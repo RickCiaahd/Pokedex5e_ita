@@ -21,7 +21,7 @@ class HomeScreen extends StatelessWidget {
               ),
               const SizedBox(height: 24),
               const Text(
-                'Benvenuto nella Pokédex 5e',
+                'Benvenuto nel Pokédex 5e',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 28,

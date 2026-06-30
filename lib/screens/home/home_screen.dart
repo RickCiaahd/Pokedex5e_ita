@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../profile/create_profile_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -37,10 +38,14 @@ class HomeScreen extends StatelessWidget {
               const SizedBox(height: 32),
               FilledButton(
                 onPressed: () {
-                  // Qui in futuro apriremo la lista Pokémon.
-                },
-                child: const Text('Apri Pokédex'),
-              ),
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => const CreateProfileScreen(),
+                    ),
+                  );
+              },
+  child: const Text('Crea profilo'),
+),
             ],
           ),
         ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../models/pokemon.dart';
 import '../../repositories/pokemon_repository.dart';
+import '../pokemon/pokemon_detail_screen.dart';
 
 class PokedexScreen extends StatefulWidget {
   const PokedexScreen({super.key});
@@ -101,7 +102,11 @@ class _PokedexScreenState extends State<PokedexScreen> {
                     subtitle: Text(pokemon.types.join(' • ')),
                     trailing: Text('PF ${pokemon.hitPoints}'),
                     onTap: () {
-                      // Qui dopo apriremo la schermata dettaglio.
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => PokemonDetailScreen(pokemon: pokemon),
+                        ),
+                      );
                     },
                   ),
                 );

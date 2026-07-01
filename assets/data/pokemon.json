@@ -1,0 +1,23 @@
+[
+  {
+    "id": 1,
+    "name": "Bulbasaur",
+    "types": ["Erba", "Veleno"],
+    "armorClass": 13,
+    "hitPoints": 18
+  },
+  {
+    "id": 4,
+    "name": "Charmander",
+    "types": ["Fuoco"],
+    "armorClass": 12,
+    "hitPoints": 16
+  },
+  {
+    "id": 7,
+    "name": "Squirtle",
+    "types": ["Acqua"],
+    "armorClass": 14,
+    "hitPoints": 20
+  }
+]

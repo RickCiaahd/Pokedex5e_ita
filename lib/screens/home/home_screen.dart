@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../profile/create_profile_screen.dart';
+import '../pokedex/pokedex_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -40,12 +41,12 @@ class HomeScreen extends StatelessWidget {
                 onPressed: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (_) => const CreateProfileScreen(),
+                      builder: (_) => const PokedexScreen(),
                     ),
                   );
-              },
-  child: const Text('Crea profilo'),
-),
+                },
+                child: const Text('Apri Pokédex'),
+              ),
             ],
           ),
         ),

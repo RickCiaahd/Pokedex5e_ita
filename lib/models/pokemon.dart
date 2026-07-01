@@ -5,6 +5,7 @@ class Pokemon {
     required this.types,
     required this.armorClass,
     required this.hitPoints,
+    required this.size,
   });
 
   final int id;
@@ -12,14 +13,16 @@ class Pokemon {
   final List<String> types;
   final int armorClass;
   final int hitPoints;
+  final String size;
 
-  factory Pokemon.fromJson(Map<String, dynamic> json) {
+  factory Pokemon.fromJson(String name, Map<String, dynamic> json) {
     return Pokemon(
-      id: json['id'],
-      name: json['name'],
-      types: List<String>.from(json['types']),
-      armorClass: json['armorClass'],
-      hitPoints: json['hitPoints'],
+      id: json['index'],
+      name: name,
+      types: List<String>.from(json['Type'] ?? []),
+      armorClass: json['AC'] ?? 0,
+      hitPoints: json['HP'] ?? 0,
+      size: json['size'] ?? 'Unknown',
     );
   }
 }

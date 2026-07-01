@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../models/pokemon.dart';
 import '../../repositories/pokemon_repository.dart';
-import '../pokemon/pokemon_detail_screen.dart';
+import '../../widgets/pokedex/pokemon_summary_dialog.dart';
+import '../../widgets/pokedex/pokemon_tile.dart';
 
 class PokedexScreen extends StatefulWidget {
   const PokedexScreen({super.key});
@@ -20,6 +21,19 @@ class _PokedexScreenState extends State<PokedexScreen> {
 
   bool _isLoading = true;
   String? _errorMessage;
+
+  String _selectedRegion = 'Kanto';
+
+  final Map<String, List<int>> _regions = {
+    'Kanto': [1, 151],
+    'Johto': [152, 251],
+    'Hoenn': [252, 386],
+    'Sinnoh': [387, 493],
+    'Unova': [494, 649],
+    'Kalos': [650, 721],
+    'Alola': [722, 809],
+    'Others': [810, 9999],
+  };
 
   @override
   void initState() {
@@ -39,7 +53,7 @@ class _PokedexScreenState extends State<PokedexScreen> {
 
       setState(() {
         _allPokemon = pokemon;
-        _filteredPokemon = pokemon;
+        _applyFilters();
         _isLoading = false;
       });
     } catch (e) {
@@ -50,14 +64,34 @@ class _PokedexScreenState extends State<PokedexScreen> {
     }
   }
 
-  void _filterPokemon(String query) {
-    final text = query.toLowerCase();
+  void _applyFilters() {
+    final range = _regions[_selectedRegion]!;
+    final query = _searchController.text.toLowerCase();
 
+    _filteredPokemon = _allPokemon.where((pokemon) {
+      final inRegion = pokemon.id >= range[0] && pokemon.id <= range[1];
+      final matchesSearch = pokemon.name.toLowerCase().contains(query);
+
+      return inRegion && matchesSearch;
+    }).toList();
+  }
+
+  void _onSearchChanged(String _) {
+    setState(_applyFilters);
+  }
+
+  void _selectRegion(String region) {
     setState(() {
-      _filteredPokemon = _allPokemon.where((pokemon) {
-        return pokemon.name.toLowerCase().contains(text);
-      }).toList();
+      _selectedRegion = region;
+      _applyFilters();
     });
+  }
+
+  void _openPokemonDialog(Pokemon pokemon) {
+    showDialog(
+      context: context,
+      builder: (_) => PokemonSummaryDialog(pokemon: pokemon),
+    );
   }
 
   @override
@@ -71,11 +105,16 @@ class _PokedexScreenState extends State<PokedexScreen> {
     } else {
       content = Column(
         children: [
+          _RegionSelector(
+            regions: _regions.keys.toList(),
+            selectedRegion: _selectedRegion,
+            onSelected: _selectRegion,
+          ),
           Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
             child: TextField(
               controller: _searchController,
-              onChanged: _filterPokemon,
+              onChanged: _onSearchChanged,
               decoration: const InputDecoration(
                 hintText: 'Cerca Pokémon...',
                 prefixIcon: Icon(Icons.search),
@@ -84,31 +123,21 @@ class _PokedexScreenState extends State<PokedexScreen> {
             ),
           ),
           Expanded(
-            child: ListView.builder(
+            child: GridView.builder(
+              padding: const EdgeInsets.all(16),
+              gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                maxCrossAxisExtent: 120,
+                mainAxisSpacing: 16,
+                crossAxisSpacing: 16,
+                childAspectRatio: 0.85,
+              ),
               itemCount: _filteredPokemon.length,
               itemBuilder: (context, index) {
                 final pokemon = _filteredPokemon[index];
 
-                return Card(
-                  margin: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 4,
-                  ),
-                  child: ListTile(
-                    leading: CircleAvatar(
-                      child: Text('${pokemon.id}'),
-                    ),
-                    title: Text(pokemon.name),
-                    subtitle: Text(pokemon.types.join(' • ')),
-                    trailing: Text('PF ${pokemon.hitPoints}'),
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => PokemonDetailScreen(pokemon: pokemon),
-                        ),
-                      );
-                    },
-                  ),
+                return PokemonTile(
+                  pokemon: pokemon,
+                  onTap: () => _openPokemonDialog(pokemon),
                 );
               },
             ),
@@ -122,6 +151,41 @@ class _PokedexScreenState extends State<PokedexScreen> {
         title: const Text('Pokédex'),
       ),
       body: content,
+    );
+  }
+}
+
+class _RegionSelector extends StatelessWidget {
+  const _RegionSelector({
+    required this.regions,
+    required this.selectedRegion,
+    required this.onSelected,
+  });
+
+  final List<String> regions;
+  final String selectedRegion;
+  final ValueChanged<String> onSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 52,
+      child: ListView.separated(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        scrollDirection: Axis.horizontal,
+        itemCount: regions.length,
+        separatorBuilder: (_, __) => const SizedBox(width: 8),
+        itemBuilder: (context, index) {
+          final region = regions[index];
+          final selected = region == selectedRegion;
+
+          return ChoiceChip(
+            label: Text(region),
+            selected: selected,
+            onSelected: (_) => onSelected(region),
+          );
+        },
+      ),
     );
   }
 }

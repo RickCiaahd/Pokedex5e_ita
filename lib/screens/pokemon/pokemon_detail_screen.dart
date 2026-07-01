@@ -49,6 +49,70 @@ class PokemonDetailScreen extends StatelessWidget {
               _InfoRow(label: 'CA', value: pokemon.armorClass.toString()),
               _InfoRow(label: 'PF', value: pokemon.hitPoints.toString()),
               _InfoRow(label: 'Taglia', value: pokemon.size),
+              _InfoRow(label: 'Velocità', value: '${pokemon.speed} ft'),
+            ],
+          ),
+
+          const SizedBox(height: 16),
+
+          _InfoCard(
+            title: 'Caratteristiche',
+            children: [
+              _InfoRow(label: 'FOR', value: pokemon.attributes.strength.toString()),
+              _InfoRow(label: 'DES', value: pokemon.attributes.dexterity.toString()),
+              _InfoRow(label: 'COS', value: pokemon.attributes.constitution.toString()),
+              _InfoRow(label: 'INT', value: pokemon.attributes.intelligence.toString()),
+              _InfoRow(label: 'SAG', value: pokemon.attributes.wisdom.toString()),
+              _InfoRow(label: 'CAR', value: pokemon.attributes.charisma.toString()),
+            ],
+          ),
+
+          const SizedBox(height: 16),
+
+          _InfoCard(
+            title: 'Abilità',
+            children: [
+              if (pokemon.abilities.isEmpty)
+                const Text('Nessuna abilità indicata.')
+              else
+                ...pokemon.abilities.map(
+                  (ability) => _BulletText(ability),
+                ),
+              if (pokemon.hiddenAbility != null) ...[
+                const Divider(),
+                _InfoRow(
+                  label: 'Abilità nascosta',
+                  value: pokemon.hiddenAbility!,
+                ),
+              ],
+            ],
+          ),
+
+          const SizedBox(height: 16),
+
+          _InfoCard(
+            title: 'Competenze',
+            children: [
+              if (pokemon.skills.isEmpty)
+                const Text('Nessuna competenza indicata.')
+              else
+                ...pokemon.skills.map(
+                  (skill) => _BulletText(skill),
+                ),
+            ],
+          ),
+
+          const SizedBox(height: 16),
+
+          _InfoCard(
+            title: 'Tiri salvezza',
+            children: [
+              if (pokemon.savingThrows.isEmpty)
+                const Text('Nessun tiro salvezza indicato.')
+              else
+                ...pokemon.savingThrows.map(
+                  (savingThrow) => _BulletText(savingThrow),
+                ),
             ],
           ),
         ],
@@ -114,6 +178,20 @@ class _InfoRow extends StatelessWidget {
           Text(value),
         ],
       ),
+    );
+  }
+}
+
+class _BulletText extends StatelessWidget {
+  const _BulletText(this.text);
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Text('• $text'),
     );
   }
 }

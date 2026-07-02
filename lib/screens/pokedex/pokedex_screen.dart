@@ -5,6 +5,9 @@ import '../../repositories/pokemon_repository.dart';
 import '../../widgets/pokedex/pokemon_summary_dialog.dart';
 import '../../widgets/pokedex/pokemon_tile.dart';
 import '../../models/pokedex_entry.dart';
+import '../../models/pokemon_flavor.dart';
+
+
 
 enum MarkMode {
   none,
@@ -24,6 +27,7 @@ class _PokedexScreenState extends State<PokedexScreen> {
   final PokemonRepository _repository = PokemonRepository();
   final TextEditingController _searchController = TextEditingController();
   final Map<int, PokedexEntry> _entries = {};
+  final Map<int, PokemonFlavor> _pokemonFlavors = {};
 
   MarkMode _markMode = MarkMode.none;
 
@@ -61,12 +65,14 @@ class _PokedexScreenState extends State<PokedexScreen> {
   Future<void> _loadPokemon() async {
     try {
       final pokemon = await _repository.getAllPokemon();
+      final flavors = await _repository.getPokemonFlavors();
 
-      setState(() {
-        _allPokemon = pokemon;
-        _applyFilters();
-        _isLoading = false;
-      });
+    setState(() {
+      _allPokemon = pokemon;
+      _pokemonFlavors.addAll(flavors);
+      _applyFilters();
+      _isLoading = false;
+    });
     } catch (e) {
       setState(() {
         _errorMessage = e.toString();
@@ -109,6 +115,7 @@ class _PokedexScreenState extends State<PokedexScreen> {
       context: context,
       builder: (_) => PokemonSummaryDialog(
         pokemon: pokemon,
+        flavor: _pokemonFlavors[pokemon.id],
         entry: _entryFor(pokemon),
         onToggleSeen: () => _toggleSeen(pokemon),
         onToggleCaught: () => _toggleCaught(pokemon),

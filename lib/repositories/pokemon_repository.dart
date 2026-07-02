@@ -5,6 +5,8 @@ import 'package:flutter/services.dart';
 
 import '../models/pokemon.dart';
 
+import '../models/pokemon_flavor.dart';
+
 class PokemonRepository {
   Future<List<Pokemon>> getAllPokemon() async {
     final indexString = await rootBundle.loadString(
@@ -42,6 +44,21 @@ class PokemonRepository {
     }
 
     return pokemonList;
+  }
+
+  Future<Map<int, PokemonFlavor>> getPokemonFlavors() async {
+  final jsonString = await rootBundle.loadString(
+    'assets/data/pokemon_flavor.json',
+  );
+
+  final Map<String, dynamic> json = jsonDecode(jsonString);
+
+  return json.map(
+    (key, value) => MapEntry(
+      int.parse(key),
+      PokemonFlavor.fromJson(value as Map<String, dynamic>),
+    ),
+  );
   }
 
   String _normalizePokemonFileName(String name) {

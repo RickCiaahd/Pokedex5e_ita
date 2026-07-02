@@ -3,17 +3,20 @@ import 'package:flutter/material.dart';
 import '../../models/pokedex_entry.dart';
 import '../../models/pokemon.dart';
 import '../../screens/pokemon/pokemon_detail_screen.dart';
+import '../../models/pokemon_flavor.dart';
 
 class PokemonSummaryDialog extends StatelessWidget {
   const PokemonSummaryDialog({
     super.key,
     required this.pokemon,
+    this.flavor,
     required this.entry,
     required this.onToggleSeen,
     required this.onToggleCaught,
   });
 
   final Pokemon pokemon;
+  final PokemonFlavor? flavor;
   final PokedexEntry entry;
   final VoidCallback onToggleSeen;
   final VoidCallback onToggleCaught;
@@ -35,6 +38,25 @@ class PokemonSummaryDialog extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
+          if (flavor != null) ...[
+              Text(
+                flavor!.genus,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 4),
+              Text(
+                'Altezza: ${flavor!.heightMeters.toStringAsFixed(1)} m · '
+                'Peso: ${flavor!.weightKg.toStringAsFixed(1)} kg',
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 12),
+              Text(
+                flavor!.flavor,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+            ],
           if (entry.seen) ...[
             Text(pokemon.types.join(' • ')),
             const SizedBox(height: 16),

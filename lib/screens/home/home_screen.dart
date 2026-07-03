@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../pokedex/pokedex_screen.dart';
-import '../profile/create_profile_screen.dart';
+import '../profile/profiles_screen.dart';
 import '../team/team_selection_screen.dart';
 import '../../models/pokedex_entry.dart';
 import '../../models/pokemon.dart';
@@ -133,13 +133,14 @@ class _HomeScreenState extends State<HomeScreen> {
               _HomeActionButton(
                 icon: Icons.person,
                 title: 'Profili',
-                subtitle: 'Crea un nuovo profilo allenatore.',
-                onTap: () {
-                  Navigator.of(context).push(
+                subtitle: 'Crea, cambia o elimina profili allenatore.',
+                onTap: () async {
+                  await Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (_) => const CreateProfileScreen(),
+                      builder: (_) => const ProfilesScreen(),
                     ),
                   );
+                  await _loadDashboard();
                 },
               ),
             ],

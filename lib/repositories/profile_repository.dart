@@ -9,6 +9,8 @@ class ProfileRepository {
   Future<Box> _appStateBox() => Hive.openBox(HiveBoxes.appState);
 
   Future<List<UserProfile>> getProfiles() async {
+    await getActiveProfile();
+
     final box = await _profilesBox();
 
     return box.values
@@ -60,10 +62,20 @@ class ProfileRepository {
   Future<void> saveProfile(UserProfile profile) async {
     final box = await _profilesBox();
     await box.put(profile.id, profile.toJson());
+    await box.flush();
   }
 
   Future<void> deleteProfile(String profileId) async {
     final profiles = await _profilesBox();
+    final appState = await _appStateBox();
+    final activeId = appState.get(HiveKeys.activeProfileId);
+
     await profiles.delete(profileId);
+    await profiles.flush();
+
+    if (activeId == profileId) {
+      final defaultProfile = await getActiveProfile();
+      await appState.put(HiveKeys.activeProfileId, defaultProfile.id);
+    }
   }
 }

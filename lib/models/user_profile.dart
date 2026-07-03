@@ -1,4 +1,6 @@
 class UserProfile {
+  static const defaultProfileId = 'default';
+
   final String id;
   final String name;
   final DateTime createdAt;
@@ -23,7 +25,14 @@ class UserProfile {
   }
 
   factory UserProfile.defaultProfile() {
-    return UserProfile.create('Allenatore');
+    final now = DateTime.now();
+
+    return UserProfile(
+      id: defaultProfileId,
+      name: 'Allenatore',
+      createdAt: now,
+      updatedAt: now,
+    );
   }
 
   Map<String, dynamic> toJson() {

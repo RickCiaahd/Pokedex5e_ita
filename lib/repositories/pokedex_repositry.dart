@@ -1,4 +1,5 @@
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:flutter/foundation.dart';
 
 import '../database/hive_boxes.dart';
 import '../models/pokedex_entry.dart';
@@ -37,6 +38,10 @@ class PokedexRepository {
       }
     }
 
+    debugPrint(
+      'POKEDEX REPOSITORY: caricate ${result.length} entries per profilo $profileId',
+    );
+
     return result;
   }
 
@@ -49,6 +54,12 @@ class PokedexRepository {
     await box.put(
       _key(profileId, entry.pokemonId),
       entry.toJson(),
+    );
+    await box.flush();
+
+    debugPrint(
+      'POKEDEX REPOSITORY: salvato pokemon ${entry.pokemonId} '
+      'seen=${entry.seen} caught=${entry.caught} profilo=$profileId',
     );
   }
 

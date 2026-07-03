@@ -1,16 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
+import '../../models/pokedex_entry.dart';
 import '../../models/pokemon.dart';
+import '../../models/pokemon_flavor.dart';
 import '../../repositories/pokemon_repository.dart';
 import '../../widgets/pokedex/pokemon_summary_dialog.dart';
 import '../../widgets/pokedex/pokemon_tile.dart';
-import '../../models/pokedex_entry.dart';
-import '../../models/pokemon_flavor.dart';
-
-
+import '../../services/profile_storage_service.dart';
 
 enum MarkMode {
   none,
+  seen,
+  unseen,
+  caught,
+}
+
+enum ViewFilter {
+  all,
   seen,
   unseen,
   caught,
@@ -25,11 +32,17 @@ class PokedexScreen extends StatefulWidget {
 
 class _PokedexScreenState extends State<PokedexScreen> {
   final PokemonRepository _repository = PokemonRepository();
+  final ProfileStorageService _profileStorageService = ProfileStorageService();
   final TextEditingController _searchController = TextEditingController();
+  final ItemScrollController _itemScrollController = ItemScrollController();
+  final ItemPositionsListener _itemPositionsListener =
+      ItemPositionsListener.create();
+
   final Map<int, PokedexEntry> _entries = {};
   final Map<int, PokemonFlavor> _pokemonFlavors = {};
 
   MarkMode _markMode = MarkMode.none;
+  ViewFilter _viewFilter = ViewFilter.all;
 
   List<Pokemon> _allPokemon = [];
   List<Pokemon> _filteredPokemon = [];
@@ -53,12 +66,14 @@ class _PokedexScreenState extends State<PokedexScreen> {
   @override
   void initState() {
     super.initState();
+    _itemPositionsListener.itemPositions.addListener(_onSectionScroll);
     _loadPokemon();
   }
 
   @override
   void dispose() {
     _searchController.dispose();
+    _itemPositionsListener.itemPositions.removeListener(_onSectionScroll);
     super.dispose();
   }
 
@@ -66,13 +81,14 @@ class _PokedexScreenState extends State<PokedexScreen> {
     try {
       final pokemon = await _repository.getAllPokemon();
       final flavors = await _repository.getPokemonFlavors();
+      await _loadEntries();
 
-    setState(() {
-      _allPokemon = pokemon;
-      _pokemonFlavors.addAll(flavors);
-      _applyFilters();
-      _isLoading = false;
-    });
+      setState(() {
+        _allPokemon = pokemon;
+        _pokemonFlavors.addAll(flavors);
+        _applyFilters();
+        _isLoading = false;
+      });
     } catch (e) {
       setState(() {
         _errorMessage = e.toString();
@@ -82,20 +98,23 @@ class _PokedexScreenState extends State<PokedexScreen> {
   }
 
   void _applyFilters() {
-    final range = _regions[_selectedRegion];
-
-    if (range == null) {
-      _filteredPokemon = _allPokemon;
-      return;
-    }
-
-    final query = _searchController.text.toLowerCase();
+    final query = _searchController.text.toLowerCase().trim();
 
     _filteredPokemon = _allPokemon.where((pokemon) {
-      final inRegion = pokemon.id >= range.first && pokemon.id <= range.last;
-      final matchesSearch = pokemon.name.toLowerCase().contains(query);
+      final matchesSearch = query.isEmpty ||
+          pokemon.name.toLowerCase().contains(query) ||
+          pokemon.id.toString().contains(query);
 
-      return inRegion && matchesSearch;
+      final entry = _entryFor(pokemon);
+
+      final matchesFilter = switch (_viewFilter) {
+        ViewFilter.all => true,
+        ViewFilter.seen => entry.seen,
+        ViewFilter.unseen => !entry.seen,
+        ViewFilter.caught => entry.caught,
+      };
+
+      return matchesSearch && matchesFilter;
     }).toList();
   }
 
@@ -104,10 +123,70 @@ class _PokedexScreenState extends State<PokedexScreen> {
   }
 
   void _selectRegion(String region) {
+    final index = _visibleRegions.indexOf(region);
+
+    if (index == -1) return;
+
     setState(() {
       _selectedRegion = region;
-      _applyFilters();
     });
+
+    _itemScrollController.scrollTo(
+      index: index,
+      duration: const Duration(milliseconds: 450),
+      curve: Curves.easeInOut,
+    );
+  }
+
+  void _onSectionScroll() {
+    final positions = _itemPositionsListener.itemPositions.value;
+
+    if (positions.isEmpty) return;
+
+    final visibleIndexes = positions
+        .where((position) => position.itemTrailingEdge > 0)
+        .map((position) => position.index)
+        .toList();
+
+    if (visibleIndexes.isEmpty) return;
+
+    final firstVisibleIndex = visibleIndexes.reduce((a, b) => a < b ? a : b);
+    final regions = _visibleRegions;
+
+    if (firstVisibleIndex < 0 || firstVisibleIndex >= regions.length) return;
+
+    final region = regions[firstVisibleIndex];
+
+    if (region != _selectedRegion) {
+      setState(() {
+        _selectedRegion = region;
+      });
+    }
+  }
+
+  List<String> get _visibleRegions {
+    return _regions.keys.where((region) {
+      return _pokemonForRegion(region).isNotEmpty;
+    }).toList();
+  }
+
+  List<Pokemon> _pokemonForRegion(String region) {
+    final range = _regions[region];
+
+    if (range == null) return [];
+
+    return _filteredPokemon.where((pokemon) {
+      return pokemon.id >= range.first && pokemon.id <= range.last;
+    }).toList();
+  }
+
+  int _gridColumnCount(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+
+    if (width >= 900) return 6;
+    if (width >= 700) return 5;
+    if (width >= 500) return 4;
+    return 3;
   }
 
   void _openPokemonDialog(Pokemon pokemon) {
@@ -156,6 +235,15 @@ class _PokedexScreenState extends State<PokedexScreen> {
               ),
             ),
           ),
+          _ViewFilterSelector(
+            selectedFilter: _viewFilter,
+            onChanged: (filter) {
+              setState(() {
+                _viewFilter = filter;
+                _applyFilters();
+              });
+            },
+          ),
           _MarkModeSelector(
             selectedMode: _markMode,
             onChanged: (mode) {
@@ -165,25 +253,25 @@ class _PokedexScreenState extends State<PokedexScreen> {
             },
           ),
           Expanded(
-            child: GridView.builder(
-              padding: const EdgeInsets.all(16),
-              gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                maxCrossAxisExtent: 120,
-                mainAxisSpacing: 16,
-                crossAxisSpacing: 16,
-                childAspectRatio: 0.72,
-              ),
-              itemCount: _filteredPokemon.length,
-              itemBuilder: (context, index) {
-                final pokemon = _filteredPokemon[index];
+            child: _visibleRegions.isEmpty
+                ? const Center(child: Text('Nessun Pokémon trovato.'))
+                : ScrollablePositionedList.builder(
+                    itemScrollController: _itemScrollController,
+                    itemPositionsListener: _itemPositionsListener,
+                    itemCount: _visibleRegions.length,
+                    itemBuilder: (context, index) {
+                      final region = _visibleRegions[index];
+                      final pokemonList = _pokemonForRegion(region);
 
-                return PokemonTile(
-                  pokemon: pokemon,
-                  entry: _entryFor(pokemon),
-                  onTap: () => _handlePokemonTap(pokemon),
-                );
-              },
-            ),
+                      return _RegionSection(
+                        region: region,
+                        pokemon: pokemonList,
+                        columns: _gridColumnCount(context),
+                        entryFor: _entryFor,
+                        onPokemonTap: _handlePokemonTap,
+                      );
+                    },
+                  ),
           ),
         ],
       );
@@ -197,11 +285,31 @@ class _PokedexScreenState extends State<PokedexScreen> {
     );
   }
 
+  Future<void> _loadEntries() async {
+    final entries = await _profileStorageService.loadPokedexEntries();
+
+    _entries
+      ..clear()
+      ..addAll(entries);
+  }
+
+  Future<void> _saveEntries() async {
+    debugPrint('POKEDEX SCREEN: chiamo save con ${_entries.length} entries');
+  
+    try {
+      await _profileStorageService.savePokedexEntries(_entries);
+      debugPrint('POKEDEX SCREEN: save completato');
+    } catch (e, stackTrace) {
+      debugPrint('POKEDEX SCREEN: errore save: $e');
+      debugPrint(stackTrace.toString());
+    }
+  }
+
   PokedexEntry _entryFor(Pokemon pokemon) {
     return _entries[pokemon.id] ?? PokedexEntry(pokemonId: pokemon.id);
   }
 
-  void _toggleSeen(Pokemon pokemon) {
+  Future<void> _toggleSeen(Pokemon pokemon) async {
     final entry = _entryFor(pokemon);
 
     setState(() {
@@ -211,10 +319,13 @@ class _PokedexScreenState extends State<PokedexScreen> {
       );
     });
 
+    await _saveEntries();
+
+    if (!mounted) return;
     Navigator.of(context).pop();
   }
 
-  void _toggleCaught(Pokemon pokemon) {
+  Future<void> _toggleCaught(Pokemon pokemon) async {
     final entry = _entryFor(pokemon);
 
     setState(() {
@@ -224,82 +335,116 @@ class _PokedexScreenState extends State<PokedexScreen> {
       );
     });
 
+    await _saveEntries();
+
+    if (!mounted) return;
     Navigator.of(context).pop();
   }
 
-  List<Pokemon> get _currentRegionPokemon {
-  final range = _regions[_selectedRegion];
-
-  if (range == null) return _allPokemon;
-
-  return _allPokemon.where((pokemon) {
-    return pokemon.id >= range.first && pokemon.id <= range.last;
-  }).toList();
-  }
-
-  int get _seenCount {
-    return _currentRegionPokemon.where((pokemon) {
-      return _entryFor(pokemon).seen;
-    }).length;
-  }
-
-  int get _caughtCount {
-    return _currentRegionPokemon.where((pokemon) {
-      return _entryFor(pokemon).caught;
-    }).length;
-  }
-
-  int get _regionTotal {
-    return _currentRegionPokemon.length;
-  }
-  
   Map<String, int> _regionProgress(String region, bool caught) {
-  final range = _regions[region]!;
+    final range = _regions[region]!;
 
-  final regionPokemon = _allPokemon.where((pokemon) {
-    return pokemon.id >= range.first && pokemon.id <= range.last;
-  }).toList();
+    final regionPokemon = _allPokemon.where((pokemon) {
+      return pokemon.id >= range.first && pokemon.id <= range.last;
+    }).toList();
 
-  final count = regionPokemon.where((pokemon) {
+    final count = regionPokemon.where((pokemon) {
+      final entry = _entryFor(pokemon);
+      return caught ? entry.caught : entry.seen;
+    }).length;
+
+    return {
+      'count': count,
+      'total': regionPokemon.length,
+    };
+  }
+
+  Future<void> _handlePokemonTap(Pokemon pokemon) async {
+    if (_markMode == MarkMode.none) {
+      _openPokemonDialog(pokemon);
+      return;
+    }
+
     final entry = _entryFor(pokemon);
-    return caught ? entry.caught : entry.seen;
-  }).length;
 
-  return {
-    'count': count,
-    'total': regionPokemon.length,
-  };
+    setState(() {
+      switch (_markMode) {
+        case MarkMode.seen:
+          _entries[pokemon.id] = entry.copyWith(seen: true);
+          break;
+        case MarkMode.unseen:
+          _entries[pokemon.id] = entry.copyWith(
+            seen: false,
+            caught: false,
+          );
+          break;
+        case MarkMode.caught:
+          _entries[pokemon.id] = entry.copyWith(
+            seen: true,
+            caught: true,
+          );
+          break;
+        case MarkMode.none:
+          break;
+      }
+    });
+
+    await _saveEntries();
+  }
 }
 
-void _handlePokemonTap(Pokemon pokemon) {
-  if (_markMode == MarkMode.none) {
-    _openPokemonDialog(pokemon);
-    return;
-  }
-
-  final entry = _entryFor(pokemon);
-
-  setState(() {
-    switch (_markMode) {
-      case MarkMode.seen:
-        _entries[pokemon.id] = entry.copyWith(seen: true);
-        break;
-      case MarkMode.unseen:
-        _entries[pokemon.id] = entry.copyWith(
-          seen: false,
-          caught: false,
-        );
-        break;
-      case MarkMode.caught:
-        _entries[pokemon.id] = entry.copyWith(
-          seen: true,
-          caught: true,
-        );
-        break;
-      case MarkMode.none:
-        break;
-    }
+class _RegionSection extends StatelessWidget {
+  const _RegionSection({
+    required this.region,
+    required this.pokemon,
+    required this.columns,
+    required this.entryFor,
+    required this.onPokemonTap,
   });
+
+  final String region;
+  final List<Pokemon> pokemon;
+  final int columns;
+  final PokedexEntry Function(Pokemon pokemon) entryFor;
+  final ValueChanged<Pokemon> onPokemonTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            region.toUpperCase(),
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+          ),
+          const SizedBox(height: 12),
+          GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: pokemon.length,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: columns,
+              mainAxisSpacing: 16,
+              crossAxisSpacing: 16,
+              childAspectRatio: 0.72,
+            ),
+            itemBuilder: (context, index) {
+              final currentPokemon = pokemon[index];
+
+              return PokemonTile(
+                pokemon: currentPokemon,
+                entry: entryFor(currentPokemon),
+                onTap: () => onPokemonTap(currentPokemon),
+              );
+            },
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -333,42 +478,6 @@ class _RegionSelector extends StatelessWidget {
             onSelected: (_) => onSelected(region),
           );
         },
-      ),
-    );
-  }
-}
-
-class _ProgressCard extends StatelessWidget {
-  const _ProgressCard({
-    required this.label,
-    required this.value,
-    required this.total,
-    required this.icon,
-  });
-
-  final String label;
-  final int value;
-  final int total;
-  final IconData icon;
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-        child: Row(
-          children: [
-            Icon(icon, size: 20),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Text(
-                label,
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-            ),
-            Text('$value/$total'),
-          ],
-        ),
       ),
     );
   }
@@ -412,7 +521,9 @@ class _RegionProgressGrid extends StatelessWidget {
                     region,
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: selected ? Theme.of(context).colorScheme.primary : null,
+                      color: selected
+                          ? Theme.of(context).colorScheme.primary
+                          : null,
                     ),
                   ),
                   const SizedBox(height: 6),
@@ -423,6 +534,49 @@ class _RegionProgressGrid extends StatelessWidget {
             ),
           );
         },
+      ),
+    );
+  }
+}
+
+class _ViewFilterSelector extends StatelessWidget {
+  const _ViewFilterSelector({
+    required this.selectedFilter,
+    required this.onChanged,
+  });
+
+  final ViewFilter selectedFilter;
+  final ValueChanged<ViewFilter> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+      child: Wrap(
+        spacing: 8,
+        runSpacing: 8,
+        children: [
+          ChoiceChip(
+            label: const Text('Tutti'),
+            selected: selectedFilter == ViewFilter.all,
+            onSelected: (_) => onChanged(ViewFilter.all),
+          ),
+          ChoiceChip(
+            label: const Text('Visti'),
+            selected: selectedFilter == ViewFilter.seen,
+            onSelected: (_) => onChanged(ViewFilter.seen),
+          ),
+          ChoiceChip(
+            label: const Text('Non visti'),
+            selected: selectedFilter == ViewFilter.unseen,
+            onSelected: (_) => onChanged(ViewFilter.unseen),
+          ),
+          ChoiceChip(
+            label: const Text('Catturati'),
+            selected: selectedFilter == ViewFilter.caught,
+            onSelected: (_) => onChanged(ViewFilter.caught),
+          ),
+        ],
       ),
     );
   }

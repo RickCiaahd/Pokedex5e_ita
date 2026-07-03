@@ -55,11 +55,13 @@ class PokedexRepository {
   Future<void> updateMarkMode({
     required String profileId,
     required int pokemonId,
-    required MarkMode markMode,
+    required bool seen,
+    required bool caught,
   }) async {
     final entry = PokedexEntry(
       pokemonId: pokemonId,
-      markMode: markMode,
+      seen: seen,
+      caught: caught,
       updatedAt: DateTime.now(),
     );
 

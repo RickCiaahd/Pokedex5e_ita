@@ -87,5 +87,6 @@ class PokedexRepository {
         .toList();
 
     await box.deleteAll(keysToDelete);
+    await box.flush();
   }
 }

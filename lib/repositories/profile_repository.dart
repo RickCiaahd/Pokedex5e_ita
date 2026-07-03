@@ -42,12 +42,16 @@ class ProfileRepository {
   }
 
   Future<UserProfile> createProfile(String name) async {
-    final box = await _profilesBox();
     final profile = UserProfile.create(name);
 
-    await box.put(profile.id, profile.toJson());
+    await saveProfile(profile);
 
     return profile;
+  }
+
+  Future<void> saveProfile(UserProfile profile) async {
+    final box = await _profilesBox();
+    await box.put(profile.id, profile.toJson());
   }
 
   Future<void> deleteProfile(String profileId) async {

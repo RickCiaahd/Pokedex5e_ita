@@ -23,5 +23,12 @@ class SettingsRepository {
   ) async {
     final box = await _box();
     await box.put(profileId, settings.toJson());
+    await box.flush();
+  }
+
+  Future<void> deleteSettings(String profileId) async {
+    final box = await _box();
+    await box.delete(profileId);
+    await box.flush();
   }
 }

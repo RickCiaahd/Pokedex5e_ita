@@ -52,4 +52,10 @@ class TeamRepository {
 
     await saveTeam(profileId, updatedTeam);
   }
+
+  Future<void> deleteTeam(String profileId) async {
+    final box = await _box();
+    await box.delete(profileId);
+    await box.flush();
+  }
 }

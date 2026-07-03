@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../profile/create_profile_screen.dart';
 import '../pokedex/pokedex_screen.dart';
 
 class HomeScreen extends StatelessWidget {

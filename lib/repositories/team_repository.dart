@@ -29,6 +29,7 @@ class TeamRepository {
       profileId,
       team.map((slot) => slot.toJson()).toList(),
     );
+    await box.flush();
   }
 
   Future<void> setPokemonInSlot({

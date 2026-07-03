@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 import '../models/pokedex_entry.dart';
 import '../models/user_profile.dart';
 import '../repositories/pokedex_repositry.dart';
@@ -17,6 +19,7 @@ class ProfileStorageService {
 
   Future<Map<int, PokedexEntry>> loadPokedexEntries() async {
     final profile = await getDefaultProfile();
+    debugPrint('PROFILE STORAGE: carico pokedex profilo ${profile.id}');
     return _pokedexRepository.getEntriesForProfile(profile.id);
   }
 
@@ -24,6 +27,7 @@ class ProfileStorageService {
     Map<int, PokedexEntry> entries,
   ) async {
     final profile = await getDefaultProfile();
+    debugPrint('PROFILE STORAGE: salvo pokedex profilo ${profile.id}');
 
     for (final entry in entries.values) {
       await _pokedexRepository.saveEntry(

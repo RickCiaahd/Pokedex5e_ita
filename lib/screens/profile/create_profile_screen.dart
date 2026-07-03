@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../team/team_selection_screen.dart';
+import '../../repositories/profile_repository.dart';
 
 class CreateProfileScreen extends StatefulWidget {
   const CreateProfileScreen({super.key});
@@ -10,7 +10,9 @@ class CreateProfileScreen extends StatefulWidget {
 }
 
 class _CreateProfileScreenState extends State<CreateProfileScreen> {
+  final ProfileRepository _profileRepository = ProfileRepository();
   final TextEditingController _nicknameController = TextEditingController();
+  bool _isSaving = false;
 
   @override
   void dispose() {
@@ -18,7 +20,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
     super.dispose();
   }
 
-  void _continue() {
+  Future<void> _continue() async {
     final nickname = _nicknameController.text.trim();
 
     if (nickname.isEmpty) {
@@ -30,11 +32,16 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
       return;
     }
 
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => TeamSelectionScreen(nickname: nickname),
-      ),
-    );
+    setState(() {
+      _isSaving = true;
+    });
+
+    final profile = await _profileRepository.createProfile(nickname);
+    await _profileRepository.setActiveProfile(profile.id);
+
+    if (!mounted) return;
+
+    Navigator.of(context).pop(true);
   }
 
   @override
@@ -78,8 +85,8 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                 SizedBox(
                   width: double.infinity,
                   child: FilledButton(
-                    onPressed: _continue,
-                    child: const Text('Continua'),
+                    onPressed: _isSaving ? null : _continue,
+                    child: Text(_isSaving ? 'Creazione...' : 'Crea profilo'),
                   ),
                 ),
               ],

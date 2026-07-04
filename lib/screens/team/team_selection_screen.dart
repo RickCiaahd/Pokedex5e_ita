@@ -204,9 +204,9 @@ class _TeamHeader extends StatelessWidget {
             width: 58,
             height: 58,
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.18),
+              color: Colors.white.withValues(alpha: 0.18),
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: Colors.white.withOpacity(0.35)),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.35)),
             ),
             child: const Icon(
               Icons.catching_pokemon,
@@ -274,9 +274,8 @@ class _TeamSlotCard extends StatelessWidget {
     final number = pokemon == null
         ? null
         : '#${pokemon!.id.toString().padLeft(3, '0')}';
-    final title = slot.nickname.trim().isEmpty
-        ? pokemon?.name ?? 'Slot vuoto'
-        : slot.nickname;
+    final nickname = slot.nickname?.trim() ?? '';
+    final title = nickname.isEmpty ? pokemon?.name ?? 'Slot vuoto' : nickname;
 
     return Card(
       child: InkWell(
@@ -418,7 +417,7 @@ class _SmallChip extends StatelessWidget {
 
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: colorScheme.primaryContainer.withOpacity(0.55),
+        color: colorScheme.primaryContainer.withValues(alpha: 0.55),
         borderRadius: BorderRadius.circular(999),
       ),
       child: Padding(

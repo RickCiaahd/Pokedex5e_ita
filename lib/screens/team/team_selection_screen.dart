@@ -136,13 +136,14 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
   @override
   Widget build(BuildContext context) {
     final profileName = _profile?.name ?? widget.nickname;
+    final filledSlots = _team.where((slot) => slot.pokemonId != null).length;
 
     return Scaffold(
       appBar: AppBar(title: const Text('Squadra')),
       body: RefreshIndicator(
         onRefresh: _loadTeam,
         child: ListView(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
           children: [
             if (_isLoading)
               const Padding(
@@ -152,17 +153,12 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
             else if (_errorMessage != null)
               _TeamErrorState(message: _errorMessage!, onRetry: _loadTeam)
             else ...[
-              Text(
-                'Squadra di $profileName',
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+              _TeamHeader(
+                profileName: profileName,
+                filledSlots: filledSlots,
+                totalSlots: _team.length,
               ),
-              const SizedBox(height: 8),
-              const Text(
-                'Tocca uno slot pieno per aprire la scheda del Pokémon.',
-              ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 16),
               for (final slot in _team)
                 _TeamSlotCard(
                   slot: slot,
@@ -176,6 +172,82 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
             ],
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _TeamHeader extends StatelessWidget {
+  const _TeamHeader({
+    required this.profileName,
+    required this.filledSlots,
+    required this.totalSlots,
+  });
+
+  final String profileName;
+  final int filledSlots;
+  final int totalSlots;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: colorScheme.primary,
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 58,
+            height: 58,
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.18),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: Colors.white.withOpacity(0.35)),
+            ),
+            child: const Icon(
+              Icons.catching_pokemon,
+              color: Colors.white,
+              size: 34,
+            ),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Squadra di'.toUpperCase(),
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                    color: Colors.white70,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 0.8,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  profileName,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  '$filledSlots/$totalSlots Pokémon in squadra',
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodyMedium?.copyWith(color: Colors.white),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -198,41 +270,166 @@ class _TeamSlotCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     final number = pokemon == null
         ? null
         : '#${pokemon!.id.toString().padLeft(3, '0')}';
+    final title = slot.nickname.trim().isEmpty
+        ? pokemon?.name ?? 'Slot vuoto'
+        : slot.nickname;
 
     return Card(
-      child: ListTile(
-        leading: CircleAvatar(child: Text('${slot.slotIndex + 1}')),
-        title: Text(pokemon?.name ?? 'Slot vuoto'),
-        subtitle: Text(
-          pokemon == null
-              ? 'Scegli un Pokémon'
-              : '$number • ${pokemon!.types.join(' / ')}',
-        ),
-        trailing: pokemon == null
-            ? IconButton(
-                tooltip: 'Scegli',
-                icon: const Icon(Icons.add),
-                onPressed: onChange,
-              )
-            : Wrap(
-                spacing: 4,
-                children: [
-                  IconButton(
-                    tooltip: 'Cambia',
-                    icon: const Icon(Icons.swap_horiz),
-                    onPressed: onChange,
-                  ),
-                  IconButton(
-                    tooltip: 'Rimuovi',
-                    icon: const Icon(Icons.close),
-                    onPressed: onRemove,
-                  ),
-                ],
-              ),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(14),
         onTap: onOpen,
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Row(
+            children: [
+              _SlotAvatar(slotIndex: slot.slotIndex, hasPokemon: pokemon != null),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            title,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: Theme.of(context).textTheme.titleMedium
+                                ?.copyWith(fontWeight: FontWeight.w900),
+                          ),
+                        ),
+                        if (pokemon != null)
+                          Text(
+                            number!,
+                            style: Theme.of(context).textTheme.labelLarge
+                                ?.copyWith(
+                                  color: colorScheme.primary,
+                                  fontWeight: FontWeight.w900,
+                                ),
+                          ),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    if (pokemon == null)
+                      Text(
+                        'Tocca per scegliere un Pokémon',
+                        style: TextStyle(color: colorScheme.onSurfaceVariant),
+                      )
+                    else ...[
+                      Wrap(
+                        spacing: 6,
+                        runSpacing: 6,
+                        children: [
+                          for (final type in pokemon!.types)
+                            _SmallChip(label: type.toUpperCase()),
+                          _SmallChip(label: 'HP ${pokemon!.hitPoints}'),
+                          _SmallChip(label: 'AC ${pokemon!.armorClass}'),
+                        ],
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              pokemon == null
+                  ? IconButton.filled(
+                      tooltip: 'Scegli',
+                      icon: const Icon(Icons.add),
+                      onPressed: onChange,
+                    )
+                  : PopupMenuButton<_SlotAction>(
+                      tooltip: 'Azioni slot',
+                      onSelected: (action) {
+                        switch (action) {
+                          case _SlotAction.change:
+                            onChange();
+                            break;
+                          case _SlotAction.remove:
+                            onRemove?.call();
+                            break;
+                        }
+                      },
+                      itemBuilder: (context) => const [
+                        PopupMenuItem(
+                          value: _SlotAction.change,
+                          child: Text('Cambia Pokémon'),
+                        ),
+                        PopupMenuItem(
+                          value: _SlotAction.remove,
+                          child: Text('Rimuovi dallo slot'),
+                        ),
+                      ],
+                    ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+enum _SlotAction { change, remove }
+
+class _SlotAvatar extends StatelessWidget {
+  const _SlotAvatar({required this.slotIndex, required this.hasPokemon});
+
+  final int slotIndex;
+  final bool hasPokemon;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Container(
+      width: 54,
+      height: 54,
+      decoration: BoxDecoration(
+        color: hasPokemon ? colorScheme.primary : colorScheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Center(
+        child: hasPokemon
+            ? const Icon(Icons.catching_pokemon, color: Colors.white, size: 30)
+            : Text(
+                '${slotIndex + 1}',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+      ),
+    );
+  }
+}
+
+class _SmallChip extends StatelessWidget {
+  const _SmallChip({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: colorScheme.primaryContainer.withOpacity(0.55),
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+        child: Text(
+          label,
+          style: Theme.of(context).textTheme.labelSmall?.copyWith(
+            color: colorScheme.onPrimaryContainer,
+            fontWeight: FontWeight.w800,
+          ),
+        ),
       ),
     );
   }
@@ -264,44 +461,70 @@ class _PokemonPickerSheetState extends State<_PokemonPickerSheet> {
 
       return query.isEmpty ||
           pokemon.name.toLowerCase().contains(query) ||
-          pokemon.id.toString().contains(query);
+          pokemon.id.toString().contains(query) ||
+          pokemon.types.any((type) => type.toLowerCase().contains(query));
     }).toList();
 
     return SafeArea(
       child: SizedBox(
-        height: MediaQuery.of(context).size.height * 0.78,
+        height: MediaQuery.of(context).size.height * 0.82,
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-              child: TextField(
-                controller: _searchController,
-                decoration: const InputDecoration(
-                  hintText: 'Cerca Pokémon...',
-                  prefixIcon: Icon(Icons.search),
-                  border: OutlineInputBorder(),
-                ),
-                onChanged: (value) {
-                  setState(() {
-                    _query = value;
-                  });
-                },
+              padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Scegli Pokémon',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: _searchController,
+                    decoration: const InputDecoration(
+                      hintText: 'Cerca per nome, numero o tipo...',
+                      prefixIcon: Icon(Icons.search),
+                    ),
+                    onChanged: (value) {
+                      setState(() {
+                        _query = value;
+                      });
+                    },
+                  ),
+                ],
               ),
             ),
             Expanded(
               child: ListView.builder(
+                padding: const EdgeInsets.fromLTRB(12, 0, 12, 16),
                 itemCount: filteredPokemon.length,
                 itemBuilder: (context, index) {
                   final pokemon = filteredPokemon[index];
                   final number = '#${pokemon.id.toString().padLeft(3, '0')}';
 
-                  return ListTile(
-                    leading: const Icon(Icons.catching_pokemon),
-                    title: Text(pokemon.name),
-                    subtitle: Text('$number • ${pokemon.types.join(' / ')}'),
-                    onTap: () {
-                      Navigator.of(context).pop(pokemon.id);
-                    },
+                  return Card(
+                    child: ListTile(
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                      leading: const Icon(Icons.catching_pokemon),
+                      title: Text(
+                        pokemon.name,
+                        style: const TextStyle(fontWeight: FontWeight.w800),
+                      ),
+                      subtitle: Text(
+                        '$number • ${pokemon.types.join(' / ')} • HP ${pokemon.hitPoints} • AC ${pokemon.armorClass}',
+                      ),
+                      trailing: const Icon(Icons.add_circle_outline),
+                      onTap: () {
+                        Navigator.of(context).pop(pokemon.id);
+                      },
+                    ),
                   );
                 },
               ),

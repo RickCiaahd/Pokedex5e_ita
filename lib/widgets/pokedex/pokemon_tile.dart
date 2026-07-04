@@ -42,13 +42,13 @@ class PokemonTile extends StatelessWidget {
                       ? colorScheme.primary
                       : entry.seen
                       ? colorScheme.outlineVariant
-                      : colorScheme.outline.withOpacity(0.45),
+                      : colorScheme.outline.withValues(alpha: 0.45),
                   width: entry.caught ? 2 : 1,
                 ),
                 boxShadow: entry.caught
                     ? [
                         BoxShadow(
-                          color: colorScheme.primary.withOpacity(0.14),
+                          color: colorScheme.primary.withValues(alpha: 0.14),
                           blurRadius: 10,
                           offset: const Offset(0, 4),
                         ),
@@ -64,8 +64,8 @@ class PokemonTile extends StatelessWidget {
                       width: 54,
                       height: 8,
                       decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(
-                          entry.seen ? 0.10 : 0.18,
+                        color: Colors.black.withValues(
+                          alpha: entry.seen ? 0.10 : 0.18,
                         ),
                         borderRadius: BorderRadius.circular(999),
                       ),

@@ -53,24 +53,24 @@ class PokemonAssetImage extends StatelessWidget {
       );
     } else if (!caught) {
       image = Opacity(
-        opacity: 0.58,
+        opacity: 0.56,
         child: ColorFiltered(
           colorFilter: const ColorFilter.matrix(<double>[
             0.2126,
             0.7152,
             0.0722,
             0,
-            45,
+            52,
             0.2126,
             0.7152,
             0.0722,
             0,
-            45,
+            52,
             0.2126,
             0.7152,
             0.0722,
             0,
-            45,
+            52,
             0,
             0,
             0,
@@ -137,18 +137,30 @@ class PokemonAssetPaths {
     final alternateFolder = useLargeArtwork ? 'sprites' : 'pokemons';
     final id = pokemon.id.toString();
     final paddedId = id.padLeft(3, '0');
-    final name = _assetName(pokemon.name);
-    final lowerName = name.toLowerCase();
+    final rawName = pokemon.name.trim();
+    final assetName = _assetName(rawName);
+    final compactName = _compactAssetName(rawName);
+
+    final fileNames = <String>{
+      '$id$rawName.png',
+      '$paddedId$rawName.png',
+      '$id$assetName.png',
+      '$paddedId$assetName.png',
+      '$id$compactName.png',
+      '$paddedId$compactName.png',
+      '$paddedId.png',
+      '$id.png',
+      '$rawName.png',
+      '$assetName.png',
+      '$compactName.png',
+      assetName.toLowerCase() + '.png',
+      compactName.toLowerCase() + '.png',
+    };
 
     return <String>[
-      'assets/textures/$folder/$paddedId.png',
-      'assets/textures/$folder/$id.png',
-      'assets/textures/$folder/$name.png',
-      'assets/textures/$folder/$lowerName.png',
-      'assets/textures/$alternateFolder/$paddedId.png',
-      'assets/textures/$alternateFolder/$id.png',
-      'assets/textures/$alternateFolder/$name.png',
-      'assets/textures/$alternateFolder/$lowerName.png',
+      for (final fileName in fileNames) 'assets/textures/$folder/$fileName',
+      for (final fileName in fileNames)
+        'assets/textures/$alternateFolder/$fileName',
     ];
   }
 
@@ -223,6 +235,17 @@ class PokemonAssetPaths {
         .replaceAll(' ', '_')
         .replaceAll('-', '_');
   }
+
+  static String _compactAssetName(String value) {
+    return value
+        .trim()
+        .replaceAll(':', '')
+        .replaceAll('.', '')
+        .replaceAll("'", '')
+        .replaceAll('’', '')
+        .replaceAll(' ', '')
+        .replaceAll('-', '');
+  }
 }
 
 class _AssetFallbackImage extends StatefulWidget {
@@ -266,7 +289,7 @@ class _AssetFallbackImageState extends State<_AssetFallbackImage> {
       width: widget.width,
       height: widget.height,
       fit: widget.fit,
-      filterQuality: FilterQuality.none,
+      filterQuality: FilterQuality.medium,
       errorBuilder: (context, error, stackTrace) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (!mounted) return;

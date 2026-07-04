@@ -23,33 +23,61 @@ class PokemonTile extends StatelessWidget {
 
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(14),
+      borderRadius: BorderRadius.circular(16),
       child: Column(
         children: [
           Expanded(
             child: Container(
               width: double.infinity,
-              padding: const EdgeInsets.all(8),
+              padding: const EdgeInsets.fromLTRB(6, 8, 6, 6),
               decoration: BoxDecoration(
                 color: entry.caught
-                    ? colorScheme.primaryContainer
-                    : entry.seen
                     ? Colors.white
-                    : colorScheme.surfaceContainerHighest,
-                borderRadius: BorderRadius.circular(14),
+                    : entry.seen
+                    ? const Color(0xFFF6F6F6)
+                    : const Color(0xFFE4E1DC),
+                borderRadius: BorderRadius.circular(16),
                 border: Border.all(
                   color: entry.caught
                       ? colorScheme.primary
-                      : colorScheme.outlineVariant,
+                      : entry.seen
+                      ? colorScheme.outlineVariant
+                      : colorScheme.outline.withOpacity(0.45),
                   width: entry.caught ? 2 : 1,
                 ),
+                boxShadow: entry.caught
+                    ? [
+                        BoxShadow(
+                          color: colorScheme.primary.withOpacity(0.14),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        ),
+                      ]
+                    : null,
               ),
-              child: Center(
-                child: PokemonAssetImage(
-                  pokemon: pokemon,
-                  entry: entry,
-                  size: 74,
-                ),
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Positioned(
+                    bottom: 4,
+                    child: Container(
+                      width: 54,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(
+                          entry.seen ? 0.10 : 0.18,
+                        ),
+                        borderRadius: BorderRadius.circular(999),
+                      ),
+                    ),
+                  ),
+                  PokemonAssetImage(
+                    pokemon: pokemon,
+                    entry: entry,
+                    useLargeArtwork: true,
+                    size: 96,
+                  ),
+                ],
               ),
             ),
           ),

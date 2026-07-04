@@ -11,6 +11,7 @@ class TeamSlot {
   final String? gender;
   final String nature;
   final String? heldItem;
+  final List<String> abilities;
   final List<String> feats;
   final List<String> extraSkills;
   final Map<String, int> customAbilityScores;
@@ -26,6 +27,7 @@ class TeamSlot {
     this.gender,
     this.nature = 'No Nature',
     this.heldItem,
+    this.abilities = const [],
     this.feats = const [],
     this.extraSkills = const [],
     this.customAbilityScores = const {},
@@ -43,6 +45,7 @@ class TeamSlot {
       'gender': gender,
       'nature': nature,
       'heldItem': heldItem,
+      'abilities': abilities,
       'feats': feats,
       'extraSkills': extraSkills,
       'customAbilityScores': customAbilityScores,
@@ -61,6 +64,7 @@ class TeamSlot {
       gender: json['gender'],
       nature: json['nature'] ?? 'No Nature',
       heldItem: json['heldItem'],
+      abilities: List<String>.from(json['abilities'] ?? []),
       feats: List<String>.from(json['feats'] ?? []),
       extraSkills: List<String>.from(json['extraSkills'] ?? []),
       customAbilityScores: Map<String, int>.from(
@@ -80,6 +84,7 @@ class TeamSlot {
     Object? gender = _unset,
     String? nature,
     Object? heldItem = _unset,
+    List<String>? abilities,
     List<String>? feats,
     List<String>? extraSkills,
     Map<String, int>? customAbilityScores,
@@ -100,6 +105,7 @@ class TeamSlot {
       heldItem: identical(heldItem, _unset)
           ? this.heldItem
           : heldItem as String?,
+      abilities: abilities ?? this.abilities,
       feats: feats ?? this.feats,
       extraSkills: extraSkills ?? this.extraSkills,
       customAbilityScores: customAbilityScores ?? this.customAbilityScores,

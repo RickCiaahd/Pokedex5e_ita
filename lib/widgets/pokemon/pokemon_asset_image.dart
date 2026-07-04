@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../models/pokedex_entry.dart';
 import '../../models/pokemon.dart';
@@ -138,23 +139,16 @@ class PokemonAssetPaths {
     final id = pokemon.id.toString();
     final paddedId = id.padLeft(3, '0');
     final rawName = pokemon.name.trim();
-    final assetName = _assetName(rawName);
-    final compactName = _compactAssetName(rawName);
-
+    final nameAliases = _nameAliases(rawName);
     final fileNames = <String>{
-      '$id$rawName.png',
-      '$paddedId$rawName.png',
-      '$id$assetName.png',
-      '$paddedId$assetName.png',
-      '$id$compactName.png',
-      '$paddedId$compactName.png',
+      for (final name in nameAliases) ...[
+        '$id$name.png',
+        '$paddedId$name.png',
+        '$name.png',
+        '${name.toLowerCase()}.png',
+      ],
       '$paddedId.png',
       '$id.png',
-      '$rawName.png',
-      '$assetName.png',
-      '$compactName.png',
-      '${assetName.toLowerCase()}.png',
-      '${compactName.toLowerCase()}.png',
     };
 
     return <String>[
@@ -246,9 +240,26 @@ class PokemonAssetPaths {
         .replaceAll(' ', '')
         .replaceAll('-', '');
   }
+
+  static Set<String> _nameAliases(String value) {
+    final genderName = value
+        .replaceAll(' ♀', '-f')
+        .replaceAll('♀', '-f')
+        .replaceAll(' ♂', '-m')
+        .replaceAll('♂', '-m');
+
+    return <String>{
+      value.trim(),
+      _assetName(value),
+      _compactAssetName(value),
+      genderName.trim(),
+      _assetName(genderName),
+      _compactAssetName(genderName),
+    }..removeWhere((name) => name.isEmpty);
+  }
 }
 
-class _AssetFallbackImage extends StatefulWidget {
+class _AssetFallbackImage extends StatelessWidget {
   const _AssetFallbackImage({
     required this.assetPaths,
     required this.fallback,
@@ -264,41 +275,49 @@ class _AssetFallbackImage extends StatefulWidget {
   final BoxFit fit;
 
   @override
-  State<_AssetFallbackImage> createState() => _AssetFallbackImageState();
-}
-
-class _AssetFallbackImageState extends State<_AssetFallbackImage> {
-  int _index = 0;
-
-  @override
-  void didUpdateWidget(covariant _AssetFallbackImage oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.assetPaths.join('|') != widget.assetPaths.join('|')) {
-      _index = 0;
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
-    if (_index >= widget.assetPaths.length) {
-      return widget.fallback;
-    }
+    return FutureBuilder<String?>(
+      future: _AssetLookup.firstExisting(assetPaths),
+      builder: (context, snapshot) {
+        final assetPath = snapshot.data;
 
-    return Image.asset(
-      widget.assetPaths[_index],
-      width: widget.width,
-      height: widget.height,
-      fit: widget.fit,
-      filterQuality: FilterQuality.medium,
-      errorBuilder: (context, error, stackTrace) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (!mounted) return;
-          setState(() {
-            _index += 1;
-          });
-        });
-        return widget.fallback;
+        if (assetPath == null) {
+          return fallback;
+        }
+
+        return Image.asset(
+          assetPath,
+          width: width,
+          height: height,
+          fit: fit,
+          filterQuality: FilterQuality.medium,
+          errorBuilder: (context, error, stackTrace) => fallback,
+        );
       },
     );
+  }
+}
+
+class _AssetLookup {
+  const _AssetLookup._();
+
+  static Future<Set<String>>? _assetPathsFuture;
+
+  static Future<String?> firstExisting(List<String> candidates) async {
+    final assetPaths = await _assetPaths();
+
+    for (final candidate in candidates) {
+      if (assetPaths.contains(candidate)) {
+        return candidate;
+      }
+    }
+
+    return null;
+  }
+
+  static Future<Set<String>> _assetPaths() {
+    return _assetPathsFuture ??= AssetManifest.loadFromAssetBundle(
+      rootBundle,
+    ).then((manifest) => manifest.listAssets().toSet());
   }
 }

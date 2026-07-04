@@ -1,0 +1,2038 @@
+diff --git a/lib/screens/pokemon/pokemon_detail_screen.dart b/lib/screens/pokemon/pokemon_detail_screen.dart
+index 345f198..0930aa0 100644
+--- a/lib/screens/pokemon/pokemon_detail_screen.dart
++++ b/lib/screens/pokemon/pokemon_detail_screen.dart
+@@ -8,6 +8,7 @@ import '../../models/pokemon_nature.dart';
+ import '../../models/team_slot.dart';
+ import '../../repositories/ability_repository.dart';
+ import '../../repositories/evolution_repository.dart';
++import '../../repositories/feat_repository.dart';
+ import '../../repositories/move_repository.dart';
+ import 'pokemon_edit_screen.dart';
+ 
+@@ -35,12 +36,14 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
+   final MoveRepository _moveRepository = MoveRepository();
+   final AbilityRepository _abilityRepository = AbilityRepository();
+   final EvolutionRepository _evolutionRepository = EvolutionRepository();
++  final FeatRepository _featRepository = FeatRepository();
+ 
+   late Pokemon _pokemon;
+   late List<TeamSlot> _team;
+   TeamSlot? _teamSlot;
+   Map<String, MoveData?> _moves = {};
+   Map<String, String> _abilities = {};
++  Map<String, String> _featDescriptions = {};
+   Map<String, EvolutionData> _evolutions = {};
+   bool _isLoading = true;
+ 
+@@ -53,11 +56,8 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
+     final savedHp = _teamSlot?.currentHp ?? 0;
+     return savedHp <= 0 ? _pokemon.hitPoints : savedHp;
+   }
+-
+   int get _armorClass {
+-    final natureScores = PokemonNature.forName(
+-      _teamSlot?.nature ?? 'No Nature',
+-    );
++    final natureScores = PokemonNature.forName(_teamSlot?.nature ?? 'No Nature');
+     return _pokemon.armorClass + (natureScores['AC'] ?? 0);
+   }
+ 
+@@ -95,14 +95,18 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
+       _moveRepository.getMoves(moveNames),
+       _abilityRepository.getAbilityDescriptions(),
+       _evolutionRepository.getEvolutionData(),
++      _featRepository.getFeatDescriptions(),
+     ]);
+ 
+-    if (!mounted) return;
++    if (!mounted) {
++      return;
++    }
+ 
+     setState(() {
+       _moves = results[0] as Map<String, MoveData?>;
+       _abilities = results[1] as Map<String, String>;
+       _evolutions = results[2] as Map<String, EvolutionData>;
++      _featDescriptions = results[3] as Map<String, String>;
+       _isLoading = false;
+     });
+   }
+@@ -111,11 +115,10 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
+     final names = <String>[];
+     names.addAll(pokemon.moves.startingMoves);
+ 
+-    final levelEntries =
+-        pokemon.moves.levelMoves.entries
+-            .where((entry) => entry.key <= level)
+-            .toList()
+-          ..sort((a, b) => a.key.compareTo(b.key));
++    final levelEntries = pokemon.moves.levelMoves.entries
++        .where((entry) => entry.key <= level)
++        .toList()
++      ..sort((a, b) => a.key.compareTo(b.key));
+ 
+     for (final entry in levelEntries) {
+       names.addAll(entry.value);
+@@ -141,7 +144,9 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
+ 
+   void _ensureSelectedMovesIsSaved() {
+     final slot = _teamSlot;
+-    if (slot == null || slot.selectedMoves.isNotEmpty) return;
++    if (slot == null || slot.selectedMoves.isNotEmpty) {
++      return;
++    }
+ 
+     final updatedSlot = slot.copyWith(
+       selectedMoves: _defaultSelectedMoves(_pokemon, _level),
+@@ -157,14 +162,18 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
+ 
+   Future<void> _editExperience() async {
+     final slot = _teamSlot;
+-    if (slot == null) return;
++    if (slot == null) {
++      return;
++    }
+ 
+     final input = await showDialog<String>(
+       context: context,
+       builder: (_) => _ExperienceDialog(currentExperience: slot.experience),
+     );
+ 
+-    if (input == null) return;
++    if (input == null) {
++      return;
++    }
+ 
+     final oldLevel = LevelProgression.levelFromExperience(slot.experience);
+     final updatedExperience = LevelProgression.applyExperienceInput(
+@@ -173,7 +182,9 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
+     );
+     final newLevel = LevelProgression.levelFromExperience(updatedExperience);
+ 
+-    var updatedSlot = slot.copyWith(experience: updatedExperience);
++    var updatedSlot = slot.copyWith(
++      experience: updatedExperience,
++    );
+ 
+     if (newLevel > oldLevel) {
+       updatedSlot = await _applyLevelUpMoves(updatedSlot, oldLevel, newLevel);
+@@ -195,15 +206,16 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
+         ? _defaultSelectedMoves(_pokemon, oldLevel)
+         : List<String>.from(slot.selectedMoves);
+ 
+-    final learnedEntries =
+-        _pokemon.moves.levelMoves.entries
+-            .where((entry) => entry.key > oldLevel && entry.key <= newLevel)
+-            .toList()
+-          ..sort((a, b) => a.key.compareTo(b.key));
++    final learnedEntries = _pokemon.moves.levelMoves.entries
++        .where((entry) => entry.key > oldLevel && entry.key <= newLevel)
++        .toList()
++      ..sort((a, b) => a.key.compareTo(b.key));
+ 
+     for (final entry in learnedEntries) {
+       for (final move in entry.value) {
+-        if (selectedMoves.contains(move)) continue;
++        if (selectedMoves.contains(move)) {
++          continue;
++        }
+ 
+         if (selectedMoves.length < 4) {
+           selectedMoves.add(move);
+@@ -211,7 +223,9 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
+         }
+ 
+         final replacedMove = await _askMoveReplacement(move, selectedMoves);
+-        if (replacedMove == null) continue;
++        if (replacedMove == null) {
++          continue;
++        }
+ 
+         final replaceIndex = selectedMoves.indexOf(replacedMove);
+         if (replaceIndex >= 0) {
+@@ -234,9 +248,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
+         children: [
+           const Padding(
+             padding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+-            child: Text(
+-              'Il moveset e gia pieno. Scegli una mossa da dimenticare.',
+-            ),
++            child: Text('Il moveset e gia pieno. Scegli una mossa da dimenticare.'),
+           ),
+           for (final move in selectedMoves)
+             SimpleDialogOption(
+@@ -253,10 +265,14 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
+   }
+ 
+   Pokemon? _pokemonById(int? pokemonId) {
+-    if (pokemonId == null) return null;
++    if (pokemonId == null) {
++      return null;
++    }
+ 
+     for (final pokemon in widget.allPokemon) {
+-      if (pokemon.id == pokemonId) return pokemon;
++      if (pokemon.id == pokemonId) {
++        return pokemon;
++      }
+     }
+ 
+     return null;
+@@ -264,7 +280,9 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
+ 
+   Pokemon? _pokemonByName(String name) {
+     for (final pokemon in widget.allPokemon) {
+-      if (pokemon.name == name) return pokemon;
++      if (pokemon.name == name) {
++        return pokemon;
++      }
+     }
+ 
+     return null;
+@@ -272,27 +290,26 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
+ 
+   Future<void> _openEditScreen() async {
+     final slot = _teamSlot;
+-    if (slot == null) return;
++    if (slot == null) {
++      return;
++    }
+ 
+     final result = await Navigator.of(context).push<PokemonEditResult>(
+       MaterialPageRoute(
+         builder: (_) => PokemonEditScreen(
+           pokemon: _pokemon,
+           slot: slot,
+-          level: _level,
+-          evolutionData: _evolutions[_pokemon.name],
+           availableMoves: _learnedMovesFor(_pokemon, _level),
+         ),
+       ),
+     );
+ 
+-    if (result == null) return;
+-
+-    var updatedSlot = result.slot;
+-    if (result.evolveRequested) {
+-      updatedSlot = await _evolveSlot(updatedSlot) ?? updatedSlot;
++    if (result == null) {
++      return;
+     }
+ 
++    final updatedSlot = result.slot;
++
+     setState(() {
+       _teamSlot = updatedSlot;
+       _replaceTeamSlot(updatedSlot);
+@@ -301,17 +318,51 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
+     await _loadData();
+   }
+ 
++  bool _canEvolveCurrentPokemon() {
++    final evolution = _evolutions[_pokemon.name];
++    return evolution != null &&
++        evolution.canEvolve &&
++        evolution.level != null &&
++        _level >= evolution.level!;
++  }
++
++  String? _evolutionLabel() {
++    final evolution = _evolutions[_pokemon.name];
++    if (evolution == null || !evolution.canEvolve) {
++      return null;
++    }
++    if (evolution.evolutions.isEmpty) {
++      return null;
++    }
++    return 'FAI EVOLVERE IN ${evolution.evolutions.first.toUpperCase()}';
++  }
++
++  Future<void> _evolveCurrentPokemon() async {
++    final slot = _teamSlot;
++    if (slot == null) {
++      return;
++    }
++
++    final updatedSlot = await _evolveSlot(slot);
++    if (updatedSlot == null) {
++      return;
++    }
++
++    widget.onTeamSlotChanged?.call(updatedSlot);
++    await _loadData();
++  }
++
+   Future<TeamSlot?> _evolveSlot(TeamSlot slot) async {
+     final evolution = _evolutions[_pokemon.name];
+-    if (evolution == null ||
+-        !evolution.canEvolve ||
+-        _level < evolution.level!) {
++    if (evolution == null || !evolution.canEvolve || _level < evolution.level!) {
+       return null;
+     }
+ 
+     final evolutionName = evolution.evolutions.first;
+     final evolvedPokemon = _pokemonByName(evolutionName);
+-    if (evolvedPokemon == null) return null;
++    if (evolvedPokemon == null) {
++      return null;
++    }
+ 
+     final wasFullHp = _currentHp >= _pokemon.hitPoints;
+     final oldName = _pokemon.name;
+@@ -321,7 +372,9 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
+       selectedMoves: List<String>.from(slot.selectedMoves),
+     );
+ 
+-    if (!mounted) return updatedSlot;
++    if (!mounted) {
++      return updatedSlot;
++    }
+ 
+     setState(() {
+       _pokemon = evolvedPokemon;
+@@ -338,7 +391,9 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
+ 
+   Future<void> _switchPartySlot(TeamSlot slot) async {
+     final pokemon = _pokemonById(slot.pokemonId);
+-    if (pokemon == null) return;
++    if (pokemon == null) {
++      return;
++    }
+ 
+     setState(() {
+       _pokemon = pokemon;
+@@ -352,10 +407,18 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
+   int _modifier(int score) => ((score - 10) / 2).floor();
+ 
+   int _proficiency(int level) {
+-    if (level >= 17) return 6;
+-    if (level >= 13) return 5;
+-    if (level >= 9) return 4;
+-    if (level >= 5) return 3;
++    if (level >= 17) {
++      return 6;
++    }
++    if (level >= 13) {
++      return 5;
++    }
++    if (level >= 9) {
++      return 4;
++    }
++    if (level >= 5) {
++      return 3;
++    }
+     return 2;
+   }
+ 
+@@ -364,28 +427,22 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
+     final natureScores = PokemonNature.forName(slot?.nature ?? 'No Nature');
+ 
+     return {
+-      'STR':
+-          pokemon.attributes.strength +
++      'STR': pokemon.attributes.strength +
+           (customScores['STR'] ?? 0) +
+           (natureScores['STR'] ?? 0),
+-      'DEX':
+-          pokemon.attributes.dexterity +
++      'DEX': pokemon.attributes.dexterity +
+           (customScores['DEX'] ?? 0) +
+           (natureScores['DEX'] ?? 0),
+-      'CON':
+-          pokemon.attributes.constitution +
++      'CON': pokemon.attributes.constitution +
+           (customScores['CON'] ?? 0) +
+           (natureScores['CON'] ?? 0),
+-      'INT':
+-          pokemon.attributes.intelligence +
++      'INT': pokemon.attributes.intelligence +
+           (customScores['INT'] ?? 0) +
+           (natureScores['INT'] ?? 0),
+-      'WIS':
+-          pokemon.attributes.wisdom +
++      'WIS': pokemon.attributes.wisdom +
+           (customScores['WIS'] ?? 0) +
+           (natureScores['WIS'] ?? 0),
+-      'CHA':
+-          pokemon.attributes.charisma +
++      'CHA': pokemon.attributes.charisma +
+           (customScores['CHA'] ?? 0) +
+           (natureScores['CHA'] ?? 0),
+     };
+@@ -399,7 +456,9 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
+         .map((power) => _modifier(attributes[power]!))
+         .toList();
+ 
+-    if (modifiers.isEmpty) return 0;
++    if (modifiers.isEmpty) {
++      return 0;
++    }
+     modifiers.sort();
+     return modifiers.last;
+   }
+@@ -418,9 +477,15 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
+     }
+ 
+     final damage = move.damageForLevel(_level);
+-    if (damage != null) parts.add(damage.label);
+-    if (move.range != '-') parts.add(move.range);
+-    if (move.duration != '-') parts.add(move.duration);
++    if (damage != null) {
++      parts.add(damage.label);
++    }
++    if (move.range != '-') {
++      parts.add(move.range);
++    }
++    if (move.duration != '-') {
++      parts.add(move.duration);
++    }
+ 
+     return parts.join('  ||  ');
+   }
+@@ -455,6 +520,9 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
+                     currentHp: _currentHp,
+                     isPartyMode: _isPartyMode,
+                     onEditExperience: _editExperience,
++                    canEvolve: _canEvolveCurrentPokemon(),
++                    evolutionLabel: _evolutionLabel(),
++                    onEvolve: _evolveCurrentPokemon,
+                   ),
+                   const TabBar(
+                     tabs: [
+@@ -477,6 +545,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
+                           pokemon: pokemon,
+                           slot: _teamSlot,
+                           abilityDescriptions: _abilities,
++                          featDescriptions: _featDescriptions,
+                         ),
+                         _TraitsView(
+                           pokemon: pokemon,
+@@ -511,6 +580,9 @@ class _Header extends StatelessWidget {
+     required this.currentHp,
+     required this.isPartyMode,
+     required this.onEditExperience,
++    required this.canEvolve,
++    required this.evolutionLabel,
++    required this.onEvolve,
+   });
+ 
+   final Pokemon pokemon;
+@@ -520,6 +592,9 @@ class _Header extends StatelessWidget {
+   final int currentHp;
+   final bool isPartyMode;
+   final VoidCallback onEditExperience;
++  final bool canEvolve;
++  final String? evolutionLabel;
++  final VoidCallback onEvolve;
+ 
+   @override
+   Widget build(BuildContext context) {
+@@ -569,10 +644,7 @@ class _Header extends StatelessWidget {
+                       children: [
+                         _Pill(label: 'Lv.', value: '$level'),
+                         _Pill(label: 'AC', value: '$armorClass'),
+-                        _Pill(
+-                          label: 'HP',
+-                          value: '$currentHp/${pokemon.hitPoints}',
+-                        ),
++                        _Pill(label: 'HP', value: '$currentHp/${pokemon.hitPoints}'),
+                         _Pill(label: 'SR', value: pokemon.sr.toString()),
+                       ],
+                     ),
+@@ -602,6 +674,16 @@ class _Header extends StatelessWidget {
+                 ),
+               ),
+             ),
++            if (canEvolve && evolutionLabel != null) ...[
++              const SizedBox(height: 10),
++              SizedBox(
++                width: double.infinity,
++                child: FilledButton(
++                  onPressed: onEvolve,
++                  child: Text(evolutionLabel!),
++                ),
++              ),
++            ],
+           ],
+         ],
+       ),
+@@ -638,17 +720,15 @@ class _MovesView extends StatelessWidget {
+ 
+   @override
+   Widget build(BuildContext context) {
+-    final unlocked =
+-        pokemon.moves.levelMoves.entries
+-            .where((entry) => entry.key <= level)
+-            .toList()
+-          ..sort((a, b) => a.key.compareTo(b.key));
+-
+-    final future =
+-        pokemon.moves.levelMoves.entries
+-            .where((entry) => entry.key > level)
+-            .toList()
+-          ..sort((a, b) => a.key.compareTo(b.key));
++    final unlocked = pokemon.moves.levelMoves.entries
++        .where((entry) => entry.key <= level)
++        .toList()
++      ..sort((a, b) => a.key.compareTo(b.key));
++
++    final future = pokemon.moves.levelMoves.entries
++        .where((entry) => entry.key > level)
++        .toList()
++      ..sort((a, b) => a.key.compareTo(b.key));
+ 
+     return ListView(
+       padding: const EdgeInsets.all(12),
+@@ -699,7 +779,9 @@ class _MoveSection extends StatelessWidget {
+ 
+   @override
+   Widget build(BuildContext context) {
+-    if (names.isEmpty) return const SizedBox.shrink();
++    if (names.isEmpty) {
++      return const SizedBox.shrink();
++    }
+ 
+     return Column(
+       crossAxisAlignment: CrossAxisAlignment.stretch,
+@@ -720,11 +802,7 @@ class _MoveSection extends StatelessWidget {
+ }
+ 
+ class _MoveCard extends StatelessWidget {
+-  const _MoveCard({
+-    required this.name,
+-    required this.move,
+-    required this.stats,
+-  });
++  const _MoveCard({required this.name, required this.move, required this.stats});
+ 
+   final String name;
+   final MoveData? move;
+@@ -783,36 +861,45 @@ class _FeaturesView extends StatelessWidget {
+     required this.pokemon,
+     required this.slot,
+     required this.abilityDescriptions,
++    required this.featDescriptions,
+   });
+ 
+   final Pokemon pokemon;
+   final TeamSlot? slot;
+   final Map<String, String> abilityDescriptions;
++  final Map<String, String> featDescriptions;
+ 
+   @override
+   Widget build(BuildContext context) {
++    final feats = slot?.feats ?? const <String>[];
++    final abilities = [
++      ...pokemon.abilities,
++      if (pokemon.hiddenAbility != null && feats.contains('Hidden Ability'))
++        pokemon.hiddenAbility!,
++    ];
++
+     return ListView(
+       padding: const EdgeInsets.all(12),
+       children: [
+-        if (slot?.heldItem != null)
+-          _InfoCard(title: 'Item', child: Text(slot!.heldItem!)),
+-        for (final ability in pokemon.abilities)
++        for (final ability in abilities)
+           _InfoCard(
+             title: ability,
+             child: Text(
+               abilityDescriptions[ability] ?? 'Descrizione non disponibile.',
+             ),
+           ),
+-        if (pokemon.hiddenAbility != null)
++        for (final feat in feats)
+           _InfoCard(
+-            title: 'Nascosta: ${pokemon.hiddenAbility}',
++            title: feat,
+             child: Text(
+-              abilityDescriptions[pokemon.hiddenAbility!] ??
+-                  'Descrizione non disponibile.',
++              featDescriptions[feat] ?? 'Descrizione non disponibile.',
+             ),
+           ),
+-        if (slot != null && slot!.feats.isNotEmpty)
+-          _InfoCard(title: 'Feat', child: Text(slot!.feats.join('\n'))),
++        if (abilities.isEmpty && feats.isEmpty)
++          const _InfoCard(
++            title: 'Features',
++            child: Text('Nessuna feature disponibile.'),
++          ),
+       ],
+     );
+   }
+@@ -865,23 +952,17 @@ class _TraitsView extends StatelessWidget {
+               _InfoRow(label: 'Velocità', value: '${pokemon.speed} ft'),
+               _InfoRow(label: 'Dado vita', value: 'd${pokemon.hitDice}'),
+               _InfoRow(label: 'Competenza', value: '+$proficiency'),
+-              _InfoRow(
+-                label: 'Livello minimo',
+-                value: '${pokemon.minLevelFound}',
+-              ),
+-              _InfoRow(
+-                label: 'Tiri salvezza',
+-                value: pokemon.savingThrows.join(', '),
+-              ),
++              _InfoRow(label: 'Livello minimo', value: '${pokemon.minLevelFound}'),
++              _InfoRow(label: 'Tiri salvezza', value: pokemon.savingThrows.join(', ')),
+               _InfoRow(
+                 label: 'Competenze',
+-                value: [...pokemon.skills, ...?slot?.extraSkills].join(', '),
++                value: [
++                  ...pokemon.skills,
++                  ...?slot?.extraSkills,
++                ].join(', '),
+               ),
+               _InfoRow(label: 'Natura', value: slot?.nature ?? 'No Nature'),
+-              _InfoRow(
+-                label: 'Shiny',
+-                value: slot?.isShiny == true ? 'Si' : 'No',
+-              ),
++              _InfoRow(label: 'Shiny', value: slot?.isShiny == true ? 'Si' : 'No'),
+               _InfoRow(label: 'Sesso', value: slot?.gender ?? '-'),
+             ],
+           ),
+@@ -986,7 +1067,9 @@ class _PartySwitcher extends StatelessWidget {
+         height: 68,
+         decoration: BoxDecoration(
+           color: colorScheme.surfaceContainerHighest,
+-          border: Border(top: BorderSide(color: colorScheme.outlineVariant)),
++          border: Border(
++            top: BorderSide(color: colorScheme.outlineVariant),
++          ),
+         ),
+         child: Row(
+           children: [
+@@ -1040,14 +1123,12 @@ class _PartySlotButton extends StatelessWidget {
+           mainAxisAlignment: MainAxisAlignment.center,
+           children: [
+             Icon(
+-              pokemon == null
+-                  ? Icons.radio_button_unchecked
+-                  : Icons.catching_pokemon,
++              pokemon == null ? Icons.radio_button_unchecked : Icons.catching_pokemon,
+               color: pokemon == null
+                   ? colorScheme.outline
+                   : isActive
+-                  ? colorScheme.primary
+-                  : colorScheme.onSurfaceVariant,
++                      ? colorScheme.primary
++                      : colorScheme.onSurfaceVariant,
+             ),
+             const SizedBox(height: 2),
+             Text(
+@@ -1104,7 +1185,10 @@ class _ExperienceDialogState extends State<_ExperienceDialog> {
+           onPressed: () => Navigator.of(context).pop(),
+           child: const Text('Annulla'),
+         ),
+-        FilledButton(onPressed: _submit, child: const Text('Salva')),
++        FilledButton(
++          onPressed: _submit,
++          child: const Text('Salva'),
++        ),
+       ],
+     );
+   }
+diff --git a/lib/screens/pokemon/pokemon_edit_screen.dart b/lib/screens/pokemon/pokemon_edit_screen.dart
+index a58412e..c470d8c 100644
+--- a/lib/screens/pokemon/pokemon_edit_screen.dart
++++ b/lib/screens/pokemon/pokemon_edit_screen.dart
+@@ -1,15 +1,17 @@
+ import 'package:flutter/material.dart';
+ 
+-import '../../models/evolution_data.dart';
+ import '../../models/pokemon.dart';
+ import '../../models/pokemon_nature.dart';
+ import '../../models/team_slot.dart';
++import '../../repositories/feat_repository.dart';
++import '../../repositories/item_repository.dart';
+ 
+ class PokemonEditResult {
+-  const PokemonEditResult({required this.slot, this.evolveRequested = false});
++  const PokemonEditResult({
++    required this.slot,
++  });
+ 
+   final TeamSlot slot;
+-  final bool evolveRequested;
+ }
+ 
+ class PokemonEditScreen extends StatefulWidget {
+@@ -17,15 +19,11 @@ class PokemonEditScreen extends StatefulWidget {
+     super.key,
+     required this.pokemon,
+     required this.slot,
+-    required this.level,
+-    required this.evolutionData,
+     required this.availableMoves,
+   });
+ 
+   final Pokemon pokemon;
+   final TeamSlot slot;
+-  final int level;
+-  final EvolutionData? evolutionData;
+   final List<String> availableMoves;
+ 
+   @override
+@@ -33,22 +31,47 @@ class PokemonEditScreen extends StatefulWidget {
+ }
+ 
+ class _PokemonEditScreenState extends State<PokemonEditScreen> {
++  static const _skills = [
++    'Acrobatics',
++    'Animal Handling',
++    'Arcana',
++    'Athletics',
++    'Deception',
++    'History',
++    'Insight',
++    'Intimidation',
++    'Investigation',
++    'Medicine',
++    'Nature',
++    'Perception',
++    'Performance',
++    'Persuasion',
++    'Religion',
++    'Sleight of Hand',
++    'Stealth',
++    'Survival',
++  ];
++
++  final FeatRepository _featRepository = FeatRepository();
++  final ItemRepository _itemRepository = ItemRepository();
++
+   late final TextEditingController _nicknameController;
+-  late final TextEditingController _heldItemController;
+-  late final TextEditingController _movesController;
+-  late final TextEditingController _featsController;
+-  late final TextEditingController _skillsController;
+   late bool _isShiny;
+   late String? _gender;
+   late String _nature;
++  late List<String> _selectedMoves;
++  late List<String> _feats;
++  late List<String> _extraSkills;
++  late String? _heldItem;
+   late Map<String, int> _customAbilityScores;
+-
+-  bool get _canEvolve {
+-    final evolution = widget.evolutionData;
+-    return evolution != null &&
+-        evolution.canEvolve &&
+-        widget.level >= evolution.level!;
+-  }
++  Map<String, String> _featDescriptions = {};
++  Map<String, String> _itemDescriptions = {};
++  bool _movesOpen = false;
++  bool _featsOpen = false;
++  bool _skillsOpen = false;
++  bool _heldItemOpen = false;
++  bool _extraAsiOpen = false;
++  bool _isLoadingChoices = true;
+ 
+   @override
+   void initState() {
+@@ -56,23 +79,15 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
+     _nicknameController = TextEditingController(
+       text: widget.slot.nickname ?? widget.pokemon.name,
+     );
+-    _heldItemController = TextEditingController(
+-      text: widget.slot.heldItem ?? '',
+-    );
+-    _movesController = TextEditingController(
+-      text: widget.slot.selectedMoves.join(', '),
+-    );
+-    _featsController = TextEditingController(
+-      text: widget.slot.feats.join(', '),
+-    );
+-    _skillsController = TextEditingController(
+-      text: widget.slot.extraSkills.join(', '),
+-    );
+     _isShiny = widget.slot.isShiny;
+     _gender = widget.slot.gender;
+     _nature = PokemonNature.names.contains(widget.slot.nature)
+         ? widget.slot.nature
+         : 'No Nature';
++    _selectedMoves = _normalizedMoves(widget.slot.selectedMoves);
++    _feats = [...widget.slot.feats];
++    _extraSkills = [...widget.slot.extraSkills];
++    _heldItem = widget.slot.heldItem;
+     _customAbilityScores = {
+       'STR': 0,
+       'DEX': 0,
+@@ -82,29 +97,79 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
+       'CHA': 0,
+       ...widget.slot.customAbilityScores,
+     };
++    _loadChoices();
+   }
+ 
+   @override
+   void dispose() {
+     _nicknameController.dispose();
+-    _heldItemController.dispose();
+-    _movesController.dispose();
+-    _featsController.dispose();
+-    _skillsController.dispose();
+     super.dispose();
+   }
+ 
+-  List<String> _csv(TextEditingController controller) {
+-    return controller.text
+-        .split(',')
+-        .map((value) => value.trim())
+-        .where((value) => value.isNotEmpty)
+-        .toList();
++  Future<void> _loadChoices() async {
++    final results = await Future.wait([
++      _featRepository.getFeatDescriptions(),
++      _itemRepository.getItemDescriptions(),
++    ]);
++
++    if (!mounted) {
++      return;
++    }
++
++    setState(() {
++      _featDescriptions = results[0];
++      _itemDescriptions = results[1];
++      _isLoadingChoices = false;
++    });
++  }
++
++  List<String> _normalizedMoves(List<String> moves) {
++    return moves.where((move) => move.trim().isNotEmpty).take(4).toList();
++  }
++
++  List<String> _movesUpToLevel(int level) {
++    final names = <String>[
++      ...widget.pokemon.moves.startingMoves,
++    ];
++    final entries = widget.pokemon.moves.levelMoves.entries
++        .where((entry) => entry.key <= level)
++        .toList()
++      ..sort((a, b) => a.key.compareTo(b.key));
++    for (final entry in entries) {
++      names.addAll(entry.value);
++    }
++    return _unique(names);
++  }
++
++  List<String> _tmMoves() {
++    return _unique(
++      widget.pokemon.moves.tmMoves
++          .map((tm) => _tmMovesByNumber[tm])
++          .whereType<String>(),
++    );
++  }
++
++  List<String> _allMoveChoices() {
++    return _unique([
++      ..._movesUpToLevel(20),
++      ..._tmMoves(),
++      ...widget.availableMoves,
++    ])..sort();
++  }
++
++  List<String> _unique(Iterable<String> values) {
++    final seen = <String>{};
++    final result = <String>[];
++    for (final value in values) {
++      if (seen.add(value)) {
++        result.add(value);
++      }
++    }
++    return result;
+   }
+ 
+   TeamSlot _updatedSlot() {
+     final nickname = _nicknameController.text.trim();
+-    final heldItem = _heldItemController.text.trim();
+ 
+     return widget.slot.copyWith(
+       nickname: nickname.isEmpty || nickname == widget.pokemon.name
+@@ -113,29 +178,134 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
+       isShiny: _isShiny,
+       gender: _gender,
+       nature: _nature,
+-      heldItem: heldItem.isEmpty ? null : heldItem,
+-      selectedMoves: _csv(_movesController).take(4).toList(),
+-      feats: _csv(_featsController),
+-      extraSkills: _csv(_skillsController),
++      heldItem: _heldItem?.isEmpty == true ? null : _heldItem,
++      selectedMoves: _normalizedMoves(_selectedMoves),
++      feats: _feats,
++      extraSkills: _extraSkills,
+       customAbilityScores: Map<String, int>.from(_customAbilityScores)
+         ..removeWhere((_, value) => value == 0),
+     );
+   }
+ 
+-  void _save({bool evolveRequested = false}) {
+-    Navigator.of(context).pop(
+-      PokemonEditResult(slot: _updatedSlot(), evolveRequested: evolveRequested),
++  void _save() {
++    Navigator.of(context).pop(PokemonEditResult(slot: _updatedSlot()));
++  }
++
++  Future<void> _pickMove(int index) async {
++    final blocked = _selectedMoves
++        .asMap()
++        .entries
++        .where((entry) => entry.key != index)
++        .map((entry) => entry.value)
++        .toSet();
++
++    final result = await Navigator.of(context).push<String>(
++      MaterialPageRoute(
++        builder: (_) => _MovePickerScreen(
++          currentLevelMoves: widget.availableMoves,
++          level20Moves: _movesUpToLevel(20),
++          tmMoves: _tmMoves(),
++          allMoves: _allMoveChoices(),
++          blockedMoves: blocked,
++        ),
++      ),
++    );
++
++    if (result == null) {
++      return;
++    }
++
++    setState(() {
++      while (_selectedMoves.length <= index) {
++        _selectedMoves.add('');
++      }
++      _selectedMoves[index] = result;
++      _selectedMoves = _selectedMoves.where((move) => move.isNotEmpty).toList();
++    });
++  }
++
++  Future<void> _pickFeat([int? index]) async {
++    final blocked = _feats
++        .asMap()
++        .entries
++        .where((entry) => entry.key != index)
++        .map((entry) => entry.value)
++        .toSet();
++    final result = await Navigator.of(context).push<String>(
++      MaterialPageRoute(
++        builder: (_) => _ChoicePickerScreen(
++          title: 'Scegli feat',
++          options: _featDescriptions.keys.toList()..sort(),
++          blockedOptions: blocked,
++          descriptions: _featDescriptions,
++        ),
++      ),
++    );
++
++    if (result == null) {
++      return;
++    }
++    setState(() {
++      if (index == null) {
++        _feats = [..._feats, result];
++      } else {
++        _feats[index] = result;
++      }
++    });
++  }
++
++  Future<void> _pickSkill([int? index]) async {
++    final blocked = _extraSkills
++        .asMap()
++        .entries
++        .where((entry) => entry.key != index)
++        .map((entry) => entry.value)
++        .toSet();
++    final result = await Navigator.of(context).push<String>(
++      MaterialPageRoute(
++        builder: (_) => _ChoicePickerScreen(
++          title: 'Scegli skill',
++          options: _skills,
++          blockedOptions: blocked,
++        ),
++      ),
++    );
++
++    if (result == null) {
++      return;
++    }
++    setState(() {
++      if (index == null) {
++        _extraSkills = [..._extraSkills, result];
++      } else {
++        _extraSkills[index] = result;
++      }
++    });
++  }
++
++  Future<void> _pickItem() async {
++    final result = await Navigator.of(context).push<String>(
++      MaterialPageRoute(
++        builder: (_) => _ChoicePickerScreen(
++          title: 'Scegli item',
++          options: _itemDescriptions.keys.toList()..sort(),
++          descriptions: _itemDescriptions,
++          includeNone: true,
++        ),
++      ),
++    );
++
++    if (result == null) {
++      return;
++    }
++    setState(
++      () => _heldItem = result == _ChoicePickerScreen.noneValue ? null : result,
+     );
+   }
+ 
+   @override
+   Widget build(BuildContext context) {
+     final title = widget.slot.nickname ?? widget.pokemon.name;
+-    final evolutionLabel = _canEvolve
+-        ? 'FAI EVOLVERE'
+-        : widget.evolutionData?.level == null
+-        ? 'EVOLUZIONE NON DISPONIBILE'
+-        : 'EVOLVE AL LV. ${widget.evolutionData!.level}';
+ 
+     return Scaffold(
+       appBar: AppBar(
+@@ -143,142 +313,153 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
+         backgroundColor: Colors.orange,
+         foregroundColor: Colors.white,
+       ),
+-      body: ListView(
+-        padding: const EdgeInsets.all(16),
+-        children: [
+-          TextField(
+-            controller: _nicknameController,
+-            decoration: const InputDecoration(
+-              labelText: 'Nome / nickname',
+-              border: OutlineInputBorder(),
+-            ),
+-          ),
+-          const SizedBox(height: 12),
+-          Row(
+-            children: [
+-              Expanded(
+-                child: DropdownButtonFormField<String>(
+-                  initialValue: _nature,
++      body: _isLoadingChoices
++          ? const Center(child: CircularProgressIndicator())
++          : ListView(
++              padding: const EdgeInsets.all(16),
++              children: [
++                TextField(
++                  controller: _nicknameController,
++                  textAlign: TextAlign.center,
+                   decoration: const InputDecoration(
+-                    labelText: 'Natura',
++                    labelText: 'Nome / nickname',
+                     border: OutlineInputBorder(),
+                   ),
+-                  items: [
+-                    for (final nature in PokemonNature.names)
+-                      DropdownMenuItem(value: nature, child: Text(nature)),
+-                  ],
+-                  onChanged: (value) {
+-                    if (value == null) return;
+-                    setState(() => _nature = value);
+-                  },
+                 ),
+-              ),
+-              const SizedBox(width: 12),
+-              Expanded(
+-                child: DropdownButtonFormField<String?>(
+-                  initialValue: _gender,
+-                  decoration: const InputDecoration(
+-                    labelText: 'Sesso',
+-                    border: OutlineInputBorder(),
+-                  ),
+-                  items: const [
+-                    DropdownMenuItem(value: null, child: Text('Qualsiasi')),
+-                    DropdownMenuItem(value: 'male', child: Text('Maschio')),
+-                    DropdownMenuItem(value: 'female', child: Text('Femmina')),
+-                    DropdownMenuItem(
+-                      value: 'genderless',
+-                      child: Text('Genderless'),
++                const SizedBox(height: 12),
++                Row(
++                  children: [
++                    Expanded(
++                      child: DropdownButtonFormField<String>(
++                        initialValue: _nature,
++                        decoration: const InputDecoration(
++                          labelText: 'Natura',
++                          border: OutlineInputBorder(),
++                        ),
++                        items: [
++                          for (final nature in PokemonNature.names)
++                            DropdownMenuItem(
++                              value: nature,
++                              child: Text(nature),
++                            ),
++                        ],
++                        onChanged: (value) {
++                          if (value == null) {
++                            return;
++                          }
++                          setState(() => _nature = value);
++                        },
++                      ),
++                    ),
++                    const SizedBox(width: 12),
++                    Expanded(
++                      child: DropdownButtonFormField<String?>(
++                        initialValue: _gender,
++                        decoration: const InputDecoration(
++                          labelText: 'Sesso',
++                          border: OutlineInputBorder(),
++                        ),
++                        items: const [
++                          DropdownMenuItem(value: null, child: Text('Qualsiasi')),
++                          DropdownMenuItem(value: 'male', child: Text('Maschio')),
++                          DropdownMenuItem(value: 'female', child: Text('Femmina')),
++                          DropdownMenuItem(
++                            value: 'genderless',
++                            child: Text('Genderless'),
++                          ),
++                        ],
++                        onChanged: (value) => setState(() => _gender = value),
++                      ),
+                     ),
+                   ],
+-                  onChanged: (value) => setState(() => _gender = value),
+                 ),
+-              ),
+-            ],
+-          ),
+-          SwitchListTile(
+-            contentPadding: EdgeInsets.zero,
+-            title: const Text('Shiny'),
+-            value: _isShiny,
+-            onChanged: (value) => setState(() => _isShiny = value),
+-          ),
+-          TextField(
+-            controller: _heldItemController,
+-            decoration: const InputDecoration(
+-              labelText: 'Held item',
+-              hintText: 'Es. Leftovers',
+-              border: OutlineInputBorder(),
+-            ),
+-          ),
+-          const SizedBox(height: 16),
+-          _EditSection(
+-            title: 'Move set',
+-            child: TextField(
+-              controller: _movesController,
+-              decoration: InputDecoration(
+-                helperText:
+-                    'Massimo 4 mosse. Disponibili: ${widget.availableMoves.join(', ')}',
+-                border: const OutlineInputBorder(),
+-              ),
+-            ),
+-          ),
+-          _EditSection(
+-            title: 'Feat',
+-            child: TextField(
+-              controller: _featsController,
+-              decoration: const InputDecoration(
+-                helperText: 'Separali con una virgola.',
+-                border: OutlineInputBorder(),
+-              ),
+-            ),
+-          ),
+-          _EditSection(
+-            title: 'Skill extra',
+-            child: TextField(
+-              controller: _skillsController,
+-              decoration: const InputDecoration(
+-                helperText: 'Separale con una virgola.',
+-                border: OutlineInputBorder(),
+-              ),
+-            ),
+-          ),
+-          _EditSection(
+-            title: 'ASI personalizzati',
+-            child: Column(
+-              children: [
+-                for (final key in _customAbilityScores.keys)
+-                  _ScoreStepper(
+-                    label: key,
+-                    value: _customAbilityScores[key] ?? 0,
+-                    onChanged: (value) {
+-                      setState(() => _customAbilityScores[key] = value);
++                SwitchListTile(
++                  contentPadding: EdgeInsets.zero,
++                  title: const Text('Shiny'),
++                  value: _isShiny,
++                  onChanged: (value) => setState(() => _isShiny = value),
++                ),
++                _CollapsibleEditSection(
++                  title: 'Move set',
++                  isOpen: _movesOpen,
++                  onToggle: () => setState(() => _movesOpen = !_movesOpen),
++                  child: _MoveSlotGrid(
++                    selectedMoves: _selectedMoves,
++                    onPick: _pickMove,
++                    onRemove: (index) {
++                      setState(() {
++                        if (index < _selectedMoves.length) {
++                          _selectedMoves.removeAt(index);
++                        }
++                      });
+                     },
+                   ),
++                ),
++                _CollapsibleEditSection(
++                  title: 'Feats',
++                  isOpen: _featsOpen,
++                  onToggle: () => setState(() => _featsOpen = !_featsOpen),
++                  child: _ChipSlots(
++                    values: _feats,
++                    emptyLabel: 'FEAT',
++                    onAdd: _pickFeat,
++                    onPick: _pickFeat,
++                    onRemove: (index) {
++                      setState(() => _feats.removeAt(index));
++                    },
++                  ),
++                ),
++                _CollapsibleEditSection(
++                  title: 'Skills',
++                  isOpen: _skillsOpen,
++                  onToggle: () => setState(() => _skillsOpen = !_skillsOpen),
++                  child: _ChipSlots(
++                    values: _extraSkills,
++                    emptyLabel: 'SKILL',
++                    onAdd: _pickSkill,
++                    onPick: _pickSkill,
++                    onRemove: (index) {
++                      setState(() => _extraSkills.removeAt(index));
++                    },
++                  ),
++                ),
++                _CollapsibleEditSection(
++                  title: 'Held item',
++                  isOpen: _heldItemOpen,
++                  onToggle: () => setState(() => _heldItemOpen = !_heldItemOpen),
++                  child: _SingleSlot(
++                    label: _heldItem ?? 'ITEM',
++                    onTap: _pickItem,
++                    onRemove: _heldItem == null
++                        ? null
++                        : () => setState(() => _heldItem = null),
++                  ),
++                ),
++                _CollapsibleEditSection(
++                  title: 'Extra ability score',
++                  isOpen: _extraAsiOpen,
++                  onToggle: () => setState(() => _extraAsiOpen = !_extraAsiOpen),
++                  child: Column(
++                    children: [
++                      for (final key in _customAbilityScores.keys)
++                        _ScoreStepper(
++                          label: key,
++                          value: _customAbilityScores[key] ?? 0,
++                          onChanged: (value) {
++                            setState(() => _customAbilityScores[key] = value);
++                          },
++                        ),
++                    ],
++                  ),
++                ),
+               ],
+             ),
+-          ),
+-        ],
+-      ),
+       bottomNavigationBar: SafeArea(
+         child: Padding(
+           padding: const EdgeInsets.all(12),
+-          child: Row(
+-            children: [
+-              Expanded(
+-                child: FilledButton(
+-                  onPressed: () => _save(),
+-                  child: const Text('SALVA'),
+-                ),
+-              ),
+-              const SizedBox(width: 12),
+-              Expanded(
+-                child: FilledButton.tonal(
+-                  onPressed: _canEvolve
+-                      ? () => _save(evolveRequested: true)
+-                      : null,
+-                  child: Text(evolutionLabel),
+-                ),
+-              ),
+-            ],
++          child: FilledButton(
++            onPressed: _save,
++            child: const Text('SALVA'),
+           ),
+         ),
+       ),
+@@ -286,29 +467,172 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
+   }
+ }
+ 
+-class _EditSection extends StatelessWidget {
+-  const _EditSection({required this.title, required this.child});
++class _CollapsibleEditSection extends StatelessWidget {
++  const _CollapsibleEditSection({
++    required this.title,
++    required this.isOpen,
++    required this.onToggle,
++    required this.child,
++  });
+ 
+   final String title;
++  final bool isOpen;
++  final VoidCallback onToggle;
+   final Widget child;
+ 
+   @override
+   Widget build(BuildContext context) {
+-    return Padding(
+-      padding: const EdgeInsets.only(bottom: 16),
+-      child: Column(
+-        crossAxisAlignment: CrossAxisAlignment.stretch,
+-        children: [
+-          Text(
+-            title.toUpperCase(),
+-            style: Theme.of(
+-              context,
+-            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
++    return Column(
++      children: [
++        InkWell(
++          onTap: onToggle,
++          child: Padding(
++            padding: const EdgeInsets.symmetric(vertical: 8),
++            child: Row(
++              mainAxisAlignment: MainAxisAlignment.center,
++              children: [
++                Text(
++                  title.toUpperCase(),
++                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
++                        fontWeight: FontWeight.bold,
++                      ),
++                ),
++                const SizedBox(width: 12),
++                Text(
++                  isOpen ? '-' : '+',
++                  style: Theme.of(context).textTheme.headlineSmall,
++                ),
++              ],
++            ),
+           ),
+-          const SizedBox(height: 8),
++        ),
++        if (isOpen)
+           child,
+-        ],
++      ],
++    );
++  }
++}
++
++class _MoveSlotGrid extends StatelessWidget {
++  const _MoveSlotGrid({
++    required this.selectedMoves,
++    required this.onPick,
++    required this.onRemove,
++  });
++
++  final List<String> selectedMoves;
++  final ValueChanged<int> onPick;
++  final ValueChanged<int> onRemove;
++
++  @override
++  Widget build(BuildContext context) {
++    return GridView.builder(
++      shrinkWrap: true,
++      physics: const NeverScrollableScrollPhysics(),
++      itemCount: 4,
++      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
++        crossAxisCount: 2,
++        childAspectRatio: 3.8,
++        crossAxisSpacing: 12,
++        mainAxisSpacing: 10,
+       ),
++      itemBuilder: (context, index) {
++        final hasMove = index < selectedMoves.length;
++        return _SingleSlot(
++          label: hasMove ? selectedMoves[index] : 'MOVE',
++          onTap: () => onPick(index),
++          onRemove: hasMove ? () => onRemove(index) : null,
++        );
++      },
++    );
++  }
++}
++
++class _ChipSlots extends StatelessWidget {
++  const _ChipSlots({
++    required this.values,
++    required this.emptyLabel,
++    required this.onAdd,
++    required this.onPick,
++    required this.onRemove,
++  });
++
++  final List<String> values;
++  final String emptyLabel;
++  final VoidCallback onAdd;
++  final ValueChanged<int> onPick;
++  final ValueChanged<int> onRemove;
++
++  @override
++  Widget build(BuildContext context) {
++    return Wrap(
++      spacing: 12,
++      runSpacing: 10,
++      children: [
++        for (final entry in values.asMap().entries)
++          SizedBox(
++            width: 150,
++            child: _SingleSlot(
++              label: entry.value,
++              onTap: () => onPick(entry.key),
++              onRemove: () => onRemove(entry.key),
++            ),
++          ),
++        SizedBox(
++          width: 150,
++          child: _SingleSlot(
++            label: emptyLabel,
++            onTap: onAdd,
++          ),
++        ),
++      ],
++    );
++  }
++}
++
++class _SingleSlot extends StatelessWidget {
++  const _SingleSlot({
++    required this.label,
++    required this.onTap,
++    this.onRemove,
++  });
++
++  final String label;
++  final VoidCallback onTap;
++  final VoidCallback? onRemove;
++
++  @override
++  Widget build(BuildContext context) {
++    return Stack(
++      clipBehavior: Clip.none,
++      children: [
++        OutlinedButton(
++          onPressed: onTap,
++          style: OutlinedButton.styleFrom(
++            minimumSize: const Size.fromHeight(48),
++            side: const BorderSide(color: Colors.orange),
++            shape: RoundedRectangleBorder(
++              borderRadius: BorderRadius.circular(4),
++            ),
++          ),
++          child: Text(
++            label.toUpperCase(),
++            maxLines: 1,
++            overflow: TextOverflow.ellipsis,
++          ),
++        ),
++        if (onRemove != null)
++          Positioned(
++            top: -8,
++            right: -8,
++            child: IconButton.filled(
++              constraints: const BoxConstraints.tightFor(width: 28, height: 28),
++              padding: EdgeInsets.zero,
++              onPressed: onRemove,
++              icon: const Icon(Icons.close, size: 18),
++            ),
++          ),
++      ],
+     );
+   }
+ }
+@@ -326,25 +650,381 @@ class _ScoreStepper extends StatelessWidget {
+ 
+   @override
+   Widget build(BuildContext context) {
+-    return ListTile(
+-      contentPadding: EdgeInsets.zero,
+-      title: Text(label),
+-      subtitle: Text('Bonus personalizzato: ${value >= 0 ? '+' : ''}$value'),
+-      trailing: Wrap(
+-        spacing: 4,
+-        children: [
+-          IconButton(
+-            tooltip: 'Diminuisci',
+-            onPressed: () => onChanged(value - 1),
+-            icon: const Icon(Icons.remove_circle_outline),
++    return Card(
++      child: ListTile(
++        title: Text(label),
++        subtitle: Text('Bonus personalizzato: ${value >= 0 ? '+' : ''}$value'),
++        trailing: Wrap(
++          spacing: 4,
++          children: [
++            IconButton(
++              tooltip: 'Diminuisci',
++              onPressed: () => onChanged(value - 1),
++              icon: const Icon(Icons.remove_circle_outline),
++            ),
++            IconButton(
++              tooltip: 'Aumenta',
++              onPressed: () => onChanged(value + 1),
++              icon: const Icon(Icons.add_circle_outline),
++            ),
++          ],
++        ),
++      ),
++    );
++  }
++}
++
++class _MovePickerScreen extends StatefulWidget {
++  const _MovePickerScreen({
++    required this.currentLevelMoves,
++    required this.level20Moves,
++    required this.tmMoves,
++    required this.allMoves,
++    required this.blockedMoves,
++  });
++
++  final List<String> currentLevelMoves;
++  final List<String> level20Moves;
++  final List<String> tmMoves;
++  final List<String> allMoves;
++  final Set<String> blockedMoves;
++
++  @override
++  State<_MovePickerScreen> createState() => _MovePickerScreenState();
++}
++
++class _MovePickerScreenState extends State<_MovePickerScreen> {
++  String _filter = 'current';
++  String _search = '';
++
++  List<String> get _activeMoves {
++    final source = switch (_filter) {
++      'tm' => widget.tmMoves,
++      'lv20' => widget.level20Moves,
++      'az' => widget.allMoves,
++      _ => widget.currentLevelMoves,
++    };
++
++    return source
++        .where((move) => !widget.blockedMoves.contains(move))
++        .where((move) => move.toLowerCase().contains(_search.toLowerCase()))
++        .toList()
++      ..sort();
++  }
++
++  @override
++  Widget build(BuildContext context) {
++    return _ChoiceShell(
++      title: 'Scegli mossa',
++      searchLabel: 'Cerca',
++      onSearchChanged: (value) => setState(() => _search = value),
++      sideFilters: [
++        _FilterButton(
++          label: 'Lv.',
++          selected: _filter == 'current',
++          onTap: () => setState(() => _filter = 'current'),
++        ),
++        _FilterButton(
++          label: 'TM',
++          selected: _filter == 'tm',
++          onTap: () => setState(() => _filter = 'tm'),
++        ),
++        _FilterButton(
++          label: 'Lv.20',
++          selected: _filter == 'lv20',
++          onTap: () => setState(() => _filter = 'lv20'),
++        ),
++        _FilterButton(
++          label: 'A-Z',
++          selected: _filter == 'az',
++          onTap: () => setState(() => _filter = 'az'),
++        ),
++      ],
++      children: [
++        for (final move in _activeMoves)
++          _PickerTile(
++            label: move,
++            onTap: () => Navigator.of(context).pop(move),
++          ),
++        if (_activeMoves.isEmpty)
++          const Padding(
++            padding: EdgeInsets.all(24),
++            child: Text('Nessuna mossa disponibile.'),
++          ),
++      ],
++    );
++  }
++}
++
++class _ChoicePickerScreen extends StatefulWidget {
++  const _ChoicePickerScreen({
++    required this.title,
++    required this.options,
++    this.blockedOptions = const {},
++    this.descriptions = const {},
++    this.includeNone = false,
++  });
++
++  static const noneValue = '__none__';
++
++  final String title;
++  final List<String> options;
++  final Set<String> blockedOptions;
++  final Map<String, String> descriptions;
++  final bool includeNone;
++
++  @override
++  State<_ChoicePickerScreen> createState() => _ChoicePickerScreenState();
++}
++
++class _ChoicePickerScreenState extends State<_ChoicePickerScreen> {
++  String _search = '';
++
++  List<String> get _options {
++    return widget.options
++        .where((option) => !widget.blockedOptions.contains(option))
++        .where((option) => option.toLowerCase().contains(_search.toLowerCase()))
++        .toList();
++  }
++
++  @override
++  Widget build(BuildContext context) {
++    return _ChoiceShell(
++      title: widget.title,
++      searchLabel: 'Cerca',
++      onSearchChanged: (value) => setState(() => _search = value),
++      children: [
++        if (widget.includeNone)
++          _PickerTile(
++            label: 'Nessuno',
++            onTap: () {
++              Navigator.of(context).pop(_ChoicePickerScreen.noneValue);
++            },
+           ),
+-          IconButton(
+-            tooltip: 'Aumenta',
+-            onPressed: () => onChanged(value + 1),
+-            icon: const Icon(Icons.add_circle_outline),
++        for (final option in _options)
++          _PickerTile(
++            label: option,
++            subtitle: widget.descriptions[option],
++            onTap: () => Navigator.of(context).pop(option),
++          ),
++        if (_options.isEmpty && !widget.includeNone)
++          const Padding(
++            padding: EdgeInsets.all(24),
++            child: Text('Nessun elemento disponibile.'),
++          ),
++      ],
++    );
++  }
++}
++
++class _ChoiceShell extends StatelessWidget {
++  const _ChoiceShell({
++    required this.title,
++    required this.searchLabel,
++    required this.onSearchChanged,
++    required this.children,
++    this.sideFilters = const [],
++  });
++
++  final String title;
++  final String searchLabel;
++  final ValueChanged<String> onSearchChanged;
++  final List<Widget> children;
++  final List<Widget> sideFilters;
++
++  @override
++  Widget build(BuildContext context) {
++    return Scaffold(
++      appBar: AppBar(
++        title: Text(title.toUpperCase()),
++        backgroundColor: Colors.orange,
++        foregroundColor: Colors.white,
++      ),
++      body: Row(
++        children: [
++          if (sideFilters.isNotEmpty)
++            SizedBox(
++              width: 72,
++              child: ListView(
++                padding: const EdgeInsets.only(top: 96),
++                children: sideFilters,
++              ),
++            ),
++          Expanded(
++            child: ListView(
++              padding: const EdgeInsets.all(16),
++              children: [
++                TextField(
++                  textAlign: TextAlign.center,
++                  decoration: InputDecoration(
++                    labelText: searchLabel,
++                    border: const OutlineInputBorder(),
++                  ),
++                  onChanged: onSearchChanged,
++                ),
++                const SizedBox(height: 16),
++                ...children,
++              ],
++            ),
+           ),
+         ],
+       ),
+     );
+   }
+ }
++
++class _FilterButton extends StatelessWidget {
++  const _FilterButton({
++    required this.label,
++    required this.selected,
++    required this.onTap,
++  });
++
++  final String label;
++  final bool selected;
++  final VoidCallback onTap;
++
++  @override
++  Widget build(BuildContext context) {
++    return Padding(
++      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
++      child: FilledButton.tonal(
++        onPressed: onTap,
++        style: FilledButton.styleFrom(
++          backgroundColor: selected ? Colors.orange : null,
++          padding: const EdgeInsets.symmetric(horizontal: 4),
++        ),
++        child: Text(label),
++      ),
++    );
++  }
++}
++
++class _PickerTile extends StatelessWidget {
++  const _PickerTile({
++    required this.label,
++    required this.onTap,
++    this.subtitle,
++  });
++
++  final String label;
++  final String? subtitle;
++  final VoidCallback onTap;
++
++  @override
++  Widget build(BuildContext context) {
++    return Card(
++      child: ListTile(
++        leading: const Icon(Icons.radio_button_unchecked),
++        title: Text(label.toUpperCase()),
++        subtitle: subtitle == null || subtitle!.isEmpty
++            ? null
++            : Text(subtitle!),
++        onTap: onTap,
++      ),
++    );
++  }
++}
++
++const _tmMovesByNumber = <int, String>{
++  1: 'Work Up',
++  2: 'Dragon Claw',
++  3: 'Psyshock',
++  4: 'Calm Mind',
++  5: 'Roar',
++  6: 'Toxic',
++  7: 'Hail',
++  8: 'Bulk Up',
++  9: 'Venoshock',
++  10: 'Hidden Power',
++  11: 'Sunny Day',
++  12: 'Taunt',
++  13: 'Ice Beam',
++  14: 'Blizzard',
++  15: 'Hyper Beam',
++  16: 'Light Screen',
++  17: 'Protect',
++  18: 'Rain Dance',
++  19: 'Roost',
++  20: 'Safeguard',
++  21: 'Frustration',
++  22: 'Solar Beam',
++  23: 'Smack Down',
++  24: 'Thunderbolt',
++  25: 'Thunder',
++  26: 'Earthquake',
++  27: 'Return',
++  28: 'Leech Life',
++  29: 'Psychic',
++  30: 'Shadow Ball',
++  31: 'Brick Break',
++  32: 'Double Team',
++  33: 'Reflect',
++  34: 'Sludge Wave',
++  35: 'Flamethrower',
++  36: 'Sludge Bomb',
++  37: 'Sandstorm',
++  38: 'Fire Blast',
++  39: 'Rock Tomb',
++  40: 'Aerial Ace',
++  41: 'Torment',
++  42: 'Facade',
++  43: 'Flame Charge',
++  44: 'Rest',
++  45: 'Attract',
++  46: 'Thief',
++  47: 'Low Sweep',
++  48: 'Round',
++  49: 'Echoed Voice',
++  50: 'Overheat',
++  51: 'Steel Wing',
++  52: 'Focus Blast',
++  53: 'Energy Ball',
++  54: 'False Swipe',
++  55: 'Scald',
++  56: 'Fling',
++  57: 'Charge Beam',
++  58: 'Sky Drop',
++  59: 'Brutal Swing',
++  60: 'Quash',
++  61: 'Will-O-Wisp',
++  62: 'Acrobatics',
++  63: 'Embargo',
++  64: 'Explosion',
++  65: 'Shadow Claw',
++  66: 'Payback',
++  67: 'Smart Strike',
++  68: 'Giga Impact',
++  69: 'Rock Polish',
++  70: 'Aurora Veil',
++  71: 'Stone Edge',
++  72: 'Volt Switch',
++  73: 'Thunder Wave',
++  74: 'Gyro Ball',
++  75: 'Swords Dance',
++  76: 'Fly',
++  77: 'Psych Up',
++  78: 'Bulldoze',
++  79: 'Frost Breath',
++  80: 'Rock Slide',
++  81: 'X-Scissor',
++  82: 'Dragon Tail',
++  83: 'Infestation',
++  84: 'Poison Jab',
++  85: 'Dream Eater',
++  86: 'Grass Knot',
++  87: 'Swagger',
++  88: 'Sleep Talk',
++  89: 'U-turn',
++  90: 'Substitute',
++  91: 'Flash Cannon',
++  92: 'Trick Room',
++  93: 'Wild Charge',
++  94: 'Surf',
++  95: 'Snarl',
++  96: 'Nature Power',
++  97: 'Dark Pulse',
++  98: 'Waterfall',
++  99: 'Dazzling Gleam',
++  100: 'Confide',
++};
+diff --git a/assets/data/feats.json b/assets/data/feats.json
+new file mode 100644
+index 0000000..453ead3
+--- /dev/null
++++ b/assets/data/feats.json
+@@ -0,0 +1,110 @@
++{
++	"AC Up": {
++		"Description": "Your Pokémon’s AC increases by 1. This bonus is included through a Pokémon’s evolutions."
++	},
++	"Able-Bodied": {
++		"Description": "Your Pokemon's body is trained to learn from and fight off ailments for long periods of time. After recovering from a status effect, this Pokemon becomes immune to the same status for 3 rounds."
++	},
++	"Acrobat": {
++		"Description": "Unearthed Arcana: Feats for Skills"
++	},
++	"Actor": {
++		"Description": "PHB:165"
++	},
++	"Alert": {
++		"Description": "PHB:165 (Initiative bonus applied to trainer while you are the active Pokémon)"
++	},
++	"Athlete (DEX)": {
++		"Description": "PHB:165"
++	},
++	"Athlete (STR)": {
++		"Description": "PHB:165"
++	},
++	"Brawny": {
++		"Description": "Unearthed Arcana: Feats for Skills"
++	},
++	"Charger": {
++		"Description": "PHB:165 (When using melee attacks)"
++	},
++	"Combo Master": {
++		"Description": "Your Pokémon is an expert in combining strikes against a foe. When this feature is selected, combo moves that have the ability to hit more than once are guaranteed to hit at least twice. (Fury Swipes, Double Slap, etc.)"
++	},
++	"Durable": {
++		"Description": "PHB:166"
++	},
++	"Elemental Adept": {
++		"Description": "PHB:166 (Choose one of the Pokémon damage types)"
++	},
++	"Extra Move": {
++		"Description": "Your Pokémon can know five total moves instead of four."
++	},
++	"Hidden Ability": {
++		"Description": "Your Pokémon reaches inside itself to discover a new ability. It gains access to the Hidden Ability in its stat block."
++	},
++	"Melee Master": {
++		"Description": "Your Pokemon is a master of close combat. Gain advantage on all attacks of opportunity. Before you make a melee attack, you can choose to take a -5 penalty to the attack roll. If the attack hits, you add +10 to the attack’s damage (Once per move)."
++	},
++	"Mobile": {
++		"Description": "PHB:168"
++	},
++	"Observant": {
++		"Description": "PHB:168"
++	},
++	"Perceptive": {
++		"Description": "Unearthed Arcana:Feats for Skills"
++	},
++	"Power Sculptor": {
++		"Description": "Your Pokémon is able to sculpt the power of their moves around their allies. For area of effect moves your Pokémon activates, choose 1 + MOVE allies in range to automatically succeed on their saving throw against taking damage or an effect. If the damage is halved for a successful save, they take no damage instead."
++	},
++	"Quick-Fingered": {
++		"Description": "Unearthed Arcana:Feats for Skills"
++	},
++	"Ranged Master": {
++		"Description": "Your Pokemon is a sharpshooter. Your ranged attacks ignore half and three-fourths cover, Before you make a ranged attack, you can choose to take a -5 penalty to the attack roll. If the attack hits, you add +10 to the attack’s damage (Once per move)."
++	},
++	"Resilient (CHA)": {
++		"Description": "PHB:168"
++	},
++	"Resilient (CON)": {
++		"Description": "PHB:168"
++	},
++	"Resilient (DEX)": {
++		"Description": "PHB:168"
++	},
++	"Resilient (INT)": {
++		"Description": "PHB:168"
++	},
++	"Resilient (STR)": {
++		"Description": "PHB:168"
++	},
++	"Resilient (WIS)": {
++		"Description": "PHB:168"
++	},
++	"Savage Attacker": {
++		"Description": "PHB:169"
++	},
++	"Sentinel": {
++		"Description": "PHB:169"
++	},
++	"Skilled": {
++		"Description": "PHB:170"
++	},
++	"Skulker": {
++		"Description": "PHB:170"
++	},
++	"Stealthy": {
++		"Description": "Unearthed Arcana:Feats for Skills"
++	},
++	"Terrain Adept": {
++		"Description": "Your Pokémon is especially skilled when fighting on a specific terrain. Choose one of the following terrains when selecting this feature. Your Pokémon gains +2 to attack rolls when in this terrain. Terrains: Coastal, Swamp, Forest, Arctic, Desert, Grassland, Hill, Mountain, Underwater."
++	},
++	"Tireless": {
++		"Description": "Your Pokémon endures hours of rigorous training which keep it in battle longer than the average Pokémon. Gain +1 PP for every move."
++	},
++	"Tough": {
++		"Description": "PHB:170"
++	},
++	"Wrangler": {
++		"Description": "You have developed a unique set of skills that give you the ability to grapple and hold an opponent down with steady and strong hands. You gain the following benefits:\n* You have advantage on attack rolls against a creature you are Grappling.\n* You can use your action to try to pin a creature already Grappled by you. To do so, make another grapple check. If you succeed, you and the creature are both Restrained until the grapple ends.\n* When a creature attempts to use their movement to leave your reach without disengaging, you may use your reaction to attempt to Grapple the target."
++	}
++}
+diff --git a/lib/repositories/feat_repository.dart b/lib/repositories/feat_repository.dart
+new file mode 100644
+index 0000000..afd117e
+--- /dev/null
++++ b/lib/repositories/feat_repository.dart
+@@ -0,0 +1,23 @@
++import 'dart:convert';
++
++import 'package:flutter/services.dart';
++
++class FeatRepository {
++  Map<String, String>? _cache;
++
++  Future<Map<String, String>> getFeatDescriptions() async {
++    if (_cache != null) {
++      return _cache!;
++    }
++
++    final jsonString = await rootBundle.loadString('assets/data/feats.json');
++    final json = Map<String, dynamic>.from(jsonDecode(jsonString));
++
++    _cache = json.map((key, value) {
++      final data = Map<String, dynamic>.from(value);
++      return MapEntry(key, data['Description']?.toString() ?? '');
++    });
++
++    return _cache!;
++  }
++}
+diff --git a/lib/repositories/item_repository.dart b/lib/repositories/item_repository.dart
+new file mode 100644
+index 0000000..c8d9082
+--- /dev/null
++++ b/lib/repositories/item_repository.dart
+@@ -0,0 +1,23 @@
++import 'dart:convert';
++
++import 'package:flutter/services.dart';
++
++class ItemRepository {
++  Map<String, String>? _cache;
++
++  Future<Map<String, String>> getItemDescriptions() async {
++    if (_cache != null) {
++      return _cache!;
++    }
++
++    final jsonString = await rootBundle.loadString('assets/data/items.json');
++    final json = Map<String, dynamic>.from(jsonDecode(jsonString));
++
++    _cache = json.map((key, value) {
++      final data = Map<String, dynamic>.from(value);
++      return MapEntry(key, data['Effect']?.toString() ?? '');
++    });
++
++    return _cache!;
++  }
++}

@@ -8,6 +8,7 @@ import '../../models/pokemon_nature.dart';
 import '../../models/team_slot.dart';
 import '../../repositories/ability_repository.dart';
 import '../../repositories/evolution_repository.dart';
+import '../../repositories/feat_repository.dart';
 import '../../repositories/move_repository.dart';
 import 'pokemon_edit_screen.dart';
 
@@ -35,12 +36,14 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
   final MoveRepository _moveRepository = MoveRepository();
   final AbilityRepository _abilityRepository = AbilityRepository();
   final EvolutionRepository _evolutionRepository = EvolutionRepository();
+  final FeatRepository _featRepository = FeatRepository();
 
   late Pokemon _pokemon;
   late List<TeamSlot> _team;
   TeamSlot? _teamSlot;
   Map<String, MoveData?> _moves = {};
   Map<String, String> _abilities = {};
+  Map<String, String> _featDescriptions = {};
   Map<String, EvolutionData> _evolutions = {};
   bool _isLoading = true;
 
@@ -95,14 +98,18 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
       _moveRepository.getMoves(moveNames),
       _abilityRepository.getAbilityDescriptions(),
       _evolutionRepository.getEvolutionData(),
+      _featRepository.getFeatDescriptions(),
     ]);
 
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
 
     setState(() {
       _moves = results[0] as Map<String, MoveData?>;
       _abilities = results[1] as Map<String, String>;
       _evolutions = results[2] as Map<String, EvolutionData>;
+      _featDescriptions = results[3] as Map<String, String>;
       _isLoading = false;
     });
   }
@@ -141,7 +148,9 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
 
   void _ensureSelectedMovesIsSaved() {
     final slot = _teamSlot;
-    if (slot == null || slot.selectedMoves.isNotEmpty) return;
+    if (slot == null || slot.selectedMoves.isNotEmpty) {
+      return;
+    }
 
     final updatedSlot = slot.copyWith(
       selectedMoves: _defaultSelectedMoves(_pokemon, _level),
@@ -157,14 +166,18 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
 
   Future<void> _editExperience() async {
     final slot = _teamSlot;
-    if (slot == null) return;
+    if (slot == null) {
+      return;
+    }
 
     final input = await showDialog<String>(
       context: context,
       builder: (_) => _ExperienceDialog(currentExperience: slot.experience),
     );
 
-    if (input == null) return;
+    if (input == null) {
+      return;
+    }
 
     final oldLevel = LevelProgression.levelFromExperience(slot.experience);
     final updatedExperience = LevelProgression.applyExperienceInput(
@@ -203,7 +216,9 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
 
     for (final entry in learnedEntries) {
       for (final move in entry.value) {
-        if (selectedMoves.contains(move)) continue;
+        if (selectedMoves.contains(move)) {
+          continue;
+        }
 
         if (selectedMoves.length < 4) {
           selectedMoves.add(move);
@@ -211,7 +226,9 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
         }
 
         final replacedMove = await _askMoveReplacement(move, selectedMoves);
-        if (replacedMove == null) continue;
+        if (replacedMove == null) {
+          continue;
+        }
 
         final replaceIndex = selectedMoves.indexOf(replacedMove);
         if (replaceIndex >= 0) {
@@ -253,10 +270,14 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
   }
 
   Pokemon? _pokemonById(int? pokemonId) {
-    if (pokemonId == null) return null;
+    if (pokemonId == null) {
+      return null;
+    }
 
     for (final pokemon in widget.allPokemon) {
-      if (pokemon.id == pokemonId) return pokemon;
+      if (pokemon.id == pokemonId) {
+        return pokemon;
+      }
     }
 
     return null;
@@ -264,7 +285,9 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
 
   Pokemon? _pokemonByName(String name) {
     for (final pokemon in widget.allPokemon) {
-      if (pokemon.name == name) return pokemon;
+      if (pokemon.name == name) {
+        return pokemon;
+      }
     }
 
     return null;
@@ -272,31 +295,64 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
 
   Future<void> _openEditScreen() async {
     final slot = _teamSlot;
-    if (slot == null) return;
+    if (slot == null) {
+      return;
+    }
 
     final result = await Navigator.of(context).push<PokemonEditResult>(
       MaterialPageRoute(
         builder: (_) => PokemonEditScreen(
           pokemon: _pokemon,
           slot: slot,
-          level: _level,
-          evolutionData: _evolutions[_pokemon.name],
           availableMoves: _learnedMovesFor(_pokemon, _level),
         ),
       ),
     );
 
-    if (result == null) return;
-
-    var updatedSlot = result.slot;
-    if (result.evolveRequested) {
-      updatedSlot = await _evolveSlot(updatedSlot) ?? updatedSlot;
+    if (result == null) {
+      return;
     }
+
+    final updatedSlot = result.slot;
 
     setState(() {
       _teamSlot = updatedSlot;
       _replaceTeamSlot(updatedSlot);
     });
+    widget.onTeamSlotChanged?.call(updatedSlot);
+    await _loadData();
+  }
+
+  bool _canEvolveCurrentPokemon() {
+    final evolution = _evolutions[_pokemon.name];
+    return evolution != null &&
+        evolution.canEvolve &&
+        evolution.level != null &&
+        _level >= evolution.level!;
+  }
+
+  String? _evolutionLabel() {
+    final evolution = _evolutions[_pokemon.name];
+    if (evolution == null || !evolution.canEvolve) {
+      return null;
+    }
+    if (evolution.evolutions.isEmpty) {
+      return null;
+    }
+    return 'FAI EVOLVERE IN ${evolution.evolutions.first.toUpperCase()}';
+  }
+
+  Future<void> _evolveCurrentPokemon() async {
+    final slot = _teamSlot;
+    if (slot == null) {
+      return;
+    }
+
+    final updatedSlot = await _evolveSlot(slot);
+    if (updatedSlot == null) {
+      return;
+    }
+
     widget.onTeamSlotChanged?.call(updatedSlot);
     await _loadData();
   }
@@ -311,7 +367,9 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
 
     final evolutionName = evolution.evolutions.first;
     final evolvedPokemon = _pokemonByName(evolutionName);
-    if (evolvedPokemon == null) return null;
+    if (evolvedPokemon == null) {
+      return null;
+    }
 
     final wasFullHp = _currentHp >= _pokemon.hitPoints;
     final oldName = _pokemon.name;
@@ -321,7 +379,9 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
       selectedMoves: List<String>.from(slot.selectedMoves),
     );
 
-    if (!mounted) return updatedSlot;
+    if (!mounted) {
+      return updatedSlot;
+    }
 
     setState(() {
       _pokemon = evolvedPokemon;
@@ -338,7 +398,9 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
 
   Future<void> _switchPartySlot(TeamSlot slot) async {
     final pokemon = _pokemonById(slot.pokemonId);
-    if (pokemon == null) return;
+    if (pokemon == null) {
+      return;
+    }
 
     setState(() {
       _pokemon = pokemon;
@@ -352,10 +414,18 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
   int _modifier(int score) => ((score - 10) / 2).floor();
 
   int _proficiency(int level) {
-    if (level >= 17) return 6;
-    if (level >= 13) return 5;
-    if (level >= 9) return 4;
-    if (level >= 5) return 3;
+    if (level >= 17) {
+      return 6;
+    }
+    if (level >= 13) {
+      return 5;
+    }
+    if (level >= 9) {
+      return 4;
+    }
+    if (level >= 5) {
+      return 3;
+    }
     return 2;
   }
 
@@ -399,7 +469,9 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
         .map((power) => _modifier(attributes[power]!))
         .toList();
 
-    if (modifiers.isEmpty) return 0;
+    if (modifiers.isEmpty) {
+      return 0;
+    }
     modifiers.sort();
     return modifiers.last;
   }
@@ -418,9 +490,15 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
     }
 
     final damage = move.damageForLevel(_level);
-    if (damage != null) parts.add(damage.label);
-    if (move.range != '-') parts.add(move.range);
-    if (move.duration != '-') parts.add(move.duration);
+    if (damage != null) {
+      parts.add(damage.label);
+    }
+    if (move.range != '-') {
+      parts.add(move.range);
+    }
+    if (move.duration != '-') {
+      parts.add(move.duration);
+    }
 
     return parts.join('  ||  ');
   }
@@ -455,6 +533,9 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
                     currentHp: _currentHp,
                     isPartyMode: _isPartyMode,
                     onEditExperience: _editExperience,
+                    canEvolve: _canEvolveCurrentPokemon(),
+                    evolutionLabel: _evolutionLabel(),
+                    onEvolve: _evolveCurrentPokemon,
                   ),
                   const TabBar(
                     tabs: [
@@ -477,6 +558,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
                           pokemon: pokemon,
                           slot: _teamSlot,
                           abilityDescriptions: _abilities,
+                          featDescriptions: _featDescriptions,
                         ),
                         _TraitsView(
                           pokemon: pokemon,
@@ -511,6 +593,9 @@ class _Header extends StatelessWidget {
     required this.currentHp,
     required this.isPartyMode,
     required this.onEditExperience,
+    required this.canEvolve,
+    required this.evolutionLabel,
+    required this.onEvolve,
   });
 
   final Pokemon pokemon;
@@ -520,6 +605,9 @@ class _Header extends StatelessWidget {
   final int currentHp;
   final bool isPartyMode;
   final VoidCallback onEditExperience;
+  final bool canEvolve;
+  final String? evolutionLabel;
+  final VoidCallback onEvolve;
 
   @override
   Widget build(BuildContext context) {
@@ -602,6 +690,16 @@ class _Header extends StatelessWidget {
                 ),
               ),
             ),
+            if (canEvolve && evolutionLabel != null) ...[
+              const SizedBox(height: 10),
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton(
+                  onPressed: onEvolve,
+                  child: Text(evolutionLabel!),
+                ),
+              ),
+            ],
           ],
         ],
       ),
@@ -699,7 +797,9 @@ class _MoveSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (names.isEmpty) return const SizedBox.shrink();
+    if (names.isEmpty) {
+      return const SizedBox.shrink();
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -783,36 +883,45 @@ class _FeaturesView extends StatelessWidget {
     required this.pokemon,
     required this.slot,
     required this.abilityDescriptions,
+    required this.featDescriptions,
   });
 
   final Pokemon pokemon;
   final TeamSlot? slot;
   final Map<String, String> abilityDescriptions;
+  final Map<String, String> featDescriptions;
 
   @override
   Widget build(BuildContext context) {
+    final feats = slot?.feats ?? const <String>[];
+    final abilities = [
+      ...pokemon.abilities,
+      if (pokemon.hiddenAbility != null && feats.contains('Hidden Ability'))
+        pokemon.hiddenAbility!,
+    ];
+
     return ListView(
       padding: const EdgeInsets.all(12),
       children: [
-        if (slot?.heldItem != null)
-          _InfoCard(title: 'Item', child: Text(slot!.heldItem!)),
-        for (final ability in pokemon.abilities)
+        for (final ability in abilities)
           _InfoCard(
             title: ability,
             child: Text(
               abilityDescriptions[ability] ?? 'Descrizione non disponibile.',
             ),
           ),
-        if (pokemon.hiddenAbility != null)
+        for (final feat in feats)
           _InfoCard(
-            title: 'Nascosta: ${pokemon.hiddenAbility}',
+            title: feat,
             child: Text(
-              abilityDescriptions[pokemon.hiddenAbility!] ??
-                  'Descrizione non disponibile.',
+              featDescriptions[feat] ?? 'Descrizione non disponibile.',
             ),
           ),
-        if (slot != null && slot!.feats.isNotEmpty)
-          _InfoCard(title: 'Feat', child: Text(slot!.feats.join('\n'))),
+        if (abilities.isEmpty && feats.isEmpty)
+          const _InfoCard(
+            title: 'Features',
+            child: Text('Nessuna feature disponibile.'),
+          ),
       ],
     );
   }

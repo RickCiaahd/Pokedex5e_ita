@@ -31,7 +31,10 @@ class ProfileRepository {
     }
 
     if (profiles.containsKey(UserProfile.defaultProfileId)) {
-      await appState.put(HiveKeys.activeProfileId, UserProfile.defaultProfileId);
+      await appState.put(
+        HiveKeys.activeProfileId,
+        UserProfile.defaultProfileId,
+      );
 
       return UserProfile.fromJson(
         Map<String, dynamic>.from(profiles.get(UserProfile.defaultProfileId)),

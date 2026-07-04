@@ -25,9 +25,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
 
     if (nickname.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Inserisci un nickname per continuare.'),
-        ),
+        const SnackBar(content: Text('Inserisci un nickname per continuare.')),
       );
       return;
     }
@@ -47,9 +45,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Crea profilo'),
-      ),
+      appBar: AppBar(title: const Text('Crea profilo')),
       body: Padding(
         padding: const EdgeInsets.all(24),
         child: Center(
@@ -62,10 +58,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                 const SizedBox(height: 24),
                 const Text(
                   'Benvenuto allenatore!',
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 12),
                 const Text(

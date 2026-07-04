@@ -9,10 +9,7 @@ import '../../repositories/team_repository.dart';
 import '../pokemon/pokemon_detail_screen.dart';
 
 class TeamSelectionScreen extends StatefulWidget {
-  const TeamSelectionScreen({
-    super.key,
-    required this.nickname,
-  });
+  const TeamSelectionScreen({super.key, required this.nickname});
 
   final String nickname;
 
@@ -94,10 +91,7 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
     final profile = _profile;
     if (profile == null) return;
 
-    await _teamRepository.updateSlot(
-      profileId: profile.id,
-      updatedSlot: slot,
-    );
+    await _teamRepository.updateSlot(profileId: profile.id, updatedSlot: slot);
 
     await _loadTeam();
   }
@@ -114,6 +108,8 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
         builder: (_) => PokemonDetailScreen(
           pokemon: pokemon,
           teamSlot: slot,
+          allPokemon: _allPokemon,
+          team: _team,
           onTeamSlotChanged: (updatedSlot) {
             _updateSlot(updatedSlot);
           },
@@ -142,9 +138,7 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
     final profileName = _profile?.name ?? widget.nickname;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Squadra'),
-      ),
+      appBar: AppBar(title: const Text('Squadra')),
       body: RefreshIndicator(
         onRefresh: _loadTeam,
         child: ListView(
@@ -156,16 +150,13 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
                 child: Center(child: CircularProgressIndicator()),
               )
             else if (_errorMessage != null)
-              _TeamErrorState(
-                message: _errorMessage!,
-                onRetry: _loadTeam,
-              )
+              _TeamErrorState(message: _errorMessage!, onRetry: _loadTeam)
             else ...[
               Text(
                 'Squadra di $profileName',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 8),
               const Text(
@@ -213,9 +204,7 @@ class _TeamSlotCard extends StatelessWidget {
 
     return Card(
       child: ListTile(
-        leading: CircleAvatar(
-          child: Text('${slot.slotIndex + 1}'),
-        ),
+        leading: CircleAvatar(child: Text('${slot.slotIndex + 1}')),
         title: Text(pokemon?.name ?? 'Slot vuoto'),
         subtitle: Text(
           pokemon == null
@@ -325,10 +314,7 @@ class _PokemonPickerSheetState extends State<_PokemonPickerSheet> {
 }
 
 class _TeamErrorState extends StatelessWidget {
-  const _TeamErrorState({
-    required this.message,
-    required this.onRetry,
-  });
+  const _TeamErrorState({required this.message, required this.onRetry});
 
   final String message;
   final VoidCallback onRetry;
@@ -340,15 +326,9 @@ class _TeamErrorState extends StatelessWidget {
         children: [
           const Icon(Icons.error_outline, size: 48),
           const SizedBox(height: 16),
-          Text(
-            'Errore: $message',
-            textAlign: TextAlign.center,
-          ),
+          Text('Errore: $message', textAlign: TextAlign.center),
           const SizedBox(height: 16),
-          FilledButton(
-            onPressed: onRetry,
-            child: const Text('Riprova'),
-          ),
+          FilledButton(onPressed: onRetry, child: const Text('Riprova')),
         ],
       ),
     );

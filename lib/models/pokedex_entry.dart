@@ -26,9 +26,7 @@ class PokedexEntry {
   }
 
   factory PokedexEntry.empty(int pokemonId) {
-    return PokedexEntry(
-      pokemonId: pokemonId,
-    );
+    return PokedexEntry(pokemonId: pokemonId);
   }
 
   Map<String, dynamic> toJson() {
@@ -43,8 +41,8 @@ class PokedexEntry {
   factory PokedexEntry.fromJson(Map<String, dynamic> json) {
     final markMode = json['markMode'] as String?;
     final updatedAt = json['updatedAt'] as String?;
-    final seen = (json['seen'] as bool?) ??
-        (markMode == 'seen' || markMode == 'caught');
+    final seen =
+        (json['seen'] as bool?) ?? (markMode == 'seen' || markMode == 'caught');
     final caught = (json['caught'] as bool?) ?? markMode == 'caught';
 
     return PokedexEntry(

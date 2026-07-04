@@ -23,17 +23,12 @@ class ProfileStorageService {
     return _pokedexRepository.getEntriesForProfile(profile.id);
   }
 
-  Future<void> savePokedexEntries(
-    Map<int, PokedexEntry> entries,
-  ) async {
+  Future<void> savePokedexEntries(Map<int, PokedexEntry> entries) async {
     final profile = await getDefaultProfile();
     debugPrint('PROFILE STORAGE: salvo pokedex profilo ${profile.id}');
 
     for (final entry in entries.values) {
-      await _pokedexRepository.saveEntry(
-        profileId: profile.id,
-        entry: entry,
-      );
+      await _pokedexRepository.saveEntry(profileId: profile.id, entry: entry);
     }
   }
 }

@@ -34,17 +34,13 @@ class PokemonTile extends StatelessWidget {
                       : Colors.grey.shade300,
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: entry.caught
-                        ? Colors.green
-                        : Colors.grey.shade500,
+                    color: entry.caught ? Colors.green : Colors.grey.shade500,
                     width: entry.caught ? 2 : 1,
                   ),
                 ),
                 child: Center(
                   child: Icon(
-                    entry.seen
-                        ? Icons.catching_pokemon
-                        : Icons.question_mark,
+                    entry.seen ? Icons.catching_pokemon : Icons.question_mark,
                     size: 36,
                   ),
                 ),

@@ -34,9 +34,7 @@ class PokemonRepository {
 
           final Map<String, dynamic> json = jsonDecode(jsonString);
 
-          pokemonList.add(
-            Pokemon.fromJson(pokemonName, json),
-          );
+          pokemonList.add(Pokemon.fromJson(pokemonName, json));
         } catch (e) {
           debugPrint('Errore caricando $pokemonName: $e');
         }
@@ -47,22 +45,21 @@ class PokemonRepository {
   }
 
   Future<Map<int, PokemonFlavor>> getPokemonFlavors() async {
-  final jsonString = await rootBundle.loadString(
-    'assets/data/pokemon_flavor.json',
-  );
+    final jsonString = await rootBundle.loadString(
+      'assets/data/pokemon_flavor.json',
+    );
 
-  final Map<String, dynamic> json = jsonDecode(jsonString);
+    final Map<String, dynamic> json = jsonDecode(jsonString);
 
-  return json.map(
-    (key, value) => MapEntry(
-      int.parse(key),
-      PokemonFlavor.fromJson(value as Map<String, dynamic>),
-    ),
-  );
+    return json.map(
+      (key, value) => MapEntry(
+        int.parse(key),
+        PokemonFlavor.fromJson(value as Map<String, dynamic>),
+      ),
+    );
   }
 
   String _normalizePokemonFileName(String name) {
-
     return name
         .replaceAll(' ♀', '-f')
         .replaceAll(' ♂', '-m')

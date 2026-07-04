@@ -17,10 +17,7 @@ class SettingsRepository {
     return ProfileSettings.fromJson(Map<String, dynamic>.from(data));
   }
 
-  Future<void> saveSettings(
-    String profileId,
-    ProfileSettings settings,
-  ) async {
+  Future<void> saveSettings(String profileId, ProfileSettings settings) async {
     final box = await _box();
     await box.put(profileId, settings.toJson());
     await box.flush();

@@ -25,10 +25,7 @@ class TeamRepository {
   Future<void> saveTeam(String profileId, List<TeamSlot> team) async {
     final box = await _box();
 
-    await box.put(
-      profileId,
-      team.map((slot) => slot.toJson()).toList(),
-    );
+    await box.put(profileId, team.map((slot) => slot.toJson()).toList());
     await box.flush();
   }
 
@@ -48,6 +45,15 @@ class TeamRepository {
           clearPokemon: pokemonId == null,
           experience: changedPokemon ? 0 : slot.experience,
           currentHp: changedPokemon ? 0 : slot.currentHp,
+          nickname: changedPokemon ? null : slot.nickname,
+          selectedMoves: changedPokemon ? [] : slot.selectedMoves,
+          isShiny: changedPokemon ? false : slot.isShiny,
+          gender: changedPokemon ? null : slot.gender,
+          nature: changedPokemon ? 'No Nature' : slot.nature,
+          heldItem: changedPokemon ? null : slot.heldItem,
+          feats: changedPokemon ? [] : slot.feats,
+          extraSkills: changedPokemon ? [] : slot.extraSkills,
+          customAbilityScores: changedPokemon ? {} : slot.customAbilityScores,
         );
       }
 

@@ -76,9 +76,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }).length;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Pokédex 5e ITA'),
-      ),
+      appBar: AppBar(title: const Text('Pokédex 5e ITA')),
       body: RefreshIndicator(
         onRefresh: _loadDashboard,
         child: ListView(
@@ -90,18 +88,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Center(child: CircularProgressIndicator()),
               )
             else if (_errorMessage != null)
-              _ErrorState(
-                message: _errorMessage!,
-                onRetry: _loadDashboard,
-              )
+              _ErrorState(message: _errorMessage!, onRetry: _loadDashboard)
             else ...[
               _TrainerHeader(profileName: profile?.name ?? 'Allenatore'),
               const SizedBox(height: 20),
-              _ProgressOverview(
-                total: total,
-                seen: seen,
-                caught: caught,
-              ),
+              _ProgressOverview(total: total, seen: seen, caught: caught),
               const SizedBox(height: 24),
               _HomeActionButton(
                 icon: Icons.catching_pokemon,
@@ -109,9 +100,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 subtitle: 'Consulta, filtra e marca i Pokémon.',
                 onTap: () async {
                   await Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => const PokedexScreen(),
-                    ),
+                    MaterialPageRoute(builder: (_) => const PokedexScreen()),
                   );
                   await _loadDashboard();
                 },
@@ -136,9 +125,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 subtitle: 'Crea, cambia o elimina profili allenatore.',
                 onTap: () async {
                   await Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => const ProfilesScreen(),
-                    ),
+                    MaterialPageRoute(builder: (_) => const ProfilesScreen()),
                   );
                   await _loadDashboard();
                 },
@@ -177,8 +164,8 @@ class _TrainerHeader extends StatelessWidget {
               Text(
                 'Ciao, $profileName',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 4),
               const Text('Ecco il riepilogo della tua avventura.'),
@@ -211,9 +198,9 @@ class _ProgressOverview extends StatelessWidget {
           children: [
             Text(
               'Progresso Pokédex',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
             LinearProgressIndicator(
@@ -224,10 +211,7 @@ class _ProgressOverview extends StatelessWidget {
             Row(
               children: [
                 Expanded(
-                  child: _ProgressStat(
-                    label: 'Visti',
-                    value: '$seen/$total',
-                  ),
+                  child: _ProgressStat(label: 'Visti', value: '$seen/$total'),
                 ),
                 Expanded(
                   child: _ProgressStat(
@@ -245,10 +229,7 @@ class _ProgressOverview extends StatelessWidget {
 }
 
 class _ProgressStat extends StatelessWidget {
-  const _ProgressStat({
-    required this.label,
-    required this.value,
-  });
+  const _ProgressStat({required this.label, required this.value});
 
   final String label;
   final String value;
@@ -258,16 +239,13 @@ class _ProgressStat extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: Theme.of(context).textTheme.bodySmall,
-        ),
+        Text(label, style: Theme.of(context).textTheme.bodySmall),
         const SizedBox(height: 4),
         Text(
           value,
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
         ),
       ],
     );
@@ -302,10 +280,7 @@ class _HomeActionButton extends StatelessWidget {
 }
 
 class _ErrorState extends StatelessWidget {
-  const _ErrorState({
-    required this.message,
-    required this.onRetry,
-  });
+  const _ErrorState({required this.message, required this.onRetry});
 
   final String message;
   final VoidCallback onRetry;
@@ -317,15 +292,9 @@ class _ErrorState extends StatelessWidget {
         children: [
           const Icon(Icons.error_outline, size: 48),
           const SizedBox(height: 16),
-          Text(
-            'Errore: $message',
-            textAlign: TextAlign.center,
-          ),
+          Text('Errore: $message', textAlign: TextAlign.center),
           const SizedBox(height: 16),
-          FilledButton(
-            onPressed: onRetry,
-            child: const Text('Riprova'),
-          ),
+          FilledButton(onPressed: onRetry, child: const Text('Riprova')),
         ],
       ),
     );

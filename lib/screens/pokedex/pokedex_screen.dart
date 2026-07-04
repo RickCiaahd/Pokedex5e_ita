@@ -9,19 +9,9 @@ import '../../widgets/pokedex/pokemon_summary_dialog.dart';
 import '../../widgets/pokedex/pokemon_tile.dart';
 import '../../services/profile_storage_service.dart';
 
-enum MarkMode {
-  none,
-  seen,
-  unseen,
-  caught,
-}
+enum MarkMode { none, seen, unseen, caught }
 
-enum ViewFilter {
-  all,
-  seen,
-  unseen,
-  caught,
-}
+enum ViewFilter { all, seen, unseen, caught }
 
 class PokedexScreen extends StatefulWidget {
   const PokedexScreen({super.key});
@@ -101,7 +91,8 @@ class _PokedexScreenState extends State<PokedexScreen> {
     final query = _searchController.text.toLowerCase().trim();
 
     _filteredPokemon = _allPokemon.where((pokemon) {
-      final matchesSearch = query.isEmpty ||
+      final matchesSearch =
+          query.isEmpty ||
           pokemon.name.toLowerCase().contains(query) ||
           pokemon.id.toString().contains(query);
 
@@ -278,9 +269,7 @@ class _PokedexScreenState extends State<PokedexScreen> {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Pokédex'),
-      ),
+      appBar: AppBar(title: const Text('Pokédex')),
       body: content,
     );
   }
@@ -295,7 +284,7 @@ class _PokedexScreenState extends State<PokedexScreen> {
 
   Future<void> _saveEntries() async {
     debugPrint('POKEDEX SCREEN: chiamo save con ${_entries.length} entries');
-  
+
     try {
       await _profileStorageService.savePokedexEntries(_entries);
       debugPrint('POKEDEX SCREEN: save completato');
@@ -329,10 +318,7 @@ class _PokedexScreenState extends State<PokedexScreen> {
     final entry = _entryFor(pokemon);
 
     setState(() {
-      _entries[pokemon.id] = entry.copyWith(
-        seen: true,
-        caught: !entry.caught,
-      );
+      _entries[pokemon.id] = entry.copyWith(seen: true, caught: !entry.caught);
     });
 
     await _saveEntries();
@@ -353,10 +339,7 @@ class _PokedexScreenState extends State<PokedexScreen> {
       return caught ? entry.caught : entry.seen;
     }).length;
 
-    return {
-      'count': count,
-      'total': regionPokemon.length,
-    };
+    return {'count': count, 'total': regionPokemon.length};
   }
 
   Future<void> _handlePokemonTap(Pokemon pokemon) async {
@@ -373,16 +356,10 @@ class _PokedexScreenState extends State<PokedexScreen> {
           _entries[pokemon.id] = entry.copyWith(seen: true);
           break;
         case MarkMode.unseen:
-          _entries[pokemon.id] = entry.copyWith(
-            seen: false,
-            caught: false,
-          );
+          _entries[pokemon.id] = entry.copyWith(seen: false, caught: false);
           break;
         case MarkMode.caught:
-          _entries[pokemon.id] = entry.copyWith(
-            seen: true,
-            caught: true,
-          );
+          _entries[pokemon.id] = entry.copyWith(seen: true, caught: true);
           break;
         case MarkMode.none:
           break;
@@ -417,9 +394,9 @@ class _RegionSection extends StatelessWidget {
         children: [
           Text(
             region.toUpperCase(),
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 12),
           GridView.builder(

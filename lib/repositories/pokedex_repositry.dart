@@ -51,10 +51,7 @@ class PokedexRepository {
   }) async {
     final box = await _box();
 
-    await box.put(
-      _key(profileId, entry.pokemonId),
-      entry.toJson(),
-    );
+    await box.put(_key(profileId, entry.pokemonId), entry.toJson());
     await box.flush();
 
     debugPrint(

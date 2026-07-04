@@ -39,24 +39,21 @@ class PokemonSummaryDialog extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           if (flavor != null) ...[
-              Text(
-                flavor!.genus,
-                style: const TextStyle(fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 4),
-              Text(
-                'Altezza: ${flavor!.heightMeters.toStringAsFixed(1)} m · '
-                'Peso: ${flavor!.weightKg.toStringAsFixed(1)} kg',
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 12),
-              Text(
-                flavor!.flavor,
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 16),
-            ],
+            Text(
+              flavor!.genus,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'Altezza: ${flavor!.heightMeters.toStringAsFixed(1)} m · '
+              'Peso: ${flavor!.weightKg.toStringAsFixed(1)} kg',
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 12),
+            Text(flavor!.flavor, textAlign: TextAlign.center),
+            const SizedBox(height: 16),
+          ],
           if (entry.seen) ...[
             Text(pokemon.types.join(' • ')),
             const SizedBox(height: 16),

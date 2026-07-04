@@ -153,8 +153,8 @@ class PokemonAssetPaths {
       '$rawName.png',
       '$assetName.png',
       '$compactName.png',
-      assetName.toLowerCase() + '.png',
-      compactName.toLowerCase() + '.png',
+      '${assetName.toLowerCase()}.png',
+      '${compactName.toLowerCase()}.png',
     };
 
     return <String>[

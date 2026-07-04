@@ -6,6 +6,7 @@ import '../../models/user_profile.dart';
 import '../../repositories/pokemon_repository.dart';
 import '../../repositories/profile_repository.dart';
 import '../../repositories/team_repository.dart';
+import '../pokemon/pokemon_detail_screen.dart';
 
 class TeamSelectionScreen extends StatefulWidget {
   const TeamSelectionScreen({
@@ -89,6 +90,40 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
     await _loadTeam();
   }
 
+  Future<void> _updateSlot(TeamSlot slot) async {
+    final profile = _profile;
+    if (profile == null) return;
+
+    await _teamRepository.updateSlot(
+      profileId: profile.id,
+      updatedSlot: slot,
+    );
+
+    await _loadTeam();
+  }
+
+  Future<void> _openPokemonDetail(TeamSlot slot) async {
+    final pokemon = _pokemonById(slot.pokemonId);
+    if (pokemon == null) {
+      await _openPokemonPicker(slot);
+      return;
+    }
+
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => PokemonDetailScreen(
+          pokemon: pokemon,
+          teamSlot: slot,
+          onTeamSlotChanged: (updatedSlot) {
+            _updateSlot(updatedSlot);
+          },
+        ),
+      ),
+    );
+
+    await _loadTeam();
+  }
+
   Future<void> _openPokemonPicker(TeamSlot slot) async {
     final selectedPokemonId = await showModalBottomSheet<int>(
       context: context,
@@ -133,13 +168,16 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
                     ),
               ),
               const SizedBox(height: 8),
-              const Text('Tocca uno slot per scegliere o cambiare Pokémon.'),
+              const Text(
+                'Tocca uno slot pieno per aprire la scheda del Pokémon.',
+              ),
               const SizedBox(height: 20),
               for (final slot in _team)
                 _TeamSlotCard(
                   slot: slot,
                   pokemon: _pokemonById(slot.pokemonId),
-                  onSelect: () => _openPokemonPicker(slot),
+                  onOpen: () => _openPokemonDetail(slot),
+                  onChange: () => _openPokemonPicker(slot),
                   onRemove: slot.pokemonId == null
                       ? null
                       : () => _setPokemonInSlot(slot.slotIndex, null),
@@ -156,13 +194,15 @@ class _TeamSlotCard extends StatelessWidget {
   const _TeamSlotCard({
     required this.slot,
     required this.pokemon,
-    required this.onSelect,
+    required this.onOpen,
+    required this.onChange,
     required this.onRemove,
   });
 
   final TeamSlot slot;
   final Pokemon? pokemon;
-  final VoidCallback onSelect;
+  final VoidCallback onOpen;
+  final VoidCallback onChange;
   final VoidCallback? onRemove;
 
   @override
@@ -182,14 +222,28 @@ class _TeamSlotCard extends StatelessWidget {
               ? 'Scegli un Pokémon'
               : '$number • ${pokemon!.types.join(' / ')}',
         ),
-        trailing: onRemove == null
-            ? const Icon(Icons.add)
-            : IconButton(
-                tooltip: 'Rimuovi',
-                icon: const Icon(Icons.close),
-                onPressed: onRemove,
+        trailing: pokemon == null
+            ? IconButton(
+                tooltip: 'Scegli',
+                icon: const Icon(Icons.add),
+                onPressed: onChange,
+              )
+            : Wrap(
+                spacing: 4,
+                children: [
+                  IconButton(
+                    tooltip: 'Cambia',
+                    icon: const Icon(Icons.swap_horiz),
+                    onPressed: onChange,
+                  ),
+                  IconButton(
+                    tooltip: 'Rimuovi',
+                    icon: const Icon(Icons.close),
+                    onPressed: onRemove,
+                  ),
+                ],
               ),
-        onTap: onSelect,
+        onTap: onOpen,
       ),
     );
   }

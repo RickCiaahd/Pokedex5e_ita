@@ -41,10 +41,31 @@ class TeamRepository {
 
     final updatedTeam = team.map((slot) {
       if (slot.slotIndex == slotIndex) {
-        return TeamSlot(
-          slotIndex: slotIndex,
+        final changedPokemon = slot.pokemonId != pokemonId;
+
+        return slot.copyWith(
           pokemonId: pokemonId,
+          clearPokemon: pokemonId == null,
+          experience: changedPokemon ? 0 : slot.experience,
+          currentHp: changedPokemon ? 0 : slot.currentHp,
         );
+      }
+
+      return slot;
+    }).toList();
+
+    await saveTeam(profileId, updatedTeam);
+  }
+
+  Future<void> updateSlot({
+    required String profileId,
+    required TeamSlot updatedSlot,
+  }) async {
+    final team = await getTeam(profileId);
+
+    final updatedTeam = team.map((slot) {
+      if (slot.slotIndex == updatedSlot.slotIndex) {
+        return updatedSlot;
       }
 
       return slot;

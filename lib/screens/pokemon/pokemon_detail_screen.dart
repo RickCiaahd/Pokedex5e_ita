@@ -138,12 +138,12 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
   List<String> _selectedMoves() {
     final slot = _teamSlot;
     if (slot == null) {
-      return _learnedMovesFor(_pokemon, _level);
+      return _defaultSelectedMoves(_pokemon, _level);
     }
     if (slot.selectedMoves.isEmpty) {
       return _defaultSelectedMoves(_pokemon, _level);
     }
-    return slot.selectedMoves;
+    return slot.selectedMoves.take(4).toList();
   }
 
   void _ensureSelectedMovesIsSaved() {
@@ -206,7 +206,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
   ) async {
     var selectedMoves = slot.selectedMoves.isEmpty
         ? _defaultSelectedMoves(_pokemon, oldLevel)
-        : List<String>.from(slot.selectedMoves);
+        : slot.selectedMoves.take(4).toList();
 
     final learnedEntries =
         _pokemon.moves.levelMoves.entries
@@ -225,7 +225,12 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
           continue;
         }
 
-        final replacedMove = await _askMoveReplacement(move, selectedMoves);
+        final moveData = _moves[move] ?? await _moveRepository.getMove(move);
+        final replacedMove = await _askMoveReplacement(
+          move,
+          selectedMoves,
+          moveData,
+        );
         if (replacedMove == null) {
           continue;
         }
@@ -243,25 +248,41 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
   Future<String?> _askMoveReplacement(
     String newMove,
     List<String> selectedMoves,
+    MoveData? moveData,
   ) async {
     return showDialog<String?>(
       context: context,
-      builder: (_) => SimpleDialog(
+      builder: (_) => AlertDialog(
         title: Text('Vuoi imparare $newMove?'),
-        children: [
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-            child: Text(
-              'Il moveset e gia pieno. Scegli una mossa da dimenticare.',
-            ),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _MoveCard(
+                name: newMove,
+                move: moveData,
+                stats: moveData == null ? null : _moveStats(moveData),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Il moveset e gia pieno. Scegli una mossa da dimenticare.',
+              ),
+            ],
           ),
+        ),
+        actions: [
           for (final move in selectedMoves)
-            SimpleDialogOption(
-              onPressed: () => Navigator.of(context).pop(move),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(move);
+              },
               child: Text('Dimentica $move'),
             ),
-          SimpleDialogOption(
-            onPressed: () => Navigator.of(context).pop(),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
             child: Text('Non imparare $newMove'),
           ),
         ],
@@ -548,8 +569,6 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
                     child: TabBarView(
                       children: [
                         _MovesView(
-                          pokemon: pokemon,
-                          level: _level,
                           selectedMoves: _selectedMoves(),
                           moves: _moves,
                           moveStatsBuilder: _moveStats,
@@ -721,33 +740,17 @@ class _Pill extends StatelessWidget {
 
 class _MovesView extends StatelessWidget {
   const _MovesView({
-    required this.pokemon,
-    required this.level,
     required this.selectedMoves,
     required this.moves,
     required this.moveStatsBuilder,
   });
 
-  final Pokemon pokemon;
-  final int level;
   final List<String> selectedMoves;
   final Map<String, MoveData?> moves;
   final String Function(MoveData move) moveStatsBuilder;
 
   @override
   Widget build(BuildContext context) {
-    final unlocked =
-        pokemon.moves.levelMoves.entries
-            .where((entry) => entry.key <= level)
-            .toList()
-          ..sort((a, b) => a.key.compareTo(b.key));
-
-    final future =
-        pokemon.moves.levelMoves.entries
-            .where((entry) => entry.key > level)
-            .toList()
-          ..sort((a, b) => a.key.compareTo(b.key));
-
     return ListView(
       padding: const EdgeInsets.all(12),
       children: [
@@ -757,26 +760,6 @@ class _MovesView extends StatelessWidget {
           moves: moves,
           moveStatsBuilder: moveStatsBuilder,
         ),
-        _MoveSection(
-          title: 'Mosse gia sbloccate',
-          names: unlocked.expand((entry) => entry.value).toSet().toList(),
-          moves: moves,
-          moveStatsBuilder: moveStatsBuilder,
-        ),
-        if (future.isNotEmpty)
-          _InfoCard(
-            title: 'Prossime mosse',
-            child: Text(
-              future
-                  .map((entry) => 'Lv. ${entry.key}: ${entry.value.join(', ')}')
-                  .join('\n'),
-            ),
-          ),
-        if (pokemon.moves.tmMoves.isNotEmpty)
-          _InfoCard(
-            title: 'TM compatibili',
-            child: Text(pokemon.moves.tmMoves.map((tm) => 'TM$tm').join(', ')),
-          ),
       ],
     );
   }
@@ -894,11 +877,13 @@ class _FeaturesView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final feats = slot?.feats ?? const <String>[];
-    final abilities = [
-      ...pokemon.abilities,
-      if (pokemon.hiddenAbility != null && feats.contains('Hidden Ability'))
-        pokemon.hiddenAbility!,
-    ];
+    final abilities = slot?.abilities.isNotEmpty == true
+        ? slot!.abilities
+        : [
+            ...pokemon.abilities,
+            if (pokemon.hiddenAbility != null && feats.contains('Hidden Ability'))
+              pokemon.hiddenAbility!,
+          ];
 
     return ListView(
       padding: const EdgeInsets.all(12),

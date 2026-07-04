@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../models/pokedex_entry.dart';
 import '../../models/pokemon.dart';
+import '../pokemon/pokemon_asset_image.dart';
 
 class PokemonTile extends StatelessWidget {
   const PokemonTile({
@@ -18,42 +19,54 @@ class PokemonTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final number = '#${pokemon.id.toString().padLeft(3, '0')}';
+    final colorScheme = Theme.of(context).colorScheme;
 
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: Opacity(
-        opacity: entry.seen ? 1 : 0.45,
-        child: Column(
-          children: [
-            Expanded(
-              child: Container(
-                decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(14),
+      child: Column(
+        children: [
+          Expanded(
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: entry.caught
+                    ? colorScheme.primaryContainer
+                    : entry.seen
+                    ? Colors.white
+                    : colorScheme.surfaceContainerHighest,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(
                   color: entry.caught
-                      ? Colors.green.shade200
-                      : Colors.grey.shade300,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: entry.caught ? Colors.green : Colors.grey.shade500,
-                    width: entry.caught ? 2 : 1,
-                  ),
+                      ? colorScheme.primary
+                      : colorScheme.outlineVariant,
+                  width: entry.caught ? 2 : 1,
                 ),
-                child: Center(
-                  child: Icon(
-                    entry.seen ? Icons.catching_pokemon : Icons.question_mark,
-                    size: 36,
-                  ),
+              ),
+              child: Center(
+                child: PokemonAssetImage(
+                  pokemon: pokemon,
+                  entry: entry,
+                  size: 74,
                 ),
               ),
             ),
-            const SizedBox(height: 4),
-            Text(
-              entry.seen ? pokemon.name : number,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontSize: 12),
+          ),
+          const SizedBox(height: 5),
+          Text(
+            entry.seen ? pokemon.name : number,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.labelMedium?.copyWith(
+              fontWeight: entry.caught ? FontWeight.w900 : FontWeight.w700,
+              color: entry.seen
+                  ? colorScheme.onSurface
+                  : colorScheme.onSurfaceVariant,
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

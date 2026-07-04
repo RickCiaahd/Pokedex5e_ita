@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../models/pokemon.dart';
 import '../../models/pokemon_nature.dart';
 import '../../models/team_slot.dart';
+import '../../repositories/ability_repository.dart';
 import '../../repositories/feat_repository.dart';
 import '../../repositories/item_repository.dart';
 
@@ -50,6 +51,7 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
     'Survival',
   ];
 
+  final AbilityRepository _abilityRepository = AbilityRepository();
   final FeatRepository _featRepository = FeatRepository();
   final ItemRepository _itemRepository = ItemRepository();
 
@@ -58,13 +60,16 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
   late String? _gender;
   late String _nature;
   late List<String> _selectedMoves;
+  late List<String> _abilities;
   late List<String> _feats;
   late List<String> _extraSkills;
   late String? _heldItem;
   late Map<String, int> _customAbilityScores;
+  Map<String, String> _abilityDescriptions = {};
   Map<String, String> _featDescriptions = {};
   Map<String, String> _itemDescriptions = {};
   bool _movesOpen = false;
+  bool _abilitiesOpen = false;
   bool _featsOpen = false;
   bool _skillsOpen = false;
   bool _heldItemOpen = false;
@@ -83,6 +88,7 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
         ? widget.slot.nature
         : 'No Nature';
     _selectedMoves = _normalizedMoves(widget.slot.selectedMoves);
+    _abilities = _normalizedAbilities(widget.slot.abilities);
     _feats = [...widget.slot.feats];
     _extraSkills = [...widget.slot.extraSkills];
     _heldItem = widget.slot.heldItem;
@@ -106,6 +112,7 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
 
   Future<void> _loadChoices() async {
     final results = await Future.wait([
+      _abilityRepository.getAbilityDescriptions(),
       _featRepository.getFeatDescriptions(),
       _itemRepository.getItemDescriptions(),
     ]);
@@ -115,14 +122,28 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
     }
 
     setState(() {
-      _featDescriptions = results[0];
-      _itemDescriptions = results[1];
+      _abilityDescriptions = results[0];
+      _featDescriptions = results[1];
+      _itemDescriptions = results[2];
       _isLoadingChoices = false;
     });
   }
 
   List<String> _normalizedMoves(List<String> moves) {
     return moves.where((move) => move.trim().isNotEmpty).take(4).toList();
+  }
+
+  List<String> _normalizedAbilities(List<String> abilities) {
+    final selected = abilities.where((ability) => ability.trim().isNotEmpty);
+    final fallback = widget.pokemon.abilities;
+    return _unique(selected.isEmpty ? fallback : selected).take(2).toList();
+  }
+
+  List<String> _availableAbilities() {
+    return _unique([
+      ...widget.pokemon.abilities,
+      if (widget.pokemon.hiddenAbility != null) widget.pokemon.hiddenAbility!,
+    ]);
   }
 
   List<String> _movesUpToLevel(int level) {
@@ -177,6 +198,7 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
       nature: _nature,
       heldItem: _heldItem?.isEmpty == true ? null : _heldItem,
       selectedMoves: _normalizedMoves(_selectedMoves),
+      abilities: _normalizedAbilities(_abilities),
       feats: _feats,
       extraSkills: _extraSkills,
       customAbilityScores: Map<String, int>.from(_customAbilityScores)
@@ -247,6 +269,36 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
         _feats = [..._feats, result];
       } else {
         _feats[index] = result;
+      }
+    });
+  }
+
+  Future<void> _pickAbility([int? index]) async {
+    final blocked = _abilities
+        .asMap()
+        .entries
+        .where((entry) => entry.key != index)
+        .map((entry) => entry.value)
+        .toSet();
+    final result = await Navigator.of(context).push<String>(
+      MaterialPageRoute(
+        builder: (_) => _ChoicePickerScreen(
+          title: 'Scegli abilita',
+          options: _availableAbilities(),
+          blockedOptions: blocked,
+          descriptions: _abilityDescriptions,
+        ),
+      ),
+    );
+
+    if (result == null) {
+      return;
+    }
+    setState(() {
+      if (index == null) {
+        _abilities = _normalizedAbilities([..._abilities, result]);
+      } else {
+        _abilities[index] = result;
       }
     });
   }
@@ -398,6 +450,21 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
                           _selectedMoves.removeAt(index);
                         }
                       });
+                    },
+                  ),
+                ),
+                _CollapsibleEditSection(
+                  title: 'Abilities',
+                  isOpen: _abilitiesOpen,
+                  onToggle: () =>
+                      setState(() => _abilitiesOpen = !_abilitiesOpen),
+                  child: _ChipSlots(
+                    values: _abilities,
+                    emptyLabel: 'ABILITY',
+                    onAdd: _abilities.length >= 2 ? null : _pickAbility,
+                    onPick: _pickAbility,
+                    onRemove: (index) {
+                      setState(() => _abilities.removeAt(index));
                     },
                   ),
                 ),
@@ -563,7 +630,7 @@ class _ChipSlots extends StatelessWidget {
 
   final List<String> values;
   final String emptyLabel;
-  final VoidCallback onAdd;
+  final VoidCallback? onAdd;
   final ValueChanged<int> onPick;
   final ValueChanged<int> onRemove;
 
@@ -582,10 +649,11 @@ class _ChipSlots extends StatelessWidget {
               onRemove: () => onRemove(entry.key),
             ),
           ),
-        SizedBox(
-          width: 150,
-          child: _SingleSlot(label: emptyLabel, onTap: onAdd),
-        ),
+        if (onAdd != null)
+          SizedBox(
+            width: 150,
+            child: _SingleSlot(label: emptyLabel, onTap: onAdd!),
+          ),
       ],
     );
   }

@@ -473,8 +473,10 @@ class _RegionProgressGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bodyStyle = Theme.of(context).textTheme.bodySmall;
+
     return SizedBox(
-      height: 110,
+      height: 122,
       child: ListView.separated(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         scrollDirection: Axis.horizontal,
@@ -490,12 +492,15 @@ class _RegionProgressGrid extends StatelessWidget {
             elevation: selected ? 3 : 1,
             child: Container(
               width: 120,
-              padding: const EdgeInsets.all(10),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 7),
               child: Column(
+                mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     region,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: selected
@@ -503,9 +508,15 @@ class _RegionProgressGrid extends StatelessWidget {
                           : null,
                     ),
                   ),
-                  const SizedBox(height: 6),
-                  Text('Visti: ${seen['count']}/${seen['total']}'),
-                  Text('Presi: ${caught['count']}/${caught['total']}'),
+                  const SizedBox(height: 3),
+                  Text(
+                    'Visti: ${seen['count']}/${seen['total']}',
+                    style: bodyStyle,
+                  ),
+                  Text(
+                    'Presi: ${caught['count']}/${caught['total']}',
+                    style: bodyStyle,
+                  ),
                 ],
               ),
             ),

@@ -204,9 +204,9 @@ class _TeamHeader extends StatelessWidget {
             width: 58,
             height: 58,
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.18),
+              color: Colors.white.withOpacity(0.18),
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: Colors.white.withValues(alpha: 0.35)),
+              border: Border.all(color: Colors.white.withOpacity(0.35)),
             ),
             child: const Icon(
               Icons.catching_pokemon,
@@ -348,8 +348,10 @@ class _TeamSlotCard extends StatelessWidget {
                         switch (action) {
                           case _SlotAction.change:
                             onChange();
+                            break;
                           case _SlotAction.remove:
                             onRemove?.call();
+                            break;
                         }
                       },
                       itemBuilder: (context) => const [
@@ -416,7 +418,7 @@ class _SmallChip extends StatelessWidget {
 
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: colorScheme.primaryContainer.withValues(alpha: 0.55),
+        color: colorScheme.primaryContainer.withOpacity(0.55),
         borderRadius: BorderRadius.circular(999),
       ),
       child: Padding(

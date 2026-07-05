@@ -4,6 +4,7 @@ import '../../models/pokedex_entry.dart';
 import '../../models/pokemon.dart';
 import '../../screens/pokemon/pokemon_detail_screen.dart';
 import '../../models/pokemon_flavor.dart';
+import '../pokemon/pokemon_asset_image.dart';
 
 class PokemonSummaryDialog extends StatelessWidget {
   const PokemonSummaryDialog({
@@ -30,11 +31,21 @@ class PokemonSummaryDialog extends StatelessWidget {
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          CircleAvatar(
-            radius: 44,
-            child: Icon(
-              entry.seen ? Icons.catching_pokemon : Icons.question_mark,
-              size: 40,
+          DecoratedBox(
+            decoration: BoxDecoration(
+              color: entry.caught
+                  ? Theme.of(context).colorScheme.primaryContainer
+                  : Theme.of(context).colorScheme.surfaceContainerHighest,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(8),
+              child: PokemonAssetImage(
+                pokemon: pokemon,
+                entry: entry,
+                useLargeArtwork: true,
+                size: 96,
+              ),
             ),
           ),
           const SizedBox(height: 16),

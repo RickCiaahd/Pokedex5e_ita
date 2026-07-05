@@ -66,7 +66,15 @@ class PokemonSummaryDialog extends StatelessWidget {
             const SizedBox(height: 16),
           ],
           if (entry.seen) ...[
-            Text(pokemon.types.join(' • ')),
+            Wrap(
+              alignment: WrapAlignment.center,
+              spacing: 6,
+              runSpacing: 6,
+              children: [
+                for (final type in pokemon.types)
+                  PokemonTypeBadge(type: type, height: 24),
+              ],
+            ),
             const SizedBox(height: 16),
             Row(
               children: [

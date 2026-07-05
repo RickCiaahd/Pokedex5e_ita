@@ -27,6 +27,7 @@ class PokemonAssetImage extends StatelessWidget {
     final entry = this.entry;
     final seen = entry?.seen ?? true;
     final caught = entry?.caught ?? true;
+    final visualScale = useLargeArtwork ? 1.08 : 1.12;
 
     Widget image = _AssetFallbackImage(
       assetPaths: PokemonAssetPaths.imageCandidates(
@@ -83,7 +84,13 @@ class PokemonAssetImage extends StatelessWidget {
       );
     }
 
-    return SizedBox(width: size, height: size, child: image);
+    return SizedBox(
+      width: size,
+      height: size,
+      child: Center(
+        child: Transform.scale(scale: visualScale, child: image),
+      ),
+    );
   }
 }
 

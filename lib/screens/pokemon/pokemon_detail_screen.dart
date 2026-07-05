@@ -674,7 +674,17 @@ class _Header extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.headlineSmall,
                     ),
-                    Text('$number ${pokemon.types.join(' / ')}'),
+                    const SizedBox(height: 2),
+                    Wrap(
+                      spacing: 6,
+                      runSpacing: 6,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: [
+                        Text(number),
+                        for (final type in pokemon.types)
+                          PokemonTypeBadge(type: type, height: 24),
+                      ],
+                    ),
                     const SizedBox(height: 8),
                     Wrap(
                       spacing: 8,
@@ -851,7 +861,7 @@ class _MoveCard extends StatelessWidget {
               Wrap(
                 spacing: 8,
                 children: [
-                  Chip(label: Text(move.type)),
+                  PokemonTypeBadge(type: move.type, height: 24),
                   Chip(label: Text(move.moveTime)),
                 ],
               ),

@@ -6,6 +6,7 @@ import '../../models/user_profile.dart';
 import '../../repositories/pokemon_repository.dart';
 import '../../repositories/profile_repository.dart';
 import '../../repositories/team_repository.dart';
+import '../../widgets/pokemon/pokemon_asset_image.dart';
 import '../pokemon/pokemon_detail_screen.dart';
 
 class TeamSelectionScreen extends StatefulWidget {
@@ -325,7 +326,7 @@ class _TeamSlotCard extends StatelessWidget {
                         runSpacing: 6,
                         children: [
                           for (final type in pokemon!.types)
-                            _SmallChip(label: type.toUpperCase()),
+                            PokemonTypeBadge(type: type, height: 20),
                           _SmallChip(label: 'HP ${pokemon!.hitPoints}'),
                           _SmallChip(label: 'AC ${pokemon!.armorClass}'),
                         ],

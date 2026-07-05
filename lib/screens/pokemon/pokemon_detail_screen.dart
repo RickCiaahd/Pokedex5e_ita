@@ -10,6 +10,7 @@ import '../../repositories/ability_repository.dart';
 import '../../repositories/evolution_repository.dart';
 import '../../repositories/feat_repository.dart';
 import '../../repositories/move_repository.dart';
+import '../../widgets/pokemon/pokemon_asset_image.dart';
 import 'pokemon_edit_screen.dart';
 
 class PokemonDetailScreen extends StatefulWidget {
@@ -648,13 +649,18 @@ class _Header extends StatelessWidget {
                 width: 112,
                 height: 112,
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primaryContainer,
+                  color: Colors.white,
                   borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: Theme.of(context).colorScheme.outlineVariant,
+                  ),
                 ),
-                child: Icon(
-                  Icons.catching_pokemon,
-                  color: Theme.of(context).colorScheme.onPrimaryContainer,
-                  size: 60,
+                child: Center(
+                  child: PokemonAssetImage(
+                    pokemon: pokemon,
+                    useLargeArtwork: true,
+                    size: 104,
+                  ),
                 ),
               ),
               const SizedBox(width: 12),
@@ -1133,16 +1139,9 @@ class _PartySlotButton extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              pokemon == null
-                  ? Icons.radio_button_unchecked
-                  : Icons.catching_pokemon,
-              color: pokemon == null
-                  ? colorScheme.outline
-                  : isActive
-                  ? colorScheme.primary
-                  : colorScheme.onSurfaceVariant,
-            ),
+            pokemon == null
+                ? Icon(Icons.radio_button_unchecked, color: colorScheme.outline)
+                : PokemonAssetImage(pokemon: pokemon, size: 30),
             const SizedBox(height: 2),
             Text(
               pokemon == null

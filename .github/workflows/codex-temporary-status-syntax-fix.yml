@@ -1,0 +1,60 @@
+name: Codex temporary status syntax fix
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  apply-status-syntax-fix:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Fix Dart string quoting
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          target = Path('lib/screens/pokemon/pokemon_detail_screen.dart')
+          workflow = Path('.github/workflows/codex-temporary-status-syntax-fix.yml')
+
+          text = target.read_text(encoding='utf-8')
+          fixed_description = (
+              '    description: "Cannot take reactions. Lasts three rounds. At the start of the creature\'s turn, roll a d8. '
+              '1: The creature takes the Struggle action against itself and automatically hits. '
+              '2: The creature takes the Struggle action against the nearest Pokemon target. If there are no valid targets, it takes the Struggle action against itself instead, and hits. '
+              '3: The creature doesn\'t move or take actions. 4-7: The creature chooses its behavior. 8: The condition ends.",'
+          )
+
+          pattern = re.compile(
+              r"(  _StatusEffectInfo\(\n"
+              r"    name: 'Confused',\n"
+              r"    shortLabel: 'CNF',\n)"
+              r"    description: .*?,\n"
+              r"(    assetCandidates: \[)",
+              re.DOTALL,
+          )
+
+          text, count = pattern.subn(r"\1" + fixed_description + "\n" + r"\2", text, count=1)
+          if count != 1:
+              raise SystemExit('Could not find Confused status description to fix')
+
+          target.write_text(text, encoding='utf-8')
+          workflow.unlink(missing_ok=True)
+          PY
+
+      - name: Commit syntax fix and remove workflow
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A lib/screens/pokemon/pokemon_detail_screen.dart .github/workflows/codex-temporary-status-syntax-fix.yml
+          git commit -m "Fix confused status description syntax" || exit 0
+          git push

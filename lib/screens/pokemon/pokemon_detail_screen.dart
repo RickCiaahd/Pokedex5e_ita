@@ -200,6 +200,23 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
     widget.onTeamSlotChanged?.call(updatedSlot);
   }
 
+  void _changeHp(int delta) {
+    final slot = _teamSlot;
+    if (slot == null) {
+      return;
+    }
+
+    final maxHp = _pokemon.hitPoints;
+    final updatedHp = (_currentHp + delta).clamp(0, maxHp).toInt();
+    final updatedSlot = slot.copyWith(currentHp: updatedHp);
+
+    setState(() {
+      _teamSlot = updatedSlot;
+      _replaceTeamSlot(updatedSlot);
+    });
+    widget.onTeamSlotChanged?.call(updatedSlot);
+  }
+
   Future<TeamSlot> _applyLevelUpMoves(
     TeamSlot slot,
     int oldLevel,
@@ -528,6 +545,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final pokemon = _pokemon;
+    final attributes = _attributeScores(pokemon, _teamSlot);
 
     return DefaultTabController(
       length: 3,
@@ -554,7 +572,13 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
                     experience: _experience,
                     currentHp: _currentHp,
                     isPartyMode: _isPartyMode,
+                    attributes: attributes,
+                    modifierBuilder: _modifier,
+                    proficiency: _proficiency(_level),
+                    heldItem: _teamSlot?.heldItem,
                     onEditExperience: _editExperience,
+                    onDecreaseHp: () => _changeHp(-1),
+                    onIncreaseHp: () => _changeHp(1),
                     canEvolve: _canEvolveCurrentPokemon(),
                     evolutionLabel: _evolutionLabel(),
                     onEvolve: _evolveCurrentPokemon,
@@ -583,7 +607,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
                         _TraitsView(
                           pokemon: pokemon,
                           slot: _teamSlot,
-                          attributes: _attributeScores(pokemon, _teamSlot),
+                          attributes: attributes,
                           modifierBuilder: _modifier,
                           proficiency: _proficiency(_level),
                         ),
@@ -612,7 +636,13 @@ class _Header extends StatelessWidget {
     required this.experience,
     required this.currentHp,
     required this.isPartyMode,
+    required this.attributes,
+    required this.modifierBuilder,
+    required this.proficiency,
+    required this.heldItem,
     required this.onEditExperience,
+    required this.onDecreaseHp,
+    required this.onIncreaseHp,
     required this.canEvolve,
     required this.evolutionLabel,
     required this.onEvolve,
@@ -624,7 +654,13 @@ class _Header extends StatelessWidget {
   final int experience;
   final int currentHp;
   final bool isPartyMode;
+  final Map<String, int> attributes;
+  final int Function(int score) modifierBuilder;
+  final int proficiency;
+  final String? heldItem;
   final VoidCallback onEditExperience;
+  final VoidCallback onDecreaseHp;
+  final VoidCallback onIncreaseHp;
   final bool canEvolve;
   final String? evolutionLabel;
   final VoidCallback onEvolve;
@@ -638,16 +674,25 @@ class _Header extends StatelessWidget {
     final progress = range <= 0
         ? 1.0
         : ((experience - currentThreshold) / range).clamp(0.0, 1.0);
+    final maxHp = pokemon.hitPoints;
+    final hpProgress = maxHp <= 0 ? 0.0 : (currentHp / maxHp).clamp(0.0, 1.0);
+    final itemLabel = heldItem == null || heldItem!.trim().isEmpty
+        ? 'NONE'
+        : heldItem!.toUpperCase();
 
     return Padding(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.fromLTRB(8, 8, 8, 6),
       child: Column(
         children: [
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              _SleepMarker(),
+              const SizedBox(width: 6),
               Container(
-                width: 112,
-                height: 112,
+                width: 132,
+                height: 132,
+                padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(8),
@@ -655,92 +700,478 @@ class _Header extends StatelessWidget {
                     color: Theme.of(context).colorScheme.outlineVariant,
                   ),
                 ),
-                child: Center(
-                  child: PokemonAssetImage(
-                    pokemon: pokemon,
-                    useLargeArtwork: true,
-                    size: 104,
-                  ),
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: PokemonAssetImage(
+                        pokemon: pokemon,
+                        useLargeArtwork: true,
+                        size: 112,
+                      ),
+                    ),
+                    Text(
+                      '$number ${pokemon.name}',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 8),
               Expanded(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Text(
                       pokemon.name.toUpperCase(),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.headlineSmall,
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                        fontWeight: FontWeight.w900,
+                        height: 0.95,
+                      ),
                     ),
-                    const SizedBox(height: 2),
-                    Wrap(
-                      spacing: 6,
-                      runSpacing: 6,
-                      crossAxisAlignment: WrapCrossAlignment.center,
+                    const SizedBox(height: 6),
+                    _LoyaltyRow(),
+                    const SizedBox(height: 6),
+                    Row(
                       children: [
-                        Text(number),
-                        for (final type in pokemon.types)
-                          PokemonTypeBadge(type: type, height: 24),
+                        Expanded(child: _FightMetric(label: 'Lv.', value: '$level')),
+                        const SizedBox(width: 6),
+                        Expanded(child: _FightMetric(label: 'AC:', value: '$armorClass')),
                       ],
                     ),
-                    const SizedBox(height: 8),
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: [
-                        _Pill(label: 'Lv.', value: '$level'),
-                        _Pill(label: 'AC', value: '$armorClass'),
-                        _Pill(
-                          label: 'HP',
-                          value: '$currentHp/${pokemon.hitPoints}',
-                        ),
-                        _Pill(label: 'SR', value: pokemon.sr.toString()),
-                      ],
+                    const SizedBox(height: 6),
+                    InkWell(
+                      onTap: isPartyMode ? onEditExperience : null,
+                      borderRadius: BorderRadius.circular(8),
+                      child: _ProgressPanel(
+                        label: 'EXP: $experience/$nextThreshold',
+                        value: progress,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
                     ),
                   ],
                 ),
               ),
             ],
           ),
-          if (isPartyMode) ...[
-            const SizedBox(height: 12),
-            InkWell(
-              onTap: onEditExperience,
-              borderRadius: BorderRadius.circular(8),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+          const SizedBox(height: 8),
+          _FightStatsGrid(
+            attributes: attributes,
+            modifierBuilder: modifierBuilder,
+          ),
+          const SizedBox(height: 4),
+          _SavingThrowsRow(
+            attributes: attributes,
+            savingThrows: pokemon.savingThrows,
+            modifierBuilder: modifierBuilder,
+            proficiency: proficiency,
+          ),
+          const SizedBox(height: 6),
+          Row(
+            children: [
+              Expanded(
+                child: _FightPanelButton(label: '+ ADD STATUS EFFECTS'),
+              ),
+              const SizedBox(width: 6),
+              Expanded(child: _FightPanelButton(label: 'ITEM: $itemLabel')),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              _FightIconButton(icon: Icons.remove, onPressed: onDecreaseHp),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Row(
                   children: [
                     Text(
-                      'EXP: $experience/$nextThreshold',
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(fontWeight: FontWeight.bold),
+                      'HP: $currentHp/$maxHp',
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.w800,
+                      ),
                     ),
-                    const SizedBox(height: 6),
-                    LinearProgressIndicator(value: progress),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(999),
+                        child: LinearProgressIndicator(
+                          value: hpProgress,
+                          minHeight: 16,
+                          color: const Color(0xFF43BE38),
+                          backgroundColor: const Color(0xFFE4E4E4),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
-            ),
-            if (canEvolve && evolutionLabel != null) ...[
-              const SizedBox(height: 10),
-              SizedBox(
-                width: double.infinity,
-                child: FilledButton(
-                  onPressed: onEvolve,
-                  child: Text(evolutionLabel!),
-                ),
-              ),
+              const SizedBox(width: 8),
+              _FightIconButton(icon: Icons.add, onPressed: onIncreaseHp),
             ],
+          ),
+          if (isPartyMode && canEvolve && evolutionLabel != null) ...[
+            const SizedBox(height: 8),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton(onPressed: onEvolve, child: Text(evolutionLabel!)),
+            ),
           ],
         ],
       ),
     );
   }
 }
+
+class _SleepMarker extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 46,
+      height: 132,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+      ),
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'Z',
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.primary,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              'Z',
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.78),
+                fontWeight: FontWeight.w900,
+                fontSize: 12,
+              ),
+            ),
+            Icon(Icons.nights_stay, color: Theme.of(context).colorScheme.primary),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _LoyaltyRow extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        _FightIconButton(icon: Icons.remove, onPressed: () {}),
+        const SizedBox(width: 6),
+        Expanded(
+          child: Container(
+            height: 36,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: Theme.of(context).colorScheme.outlineVariant,
+              ),
+            ),
+            child: const Text(
+              'LOYALTY: +0',
+              style: TextStyle(fontWeight: FontWeight.w900),
+            ),
+          ),
+        ),
+        const SizedBox(width: 6),
+        _FightIconButton(icon: Icons.add, onPressed: () {}),
+      ],
+    );
+  }
+}
+
+class _FightMetric extends StatelessWidget {
+  const _FightMetric({required this.label, required this.value});
+
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 38,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+      ),
+      child: Text(
+        '$label $value',
+        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+          fontWeight: FontWeight.w900,
+        ),
+      ),
+    );
+  }
+}
+
+class _ProgressPanel extends StatelessWidget {
+  const _ProgressPanel({
+    required this.label,
+    required this.value,
+    required this.color,
+  });
+
+  final String label;
+  final double value;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 42,
+      padding: const EdgeInsets.fromLTRB(8, 5, 8, 6),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: color, width: 1.5),
+      ),
+      child: Column(
+        children: [
+          Text(
+            label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(color: color, fontWeight: FontWeight.w900),
+          ),
+          const SizedBox(height: 4),
+          LinearProgressIndicator(value: value, minHeight: 6),
+        ],
+      ),
+    );
+  }
+}
+
+class _FightStatsGrid extends StatelessWidget {
+  const _FightStatsGrid({
+    required this.attributes,
+    required this.modifierBuilder,
+  });
+
+  final Map<String, int> attributes;
+  final int Function(int score) modifierBuilder;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final compact = constraints.maxWidth < 520;
+        return GridView.count(
+          crossAxisCount: compact ? 3 : 6,
+          childAspectRatio: compact ? 1.85 : 1.18,
+          crossAxisSpacing: 4,
+          mainAxisSpacing: 4,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          children: [
+            for (final entry in attributes.entries)
+              _FightStatBox(
+                label: entry.key,
+                score: entry.value,
+                modifier: modifierBuilder(entry.value),
+              ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _FightStatBox extends StatelessWidget {
+  const _FightStatBox({
+    required this.label,
+    required this.score,
+    required this.modifier,
+  });
+
+  final String label;
+  final int score;
+  final int modifier;
+
+  @override
+  Widget build(BuildContext context) {
+    final muted = Theme.of(context).colorScheme.onSurfaceVariant;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 3),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(label, style: TextStyle(color: muted, fontWeight: FontWeight.w700)),
+              const SizedBox(width: 5),
+              Text('$score', style: const TextStyle(fontWeight: FontWeight.w900)),
+            ],
+          ),
+          Text(
+            _signed(modifier),
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.w900,
+              height: 1,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SavingThrowsRow extends StatelessWidget {
+  const _SavingThrowsRow({
+    required this.attributes,
+    required this.savingThrows,
+    required this.modifierBuilder,
+    required this.proficiency,
+  });
+
+  final Map<String, int> attributes;
+  final List<String> savingThrows;
+  final int Function(int score) modifierBuilder;
+  final int proficiency;
+
+  @override
+  Widget build(BuildContext context) {
+    final labels = attributes.keys.toList();
+
+    return Column(
+      children: [
+        Text(
+          'SAVING THROWS',
+          style: Theme.of(context).textTheme.labelMedium?.copyWith(
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+            fontWeight: FontWeight.w800,
+          ),
+        ),
+        const SizedBox(height: 2),
+        Row(
+          children: [
+            for (final label in labels) ...[
+              Expanded(
+                child: _SaveBox(
+                  value: _savingThrowValue(label),
+                  proficient: _isSavingThrowProficient(label),
+                ),
+              ),
+              if (label != labels.last) const SizedBox(width: 4),
+            ],
+          ],
+        ),
+      ],
+    );
+  }
+
+  int _savingThrowValue(String label) {
+    final base = modifierBuilder(attributes[label] ?? 10);
+    return _isSavingThrowProficient(label) ? base + proficiency : base;
+  }
+
+  bool _isSavingThrowProficient(String label) {
+    return savingThrows.any((save) => save.toUpperCase().contains(label));
+  }
+}
+
+class _SaveBox extends StatelessWidget {
+  const _SaveBox({required this.value, required this.proficient});
+
+  final int value;
+  final bool proficient;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 26,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: proficient
+            ? Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.72)
+            : Colors.white,
+        borderRadius: BorderRadius.circular(5),
+        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+      ),
+      child: Text(
+        _signed(value),
+        style: const TextStyle(fontWeight: FontWeight.w900),
+      ),
+    );
+  }
+}
+
+class _FightPanelButton extends StatelessWidget {
+  const _FightPanelButton({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 36,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+      ),
+      child: Text(
+        label,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: TextStyle(
+          color: label.startsWith('+')
+              ? Theme.of(context).colorScheme.primary
+              : Theme.of(context).colorScheme.onSurface,
+          fontWeight: FontWeight.w900,
+        ),
+      ),
+    );
+  }
+}
+
+class _FightIconButton extends StatelessWidget {
+  const _FightIconButton({required this.icon, required this.onPressed});
+
+  final IconData icon;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 44,
+      height: 44,
+      child: IconButton.filled(
+        padding: EdgeInsets.zero,
+        onPressed: onPressed,
+        icon: Icon(icon, size: 30),
+      ),
+    );
+  }
+}
+
+String _signed(int value) => value >= 0 ? '+$value' : '$value';
 
 class _Pill extends StatelessWidget {
   const _Pill({required this.label, required this.value});

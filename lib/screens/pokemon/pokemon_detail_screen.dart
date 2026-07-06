@@ -34,6 +34,16 @@ class PokemonDetailScreen extends StatefulWidget {
 }
 
 class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
+  static const _statusChoices = [
+    'Asleep',
+    'Burned',
+    'Confused',
+    'Flinched',
+    'Frozen',
+    'Paralyzed',
+    'Poisoned',
+  ];
+
   final MoveRepository _moveRepository = MoveRepository();
   final AbilityRepository _abilityRepository = AbilityRepository();
   final EvolutionRepository _evolutionRepository = EvolutionRepository();
@@ -46,6 +56,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
   Map<String, String> _abilities = {};
   Map<String, String> _featDescriptions = {};
   Map<String, EvolutionData> _evolutions = {};
+  final Map<int, List<String>> _statusEffectsBySlot = {};
   bool _isLoading = true;
 
   bool get _isPartyMode => _teamSlot != null;
@@ -53,6 +64,14 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
   int get _level => _teamSlot == null
       ? _pokemon.minLevelFound
       : LevelProgression.levelFromExperience(_experience);
+  List<String> get _currentStatusEffects {
+    final slot = _teamSlot;
+    if (slot == null) {
+      return const [];
+    }
+    return _statusEffectsBySlot[slot.slotIndex] ?? const [];
+  }
+
   int get _currentHp {
     final savedHp = _teamSlot?.currentHp ?? 0;
     return savedHp <= 0 ? _pokemon.hitPoints : savedHp;
@@ -119,11 +138,10 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
     final names = <String>[];
     names.addAll(pokemon.moves.startingMoves);
 
-    final levelEntries =
-        pokemon.moves.levelMoves.entries
-            .where((entry) => entry.key <= level)
-            .toList()
-          ..sort((a, b) => a.key.compareTo(b.key));
+    final levelEntries = pokemon.moves.levelMoves.entries
+        .where((entry) => entry.key <= level)
+        .toList()
+      ..sort((a, b) => a.key.compareTo(b.key));
 
     for (final entry in levelEntries) {
       names.addAll(entry.value);
@@ -138,10 +156,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
 
   List<String> _selectedMoves() {
     final slot = _teamSlot;
-    if (slot == null) {
-      return _defaultSelectedMoves(_pokemon, _level);
-    }
-    if (slot.selectedMoves.isEmpty) {
+    if (slot == null || slot.selectedMoves.isEmpty) {
       return _defaultSelectedMoves(_pokemon, _level);
     }
     return slot.selectedMoves.take(4).toList();
@@ -217,6 +232,75 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
     widget.onTeamSlotChanged?.call(updatedSlot);
   }
 
+  void _setStatusEffects(List<String> statuses) {
+    final slot = _teamSlot;
+    if (slot == null) {
+      return;
+    }
+
+    setState(() {
+      _statusEffectsBySlot[slot.slotIndex] = statuses;
+    });
+  }
+
+  void _toggleSleepStatus() {
+    final statuses = [..._currentStatusEffects];
+    const sleepStatus = 'Asleep';
+    if (statuses.contains(sleepStatus)) {
+      statuses.remove(sleepStatus);
+    } else {
+      statuses.add(sleepStatus);
+    }
+    _setStatusEffects(statuses);
+  }
+
+  Future<void> _pickStatusEffect() async {
+    if (_teamSlot == null) {
+      return;
+    }
+
+    final current = _currentStatusEffects;
+    final result = await showModalBottomSheet<String>(
+      context: context,
+      builder: (context) => SafeArea(
+        child: ListView(
+          shrinkWrap: true,
+          children: [
+            for (final status in _statusChoices)
+              CheckboxListTile(
+                title: Text(status.toUpperCase()),
+                value: current.contains(status),
+                onChanged: (_) => Navigator.of(context).pop(status),
+              ),
+            if (current.isNotEmpty)
+              ListTile(
+                leading: const Icon(Icons.clear),
+                title: const Text('REMOVE ALL STATUS EFFECTS'),
+                onTap: () => Navigator.of(context).pop('__clear__'),
+              ),
+          ],
+        ),
+      ),
+    );
+
+    if (result == null) {
+      return;
+    }
+
+    if (result == '__clear__') {
+      _setStatusEffects([]);
+      return;
+    }
+
+    final updated = [...current];
+    if (updated.contains(result)) {
+      updated.remove(result);
+    } else {
+      updated.add(result);
+    }
+    _setStatusEffects(updated);
+  }
+
   Future<TeamSlot> _applyLevelUpMoves(
     TeamSlot slot,
     int oldLevel,
@@ -226,11 +310,10 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
         ? _defaultSelectedMoves(_pokemon, oldLevel)
         : slot.selectedMoves.take(4).toList();
 
-    final learnedEntries =
-        _pokemon.moves.levelMoves.entries
-            .where((entry) => entry.key > oldLevel && entry.key <= newLevel)
-            .toList()
-          ..sort((a, b) => a.key.compareTo(b.key));
+    final learnedEntries = _pokemon.moves.levelMoves.entries
+        .where((entry) => entry.key > oldLevel && entry.key <= newLevel)
+        .toList()
+      ..sort((a, b) => a.key.compareTo(b.key));
 
     for (final entry in learnedEntries) {
       for (final move in entry.value) {
@@ -292,15 +375,11 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
         actions: [
           for (final move in selectedMoves)
             TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(move);
-              },
+              onPressed: () => Navigator.of(context).pop(move),
               child: Text('Dimentica $move'),
             ),
           TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
+            onPressed: () => Navigator.of(context).pop(),
             child: Text('Non imparare $newMove'),
           ),
         ],
@@ -312,13 +391,11 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
     if (pokemonId == null) {
       return null;
     }
-
     for (final pokemon in widget.allPokemon) {
       if (pokemon.id == pokemonId) {
         return pokemon;
       }
     }
-
     return null;
   }
 
@@ -328,7 +405,6 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
         return pokemon;
       }
     }
-
     return null;
   }
 
@@ -353,7 +429,6 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
     }
 
     final updatedSlot = result.slot;
-
     setState(() {
       _teamSlot = updatedSlot;
       _replaceTeamSlot(updatedSlot);
@@ -400,6 +475,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
     final evolution = _evolutions[_pokemon.name];
     if (evolution == null ||
         !evolution.canEvolve ||
+        evolution.level == null ||
         _level < evolution.level!) {
       return null;
     }
@@ -473,28 +549,22 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
     final natureScores = PokemonNature.forName(slot?.nature ?? 'No Nature');
 
     return {
-      'STR':
-          pokemon.attributes.strength +
+      'STR': pokemon.attributes.strength +
           (customScores['STR'] ?? 0) +
           (natureScores['STR'] ?? 0),
-      'DEX':
-          pokemon.attributes.dexterity +
+      'DEX': pokemon.attributes.dexterity +
           (customScores['DEX'] ?? 0) +
           (natureScores['DEX'] ?? 0),
-      'CON':
-          pokemon.attributes.constitution +
+      'CON': pokemon.attributes.constitution +
           (customScores['CON'] ?? 0) +
           (natureScores['CON'] ?? 0),
-      'INT':
-          pokemon.attributes.intelligence +
+      'INT': pokemon.attributes.intelligence +
           (customScores['INT'] ?? 0) +
           (natureScores['INT'] ?? 0),
-      'WIS':
-          pokemon.attributes.wisdom +
+      'WIS': pokemon.attributes.wisdom +
           (customScores['WIS'] ?? 0) +
           (natureScores['WIS'] ?? 0),
-      'CHA':
-          pokemon.attributes.charisma +
+      'CHA': pokemon.attributes.charisma +
           (customScores['CHA'] ?? 0) +
           (natureScores['CHA'] ?? 0),
     };
@@ -502,7 +572,6 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
 
   int _bestMoveModifier(MoveData move) {
     final attributes = _attributeScores(_pokemon, _teamSlot);
-
     final modifiers = move.movePowers
         .where(attributes.containsKey)
         .map((power) => _modifier(attributes[power]!))
@@ -576,9 +645,12 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
                     modifierBuilder: _modifier,
                     proficiency: _proficiency(_level),
                     heldItem: _teamSlot?.heldItem,
+                    statusEffects: _currentStatusEffects,
                     onEditExperience: _editExperience,
                     onDecreaseHp: () => _changeHp(-1),
                     onIncreaseHp: () => _changeHp(1),
+                    onToggleSleep: _toggleSleepStatus,
+                    onAddStatusEffect: _pickStatusEffect,
                     canEvolve: _canEvolveCurrentPokemon(),
                     evolutionLabel: _evolutionLabel(),
                     onEvolve: _evolveCurrentPokemon,
@@ -640,9 +712,12 @@ class _Header extends StatelessWidget {
     required this.modifierBuilder,
     required this.proficiency,
     required this.heldItem,
+    required this.statusEffects,
     required this.onEditExperience,
     required this.onDecreaseHp,
     required this.onIncreaseHp,
+    required this.onToggleSleep,
+    required this.onAddStatusEffect,
     required this.canEvolve,
     required this.evolutionLabel,
     required this.onEvolve,
@@ -658,9 +733,12 @@ class _Header extends StatelessWidget {
   final int Function(int score) modifierBuilder;
   final int proficiency;
   final String? heldItem;
+  final List<String> statusEffects;
   final VoidCallback onEditExperience;
   final VoidCallback onDecreaseHp;
   final VoidCallback onIncreaseHp;
+  final VoidCallback onToggleSleep;
+  final VoidCallback onAddStatusEffect;
   final bool canEvolve;
   final String? evolutionLabel;
   final VoidCallback onEvolve;
@@ -679,6 +757,9 @@ class _Header extends StatelessWidget {
     final itemLabel = heldItem == null || heldItem!.trim().isEmpty
         ? 'NONE'
         : heldItem!.toUpperCase();
+    final statusLabel = statusEffects.isEmpty
+        ? '+ ADD STATUS EFFECTS'
+        : statusEffects.map((status) => status.toUpperCase()).join(' / ');
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(8, 8, 8, 6),
@@ -687,7 +768,10 @@ class _Header extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _SleepMarker(),
+              _SleepMarker(
+                isActive: statusEffects.contains('Asleep'),
+                onTap: isPartyMode ? onToggleSleep : null,
+              ),
               const SizedBox(width: 6),
               Container(
                 width: 132,
@@ -714,8 +798,8 @@ class _Header extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        fontWeight: FontWeight.w800,
-                      ),
+                            fontWeight: FontWeight.w800,
+                          ),
                     ),
                   ],
                 ),
@@ -731,18 +815,22 @@ class _Header extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.w900,
-                        height: 0.95,
-                      ),
+                            fontWeight: FontWeight.w900,
+                            height: 0.95,
+                          ),
                     ),
                     const SizedBox(height: 6),
                     _LoyaltyRow(),
                     const SizedBox(height: 6),
                     Row(
                       children: [
-                        Expanded(child: _FightMetric(label: 'Lv.', value: '$level')),
+                        Expanded(
+                          child: _FightMetric(label: 'Lv.', value: '$level'),
+                        ),
                         const SizedBox(width: 6),
-                        Expanded(child: _FightMetric(label: 'AC:', value: '$armorClass')),
+                        Expanded(
+                          child: _FightMetric(label: 'AC:', value: '$armorClass'),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 6),
@@ -776,7 +864,10 @@ class _Header extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: _FightPanelButton(label: '+ ADD STATUS EFFECTS'),
+                child: _FightPanelButton(
+                  label: statusLabel,
+                  onTap: isPartyMode ? onAddStatusEffect : null,
+                ),
               ),
               const SizedBox(width: 6),
               Expanded(child: _FightPanelButton(label: 'ITEM: $itemLabel')),
@@ -793,8 +884,8 @@ class _Header extends StatelessWidget {
                     Text(
                       'HP: $currentHp/$maxHp',
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.w800,
-                      ),
+                            fontWeight: FontWeight.w800,
+                          ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
@@ -819,7 +910,10 @@ class _Header extends StatelessWidget {
             const SizedBox(height: 8),
             SizedBox(
               width: double.infinity,
-              child: FilledButton(onPressed: onEvolve, child: Text(evolutionLabel!)),
+              child: FilledButton(
+                onPressed: onEvolve,
+                child: Text(evolutionLabel!),
+              ),
             ),
           ],
         ],
@@ -829,38 +923,51 @@ class _Header extends StatelessWidget {
 }
 
 class _SleepMarker extends StatelessWidget {
+  const _SleepMarker({required this.isActive, required this.onTap});
+
+  final bool isActive;
+  final VoidCallback? onTap;
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 46,
-      height: 132,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
-      ),
-      child: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              'Z',
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.primary,
-                fontWeight: FontWeight.w900,
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(8),
+      child: Container(
+        width: 46,
+        height: 132,
+        decoration: BoxDecoration(
+          color: isActive ? colorScheme.primaryContainer : Colors.white,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color: isActive ? colorScheme.primary : colorScheme.outlineVariant,
+          ),
+        ),
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Z',
+                style: TextStyle(
+                  color: colorScheme.primary,
+                  fontWeight: FontWeight.w900,
+                ),
               ),
-            ),
-            const SizedBox(height: 2),
-            Text(
-              'Z',
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.78),
-                fontWeight: FontWeight.w900,
-                fontSize: 12,
+              const SizedBox(height: 2),
+              Text(
+                'Z',
+                style: TextStyle(
+                  color: colorScheme.primary.withValues(alpha: 0.78),
+                  fontWeight: FontWeight.w900,
+                  fontSize: 12,
+                ),
               ),
-            ),
-            Icon(Icons.nights_stay, color: Theme.of(context).colorScheme.primary),
-          ],
+              Icon(Icons.nights_stay, color: colorScheme.primary),
+            ],
+          ),
         ),
       ),
     );
@@ -917,8 +1024,8 @@ class _FightMetric extends StatelessWidget {
       child: Text(
         '$label $value',
         style: Theme.of(context).textTheme.titleMedium?.copyWith(
-          fontWeight: FontWeight.w900,
-        ),
+              fontWeight: FontWeight.w900,
+            ),
       ),
     );
   }
@@ -938,8 +1045,8 @@ class _ProgressPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 42,
-      padding: const EdgeInsets.fromLTRB(8, 5, 8, 6),
+      height: 46,
+      padding: const EdgeInsets.fromLTRB(8, 4, 8, 6),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(8),
@@ -947,13 +1054,16 @@ class _ProgressPanel extends StatelessWidget {
       ),
       child: Column(
         children: [
-          Text(
-            label,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(color: color, fontWeight: FontWeight.w900),
+          Expanded(
+            child: Center(
+              child: Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(color: color, fontWeight: FontWeight.w900),
+              ),
+            ),
           ),
-          const SizedBox(height: 4),
           LinearProgressIndicator(value: value, minHeight: 6),
         ],
       ),
@@ -1023,7 +1133,10 @@ class _FightStatBox extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(label, style: TextStyle(color: muted, fontWeight: FontWeight.w700)),
+              Text(
+                label,
+                style: TextStyle(color: muted, fontWeight: FontWeight.w700),
+              ),
               const SizedBox(width: 5),
               Text('$score', style: const TextStyle(fontWeight: FontWeight.w900)),
             ],
@@ -1031,9 +1144,9 @@ class _FightStatBox extends StatelessWidget {
           Text(
             _signed(modifier),
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.w900,
-              height: 1,
-            ),
+                  fontWeight: FontWeight.w900,
+                  height: 1,
+                ),
           ),
         ],
       ),
@@ -1063,9 +1176,9 @@ class _SavingThrowsRow extends StatelessWidget {
         Text(
           'SAVING THROWS',
           style: Theme.of(context).textTheme.labelMedium?.copyWith(
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
-            fontWeight: FontWeight.w800,
-          ),
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                fontWeight: FontWeight.w800,
+              ),
         ),
         const SizedBox(height: 2),
         Row(
@@ -1122,29 +1235,34 @@ class _SaveBox extends StatelessWidget {
 }
 
 class _FightPanelButton extends StatelessWidget {
-  const _FightPanelButton({required this.label});
+  const _FightPanelButton({required this.label, this.onTap});
 
   final String label;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 36,
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
-      ),
-      child: Text(
-        label,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        style: TextStyle(
-          color: label.startsWith('+')
-              ? Theme.of(context).colorScheme.primary
-              : Theme.of(context).colorScheme.onSurface,
-          fontWeight: FontWeight.w900,
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(8),
+      child: Container(
+        height: 36,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+        ),
+        child: Text(
+          label,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+            color: label.startsWith('+')
+                ? Theme.of(context).colorScheme.primary
+                : Theme.of(context).colorScheme.onSurface,
+            fontWeight: FontWeight.w900,
+          ),
         ),
       ),
     );
@@ -1280,7 +1398,7 @@ class _MoveCard extends StatelessWidget {
               Wrap(
                 spacing: 8,
                 children: [
-                  PokemonTypeBadge(type: move.type, height: 24),
+                  Chip(label: Text(move.type)),
                   Chip(label: Text(move.moveTime)),
                 ],
               ),

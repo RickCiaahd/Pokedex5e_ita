@@ -286,7 +286,7 @@ class _TeamSlotCard extends StatelessWidget {
           padding: const EdgeInsets.all(12),
           child: Row(
             children: [
-              _SlotAvatar(slotIndex: slot.slotIndex, hasPokemon: pokemon != null),
+              _SlotAvatar(slotIndex: slot.slotIndex, pokemon: pokemon),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -376,32 +376,35 @@ class _TeamSlotCard extends StatelessWidget {
 enum _SlotAction { change, remove }
 
 class _SlotAvatar extends StatelessWidget {
-  const _SlotAvatar({required this.slotIndex, required this.hasPokemon});
+  const _SlotAvatar({required this.slotIndex, required this.pokemon});
 
   final int slotIndex;
-  final bool hasPokemon;
+  final Pokemon? pokemon;
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final pokemon = this.pokemon;
 
     return Container(
       width: 54,
       height: 54,
       decoration: BoxDecoration(
-        color: hasPokemon ? colorScheme.primary : colorScheme.surfaceContainerHighest,
+        color: pokemon != null
+            ? colorScheme.primaryContainer.withValues(alpha: 0.72)
+            : colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Center(
-        child: hasPokemon
-            ? const Icon(Icons.catching_pokemon, color: Colors.white, size: 30)
-            : Text(
+        child: pokemon == null
+            ? Text(
                 '${slotIndex + 1}',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   color: colorScheme.onSurfaceVariant,
                   fontWeight: FontWeight.w900,
                 ),
-              ),
+              )
+            : PokemonAssetImage(pokemon: pokemon, size: 48),
       ),
     );
   }

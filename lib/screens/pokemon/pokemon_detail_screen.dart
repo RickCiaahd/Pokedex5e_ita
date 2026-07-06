@@ -51,7 +51,7 @@ const _statusEffectInfos = [
   _StatusEffectInfo(
     name: 'Asleep',
     shortLabel: 'SLP',
-    description: 'Incapacitato e trattenuto, tira tutti i tiri salvezza con svantaggio. Dura 3 round: con movimento forzato e alla fine di ogni turno tira 1d20; con 11+ termina.',
+    description: 'Incapacitated and restrained, and rolls all saving throws with disadvantage. Lasts three rounds. When subject to forced movement and at the end of each of its turns, roll a d20. On 11 or higher, the condition ends.',
     assetCandidates: [
       'assets/textures/gui/status/sleep_down.png',
       'assets/textures/gui/status/sleep_up.png',
@@ -60,7 +60,7 @@ const _statusEffectInfos = [
   _StatusEffectInfo(
     name: 'Burned',
     shortLabel: 'BRN',
-    description: 'Tira due volte i danni e prende il risultato piu basso. Finche non guarisce o cade incosciente, subisce danni pari alla competenza alla fine di ogni suo turno.',
+    description: 'Rolls all damage rolls twice and takes the lower result. Until cured or the creature becomes unconscious, it takes an amount of damage equal to its proficiency bonus at the end of each of its turns. Fire-type pokemon are immune to this condition.',
     assetCandidates: [
       'assets/textures/gui/status/burn_down.png',
       'assets/textures/gui/status/burn_up.png',
@@ -69,7 +69,7 @@ const _statusEffectInfos = [
   _StatusEffectInfo(
     name: 'Confused',
     shortLabel: 'CNF',
-    description: 'Non puo usare reazioni. Dura 3 round. All’inizio del turno tira 1d8: 1 colpisce se stesso con Struggle, 2 il bersaglio piu vicino, 3 non agisce, 4-7 agisce normalmente, 8 termina.',
+    description: 'Cannot take reactions. Lasts three rounds. At the start of the creature's turn, roll a d8. 1: The creature takes the Struggle action against itself and automatically hits. 2: The creature takes the Struggle action against the nearest Pokemon target. If there are no valid targets, it takes the Struggle action against itself instead, and hits. 3: The creature doesn't move or take actions. 4-7: The creature chooses its behavior. 8: The condition ends.',
     assetCandidates: [
       'assets/textures/gui/status/confuse_down.png',
       'assets/textures/gui/status/confuse_up.png',
@@ -78,13 +78,13 @@ const _statusEffectInfos = [
   _StatusEffectInfo(
     name: 'Flinched',
     shortLabel: 'FLN',
-    description: 'Svantaggio a tiri per colpire, prove di abilita e tiri salvezza fino alla fine del prossimo turno. Se usa un’azione che richiede un tiro salvezza, i bersagli hanno vantaggio.',
+    description: 'Disadvantage on all attack rolls, ability checks, and saving throws until the end of its next turn. If the creature uses an action that requires a saving throw, the targets have advantage on the roll.',
     assetCandidates: [],
   ),
   _StatusEffectInfo(
     name: 'Frozen',
     shortLabel: 'FRZ',
-    description: 'Incapacitato e trattenuto. Dura 1 ora o finche si libera alla fine del turno con TS FOR CD 10 + competenza di chi lo ha congelato. Termina con danni fuoco o mosse che possono Bruciare.',
+    description: 'Incapacitated and restrained. Lasts 1 hour, or until the creature breaks free at the end of one of its turns with a STR save DC 10 + the proficiency of the creature that caused this condition. Ends if the creature takes fire-type damage or damage from a move that can afflict the Burned status. Ice-type pokemon are immune to this condition.',
     assetCandidates: [
       'assets/textures/gui/status/frozen_down.png',
       'assets/textures/gui/status/frozen_up.png',
@@ -93,7 +93,7 @@ const _statusEffectInfos = [
   _StatusEffectInfo(
     name: 'Paralyzed',
     shortLabel: 'PAR',
-    description: 'Svantaggio ai TS FOR e DES, e velocita dimezzata. All’inizio del turno tira 1d4: con 1 e incapacitato e trattenuto fino all’inizio del prossimo turno.',
+    description: 'Disadvantage on STR and DEX saving throws, and moves at half speed. At the start of its turn, roll a d4. On a 1, the creature is incapacitated and restrained until the start of its next turn. This roll comes before rolls for the Asleep or Confused conditions. Electric-type pokemon are immune to this condition.',
     assetCandidates: [
       'assets/textures/gui/status/paralyze_down.png',
       'assets/textures/gui/status/paralyze_up.png',
@@ -102,7 +102,7 @@ const _statusEffectInfos = [
   _StatusEffectInfo(
     name: 'Poisoned',
     shortLabel: 'PSN',
-    description: 'Svantaggio a tutte le prove di abilita e ai tiri per colpire. Finche non guarisce o cade incosciente, subisce danni pari alla competenza alla fine di ogni suo turno.',
+    description: 'Disadvantage on all ability checks and attack rolls. Until cured or the creature becomes unconscious, it takes an amount of damage equal to its proficiency bonus at the end of each of its turns. Poison- and Steel-type pokemon are immune to this condition.',
     assetCandidates: [
       'assets/textures/gui/status/poisoned_down.png',
       'assets/textures/gui/status/poisoned_up.png',
@@ -388,7 +388,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
                     ),
               ),
             ),
-            for (final info in _statusEffectInfos)
+            for (final info in _statusEffectInfos.where((info) => info.name != 'Flinched'))
               CheckboxListTile(
                 secondary: _StatusIcon(info: info, size: 28),
                 title: Text(info.name.toUpperCase()),

@@ -14,6 +14,8 @@ class TeamSlot {
   final List<String> abilities;
   final List<String> feats;
   final List<String> extraSkills;
+  final List<String> statusConditions;
+  final int loyalty;
   final Map<String, int> customAbilityScores;
 
   TeamSlot({
@@ -30,6 +32,8 @@ class TeamSlot {
     this.abilities = const [],
     this.feats = const [],
     this.extraSkills = const [],
+    this.statusConditions = const [],
+    this.loyalty = 0,
     this.customAbilityScores = const {},
   });
 
@@ -48,6 +52,8 @@ class TeamSlot {
       'abilities': abilities,
       'feats': feats,
       'extraSkills': extraSkills,
+      'statusConditions': statusConditions,
+      'loyalty': loyalty,
       'customAbilityScores': customAbilityScores,
     };
   }
@@ -67,6 +73,8 @@ class TeamSlot {
       abilities: List<String>.from(json['abilities'] ?? []),
       feats: List<String>.from(json['feats'] ?? []),
       extraSkills: List<String>.from(json['extraSkills'] ?? []),
+      statusConditions: List<String>.from(json['statusConditions'] ?? []),
+      loyalty: json['loyalty'] ?? 0,
       customAbilityScores: Map<String, int>.from(
         json['customAbilityScores'] ?? {},
       ),
@@ -87,6 +95,8 @@ class TeamSlot {
     List<String>? abilities,
     List<String>? feats,
     List<String>? extraSkills,
+    List<String>? statusConditions,
+    int? loyalty,
     Map<String, int>? customAbilityScores,
     bool clearPokemon = false,
   }) {
@@ -108,6 +118,8 @@ class TeamSlot {
       abilities: abilities ?? this.abilities,
       feats: feats ?? this.feats,
       extraSkills: extraSkills ?? this.extraSkills,
+      statusConditions: statusConditions ?? this.statusConditions,
+      loyalty: loyalty ?? this.loyalty,
       customAbilityScores: customAbilityScores ?? this.customAbilityScores,
     );
   }

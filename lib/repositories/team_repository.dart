@@ -51,8 +51,11 @@ class TeamRepository {
           gender: changedPokemon ? null : slot.gender,
           nature: changedPokemon ? 'No Nature' : slot.nature,
           heldItem: changedPokemon ? null : slot.heldItem,
+          abilities: changedPokemon ? [] : slot.abilities,
           feats: changedPokemon ? [] : slot.feats,
           extraSkills: changedPokemon ? [] : slot.extraSkills,
+          statusConditions: changedPokemon ? [] : slot.statusConditions,
+          loyalty: changedPokemon ? 0 : slot.loyalty,
           customAbilityScores: changedPokemon ? {} : slot.customAbilityScores,
         );
       }

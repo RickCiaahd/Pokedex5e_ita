@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 
 import '../../models/pokemon.dart';
+import '../../models/pokemon_loyalty.dart';
 import '../../models/pokemon_nature.dart';
 import '../../models/team_slot.dart';
 import '../../repositories/ability_repository.dart';
 import '../../repositories/feat_repository.dart';
 import '../../repositories/item_repository.dart';
+import '../../widgets/pokemon/pokemon_status_icon.dart';
 
 class PokemonEditResult {
   const PokemonEditResult({required this.slot});
@@ -18,11 +20,13 @@ class PokemonEditScreen extends StatefulWidget {
     super.key,
     required this.pokemon,
     required this.slot,
+    required this.level,
     required this.availableMoves,
   });
 
   final Pokemon pokemon;
   final TeamSlot slot;
+  final int level;
   final List<String> availableMoves;
 
   @override
@@ -63,7 +67,9 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
   late List<String> _abilities;
   late List<String> _feats;
   late List<String> _extraSkills;
+  late List<String> _statusConditions;
   late String? _heldItem;
+  late int _loyalty;
   late Map<String, int> _customAbilityScores;
   Map<String, String> _abilityDescriptions = {};
   Map<String, String> _featDescriptions = {};
@@ -72,6 +78,8 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
   bool _abilitiesOpen = false;
   bool _featsOpen = false;
   bool _skillsOpen = false;
+  bool _statusOpen = false;
+  bool _loyaltyOpen = false;
   bool _heldItemOpen = false;
   bool _extraAsiOpen = false;
   bool _isLoadingChoices = true;
@@ -91,7 +99,11 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
     _abilities = _normalizedAbilities(widget.slot.abilities);
     _feats = [...widget.slot.feats];
     _extraSkills = [...widget.slot.extraSkills];
+    _statusConditions = _normalizedStatusConditions(
+      widget.slot.statusConditions,
+    );
     _heldItem = widget.slot.heldItem;
+    _loyalty = PokemonLoyalty.clamp(widget.slot.loyalty);
     _customAbilityScores = {
       'STR': 0,
       'DEX': 0,
@@ -137,6 +149,13 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
     final selected = abilities.where((ability) => ability.trim().isNotEmpty);
     final fallback = widget.pokemon.abilities;
     return _unique(selected.isEmpty ? fallback : selected).take(2).toList();
+  }
+
+  List<String> _normalizedStatusConditions(List<String> conditions) {
+    final allowed = PokemonStatusConditions.all
+        .map((condition) => condition.key)
+        .toSet();
+    return _unique(conditions.where(allowed.contains)).toList();
   }
 
   List<String> _availableAbilities() {
@@ -188,11 +207,23 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
 
   TeamSlot _updatedSlot() {
     final nickname = _nicknameController.text.trim();
+    final oldMaxHp = widget.pokemon.hitPoints +
+        PokemonLoyalty.hitPointBonus(
+          level: widget.level,
+          loyalty: widget.slot.loyalty,
+        );
+    final newMaxHp = widget.pokemon.hitPoints +
+        PokemonLoyalty.hitPointBonus(level: widget.level, loyalty: _loyalty);
+    final currentHp =
+        widget.slot.currentHp <= 0 ? oldMaxHp : widget.slot.currentHp;
+    final updatedCurrentHp =
+        currentHp >= oldMaxHp ? newMaxHp : currentHp.clamp(0, newMaxHp).toInt();
 
     return widget.slot.copyWith(
       nickname: nickname.isEmpty || nickname == widget.pokemon.name
           ? null
           : nickname,
+      currentHp: updatedCurrentHp,
       isShiny: _isShiny,
       gender: _gender,
       nature: _nature,
@@ -201,6 +232,8 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
       abilities: _normalizedAbilities(_abilities),
       feats: _feats,
       extraSkills: _extraSkills,
+      statusConditions: _normalizedStatusConditions(_statusConditions),
+      loyalty: _loyalty,
       customAbilityScores: Map<String, int>.from(_customAbilityScores)
         ..removeWhere((_, value) => value == 0),
     );
@@ -283,7 +316,7 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
     final result = await Navigator.of(context).push<String>(
       MaterialPageRoute(
         builder: (_) => _ChoicePickerScreen(
-          title: 'Scegli abilita',
+          title: 'Scegli abilità',
           options: _availableAbilities(),
           blockedOptions: blocked,
           descriptions: _abilityDescriptions,
@@ -350,6 +383,22 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
     setState(
       () => _heldItem = result == _ChoicePickerScreen.noneValue ? null : result,
     );
+  }
+
+  void _toggleStatusCondition(String key) {
+    setState(() {
+      if (_statusConditions.contains(key)) {
+        _statusConditions.remove(key);
+      } else {
+        _statusConditions = [..._statusConditions, key];
+      }
+    });
+  }
+
+  void _changeLoyalty(int delta) {
+    setState(() {
+      _loyalty = PokemonLoyalty.clamp(_loyalty + delta);
+    });
   }
 
   @override
@@ -454,7 +503,7 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
                   ),
                 ),
                 _CollapsibleEditSection(
-                  title: 'Abilities',
+                  title: 'Abilità',
                   isOpen: _abilitiesOpen,
                   onToggle: () =>
                       setState(() => _abilitiesOpen = !_abilitiesOpen),
@@ -494,6 +543,27 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
                     onRemove: (index) {
                       setState(() => _extraSkills.removeAt(index));
                     },
+                  ),
+                ),
+                _CollapsibleEditSection(
+                  title: 'Status',
+                  isOpen: _statusOpen,
+                  onToggle: () => setState(() => _statusOpen = !_statusOpen),
+                  child: _StatusToggleGrid(
+                    selectedConditions: _statusConditions.toSet(),
+                    onToggle: _toggleStatusCondition,
+                  ),
+                ),
+                _CollapsibleEditSection(
+                  title: 'Lealtà',
+                  isOpen: _loyaltyOpen,
+                  onToggle: () =>
+                      setState(() => _loyaltyOpen = !_loyaltyOpen),
+                  child: _LoyaltyEditor(
+                    loyalty: _loyalty,
+                    level: widget.level,
+                    onDecrease: () => _changeLoyalty(-1),
+                    onIncrease: () => _changeLoyalty(1),
                   ),
                 ),
                 _CollapsibleEditSection(
@@ -698,6 +768,97 @@ class _SingleSlot extends StatelessWidget {
             ),
           ),
       ],
+    );
+  }
+}
+
+class _StatusToggleGrid extends StatelessWidget {
+  const _StatusToggleGrid({
+    required this.selectedConditions,
+    required this.onToggle,
+  });
+
+  final Set<String> selectedConditions;
+  final ValueChanged<String> onToggle;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        for (final condition in PokemonStatusConditions.all)
+          _StatusToggleButton(
+            condition: condition,
+            selected: selectedConditions.contains(condition.key),
+            onTap: () => onToggle(condition.key),
+          ),
+      ],
+    );
+  }
+}
+
+class _StatusToggleButton extends StatelessWidget {
+  const _StatusToggleButton({
+    required this.condition,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final PokemonStatusCondition condition;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: ListTile(
+        onTap: onTap,
+        leading: PokemonStatusIcon(condition: condition, selected: selected),
+        title: Text(
+          condition.label,
+          style: TextStyle(fontWeight: selected ? FontWeight.bold : null),
+        ),
+        subtitle: Text(condition.description),
+        trailing: Icon(
+          selected ? Icons.check_circle : Icons.radio_button_unchecked,
+          color: selected
+              ? Theme.of(context).colorScheme.primary
+              : Theme.of(context).colorScheme.outline,
+        ),
+      ),
+    );
+  }
+}
+
+class _LoyaltyEditor extends StatelessWidget {
+  const _LoyaltyEditor({
+    required this.loyalty,
+    required this.level,
+    required this.onDecrease,
+    required this.onIncrease,
+  });
+
+  final int loyalty;
+  final int level;
+  final VoidCallback onDecrease;
+  final VoidCallback onIncrease;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: ListTile(
+        title: const Text('LEALTÀ'),
+        subtitle: Text(PokemonLoyalty.summary(level: level, loyalty: loyalty)),
+        leading: IconButton(
+          tooltip: 'Diminuisci lealtà',
+          onPressed: loyalty <= PokemonLoyalty.min ? null : onDecrease,
+          icon: const Icon(Icons.remove_circle_outline),
+        ),
+        trailing: IconButton(
+          tooltip: 'Aumenta lealtà',
+          onPressed: loyalty >= PokemonLoyalty.max ? null : onIncrease,
+          icon: const Icon(Icons.add_circle_outline),
+        ),
+      ),
     );
   }
 }

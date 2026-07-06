@@ -382,6 +382,9 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
     if (shouldHeal != true) {
       return;
     }
+    if (!mounted) {
+      return;
+    }
 
     _saveTeamSlot(
       slot.copyWith(

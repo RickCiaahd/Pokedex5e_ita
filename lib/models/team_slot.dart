@@ -16,6 +16,7 @@ class TeamSlot {
   final List<String> extraSkills;
   final List<String> statusEffects;
   final Map<String, int> customAbilityScores;
+  final int loyalty;
 
   TeamSlot({
     required this.slotIndex,
@@ -33,6 +34,7 @@ class TeamSlot {
     this.extraSkills = const [],
     this.statusEffects = const [],
     this.customAbilityScores = const {},
+    this.loyalty = 0,
   });
 
   Map<String, dynamic> toJson() {
@@ -52,6 +54,7 @@ class TeamSlot {
       'extraSkills': extraSkills,
       'statusEffects': statusEffects,
       'customAbilityScores': customAbilityScores,
+      'loyalty': loyalty,
     };
   }
 
@@ -74,6 +77,7 @@ class TeamSlot {
       customAbilityScores: Map<String, int>.from(
         json['customAbilityScores'] ?? {},
       ),
+      loyalty: json['loyalty'] ?? 0,
     );
   }
 
@@ -93,6 +97,7 @@ class TeamSlot {
     List<String>? extraSkills,
     List<String>? statusEffects,
     Map<String, int>? customAbilityScores,
+    int? loyalty,
     bool clearPokemon = false,
   }) {
     return TeamSlot(
@@ -115,6 +120,7 @@ class TeamSlot {
       extraSkills: extraSkills ?? this.extraSkills,
       statusEffects: statusEffects ?? this.statusEffects,
       customAbilityScores: customAbilityScores ?? this.customAbilityScores,
+      loyalty: loyalty ?? this.loyalty,
     );
   }
 }

@@ -1,0 +1,41 @@
+name: Fix Pokemon Center mounted guard
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  apply-fix:
+    if: ${{ github.actor != 'github-actions[bot]' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Apply mounted guard fix
+        shell: bash
+        run: |
+          git apply <<'PATCH'
+          diff --git a/lib/screens/pokemon/pokemon_detail_screen.dart b/lib/screens/pokemon/pokemon_detail_screen.dart
+          --- a/lib/screens/pokemon/pokemon_detail_screen.dart
+          +++ b/lib/screens/pokemon/pokemon_detail_screen.dart
+          @@ -382,6 +382,9 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
+               if (shouldHeal != true) {
+                 return;
+               }
+          +    if (!mounted) {
+          +      return;
+          +    }
+           
+               _saveTeamSlot(
+                 slot.copyWith(
+          PATCH
+          rm -f .github/workflows/fix-pokemon-center-mounted.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add lib/screens/pokemon/pokemon_detail_screen.dart .github/workflows/fix-pokemon-center-mounted.yml
+          git commit -m "Guard Pokemon Center dialog context"
+          git push

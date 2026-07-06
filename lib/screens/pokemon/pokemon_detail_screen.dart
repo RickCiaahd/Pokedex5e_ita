@@ -69,7 +69,7 @@ const _statusEffectInfos = [
   _StatusEffectInfo(
     name: 'Confused',
     shortLabel: 'CNF',
-    description: 'Cannot take reactions. Lasts three rounds. At the start of the creature's turn, roll a d8. 1: The creature takes the Struggle action against itself and automatically hits. 2: The creature takes the Struggle action against the nearest Pokemon target. If there are no valid targets, it takes the Struggle action against itself instead, and hits. 3: The creature doesn't move or take actions. 4-7: The creature chooses its behavior. 8: The condition ends.',
+    description: "Cannot take reactions. Lasts three rounds. At the start of the creature's turn, roll a d8. 1: The creature takes the Struggle action against itself and automatically hits. 2: The creature takes the Struggle action against the nearest Pokemon target. If there are no valid targets, it takes the Struggle action against itself instead, and hits. 3: The creature doesn't move or take actions. 4-7: The creature chooses its behavior. 8: The condition ends.",
     assetCandidates: [
       'assets/textures/gui/status/confuse_down.png',
       'assets/textures/gui/status/confuse_up.png',

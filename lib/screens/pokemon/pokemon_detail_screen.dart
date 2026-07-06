@@ -1751,7 +1751,7 @@ class _MoveCard extends StatelessWidget {
               Wrap(
                 spacing: 8,
                 children: [
-                  Chip(label: Text(move.type)),
+                  PokemonTypeBadge(type: move.type, height: 24),
                   Chip(label: Text(move.moveTime)),
                 ],
               ),

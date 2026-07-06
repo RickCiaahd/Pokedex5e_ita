@@ -1173,18 +1173,6 @@ class _FightIconButton extends StatelessWidget {
 
 String _signed(int value) => value >= 0 ? '+$value' : '$value';
 
-class _Pill extends StatelessWidget {
-  const _Pill({required this.label, required this.value});
-
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    return Chip(label: Text('$label $value'));
-  }
-}
-
 class _MovesView extends StatelessWidget {
   const _MovesView({
     required this.selectedMoves,

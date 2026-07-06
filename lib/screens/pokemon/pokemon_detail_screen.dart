@@ -33,17 +33,119 @@ class PokemonDetailScreen extends StatefulWidget {
   State<PokemonDetailScreen> createState() => _PokemonDetailScreenState();
 }
 
-class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
-  static const _statusChoices = [
-    'Asleep',
-    'Burned',
-    'Confused',
-    'Flinched',
-    'Frozen',
-    'Paralyzed',
-    'Poisoned',
-  ];
+class _StatusEffectInfo {
+  const _StatusEffectInfo({
+    required this.name,
+    required this.shortLabel,
+    required this.description,
+    required this.assetCandidates,
+  });
 
+  final String name;
+  final String shortLabel;
+  final String description;
+  final List<String> assetCandidates;
+}
+
+const _statusEffectInfos = [
+  _StatusEffectInfo(
+    name: 'Asleep',
+    shortLabel: 'SLP',
+    description: 'The Pokemon is asleep and cannot act until it wakes up. Pokemon Center removes this status.',
+    assetCandidates: [
+      'assets/textures/gui/status/asleep.png',
+      'assets/textures/gui/status/Asleep.png',
+      'assets/textures/gui/status/sleep.png',
+      'assets/textures/gui/status/Sleep.png',
+      'assets/textures/gui/status/slp.png',
+      'assets/textures/gui/status/SLP.png',
+    ],
+  ),
+  _StatusEffectInfo(
+    name: 'Burned',
+    shortLabel: 'BRN',
+    description: 'The Pokemon is burned. Track the burn penalty and recurring burn damage according to the move or rule that caused it.',
+    assetCandidates: [
+      'assets/textures/gui/status/burned.png',
+      'assets/textures/gui/status/Burned.png',
+      'assets/textures/gui/status/burn.png',
+      'assets/textures/gui/status/Burn.png',
+      'assets/textures/gui/status/brn.png',
+      'assets/textures/gui/status/BRN.png',
+    ],
+  ),
+  _StatusEffectInfo(
+    name: 'Confused',
+    shortLabel: 'CNF',
+    description: 'The Pokemon is confused. Check confusion before it acts and resolve the effect that caused the condition.',
+    assetCandidates: [
+      'assets/textures/gui/status/confused.png',
+      'assets/textures/gui/status/Confused.png',
+      'assets/textures/gui/status/confusion.png',
+      'assets/textures/gui/status/Confusion.png',
+      'assets/textures/gui/status/cnf.png',
+      'assets/textures/gui/status/CNF.png',
+    ],
+  ),
+  _StatusEffectInfo(
+    name: 'Flinched',
+    shortLabel: 'FLN',
+    description: 'The Pokemon flinched and should lose the action or reaction specified by the effect that caused it.',
+    assetCandidates: [
+      'assets/textures/gui/status/flinched.png',
+      'assets/textures/gui/status/Flinched.png',
+      'assets/textures/gui/status/flinch.png',
+      'assets/textures/gui/status/Flinch.png',
+      'assets/textures/gui/status/fln.png',
+      'assets/textures/gui/status/FLN.png',
+    ],
+  ),
+  _StatusEffectInfo(
+    name: 'Frozen',
+    shortLabel: 'FRZ',
+    description: 'The Pokemon is frozen and cannot move normally until thawed or removed by an effect such as Pokemon Center.',
+    assetCandidates: [
+      'assets/textures/gui/status/frozen.png',
+      'assets/textures/gui/status/Frozen.png',
+      'assets/textures/gui/status/freeze.png',
+      'assets/textures/gui/status/Freeze.png',
+      'assets/textures/gui/status/frz.png',
+      'assets/textures/gui/status/FRZ.png',
+    ],
+  ),
+  _StatusEffectInfo(
+    name: 'Paralyzed',
+    shortLabel: 'PAR',
+    description: 'The Pokemon is paralyzed. Track the speed, action, or saving throw limits from the source of paralysis.',
+    assetCandidates: [
+      'assets/textures/gui/status/paralyzed.png',
+      'assets/textures/gui/status/Paralyzed.png',
+      'assets/textures/gui/status/paralysis.png',
+      'assets/textures/gui/status/Paralysis.png',
+      'assets/textures/gui/status/par.png',
+      'assets/textures/gui/status/PAR.png',
+    ],
+  ),
+  _StatusEffectInfo(
+    name: 'Poisoned',
+    shortLabel: 'PSN',
+    description: 'The Pokemon is poisoned. Track the poison damage or disadvantage from the effect that applied it.',
+    assetCandidates: [
+      'assets/textures/gui/status/poisoned.png',
+      'assets/textures/gui/status/Poisoned.png',
+      'assets/textures/gui/status/poison.png',
+      'assets/textures/gui/status/Poison.png',
+      'assets/textures/gui/status/psn.png',
+      'assets/textures/gui/status/PSN.png',
+    ],
+  ),
+];
+
+Map<String, _StatusEffectInfo> get _statusEffectInfoByName => {
+      for (final info in _statusEffectInfos) info.name: info,
+    };
+
+class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
   final MoveRepository _moveRepository = MoveRepository();
   final AbilityRepository _abilityRepository = AbilityRepository();
   final EvolutionRepository _evolutionRepository = EvolutionRepository();
@@ -56,7 +158,6 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
   Map<String, String> _abilities = {};
   Map<String, String> _featDescriptions = {};
   Map<String, EvolutionData> _evolutions = {};
-  final Map<int, List<String>> _statusEffectsBySlot = {};
   bool _isLoading = true;
 
   bool get _isPartyMode => _teamSlot != null;
@@ -64,13 +165,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
   int get _level => _teamSlot == null
       ? _pokemon.minLevelFound
       : LevelProgression.levelFromExperience(_experience);
-  List<String> get _currentStatusEffects {
-    final slot = _teamSlot;
-    if (slot == null) {
-      return const [];
-    }
-    return _statusEffectsBySlot[slot.slotIndex] ?? const [];
-  }
+  List<String> get _currentStatusEffects => _teamSlot?.statusEffects ?? const [];
 
   int get _currentHp {
     final savedHp = _teamSlot?.currentHp ?? 0;
@@ -104,6 +199,14 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
     }
 
     _team = [..._team]..[index] = updatedSlot;
+  }
+
+  void _saveTeamSlot(TeamSlot updatedSlot) {
+    setState(() {
+      _teamSlot = updatedSlot;
+      _replaceTeamSlot(updatedSlot);
+    });
+    widget.onTeamSlotChanged?.call(updatedSlot);
   }
 
   Future<void> _loadData() async {
@@ -208,11 +311,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
       updatedSlot = await _applyLevelUpMoves(updatedSlot, oldLevel, newLevel);
     }
 
-    setState(() {
-      _teamSlot = updatedSlot;
-      _replaceTeamSlot(updatedSlot);
-    });
-    widget.onTeamSlotChanged?.call(updatedSlot);
+    _saveTeamSlot(updatedSlot);
   }
 
   void _changeHp(int delta) {
@@ -223,13 +322,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
 
     final maxHp = _pokemon.hitPoints;
     final updatedHp = (_currentHp + delta).clamp(0, maxHp).toInt();
-    final updatedSlot = slot.copyWith(currentHp: updatedHp);
-
-    setState(() {
-      _teamSlot = updatedSlot;
-      _replaceTeamSlot(updatedSlot);
-    });
-    widget.onTeamSlotChanged?.call(updatedSlot);
+    _saveTeamSlot(slot.copyWith(currentHp: updatedHp));
   }
 
   void _setStatusEffects(List<String> statuses) {
@@ -237,21 +330,24 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
     if (slot == null) {
       return;
     }
-
-    setState(() {
-      _statusEffectsBySlot[slot.slotIndex] = statuses;
-    });
+    _saveTeamSlot(slot.copyWith(statusEffects: statuses));
   }
 
-  void _toggleSleepStatus() {
-    final statuses = [..._currentStatusEffects];
-    const sleepStatus = 'Asleep';
-    if (statuses.contains(sleepStatus)) {
-      statuses.remove(sleepStatus);
-    } else {
-      statuses.add(sleepStatus);
+  void _usePokemonCenter() {
+    final slot = _teamSlot;
+    if (slot == null) {
+      return;
     }
-    _setStatusEffects(statuses);
+
+    _saveTeamSlot(
+      slot.copyWith(
+        currentHp: _pokemon.hitPoints,
+        statusEffects: const [],
+      ),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('${_pokemon.name} healed at the Pokemon Center.')),
+    );
   }
 
   Future<void> _pickStatusEffect() async {
@@ -262,15 +358,28 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
     final current = _currentStatusEffects;
     final result = await showModalBottomSheet<String>(
       context: context,
+      showDragHandle: true,
       builder: (context) => SafeArea(
         child: ListView(
           shrinkWrap: true,
+          padding: const EdgeInsets.only(bottom: 12),
           children: [
-            for (final status in _statusChoices)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 10),
+              child: Text(
+                'ADD STATUS EFFECT',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w900,
+                    ),
+              ),
+            ),
+            for (final info in _statusEffectInfos)
               CheckboxListTile(
-                title: Text(status.toUpperCase()),
-                value: current.contains(status),
-                onChanged: (_) => Navigator.of(context).pop(status),
+                secondary: _StatusIcon(info: info, size: 28),
+                title: Text(info.name.toUpperCase()),
+                subtitle: Text(info.description),
+                value: current.contains(info.name),
+                onChanged: (_) => Navigator.of(context).pop(info.name),
               ),
             if (current.isNotEmpty)
               ListTile(
@@ -320,7 +429,6 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
         if (selectedMoves.contains(move)) {
           continue;
         }
-
         if (selectedMoves.length < 4) {
           selectedMoves.add(move);
           continue;
@@ -428,12 +536,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
       return;
     }
 
-    final updatedSlot = result.slot;
-    setState(() {
-      _teamSlot = updatedSlot;
-      _replaceTeamSlot(updatedSlot);
-    });
-    widget.onTeamSlotChanged?.call(updatedSlot);
+    _saveTeamSlot(result.slot);
     await _loadData();
   }
 
@@ -649,7 +752,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
                     onEditExperience: _editExperience,
                     onDecreaseHp: () => _changeHp(-1),
                     onIncreaseHp: () => _changeHp(1),
-                    onToggleSleep: _toggleSleepStatus,
+                    onPokemonCenter: _usePokemonCenter,
                     onAddStatusEffect: _pickStatusEffect,
                     canEvolve: _canEvolveCurrentPokemon(),
                     evolutionLabel: _evolutionLabel(),
@@ -716,7 +819,7 @@ class _Header extends StatelessWidget {
     required this.onEditExperience,
     required this.onDecreaseHp,
     required this.onIncreaseHp,
-    required this.onToggleSleep,
+    required this.onPokemonCenter,
     required this.onAddStatusEffect,
     required this.canEvolve,
     required this.evolutionLabel,
@@ -737,7 +840,7 @@ class _Header extends StatelessWidget {
   final VoidCallback onEditExperience;
   final VoidCallback onDecreaseHp;
   final VoidCallback onIncreaseHp;
-  final VoidCallback onToggleSleep;
+  final VoidCallback onPokemonCenter;
   final VoidCallback onAddStatusEffect;
   final bool canEvolve;
   final String? evolutionLabel;
@@ -757,9 +860,6 @@ class _Header extends StatelessWidget {
     final itemLabel = heldItem == null || heldItem!.trim().isEmpty
         ? 'NONE'
         : heldItem!.toUpperCase();
-    final statusLabel = statusEffects.isEmpty
-        ? '+ ADD STATUS EFFECTS'
-        : statusEffects.map((status) => status.toUpperCase()).join(' / ');
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(8, 8, 8, 6),
@@ -768,9 +868,8 @@ class _Header extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _SleepMarker(
-                isActive: statusEffects.contains('Asleep'),
-                onTap: isPartyMode ? onToggleSleep : null,
+              _PokemonCenterButton(
+                onTap: isPartyMode ? onPokemonCenter : null,
               ),
               const SizedBox(width: 6),
               Container(
@@ -864,8 +963,8 @@ class _Header extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: _FightPanelButton(
-                  label: statusLabel,
+                child: _StatusPanelButton(
+                  statuses: statusEffects,
                   onTap: isPartyMode ? onAddStatusEffect : null,
                 ),
               ),
@@ -922,16 +1021,14 @@ class _Header extends StatelessWidget {
   }
 }
 
-class _SleepMarker extends StatelessWidget {
-  const _SleepMarker({required this.isActive, required this.onTap});
+class _PokemonCenterButton extends StatelessWidget {
+  const _PokemonCenterButton({required this.onTap});
 
-  final bool isActive;
   final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(8),
@@ -939,35 +1036,27 @@ class _SleepMarker extends StatelessWidget {
         width: 46,
         height: 132,
         decoration: BoxDecoration(
-          color: isActive ? colorScheme.primaryContainer : Colors.white,
+          color: Colors.white,
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(
-            color: isActive ? colorScheme.primary : colorScheme.outlineVariant,
-          ),
+          border: Border.all(color: colorScheme.outlineVariant),
         ),
-        child: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'Z',
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.local_hospital, color: colorScheme.primary),
+            const SizedBox(height: 6),
+            RotatedBox(
+              quarterTurns: 3,
+              child: Text(
+                'CENTER',
                 style: TextStyle(
                   color: colorScheme.primary,
                   fontWeight: FontWeight.w900,
+                  fontSize: 11,
                 ),
               ),
-              const SizedBox(height: 2),
-              Text(
-                'Z',
-                style: TextStyle(
-                  color: colorScheme.primary.withValues(alpha: 0.78),
-                  fontWeight: FontWeight.w900,
-                  fontSize: 12,
-                ),
-              ),
-              Icon(Icons.nights_stay, color: colorScheme.primary),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -1229,6 +1318,130 @@ class _SaveBox extends StatelessWidget {
       child: Text(
         _signed(value),
         style: const TextStyle(fontWeight: FontWeight.w900),
+      ),
+    );
+  }
+}
+
+class _StatusPanelButton extends StatelessWidget {
+  const _StatusPanelButton({required this.statuses, required this.onTap});
+
+  final List<String> statuses;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(8),
+      child: Container(
+        height: 36,
+        alignment: Alignment.center,
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: colorScheme.outlineVariant),
+        ),
+        child: statuses.isEmpty
+            ? Text(
+                '+ ADD STATUS EFFECTS',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: colorScheme.primary,
+                  fontWeight: FontWeight.w900,
+                ),
+              )
+            : Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  for (final status in statuses.take(5)) ...[
+                    _StatusIcon(
+                      info: _statusEffectInfoByName[status],
+                      size: 24,
+                    ),
+                    const SizedBox(width: 4),
+                  ],
+                  if (statuses.length > 5)
+                    Text(
+                      '+${statuses.length - 5}',
+                      style: const TextStyle(fontWeight: FontWeight.w900),
+                    ),
+                ],
+              ),
+      ),
+    );
+  }
+}
+
+class _StatusIcon extends StatelessWidget {
+  const _StatusIcon({required this.info, required this.size});
+
+  final _StatusEffectInfo? info;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    final statusInfo = info;
+    if (statusInfo == null) {
+      return const SizedBox.shrink();
+    }
+
+    return _FallbackAssetIcon(
+      paths: statusInfo.assetCandidates,
+      fallbackLabel: statusInfo.shortLabel,
+      size: size,
+    );
+  }
+}
+
+class _FallbackAssetIcon extends StatelessWidget {
+  const _FallbackAssetIcon({
+    required this.paths,
+    required this.fallbackLabel,
+    required this.size,
+    this.index = 0,
+  });
+
+  final List<String> paths;
+  final String fallbackLabel;
+  final double size;
+  final int index;
+
+  @override
+  Widget build(BuildContext context) {
+    if (index >= paths.length) {
+      return Container(
+        width: size,
+        height: size,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.primaryContainer,
+          borderRadius: BorderRadius.circular(4),
+        ),
+        child: Text(
+          fallbackLabel,
+          style: TextStyle(
+            fontSize: size * 0.32,
+            fontWeight: FontWeight.w900,
+          ),
+        ),
+      );
+    }
+
+    return Image.asset(
+      paths[index],
+      width: size,
+      height: size,
+      fit: BoxFit.contain,
+      errorBuilder: (_, __, ___) => _FallbackAssetIcon(
+        paths: paths,
+        fallbackLabel: fallbackLabel,
+        size: size,
+        index: index + 1,
       ),
     );
   }

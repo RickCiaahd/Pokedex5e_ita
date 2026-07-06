@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 
+import '../../models/move_data.dart';
 import '../../models/pokemon.dart';
 import '../../models/pokemon_nature.dart';
 import '../../models/team_slot.dart';
 import '../../repositories/ability_repository.dart';
 import '../../repositories/feat_repository.dart';
 import '../../repositories/item_repository.dart';
+import '../../repositories/move_repository.dart';
+import '../../widgets/pokemon/pokemon_asset_image.dart';
 
 class PokemonEditResult {
   const PokemonEditResult({required this.slot});
@@ -54,6 +57,7 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
   final AbilityRepository _abilityRepository = AbilityRepository();
   final FeatRepository _featRepository = FeatRepository();
   final ItemRepository _itemRepository = ItemRepository();
+  final MoveRepository _moveRepository = MoveRepository();
 
   late final TextEditingController _nicknameController;
   late bool _isShiny;
@@ -68,6 +72,7 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
   Map<String, String> _abilityDescriptions = {};
   Map<String, String> _featDescriptions = {};
   Map<String, String> _itemDescriptions = {};
+  Map<String, MoveData?> _moveData = {};
   bool _movesOpen = false;
   bool _abilitiesOpen = false;
   bool _featsOpen = false;
@@ -111,20 +116,25 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
   }
 
   Future<void> _loadChoices() async {
-    final results = await Future.wait([
-      _abilityRepository.getAbilityDescriptions(),
-      _featRepository.getFeatDescriptions(),
-      _itemRepository.getItemDescriptions(),
-    ]);
+    final abilityDescriptionsFuture = _abilityRepository.getAbilityDescriptions();
+    final featDescriptionsFuture = _featRepository.getFeatDescriptions();
+    final itemDescriptionsFuture = _itemRepository.getItemDescriptions();
+    final moveDataFuture = _moveRepository.getMoves(_allMoveChoices());
+
+    final abilityDescriptions = await abilityDescriptionsFuture;
+    final featDescriptions = await featDescriptionsFuture;
+    final itemDescriptions = await itemDescriptionsFuture;
+    final moveData = await moveDataFuture;
 
     if (!mounted) {
       return;
     }
 
     setState(() {
-      _abilityDescriptions = results[0];
-      _featDescriptions = results[1];
-      _itemDescriptions = results[2];
+      _abilityDescriptions = abilityDescriptions;
+      _featDescriptions = featDescriptions;
+      _itemDescriptions = itemDescriptions;
+      _moveData = moveData;
       _isLoadingChoices = false;
     });
   }
@@ -226,6 +236,7 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
           tmMoves: _tmMoves(),
           allMoves: _allMoveChoices(),
           blockedMoves: blocked,
+          moveData: _moveData,
         ),
       ),
     );
@@ -443,6 +454,7 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
                   onToggle: () => setState(() => _movesOpen = !_movesOpen),
                   child: _MoveSlotGrid(
                     selectedMoves: _selectedMoves,
+                    moveData: _moveData,
                     onPick: _pickMove,
                     onRemove: (index) {
                       setState(() {
@@ -587,11 +599,13 @@ class _CollapsibleEditSection extends StatelessWidget {
 class _MoveSlotGrid extends StatelessWidget {
   const _MoveSlotGrid({
     required this.selectedMoves,
+    required this.moveData,
     required this.onPick,
     required this.onRemove,
   });
 
   final List<String> selectedMoves;
+  final Map<String, MoveData?> moveData;
   final ValueChanged<int> onPick;
   final ValueChanged<int> onRemove;
 
@@ -609,8 +623,10 @@ class _MoveSlotGrid extends StatelessWidget {
       ),
       itemBuilder: (context, index) {
         final hasMove = index < selectedMoves.length;
+        final moveName = hasMove ? selectedMoves[index] : 'MOVE';
         return _SingleSlot(
-          label: hasMove ? selectedMoves[index] : 'MOVE',
+          label: moveName,
+          type: hasMove ? moveData[moveName]?.type : null,
           onTap: () => onPick(index),
           onRemove: hasMove ? () => onRemove(index) : null,
         );
@@ -660,14 +676,21 @@ class _ChipSlots extends StatelessWidget {
 }
 
 class _SingleSlot extends StatelessWidget {
-  const _SingleSlot({required this.label, required this.onTap, this.onRemove});
+  const _SingleSlot({
+    required this.label,
+    required this.onTap,
+    this.onRemove,
+    this.type,
+  });
 
   final String label;
+  final String? type;
   final VoidCallback onTap;
   final VoidCallback? onRemove;
 
   @override
   Widget build(BuildContext context) {
+    final type = this.type;
     return Stack(
       clipBehavior: Clip.none,
       children: [
@@ -680,10 +703,22 @@ class _SingleSlot extends StatelessWidget {
               borderRadius: BorderRadius.circular(4),
             ),
           ),
-          child: Text(
-            label.toUpperCase(),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (type != null) ...[
+                PokemonTypeBadge(type: type, height: 18),
+                const SizedBox(width: 6),
+              ],
+              Flexible(
+                child: Text(
+                  label.toUpperCase(),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
           ),
         ),
         if (onRemove != null)
@@ -746,6 +781,7 @@ class _MovePickerScreen extends StatefulWidget {
     required this.tmMoves,
     required this.allMoves,
     required this.blockedMoves,
+    required this.moveData,
   });
 
   final List<String> currentLevelMoves;
@@ -753,6 +789,7 @@ class _MovePickerScreen extends StatefulWidget {
   final List<String> tmMoves;
   final List<String> allMoves;
   final Set<String> blockedMoves;
+  final Map<String, MoveData?> moveData;
 
   @override
   State<_MovePickerScreen> createState() => _MovePickerScreenState();
@@ -809,6 +846,7 @@ class _MovePickerScreenState extends State<_MovePickerScreen> {
         for (final move in _activeMoves)
           _PickerTile(
             label: move,
+            type: widget.moveData[move]?.type,
             onTap: () => Navigator.of(context).pop(move),
           ),
         if (_activeMoves.isEmpty)
@@ -966,17 +1004,32 @@ class _FilterButton extends StatelessWidget {
 }
 
 class _PickerTile extends StatelessWidget {
-  const _PickerTile({required this.label, required this.onTap, this.subtitle});
+  const _PickerTile({
+    required this.label,
+    required this.onTap,
+    this.subtitle,
+    this.type,
+  });
 
   final String label;
   final String? subtitle;
+  final String? type;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
+    final type = this.type;
     return Card(
       child: ListTile(
-        leading: const Icon(Icons.radio_button_unchecked),
+        leading: type == null
+            ? const Icon(Icons.radio_button_unchecked)
+            : SizedBox(
+                width: 74,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: PokemonTypeBadge(type: type, height: 22),
+                ),
+              ),
         title: Text(label.toUpperCase()),
         subtitle: subtitle == null || subtitle!.isEmpty
             ? null

@@ -1,0 +1,622 @@
+name: Apply Pokedex detail status fix
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  apply-fix:
+    if: ${{ github.actor != 'github-actions[bot]' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Apply status and Pokemon Center fix
+        shell: bash
+        run: |
+          git apply <<'PATCH'
+          --- a/lib/screens/pokemon/pokemon_detail_screen.dart
+          +++ b/lib/screens/pokemon/pokemon_detail_screen.dart
+          @@ -48,98 +48,133 @@
+           }
+           
+           const _statusEffectInfos = [
+          -  _StatusEffectInfo(
+          -    name: 'Asleep',
+          -    shortLabel: 'SLP',
+          -    description: 'The Pokemon is asleep and cannot act until it wakes up. Pokemon Center removes this status.',
+          -    assetCandidates: [
+          -      'assets/textures/gui/status/asleep.png',
+          -      'assets/textures/gui/status/Asleep.png',
+          -      'assets/textures/gui/status/sleep.png',
+          -      'assets/textures/gui/status/Sleep.png',
+          -      'assets/textures/gui/status/slp.png',
+          -      'assets/textures/gui/status/SLP.png',
+          -    ],
+          -  ),
+          -  _StatusEffectInfo(
+          -    name: 'Burned',
+          -    shortLabel: 'BRN',
+          -    description: 'The Pokemon is burned. Track the burn penalty and recurring burn damage according to the move or rule that caused it.',
+          -    assetCandidates: [
+          -      'assets/textures/gui/status/burned.png',
+          -      'assets/textures/gui/status/Burned.png',
+          -      'assets/textures/gui/status/burn.png',
+          -      'assets/textures/gui/status/Burn.png',
+          -      'assets/textures/gui/status/brn.png',
+          -      'assets/textures/gui/status/BRN.png',
+          -    ],
+          -  ),
+          -  _StatusEffectInfo(
+          -    name: 'Confused',
+          -    shortLabel: 'CNF',
+          -    description: 'The Pokemon is confused. Check confusion before it acts and resolve the effect that caused the condition.',
+          -    assetCandidates: [
+          -      'assets/textures/gui/status/confused.png',
+          -      'assets/textures/gui/status/Confused.png',
+          -      'assets/textures/gui/status/confusion.png',
+          -      'assets/textures/gui/status/Confusion.png',
+          -      'assets/textures/gui/status/cnf.png',
+          -      'assets/textures/gui/status/CNF.png',
+          -    ],
+          -  ),
+          -  _StatusEffectInfo(
+          -    name: 'Flinched',
+          -    shortLabel: 'FLN',
+          -    description: 'The Pokemon flinched and should lose the action or reaction specified by the effect that caused it.',
+          -    assetCandidates: [
+          -      'assets/textures/gui/status/flinched.png',
+          -      'assets/textures/gui/status/Flinched.png',
+          -      'assets/textures/gui/status/flinch.png',
+          -      'assets/textures/gui/status/Flinch.png',
+          -      'assets/textures/gui/status/fln.png',
+          -      'assets/textures/gui/status/FLN.png',
+          -    ],
+          -  ),
+          -  _StatusEffectInfo(
+          -    name: 'Frozen',
+          -    shortLabel: 'FRZ',
+          -    description: 'The Pokemon is frozen and cannot move normally until thawed or removed by an effect such as Pokemon Center.',
+          -    assetCandidates: [
+          -      'assets/textures/gui/status/frozen.png',
+          -      'assets/textures/gui/status/Frozen.png',
+          -      'assets/textures/gui/status/freeze.png',
+          -      'assets/textures/gui/status/Freeze.png',
+          -      'assets/textures/gui/status/frz.png',
+          -      'assets/textures/gui/status/FRZ.png',
+          -    ],
+          -  ),
+          -  _StatusEffectInfo(
+          -    name: 'Paralyzed',
+          -    shortLabel: 'PAR',
+          -    description: 'The Pokemon is paralyzed. Track the speed, action, or saving throw limits from the source of paralysis.',
+          -    assetCandidates: [
+          -      'assets/textures/gui/status/paralyzed.png',
+          -      'assets/textures/gui/status/Paralyzed.png',
+          -      'assets/textures/gui/status/paralysis.png',
+          -      'assets/textures/gui/status/Paralysis.png',
+          -      'assets/textures/gui/status/par.png',
+          -      'assets/textures/gui/status/PAR.png',
+          -    ],
+          -  ),
+          -  _StatusEffectInfo(
+          -    name: 'Poisoned',
+          -    shortLabel: 'PSN',
+          -    description: 'The Pokemon is poisoned. Track the poison damage or disadvantage from the effect that applied it.',
+          -    assetCandidates: [
+          -      'assets/textures/gui/status/poisoned.png',
+          -      'assets/textures/gui/status/Poisoned.png',
+          -      'assets/textures/gui/status/poison.png',
+          -      'assets/textures/gui/status/Poison.png',
+          -      'assets/textures/gui/status/psn.png',
+          -      'assets/textures/gui/status/PSN.png',
+          -    ],
+          -  ),
+          -];
+          +  _StatusEffectInfo(
+          +    name: 'Asleep',
+          +    shortLabel: 'SLP',
+          +    description: 'Incapacitato e trattenuto, tira tutti i tiri salvezza con svantaggio. Dura 3 round: con movimento forzato e alla fine di ogni turno tira 1d20; con 11+ termina.',
+          +    assetCandidates: [
+          +      'assets/textures/gui/status/sleep_up.png',
+          +      'assets/textures/gui/status/sleep_down.png',
+          +      'assets/textures/gui/status/asleep.png',
+          +      'assets/textures/gui/status/Asleep.png',
+          +      'assets/textures/gui/status/sleep.png',
+          +      'assets/textures/gui/status/Sleep.png',
+          +      'assets/textures/gui/status/status_slp.png',
+          +      'assets/textures/gui/status/status_sleep.png',
+          +      'assets/textures/gui/status/status_asleep.png',
+          +      'assets/textures/gui/status/slp.webp',
+          +      'assets/textures/gui/status/SLP.webp',
+          +    ],
+          +  ),
+          +  _StatusEffectInfo(
+          +    name: 'Burned',
+          +    shortLabel: 'BRN',
+          +    description: 'Tira due volte i danni e prende il risultato piu basso. Finche non guarisce o cade incosciente, subisce danni pari alla competenza alla fine di ogni suo turno.',
+          +    assetCandidates: [
+          +      'assets/textures/gui/status/burn_up.png',
+          +      'assets/textures/gui/status/burn_down.png',
+          +      'assets/textures/gui/status/burned.png',
+          +      'assets/textures/gui/status/Burned.png',
+          +      'assets/textures/gui/status/burn.png',
+          +      'assets/textures/gui/status/Burn.png',
+          +      'assets/textures/gui/status/status_brn.png',
+          +      'assets/textures/gui/status/status_burn.png',
+          +      'assets/textures/gui/status/status_burned.png',
+          +      'assets/textures/gui/status/brn.webp',
+          +      'assets/textures/gui/status/BRN.webp',
+          +    ],
+          +  ),
+          +  _StatusEffectInfo(
+          +    name: 'Confused',
+          +    shortLabel: 'CNF',
+          +    description: 'Non puo usare reazioni. Dura 3 round. All’inizio del turno tira 1d8: 1 colpisce se stesso con Struggle, 2 il bersaglio piu vicino, 3 non agisce, 4-7 agisce normalmente, 8 termina.',
+          +    assetCandidates: [
+          +      'assets/textures/gui/status/confuse_up.png',
+          +      'assets/textures/gui/status/confuse_down.png',
+          +      'assets/textures/gui/status/confused.png',
+          +      'assets/textures/gui/status/Confused.png',
+          +      'assets/textures/gui/status/confusion.png',
+          +      'assets/textures/gui/status/Confusion.png',
+          +      'assets/textures/gui/status/status_cnf.png',
+          +      'assets/textures/gui/status/status_confused.png',
+          +      'assets/textures/gui/status/status_confusion.png',
+          +      'assets/textures/gui/status/cnf.webp',
+          +      'assets/textures/gui/status/CNF.webp',
+          +    ],
+          +  ),
+          +  _StatusEffectInfo(
+          +    name: 'Flinched',
+          +    shortLabel: 'FLN',
+          +    description: 'Svantaggio a tiri per colpire, prove di abilita e tiri salvezza fino alla fine del prossimo turno. Se usa un’azione che richiede un tiro salvezza, i bersagli hanno vantaggio.',
+          +    assetCandidates: [
+          +      'assets/textures/gui/status/fln.png',
+          +      'assets/textures/gui/status/FLN.png',
+          +      'assets/textures/gui/status/flinched.png',
+          +      'assets/textures/gui/status/Flinched.png',
+          +      'assets/textures/gui/status/flinch.png',
+          +      'assets/textures/gui/status/Flinch.png',
+          +      'assets/textures/gui/status/status_fln.png',
+          +      'assets/textures/gui/status/status_flinch.png',
+          +      'assets/textures/gui/status/status_flinched.png',
+          +      'assets/textures/gui/status/fln.webp',
+          +      'assets/textures/gui/status/FLN.webp',
+          +    ],
+          +  ),
+          +  _StatusEffectInfo(
+          +    name: 'Frozen',
+          +    shortLabel: 'FRZ',
+          +    description: 'Incapacitato e trattenuto. Dura 1 ora o finche si libera alla fine del turno con TS FOR CD 10 + competenza di chi lo ha congelato. Termina con danni fuoco o mosse che possono Bruciare.',
+          +    assetCandidates: [
+          +      'assets/textures/gui/status/frozen_up.png',
+          +      'assets/textures/gui/status/frozen_down.png',
+          +      'assets/textures/gui/status/frozen.png',
+          +      'assets/textures/gui/status/Frozen.png',
+          +      'assets/textures/gui/status/freeze.png',
+          +      'assets/textures/gui/status/Freeze.png',
+          +      'assets/textures/gui/status/status_frz.png',
+          +      'assets/textures/gui/status/status_frozen.png',
+          +      'assets/textures/gui/status/status_freeze.png',
+          +      'assets/textures/gui/status/frz.webp',
+          +      'assets/textures/gui/status/FRZ.webp',
+          +    ],
+          +  ),
+          +  _StatusEffectInfo(
+          +    name: 'Paralyzed',
+          +    shortLabel: 'PAR',
+          +    description: 'Svantaggio ai TS FOR e DES, e velocita dimezzata. All’inizio del turno tira 1d4: con 1 e incapacitato e trattenuto fino all’inizio del prossimo turno.',
+          +    assetCandidates: [
+          +      'assets/textures/gui/status/paralyze_up.png',
+          +      'assets/textures/gui/status/paralyze_down.png',
+          +      'assets/textures/gui/status/paralyzed.png',
+          +      'assets/textures/gui/status/Paralyzed.png',
+          +      'assets/textures/gui/status/paralysis.png',
+          +      'assets/textures/gui/status/Paralysis.png',
+          +      'assets/textures/gui/status/status_par.png',
+          +      'assets/textures/gui/status/status_paralyzed.png',
+          +      'assets/textures/gui/status/status_paralysis.png',
+          +      'assets/textures/gui/status/par.webp',
+          +      'assets/textures/gui/status/PAR.webp',
+          +    ],
+          +  ),
+          +  _StatusEffectInfo(
+          +    name: 'Poisoned',
+          +    shortLabel: 'PSN',
+          +    description: 'Svantaggio a tutte le prove di abilita e ai tiri per colpire. Finche non guarisce o cade incosciente, subisce danni pari alla competenza alla fine di ogni suo turno.',
+          +    assetCandidates: [
+          +      'assets/textures/gui/status/poisoned_up.png',
+          +      'assets/textures/gui/status/poisoned_down.png',
+          +      'assets/textures/gui/status/poisoned.png',
+          +      'assets/textures/gui/status/Poisoned.png',
+          +      'assets/textures/gui/status/poison.png',
+          +      'assets/textures/gui/status/Poison.png',
+          +      'assets/textures/gui/status/status_psn.png',
+          +      'assets/textures/gui/status/status_poison.png',
+          +      'assets/textures/gui/status/status_poisoned.png',
+          +      'assets/textures/gui/status/psn.webp',
+          +      'assets/textures/gui/status/PSN.webp',
+          +    ],
+          +  ),
+          +];
+           
+           Map<String, _StatusEffectInfo> get _statusEffectInfoByName => {
+                 for (final info in _statusEffectInfos) info.name: info,
+          @@ -333,22 +368,31 @@
+               _saveTeamSlot(slot.copyWith(statusEffects: statuses));
+             }
+           
+          -  void _usePokemonCenter() {
+          -    final slot = _teamSlot;
+          -    if (slot == null) {
+          -      return;
+          -    }
+          -
+          -    _saveTeamSlot(
+          -      slot.copyWith(
+          -        currentHp: _pokemon.hitPoints,
+          -        statusEffects: const [],
+          -      ),
+          -    );
+          -    ScaffoldMessenger.of(context).showSnackBar(
+          -      SnackBar(content: Text('${_pokemon.name} healed at the Pokemon Center.')),
+          -    );
+          -  }
+          +  Future<void> _usePokemonCenter() async {
+          +    final slot = _teamSlot;
+          +    if (slot == null) {
+          +      return;
+          +    }
+          +
+          +    final shouldHeal = await showDialog<bool>(
+          +      context: context,
+          +      barrierDismissible: true,
+          +      builder: (context) => const _PokemonCenterDialog(),
+          +    );
+          +    if (shouldHeal != true) {
+          +      return;
+          +    }
+          +
+          +    _saveTeamSlot(
+          +      slot.copyWith(
+          +        currentHp: _pokemon.hitPoints,
+          +        statusEffects: const [],
+          +      ),
+          +    );
+          +    ScaffoldMessenger.of(context).showSnackBar(
+          +      SnackBar(content: Text('${_pokemon.name} e stato curato al Pokemon Center.')),
+          +    );
+          +  }
+           
+             Future<void> _pickStatusEffect() async {
+               if (_teamSlot == null) {
+          @@ -1021,8 +1065,8 @@
+             }
+           }
+           
+          -class _PokemonCenterButton extends StatelessWidget {
+          -  const _PokemonCenterButton({required this.onTap});
+          +class _PokemonCenterButton extends StatelessWidget {
+          +  const _PokemonCenterButton({required this.onTap});
+           
+             final VoidCallback? onTap;
+           
+          @@ -1060,10 +1104,101 @@
+                   ),
+                 ),
+               );
+          -  }
+          -}
+          -
+          -class _LoyaltyRow extends StatelessWidget {
+          +  }
+          +}
+          +
+          +class _PokemonCenterDialog extends StatelessWidget {
+          +  const _PokemonCenterDialog();
+          +
+          +  @override
+          +  Widget build(BuildContext context) {
+          +    final colorScheme = Theme.of(context).colorScheme;
+          +    return Dialog(
+          +      insetPadding: const EdgeInsets.symmetric(horizontal: 24),
+          +      backgroundColor: Colors.white,
+          +      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(2)),
+          +      child: Padding(
+          +        padding: const EdgeInsets.fromLTRB(18, 18, 18, 16),
+          +        child: Column(
+          +          mainAxisSize: MainAxisSize.min,
+          +          children: [
+          +            Text(
+          +              'Pokemon Center',
+          +              textAlign: TextAlign.center,
+          +              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+          +                    fontWeight: FontWeight.w900,
+          +                  ),
+          +            ),
+          +            const SizedBox(height: 10),
+          +            Text(
+          +              'Riporteremo il tuo Pokemon in perfetta salute!\nVuoi curare il tuo Pokemon?',
+          +              textAlign: TextAlign.center,
+          +              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+          +                    fontWeight: FontWeight.w700,
+          +                    height: 1.25,
+          +                  ),
+          +            ),
+          +            const SizedBox(height: 24),
+          +            Row(
+          +              children: [
+          +                Expanded(
+          +                  child: _PokemonCenterDialogButton(
+          +                    label: 'NO',
+          +                    onPressed: () => Navigator.of(context).pop(false),
+          +                  ),
+          +                ),
+          +                const SizedBox(width: 28),
+          +                Expanded(
+          +                  child: _PokemonCenterDialogButton(
+          +                    label: 'SI',
+          +                    onPressed: () => Navigator.of(context).pop(true),
+          +                  ),
+          +                ),
+          +              ],
+          +            ),
+          +            const SizedBox(height: 2),
+          +            Divider(color: colorScheme.outlineVariant, height: 1),
+          +          ],
+          +        ),
+          +      ),
+          +    );
+          +  }
+          +}
+          +
+          +class _PokemonCenterDialogButton extends StatelessWidget {
+          +  const _PokemonCenterDialogButton({
+          +    required this.label,
+          +    required this.onPressed,
+          +  });
+          +
+          +  final String label;
+          +  final VoidCallback onPressed;
+          +
+          +  @override
+          +  Widget build(BuildContext context) {
+          +    return SizedBox(
+          +      height: 52,
+          +      child: FilledButton(
+          +        onPressed: onPressed,
+          +        style: FilledButton.styleFrom(
+          +          backgroundColor: const Color(0xFFF9A51A),
+          +          foregroundColor: Colors.white,
+          +          shape: RoundedRectangleBorder(
+          +            borderRadius: BorderRadius.circular(6),
+          +            side: const BorderSide(color: Color(0xFFD67500), width: 1.5),
+          +          ),
+          +          textStyle: const TextStyle(
+          +            fontSize: 22,
+          +            fontWeight: FontWeight.w900,
+          +          ),
+          +        ),
+          +        child: Text(label),
+          +      ),
+          +    );
+          +  }
+          +}
+          +
+          +class _LoyaltyRow extends StatelessWidget {
+             @override
+             Widget build(BuildContext context) {
+               return Row(
+          @@ -1377,8 +1512,8 @@
+             }
+           }
+           
+          -class _StatusIcon extends StatelessWidget {
+          -  const _StatusIcon({required this.info, required this.size});
+          +class _StatusIcon extends StatelessWidget {
+          +  const _StatusIcon({required this.info, required this.size});
+           
+             final _StatusEffectInfo? info;
+             final double size;
+          @@ -1386,99 +1521,96 @@
+             @override
+             Widget build(BuildContext context) {
+               final statusInfo = info;
+          -    if (statusInfo == null) {
+          -      return const SizedBox.shrink();
+          -    }
+          -
+          -    return _FallbackAssetIcon(
+          -      paths: statusInfo.assetCandidates,
+          -      fallbackLabel: statusInfo.shortLabel,
+          -      size: size,
+          -    );
+          -  }
+          -}
+          -
+          -class _FallbackAssetIcon extends StatelessWidget {
+          -  const _FallbackAssetIcon({
+          -    required this.paths,
+          -    required this.fallbackLabel,
+          -    required this.size,
+          -    this.index = 0,
+          -  });
+          -
+          -  final List<String> paths;
+          -  final String fallbackLabel;
+          -  final double size;
+          -  final int index;
+          -
+          -  @override
+          -  Widget build(BuildContext context) {
+          -    if (index >= paths.length) {
+          -      return Container(
+          -        width: size,
+          -        height: size,
+          -        alignment: Alignment.center,
+          -        decoration: BoxDecoration(
+          -          color: Theme.of(context).colorScheme.primaryContainer,
+          -          borderRadius: BorderRadius.circular(4),
+          -        ),
+          -        child: Text(
+          -          fallbackLabel,
+          -          style: TextStyle(
+          -            fontSize: size * 0.32,
+          -            fontWeight: FontWeight.w900,
+          -          ),
+          -        ),
+          -      );
+          -    }
+          -
+          -    return Image.asset(
+          -      paths[index],
+          -      width: size,
+          -      height: size,
+          -      fit: BoxFit.contain,
+          -      errorBuilder: (_, __, ___) => _FallbackAssetIcon(
+          -        paths: paths,
+          -        fallbackLabel: fallbackLabel,
+          -        size: size,
+          -        index: index + 1,
+          -      ),
+          -    );
+          -  }
+          -}
+          -
+          -class _FightPanelButton extends StatelessWidget {
+          -  const _FightPanelButton({required this.label, this.onTap});
+          -
+          -  final String label;
+          -  final VoidCallback? onTap;
+          -
+          -  @override
+          -  Widget build(BuildContext context) {
+          -    return InkWell(
+          -      onTap: onTap,
+          -      borderRadius: BorderRadius.circular(8),
+          -      child: Container(
+          -        height: 36,
+          -        alignment: Alignment.center,
+          -        decoration: BoxDecoration(
+          -          color: Colors.white,
+          -          borderRadius: BorderRadius.circular(8),
+          -          border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+          -        ),
+          -        child: Text(
+          -          label,
+          -          maxLines: 1,
+          -          overflow: TextOverflow.ellipsis,
+          -          style: TextStyle(
+          -            color: label.startsWith('+')
+          -                ? Theme.of(context).colorScheme.primary
+          -                : Theme.of(context).colorScheme.onSurface,
+          -            fontWeight: FontWeight.w900,
+          -          ),
+          -        ),
+          -      ),
+          -    );
+          +    if (statusInfo == null) {
+          +      return const SizedBox.shrink();
+          +    }
+          +
+          +    return _StatusAssetIcon(
+          +      path: statusInfo.assetCandidates.first,
+          +      fallbackLabel: statusInfo.shortLabel,
+          +      size: size,
+          +    );
+          +  }
+          +}
+          +
+          +class _StatusAssetIcon extends StatelessWidget {
+          +  const _StatusAssetIcon({
+          +    required this.path,
+          +    required this.fallbackLabel,
+          +    required this.size,
+          +  });
+          +
+          +  final String path;
+          +  final String fallbackLabel;
+          +  final double size;
+          +
+          +  @override
+          +  Widget build(BuildContext context) {
+          +    return Image.asset(
+          +      path,
+          +      width: size,
+          +      height: size,
+          +      fit: BoxFit.contain,
+          +      errorBuilder: (context, error, stackTrace) =>
+          +          _StatusFallbackLabel(label: fallbackLabel, size: size),
+          +    );
+          +  }
+          +}
+          +
+          +class _StatusFallbackLabel extends StatelessWidget {
+          +  const _StatusFallbackLabel({required this.label, required this.size});
+          +
+          +  final String label;
+          +  final double size;
+          +
+          +  @override
+          +  Widget build(BuildContext context) {
+          +    return Container(
+          +      width: size,
+          +      height: size,
+          +      alignment: Alignment.center,
+          +      decoration: BoxDecoration(
+          +        color: Theme.of(context).colorScheme.primaryContainer,
+          +        borderRadius: BorderRadius.circular(4),
+          +      ),
+          +      child: Text(
+          +        label,
+          +        style: TextStyle(
+          +          fontSize: size * 0.32,
+          +          fontWeight: FontWeight.w900,
+          +        ),
+          +      ),
+          +    );
+          +  }
+          +}
+          +
+          +class _FightPanelButton extends StatelessWidget {
+          +  const _FightPanelButton({required this.label});
+          +
+          +  final String label;
+          +
+          +  @override
+          +  Widget build(BuildContext context) {
+          +    return Container(
+          +      height: 36,
+          +      alignment: Alignment.center,
+          +      decoration: BoxDecoration(
+          +        color: Colors.white,
+          +        borderRadius: BorderRadius.circular(8),
+          +        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+          +      ),
+          +      child: Text(
+          +        label,
+          +        maxLines: 1,
+          +        overflow: TextOverflow.ellipsis,
+          +        style: TextStyle(
+          +          color: label.startsWith('+')
+          +              ? Theme.of(context).colorScheme.primary
+          +              : Theme.of(context).colorScheme.onSurface,
+          +          fontWeight: FontWeight.w900,
+          +        ),
+          +      ),
+          +    );
+             }
+           }
+           
+          PATCH
+          rm -f .github/workflows/apply-pokedex-detail-fix.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add lib/screens/pokemon/pokemon_detail_screen.dart .github/workflows/apply-pokedex-detail-fix.yml
+          git commit -m "Improve Pokemon detail status controls"
+          git push

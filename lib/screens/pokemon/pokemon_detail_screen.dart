@@ -55,15 +55,6 @@ const _statusEffectInfos = [
     assetCandidates: [
       'assets/textures/gui/status/sleep_down.png',
       'assets/textures/gui/status/sleep_up.png',
-      'assets/textures/gui/status/asleep.png',
-      'assets/textures/gui/status/Asleep.png',
-      'assets/textures/gui/status/sleep.png',
-      'assets/textures/gui/status/Sleep.png',
-      'assets/textures/gui/status/status_slp.png',
-      'assets/textures/gui/status/status_sleep.png',
-      'assets/textures/gui/status/status_asleep.png',
-      'assets/textures/gui/status/slp.webp',
-      'assets/textures/gui/status/SLP.webp',
     ],
   ),
   _StatusEffectInfo(
@@ -73,15 +64,6 @@ const _statusEffectInfos = [
     assetCandidates: [
       'assets/textures/gui/status/burn_down.png',
       'assets/textures/gui/status/burn_up.png',
-      'assets/textures/gui/status/burned.png',
-      'assets/textures/gui/status/Burned.png',
-      'assets/textures/gui/status/burn.png',
-      'assets/textures/gui/status/Burn.png',
-      'assets/textures/gui/status/status_brn.png',
-      'assets/textures/gui/status/status_burn.png',
-      'assets/textures/gui/status/status_burned.png',
-      'assets/textures/gui/status/brn.webp',
-      'assets/textures/gui/status/BRN.webp',
     ],
   ),
   _StatusEffectInfo(
@@ -91,15 +73,6 @@ const _statusEffectInfos = [
     assetCandidates: [
       'assets/textures/gui/status/confuse_down.png',
       'assets/textures/gui/status/confuse_up.png',
-      'assets/textures/gui/status/confused.png',
-      'assets/textures/gui/status/Confused.png',
-      'assets/textures/gui/status/confusion.png',
-      'assets/textures/gui/status/Confusion.png',
-      'assets/textures/gui/status/status_cnf.png',
-      'assets/textures/gui/status/status_confused.png',
-      'assets/textures/gui/status/status_confusion.png',
-      'assets/textures/gui/status/cnf.webp',
-      'assets/textures/gui/status/CNF.webp',
     ],
   ),
   _StatusEffectInfo(
@@ -115,15 +88,6 @@ const _statusEffectInfos = [
     assetCandidates: [
       'assets/textures/gui/status/frozen_down.png',
       'assets/textures/gui/status/frozen_up.png',
-      'assets/textures/gui/status/frozen.png',
-      'assets/textures/gui/status/Frozen.png',
-      'assets/textures/gui/status/freeze.png',
-      'assets/textures/gui/status/Freeze.png',
-      'assets/textures/gui/status/status_frz.png',
-      'assets/textures/gui/status/status_frozen.png',
-      'assets/textures/gui/status/status_freeze.png',
-      'assets/textures/gui/status/frz.webp',
-      'assets/textures/gui/status/FRZ.webp',
     ],
   ),
   _StatusEffectInfo(
@@ -133,15 +97,6 @@ const _statusEffectInfos = [
     assetCandidates: [
       'assets/textures/gui/status/paralyze_down.png',
       'assets/textures/gui/status/paralyze_up.png',
-      'assets/textures/gui/status/paralyzed.png',
-      'assets/textures/gui/status/Paralyzed.png',
-      'assets/textures/gui/status/paralysis.png',
-      'assets/textures/gui/status/Paralysis.png',
-      'assets/textures/gui/status/status_par.png',
-      'assets/textures/gui/status/status_paralyzed.png',
-      'assets/textures/gui/status/status_paralysis.png',
-      'assets/textures/gui/status/par.webp',
-      'assets/textures/gui/status/PAR.webp',
     ],
   ),
   _StatusEffectInfo(
@@ -151,15 +106,6 @@ const _statusEffectInfos = [
     assetCandidates: [
       'assets/textures/gui/status/poisoned_down.png',
       'assets/textures/gui/status/poisoned_up.png',
-      'assets/textures/gui/status/poisoned.png',
-      'assets/textures/gui/status/Poisoned.png',
-      'assets/textures/gui/status/poison.png',
-      'assets/textures/gui/status/Poison.png',
-      'assets/textures/gui/status/status_psn.png',
-      'assets/textures/gui/status/status_poison.png',
-      'assets/textures/gui/status/status_poisoned.png',
-      'assets/textures/gui/status/psn.webp',
-      'assets/textures/gui/status/PSN.webp',
     ],
   ),
 ];
@@ -189,10 +135,14 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
       ? _pokemon.minLevelFound
       : LevelProgression.levelFromExperience(_experience);
   List<String> get _currentStatusEffects => _teamSlot?.statusEffects ?? const [];
+  int get _loyalty => (_teamSlot?.loyalty ?? 0).clamp(-3, 3).toInt();
+  int get _savingThrowLoyaltyBonus => _loyalty.clamp(-1, 1).toInt();
+
+  int get _maxHp => _pokemon.hitPoints + _loyaltyHpBonus(_loyalty, _level);
 
   int get _currentHp {
     final savedHp = _teamSlot?.currentHp ?? 0;
-    return savedHp <= 0 ? _pokemon.hitPoints : savedHp;
+    return savedHp <= 0 ? _maxHp : savedHp.clamp(0, _maxHp).toInt();
   }
 
   int get _armorClass {
@@ -200,6 +150,16 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
       _teamSlot?.nature ?? 'No Nature',
     );
     return _pokemon.armorClass + (natureScores['AC'] ?? 0);
+  }
+
+  int _loyaltyHpBonus(int loyalty, int level) {
+    if (loyalty == 2) {
+      return (level / 2).ceil();
+    }
+    if (loyalty == 3) {
+      return level;
+    }
+    return 0;
   }
 
   @override
@@ -296,7 +256,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
 
     final updatedSlot = slot.copyWith(
       selectedMoves: _defaultSelectedMoves(_pokemon, _level),
-      currentHp: slot.currentHp <= 0 ? _pokemon.hitPoints : slot.currentHp,
+      currentHp: slot.currentHp <= 0 ? _maxHp : slot.currentHp,
     );
     _teamSlot = updatedSlot;
     _replaceTeamSlot(updatedSlot);
@@ -343,9 +303,29 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
       return;
     }
 
-    final maxHp = _pokemon.hitPoints;
+    final maxHp = _maxHp;
     final updatedHp = (_currentHp + delta).clamp(0, maxHp).toInt();
     _saveTeamSlot(slot.copyWith(currentHp: updatedHp));
+  }
+
+  void _changeLoyalty(int delta) {
+    final slot = _teamSlot;
+    if (slot == null) {
+      return;
+    }
+
+    final oldMaxHp = _maxHp;
+    final oldCurrentHp = _currentHp;
+    final updatedLoyalty = (slot.loyalty + delta).clamp(-3, 3).toInt();
+    final updatedMaxHp = _pokemon.hitPoints +
+        _loyaltyHpBonus(updatedLoyalty, _level);
+    final updatedHp = oldCurrentHp >= oldMaxHp
+        ? updatedMaxHp
+        : oldCurrentHp.clamp(0, updatedMaxHp).toInt();
+
+    _saveTeamSlot(
+      slot.copyWith(loyalty: updatedLoyalty, currentHp: updatedHp),
+    );
   }
 
   void _setStatusEffects(List<String> statuses) {
@@ -376,7 +356,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
 
     _saveTeamSlot(
       slot.copyWith(
-        currentHp: _pokemon.hitPoints,
+        currentHp: _maxHp,
         statusEffects: const [],
       ),
     );
@@ -624,11 +604,13 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
       return null;
     }
 
-    final wasFullHp = _currentHp >= _pokemon.hitPoints;
+    final wasFullHp = _currentHp >= _maxHp;
     final oldName = _pokemon.name;
+    final evolvedMaxHp = evolvedPokemon.hitPoints +
+        _loyaltyHpBonus(slot.loyalty, _level);
     final updatedSlot = slot.copyWith(
       pokemonId: evolvedPokemon.id,
-      currentHp: wasFullHp ? evolvedPokemon.hitPoints : _currentHp,
+      currentHp: wasFullHp ? evolvedMaxHp : _currentHp,
       selectedMoves: List<String>.from(slot.selectedMoves),
     );
 
@@ -778,15 +760,20 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
                     armorClass: _armorClass,
                     experience: _experience,
                     currentHp: _currentHp,
+                    maxHp: _maxHp,
+                    loyalty: _loyalty,
                     isPartyMode: _isPartyMode,
                     attributes: attributes,
                     modifierBuilder: _modifier,
                     proficiency: _proficiency(_level),
+                    savingThrowLoyaltyBonus: _savingThrowLoyaltyBonus,
                     heldItem: _teamSlot?.heldItem,
                     statusEffects: _currentStatusEffects,
                     onEditExperience: _editExperience,
                     onDecreaseHp: () => _changeHp(-1),
                     onIncreaseHp: () => _changeHp(1),
+                    onDecreaseLoyalty: () => _changeLoyalty(-1),
+                    onIncreaseLoyalty: () => _changeLoyalty(1),
                     onPokemonCenter: _usePokemonCenter,
                     onAddStatusEffect: _pickStatusEffect,
                     canEvolve: _canEvolveCurrentPokemon(),
@@ -845,15 +832,20 @@ class _Header extends StatelessWidget {
     required this.armorClass,
     required this.experience,
     required this.currentHp,
+    required this.maxHp,
+    required this.loyalty,
     required this.isPartyMode,
     required this.attributes,
     required this.modifierBuilder,
     required this.proficiency,
+    required this.savingThrowLoyaltyBonus,
     required this.heldItem,
     required this.statusEffects,
     required this.onEditExperience,
     required this.onDecreaseHp,
     required this.onIncreaseHp,
+    required this.onDecreaseLoyalty,
+    required this.onIncreaseLoyalty,
     required this.onPokemonCenter,
     required this.onAddStatusEffect,
     required this.canEvolve,
@@ -866,15 +858,20 @@ class _Header extends StatelessWidget {
   final int armorClass;
   final int experience;
   final int currentHp;
+  final int maxHp;
+  final int loyalty;
   final bool isPartyMode;
   final Map<String, int> attributes;
   final int Function(int score) modifierBuilder;
   final int proficiency;
+  final int savingThrowLoyaltyBonus;
   final String? heldItem;
   final List<String> statusEffects;
   final VoidCallback onEditExperience;
   final VoidCallback onDecreaseHp;
   final VoidCallback onIncreaseHp;
+  final VoidCallback onDecreaseLoyalty;
+  final VoidCallback onIncreaseLoyalty;
   final VoidCallback onPokemonCenter;
   final VoidCallback onAddStatusEffect;
   final bool canEvolve;
@@ -890,12 +887,10 @@ class _Header extends StatelessWidget {
     final progress = range <= 0
         ? 1.0
         : ((experience - currentThreshold) / range).clamp(0.0, 1.0);
-    final maxHp = pokemon.hitPoints;
     final hpProgress = maxHp <= 0 ? 0.0 : (currentHp / maxHp).clamp(0.0, 1.0);
     final itemLabel = heldItem == null || heldItem!.trim().isEmpty
         ? 'NONE'
         : heldItem!.toUpperCase();
-    final visibleTypes = pokemon.types.take(2).toList();
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(8, 8, 8, 6),
@@ -955,20 +950,11 @@ class _Header extends StatelessWidget {
                           ),
                     ),
                     const SizedBox(height: 6),
-                    if (visibleTypes.isNotEmpty) ...[
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          for (final type in visibleTypes) ...[
-                            PokemonTypeBadge(type: type, height: 20),
-                            if (type != visibleTypes.last)
-                              const SizedBox(width: 6),
-                          ],
-                        ],
-                      ),
-                      const SizedBox(height: 6),
-                    ],
-                    _LoyaltyRow(),
+                    _LoyaltyRow(
+                      loyalty: loyalty,
+                      onDecrease: loyalty <= -3 ? null : onDecreaseLoyalty,
+                      onIncrease: loyalty >= 3 ? null : onIncreaseLoyalty,
+                    ),
                     const SizedBox(height: 6),
                     Row(
                       children: [
@@ -1007,6 +993,7 @@ class _Header extends StatelessWidget {
             savingThrows: pokemon.savingThrows,
             modifierBuilder: modifierBuilder,
             proficiency: proficiency,
+            loyaltyBonus: savingThrowLoyaltyBonus,
           ),
           const SizedBox(height: 6),
           Row(
@@ -1117,61 +1104,64 @@ class _PokemonCenterDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
     return Dialog(
       insetPadding: const EdgeInsets.symmetric(horizontal: 24),
-      backgroundColor: Colors.white,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(2)),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(18, 18, 18, 16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              'Pokemon Center',
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.w900,
-                  ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Padding(
+            padding: EdgeInsets.fromLTRB(18, 18, 18, 26),
+            child: Column(
+              children: [
+                Text(
+                  'Pokemon Center',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 30, fontWeight: FontWeight.w900),
+                ),
+                SizedBox(height: 10),
+                Text(
+                  'Riporteremo il tuo Pokemon in perfetta salute!',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.w700),
+                ),
+                SizedBox(height: 6),
+                Text(
+                  'Vuoi curare il tuo Pokemon?',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.w700),
+                ),
+              ],
             ),
-            const SizedBox(height: 10),
-            Text(
-              'Riporteremo il tuo Pokemon in perfetta salute!\nVuoi curare il tuo Pokemon?',
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    height: 1.25,
-                  ),
-            ),
-            const SizedBox(height: 24),
-            Row(
+          ),
+          Container(
+            color: Colors.black.withValues(alpha: 0.48),
+            padding: const EdgeInsets.symmetric(horizontal: 26, vertical: 16),
+            child: Row(
               children: [
                 Expanded(
-                  child: _PokemonCenterDialogButton(
+                  child: _PokemonCenterChoiceButton(
                     label: 'NO',
                     onPressed: () => Navigator.of(context).pop(false),
                   ),
                 ),
-                const SizedBox(width: 28),
+                const SizedBox(width: 56),
                 Expanded(
-                  child: _PokemonCenterDialogButton(
+                  child: _PokemonCenterChoiceButton(
                     label: 'SI',
                     onPressed: () => Navigator.of(context).pop(true),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 2),
-            Divider(color: colorScheme.outlineVariant, height: 1),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 }
 
-class _PokemonCenterDialogButton extends StatelessWidget {
-  const _PokemonCenterDialogButton({
+class _PokemonCenterChoiceButton extends StatelessWidget {
+  const _PokemonCenterChoiceButton({
     required this.label,
     required this.onPressed,
   });
@@ -1184,19 +1174,19 @@ class _PokemonCenterDialogButton extends StatelessWidget {
     return SizedBox(
       height: 52,
       child: FilledButton(
-        onPressed: onPressed,
         style: FilledButton.styleFrom(
-          backgroundColor: const Color(0xFFF9A51A),
+          backgroundColor: Colors.orange,
           foregroundColor: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(6),
-            side: const BorderSide(color: Color(0xFFD67500), width: 1.5),
-          ),
           textStyle: const TextStyle(
-            fontSize: 22,
+            fontSize: 24,
             fontWeight: FontWeight.w900,
           ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(6),
+            side: BorderSide(color: Colors.orange.shade900),
+          ),
         ),
+        onPressed: onPressed,
         child: Text(label),
       ),
     );
@@ -1204,11 +1194,21 @@ class _PokemonCenterDialogButton extends StatelessWidget {
 }
 
 class _LoyaltyRow extends StatelessWidget {
+  const _LoyaltyRow({
+    required this.loyalty,
+    required this.onDecrease,
+    required this.onIncrease,
+  });
+
+  final int loyalty;
+  final VoidCallback? onDecrease;
+  final VoidCallback? onIncrease;
+
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
-        _FightIconButton(icon: Icons.remove, onPressed: () {}),
+        _FightIconButton(icon: Icons.remove, onPressed: onDecrease),
         const SizedBox(width: 6),
         Expanded(
           child: Container(
@@ -1221,14 +1221,14 @@ class _LoyaltyRow extends StatelessWidget {
                 color: Theme.of(context).colorScheme.outlineVariant,
               ),
             ),
-            child: const Text(
-              'LOYALTY: +0',
-              style: TextStyle(fontWeight: FontWeight.w900),
+            child: Text(
+              'LOYALTY: ${_signed(loyalty)}',
+              style: const TextStyle(fontWeight: FontWeight.w900),
             ),
           ),
         ),
         const SizedBox(width: 6),
-        _FightIconButton(icon: Icons.add, onPressed: () {}),
+        _FightIconButton(icon: Icons.add, onPressed: onIncrease),
       ],
     );
   }
@@ -1389,12 +1389,14 @@ class _SavingThrowsRow extends StatelessWidget {
     required this.savingThrows,
     required this.modifierBuilder,
     required this.proficiency,
+    required this.loyaltyBonus,
   });
 
   final Map<String, int> attributes;
   final List<String> savingThrows;
   final int Function(int score) modifierBuilder;
   final int proficiency;
+  final int loyaltyBonus;
 
   @override
   Widget build(BuildContext context) {
@@ -1428,7 +1430,7 @@ class _SavingThrowsRow extends StatelessWidget {
   }
 
   int _savingThrowValue(String label) {
-    final base = modifierBuilder(attributes[label] ?? 10);
+    final base = modifierBuilder(attributes[label] ?? 10) + loyaltyBonus;
     return _isSavingThrowProficient(label) ? base + proficiency : base;
   }
 
@@ -1529,93 +1531,93 @@ class _StatusIcon extends StatelessWidget {
     if (statusInfo == null) {
       return const SizedBox.shrink();
     }
-    if (statusInfo.assetCandidates.isEmpty) {
-      return _StatusFallbackLabel(label: statusInfo.shortLabel, size: size);
-    }
 
-    return _StatusAssetIcon(
-      path: statusInfo.assetCandidates.first,
+    return _FallbackAssetIcon(
+      paths: statusInfo.assetCandidates,
       fallbackLabel: statusInfo.shortLabel,
       size: size,
     );
   }
 }
 
-class _StatusAssetIcon extends StatelessWidget {
-  const _StatusAssetIcon({
-    required this.path,
+class _FallbackAssetIcon extends StatelessWidget {
+  const _FallbackAssetIcon({
+    required this.paths,
     required this.fallbackLabel,
     required this.size,
+    this.index = 0,
   });
 
-  final String path;
+  final List<String> paths;
   final String fallbackLabel;
   final double size;
+  final int index;
 
   @override
   Widget build(BuildContext context) {
+    if (index >= paths.length) {
+      return Container(
+        width: size,
+        height: size,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.primaryContainer,
+          borderRadius: BorderRadius.circular(4),
+        ),
+        child: Text(
+          fallbackLabel,
+          style: TextStyle(
+            fontSize: size * 0.32,
+            fontWeight: FontWeight.w900,
+          ),
+        ),
+      );
+    }
+
     return Image.asset(
-      path,
+      paths[index],
       width: size,
       height: size,
       fit: BoxFit.contain,
-      errorBuilder: (context, error, stackTrace) =>
-          _StatusFallbackLabel(label: fallbackLabel, size: size),
-    );
-  }
-}
-
-class _StatusFallbackLabel extends StatelessWidget {
-  const _StatusFallbackLabel({required this.label, required this.size});
-
-  final String label;
-  final double size;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: size,
-      height: size,
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primaryContainer,
-        borderRadius: BorderRadius.circular(4),
-      ),
-      child: Text(
-        label,
-        style: TextStyle(
-          fontSize: size * 0.32,
-          fontWeight: FontWeight.w900,
-        ),
+      errorBuilder: (_, __, ___) => _FallbackAssetIcon(
+        paths: paths,
+        fallbackLabel: fallbackLabel,
+        size: size,
+        index: index + 1,
       ),
     );
   }
 }
 
 class _FightPanelButton extends StatelessWidget {
-  const _FightPanelButton({required this.label});
+  const _FightPanelButton({required this.label, this.onTap});
 
   final String label;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 36,
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
-      ),
-      child: Text(
-        label,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        style: TextStyle(
-          color: label.startsWith('+')
-              ? Theme.of(context).colorScheme.primary
-              : Theme.of(context).colorScheme.onSurface,
-          fontWeight: FontWeight.w900,
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(8),
+      child: Container(
+        height: 36,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+        ),
+        child: Text(
+          label,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+            color: label.startsWith('+')
+                ? Theme.of(context).colorScheme.primary
+                : Theme.of(context).colorScheme.onSurface,
+            fontWeight: FontWeight.w900,
+          ),
         ),
       ),
     );
@@ -1626,7 +1628,7 @@ class _FightIconButton extends StatelessWidget {
   const _FightIconButton({required this.icon, required this.onPressed});
 
   final IconData icon;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
 
   @override
   Widget build(BuildContext context) {

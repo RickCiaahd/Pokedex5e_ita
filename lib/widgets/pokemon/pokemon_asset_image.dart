@@ -166,60 +166,72 @@ class PokemonAssetPaths {
   }
 
   static List<String> typeCandidates(String type) {
-    final english = _assetName(type);
-    final italian = localizedTypeLabel(type);
-    final italianAsset = _assetName(italian);
-    final values = <String>{
-      english,
-      english.toLowerCase(),
-      english.toUpperCase(),
-      italianAsset,
-      italianAsset.toLowerCase(),
-      italianAsset.toUpperCase(),
-    };
+    final localized = localizedTypeLabel(type);
+    final assetName = _assetName(localized);
+    final lowercaseAssetName = assetName.toLowerCase();
 
     return [
-      for (final value in values) 'assets/textures/type_names/$value.png',
+      'assets/textures/type_names/$lowercaseAssetName.png',
+      if (assetName != lowercaseAssetName)
+        'assets/textures/type_names/$assetName.png',
     ];
   }
 
   static String localizedTypeLabel(String type) {
     switch (type.trim().toLowerCase()) {
       case 'bug':
+      case 'coleottero':
         return 'Coleottero';
       case 'dark':
+      case 'buio':
         return 'Buio';
       case 'dragon':
+      case 'drago':
         return 'Drago';
       case 'electric':
+      case 'elettro':
         return 'Elettro';
       case 'fairy':
+      case 'folletto':
         return 'Folletto';
       case 'fighting':
+      case 'lotta':
         return 'Lotta';
       case 'fire':
+      case 'fuoco':
         return 'Fuoco';
       case 'flying':
+      case 'volante':
         return 'Volante';
       case 'ghost':
+      case 'spettro':
         return 'Spettro';
       case 'grass':
+      case 'erba':
         return 'Erba';
       case 'ground':
+      case 'terra':
         return 'Terra';
       case 'ice':
+      case 'ghiaccio':
         return 'Ghiaccio';
       case 'normal':
+      case 'normale':
         return 'Normale';
       case 'poison':
+      case 'veleno':
         return 'Veleno';
       case 'psychic':
+      case 'psico':
         return 'Psico';
       case 'rock':
+      case 'roccia':
         return 'Roccia';
       case 'steel':
+      case 'acciaio':
         return 'Acciaio';
       case 'water':
+      case 'acqua':
         return 'Acqua';
       default:
         return type;

@@ -53,8 +53,8 @@ const _statusEffectInfos = [
     shortLabel: 'SLP',
     description: 'Incapacitato e trattenuto, tira tutti i tiri salvezza con svantaggio. Dura 3 round: con movimento forzato e alla fine di ogni turno tira 1d20; con 11+ termina.',
     assetCandidates: [
-      'assets/textures/gui/status/sleep_up.png',
       'assets/textures/gui/status/sleep_down.png',
+      'assets/textures/gui/status/sleep_up.png',
       'assets/textures/gui/status/asleep.png',
       'assets/textures/gui/status/Asleep.png',
       'assets/textures/gui/status/sleep.png',
@@ -71,8 +71,8 @@ const _statusEffectInfos = [
     shortLabel: 'BRN',
     description: 'Tira due volte i danni e prende il risultato piu basso. Finche non guarisce o cade incosciente, subisce danni pari alla competenza alla fine di ogni suo turno.',
     assetCandidates: [
-      'assets/textures/gui/status/burn_up.png',
       'assets/textures/gui/status/burn_down.png',
+      'assets/textures/gui/status/burn_up.png',
       'assets/textures/gui/status/burned.png',
       'assets/textures/gui/status/Burned.png',
       'assets/textures/gui/status/burn.png',
@@ -89,8 +89,8 @@ const _statusEffectInfos = [
     shortLabel: 'CNF',
     description: 'Non puo usare reazioni. Dura 3 round. All’inizio del turno tira 1d8: 1 colpisce se stesso con Struggle, 2 il bersaglio piu vicino, 3 non agisce, 4-7 agisce normalmente, 8 termina.',
     assetCandidates: [
-      'assets/textures/gui/status/confuse_up.png',
       'assets/textures/gui/status/confuse_down.png',
+      'assets/textures/gui/status/confuse_up.png',
       'assets/textures/gui/status/confused.png',
       'assets/textures/gui/status/Confused.png',
       'assets/textures/gui/status/confusion.png',
@@ -106,27 +106,15 @@ const _statusEffectInfos = [
     name: 'Flinched',
     shortLabel: 'FLN',
     description: 'Svantaggio a tiri per colpire, prove di abilita e tiri salvezza fino alla fine del prossimo turno. Se usa un’azione che richiede un tiro salvezza, i bersagli hanno vantaggio.',
-    assetCandidates: [
-      'assets/textures/gui/status/fln.png',
-      'assets/textures/gui/status/FLN.png',
-      'assets/textures/gui/status/flinched.png',
-      'assets/textures/gui/status/Flinched.png',
-      'assets/textures/gui/status/flinch.png',
-      'assets/textures/gui/status/Flinch.png',
-      'assets/textures/gui/status/status_fln.png',
-      'assets/textures/gui/status/status_flinch.png',
-      'assets/textures/gui/status/status_flinched.png',
-      'assets/textures/gui/status/fln.webp',
-      'assets/textures/gui/status/FLN.webp',
-    ],
+    assetCandidates: [],
   ),
   _StatusEffectInfo(
     name: 'Frozen',
     shortLabel: 'FRZ',
     description: 'Incapacitato e trattenuto. Dura 1 ora o finche si libera alla fine del turno con TS FOR CD 10 + competenza di chi lo ha congelato. Termina con danni fuoco o mosse che possono Bruciare.',
     assetCandidates: [
-      'assets/textures/gui/status/frozen_up.png',
       'assets/textures/gui/status/frozen_down.png',
+      'assets/textures/gui/status/frozen_up.png',
       'assets/textures/gui/status/frozen.png',
       'assets/textures/gui/status/Frozen.png',
       'assets/textures/gui/status/freeze.png',
@@ -143,8 +131,8 @@ const _statusEffectInfos = [
     shortLabel: 'PAR',
     description: 'Svantaggio ai TS FOR e DES, e velocita dimezzata. All’inizio del turno tira 1d4: con 1 e incapacitato e trattenuto fino all’inizio del prossimo turno.',
     assetCandidates: [
-      'assets/textures/gui/status/paralyze_up.png',
       'assets/textures/gui/status/paralyze_down.png',
+      'assets/textures/gui/status/paralyze_up.png',
       'assets/textures/gui/status/paralyzed.png',
       'assets/textures/gui/status/Paralyzed.png',
       'assets/textures/gui/status/paralysis.png',
@@ -161,8 +149,8 @@ const _statusEffectInfos = [
     shortLabel: 'PSN',
     description: 'Svantaggio a tutte le prove di abilita e ai tiri per colpire. Finche non guarisce o cade incosciente, subisce danni pari alla competenza alla fine di ogni suo turno.',
     assetCandidates: [
-      'assets/textures/gui/status/poisoned_up.png',
       'assets/textures/gui/status/poisoned_down.png',
+      'assets/textures/gui/status/poisoned_up.png',
       'assets/textures/gui/status/poisoned.png',
       'assets/textures/gui/status/Poisoned.png',
       'assets/textures/gui/status/poison.png',
@@ -907,6 +895,7 @@ class _Header extends StatelessWidget {
     final itemLabel = heldItem == null || heldItem!.trim().isEmpty
         ? 'NONE'
         : heldItem!.toUpperCase();
+    final visibleTypes = pokemon.types.take(2).toList();
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(8, 8, 8, 6),
@@ -966,6 +955,19 @@ class _Header extends StatelessWidget {
                           ),
                     ),
                     const SizedBox(height: 6),
+                    if (visibleTypes.isNotEmpty) ...[
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          for (final type in visibleTypes) ...[
+                            PokemonTypeBadge(type: type, height: 20),
+                            if (type != visibleTypes.last)
+                              const SizedBox(width: 6),
+                          ],
+                        ],
+                      ),
+                      const SizedBox(height: 6),
+                    ],
                     _LoyaltyRow(),
                     const SizedBox(height: 6),
                     Row(
@@ -1474,7 +1476,7 @@ class _StatusPanelButton extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(8),
       child: Container(
-        height: 36,
+        height: 42,
         alignment: Alignment.center,
         padding: const EdgeInsets.symmetric(horizontal: 8),
         decoration: BoxDecoration(
@@ -1499,7 +1501,7 @@ class _StatusPanelButton extends StatelessWidget {
                   for (final status in statuses.take(5)) ...[
                     _StatusIcon(
                       info: _statusEffectInfoByName[status],
-                      size: 24,
+                      size: 32,
                     ),
                     const SizedBox(width: 4),
                   ],
@@ -1526,6 +1528,9 @@ class _StatusIcon extends StatelessWidget {
     final statusInfo = info;
     if (statusInfo == null) {
       return const SizedBox.shrink();
+    }
+    if (statusInfo.assetCandidates.isEmpty) {
+      return _StatusFallbackLabel(label: statusInfo.shortLabel, size: size);
     }
 
     return _StatusAssetIcon(

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../pokedex/pokedex_screen.dart';
 import '../profile/profiles_screen.dart';
 import '../team/team_selection_screen.dart';
+import '../trainer/trainer_sheet_screen.dart';
 import '../../models/pokedex_entry.dart';
 import '../../models/pokemon.dart';
 import '../../models/trainer_progression.dart';
@@ -95,6 +96,19 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 20),
               _ProgressOverview(total: total, seen: seen, caught: caught),
               const SizedBox(height: 24),
+              _HomeActionButton(
+                icon: Icons.badge_outlined,
+                title: 'Scheda Allenatore',
+                subtitle: 'Aggiorna livello, soldi e progressione campagna.',
+                onTap: () async {
+                  await Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => const TrainerSheetScreen(),
+                    ),
+                  );
+                  await _loadDashboard();
+                },
+              ),
               _HomeActionButton(
                 icon: Icons.catching_pokemon,
                 title: 'Apri Pokédex',

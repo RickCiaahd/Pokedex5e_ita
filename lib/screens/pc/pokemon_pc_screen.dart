@@ -9,6 +9,7 @@ import '../../repositories/pokemon_pc_repository.dart';
 import '../../repositories/pokemon_repository.dart';
 import '../../repositories/profile_repository.dart';
 import '../../repositories/team_repository.dart';
+import '../../widgets/navigation/home_leading_button.dart';
 
 class PokemonPcScreen extends StatefulWidget {
   const PokemonPcScreen({super.key});
@@ -28,6 +29,7 @@ class _PokemonPcScreenState extends State<PokemonPcScreen> {
   List<PcPokemon> _pcPokemon = [];
   List<TeamSlot> _team = [];
   bool _isLoading = true;
+  String? _successMessage;
   String? _errorMessage;
 
   @override
@@ -39,6 +41,7 @@ class _PokemonPcScreenState extends State<PokemonPcScreen> {
   Future<void> _loadPc() async {
     setState(() {
       _isLoading = true;
+      _successMessage = null;
       _errorMessage = null;
     });
 
@@ -116,13 +119,10 @@ class _PokemonPcScreenState extends State<PokemonPcScreen> {
     await _loadPc();
 
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          '${pokemon?.name ?? 'Pokemon'} spostato nello slot ${freeSlot.slotIndex + 1}.',
-        ),
-      ),
-    );
+    setState(() {
+      _successMessage =
+          '${pokemon?.name ?? 'Pokemon'} spostato nello slot ${freeSlot.slotIndex + 1}.';
+    });
   }
 
   Future<void> _releaseFromPc(PcPokemon pcPokemon) async {
@@ -165,7 +165,10 @@ class _PokemonPcScreenState extends State<PokemonPcScreen> {
     final hasFreeTeamSlot = _firstFreeTeamSlot != null;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('PC Pokemon')),
+      appBar: AppBar(
+        leading: const HomeLeadingButton(),
+        title: const Text('PC Pokemon'),
+      ),
       body: RefreshIndicator(
         onRefresh: _loadPc,
         child: ListView(
@@ -184,6 +187,10 @@ class _PokemonPcScreenState extends State<PokemonPcScreen> {
                 storedCount: _pcPokemon.length,
                 hasFreeTeamSlot: hasFreeTeamSlot,
               ),
+              if (_successMessage != null) ...[
+                const SizedBox(height: 12),
+                _PcStatusMessage(message: _successMessage!),
+              ],
               const SizedBox(height: 16),
               if (_pcPokemon.isEmpty)
                 const _PcEmptyState()
@@ -340,6 +347,39 @@ class _PcPokemonCard extends StatelessWidget {
     final year = date.year.toString();
 
     return '$day/$month/$year';
+  }
+}
+
+class _PcStatusMessage extends StatelessWidget {
+  const _PcStatusMessage({required this.message});
+
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Card(
+      color: colorScheme.secondaryContainer,
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Row(
+          children: [
+            Icon(
+              Icons.check_circle_outline,
+              color: colorScheme.onSecondaryContainer,
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                message,
+                style: TextStyle(color: colorScheme.onSecondaryContainer),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 

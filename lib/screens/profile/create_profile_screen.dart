@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../repositories/profile_repository.dart';
+import '../../widgets/navigation/home_leading_button.dart';
 
 class CreateProfileScreen extends StatefulWidget {
   const CreateProfileScreen({super.key});
@@ -45,7 +46,10 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Crea profilo')),
+      appBar: AppBar(
+        leading: const HomeLeadingButton(),
+        title: const Text('Crea profilo'),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(24),
         child: Center(

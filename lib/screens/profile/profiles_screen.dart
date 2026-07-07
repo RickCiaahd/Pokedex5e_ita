@@ -6,6 +6,7 @@ import '../../repositories/pokemon_pc_repository.dart';
 import '../../repositories/profile_repository.dart';
 import '../../repositories/setting_repository.dart';
 import '../../repositories/team_repository.dart';
+import '../../widgets/navigation/home_leading_button.dart';
 
 class ProfilesScreen extends StatefulWidget {
   const ProfilesScreen({super.key});
@@ -122,7 +123,10 @@ class _ProfilesScreenState extends State<ProfilesScreen> {
     final activeProfileName = _activeProfile?.name ?? 'Allenatore';
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Profili')),
+      appBar: AppBar(
+        leading: const HomeLeadingButton(),
+        title: const Text('Profili'),
+      ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => Navigator.of(context).pop(true),
         icon: const Icon(Icons.check),

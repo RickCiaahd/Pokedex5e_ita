@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 
+import '../../widgets/navigation/home_leading_button.dart';
+
 class BagScreen extends StatelessWidget {
   const BagScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Zaino')),
+      appBar: AppBar(
+        leading: const HomeLeadingButton(),
+        title: const Text('Zaino'),
+      ),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
         children: const [
@@ -104,12 +109,7 @@ class _BagCategoryCard extends StatelessWidget {
           style: const TextStyle(fontWeight: FontWeight.w900),
         ),
         subtitle: Text(description),
-        trailing: const Icon(Icons.chevron_right),
-        onTap: () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('$title sara gestito in una prossima patch.')),
-          );
-        },
+        trailing: const Icon(Icons.lock_outline),
       ),
     );
   }

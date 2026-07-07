@@ -9,8 +9,7 @@ import '../../repositories/pokemon_pc_repository.dart';
 import '../../repositories/pokemon_repository.dart';
 import '../../repositories/profile_repository.dart';
 import '../../repositories/team_repository.dart';
-import '../pc/pokemon_pc_screen.dart';
-import '../team/team_selection_screen.dart';
+import '../../widgets/navigation/home_leading_button.dart';
 
 class CapturePokemonScreen extends StatefulWidget {
   const CapturePokemonScreen({super.key});
@@ -33,6 +32,7 @@ class _CapturePokemonScreenState extends State<CapturePokemonScreen> {
   bool _isLoading = true;
   bool _isCapturing = false;
   String _query = '';
+  String? _successMessage;
   String? _errorMessage;
 
   @override
@@ -50,6 +50,7 @@ class _CapturePokemonScreenState extends State<CapturePokemonScreen> {
   Future<void> _loadCaptureData() async {
     setState(() {
       _isLoading = true;
+      _successMessage = null;
       _errorMessage = null;
     });
 
@@ -118,7 +119,6 @@ class _CapturePokemonScreenState extends State<CapturePokemonScreen> {
 
     try {
       final teamSlot = _firstFreeTeamSlot;
-      final bool sentToTeam;
       final String destination;
 
       if (teamSlot != null) {
@@ -127,14 +127,12 @@ class _CapturePokemonScreenState extends State<CapturePokemonScreen> {
           slotIndex: teamSlot.slotIndex,
           pokemonId: pokemon.id,
         );
-        sentToTeam = true;
         destination = 'aggiunto allo slot ${teamSlot.slotIndex + 1}';
       } else {
         await _pokemonPcRepository.depositPokemon(
           profileId: profile.id,
           pokemonId: pokemon.id,
         );
-        sentToTeam = false;
         destination = 'inviato al PC';
       }
 
@@ -148,26 +146,9 @@ class _CapturePokemonScreenState extends State<CapturePokemonScreen> {
 
       if (!mounted) return;
 
-      final navigator = Navigator.of(context);
-      final messenger = ScaffoldMessenger.of(context);
-
-      messenger.showSnackBar(
-        SnackBar(
-          content: Text('${pokemon.name} catturato e $destination.'),
-          action: SnackBarAction(
-            label: sentToTeam ? 'Squadra' : 'PC',
-            onPressed: () {
-              navigator.push(
-                MaterialPageRoute(
-                  builder: (_) => sentToTeam
-                      ? TeamSelectionScreen(nickname: profile.name)
-                      : const PokemonPcScreen(),
-                ),
-              );
-            },
-          ),
-        ),
-      );
+      setState(() {
+        _successMessage = '${pokemon.name} catturato e $destination.';
+      });
     } catch (e) {
       if (!mounted) return;
 
@@ -185,7 +166,10 @@ class _CapturePokemonScreenState extends State<CapturePokemonScreen> {
     final freeSlot = _firstFreeTeamSlot;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Cattura Pokemon')),
+      appBar: AppBar(
+        leading: const HomeLeadingButton(),
+        title: const Text('Cattura Pokemon'),
+      ),
       body: RefreshIndicator(
         onRefresh: _loadCaptureData,
         child: ListView(
@@ -206,6 +190,13 @@ class _CapturePokemonScreenState extends State<CapturePokemonScreen> {
                 freeSlotIndex: freeSlot?.slotIndex,
                 unlockedSlots: _unlockedPokeslots,
               ),
+              if (_successMessage != null) ...[
+                const SizedBox(height: 12),
+                _InlineStatusMessage(
+                  icon: Icons.check_circle_outline,
+                  message: _successMessage!,
+                ),
+              ],
               const SizedBox(height: 12),
               TextField(
                 controller: _searchController,
@@ -321,6 +312,40 @@ class _CapturePokemonCard extends StatelessWidget {
         trailing: FilledButton(
           onPressed: isCapturing ? null : onCapture,
           child: const Text('Cattura'),
+        ),
+      ),
+    );
+  }
+}
+
+class _InlineStatusMessage extends StatelessWidget {
+  const _InlineStatusMessage({
+    required this.icon,
+    required this.message,
+  });
+
+  final IconData icon;
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Card(
+      color: colorScheme.secondaryContainer,
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Row(
+          children: [
+            Icon(icon, color: colorScheme.onSecondaryContainer),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                message,
+                style: TextStyle(color: colorScheme.onSecondaryContainer),
+              ),
+            ),
+          ],
         ),
       ),
     );

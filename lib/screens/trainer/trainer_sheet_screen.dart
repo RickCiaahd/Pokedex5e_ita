@@ -13,6 +13,7 @@ import '../../repositories/pokemon_repository.dart';
 import '../../repositories/profile_repository.dart';
 import '../../repositories/team_repository.dart';
 import '../../repositories/trainer_manual_repository.dart';
+import '../../widgets/navigation/home_leading_button.dart';
 
 class TrainerSheetScreen extends StatefulWidget {
   const TrainerSheetScreen({super.key});
@@ -508,7 +509,10 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Scheda Allenatore')),
+      appBar: AppBar(
+        leading: const HomeLeadingButton(),
+        title: const Text('Scheda Allenatore'),
+      ),
       body: RefreshIndicator(
         onRefresh: _loadProfile,
         child: ListView(

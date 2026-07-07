@@ -138,8 +138,7 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
   ) {
     final candidates = pokemon.where((pokemon) {
       final evolution = evolutionData[pokemon.name];
-      final isFirstStage = evolution?.currentStage == null ||
-          evolution!.currentStage <= 1;
+      final isFirstStage = evolution == null || evolution.currentStage <= 1;
 
       return pokemon.sr <= 0.5 && isFirstStage;
     }).toList()
@@ -382,6 +381,7 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
                   skillProficiencies: _skillProficiencies,
                   specializations: _specializations,
                   trainerPath: _trainerPath,
+                  onAbilityScoreChanged: _changeAbilityScore,
                 ),
                 checklist: _TrainerCompletionChecklist(
                   race: _raceController.text.trim(),
@@ -419,7 +419,6 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
                   nameController: _nameController,
                   moneyController: _moneyController,
                   trainerLevel: _trainerLevel,
-                  abilityScores: _abilityScores,
                   armorClass: _armorClass,
                   maxHp: _maxHp,
                   currentHp: _currentHp,
@@ -428,7 +427,6 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
                   errorMessage: _errorMessage,
                   onDecreaseLevel: () => _changeLevel(-1),
                   onIncreaseLevel: () => _changeLevel(1),
-                  onAbilityScoreChanged: _changeAbilityScore,
                   onArmorClassChanged: _changeArmorClass,
                   onMaxHpChanged: _changeMaxHp,
                   onCurrentHpChanged: _changeCurrentHp,
@@ -474,29 +472,26 @@ class _TrainerSheetBoard extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         if (constraints.maxWidth >= 900) {
-          return Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          return Column(
             children: [
-              Expanded(
-                flex: 7,
-                child: Column(
-                  children: [
-                    sheet,
-                    const SizedBox(height: 16),
-                    edit,
-                  ],
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                flex: 4,
-                child: Column(
-                  children: [
-                    checklist,
-                    const SizedBox(height: 16),
-                    creation,
-                  ],
-                ),
+              sheet,
+              const SizedBox(height: 16),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(flex: 6, child: creation),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    flex: 4,
+                    child: Column(
+                      children: [
+                        checklist,
+                        const SizedBox(height: 16),
+                        edit,
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ],
           );
@@ -534,6 +529,7 @@ class _TrainerSheetSummary extends StatelessWidget {
     required this.skillProficiencies,
     required this.specializations,
     required this.trainerPath,
+    required this.onAbilityScoreChanged,
   });
 
   final String name;
@@ -550,6 +546,7 @@ class _TrainerSheetSummary extends StatelessWidget {
   final List<String> skillProficiencies;
   final List<String> specializations;
   final String trainerPath;
+  final void Function(String ability, int delta) onAbilityScoreChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -629,6 +626,8 @@ class _TrainerSheetSummary extends StatelessWidget {
                   _AbilityScoreTile(
                     label: entry.key,
                     score: abilityScores[entry.key] ?? entry.value,
+                    onDecrease: () => onAbilityScoreChanged(entry.key, -1),
+                    onIncrease: () => onAbilityScoreChanged(entry.key, 1),
                   ),
               ],
             ),
@@ -785,10 +784,17 @@ class _ChecklistItem {
 }
 
 class _AbilityScoreTile extends StatelessWidget {
-  const _AbilityScoreTile({required this.label, required this.score});
+  const _AbilityScoreTile({
+    required this.label,
+    required this.score,
+    required this.onDecrease,
+    required this.onIncrease,
+  });
 
   final String label;
   final int score;
+  final VoidCallback onDecrease;
+  final VoidCallback onIncrease;
 
   @override
   Widget build(BuildContext context) {
@@ -798,9 +804,9 @@ class _AbilityScoreTile extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
       ),
       child: SizedBox(
-        width: 78,
+        width: 96,
         child: Padding(
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
           child: Column(
             children: [
               Text(label, style: Theme.of(context).textTheme.labelMedium),
@@ -810,7 +816,24 @@ class _AbilityScoreTile extends StatelessWidget {
                   context,
                 ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
               ),
-              Text(_signed(_abilityModifier(score))),
+              Text('Mod. ${_signed(_abilityModifier(score))}'),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  IconButton(
+                    visualDensity: VisualDensity.compact,
+                    tooltip: 'Diminuisci $label',
+                    onPressed: onDecrease,
+                    icon: const Icon(Icons.remove, size: 18),
+                  ),
+                  IconButton(
+                    visualDensity: VisualDensity.compact,
+                    tooltip: 'Aumenta $label',
+                    onPressed: onIncrease,
+                    icon: const Icon(Icons.add, size: 18),
+                  ),
+                ],
+              ),
             ],
           ),
         ),
@@ -1263,7 +1286,6 @@ class _TrainerEditForm extends StatelessWidget {
     required this.nameController,
     required this.moneyController,
     required this.trainerLevel,
-    required this.abilityScores,
     required this.armorClass,
     required this.maxHp,
     required this.currentHp,
@@ -1272,7 +1294,6 @@ class _TrainerEditForm extends StatelessWidget {
     required this.errorMessage,
     required this.onDecreaseLevel,
     required this.onIncreaseLevel,
-    required this.onAbilityScoreChanged,
     required this.onArmorClassChanged,
     required this.onMaxHpChanged,
     required this.onCurrentHpChanged,
@@ -1283,7 +1304,6 @@ class _TrainerEditForm extends StatelessWidget {
   final TextEditingController nameController;
   final TextEditingController moneyController;
   final int trainerLevel;
-  final Map<String, int> abilityScores;
   final int armorClass;
   final int maxHp;
   final int currentHp;
@@ -1292,7 +1312,6 @@ class _TrainerEditForm extends StatelessWidget {
   final String? errorMessage;
   final VoidCallback onDecreaseLevel;
   final VoidCallback onIncreaseLevel;
-  final void Function(String ability, int delta) onAbilityScoreChanged;
   final ValueChanged<int> onArmorClassChanged;
   final ValueChanged<int> onMaxHpChanged;
   final ValueChanged<int> onCurrentHpChanged;
@@ -1403,25 +1422,6 @@ class _TrainerEditForm extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 20),
-            Text(
-              'Caratteristiche',
-              style: Theme.of(context).textTheme.labelLarge,
-            ),
-            const SizedBox(height: 8),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                for (final ability in UserProfile.defaultAbilityScores.keys)
-                  _AbilityScoreEditor(
-                    label: ability,
-                    score: abilityScores[ability] ?? 10,
-                    onDecrease: () => onAbilityScoreChanged(ability, -1),
-                    onIncrease: () => onAbilityScoreChanged(ability, 1),
-                  ),
-              ],
-            ),
             if (errorMessage != null) ...[
               const SizedBox(height: 12),
               Text(
@@ -1488,61 +1488,6 @@ class _NumberStepper extends StatelessWidget {
                   ),
                   Text(
                     '$value',
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  IconButton(
-                    visualDensity: VisualDensity.compact,
-                    onPressed: onIncrease,
-                    icon: const Icon(Icons.add),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _AbilityScoreEditor extends StatelessWidget {
-  const _AbilityScoreEditor({
-    required this.label,
-    required this.score,
-    required this.onDecrease,
-    required this.onIncrease,
-  });
-
-  final String label;
-  final int score;
-  final VoidCallback onDecrease;
-  final VoidCallback onIncrease;
-
-  @override
-  Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: SizedBox(
-        width: 108,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-          child: Column(
-            children: [
-              Text(label, style: Theme.of(context).textTheme.labelMedium),
-              Text('Mod. ${_signed(_abilityModifier(score))}'),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  IconButton(
-                    visualDensity: VisualDensity.compact,
-                    onPressed: onDecrease,
-                    icon: const Icon(Icons.remove),
-                  ),
-                  Text(
-                    '$score',
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   IconButton(

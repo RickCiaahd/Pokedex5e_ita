@@ -83,6 +83,7 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
       profileId: profile.id,
       slotIndex: slotIndex,
       pokemonId: pokemonId,
+      initialCurrentHp: _pokemonById(pokemonId)?.hitPoints,
     );
 
     await _loadTeam();

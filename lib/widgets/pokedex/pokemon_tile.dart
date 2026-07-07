@@ -23,7 +23,7 @@ class PokemonTile extends StatelessWidget {
 
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(8),
       child: Column(
         children: [
           Expanded(
@@ -36,7 +36,7 @@ class PokemonTile extends StatelessWidget {
                     : entry.seen
                     ? const Color(0xFFF6F6F6)
                     : const Color(0xFFE4E1DC),
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(8),
                 border: Border.all(
                   color: entry.caught
                       ? colorScheme.primary
@@ -58,6 +58,40 @@ class PokemonTile extends StatelessWidget {
               child: Stack(
                 alignment: Alignment.center,
                 children: [
+                  Positioned(
+                    top: 0,
+                    left: 0,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.86),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Text(
+                        number,
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                    ),
+                  ),
+                  if (entry.caught || entry.seen)
+                    Positioned(
+                      top: 0,
+                      right: 0,
+                      child: Icon(
+                        entry.caught
+                            ? Icons.catching_pokemon
+                            : Icons.visibility,
+                        size: 18,
+                        color: entry.caught
+                            ? colorScheme.primary
+                            : colorScheme.onSurfaceVariant,
+                      ),
+                    ),
                   Positioned(
                     bottom: 4,
                     child: Container(

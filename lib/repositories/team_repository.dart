@@ -33,6 +33,7 @@ class TeamRepository {
     required String profileId,
     required int slotIndex,
     required int? pokemonId,
+    int? initialCurrentHp,
   }) async {
     final team = await getTeam(profileId);
 
@@ -44,7 +45,7 @@ class TeamRepository {
           pokemonId: pokemonId,
           clearPokemon: pokemonId == null,
           experience: changedPokemon ? 0 : slot.experience,
-          currentHp: changedPokemon ? 0 : slot.currentHp,
+          currentHp: changedPokemon ? (initialCurrentHp ?? 0) : slot.currentHp,
           nickname: changedPokemon ? null : slot.nickname,
           selectedMoves: changedPokemon ? [] : slot.selectedMoves,
           isShiny: changedPokemon ? false : slot.isShiny,

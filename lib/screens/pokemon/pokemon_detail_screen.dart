@@ -51,7 +51,8 @@ const _statusEffectInfos = [
   _StatusEffectInfo(
     name: 'Asleep',
     shortLabel: 'SLP',
-    description: 'Incapacitated and restrained, and rolls all saving throws with disadvantage. Lasts three rounds. When subject to forced movement and at the end of each of its turns, roll a d20. On 11 or higher, the condition ends.',
+    description:
+        'Incapacitated and restrained, and rolls all saving throws with disadvantage. Lasts three rounds. When subject to forced movement and at the end of each of its turns, roll a d20. On 11 or higher, the condition ends.',
     assetCandidates: [
       'assets/textures/gui/status/sleep_down.png',
       'assets/textures/gui/status/sleep_up.png',
@@ -60,7 +61,8 @@ const _statusEffectInfos = [
   _StatusEffectInfo(
     name: 'Burned',
     shortLabel: 'BRN',
-    description: 'Rolls all damage rolls twice and takes the lower result. Until cured or the creature becomes unconscious, it takes an amount of damage equal to its proficiency bonus at the end of each of its turns. Fire-type pokemon are immune to this condition.',
+    description:
+        'Rolls all damage rolls twice and takes the lower result. Until cured or the creature becomes unconscious, it takes an amount of damage equal to its proficiency bonus at the end of each of its turns. Fire-type pokemon are immune to this condition.',
     assetCandidates: [
       'assets/textures/gui/status/burn_down.png',
       'assets/textures/gui/status/burn_up.png',
@@ -69,7 +71,8 @@ const _statusEffectInfos = [
   _StatusEffectInfo(
     name: 'Confused',
     shortLabel: 'CNF',
-    description: "Cannot take reactions. Lasts three rounds. At the start of the creature's turn, roll a d8. 1: The creature takes the Struggle action against itself and automatically hits. 2: The creature takes the Struggle action against the nearest Pokemon target. If there are no valid targets, it takes the Struggle action against itself instead, and hits. 3: The creature doesn't move or take actions. 4-7: The creature chooses its behavior. 8: The condition ends.",
+    description:
+        "Cannot take reactions. Lasts three rounds. At the start of the creature's turn, roll a d8. 1: The creature takes the Struggle action against itself and automatically hits. 2: The creature takes the Struggle action against the nearest Pokemon target. If there are no valid targets, it takes the Struggle action against itself instead, and hits. 3: The creature doesn't move or take actions. 4-7: The creature chooses its behavior. 8: The condition ends.",
     assetCandidates: [
       'assets/textures/gui/status/confuse_down.png',
       'assets/textures/gui/status/confuse_up.png',
@@ -78,13 +81,15 @@ const _statusEffectInfos = [
   _StatusEffectInfo(
     name: 'Flinched',
     shortLabel: 'FLN',
-    description: 'Disadvantage on all attack rolls, ability checks, and saving throws until the end of its next turn. If the creature uses an action that requires a saving throw, the targets have advantage on the roll.',
+    description:
+        'Disadvantage on all attack rolls, ability checks, and saving throws until the end of its next turn. If the creature uses an action that requires a saving throw, the targets have advantage on the roll.',
     assetCandidates: [],
   ),
   _StatusEffectInfo(
     name: 'Frozen',
     shortLabel: 'FRZ',
-    description: 'Incapacitated and restrained. Lasts 1 hour, or until the creature breaks free at the end of one of its turns with a STR save DC 10 + the proficiency of the creature that caused this condition. Ends if the creature takes fire-type damage or damage from a move that can afflict the Burned status. Ice-type pokemon are immune to this condition.',
+    description:
+        'Incapacitated and restrained. Lasts 1 hour, or until the creature breaks free at the end of one of its turns with a STR save DC 10 + the proficiency of the creature that caused this condition. Ends if the creature takes fire-type damage or damage from a move that can afflict the Burned status. Ice-type pokemon are immune to this condition.',
     assetCandidates: [
       'assets/textures/gui/status/frozen_down.png',
       'assets/textures/gui/status/frozen_up.png',
@@ -93,7 +98,8 @@ const _statusEffectInfos = [
   _StatusEffectInfo(
     name: 'Paralyzed',
     shortLabel: 'PAR',
-    description: 'Disadvantage on STR and DEX saving throws, and moves at half speed. At the start of its turn, roll a d4. On a 1, the creature is incapacitated and restrained until the start of its next turn. This roll comes before rolls for the Asleep or Confused conditions. Electric-type pokemon are immune to this condition.',
+    description:
+        'Disadvantage on STR and DEX saving throws, and moves at half speed. At the start of its turn, roll a d4. On a 1, the creature is incapacitated and restrained until the start of its next turn. This roll comes before rolls for the Asleep or Confused conditions. Electric-type pokemon are immune to this condition.',
     assetCandidates: [
       'assets/textures/gui/status/paralyze_down.png',
       'assets/textures/gui/status/paralyze_up.png',
@@ -102,7 +108,8 @@ const _statusEffectInfos = [
   _StatusEffectInfo(
     name: 'Poisoned',
     shortLabel: 'PSN',
-    description: 'Disadvantage on all ability checks and attack rolls. Until cured or the creature becomes unconscious, it takes an amount of damage equal to its proficiency bonus at the end of each of its turns. Poison- and Steel-type pokemon are immune to this condition.',
+    description:
+        'Disadvantage on all ability checks and attack rolls. Until cured or the creature becomes unconscious, it takes an amount of damage equal to its proficiency bonus at the end of each of its turns. Poison- and Steel-type pokemon are immune to this condition.',
     assetCandidates: [
       'assets/textures/gui/status/poisoned_down.png',
       'assets/textures/gui/status/poisoned_up.png',
@@ -111,8 +118,8 @@ const _statusEffectInfos = [
 ];
 
 Map<String, _StatusEffectInfo> get _statusEffectInfoByName => {
-      for (final info in _statusEffectInfos) info.name: info,
-    };
+  for (final info in _statusEffectInfos) info.name: info,
+};
 
 class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
   final MoveRepository _moveRepository = MoveRepository();
@@ -134,7 +141,8 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
   int get _level => _teamSlot == null
       ? _pokemon.minLevelFound
       : LevelProgression.levelFromExperience(_experience);
-  List<String> get _currentStatusEffects => _teamSlot?.statusEffects ?? const [];
+  List<String> get _currentStatusEffects =>
+      _teamSlot?.statusEffects ?? const [];
   int get _loyalty => (_teamSlot?.loyalty ?? 0).clamp(-3, 3).toInt();
   int get _savingThrowLoyaltyBonus => _loyalty.clamp(-1, 1).toInt();
 
@@ -142,7 +150,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
 
   int get _currentHp {
     final savedHp = _teamSlot?.currentHp ?? 0;
-    return savedHp <= 0 ? _maxHp : savedHp.clamp(0, _maxHp).toInt();
+    return savedHp.clamp(0, _maxHp).toInt();
   }
 
   int get _armorClass {
@@ -224,10 +232,11 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
     final names = <String>[];
     names.addAll(pokemon.moves.startingMoves);
 
-    final levelEntries = pokemon.moves.levelMoves.entries
-        .where((entry) => entry.key <= level)
-        .toList()
-      ..sort((a, b) => a.key.compareTo(b.key));
+    final levelEntries =
+        pokemon.moves.levelMoves.entries
+            .where((entry) => entry.key <= level)
+            .toList()
+          ..sort((a, b) => a.key.compareTo(b.key));
 
     for (final entry in levelEntries) {
       names.addAll(entry.value);
@@ -256,7 +265,6 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
 
     final updatedSlot = slot.copyWith(
       selectedMoves: _defaultSelectedMoves(_pokemon, _level),
-      currentHp: slot.currentHp <= 0 ? _maxHp : slot.currentHp,
     );
     _teamSlot = updatedSlot;
     _replaceTeamSlot(updatedSlot);
@@ -297,6 +305,47 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
     _saveTeamSlot(updatedSlot);
   }
 
+  Future<void> _editHp() async {
+    final slot = _teamSlot;
+    if (slot == null) {
+      return;
+    }
+
+    final input = await showDialog<String>(
+      context: context,
+      builder: (_) => _HpDialog(currentHp: _currentHp, maxHp: _maxHp),
+    );
+
+    if (input == null) {
+      return;
+    }
+
+    final updatedHp = _applyHpInput(
+      currentHp: _currentHp,
+      maxHp: _maxHp,
+      input: input,
+    );
+    _saveTeamSlot(slot.copyWith(currentHp: updatedHp));
+  }
+
+  int _applyHpInput({
+    required int currentHp,
+    required int maxHp,
+    required String input,
+  }) {
+    final trimmed = input.trim();
+    if (trimmed.isEmpty) return currentHp;
+
+    final value = int.tryParse(trimmed);
+    if (value == null) return currentHp;
+
+    if (trimmed.startsWith('+') || trimmed.startsWith('-')) {
+      return (currentHp + value).clamp(0, maxHp).toInt();
+    }
+
+    return value.clamp(0, maxHp).toInt();
+  }
+
   void _changeHp(int delta) {
     final slot = _teamSlot;
     if (slot == null) {
@@ -317,15 +366,13 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
     final oldMaxHp = _maxHp;
     final oldCurrentHp = _currentHp;
     final updatedLoyalty = (slot.loyalty + delta).clamp(-3, 3).toInt();
-    final updatedMaxHp = _pokemon.hitPoints +
-        _loyaltyHpBonus(updatedLoyalty, _level);
+    final updatedMaxHp =
+        _pokemon.hitPoints + _loyaltyHpBonus(updatedLoyalty, _level);
     final updatedHp = oldCurrentHp >= oldMaxHp
         ? updatedMaxHp
         : oldCurrentHp.clamp(0, updatedMaxHp).toInt();
 
-    _saveTeamSlot(
-      slot.copyWith(loyalty: updatedLoyalty, currentHp: updatedHp),
-    );
+    _saveTeamSlot(slot.copyWith(loyalty: updatedLoyalty, currentHp: updatedHp));
   }
 
   void _setStatusEffects(List<String> statuses) {
@@ -354,14 +401,11 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
       return;
     }
 
-    _saveTeamSlot(
-      slot.copyWith(
-        currentHp: _maxHp,
-        statusEffects: const [],
-      ),
-    );
+    _saveTeamSlot(slot.copyWith(currentHp: _maxHp, statusEffects: const []));
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('${_pokemon.name} e stato curato al Pokemon Center.')),
+      SnackBar(
+        content: Text('${_pokemon.name} e stato curato al Pokemon Center.'),
+      ),
     );
   }
 
@@ -383,12 +427,14 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 10),
               child: Text(
                 'ADD STATUS EFFECT',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w900,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
               ),
             ),
-            for (final info in _statusEffectInfos.where((info) => info.name != 'Flinched'))
+            for (final info in _statusEffectInfos.where(
+              (info) => info.name != 'Flinched',
+            ))
               CheckboxListTile(
                 secondary: _StatusIcon(info: info, size: 28),
                 title: Text(info.name.toUpperCase()),
@@ -396,6 +442,14 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
                 value: current.contains(info.name),
                 onChanged: (_) => Navigator.of(context).pop(info.name),
               ),
+            ListTile(
+              leading: _StatusIcon(
+                info: _statusEffectInfoByName['Flinched'],
+                size: 28,
+              ),
+              title: const Text('FLINCHED'),
+              subtitle: Text(_statusEffectInfoByName['Flinched']!.description),
+            ),
             if (current.isNotEmpty)
               ListTile(
                 leading: const Icon(Icons.clear),
@@ -434,10 +488,11 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
         ? _defaultSelectedMoves(_pokemon, oldLevel)
         : slot.selectedMoves.take(4).toList();
 
-    final learnedEntries = _pokemon.moves.levelMoves.entries
-        .where((entry) => entry.key > oldLevel && entry.key <= newLevel)
-        .toList()
-      ..sort((a, b) => a.key.compareTo(b.key));
+    final learnedEntries =
+        _pokemon.moves.levelMoves.entries
+            .where((entry) => entry.key > oldLevel && entry.key <= newLevel)
+            .toList()
+          ..sort((a, b) => a.key.compareTo(b.key));
 
     for (final entry in learnedEntries) {
       for (final move in entry.value) {
@@ -606,8 +661,8 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
 
     final wasFullHp = _currentHp >= _maxHp;
     final oldName = _pokemon.name;
-    final evolvedMaxHp = evolvedPokemon.hitPoints +
-        _loyaltyHpBonus(slot.loyalty, _level);
+    final evolvedMaxHp =
+        evolvedPokemon.hitPoints + _loyaltyHpBonus(slot.loyalty, _level);
     final updatedSlot = slot.copyWith(
       pokemonId: evolvedPokemon.id,
       currentHp: wasFullHp ? evolvedMaxHp : _currentHp,
@@ -669,22 +724,28 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
     final natureScores = PokemonNature.forName(slot?.nature ?? 'No Nature');
 
     return {
-      'STR': pokemon.attributes.strength +
+      'STR':
+          pokemon.attributes.strength +
           (customScores['STR'] ?? 0) +
           (natureScores['STR'] ?? 0),
-      'DEX': pokemon.attributes.dexterity +
+      'DEX':
+          pokemon.attributes.dexterity +
           (customScores['DEX'] ?? 0) +
           (natureScores['DEX'] ?? 0),
-      'CON': pokemon.attributes.constitution +
+      'CON':
+          pokemon.attributes.constitution +
           (customScores['CON'] ?? 0) +
           (natureScores['CON'] ?? 0),
-      'INT': pokemon.attributes.intelligence +
+      'INT':
+          pokemon.attributes.intelligence +
           (customScores['INT'] ?? 0) +
           (natureScores['INT'] ?? 0),
-      'WIS': pokemon.attributes.wisdom +
+      'WIS':
+          pokemon.attributes.wisdom +
           (customScores['WIS'] ?? 0) +
           (natureScores['WIS'] ?? 0),
-      'CHA': pokemon.attributes.charisma +
+      'CHA':
+          pokemon.attributes.charisma +
           (customScores['CHA'] ?? 0) +
           (natureScores['CHA'] ?? 0),
     };
@@ -770,6 +831,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
                     heldItem: _teamSlot?.heldItem,
                     statusEffects: _currentStatusEffects,
                     onEditExperience: _editExperience,
+                    onEditHp: _editHp,
                     onDecreaseHp: () => _changeHp(-1),
                     onIncreaseHp: () => _changeHp(1),
                     onDecreaseLoyalty: () => _changeLoyalty(-1),
@@ -842,6 +904,7 @@ class _Header extends StatelessWidget {
     required this.heldItem,
     required this.statusEffects,
     required this.onEditExperience,
+    required this.onEditHp,
     required this.onDecreaseHp,
     required this.onIncreaseHp,
     required this.onDecreaseLoyalty,
@@ -868,6 +931,7 @@ class _Header extends StatelessWidget {
   final String? heldItem;
   final List<String> statusEffects;
   final VoidCallback onEditExperience;
+  final VoidCallback onEditHp;
   final VoidCallback onDecreaseHp;
   final VoidCallback onIncreaseHp;
   final VoidCallback onDecreaseLoyalty;
@@ -888,6 +952,11 @@ class _Header extends StatelessWidget {
         ? 1.0
         : ((experience - currentThreshold) / range).clamp(0.0, 1.0);
     final hpProgress = maxHp <= 0 ? 0.0 : (currentHp / maxHp).clamp(0.0, 1.0);
+    final hpColor = hpProgress < 0.32
+        ? const Color(0xFFFF1B41)
+        : hpProgress < 0.75
+        ? const Color(0xFFFCFF3B)
+        : const Color(0xFF51BD3E);
     final itemLabel = heldItem == null || heldItem!.trim().isEmpty
         ? 'NONE'
         : heldItem!.toUpperCase();
@@ -899,9 +968,7 @@ class _Header extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _PokemonCenterButton(
-                onTap: isPartyMode ? onPokemonCenter : null,
-              ),
+              _PokemonCenterButton(onTap: isPartyMode ? onPokemonCenter : null),
               const SizedBox(width: 6),
               Container(
                 width: 132,
@@ -928,8 +995,8 @@ class _Header extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                            fontWeight: FontWeight.w800,
-                          ),
+                        fontWeight: FontWeight.w800,
+                      ),
                     ),
                   ],
                 ),
@@ -944,10 +1011,8 @@ class _Header extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                            fontWeight: FontWeight.w900,
-                            height: 0.95,
-                          ),
+                      style: Theme.of(context).textTheme.headlineMedium
+                          ?.copyWith(fontWeight: FontWeight.w900, height: 0.95),
                     ),
                     const SizedBox(height: 6),
                     _LoyaltyRow(
@@ -963,7 +1028,10 @@ class _Header extends StatelessWidget {
                         ),
                         const SizedBox(width: 6),
                         Expanded(
-                          child: _FightMetric(label: 'AC:', value: '$armorClass'),
+                          child: _FightMetric(
+                            label: 'AC:',
+                            value: '$armorClass',
+                          ),
                         ),
                       ],
                     ),
@@ -1014,27 +1082,33 @@ class _Header extends StatelessWidget {
               _FightIconButton(icon: Icons.remove, onPressed: onDecreaseHp),
               const SizedBox(width: 8),
               Expanded(
-                child: Row(
-                  children: [
-                    Text(
-                      'HP: $currentHp/$maxHp',
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.w800,
-                          ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(999),
-                        child: LinearProgressIndicator(
-                          value: hpProgress,
-                          minHeight: 16,
-                          color: const Color(0xFF43BE38),
-                          backgroundColor: const Color(0xFFE4E4E4),
+                child: InkWell(
+                  onTap: isPartyMode ? onEditHp : null,
+                  borderRadius: BorderRadius.circular(8),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 6),
+                    child: Row(
+                      children: [
+                        Text(
+                          'HP: $currentHp/$maxHp',
+                          style: Theme.of(context).textTheme.titleLarge
+                              ?.copyWith(fontWeight: FontWeight.w800),
                         ),
-                      ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(999),
+                            child: LinearProgressIndicator(
+                              value: hpProgress,
+                              minHeight: 16,
+                              color: hpColor,
+                              backgroundColor: const Color(0xFFBABABA),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
               ),
               const SizedBox(width: 8),
@@ -1077,18 +1151,29 @@ class _PokemonCenterButton extends StatelessWidget {
           border: Border.all(color: colorScheme.outlineVariant),
         ),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.local_hospital, color: colorScheme.primary),
-            const SizedBox(height: 6),
-            RotatedBox(
-              quarterTurns: 3,
-              child: Text(
-                'CENTER',
-                style: TextStyle(
-                  color: colorScheme.primary,
-                  fontWeight: FontWeight.w900,
-                  fontSize: 11,
+            SizedBox(
+              height: 32,
+              child: Center(
+                child: Icon(Icons.local_hospital, color: colorScheme.primary),
+              ),
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 6),
+                child: Center(
+                  child: RotatedBox(
+                    quarterTurns: 3,
+                    child: Text(
+                      'POK\u00C9MON CENTER',
+                      maxLines: 1,
+                      style: TextStyle(
+                        color: colorScheme.primary,
+                        fontWeight: FontWeight.w900,
+                        fontSize: 9.5,
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -1177,10 +1262,7 @@ class _PokemonCenterChoiceButton extends StatelessWidget {
         style: FilledButton.styleFrom(
           backgroundColor: Colors.orange,
           foregroundColor: Colors.white,
-          textStyle: const TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.w900,
-          ),
+          textStyle: const TextStyle(fontSize: 24, fontWeight: FontWeight.w900),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(6),
             side: BorderSide(color: Colors.orange.shade900),
@@ -1252,9 +1334,9 @@ class _FightMetric extends StatelessWidget {
       ),
       child: Text(
         '$label $value',
-        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w900,
-            ),
+        style: Theme.of(
+          context,
+        ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
       ),
     );
   }
@@ -1367,15 +1449,18 @@ class _FightStatBox extends StatelessWidget {
                 style: TextStyle(color: muted, fontWeight: FontWeight.w700),
               ),
               const SizedBox(width: 5),
-              Text('$score', style: const TextStyle(fontWeight: FontWeight.w900)),
+              Text(
+                '$score',
+                style: const TextStyle(fontWeight: FontWeight.w900),
+              ),
             ],
           ),
           Text(
             _signed(modifier),
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.w900,
-                  height: 1,
-                ),
+              fontWeight: FontWeight.w900,
+              height: 1,
+            ),
           ),
         ],
       ),
@@ -1407,9 +1492,9 @@ class _SavingThrowsRow extends StatelessWidget {
         Text(
           'SAVING THROWS',
           style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-                fontWeight: FontWeight.w800,
-              ),
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+            fontWeight: FontWeight.w800,
+          ),
         ),
         const SizedBox(height: 2),
         Row(
@@ -1452,7 +1537,9 @@ class _SaveBox extends StatelessWidget {
       alignment: Alignment.center,
       decoration: BoxDecoration(
         color: proficient
-            ? Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.72)
+            ? Theme.of(
+                context,
+              ).colorScheme.primaryContainer.withValues(alpha: 0.72)
             : Colors.white,
         borderRadius: BorderRadius.circular(5),
         border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
@@ -1566,10 +1653,7 @@ class _FallbackAssetIcon extends StatelessWidget {
         ),
         child: Text(
           fallbackLabel,
-          style: TextStyle(
-            fontSize: size * 0.32,
-            fontWeight: FontWeight.w900,
-          ),
+          style: TextStyle(fontSize: size * 0.32, fontWeight: FontWeight.w900),
         ),
       );
     }
@@ -1606,7 +1690,9 @@ class _FightPanelButton extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+          border: Border.all(
+            color: Theme.of(context).colorScheme.outlineVariant,
+          ),
         ),
         child: Text(
           label,
@@ -1789,7 +1875,8 @@ class _FeaturesView extends StatelessWidget {
         ? slot!.abilities
         : [
             ...pokemon.abilities,
-            if (pokemon.hiddenAbility != null && feats.contains('Hidden Ability'))
+            if (pokemon.hiddenAbility != null &&
+                feats.contains('Hidden Ability'))
               pokemon.hiddenAbility!,
           ];
 
@@ -2091,6 +2178,53 @@ class _ExperienceDialogState extends State<_ExperienceDialog> {
           labelText: 'Esperienza',
           helperText: 'Usa +2000 per aggiungere, 2000 per impostare.',
           hintText: widget.currentExperience.toString(),
+        ),
+        onSubmitted: (_) => _submit(),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Annulla'),
+        ),
+        FilledButton(onPressed: _submit, child: const Text('Salva')),
+      ],
+    );
+  }
+}
+
+class _HpDialog extends StatefulWidget {
+  const _HpDialog({required this.currentHp, required this.maxHp});
+
+  final int currentHp;
+  final int maxHp;
+
+  @override
+  State<_HpDialog> createState() => _HpDialogState();
+}
+
+class _HpDialogState extends State<_HpDialog> {
+  final TextEditingController _controller = TextEditingController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _submit() => Navigator.of(context).pop(_controller.text);
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Modifica HP'),
+      content: TextField(
+        controller: _controller,
+        autofocus: true,
+        decoration: InputDecoration(
+          labelText: 'HP',
+          helperText: 'Usa +5 per curare, -5 per danneggiare, 5 per impostare.',
+          hintText: widget.currentHp.toString(),
+          suffixText: '/ ${widget.maxHp}',
         ),
         onSubmitted: (_) => _submit(),
       ),

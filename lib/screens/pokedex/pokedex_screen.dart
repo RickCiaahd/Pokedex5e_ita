@@ -5,6 +5,7 @@ import '../../models/pokedex_entry.dart';
 import '../../models/pokemon.dart';
 import '../../models/pokemon_flavor.dart';
 import '../../repositories/pokemon_repository.dart';
+import '../../widgets/pokemon/pokemon_asset_image.dart';
 import '../../widgets/pokedex/pokemon_summary_dialog.dart';
 import '../../widgets/pokedex/pokemon_tile.dart';
 import '../../services/profile_storage_service.dart';
@@ -12,6 +13,8 @@ import '../../services/profile_storage_service.dart';
 enum MarkMode { none, seen, unseen, caught }
 
 enum ViewFilter { all, seen, unseen, caught }
+
+enum SortMode { numberAsc, numberDesc, nameAsc, nameDesc }
 
 class PokedexScreen extends StatefulWidget {
   const PokedexScreen({super.key});
@@ -24,15 +27,14 @@ class _PokedexScreenState extends State<PokedexScreen> {
   final PokemonRepository _repository = PokemonRepository();
   final ProfileStorageService _profileStorageService = ProfileStorageService();
   final TextEditingController _searchController = TextEditingController();
-  final ItemScrollController _itemScrollController = ItemScrollController();
-  final ItemPositionsListener _itemPositionsListener =
-      ItemPositionsListener.create();
 
   final Map<int, PokedexEntry> _entries = {};
   final Map<int, PokemonFlavor> _pokemonFlavors = {};
 
   MarkMode _markMode = MarkMode.none;
   ViewFilter _viewFilter = ViewFilter.all;
+  SortMode? _sortMode = SortMode.numberAsc;
+  Set<String>? _selectedTypes = {};
 
   List<Pokemon> _allPokemon = [];
   List<Pokemon> _filteredPokemon = [];
@@ -40,7 +42,7 @@ class _PokedexScreenState extends State<PokedexScreen> {
   bool _isLoading = true;
   String? _errorMessage;
 
-  String _selectedRegion = 'Kanto';
+  String? _selectedRegion;
 
   final Map<String, List<int>> _regions = {
     'Kanto': [1, 151],
@@ -56,14 +58,12 @@ class _PokedexScreenState extends State<PokedexScreen> {
   @override
   void initState() {
     super.initState();
-    _itemPositionsListener.itemPositions.addListener(_onSectionScroll);
     _loadPokemon();
   }
 
   @override
   void dispose() {
     _searchController.dispose();
-    _itemPositionsListener.itemPositions.removeListener(_onSectionScroll);
     super.dispose();
   }
 
@@ -89,6 +89,8 @@ class _PokedexScreenState extends State<PokedexScreen> {
 
   void _applyFilters() {
     final query = _searchController.text.toLowerCase().trim();
+    final selectedTypes = _activeSelectedTypes;
+    final selectedRegion = _selectedRegion;
 
     _filteredPokemon = _allPokemon.where((pokemon) {
       final matchesSearch =
@@ -105,60 +107,81 @@ class _PokedexScreenState extends State<PokedexScreen> {
         ViewFilter.caught => entry.caught,
       };
 
-      return matchesSearch && matchesFilter;
+      final localizedTypes = pokemon.types
+          .map(PokemonAssetPaths.localizedTypeLabel)
+          .toSet();
+      final matchesTypes =
+          selectedTypes.isEmpty || selectedTypes.every(localizedTypes.contains);
+
+      final matchesRegion =
+          selectedRegion == null ||
+          _regionForPokemon(pokemon) == selectedRegion;
+
+      return matchesSearch && matchesFilter && matchesTypes && matchesRegion;
     }).toList();
+
+    _filteredPokemon.sort((a, b) {
+      return switch (_activeSortMode) {
+        SortMode.numberAsc => a.id.compareTo(b.id),
+        SortMode.numberDesc => b.id.compareTo(a.id),
+        SortMode.nameAsc => a.name.toLowerCase().compareTo(
+          b.name.toLowerCase(),
+        ),
+        SortMode.nameDesc => b.name.toLowerCase().compareTo(
+          a.name.toLowerCase(),
+        ),
+      };
+    });
   }
 
   void _onSearchChanged(String _) {
     setState(_applyFilters);
   }
 
-  void _selectRegion(String region) {
-    final index = _visibleRegions.indexOf(region);
-
-    if (index == -1) return;
-
+  void _setRegionFilter(String? region) {
     setState(() {
       _selectedRegion = region;
+      _applyFilters();
     });
-
-    _itemScrollController.scrollTo(
-      index: index,
-      duration: const Duration(milliseconds: 450),
-      curve: Curves.easeInOut,
-    );
-  }
-
-  void _onSectionScroll() {
-    final positions = _itemPositionsListener.itemPositions.value;
-
-    if (positions.isEmpty) return;
-
-    final visibleIndexes = positions
-        .where((position) => position.itemTrailingEdge > 0)
-        .map((position) => position.index)
-        .toList();
-
-    if (visibleIndexes.isEmpty) return;
-
-    final firstVisibleIndex = visibleIndexes.reduce((a, b) => a < b ? a : b);
-    final regions = _visibleRegions;
-
-    if (firstVisibleIndex < 0 || firstVisibleIndex >= regions.length) return;
-
-    final region = regions[firstVisibleIndex];
-
-    if (region != _selectedRegion) {
-      setState(() {
-        _selectedRegion = region;
-      });
-    }
   }
 
   List<String> get _visibleRegions {
     return _regions.keys.where((region) {
       return _pokemonForRegion(region).isNotEmpty;
     }).toList();
+  }
+
+  List<String> get _availableTypes {
+    final types = <String>{};
+    for (final pokemon in _allPokemon) {
+      types.addAll(pokemon.types.map(PokemonAssetPaths.localizedTypeLabel));
+    }
+    return types.toList()..sort((a, b) => a.compareTo(b));
+  }
+
+  SortMode get _activeSortMode => _sortMode ??= SortMode.numberAsc;
+
+  Set<String> get _activeSelectedTypes => _selectedTypes ??= {};
+
+  bool get _usesRegionSections {
+    return _activeSortMode == SortMode.numberAsc ||
+        _activeSortMode == SortMode.numberDesc;
+  }
+
+  List<String> get _visibleSections {
+    if (!_usesRegionSections) {
+      return _filteredPokemon.isEmpty ? const [] : const ['Risultati'];
+    }
+
+    return _visibleRegions;
+  }
+
+  List<Pokemon> _pokemonForSection(String section) {
+    if (!_usesRegionSections) {
+      return _filteredPokemon;
+    }
+
+    return _pokemonForRegion(section);
   }
 
   List<Pokemon> _pokemonForRegion(String region) {
@@ -169,6 +192,16 @@ class _PokedexScreenState extends State<PokedexScreen> {
     return _filteredPokemon.where((pokemon) {
       return pokemon.id >= range.first && pokemon.id <= range.last;
     }).toList();
+  }
+
+  String? _regionForPokemon(Pokemon pokemon) {
+    for (final entry in _regions.entries) {
+      final range = entry.value;
+      if (pokemon.id >= range.first && pokemon.id <= range.last) {
+        return entry.key;
+      }
+    }
+    return null;
   }
 
   int _gridColumnCount(BuildContext context) {
@@ -193,6 +226,20 @@ class _PokedexScreenState extends State<PokedexScreen> {
     );
   }
 
+  void _setTypeFilters(Set<String> types) {
+    setState(() {
+      _selectedTypes = {...types};
+      _applyFilters();
+    });
+  }
+
+  void _clearTypeFilters() {
+    setState(() {
+      _activeSelectedTypes.clear();
+      _applyFilters();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     Widget content;
@@ -204,26 +251,60 @@ class _PokedexScreenState extends State<PokedexScreen> {
     } else {
       content = Column(
         children: [
-          _RegionSelector(
-            regions: _regions.keys.toList(),
-            selectedRegion: _selectedRegion,
-            onSelected: _selectRegion,
-          ),
-          _RegionProgressGrid(
-            regions: _regions.keys.toList(),
-            selectedRegion: _selectedRegion,
-            progressBuilder: _regionProgress,
-          ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-            child: TextField(
-              controller: _searchController,
-              onChanged: _onSearchChanged,
-              decoration: const InputDecoration(
-                hintText: 'Cerca Pokémon...',
-                prefixIcon: Icon(Icons.search),
-                border: OutlineInputBorder(),
-              ),
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 10),
+            child: Column(
+              children: [
+                TextField(
+                  controller: _searchController,
+                  onChanged: _onSearchChanged,
+                  decoration: const InputDecoration(
+                    hintText: 'Cerca Pokémon...',
+                    prefixIcon: Icon(Icons.search),
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _SortModeSelector(
+                        sortMode: _activeSortMode,
+                        onChanged: (sortMode) {
+                          setState(() {
+                            _sortMode = sortMode;
+                            _applyFilters();
+                          });
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    _ResultCounter(count: _filteredPokemon.length),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _RegionFilterSelector(
+                        regions: _regions.keys.toList(),
+                        selectedRegion: _selectedRegion,
+                        progressBuilder: _regionProgress,
+                        onChanged: _setRegionFilter,
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: _TypeFilterSelector(
+                        types: _availableTypes,
+                        selectedTypes: _activeSelectedTypes,
+                        onChanged: _setTypeFilters,
+                        onClear: _clearTypeFilters,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
           _ViewFilterSelector(
@@ -244,18 +325,16 @@ class _PokedexScreenState extends State<PokedexScreen> {
             },
           ),
           Expanded(
-            child: _visibleRegions.isEmpty
+            child: _visibleSections.isEmpty
                 ? const Center(child: Text('Nessun Pokémon trovato.'))
                 : ScrollablePositionedList.builder(
-                    itemScrollController: _itemScrollController,
-                    itemPositionsListener: _itemPositionsListener,
-                    itemCount: _visibleRegions.length,
+                    itemCount: _visibleSections.length,
                     itemBuilder: (context, index) {
-                      final region = _visibleRegions[index];
-                      final pokemonList = _pokemonForRegion(region);
+                      final section = _visibleSections[index];
+                      final pokemonList = _pokemonForSection(section);
 
                       return _RegionSection(
-                        region: region,
+                        region: section,
                         pokemon: pokemonList,
                         columns: _gridColumnCount(context),
                         entryFor: _entryFor,
@@ -393,12 +472,15 @@ class _RegionSection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            region.toUpperCase(),
-            style: Theme.of(
-              context,
-            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+            '${region.toUpperCase()} · ${pokemon.length}',
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.w900,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 8),
+          Divider(color: Theme.of(context).colorScheme.outlineVariant),
+          const SizedBox(height: 8),
           GridView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
@@ -425,103 +507,407 @@ class _RegionSection extends StatelessWidget {
   }
 }
 
-class _RegionSelector extends StatelessWidget {
-  const _RegionSelector({
+class _RegionFilterSelector extends StatelessWidget {
+  const _RegionFilterSelector({
     required this.regions,
     required this.selectedRegion,
-    required this.onSelected,
+    required this.progressBuilder,
+    required this.onChanged,
   });
 
   final List<String> regions;
-  final String selectedRegion;
-  final ValueChanged<String> onSelected;
+  final String? selectedRegion;
+  final Map<String, int> Function(String region, bool caught) progressBuilder;
+  final ValueChanged<String?> onChanged;
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 52,
-      child: ListView.separated(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        scrollDirection: Axis.horizontal,
-        itemCount: regions.length,
-        separatorBuilder: (_, _) => const SizedBox(width: 8),
-        itemBuilder: (context, index) {
-          final region = regions[index];
-          final selected = region == selectedRegion;
+    final region = selectedRegion;
+    final seen = region == null ? null : progressBuilder(region, false);
+    final caught = region == null ? null : progressBuilder(region, true);
+    final subtitle = region == null
+        ? 'Tutte le regioni'
+        : 'Visti ${seen!['count']}/${seen['total']} · Presi ${caught!['count']}/${caught['total']}';
 
-          return ChoiceChip(
-            label: Text(region),
-            selected: selected,
-            onSelected: (_) => onSelected(region),
-          );
-        },
+    return OutlinedButton.icon(
+      icon: const Icon(Icons.public),
+      label: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(region ?? 'Regione'),
+          Text(
+            subtitle,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.labelSmall,
+          ),
+        ],
       ),
+      onPressed: () async {
+        final result = await showDialog<String>(
+          context: context,
+          builder: (_) => _RegionFilterDialog(
+            regions: regions,
+            selectedRegion: region,
+            progressBuilder: progressBuilder,
+          ),
+        );
+
+        if (result == null || result == _RegionFilterDialog.cancelValue) {
+          return;
+        }
+
+        if (result == _RegionFilterDialog.allValue) {
+          onChanged(null);
+        } else {
+          onChanged(result);
+        }
+      },
     );
   }
 }
 
-class _RegionProgressGrid extends StatelessWidget {
-  const _RegionProgressGrid({
+class _RegionFilterDialog extends StatefulWidget {
+  const _RegionFilterDialog({
     required this.regions,
     required this.selectedRegion,
     required this.progressBuilder,
   });
 
+  static const cancelValue = '__cancel__';
+  static const allValue = '__all__';
+
   final List<String> regions;
-  final String selectedRegion;
+  final String? selectedRegion;
   final Map<String, int> Function(String region, bool caught) progressBuilder;
 
   @override
+  State<_RegionFilterDialog> createState() => _RegionFilterDialogState();
+}
+
+class _RegionFilterDialogState extends State<_RegionFilterDialog> {
+  late String _selectedRegion =
+      widget.selectedRegion ?? _RegionFilterDialog.allValue;
+
+  @override
   Widget build(BuildContext context) {
-    final bodyStyle = Theme.of(context).textTheme.bodySmall;
-
-    return SizedBox(
-      height: 122,
-      child: ListView.separated(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        scrollDirection: Axis.horizontal,
-        itemCount: regions.length,
-        separatorBuilder: (_, _) => const SizedBox(width: 8),
-        itemBuilder: (context, index) {
-          final region = regions[index];
-          final seen = progressBuilder(region, false);
-          final caught = progressBuilder(region, true);
-          final selected = region == selectedRegion;
-
-          return Card(
-            elevation: selected ? 3 : 1,
-            child: Container(
-              width: 120,
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 7),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    region,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: selected
-                          ? Theme.of(context).colorScheme.primary
-                          : null,
-                    ),
-                  ),
-                  const SizedBox(height: 3),
-                  Text(
-                    'Visti: ${seen['count']}/${seen['total']}',
-                    style: bodyStyle,
-                  ),
-                  Text(
-                    'Presi: ${caught['count']}/${caught['total']}',
-                    style: bodyStyle,
-                  ),
-                ],
+    return AlertDialog(
+      title: const Text('Filtra per regione'),
+      content: SizedBox(
+        width: double.maxFinite,
+        child: ListView(
+          shrinkWrap: true,
+          children: [
+            _RegionOptionTile(
+              title: 'Tutte',
+              selected: _selectedRegion == _RegionFilterDialog.allValue,
+              onTap: () => setState(
+                () => _selectedRegion = _RegionFilterDialog.allValue,
               ),
             ),
-          );
-        },
+            for (final region in widget.regions)
+              _RegionOptionTile(
+                title: region,
+                selected: _selectedRegion == region,
+                subtitle: _RegionProgressText(
+                  seen: widget.progressBuilder(region, false),
+                  caught: widget.progressBuilder(region, true),
+                ),
+                onTap: () => setState(() => _selectedRegion = region),
+              ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () =>
+              Navigator.of(context).pop(_RegionFilterDialog.cancelValue),
+          child: const Text('Annulla'),
+        ),
+        TextButton(
+          onPressed: () =>
+              Navigator.of(context).pop(_RegionFilterDialog.allValue),
+          child: const Text('Tutte'),
+        ),
+        FilledButton(
+          onPressed: () => Navigator.of(context).pop(_selectedRegion),
+          child: const Text('Applica'),
+        ),
+      ],
+    );
+  }
+}
+
+class _RegionOptionTile extends StatelessWidget {
+  const _RegionOptionTile({
+    required this.title,
+    required this.selected,
+    required this.onTap,
+    this.subtitle,
+  });
+
+  final String title;
+  final bool selected;
+  final VoidCallback onTap;
+  final Widget? subtitle;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: Icon(
+        selected ? Icons.radio_button_checked : Icons.radio_button_unchecked,
+        color: selected ? Theme.of(context).colorScheme.primary : null,
+      ),
+      title: Text(title),
+      subtitle: subtitle,
+      onTap: onTap,
+    );
+  }
+}
+
+class _RegionProgressText extends StatelessWidget {
+  const _RegionProgressText({required this.seen, required this.caught});
+
+  final Map<String, int> seen;
+  final Map<String, int> caught;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      'Visti ${seen['count']}/${seen['total']} · Presi ${caught['count']}/${caught['total']}',
+    );
+  }
+}
+
+class _SortModeSelector extends StatelessWidget {
+  const _SortModeSelector({required this.sortMode, required this.onChanged});
+
+  final SortMode? sortMode;
+  final ValueChanged<SortMode> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final selectedSortMode = sortMode ?? SortMode.numberAsc;
+
+    return DropdownButtonFormField<SortMode>(
+      initialValue: selectedSortMode,
+      decoration: const InputDecoration(
+        labelText: 'Ordina',
+        prefixIcon: Icon(Icons.sort),
+        border: OutlineInputBorder(),
+        isDense: true,
+      ),
+      items: const [
+        DropdownMenuItem(
+          value: SortMode.numberAsc,
+          child: Text('Numero crescente'),
+        ),
+        DropdownMenuItem(
+          value: SortMode.numberDesc,
+          child: Text('Numero decrescente'),
+        ),
+        DropdownMenuItem(value: SortMode.nameAsc, child: Text('Nome A-Z')),
+        DropdownMenuItem(value: SortMode.nameDesc, child: Text('Nome Z-A')),
+      ],
+      onChanged: (value) {
+        if (value != null) {
+          onChanged(value);
+        }
+      },
+    );
+  }
+}
+
+class _ResultCounter extends StatelessWidget {
+  const _ResultCounter({required this.count});
+
+  final int count;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 48,
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+      ),
+      child: Text(
+        '$count',
+        style: Theme.of(
+          context,
+        ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
+      ),
+    );
+  }
+}
+
+class _TypeFilterSelector extends StatelessWidget {
+  const _TypeFilterSelector({
+    required this.types,
+    required this.selectedTypes,
+    required this.onChanged,
+    required this.onClear,
+  });
+
+  final List<String>? types;
+  final Set<String>? selectedTypes;
+  final ValueChanged<Set<String>> onChanged;
+  final VoidCallback onClear;
+
+  @override
+  Widget build(BuildContext context) {
+    final availableTypes = types ?? const <String>[];
+    final selected = selectedTypes ?? const <String>{};
+
+    if (availableTypes.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    final label = selected.isEmpty ? 'Tipi' : 'Tipi (${selected.length})';
+
+    return Row(
+      children: [
+        Expanded(
+          child: OutlinedButton.icon(
+            icon: const Icon(Icons.category),
+            label: Text(label),
+            onPressed: () async {
+              final result = await showDialog<Set<String>>(
+                context: context,
+                builder: (_) => _TypeFilterDialog(
+                  types: availableTypes,
+                  selectedTypes: selected,
+                ),
+              );
+
+              if (result != null) {
+                onChanged(result);
+              }
+            },
+          ),
+        ),
+        if (selected.isNotEmpty) ...[
+          const SizedBox(width: 8),
+          IconButton.outlined(
+            tooltip: 'Cancella tipi',
+            onPressed: onClear,
+            icon: const Icon(Icons.close),
+          ),
+        ],
+      ],
+    );
+  }
+}
+
+class _TypeFilterDialog extends StatefulWidget {
+  const _TypeFilterDialog({required this.types, required this.selectedTypes});
+
+  final List<String> types;
+  final Set<String> selectedTypes;
+
+  @override
+  State<_TypeFilterDialog> createState() => _TypeFilterDialogState();
+}
+
+class _TypeFilterDialogState extends State<_TypeFilterDialog> {
+  late final Set<String> _selectedTypes = {...widget.selectedTypes};
+
+  void _toggle(String type) {
+    setState(() {
+      if (_selectedTypes.contains(type)) {
+        _selectedTypes.remove(type);
+      } else {
+        _selectedTypes.add(type);
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Filtra per tipo'),
+      content: SizedBox(
+        width: double.maxFinite,
+        child: Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            for (final type in widget.types)
+              _TypeFilterBadgeButton(
+                type: type,
+                selected: _selectedTypes.contains(type),
+                onTap: () => _toggle(type),
+              ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Annulla'),
+        ),
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(<String>{}),
+          child: const Text('Cancella'),
+        ),
+        FilledButton(
+          onPressed: () => Navigator.of(context).pop(_selectedTypes),
+          child: const Text('Applica'),
+        ),
+      ],
+    );
+  }
+}
+
+class _TypeFilterBadgeButton extends StatelessWidget {
+  const _TypeFilterBadgeButton({
+    required this.type,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final String type;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(8),
+      child: Container(
+        height: 38,
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        decoration: BoxDecoration(
+          color: selected
+              ? Theme.of(context).colorScheme.primaryContainer
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color: selected
+                ? Theme.of(context).colorScheme.primary
+                : Theme.of(context).colorScheme.outlineVariant,
+            width: selected ? 2 : 1,
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            PokemonTypeBadge(type: type, height: 22),
+            if (selected) ...[
+              const SizedBox(width: 6),
+              Icon(
+                Icons.check,
+                size: 16,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+            ],
+          ],
+        ),
       ),
     );
   }

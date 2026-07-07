@@ -7,6 +7,13 @@ class UserProfile {
   final DateTime updatedAt;
   final int trainerLevel;
   final int money;
+  final String trainerRace;
+  final String background;
+  final String starterPokemon;
+  final String startingPack;
+  final List<String> skillProficiencies;
+  final List<String> specializations;
+  final String trainerPath;
 
   UserProfile({
     required this.id,
@@ -15,6 +22,13 @@ class UserProfile {
     required this.updatedAt,
     this.trainerLevel = 1,
     this.money = 0,
+    this.trainerRace = '',
+    this.background = '',
+    this.starterPokemon = '',
+    this.startingPack = '',
+    this.skillProficiencies = const [],
+    this.specializations = const [],
+    this.trainerPath = '',
   });
 
   factory UserProfile.create(String name) {
@@ -27,6 +41,13 @@ class UserProfile {
       updatedAt: now,
       trainerLevel: 1,
       money: 0,
+      trainerRace: '',
+      background: '',
+      starterPokemon: '',
+      startingPack: '',
+      skillProficiencies: const [],
+      specializations: const [],
+      trainerPath: '',
     );
   }
 
@@ -40,6 +61,13 @@ class UserProfile {
       updatedAt: now,
       trainerLevel: 1,
       money: 0,
+      trainerRace: '',
+      background: '',
+      starterPokemon: '',
+      startingPack: '',
+      skillProficiencies: const [],
+      specializations: const [],
+      trainerPath: '',
     );
   }
 
@@ -50,6 +78,13 @@ class UserProfile {
     DateTime? updatedAt,
     int? trainerLevel,
     int? money,
+    String? trainerRace,
+    String? background,
+    String? starterPokemon,
+    String? startingPack,
+    List<String>? skillProficiencies,
+    List<String>? specializations,
+    String? trainerPath,
   }) {
     return UserProfile(
       id: id ?? this.id,
@@ -58,6 +93,13 @@ class UserProfile {
       updatedAt: updatedAt ?? DateTime.now(),
       trainerLevel: trainerLevel ?? this.trainerLevel,
       money: money ?? this.money,
+      trainerRace: trainerRace ?? this.trainerRace,
+      background: background ?? this.background,
+      starterPokemon: starterPokemon ?? this.starterPokemon,
+      startingPack: startingPack ?? this.startingPack,
+      skillProficiencies: skillProficiencies ?? this.skillProficiencies,
+      specializations: specializations ?? this.specializations,
+      trainerPath: trainerPath ?? this.trainerPath,
     );
   }
 
@@ -69,6 +111,13 @@ class UserProfile {
       'updatedAt': updatedAt.toIso8601String(),
       'trainerLevel': trainerLevel,
       'money': money,
+      'trainerRace': trainerRace,
+      'background': background,
+      'starterPokemon': starterPokemon,
+      'startingPack': startingPack,
+      'skillProficiencies': skillProficiencies,
+      'specializations': specializations,
+      'trainerPath': trainerPath,
     };
   }
 
@@ -80,6 +129,13 @@ class UserProfile {
       updatedAt: DateTime.parse(json['updatedAt']),
       trainerLevel: json['trainerLevel'] ?? 1,
       money: json['money'] ?? 0,
+      trainerRace: json['trainerRace'] ?? '',
+      background: json['background'] ?? '',
+      starterPokemon: json['starterPokemon'] ?? '',
+      startingPack: json['startingPack'] ?? '',
+      skillProficiencies: List<String>.from(json['skillProficiencies'] ?? []),
+      specializations: List<String>.from(json['specializations'] ?? []),
+      trainerPath: json['trainerPath'] ?? '',
     );
   }
 }

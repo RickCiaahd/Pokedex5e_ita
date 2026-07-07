@@ -13,6 +13,13 @@ void main() {
 
       expect(profile.trainerLevel, 1);
       expect(profile.money, 0);
+      expect(profile.trainerRace, '');
+      expect(profile.background, '');
+      expect(profile.starterPokemon, '');
+      expect(profile.startingPack, '');
+      expect(profile.skillProficiencies, isEmpty);
+      expect(profile.specializations, isEmpty);
+      expect(profile.trainerPath, '');
     });
 
     test('persists trainer companion fields', () {
@@ -23,12 +30,26 @@ void main() {
         updatedAt: DateTime(2026, 7, 7),
         trainerLevel: 5,
         money: 1200,
+        trainerRace: 'Human',
+        background: 'Ranger',
+        starterPokemon: 'Bulbasaur',
+        startingPack: "Explorer's pack",
+        skillProficiencies: const ['Nature', 'Survival'],
+        specializations: const ['Gardener'],
+        trainerPath: 'Ranger',
       );
 
       final json = profile.toJson();
 
       expect(json['trainerLevel'], 5);
       expect(json['money'], 1200);
+      expect(json['trainerRace'], 'Human');
+      expect(json['background'], 'Ranger');
+      expect(json['starterPokemon'], 'Bulbasaur');
+      expect(json['startingPack'], "Explorer's pack");
+      expect(json['skillProficiencies'], ['Nature', 'Survival']);
+      expect(json['specializations'], ['Gardener']);
+      expect(json['trainerPath'], 'Ranger');
     });
 
     test('copyWith updates trainer companion fields', () {
@@ -43,12 +64,26 @@ void main() {
         name: 'Capopalestra',
         trainerLevel: 8,
         money: 2500,
+        trainerRace: 'Human',
+        background: 'Gym Leader',
+        starterPokemon: 'Charmander',
+        startingPack: "Dungeoneer's pack",
+        skillProficiencies: const ['Persuasion', 'Insight'],
+        specializations: const ['Pyromaniac'],
+        trainerPath: 'Ace Trainer',
       );
 
       expect(updated.id, profile.id);
       expect(updated.name, 'Capopalestra');
       expect(updated.trainerLevel, 8);
       expect(updated.money, 2500);
+      expect(updated.trainerRace, 'Human');
+      expect(updated.background, 'Gym Leader');
+      expect(updated.starterPokemon, 'Charmander');
+      expect(updated.startingPack, "Dungeoneer's pack");
+      expect(updated.skillProficiencies, ['Persuasion', 'Insight']);
+      expect(updated.specializations, ['Pyromaniac']);
+      expect(updated.trainerPath, 'Ace Trainer');
       expect(updated.createdAt, profile.createdAt);
     });
   });

@@ -36,5 +36,15 @@ void main() {
         isTrue,
       );
     });
+
+    test('returns the next progression upgrade levels', () {
+      expect(TrainerProgression.nextPokeslotLevel(1), 5);
+      expect(TrainerProgression.nextPokeslotLevel(5), 10);
+      expect(TrainerProgression.nextPokeslotLevel(15), isNull);
+
+      expect(TrainerProgression.nextControlUpgradeLevel(1), 3);
+      expect(TrainerProgression.nextControlUpgradeLevel(8), 11);
+      expect(TrainerProgression.nextControlUpgradeLevel(17), isNull);
+    });
   });
 }

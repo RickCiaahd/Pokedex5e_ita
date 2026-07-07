@@ -40,6 +40,14 @@ class TrainerProgression {
     return pokemonSr <= maxControlledSrForLevel(trainerLevel);
   }
 
+  static int? nextPokeslotLevel(int level) {
+    return _nextLevelInTable(pokeslotsByLevel, clampLevel(level));
+  }
+
+  static int? nextControlUpgradeLevel(int level) {
+    return _nextLevelInTable(maxControlledSrByLevel, clampLevel(level));
+  }
+
   static int _valueAtLevel(Map<int, int> table, int level) {
     var selected = table.entries.first.value;
 
@@ -50,5 +58,15 @@ class TrainerProgression {
     }
 
     return selected;
+  }
+
+  static int? _nextLevelInTable(Map<int, int> table, int level) {
+    for (final entry in table.entries) {
+      if (entry.key > level) {
+        return entry.key;
+      }
+    }
+
+    return null;
   }
 }

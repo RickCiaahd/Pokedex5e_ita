@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
+import '../../models/trainer_progression.dart';
 import '../../models/user_profile.dart';
 import '../../repositories/pokedex_repositry.dart';
 import '../../repositories/profile_repository.dart';
@@ -75,6 +77,24 @@ class _ProfilesScreenState extends State<ProfilesScreen> {
 
   Future<void> _setActiveProfile(UserProfile profile) async {
     await _profileRepository.setActiveProfile(profile.id);
+    await _loadProfiles();
+  }
+
+  Future<void> _editProfile(UserProfile profile) async {
+    final result = await showDialog<_ProfileEditResult>(
+      context: context,
+      builder: (_) => _EditProfileDialog(profile: profile),
+    );
+
+    if (result == null) return;
+
+    await _profileRepository.saveProfile(
+      profile.copyWith(
+        name: result.name,
+        trainerLevel: result.trainerLevel,
+        money: result.money,
+      ),
+    );
     await _loadProfiles();
   }
 
@@ -159,6 +179,7 @@ class _ProfilesScreenState extends State<ProfilesScreen> {
                   isActive: profile.id == activeProfileId,
                   canDelete: profile.id != activeProfileId,
                   onSelect: () => _setActiveProfile(profile),
+                  onEdit: () => _editProfile(profile),
                   onDelete: () => _deleteProfile(profile),
                 ),
             ],
@@ -267,6 +288,7 @@ class _ProfileTile extends StatelessWidget {
     required this.isActive,
     required this.canDelete,
     required this.onSelect,
+    required this.onEdit,
     required this.onDelete,
   });
 
@@ -274,6 +296,7 @@ class _ProfileTile extends StatelessWidget {
   final bool isActive;
   final bool canDelete;
   final VoidCallback onSelect;
+  final VoidCallback onEdit;
   final VoidCallback onDelete;
 
   @override
@@ -326,19 +349,13 @@ class _ProfileTile extends StatelessWidget {
                 : 'Lv. ${profile.trainerLevel} | Creato il ${_formatDate(profile.createdAt)}',
           ),
         ),
-        trailing: isActive
-            ? Icon(Icons.check_circle, color: colorScheme.primary)
-            : Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  TextButton(onPressed: onSelect, child: const Text('Attiva')),
-                  IconButton(
-                    tooltip: 'Elimina',
-                    icon: const Icon(Icons.delete_outline),
-                    onPressed: canDelete ? onDelete : null,
-                  ),
-                ],
-              ),
+        trailing: _ProfileActions(
+          isActive: isActive,
+          canDelete: canDelete,
+          onSelect: onSelect,
+          onEdit: onEdit,
+          onDelete: onDelete,
+        ),
         onTap: isActive ? null : onSelect,
       ),
     );
@@ -366,6 +383,48 @@ class _ProfileTile extends StatelessWidget {
   }
 }
 
+class _ProfileActions extends StatelessWidget {
+  const _ProfileActions({
+    required this.isActive,
+    required this.canDelete,
+    required this.onSelect,
+    required this.onEdit,
+    required this.onDelete,
+  });
+
+  final bool isActive;
+  final bool canDelete;
+  final VoidCallback onSelect;
+  final VoidCallback onEdit;
+  final VoidCallback onDelete;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        IconButton(
+          tooltip: 'Modifica',
+          icon: const Icon(Icons.edit_outlined),
+          onPressed: onEdit,
+        ),
+        if (isActive)
+          Icon(Icons.check_circle, color: colorScheme.primary)
+        else ...[
+          TextButton(onPressed: onSelect, child: const Text('Attiva')),
+          IconButton(
+            tooltip: 'Elimina',
+            icon: const Icon(Icons.delete_outline),
+            onPressed: canDelete ? onDelete : null,
+          ),
+        ],
+      ],
+    );
+  }
+}
+
 class _ActiveBadge extends StatelessWidget {
   const _ActiveBadge({required this.colorScheme});
 
@@ -388,6 +447,167 @@ class _ActiveBadge extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _ProfileEditResult {
+  const _ProfileEditResult({
+    required this.name,
+    required this.trainerLevel,
+    required this.money,
+  });
+
+  final String name;
+  final int trainerLevel;
+  final int money;
+}
+
+class _EditProfileDialog extends StatefulWidget {
+  const _EditProfileDialog({required this.profile});
+
+  final UserProfile profile;
+
+  @override
+  State<_EditProfileDialog> createState() => _EditProfileDialogState();
+}
+
+class _EditProfileDialogState extends State<_EditProfileDialog> {
+  late final TextEditingController _nameController;
+  late final TextEditingController _moneyController;
+  late int _trainerLevel;
+  String? _errorMessage;
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController(text: widget.profile.name);
+    _moneyController = TextEditingController(
+      text: widget.profile.money.toString(),
+    );
+    _trainerLevel = TrainerProgression.clampLevel(
+      widget.profile.trainerLevel,
+    );
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _moneyController.dispose();
+    super.dispose();
+  }
+
+  void _changeLevel(int delta) {
+    setState(() {
+      _trainerLevel = TrainerProgression.clampLevel(_trainerLevel + delta);
+    });
+  }
+
+  void _submit() {
+    final name = _nameController.text.trim();
+    final money = int.tryParse(_moneyController.text.trim());
+
+    if (name.isEmpty) {
+      setState(() => _errorMessage = 'Inserisci un nome allenatore.');
+      return;
+    }
+
+    if (money == null || money < 0) {
+      setState(() => _errorMessage = 'Inserisci una quantita di soldi valida.');
+      return;
+    }
+
+    Navigator.of(context).pop(
+      _ProfileEditResult(
+        name: name,
+        trainerLevel: _trainerLevel,
+        money: money,
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final pokeslots = TrainerProgression.pokeslotsForLevel(_trainerLevel);
+    final maxSr = TrainerProgression.maxControlledSrForLevel(_trainerLevel);
+
+    return AlertDialog(
+      title: const Text('Modifica profilo'),
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            TextField(
+              controller: _nameController,
+              autofocus: true,
+              decoration: const InputDecoration(labelText: 'Nome allenatore'),
+              onSubmitted: (_) => _submit(),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              'Livello allenatore',
+              style: Theme.of(context).textTheme.labelLarge,
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                IconButton(
+                  tooltip: 'Diminuisci livello',
+                  onPressed: _trainerLevel <= TrainerProgression.minLevel
+                      ? null
+                      : () => _changeLevel(-1),
+                  icon: const Icon(Icons.remove_circle_outline),
+                ),
+                Expanded(
+                  child: Column(
+                    children: [
+                      Text(
+                        'Lv. $_trainerLevel',
+                        style: Theme.of(context).textTheme.titleLarge
+                            ?.copyWith(fontWeight: FontWeight.bold),
+                      ),
+                      Text('Pokéslot $pokeslots | SR max $maxSr'),
+                    ],
+                  ),
+                ),
+                IconButton(
+                  tooltip: 'Aumenta livello',
+                  onPressed: _trainerLevel >= TrainerProgression.maxLevel
+                      ? null
+                      : () => _changeLevel(1),
+                  icon: const Icon(Icons.add_circle_outline),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _moneyController,
+              decoration: const InputDecoration(
+                labelText: 'Soldi',
+                prefixText: '₽ ',
+              ),
+              keyboardType: TextInputType.number,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              onSubmitted: (_) => _submit(),
+            ),
+            if (_errorMessage != null) ...[
+              const SizedBox(height: 12),
+              Text(
+                _errorMessage!,
+                style: TextStyle(color: Theme.of(context).colorScheme.error),
+              ),
+            ],
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Annulla'),
+        ),
+        FilledButton(onPressed: _submit, child: const Text('Salva')),
+      ],
     );
   }
 }

@@ -30,5 +30,26 @@ void main() {
       expect(json['trainerLevel'], 5);
       expect(json['money'], 1200);
     });
+
+    test('copyWith updates trainer companion fields', () {
+      final profile = UserProfile(
+        id: 'profile',
+        name: 'Trainer',
+        createdAt: DateTime(2026, 7, 7),
+        updatedAt: DateTime(2026, 7, 7),
+      );
+
+      final updated = profile.copyWith(
+        name: 'Capopalestra',
+        trainerLevel: 8,
+        money: 2500,
+      );
+
+      expect(updated.id, profile.id);
+      expect(updated.name, 'Capopalestra');
+      expect(updated.trainerLevel, 8);
+      expect(updated.money, 2500);
+      expect(updated.createdAt, profile.createdAt);
+    });
   });
 }

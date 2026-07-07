@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../bag/bag_screen.dart';
+import '../capture/capture_pokemon_screen.dart';
+import '../pc/pokemon_pc_screen.dart';
 import '../pokedex/pokedex_screen.dart';
 import '../profile/profiles_screen.dart';
 import '../team/team_selection_screen.dart';
@@ -121,16 +124,52 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
               ),
               _HomeActionButton(
+                icon: Icons.add_circle_outline,
+                title: 'Cattura Pokémon',
+                subtitle:
+                    'Scegli il Pokémon: va in squadra se c’è posto, altrimenti nel PC.',
+                onTap: () async {
+                  await Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => const CapturePokemonScreen(),
+                    ),
+                  );
+                  await _loadDashboard();
+                },
+              ),
+              _HomeActionButton(
                 icon: Icons.groups,
                 title: 'Squadra',
                 subtitle: 'Scegli fino a 6 Pokémon per il profilo attivo.',
-                onTap: () {
-                  Navigator.of(context).push(
+                onTap: () async {
+                  await Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (_) => TeamSelectionScreen(
                         nickname: profile?.name ?? 'Allenatore',
                       ),
                     ),
+                  );
+                  await _loadDashboard();
+                },
+              ),
+              _HomeActionButton(
+                icon: Icons.computer,
+                title: 'PC Pokémon',
+                subtitle: 'Gestisci i Pokémon catturati fuori squadra.',
+                onTap: () async {
+                  await Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const PokemonPcScreen()),
+                  );
+                  await _loadDashboard();
+                },
+              ),
+              _HomeActionButton(
+                icon: Icons.backpack_outlined,
+                title: 'Zaino',
+                subtitle: 'Equipaggiamento, cure e oggetti da cattura.',
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const BagScreen()),
                   );
                 },
               ),

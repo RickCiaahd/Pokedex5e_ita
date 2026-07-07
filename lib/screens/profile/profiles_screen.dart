@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../models/user_profile.dart';
 import '../../repositories/pokedex_repositry.dart';
+import '../../repositories/pokemon_pc_repository.dart';
 import '../../repositories/profile_repository.dart';
 import '../../repositories/setting_repository.dart';
 import '../../repositories/team_repository.dart';
@@ -16,6 +17,7 @@ class ProfilesScreen extends StatefulWidget {
 class _ProfilesScreenState extends State<ProfilesScreen> {
   final ProfileRepository _profileRepository = ProfileRepository();
   final PokedexRepository _pokedexRepository = PokedexRepository();
+  final PokemonPcRepository _pokemonPcRepository = PokemonPcRepository();
   final TeamRepository _teamRepository = TeamRepository();
   final SettingsRepository _settingsRepository = SettingsRepository();
 
@@ -85,7 +87,7 @@ class _ProfilesScreenState extends State<ProfilesScreen> {
         title: const Text('Eliminare profilo?'),
         content: Text(
           'Vuoi eliminare ${profile.name}? Verranno rimossi anche Pokédex, '
-          'squadra e impostazioni collegate.',
+          'squadra, PC e impostazioni collegate.',
         ),
         actions: [
           TextButton(
@@ -107,6 +109,7 @@ class _ProfilesScreenState extends State<ProfilesScreen> {
     if (confirmed != true) return;
 
     await _pokedexRepository.clearProfilePokedex(profile.id);
+    await _pokemonPcRepository.deletePc(profile.id);
     await _teamRepository.deleteTeam(profile.id);
     await _settingsRepository.deleteSettings(profile.id);
     await _profileRepository.deleteProfile(profile.id);

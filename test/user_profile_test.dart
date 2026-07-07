@@ -23,6 +23,7 @@ void main() {
       expect(profile.starterPokemon, '');
       expect(profile.startingPack, '');
       expect(profile.skillProficiencies, isEmpty);
+      expect(profile.savingThrowProficiencies, isEmpty);
       expect(profile.specializations, isEmpty);
       expect(profile.trainerPath, '');
     });
@@ -52,6 +53,7 @@ void main() {
         starterPokemon: 'Bulbasaur',
         startingPack: "Explorer's pack",
         skillProficiencies: const ['Nature', 'Survival'],
+        savingThrowProficiencies: const ['DEX', 'WIS'],
         specializations: const ['Gardener'],
         trainerPath: 'Ranger',
       );
@@ -70,6 +72,7 @@ void main() {
       expect(json['starterPokemon'], 'Bulbasaur');
       expect(json['startingPack'], "Explorer's pack");
       expect(json['skillProficiencies'], ['Nature', 'Survival']);
+      expect(json['savingThrowProficiencies'], ['DEX', 'WIS']);
       expect(json['specializations'], ['Gardener']);
       expect(json['trainerPath'], 'Ranger');
     });
@@ -103,6 +106,7 @@ void main() {
         starterPokemon: 'Charmander',
         startingPack: "Dungeoneer's pack",
         skillProficiencies: const ['Persuasion', 'Insight'],
+        savingThrowProficiencies: const ['STR'],
         specializations: const ['Pyromaniac'],
         trainerPath: 'Ace Trainer',
       );
@@ -121,6 +125,7 @@ void main() {
       expect(updated.starterPokemon, 'Charmander');
       expect(updated.startingPack, "Dungeoneer's pack");
       expect(updated.skillProficiencies, ['Persuasion', 'Insight']);
+      expect(updated.savingThrowProficiencies, ['STR']);
       expect(updated.specializations, ['Pyromaniac']);
       expect(updated.trainerPath, 'Ace Trainer');
       expect(updated.createdAt, profile.createdAt);

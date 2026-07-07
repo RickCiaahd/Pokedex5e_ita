@@ -25,6 +25,7 @@ class UserProfile {
   final String starterPokemon;
   final String startingPack;
   final List<String> skillProficiencies;
+  final List<String> savingThrowProficiencies;
   final List<String> specializations;
   final String trainerPath;
 
@@ -45,6 +46,7 @@ class UserProfile {
     this.starterPokemon = '',
     this.startingPack = '',
     this.skillProficiencies = const [],
+    this.savingThrowProficiencies = const [],
     this.specializations = const [],
     this.trainerPath = '',
   }) : abilityScores = Map.unmodifiable(
@@ -71,6 +73,7 @@ class UserProfile {
       starterPokemon: '',
       startingPack: '',
       skillProficiencies: const [],
+      savingThrowProficiencies: const [],
       specializations: const [],
       trainerPath: '',
     );
@@ -96,6 +99,7 @@ class UserProfile {
       starterPokemon: '',
       startingPack: '',
       skillProficiencies: const [],
+      savingThrowProficiencies: const [],
       specializations: const [],
       trainerPath: '',
     );
@@ -118,6 +122,7 @@ class UserProfile {
     String? starterPokemon,
     String? startingPack,
     List<String>? skillProficiencies,
+    List<String>? savingThrowProficiencies,
     List<String>? specializations,
     String? trainerPath,
   }) {
@@ -138,6 +143,8 @@ class UserProfile {
       starterPokemon: starterPokemon ?? this.starterPokemon,
       startingPack: startingPack ?? this.startingPack,
       skillProficiencies: skillProficiencies ?? this.skillProficiencies,
+      savingThrowProficiencies:
+          savingThrowProficiencies ?? this.savingThrowProficiencies,
       specializations: specializations ?? this.specializations,
       trainerPath: trainerPath ?? this.trainerPath,
     );
@@ -161,6 +168,7 @@ class UserProfile {
       'starterPokemon': starterPokemon,
       'startingPack': startingPack,
       'skillProficiencies': skillProficiencies,
+      'savingThrowProficiencies': savingThrowProficiencies,
       'specializations': specializations,
       'trainerPath': trainerPath,
     };
@@ -184,6 +192,9 @@ class UserProfile {
       starterPokemon: json['starterPokemon'] ?? '',
       startingPack: json['startingPack'] ?? '',
       skillProficiencies: List<String>.from(json['skillProficiencies'] ?? []),
+      savingThrowProficiencies: List<String>.from(
+        json['savingThrowProficiencies'] ?? [],
+      ),
       specializations: List<String>.from(json['specializations'] ?? []),
       trainerPath: json['trainerPath'] ?? '',
     );

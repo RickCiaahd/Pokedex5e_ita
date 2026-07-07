@@ -2,22 +2,49 @@ import 'dart:convert';
 
 import 'package:flutter/services.dart';
 
+import '../models/bag_item.dart';
+
 class ItemRepository {
-  Map<String, String>? _cache;
+  Map<String, String>? _descriptionCache;
+  List<BagItem>? _webItemCache;
 
   Future<Map<String, String>> getItemDescriptions() async {
-    if (_cache != null) {
-      return _cache!;
+    if (_descriptionCache != null) {
+      return _descriptionCache!;
     }
 
     final jsonString = await rootBundle.loadString('assets/data/items.json');
     final json = Map<String, dynamic>.from(jsonDecode(jsonString));
 
-    _cache = json.map((key, value) {
+    _descriptionCache = json.map((key, value) {
       final data = Map<String, dynamic>.from(value);
       return MapEntry(key, data['Effect']?.toString() ?? '');
     });
 
-    return _cache!;
+    return _descriptionCache!;
+  }
+
+  Future<List<BagItem>> getWebItems() async {
+    if (_webItemCache != null) {
+      return _webItemCache!;
+    }
+
+    final jsonString = await rootBundle.loadString(
+      'assets/data_webapp/items.json',
+    );
+    final json = Map<String, dynamic>.from(jsonDecode(jsonString));
+    final itemsJson = List<dynamic>.from(json['items'] ?? const []);
+
+    _webItemCache = itemsJson
+        .map((value) => BagItem.fromWebJson(Map<String, dynamic>.from(value)))
+        .where((item) => item.id.isNotEmpty)
+        .toList(growable: false)
+      ..sort((a, b) {
+        final typeCompare = a.type.compareTo(b.type);
+        if (typeCompare != 0) return typeCompare;
+        return a.name.compareTo(b.name);
+      });
+
+    return _webItemCache!;
   }
 }

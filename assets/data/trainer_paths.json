@@ -1,0 +1,352 @@
+[
+  {
+    "name": "Ace Trainer",
+    "features": [
+      {
+        "level": 2,
+        "title": "Ace Trainer",
+        "description": "I tuoi Pokemon ottengono +1 ai tiri per colpire e ai danni. E il path piu diretto per chi vuole eccellere in battaglia."
+      },
+      {
+        "level": 5,
+        "title": "Battle Master",
+        "description": "Ottieni dadi battaglia d6 pari a 1 + modificatore WIS, minimo 1. Puoi assegnarne uno a un tuo Pokemon dopo un tiro per colpire o danni per aggiungerlo al risultato. Recuperi i dadi con un riposo lungo."
+      },
+      {
+        "level": 9,
+        "title": "Max Potential",
+        "description": "Scegli un potenziamento permanente per tutti i tuoi Pokemon: +10 ft velocita, +1 STR, +1 DEX oppure +1 CON."
+      },
+      {
+        "level": 15,
+        "title": "Rapid Switching",
+        "description": "Puoi richiamare e mandare in campo Pokemon come azione bonus. Usi pari a 1 + modificatore WIS, minimo 1, recuperati con riposo lungo. Un Pokemon non puo essere sostituito prima della fine del suo primo turno completo, salvo effetti specifici."
+      }
+    ]
+  },
+  {
+    "name": "Hobbyist",
+    "features": [
+      {
+        "level": 2,
+        "title": "Hobbyist",
+        "description": "Scegli una specializzazione aggiuntiva e due competenze extra."
+      },
+      {
+        "level": 5,
+        "title": "Versatile",
+        "description": "Ottieni dadi abilita d6 pari a 1 + modificatore WIS, minimo 1. Puoi aggiungerne uno a una prova di abilita o tiro salvezza di un tuo Pokemon dopo il tiro. Recuperi i dadi con riposo lungo."
+      },
+      {
+        "level": 9,
+        "title": "Many Faces",
+        "description": "Scegli una feature di livello 2, 5 o 9 da un altro Trainer Path."
+      },
+      {
+        "level": 15,
+        "title": "Skill Switch",
+        "description": "A ogni riposo lungo scegli un talento dalla sezione Additional Feats: tutti i tuoi Pokemon lo conoscono per quel giorno."
+      }
+    ]
+  },
+  {
+    "name": "Poké Mentor",
+    "features": [
+      {
+        "level": 2,
+        "title": "Poké Mentor",
+        "description": "Le tue TM possono essere usate due volte prima di rompersi."
+      },
+      {
+        "level": 5,
+        "title": "Tutor",
+        "description": "Il tuo addestramento riduce tempi e sprechi nell insegnare mosse. Usa questa tappa come riferimento per gestione TM e apprendimento al tavolo."
+      },
+      {
+        "level": 9,
+        "title": "Guided Practice",
+        "description": "Il mentoring diventa piu efficiente: i Pokemon apprendono e consolidano tecniche con maggiore facilita durante la crescita."
+      },
+      {
+        "level": 15,
+        "title": "Master Teacher",
+        "description": "Le mosse dei tuoi Pokemon possono essere apprese e dimenticate a ogni riposo lungo invece che solo al level up."
+      }
+    ]
+  },
+  {
+    "name": "Pokéchef",
+    "features": [
+      {
+        "level": 2,
+        "title": "Pokéchef",
+        "description": "Sei specializzato nel preparare cibo e treat per sostenere i Pokemon durante l avventura."
+      },
+      {
+        "level": 5,
+        "title": "Edible Treat",
+        "description": "Prepari treat curativi. Come azione un Pokemon recupera 2d4+2 PF. Usi pari a 1 + modificatore WIS, recuperati con riposo lungo."
+      },
+      {
+        "level": 9,
+        "title": "Cheerleader",
+        "description": "Una volta per riposo breve, come azione bonus, ispiri gli alleati: fino al tuo prossimo turno aggiungi il modificatore CHA, minimo 1, a tiri per colpire, danni oppure CA degli alleati. I treat curano 3d10+6."
+      },
+      {
+        "level": 15,
+        "title": "Master Teacher",
+        "description": "Le mosse possono essere apprese e dimenticate a ogni riposo lungo; i tuoi treat curano 4d12+10 PF."
+      }
+    ]
+  },
+  {
+    "name": "Researcher",
+    "features": [
+      {
+        "level": 2,
+        "title": "Researcher",
+        "description": "Scegli WIS o INT quando prendi il path. Puoi aggiungere quel modificatore, minimo 1, alle prove di abilita dei tuoi Pokemon."
+      },
+      {
+        "level": 5,
+        "title": "Analyst",
+        "description": "Come azione bonus puoi fare una prova Investigation CD 12 per determinare il livello di un Pokemon e identificare una sua abilita scelta dal DM."
+      },
+      {
+        "level": 9,
+        "title": "Evolutionary Expert",
+        "description": "Quando un tuo Pokemon evolve, puoi usare due suoi punti evoluzione per acquistare un talento."
+      },
+      {
+        "level": 15,
+        "title": "Professor",
+        "description": "Come azione bonus puoi identificare tutte le mosse note di un bersaglio. Inoltre indichi punti deboli: gli alleati entro 60 ft ottengono +2 ai tiri per colpire contro quel bersaglio fino alla fine del tuo prossimo turno. Usi pari a 1 + modificatore INT, recuperati con riposo lungo."
+      }
+    ]
+  },
+  {
+    "name": "Pokémon Collector",
+    "features": [
+      {
+        "level": 2,
+        "title": "Pokémon Collector",
+        "description": "Ottieni expertise in Animal Handling, raddoppiando il bonus competenza per questa abilita."
+      },
+      {
+        "level": 5,
+        "title": "Gotta Catch 'Em All",
+        "description": "Una volta per riposo lungo puoi tirare Animal Handling con vantaggio per catturare, anche se il bersaglio non ha condizioni negative."
+      },
+      {
+        "level": 9,
+        "title": "Catching Expert",
+        "description": "I Pokemon che catturi vengono guariti da condizioni e tornano a PF pieni. Aggiungi anche il modificatore CHA ai tentativi di cattura."
+      },
+      {
+        "level": 15,
+        "title": "Disciplined Strikes",
+        "description": "Quando un tuo Pokemon infliggerebbe abbastanza danni da mandare KO un Pokemon, puoi lasciarlo invece a 1 PF."
+      }
+    ]
+  },
+  {
+    "name": "Nurse",
+    "features": [
+      {
+        "level": 2,
+        "title": "Nurse",
+        "description": "Ottieni competenza in Medicine. Dopo un riposo lungo o visita a un Pokecenter, i Pokemon con te ottengono PF temporanei pari al tuo livello."
+      },
+      {
+        "level": 5,
+        "title": "Pure Heart",
+        "description": "Ottieni una riserva di guarigione pari a livello trainer x 5. Come azione puoi toccare una creatura consenziente e spendere punti per curarla. Si ricarica con riposo lungo."
+      },
+      {
+        "level": 9,
+        "title": "Healing Spirit",
+        "description": "Quando usi consumabili curativi sui Pokemon, o un Pokemon usa una mossa curativa, tira due volte i dadi di cura e tieni il risultato migliore."
+      },
+      {
+        "level": 15,
+        "title": "Joy",
+        "description": "Una volta dopo ogni riposo lungo puoi spendere 1 ora per curare completamente fino a sei Pokemon e rimuovere tutti gli status, come in un Pokecenter."
+      }
+    ]
+  },
+  {
+    "name": "Commander",
+    "features": [
+      {
+        "level": 2,
+        "title": "Commander",
+        "description": "La lealta dello starter diventa Loyal. Tutti i tuoi Pokemon raddoppiano i bonus ai tiri salvezza e PF provenienti da livelli di lealta positivi."
+      },
+      {
+        "level": 5,
+        "title": "Follow Me",
+        "description": "I nuovi Pokemon che catturi ottengono +1 Loyalty. La Loyalty dei tuoi Pokemon non diminuisce per aver perso una battaglia."
+      },
+      {
+        "level": 9,
+        "title": "Show Me What You've Got",
+        "description": "Una volta per riposo breve, un tuo Pokemon puo raddoppiare i dadi danno di una mossa oppure usare una mossa di un tier superiore disponibile nel suo stat block. Puoi decidere il raddoppio dopo aver visto tiro per colpire o tiro salvezza."
+      },
+      {
+        "level": 15,
+        "title": "We're a Team",
+        "description": "Come azione bonus pronunci un comando. Fino alla fine del tuo prossimo turno, i Pokemon alleati entro 60 ft hanno vantaggio agli attacchi. Usi pari a 1 + modificatore CHA, recuperati con riposo lungo."
+      }
+    ]
+  },
+  {
+    "name": "Type Master",
+    "features": [
+      {
+        "level": 2,
+        "title": "Type Master",
+        "description": "I Pokemon dello stesso tipo della tua specializzazione aumentano lo STAB di +1. Se in futuro hai piu specializzazioni, il bonus si applica anche ai nuovi tipi; con doppio tipo e doppia specializzazione il bonus diventa +2."
+      },
+      {
+        "level": 5,
+        "title": "Drawing Power",
+        "description": "I Pokemon dei tuoi tipi specializzati aggiungono +2 ai tiri per colpire."
+      },
+      {
+        "level": 9,
+        "title": "Storing Power",
+        "description": "I Pokemon che porti con te e appartengono ai tuoi tipi specializzati ottengono resistenza a uno dei tipi della tua specializzazione, scelto quando ottieni la feature."
+      },
+      {
+        "level": 15,
+        "title": "Releasing Power",
+        "description": "I Pokemon dei tuoi tipi specializzati possono applicare lo STAB a una qualsiasi mossa dannosa a scelta, anche se la mossa non e del loro tipo."
+      }
+    ]
+  },
+  {
+    "name": "Grunt",
+    "features": [
+      {
+        "level": 2,
+        "title": "Sabotage",
+        "description": "Ottieni Shadow Points pari al tuo livello, recuperati con riposo lungo. Come reazione puoi spendere punti per ridurre un tiro per colpire che colpisce un tuo Pokemon, potenzialmente facendolo mancare; un 20 naturale non puo essere ridotto."
+      },
+      {
+        "level": 5,
+        "title": "And Make It Double",
+        "description": "Spendendo 3 Shadow Points, tu o un tuo Pokemon potete tirare con vantaggio una prova di abilita, un tiro per colpire o un tiro salvezza."
+      },
+      {
+        "level": 9,
+        "title": "Surrender Now",
+        "description": "Come reazione puoi spendere 4 Shadow Points per aumentare di un grado la resistenza di un tuo Pokemon contro una mossa che lo danneggia."
+      },
+      {
+        "level": 15,
+        "title": "Prepare to Fight",
+        "description": "Puoi spendere 5 Shadow Points per permettere a un tuo Pokemon di invocare la reazione Me First tramite Copy Meowth."
+      }
+    ]
+  },
+  {
+    "name": "Tactician",
+    "features": [
+      {
+        "level": 2,
+        "title": "Tactician",
+        "description": "Ottieni Tactical Points pari al tuo livello, recuperati con riposo lungo. Quando un Pokemon recupera PF da item o mossa, puoi spendere punti per aumentare la cura di 1d4 per punto."
+      },
+      {
+        "level": 5,
+        "title": "Directed Strike",
+        "description": "Spendendo 2 Tactical Points, un tuo Pokemon tira due volte i danni di un attacco e tiene il risultato migliore."
+      },
+      {
+        "level": 9,
+        "title": "Raise Your Defenses",
+        "description": "Come reazione puoi spendere fino a 3 Tactical Points per aumentare la CA di un Pokemon se questo trasforma un colpo in un mancato."
+      },
+      {
+        "level": 15,
+        "title": "Not This Time",
+        "description": "Dopo che un avversario tira un TS contro una mossa di un tuo Pokemon, puoi aumentare la CD fino a 5 spendendo 1 Tactical Point per ogni punto, se questo causa il fallimento."
+      }
+    ]
+  },
+  {
+    "name": "Ranger",
+    "features": [
+      {
+        "level": 2,
+        "title": "Ranger",
+        "description": "Ottieni competenza in Nature e Survival, o expertise se eri gia competente. La velocita aumenta di 5 ft e ottieni velocita di scalata e nuoto pari alla velocita di camminata."
+      },
+      {
+        "level": 5,
+        "title": "Deep Connection",
+        "description": "Puoi lanciare Speak with Animals per comunicare con un Pokemon consenziente e comprenderne la risposta. Usi giornalieri pari a modificatore WIS o CHA, minimo 1."
+      },
+      {
+        "level": 9,
+        "title": "Strong Bond",
+        "description": "A ogni riposo lungo puoi creare un legame con fino a due Pokemon."
+      },
+      {
+        "level": 15,
+        "title": "Best Friends",
+        "description": "Puoi avere due Pokemon attivi fuori dalla Ball. In battaglia condividono comunque economia d azione come se ci fosse un solo Pokemon attivo; se uno sviene puoi mandarne fuori un altro."
+      }
+    ]
+  },
+  {
+    "name": "Guru",
+    "features": [
+      {
+        "level": 2,
+        "title": "Guru",
+        "description": "Ottieni competenza in Persuasion. I Pokemon non ancora controllabili restano Indifferent invece di Disloyal finche non raggiungi il Control Upgrade richiesto."
+      },
+      {
+        "level": 5,
+        "title": "Mind",
+        "description": "Tutti i tuoi Pokemon sono competenti nei tiri salvezza di Saggezza e hanno vantaggio per evitare di fallire contro confusione."
+      },
+      {
+        "level": 9,
+        "title": "Body",
+        "description": "I tuoi Pokemon hanno accesso a entrambe le abilita non nascoste, se disponibili. Tireless costa 1 ASI invece di 2; chi lo possiede gia puo ottenere 1 ASI."
+      },
+      {
+        "level": 15,
+        "title": "Spirit",
+        "description": "All inizio del tuo turno puoi aggiungere il modificatore WIS ai tiri per colpire oppure ai danni del tuo Pokemon fino all inizio del tuo prossimo turno. Usi pari a 1 + modificatore WIS, recuperati con riposo lungo."
+      }
+    ]
+  },
+  {
+    "name": "Pokémon Breeder",
+    "features": [
+      {
+        "level": 2,
+        "title": "Pokémon Breeder",
+        "description": "Quando provi a far accoppiare due Pokemon, aggiungi il modificatore WIS al d20 della prova di successo."
+      },
+      {
+        "level": 5,
+        "title": "Tender Love and Care",
+        "description": "Hai vantaggio su tutti i tiri che riducono il contatore di incubazione delle uova Pokemon."
+      },
+      {
+        "level": 9,
+        "title": "Good Genes",
+        "description": "Ogni Pokemon nato da un uovo che fai schiudere ottiene 2 punti da aggiungere alle caratteristiche o da spendere in un talento."
+      },
+      {
+        "level": 15,
+        "title": "Master of Traits",
+        "description": "Per le uova future puoi scegliere sesso, natura e abilita disponibili del Pokemon. Se eredita almeno una Egg Move, puoi sostituirla con altre mosse dalla lista Egg Moves."
+      }
+    ]
+  }
+]

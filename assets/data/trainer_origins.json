@@ -1,0 +1,83 @@
+[
+  {
+    "name": "Alolan",
+    "description": "Bonus caratteristiche: INT +2, CHA +1.\nCompetenza: Nature.\nTratto: puoi lanciare Speak with Pokemon una volta per riposo lungo. E una buona origine per trainer curiosi, sociali e molto legati alla vita naturale dei Pokemon.",
+    "abilityBonuses": {
+      "INT": 2,
+      "CHA": 1
+    },
+    "skillProficiencies": ["Nature"],
+    "savingThrowProficiencies": []
+  },
+  {
+    "name": "Hoennian",
+    "description": "Bonus caratteristiche: WIS +2, INT +1.\nCompetenza: Survival.\nTratto: sei abituato a viaggiare in ambienti difficili e a cavartela tra clima, terreno e rotte selvagge. Funziona bene per esploratori, ranger e allenatori da viaggio.",
+    "abilityBonuses": {
+      "WIS": 2,
+      "INT": 1
+    },
+    "skillProficiencies": ["Survival"],
+    "savingThrowProficiencies": []
+  },
+  {
+    "name": "Johtoan",
+    "description": "Bonus caratteristiche: INT +2, STR +1.\nCompetenza: History.\nTratto: la tua formazione richiama tradizioni antiche e disciplina fisica; il tratto marziale premia i colpi critici con armi. Adatta a trainer legati a storia, templi, rovine e leggende.",
+    "abilityBonuses": {
+      "INT": 2,
+      "STR": 1
+    },
+    "skillProficiencies": ["History"],
+    "savingThrowProficiencies": []
+  },
+  {
+    "name": "Kalosian",
+    "description": "Bonus caratteristiche: CHA +2, INT +1.\nCompetenza: Persuasion.\nTratto: puoi ritirare un 1 secondo le regole dell origine. E pensata per trainer eleganti, diplomatici e capaci di restare lucidi quando contano presenza e stile.",
+    "abilityBonuses": {
+      "CHA": 2,
+      "INT": 1
+    },
+    "skillProficiencies": ["Persuasion"],
+    "savingThrowProficiencies": []
+  },
+  {
+    "name": "Kantoan",
+    "description": "Bonus caratteristiche: +1 a due caratteristiche a scelta. Questo bonus va assegnato manualmente nei box delle caratteristiche.\nCompetenza: Investigation.\nTratto: ottieni un talento approvato dal DM. E l origine piu flessibile, ottima se vuoi costruire un trainer molto personalizzato.",
+    "abilityBonuses": {},
+    "skillProficiencies": ["Investigation"],
+    "savingThrowProficiencies": []
+  },
+  {
+    "name": "Sinnoan",
+    "description": "Bonus caratteristiche: CON +2, STR +1.\nCompetenza: Athletics.\nTratto: ottieni competenza nei tiri salvezza di Costituzione. Ideale per allenatori resistenti, abituati a montagna, neve e lunghe spedizioni.",
+    "abilityBonuses": {
+      "CON": 2,
+      "STR": 1
+    },
+    "skillProficiencies": ["Athletics"],
+    "savingThrowProficiencies": ["CON"]
+  },
+  {
+    "name": "Unovan",
+    "description": "Bonus caratteristiche: DEX +2, WIS +1.\nCompetenza: Insight.\nTratto: ottieni due competenze aggiuntive a scelta. Perfetta per trainer rapidi, adattabili e capaci di leggere persone e situazioni.",
+    "abilityBonuses": {
+      "DEX": 2,
+      "WIS": 1
+    },
+    "skillProficiencies": ["Insight"],
+    "savingThrowProficiencies": []
+  },
+  {
+    "name": "Galarian",
+    "description": "Bonus caratteristiche: scegli DEX +2 e STR +1 oppure STR +2 e DEX +1. Questo bonus va assegnato manualmente nei box delle caratteristiche.\nCompetenza: Intimidation.\nTratto: ottieni una reazione difensiva. Adatta a trainer competitivi, fisici e abituati a reggere la pressione dello scontro.",
+    "abilityBonuses": {},
+    "skillProficiencies": ["Intimidation"],
+    "savingThrowProficiencies": []
+  },
+  {
+    "name": "Origine 5e approvata dal DM",
+    "description": "Usa una origine 5e classica o homebrew approvata dal DM. Segna manualmente bonus caratteristiche, competenze e tratti concordati al tavolo.",
+    "abilityBonuses": {},
+    "skillProficiencies": [],
+    "savingThrowProficiencies": []
+  }
+]

@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import '../../models/evolution_data.dart';
 import '../../models/pokemon.dart';
 import '../../models/team_slot.dart';
+import '../../models/trainer_manual_content.dart';
 import '../../models/trainer_manual_options.dart';
 import '../../models/trainer_progression.dart';
 import '../../models/user_profile.dart';
@@ -11,6 +12,7 @@ import '../../repositories/evolution_repository.dart';
 import '../../repositories/pokemon_repository.dart';
 import '../../repositories/profile_repository.dart';
 import '../../repositories/team_repository.dart';
+import '../../repositories/trainer_manual_repository.dart';
 
 class TrainerSheetScreen extends StatefulWidget {
   const TrainerSheetScreen({super.key});
@@ -24,12 +26,16 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
   final PokemonRepository _pokemonRepository = PokemonRepository();
   final EvolutionRepository _evolutionRepository = EvolutionRepository();
   final TeamRepository _teamRepository = TeamRepository();
+  final TrainerManualRepository _trainerManualRepository =
+      TrainerManualRepository();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _moneyController = TextEditingController();
   final TextEditingController _raceController = TextEditingController();
 
   UserProfile? _profile;
   List<Pokemon> _starterCandidates = [];
+  List<TrainerOrigin> _trainerOrigins = [];
+  List<TrainerPath> _trainerPaths = [];
   List<TeamSlot> _team = [];
   int _trainerLevel = TrainerProgression.minLevel;
   Map<String, int> _abilityScores = {...UserProfile.defaultAbilityScores};
@@ -85,6 +91,8 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
       final pokemon = await _pokemonRepository.getAllPokemon();
       final evolutionData = await _evolutionRepository.getEvolutionData();
       final team = await _teamRepository.getTeam(profile.id);
+      final trainerOrigins = await _trainerManualRepository.getOrigins();
+      final trainerPaths = await _trainerManualRepository.getTrainerPaths();
       final starterCandidates = _starterPokemonCandidates(
         pokemon,
         evolutionData,
@@ -99,6 +107,8 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
       setState(() {
         _profile = profile;
         _starterCandidates = starterCandidates;
+        _trainerOrigins = trainerOrigins;
+        _trainerPaths = trainerPaths;
         _team = team..sort((a, b) => a.slotIndex.compareTo(b.slotIndex));
         _trainerLevel = TrainerProgression.clampLevel(profile.trainerLevel);
         _abilityScores = {...profile.abilityScores};
@@ -187,8 +197,7 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
     if (race == null) return;
 
     final previousRace = _raceController.text.trim();
-    final nextBonusSource =
-        TrainerManualOptions.originAbilityBonuses.containsKey(race) ? race : '';
+    final nextBonusSource = _originAbilityBonuses(race).isNotEmpty ? race : '';
 
     if (previousRace == race &&
         _originAbilityBonusSource == nextBonusSource) {
@@ -209,12 +218,8 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
     required String previousRace,
     required String nextRace,
   }) {
-    final previousBonuses =
-        TrainerManualOptions.originAbilityBonuses[previousRace] ??
-            const <String, int>{};
-    final nextBonuses =
-        TrainerManualOptions.originAbilityBonuses[nextRace] ??
-            const <String, int>{};
+    final previousBonuses = _originAbilityBonuses(previousRace);
+    final nextBonuses = _originAbilityBonuses(nextRace);
 
     return {
       for (final entry in UserProfile.defaultAbilityScores.entries)
@@ -223,6 +228,33 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
                 (nextBonuses[entry.key] ?? 0))
             .clamp(1, 30)
             .toInt(),
+    };
+  }
+
+  TrainerOrigin? _originByName(String name) {
+    for (final origin in _trainerOrigins) {
+      if (origin.name == name) {
+        return origin;
+      }
+    }
+
+    return null;
+  }
+
+  Map<String, int> _originAbilityBonuses(String name) {
+    return _originByName(name)?.abilityBonuses ?? const <String, int>{};
+  }
+
+  Map<String, String> get _originDescriptions {
+    return {
+      for (final origin in _trainerOrigins) origin.name: origin.description,
+    };
+  }
+
+  Map<String, String> get _trainerPathDescriptions {
+    return {
+      for (final path in _trainerPaths)
+        path.name: path.featureForLevel(2)?.description ?? '',
     };
   }
 
@@ -371,9 +403,9 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
       showDragHandle: true,
       builder: (_) => _StringPickerSheet(
         title: 'Origine',
-        options: TrainerManualOptions.trainerRaces,
+        options: [for (final origin in _trainerOrigins) origin.name],
         selected: _raceController.text.trim(),
-        descriptions: TrainerManualOptions.trainerRaceNotes,
+        descriptions: _originDescriptions,
       ),
     );
 
@@ -402,9 +434,9 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
       showDragHandle: true,
       builder: (_) => _StringPickerSheet(
         title: 'Trainer Path',
-        options: TrainerManualOptions.trainerPaths,
+        options: [for (final path in _trainerPaths) path.name],
         selected: _trainerPath,
-        descriptions: TrainerManualOptions.trainerPathNotes,
+        descriptions: _trainerPathDescriptions,
       ),
     );
 
@@ -486,10 +518,14 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
                 nameController: _nameController,
                 moneyController: _moneyController,
                 race: _raceController.text.trim(),
+                raceDescription:
+                    _originByName(_raceController.text.trim())?.description ??
+                        '',
                 selectedStarter: _selectedStarter,
                 startingPack: _startingPack,
                 trainerLevel: _trainerLevel,
                 trainerPath: _trainerPath,
+                trainerPaths: _trainerPaths,
                 abilityScores: _abilityScores,
                 armorClass: _armorClass,
                 maxHp: _maxHp,
@@ -546,10 +582,12 @@ class _InteractiveTrainerSheet extends StatelessWidget {
     required this.nameController,
     required this.moneyController,
     required this.race,
+    required this.raceDescription,
     required this.selectedStarter,
     required this.startingPack,
     required this.trainerLevel,
     required this.trainerPath,
+    required this.trainerPaths,
     required this.abilityScores,
     required this.armorClass,
     required this.maxHp,
@@ -583,10 +621,12 @@ class _InteractiveTrainerSheet extends StatelessWidget {
   final TextEditingController nameController;
   final TextEditingController moneyController;
   final String race;
+  final String raceDescription;
   final Pokemon? selectedStarter;
   final String startingPack;
   final int trainerLevel;
   final String trainerPath;
+  final List<TrainerPath> trainerPaths;
   final Map<String, int> abilityScores;
   final int armorClass;
   final int maxHp;
@@ -647,6 +687,7 @@ class _InteractiveTrainerSheet extends StatelessWidget {
                       nameController: nameController,
                       moneyController: moneyController,
                       race: race,
+                      raceDescription: raceDescription,
                       selectedStarter: selectedStarter,
                       startingPack: startingPack,
                       trainerLevel: trainerLevel,
@@ -685,6 +726,7 @@ class _InteractiveTrainerSheet extends StatelessWidget {
                     child: _TrainerProgressionColumn(
                       trainerLevel: trainerLevel,
                       trainerPath: trainerPath,
+                      trainerPaths: trainerPaths,
                       specializations: specializations,
                       onTrainerPathTap: onTrainerPathTap,
                       onSpecializationTap: onSpecializationTap,
@@ -699,6 +741,7 @@ class _InteractiveTrainerSheet extends StatelessWidget {
                     nameController: nameController,
                     moneyController: moneyController,
                     race: race,
+                    raceDescription: raceDescription,
                     selectedStarter: selectedStarter,
                     startingPack: startingPack,
                     trainerLevel: trainerLevel,
@@ -734,6 +777,7 @@ class _InteractiveTrainerSheet extends StatelessWidget {
                   _TrainerProgressionColumn(
                     trainerLevel: trainerLevel,
                     trainerPath: trainerPath,
+                    trainerPaths: trainerPaths,
                     specializations: specializations,
                     onTrainerPathTap: onTrainerPathTap,
                     onSpecializationTap: onSpecializationTap,
@@ -750,6 +794,7 @@ class _TrainerSheetMainColumn extends StatelessWidget {
     required this.nameController,
     required this.moneyController,
     required this.race,
+    required this.raceDescription,
     required this.selectedStarter,
     required this.startingPack,
     required this.trainerLevel,
@@ -785,6 +830,7 @@ class _TrainerSheetMainColumn extends StatelessWidget {
   final TextEditingController nameController;
   final TextEditingController moneyController;
   final String race;
+  final String raceDescription;
   final Pokemon? selectedStarter;
   final String startingPack;
   final int trainerLevel;
@@ -878,7 +924,7 @@ class _TrainerSheetMainColumn extends StatelessWidget {
           value: race.isEmpty ? 'Scegli' : race,
           detail: race.isEmpty
               ? 'Tocca per scegliere dal manuale'
-              : TrainerManualOptions.trainerRaceNotes[race] ?? '',
+              : raceDescription,
           detailMaxLines: null,
           onTap: onRaceTap,
         ),
@@ -1046,7 +1092,8 @@ int _abilityCheckTotal({
   required String ability,
   required bool isProficient,
 }) {
-  final score = abilityScores[ability] ?? UserProfile.defaultAbilityScores[ability] ?? 10;
+  final score =
+      abilityScores[ability] ?? UserProfile.defaultAbilityScores[ability] ?? 10;
   final proficiency = isProficient ? _trainerProficiencyBonus(trainerLevel) : 0;
 
   return _abilityModifier(score) + proficiency;
@@ -1230,8 +1277,6 @@ class _SelectedSkillDescription extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: 3),
-        Text(skill.description, style: Theme.of(context).textTheme.bodySmall),
       ],
     );
   }
@@ -1350,6 +1395,7 @@ class _TrainerProgressionColumn extends StatelessWidget {
   const _TrainerProgressionColumn({
     required this.trainerLevel,
     required this.trainerPath,
+    required this.trainerPaths,
     required this.specializations,
     required this.onTrainerPathTap,
     required this.onSpecializationTap,
@@ -1357,6 +1403,7 @@ class _TrainerProgressionColumn extends StatelessWidget {
 
   final int trainerLevel;
   final String trainerPath;
+  final List<TrainerPath> trainerPaths;
   final List<String> specializations;
   final VoidCallback onTrainerPathTap;
   final void Function(int slotIndex) onSpecializationTap;
@@ -1383,7 +1430,7 @@ class _TrainerProgressionColumn extends StatelessWidget {
           value: trainerPath.isEmpty ? 'Scegli trainer path' : trainerPath,
           detail: trainerPath.isEmpty
               ? 'Tocca per scegliere dal pool dei path.'
-              : TrainerManualOptions.trainerPathNotes[trainerPath] ?? '',
+              : _trainerPathFeatureFor(2)?.description ?? '',
           onTap: onTrainerPathTap,
         ),
       );
@@ -1391,16 +1438,15 @@ class _TrainerProgressionColumn extends StatelessWidget {
 
     for (final level in [5, 9, 15]) {
       if (trainerLevel >= level) {
-        final feature = TrainerManualOptions.trainerPathFeatureFor(
-          trainerPath,
-          level,
-        );
+        final feature = _trainerPathFeatureFor(level);
         slots.add(
           _ProgressionChoiceBox(
             title: 'Trainer Path',
             level: level,
             value: feature?.title ??
-                (trainerPath.isEmpty ? 'Path non scelto' : 'Feature non trovata'),
+                (trainerPath.isEmpty
+                    ? 'Path non scelto'
+                    : 'Feature non trovata'),
             detail: feature?.description ??
                 'Scegli il path al livello 2 per vedere la feature automatica.',
           ),
@@ -1469,6 +1515,16 @@ class _TrainerProgressionColumn extends StatelessWidget {
     }
 
     return TrainerManualOptions.specializationNotes[specialization] ?? '';
+  }
+
+  TrainerPathFeature? _trainerPathFeatureFor(int level) {
+    for (final path in trainerPaths) {
+      if (path.name == trainerPath) {
+        return path.featureForLevel(level);
+      }
+    }
+
+    return null;
   }
 }
 

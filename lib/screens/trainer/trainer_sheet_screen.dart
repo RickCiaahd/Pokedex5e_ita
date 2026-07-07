@@ -40,6 +40,7 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
   String _startingPack = '';
   String _trainerPath = '';
   String _starterPokemon = '';
+  String _originAbilityBonusSource = '';
   List<String> _skillProficiencies = [];
   List<String> _savingThrowProficiencies = [];
   List<String> _specializations = [];
@@ -108,6 +109,7 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
         _startingPack = profile.startingPack;
         _trainerPath = profile.trainerPath;
         _starterPokemon = profile.starterPokemon;
+        _originAbilityBonusSource = profile.originAbilityBonusSource;
         _skillProficiencies = [...profile.skillProficiencies];
         _savingThrowProficiencies = [...profile.savingThrowProficiencies];
         _specializations = [...profile.specializations];
@@ -184,8 +186,44 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
   void _changeRace(String? race) {
     if (race == null) return;
 
+    final previousRace = _raceController.text.trim();
+    final nextBonusSource =
+        TrainerManualOptions.originAbilityBonuses.containsKey(race) ? race : '';
+
+    if (previousRace == race &&
+        _originAbilityBonusSource == nextBonusSource) {
+      return;
+    }
+
     _raceController.text = race;
-    _refreshSheetPreview();
+    setState(() {
+      _abilityScores = _abilityScoresWithOriginBonusChange(
+        previousRace: _originAbilityBonusSource,
+        nextRace: nextBonusSource,
+      );
+      _originAbilityBonusSource = nextBonusSource;
+    });
+  }
+
+  Map<String, int> _abilityScoresWithOriginBonusChange({
+    required String previousRace,
+    required String nextRace,
+  }) {
+    final previousBonuses =
+        TrainerManualOptions.originAbilityBonuses[previousRace] ??
+            const <String, int>{};
+    final nextBonuses =
+        TrainerManualOptions.originAbilityBonuses[nextRace] ??
+            const <String, int>{};
+
+    return {
+      for (final entry in UserProfile.defaultAbilityScores.entries)
+        entry.key: ((_abilityScores[entry.key] ?? entry.value) -
+                (previousBonuses[entry.key] ?? 0) +
+                (nextBonuses[entry.key] ?? 0))
+            .clamp(1, 30)
+            .toInt(),
+    };
   }
 
   void _changeStarter(Pokemon pokemon) {
@@ -263,6 +301,7 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
         currentHp: _currentHp,
         speed: _speed,
         trainerRace: _raceController.text.trim(),
+        originAbilityBonusSource: _originAbilityBonusSource,
         starterPokemon: _starterPokemon.trim(),
         startingPack: _startingPack,
         skillProficiencies: [..._skillProficiencies],
@@ -834,20 +873,14 @@ class _TrainerSheetMainColumn extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 10),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: [
-            _SheetChoiceBox(
-              label: 'Origine',
-              value: race.isEmpty ? 'Scegli' : race,
-              detail: race.isEmpty
-                  ? 'Tocca per scegliere dal manuale'
-                  : TrainerManualOptions.trainerRaceNotes[race] ?? '',
-              width: 260,
-              onTap: onRaceTap,
-            ),
-          ],
+        _SheetChoiceBox(
+          label: 'Origine',
+          value: race.isEmpty ? 'Scegli' : race,
+          detail: race.isEmpty
+              ? 'Tocca per scegliere dal manuale'
+              : TrainerManualOptions.trainerRaceNotes[race] ?? '',
+          detailMaxLines: null,
+          onTap: onRaceTap,
         ),
         const SizedBox(height: 16),
         _SheetSectionTitle(title: 'CARATTERISTICHE'),
@@ -878,6 +911,14 @@ class _TrainerSheetMainColumn extends StatelessWidget {
           trainerLevel: trainerLevel,
           savingThrowProficiencies: savingThrowProficiencies,
           onToggle: onSavingThrowToggle,
+        ),
+        const SizedBox(height: 16),
+        _StarterSheetBox(
+          pokemon: selectedStarter,
+          alreadyInTeam: starterAlreadyInTeam,
+          canAddToTeam: canAddStarterToTeam,
+          onPick: onStarterTap,
+          onAddToTeam: onAddStarterToTeam,
         ),
         const SizedBox(height: 16),
         _SheetSectionTitle(title: 'COMBATTIMENTO'),
@@ -917,14 +958,7 @@ class _TrainerSheetMainColumn extends StatelessWidget {
         LayoutBuilder(
           builder: (context, constraints) {
             final twoColumns = constraints.maxWidth >= 720;
-            final starterBox = _StarterSheetBox(
-              pokemon: selectedStarter,
-              alreadyInTeam: starterAlreadyInTeam,
-              canAddToTeam: canAddStarterToTeam,
-              onPick: onStarterTap,
-              onAddToTeam: onAddStarterToTeam,
-            );
-            final trainingBox = Column(
+            final packAndUpgrades = Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 _SheetChoiceBox(
@@ -932,12 +966,6 @@ class _TrainerSheetMainColumn extends StatelessWidget {
                   value: startingPack.isEmpty ? 'Scegli' : startingPack,
                   detail: 'Equipaggiamento rapido. Lo zaino lo separiamo dopo.',
                   onTap: onStartingPackTap,
-                ),
-                const SizedBox(height: 8),
-                _SelectedProficienciesBox(
-                  abilityScores: abilityScores,
-                  trainerLevel: trainerLevel,
-                  selectedSkills: selectedSkills,
                 ),
                 const SizedBox(height: 8),
                 _ManualBulletCard(
@@ -958,9 +986,13 @@ class _TrainerSheetMainColumn extends StatelessWidget {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  starterBox,
+                  packAndUpgrades,
                   const SizedBox(height: 8),
-                  trainingBox,
+                  _SelectedProficienciesBox(
+                    abilityScores: abilityScores,
+                    trainerLevel: trainerLevel,
+                    selectedSkills: selectedSkills,
+                  ),
                 ],
               );
             }
@@ -968,9 +1000,15 @@ class _TrainerSheetMainColumn extends StatelessWidget {
             return Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(child: starterBox),
+                Expanded(child: packAndUpgrades),
                 const SizedBox(width: 8),
-                Expanded(child: trainingBox),
+                Expanded(
+                  child: _SelectedProficienciesBox(
+                    abilityScores: abilityScores,
+                    trainerLevel: trainerLevel,
+                    selectedSkills: selectedSkills,
+                  ),
+                ),
               ],
             );
           },
@@ -1542,12 +1580,14 @@ class _SheetChoiceBox extends StatelessWidget {
     required this.value,
     required this.onTap,
     this.detail,
+    this.detailMaxLines = 4,
     this.width,
   });
 
   final String label;
   final String value;
   final String? detail;
+  final int? detailMaxLines;
   final VoidCallback onTap;
   final double? width;
 
@@ -1568,6 +1608,7 @@ class _SheetChoiceBox extends StatelessWidget {
                   label: label,
                   value: value,
                   detail: detail,
+                  detailMaxLines: detailMaxLines,
                 ),
               ),
               const Padding(
@@ -1675,11 +1716,13 @@ class _SheetBoxText extends StatelessWidget {
     required this.label,
     required this.value,
     this.detail,
+    this.detailMaxLines = 4,
   });
 
   final String label;
   final String value;
   final String? detail;
+  final int? detailMaxLines;
 
   @override
   Widget build(BuildContext context) {
@@ -1699,8 +1742,10 @@ class _SheetBoxText extends StatelessWidget {
           const SizedBox(height: 3),
           Text(
             detail!,
-            maxLines: 4,
-            overflow: TextOverflow.ellipsis,
+            maxLines: detailMaxLines,
+            overflow: detailMaxLines == null
+                ? TextOverflow.visible
+                : TextOverflow.ellipsis,
             style: Theme.of(context).textTheme.bodySmall,
           ),
         ],

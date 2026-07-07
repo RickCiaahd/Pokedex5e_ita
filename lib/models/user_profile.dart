@@ -21,6 +21,7 @@ class UserProfile {
   final int currentHp;
   final int speed;
   final String trainerRace;
+  final String originAbilityBonusSource;
   final String background;
   final String starterPokemon;
   final String startingPack;
@@ -42,6 +43,7 @@ class UserProfile {
     this.currentHp = 8,
     this.speed = 30,
     this.trainerRace = '',
+    this.originAbilityBonusSource = '',
     this.background = '',
     this.starterPokemon = '',
     this.startingPack = '',
@@ -69,6 +71,7 @@ class UserProfile {
       currentHp: 8,
       speed: 30,
       trainerRace: '',
+      originAbilityBonusSource: '',
       background: '',
       starterPokemon: '',
       startingPack: '',
@@ -95,6 +98,7 @@ class UserProfile {
       currentHp: 8,
       speed: 30,
       trainerRace: '',
+      originAbilityBonusSource: '',
       background: '',
       starterPokemon: '',
       startingPack: '',
@@ -118,6 +122,7 @@ class UserProfile {
     int? currentHp,
     int? speed,
     String? trainerRace,
+    String? originAbilityBonusSource,
     String? background,
     String? starterPokemon,
     String? startingPack,
@@ -139,6 +144,8 @@ class UserProfile {
       currentHp: currentHp ?? this.currentHp,
       speed: speed ?? this.speed,
       trainerRace: trainerRace ?? this.trainerRace,
+      originAbilityBonusSource:
+          originAbilityBonusSource ?? this.originAbilityBonusSource,
       background: background ?? this.background,
       starterPokemon: starterPokemon ?? this.starterPokemon,
       startingPack: startingPack ?? this.startingPack,
@@ -164,6 +171,7 @@ class UserProfile {
       'currentHp': currentHp,
       'speed': speed,
       'trainerRace': trainerRace,
+      'originAbilityBonusSource': originAbilityBonusSource,
       'background': background,
       'starterPokemon': starterPokemon,
       'startingPack': startingPack,
@@ -188,6 +196,7 @@ class UserProfile {
       currentHp: json['currentHp'] ?? json['maxHp'] ?? 8,
       speed: json['speed'] ?? 30,
       trainerRace: json['trainerRace'] ?? '',
+      originAbilityBonusSource: json['originAbilityBonusSource'] ?? '',
       background: json['background'] ?? '',
       starterPokemon: json['starterPokemon'] ?? '',
       startingPack: json['startingPack'] ?? '',

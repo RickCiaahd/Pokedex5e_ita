@@ -50,23 +50,57 @@ class TrainerManualOptions {
 
   static const Map<String, String> trainerRaceNotes = {
     'Alolan':
-        '+2 INT, +1 CHA. Ottieni competenza in Nature e puoi lanciare Speak with Pokémon una volta per riposo lungo: utile per leggere il comportamento dei Pokémon e trattare con creature selvatiche.',
+        'Bonus caratteristiche: INT +2, CHA +1.\n'
+        'Competenza: Nature.\n'
+        'Tratto: puoi lanciare Speak with Pokemon una volta per riposo lungo. '
+        'E una buona origine per trainer curiosi, sociali e molto legati alla vita naturale dei Pokemon.',
     'Hoennian':
-        '+2 WIS, +1 INT. Ottieni competenza in Survival e un vantaggio legato agli ambienti naturali, pensato per allenatori abituati a rotte difficili, clima variabile e traversate.',
+        'Bonus caratteristiche: WIS +2, INT +1.\n'
+        'Competenza: Survival.\n'
+        'Tratto: sei abituato a viaggiare in ambienti difficili e a cavartela tra clima, terreno e rotte selvagge. '
+        'Funziona bene per esploratori, ranger e allenatori da viaggio.',
     'Johtoan':
-        '+2 INT, +1 STR. Ottieni competenza in History e un tratto marziale che premia i colpi critici con armi: origine adatta a personaggi legati a tradizione, disciplina e antiche leggende.',
+        'Bonus caratteristiche: INT +2, STR +1.\n'
+        'Competenza: History.\n'
+        'Tratto: la tua formazione richiama tradizioni antiche e disciplina fisica; il tratto marziale premia i colpi critici con armi. '
+        'Adatta a trainer legati a storia, templi, rovine e leggende.',
     'Kalosian':
-        '+2 CHA, +1 INT. Ottieni competenza in Persuasion e una capacita di ritirare un 1, rappresentando grazia, presenza scenica e sangue freddo sociale.',
+        'Bonus caratteristiche: CHA +2, INT +1.\n'
+        'Competenza: Persuasion.\n'
+        'Tratto: puoi ritirare un 1 secondo le regole dell origine. '
+        'E pensata per trainer eleganti, diplomatici e capaci di restare lucidi quando contano presenza e stile.',
     'Kantoan':
-        '+1 a due caratteristiche a scelta. Ottieni competenza in Investigation e un talento approvato dal DM: origine flessibile per trainer versatili e curiosi.',
+        'Bonus caratteristiche: +1 a due caratteristiche a scelta. Questo bonus va assegnato manualmente nei box delle caratteristiche.\n'
+        'Competenza: Investigation.\n'
+        'Tratto: ottieni un talento approvato dal DM. '
+        'E l origine piu flessibile, ottima se vuoi costruire un trainer molto personalizzato.',
     'Sinnoan':
-        '+2 CON, +1 STR. Ottieni competenza in Athletics e competenza nei tiri salvezza di Costituzione: ideale per esploratori resistenti, montagna, neve e lunghe spedizioni.',
+        'Bonus caratteristiche: CON +2, STR +1.\n'
+        'Competenza: Athletics.\n'
+        'Tratto: ottieni competenza nei tiri salvezza di Costituzione. '
+        'Ideale per allenatori resistenti, abituati a montagna, neve e lunghe spedizioni.',
     'Unovan':
-        '+2 DEX, +1 WIS. Ottieni competenza in Insight e due competenze aggiuntive a scelta, perfetta per allenatori rapidi, adattabili e attenti alle persone.',
+        'Bonus caratteristiche: DEX +2, WIS +1.\n'
+        'Competenza: Insight.\n'
+        'Tratto: ottieni due competenze aggiuntive a scelta. '
+        'Perfetta per trainer rapidi, adattabili e capaci di leggere persone e situazioni.',
     'Galarian':
-        '+2 DEX/+1 STR oppure +2 STR/+1 DEX. Ottieni competenza in Intimidation e una reazione difensiva, adatta a trainer competitivi e fisicamente presenti.',
+        'Bonus caratteristiche: scegli DEX +2 e STR +1 oppure STR +2 e DEX +1. Questo bonus va assegnato manualmente nei box delle caratteristiche.\n'
+        'Competenza: Intimidation.\n'
+        'Tratto: ottieni una reazione difensiva. '
+        'Adatta a trainer competitivi, fisici e abituati a reggere la pressione dello scontro.',
     'Origine 5e approvata dal DM':
-        'Usa una razza/origine 5e classica o homebrew approvata. Riporta qui bonus, competenze e tratti decisi al tavolo.',
+        'Usa una origine 5e classica o homebrew approvata dal DM. '
+        'Segna manualmente bonus caratteristiche, competenze e tratti concordati al tavolo.',
+  };
+
+  static const Map<String, Map<String, int>> originAbilityBonuses = {
+    'Alolan': {'INT': 2, 'CHA': 1},
+    'Hoennian': {'WIS': 2, 'INT': 1},
+    'Johtoan': {'INT': 2, 'STR': 1},
+    'Kalosian': {'CHA': 2, 'INT': 1},
+    'Sinnoan': {'CON': 2, 'STR': 1},
+    'Unovan': {'DEX': 2, 'WIS': 1},
   };
 
   static const List<TrainerSkillDefinition> skills = [

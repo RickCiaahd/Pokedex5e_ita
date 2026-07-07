@@ -19,6 +19,7 @@ void main() {
       expect(profile.currentHp, 8);
       expect(profile.speed, 30);
       expect(profile.trainerRace, '');
+      expect(profile.originAbilityBonusSource, '');
       expect(profile.background, '');
       expect(profile.starterPokemon, '');
       expect(profile.startingPack, '');
@@ -49,6 +50,7 @@ void main() {
         currentHp: 24,
         speed: 30,
         trainerRace: 'Human',
+        originAbilityBonusSource: 'Alolan',
         background: 'Ranger',
         starterPokemon: 'Bulbasaur',
         startingPack: "Explorer's pack",
@@ -68,6 +70,7 @@ void main() {
       expect(json['currentHp'], 24);
       expect(json['speed'], 30);
       expect(json['trainerRace'], 'Human');
+      expect(json['originAbilityBonusSource'], 'Alolan');
       expect(json['background'], 'Ranger');
       expect(json['starterPokemon'], 'Bulbasaur');
       expect(json['startingPack'], "Explorer's pack");
@@ -102,6 +105,7 @@ void main() {
         currentHp: 41,
         speed: 35,
         trainerRace: 'Human',
+        originAbilityBonusSource: 'Hoennian',
         background: 'Gym Leader',
         starterPokemon: 'Charmander',
         startingPack: "Dungeoneer's pack",
@@ -121,6 +125,7 @@ void main() {
       expect(updated.currentHp, 41);
       expect(updated.speed, 35);
       expect(updated.trainerRace, 'Human');
+      expect(updated.originAbilityBonusSource, 'Hoennian');
       expect(updated.background, 'Gym Leader');
       expect(updated.starterPokemon, 'Charmander');
       expect(updated.startingPack, "Dungeoneer's pack");

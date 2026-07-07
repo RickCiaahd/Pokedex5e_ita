@@ -202,24 +202,24 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
     setState(() => _starterPokemon = pokemon.name);
   }
 
-  void _toggleSkill(String skill) {
+  void _changeSkillProficiencies(List<String> skills) {
     setState(() {
-      if (_skillProficiencies.contains(skill)) {
-        _skillProficiencies.remove(skill);
-      } else if (_skillProficiencies.length < 2) {
-        _skillProficiencies = [..._skillProficiencies, skill];
-      }
+      _skillProficiencies = skills.take(2).toList();
     });
   }
 
-  void _toggleSpecialization(String specialization) {
-    setState(() {
-      if (_specializations.contains(specialization)) {
-        _specializations.remove(specialization);
-      } else {
-        _specializations = [..._specializations, specialization];
-      }
-    });
+  void _changeSpecializationSlot(int slotIndex, String specialization) {
+    final next = [..._specializations];
+    while (next.length <= slotIndex) {
+      next.add('');
+    }
+
+    next[slotIndex] = specialization;
+    while (next.isNotEmpty && next.last.isEmpty) {
+      next.removeLast();
+    }
+
+    setState(() => _specializations = next);
   }
 
   Future<void> _saveProfile() async {
@@ -318,6 +318,110 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
     _changeStarter(selected);
   }
 
+  Future<void> _openRacePicker() async {
+    final selected = await showModalBottomSheet<String>(
+      context: context,
+      showDragHandle: true,
+      builder: (_) => _StringPickerSheet(
+        title: 'Razza / origine',
+        options: TrainerManualOptions.trainerRaces,
+        selected: _raceController.text.trim(),
+        descriptions: TrainerManualOptions.trainerRaceNotes,
+      ),
+    );
+
+    _changeRace(selected);
+  }
+
+  Future<void> _openBackgroundPicker() async {
+    final selected = await showModalBottomSheet<String>(
+      context: context,
+      showDragHandle: true,
+      builder: (_) => _StringPickerSheet(
+        title: 'Background',
+        options: TrainerManualOptions.backgroundOptions,
+        selected: _backgroundController.text.trim(),
+        descriptions: TrainerManualOptions.backgroundNotes,
+      ),
+    );
+
+    _changeBackground(selected);
+  }
+
+  Future<void> _openStartingPackPicker() async {
+    final selected = await showModalBottomSheet<String>(
+      context: context,
+      showDragHandle: true,
+      builder: (_) => _StringPickerSheet(
+        title: 'Pack iniziale',
+        options: TrainerManualOptions.startingPacks,
+        selected: _startingPack,
+      ),
+    );
+
+    _changeStartingPack(selected);
+  }
+
+  Future<void> _openTrainerPathPicker() async {
+    if (_trainerLevel < 2) return;
+
+    final selected = await showModalBottomSheet<String>(
+      context: context,
+      showDragHandle: true,
+      builder: (_) => _StringPickerSheet(
+        title: 'Trainer Path',
+        options: TrainerManualOptions.trainerPaths,
+        selected: _trainerPath,
+        descriptions: TrainerManualOptions.trainerPathNotes,
+      ),
+    );
+
+    _changeTrainerPath(selected);
+  }
+
+  Future<void> _openSkillPicker() async {
+    final selected = await showModalBottomSheet<List<String>>(
+      context: context,
+      showDragHandle: true,
+      isScrollControlled: true,
+      builder: (_) => _MultiStringPickerSheet(
+        title: 'Competenze',
+        options: TrainerManualOptions.skillChoices,
+        selected: _skillProficiencies,
+        maxSelections: 2,
+        descriptions: TrainerManualOptions.skillNotes,
+      ),
+    );
+
+    if (selected != null) {
+      _changeSkillProficiencies(selected);
+    }
+  }
+
+  Future<void> _openSpecializationPicker(int slotIndex) async {
+    final current = slotIndex < _specializations.length
+        ? _specializations[slotIndex]
+        : '';
+    final options = TrainerManualOptions.specializations.where((option) {
+      return option == current || !_specializations.contains(option);
+    }).toList();
+    final selected = await showModalBottomSheet<String>(
+      context: context,
+      showDragHandle: true,
+      isScrollControlled: true,
+      builder: (_) => _StringPickerSheet(
+        title: 'Specializzazione',
+        options: options,
+        selected: current,
+        descriptions: TrainerManualOptions.specializationNotes,
+      ),
+    );
+
+    if (selected != null) {
+      _changeSpecializationSlot(slotIndex, selected);
+    }
+  }
+
   Future<void> _addStarterToTeam() async {
     final profile = _profile;
     final starter = _selectedStarter;
@@ -365,74 +469,44 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
                 onRetry: _loadProfile,
               )
             else ...[
-              _TrainerSheetBoard(
-                sheet: _TrainerSheetSummary(
-                  name: _nameController.text.trim(),
-                  race: _raceController.text.trim(),
-                  background: _backgroundController.text.trim(),
-                  starterPokemon: _starterPokemon.trim(),
-                  trainerLevel: _trainerLevel,
-                  money: int.tryParse(_moneyController.text.trim()) ?? 0,
-                  abilityScores: _abilityScores,
-                  armorClass: _armorClass,
-                  maxHp: _maxHp,
-                  currentHp: _currentHp,
-                  speed: _speed,
-                  skillProficiencies: _skillProficiencies,
-                  specializations: _specializations,
-                  trainerPath: _trainerPath,
-                  onAbilityScoreChanged: _changeAbilityScore,
-                ),
-                checklist: _TrainerCompletionChecklist(
-                  race: _raceController.text.trim(),
-                  background: _backgroundController.text.trim(),
-                  starterPokemon: _starterPokemon.trim(),
-                  startingPack: _startingPack,
-                  trainerLevel: _trainerLevel,
-                  trainerPath: _trainerPath,
-                  skillProficiencies: _skillProficiencies,
-                  specializations: _specializations,
-                ),
-                creation: _TrainerCreationForm(
-                  raceController: _raceController,
-                  backgroundController: _backgroundController,
-                  selectedStarter: _selectedStarter,
-                  startingPack: _startingPack,
-                  trainerLevel: _trainerLevel,
-                  trainerPath: _trainerPath,
-                  skillProficiencies: _skillProficiencies,
-                  specializations: _specializations,
-                  canAddStarterToTeam: _selectedStarter != null &&
-                      !_starterAlreadyInTeam &&
-                      _hasEmptyTeamSlot,
-                  starterAlreadyInTeam: _starterAlreadyInTeam,
-                  onRaceChanged: _changeRace,
-                  onBackgroundChanged: _changeBackground,
-                  onStarterTap: _openStarterPicker,
-                  onAddStarterToTeam: _addStarterToTeam,
-                  onStartingPackChanged: _changeStartingPack,
-                  onTrainerPathChanged: _changeTrainerPath,
-                  onSkillToggle: _toggleSkill,
-                  onSpecializationToggle: _toggleSpecialization,
-                ),
-                edit: _TrainerEditForm(
-                  nameController: _nameController,
-                  moneyController: _moneyController,
-                  trainerLevel: _trainerLevel,
-                  armorClass: _armorClass,
-                  maxHp: _maxHp,
-                  currentHp: _currentHp,
-                  speed: _speed,
-                  isSaving: _isSaving,
-                  errorMessage: _errorMessage,
-                  onDecreaseLevel: () => _changeLevel(-1),
-                  onIncreaseLevel: () => _changeLevel(1),
-                  onArmorClassChanged: _changeArmorClass,
-                  onMaxHpChanged: _changeMaxHp,
-                  onCurrentHpChanged: _changeCurrentHp,
-                  onSpeedChanged: _changeSpeed,
-                  onSave: _saveProfile,
-                ),
+              _InteractiveTrainerSheet(
+                nameController: _nameController,
+                moneyController: _moneyController,
+                race: _raceController.text.trim(),
+                background: _backgroundController.text.trim(),
+                selectedStarter: _selectedStarter,
+                startingPack: _startingPack,
+                trainerLevel: _trainerLevel,
+                trainerPath: _trainerPath,
+                abilityScores: _abilityScores,
+                armorClass: _armorClass,
+                maxHp: _maxHp,
+                currentHp: _currentHp,
+                speed: _speed,
+                skillProficiencies: _skillProficiencies,
+                specializations: _specializations,
+                canAddStarterToTeam: _selectedStarter != null &&
+                    !_starterAlreadyInTeam &&
+                    _hasEmptyTeamSlot,
+                starterAlreadyInTeam: _starterAlreadyInTeam,
+                isSaving: _isSaving,
+                errorMessage: _errorMessage,
+                onDecreaseLevel: () => _changeLevel(-1),
+                onIncreaseLevel: () => _changeLevel(1),
+                onRaceTap: _openRacePicker,
+                onBackgroundTap: _openBackgroundPicker,
+                onStarterTap: _openStarterPicker,
+                onAddStarterToTeam: _addStarterToTeam,
+                onStartingPackTap: _openStartingPackPicker,
+                onTrainerPathTap: _openTrainerPathPicker,
+                onSkillTap: _openSkillPicker,
+                onSpecializationTap: _openSpecializationPicker,
+                onAbilityScoreChanged: _changeAbilityScore,
+                onArmorClassChanged: _changeArmorClass,
+                onMaxHpChanged: _changeMaxHp,
+                onCurrentHpChanged: _changeCurrentHp,
+                onSpeedChanged: _changeSpeed,
+                onSave: _saveProfile,
               ),
             ],
           ],
@@ -454,73 +528,16 @@ String _signed(int value) {
   return value >= 0 ? '+$value' : '$value';
 }
 
-class _TrainerSheetBoard extends StatelessWidget {
-  const _TrainerSheetBoard({
-    required this.sheet,
-    required this.checklist,
-    required this.creation,
-    required this.edit,
-  });
-
-  final Widget sheet;
-  final Widget checklist;
-  final Widget creation;
-  final Widget edit;
-
-  @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        if (constraints.maxWidth >= 900) {
-          return Column(
-            children: [
-              sheet,
-              const SizedBox(height: 16),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(flex: 6, child: creation),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    flex: 4,
-                    child: Column(
-                      children: [
-                        checklist,
-                        const SizedBox(height: 16),
-                        edit,
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          );
-        }
-
-        return Column(
-          children: [
-            sheet,
-            const SizedBox(height: 16),
-            checklist,
-            const SizedBox(height: 16),
-            creation,
-            const SizedBox(height: 16),
-            edit,
-          ],
-        );
-      },
-    );
-  }
-}
-
-class _TrainerSheetSummary extends StatelessWidget {
-  const _TrainerSheetSummary({
-    required this.name,
+class _InteractiveTrainerSheet extends StatelessWidget {
+  const _InteractiveTrainerSheet({
+    required this.nameController,
+    required this.moneyController,
     required this.race,
     required this.background,
-    required this.starterPokemon,
+    required this.selectedStarter,
+    required this.startingPack,
     required this.trainerLevel,
-    required this.money,
+    required this.trainerPath,
     required this.abilityScores,
     required this.armorClass,
     required this.maxHp,
@@ -528,16 +545,36 @@ class _TrainerSheetSummary extends StatelessWidget {
     required this.speed,
     required this.skillProficiencies,
     required this.specializations,
-    required this.trainerPath,
+    required this.canAddStarterToTeam,
+    required this.starterAlreadyInTeam,
+    required this.isSaving,
+    required this.errorMessage,
+    required this.onDecreaseLevel,
+    required this.onIncreaseLevel,
+    required this.onRaceTap,
+    required this.onBackgroundTap,
+    required this.onStarterTap,
+    required this.onAddStarterToTeam,
+    required this.onStartingPackTap,
+    required this.onTrainerPathTap,
+    required this.onSkillTap,
+    required this.onSpecializationTap,
     required this.onAbilityScoreChanged,
+    required this.onArmorClassChanged,
+    required this.onMaxHpChanged,
+    required this.onCurrentHpChanged,
+    required this.onSpeedChanged,
+    required this.onSave,
   });
 
-  final String name;
+  final TextEditingController nameController;
+  final TextEditingController moneyController;
   final String race;
   final String background;
-  final String starterPokemon;
+  final Pokemon? selectedStarter;
+  final String startingPack;
   final int trainerLevel;
-  final int money;
+  final String trainerPath;
   final Map<String, int> abilityScores;
   final int armorClass;
   final int maxHp;
@@ -545,230 +582,615 @@ class _TrainerSheetSummary extends StatelessWidget {
   final int speed;
   final List<String> skillProficiencies;
   final List<String> specializations;
-  final String trainerPath;
+  final bool canAddStarterToTeam;
+  final bool starterAlreadyInTeam;
+  final bool isSaving;
+  final String? errorMessage;
+  final VoidCallback onDecreaseLevel;
+  final VoidCallback onIncreaseLevel;
+  final VoidCallback onRaceTap;
+  final VoidCallback onBackgroundTap;
+  final VoidCallback onStarterTap;
+  final VoidCallback onAddStarterToTeam;
+  final VoidCallback onStartingPackTap;
+  final VoidCallback onTrainerPathTap;
+  final VoidCallback onSkillTap;
+  final void Function(int slotIndex) onSpecializationTap;
   final void Function(String ability, int delta) onAbilityScoreChanged;
+  final ValueChanged<int> onArmorClassChanged;
+  final ValueChanged<int> onMaxHpChanged;
+  final ValueChanged<int> onCurrentHpChanged;
+  final ValueChanged<int> onSpeedChanged;
+  final VoidCallback onSave;
 
   @override
   Widget build(BuildContext context) {
     final pokeslots = TrainerProgression.pokeslotsForLevel(trainerLevel);
     final maxSr = TrainerProgression.maxControlledSrForLevel(trainerLevel);
+    final width = MediaQuery.sizeOf(context).width;
+    final isWide = width >= 980;
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        border: Border.all(color: Theme.of(context).colorScheme.outline),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x22000000),
+            blurRadius: 12,
+            offset: Offset(0, 6),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: isWide
+            ? Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    flex: 7,
+                    child: _TrainerSheetMainColumn(
+                      nameController: nameController,
+                      moneyController: moneyController,
+                      race: race,
+                      background: background,
+                      selectedStarter: selectedStarter,
+                      startingPack: startingPack,
+                      trainerLevel: trainerLevel,
+                      abilityScores: abilityScores,
+                      armorClass: armorClass,
+                      maxHp: maxHp,
+                      currentHp: currentHp,
+                      speed: speed,
+                      pokeslots: pokeslots,
+                      maxSr: maxSr,
+                      skillProficiencies: skillProficiencies,
+                      canAddStarterToTeam: canAddStarterToTeam,
+                      starterAlreadyInTeam: starterAlreadyInTeam,
+                      errorMessage: errorMessage,
+                      isSaving: isSaving,
+                      onDecreaseLevel: onDecreaseLevel,
+                      onIncreaseLevel: onIncreaseLevel,
+                      onRaceTap: onRaceTap,
+                      onBackgroundTap: onBackgroundTap,
+                      onStarterTap: onStarterTap,
+                      onAddStarterToTeam: onAddStarterToTeam,
+                      onStartingPackTap: onStartingPackTap,
+                      onSkillTap: onSkillTap,
+                      onAbilityScoreChanged: onAbilityScoreChanged,
+                      onArmorClassChanged: onArmorClassChanged,
+                      onMaxHpChanged: onMaxHpChanged,
+                      onCurrentHpChanged: onCurrentHpChanged,
+                      onSpeedChanged: onSpeedChanged,
+                      onSave: onSave,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  SizedBox(
+                    width: 300,
+                    child: _TrainerProgressionColumn(
+                      trainerLevel: trainerLevel,
+                      trainerPath: trainerPath,
+                      specializations: specializations,
+                      onTrainerPathTap: onTrainerPathTap,
+                      onSpecializationTap: onSpecializationTap,
+                    ),
+                  ),
+                ],
+              )
+            : Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  _TrainerSheetMainColumn(
+                    nameController: nameController,
+                    moneyController: moneyController,
+                    race: race,
+                    background: background,
+                    selectedStarter: selectedStarter,
+                    startingPack: startingPack,
+                    trainerLevel: trainerLevel,
+                    abilityScores: abilityScores,
+                    armorClass: armorClass,
+                    maxHp: maxHp,
+                    currentHp: currentHp,
+                    speed: speed,
+                    pokeslots: pokeslots,
+                    maxSr: maxSr,
+                    skillProficiencies: skillProficiencies,
+                    canAddStarterToTeam: canAddStarterToTeam,
+                    starterAlreadyInTeam: starterAlreadyInTeam,
+                    errorMessage: errorMessage,
+                    isSaving: isSaving,
+                    onDecreaseLevel: onDecreaseLevel,
+                    onIncreaseLevel: onIncreaseLevel,
+                    onRaceTap: onRaceTap,
+                    onBackgroundTap: onBackgroundTap,
+                    onStarterTap: onStarterTap,
+                    onAddStarterToTeam: onAddStarterToTeam,
+                    onStartingPackTap: onStartingPackTap,
+                    onSkillTap: onSkillTap,
+                    onAbilityScoreChanged: onAbilityScoreChanged,
+                    onArmorClassChanged: onArmorClassChanged,
+                    onMaxHpChanged: onMaxHpChanged,
+                    onCurrentHpChanged: onCurrentHpChanged,
+                    onSpeedChanged: onSpeedChanged,
+                    onSave: onSave,
+                  ),
+                  const SizedBox(height: 16),
+                  _TrainerProgressionColumn(
+                    trainerLevel: trainerLevel,
+                    trainerPath: trainerPath,
+                    specializations: specializations,
+                    onTrainerPathTap: onTrainerPathTap,
+                    onSpecializationTap: onSpecializationTap,
+                  ),
+                ],
+              ),
+      ),
+    );
+  }
+}
+
+class _TrainerSheetMainColumn extends StatelessWidget {
+  const _TrainerSheetMainColumn({
+    required this.nameController,
+    required this.moneyController,
+    required this.race,
+    required this.background,
+    required this.selectedStarter,
+    required this.startingPack,
+    required this.trainerLevel,
+    required this.abilityScores,
+    required this.armorClass,
+    required this.maxHp,
+    required this.currentHp,
+    required this.speed,
+    required this.pokeslots,
+    required this.maxSr,
+    required this.skillProficiencies,
+    required this.canAddStarterToTeam,
+    required this.starterAlreadyInTeam,
+    required this.errorMessage,
+    required this.isSaving,
+    required this.onDecreaseLevel,
+    required this.onIncreaseLevel,
+    required this.onRaceTap,
+    required this.onBackgroundTap,
+    required this.onStarterTap,
+    required this.onAddStarterToTeam,
+    required this.onStartingPackTap,
+    required this.onSkillTap,
+    required this.onAbilityScoreChanged,
+    required this.onArmorClassChanged,
+    required this.onMaxHpChanged,
+    required this.onCurrentHpChanged,
+    required this.onSpeedChanged,
+    required this.onSave,
+  });
+
+  final TextEditingController nameController;
+  final TextEditingController moneyController;
+  final String race;
+  final String background;
+  final Pokemon? selectedStarter;
+  final String startingPack;
+  final int trainerLevel;
+  final Map<String, int> abilityScores;
+  final int armorClass;
+  final int maxHp;
+  final int currentHp;
+  final int speed;
+  final int pokeslots;
+  final int maxSr;
+  final List<String> skillProficiencies;
+  final bool canAddStarterToTeam;
+  final bool starterAlreadyInTeam;
+  final String? errorMessage;
+  final bool isSaving;
+  final VoidCallback onDecreaseLevel;
+  final VoidCallback onIncreaseLevel;
+  final VoidCallback onRaceTap;
+  final VoidCallback onBackgroundTap;
+  final VoidCallback onStarterTap;
+  final VoidCallback onAddStarterToTeam;
+  final VoidCallback onStartingPackTap;
+  final VoidCallback onSkillTap;
+  final void Function(String ability, int delta) onAbilityScoreChanged;
+  final ValueChanged<int> onArmorClassChanged;
+  final ValueChanged<int> onMaxHpChanged;
+  final ValueChanged<int> onCurrentHpChanged;
+  final ValueChanged<int> onSpeedChanged;
+  final VoidCallback onSave;
+
+  @override
+  Widget build(BuildContext context) {
+    final selectedSkills = [
+      ...TrainerManualOptions.fixedSkillProficiencies,
+      ...skillProficiencies,
+    ];
     final nextPokeslotLevel = TrainerProgression.nextPokeslotLevel(
       trainerLevel,
     );
     final nextControlLevel = TrainerProgression.nextControlUpgradeLevel(
       trainerLevel,
     );
-    final currentFeatures = [
-      for (final entry in TrainerManualOptions.trainerLevelFeatures.entries)
-        if (entry.key <= trainerLevel)
-          for (final feature in entry.value) 'Lv. ${entry.key}: $feature',
-    ];
-    final selectedSkills = [
-      ...TrainerManualOptions.fixedSkillProficiencies,
-      ...skillProficiencies,
-    ];
-    final selectedPath = TrainerManualOptions.trainerPaths.contains(trainerPath)
-        ? trainerPath
-        : '';
 
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _SheetSectionTitle(
+          title: 'TRAINER',
+          trailing: 'LEVEL $trainerLevel',
+        ),
+        const SizedBox(height: 8),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
           children: [
-            Text(
-              name.isEmpty ? 'Scheda Allenatore' : name,
-              style: Theme.of(
-                context,
-              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+            _SheetTextBox(
+              label: 'Nome',
+              controller: nameController,
+              width: 260,
             ),
-            Text(
-              [
-                if (race.isNotEmpty) race,
-                'Pokémon Trainer',
-                if (background.isNotEmpty) background,
-              ].join(' | '),
+            _SheetCounterBox(
+              label: 'Livello',
+              value: trainerLevel.toString(),
+              subtitle: 'Pokéslot $pokeslots | SR max $maxSr',
+              onDecrease: trainerLevel <= TrainerProgression.minLevel
+                  ? null
+                  : onDecreaseLevel,
+              onIncrease: trainerLevel >= TrainerProgression.maxLevel
+                  ? null
+                  : onIncreaseLevel,
             ),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: _TrainerStat(label: 'Livello', value: '$trainerLevel'),
-                ),
-                Expanded(
-                  child: _TrainerStat(
-                    label: 'Competenza',
-                    value: _signed(_trainerProficiencyBonus(trainerLevel)),
-                  ),
-                ),
-                Expanded(child: _TrainerStat(label: 'Soldi', value: '₽ $money')),
-              ],
+            _SheetTextBox(
+              label: 'Pokédollars',
+              controller: moneyController,
+              width: 150,
+              prefixText: '₽ ',
+              keyboardType: TextInputType.number,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             ),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(child: _TrainerStat(label: 'CA', value: '$armorClass')),
-                Expanded(
-                  child: _TrainerStat(label: 'PF', value: '$currentHp/$maxHp'),
-                ),
-                Expanded(
-                  child: _TrainerStat(label: 'Velocità', value: '$speed ft'),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                for (final entry in UserProfile.defaultAbilityScores.entries)
-                  _AbilityScoreTile(
-                    label: entry.key,
-                    score: abilityScores[entry.key] ?? entry.value,
-                    onDecrease: () => onAbilityScoreChanged(entry.key, -1),
-                    onIncrease: () => onAbilityScoreChanged(entry.key, 1),
-                  ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: _TrainerStat(label: 'Pokéslot', value: '$pokeslots'),
-                ),
-                Expanded(child: _TrainerStat(label: 'SR max', value: '$maxSr')),
-              ],
-            ),
-            if (starterPokemon.isNotEmpty) ...[
-              const SizedBox(height: 16),
-              _ManualBulletCard(
-                title: 'Starter',
-                bullets: [starterPokemon],
-              ),
-            ],
-            const SizedBox(height: 16),
-            _ManualBulletCard(
-              title: 'Prossimi upgrade',
-              bullets: [
-                nextPokeslotLevel == null
-                    ? 'Pokéslot: massimo gia raggiunto.'
-                    : 'Nuovo Pokéslot al livello $nextPokeslotLevel.',
-                nextControlLevel == null
-                    ? 'Controllo SR: massimo gia raggiunto.'
-                    : 'Nuovo limite SR al livello $nextControlLevel.',
-              ],
-            ),
-            const SizedBox(height: 16),
-            _DescriptionListCard(
-              title: 'Competenze attive',
-              entries: {
-                for (final skill in selectedSkills)
-                  skill: TrainerManualOptions.skillNotes[skill] ?? '',
-              },
-            ),
-            if (specializations.isNotEmpty) ...[
-              const SizedBox(height: 16),
-              _DescriptionListCard(
-                title: 'Specializzazioni',
-                entries: {
-                  for (final specialization in specializations)
-                    specialization:
-                        TrainerManualOptions.specializationNotes[specialization] ??
-                        '',
-                },
-              ),
-            ],
-            if (selectedPath.isNotEmpty) ...[
-              const SizedBox(height: 16),
-              _DescriptionListCard(
-                title: 'Trainer Path',
-                entries: {
-                  selectedPath:
-                      TrainerManualOptions.trainerPathNotes[selectedPath] ?? '',
-                },
-              ),
-            ],
-            const SizedBox(height: 16),
-            _ManualBulletCard(
-              title: 'Feature sbloccate',
-              bullets: currentFeatures,
+            _SheetInfoBox(
+              label: 'Prof',
+              value: _signed(_trainerProficiencyBonus(trainerLevel)),
+              width: 92,
             ),
           ],
         ),
-      ),
+        const SizedBox(height: 10),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            _SheetChoiceBox(
+              label: 'Razza / origine',
+              value: race.isEmpty ? 'Scegli' : race,
+              detail: race.isEmpty
+                  ? 'Tocca per scegliere dal manuale'
+                  : TrainerManualOptions.trainerRaceNotes[race] ?? '',
+              width: 260,
+              onTap: onRaceTap,
+            ),
+            _SheetChoiceBox(
+              label: 'Background',
+              value: background.isEmpty ? 'Scegli' : background,
+              detail: background.isEmpty
+                  ? 'Tocca per scegliere'
+                  : TrainerManualOptions.backgroundNotes[background] ?? '',
+              width: 260,
+              onTap: onBackgroundTap,
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        _SheetSectionTitle(title: 'CARATTERISTICHE'),
+        const SizedBox(height: 8),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            for (final entry in UserProfile.defaultAbilityScores.entries)
+              _AbilityScoreTile(
+                label: entry.key,
+                score: abilityScores[entry.key] ?? entry.value,
+                onDecrease: () => onAbilityScoreChanged(entry.key, -1),
+                onIncrease: () => onAbilityScoreChanged(entry.key, 1),
+              ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        _SheetSectionTitle(title: 'COMBATTIMENTO'),
+        const SizedBox(height: 8),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            _SheetCounterBox(
+              label: 'CA',
+              value: armorClass.toString(),
+              onDecrease: () => onArmorClassChanged(-1),
+              onIncrease: () => onArmorClassChanged(1),
+            ),
+            _SheetCounterBox(
+              label: 'PF attuali',
+              value: currentHp.toString(),
+              subtitle: 'Max $maxHp',
+              onDecrease: () => onCurrentHpChanged(-1),
+              onIncrease: () => onCurrentHpChanged(1),
+            ),
+            _SheetCounterBox(
+              label: 'PF max',
+              value: maxHp.toString(),
+              onDecrease: () => onMaxHpChanged(-1),
+              onIncrease: () => onMaxHpChanged(1),
+            ),
+            _SheetCounterBox(
+              label: 'Velocita',
+              value: '$speed ft',
+              onDecrease: () => onSpeedChanged(-5),
+              onIncrease: () => onSpeedChanged(5),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        LayoutBuilder(
+          builder: (context, constraints) {
+            final twoColumns = constraints.maxWidth >= 720;
+            final starterBox = _StarterSheetBox(
+              pokemon: selectedStarter,
+              alreadyInTeam: starterAlreadyInTeam,
+              canAddToTeam: canAddStarterToTeam,
+              onPick: onStarterTap,
+              onAddToTeam: onAddStarterToTeam,
+            );
+            final trainingBox = Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _SheetChoiceBox(
+                  label: 'Pack iniziale',
+                  value: startingPack.isEmpty ? 'Scegli' : startingPack,
+                  detail: 'Equipaggiamento rapido. Lo zaino lo separiamo dopo.',
+                  onTap: onStartingPackTap,
+                ),
+                const SizedBox(height: 8),
+                _SheetChoiceBox(
+                  label: 'Competenze',
+                  value: skillProficiencies.isEmpty
+                      ? 'Scegli 2 competenze'
+                      : skillProficiencies.join(', '),
+                  detail: '${selectedSkills.join(', ')}\n'
+                      '${_skillDetails(selectedSkills)}',
+                  onTap: onSkillTap,
+                ),
+                const SizedBox(height: 8),
+                _ManualBulletCard(
+                  title: 'Prossimi upgrade',
+                  bullets: [
+                    nextPokeslotLevel == null
+                        ? 'Pokéslot: massimo gia raggiunto.'
+                        : 'Nuovo Pokéslot al livello $nextPokeslotLevel.',
+                    nextControlLevel == null
+                        ? 'Controllo SR: massimo gia raggiunto.'
+                        : 'Nuovo limite SR al livello $nextControlLevel.',
+                  ],
+                ),
+              ],
+            );
+
+            if (!twoColumns) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  starterBox,
+                  const SizedBox(height: 8),
+                  trainingBox,
+                ],
+              );
+            }
+
+            return Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(child: starterBox),
+                const SizedBox(width: 8),
+                Expanded(child: trainingBox),
+              ],
+            );
+          },
+        ),
+        if (errorMessage != null) ...[
+          const SizedBox(height: 12),
+          Text(
+            errorMessage!,
+            style: TextStyle(color: Theme.of(context).colorScheme.error),
+          ),
+        ],
+        const SizedBox(height: 16),
+        Align(
+          alignment: Alignment.centerRight,
+          child: FilledButton.icon(
+            onPressed: isSaving ? null : onSave,
+            icon: isSaving
+                ? const SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Icon(Icons.save_outlined),
+            label: Text(isSaving ? 'Salvataggio...' : 'Salva scheda'),
+          ),
+        ),
+      ],
     );
   }
 }
 
-class _TrainerCompletionChecklist extends StatelessWidget {
-  const _TrainerCompletionChecklist({
-    required this.race,
-    required this.background,
-    required this.starterPokemon,
-    required this.startingPack,
+String _skillDetails(List<String> skills) {
+  return skills
+      .map((skill) => TrainerManualOptions.skillNotes[skill] ?? '')
+      .where((note) => note.isNotEmpty)
+      .join('\n');
+}
+
+class _TrainerProgressionColumn extends StatelessWidget {
+  const _TrainerProgressionColumn({
     required this.trainerLevel,
     required this.trainerPath,
-    required this.skillProficiencies,
     required this.specializations,
+    required this.onTrainerPathTap,
+    required this.onSpecializationTap,
   });
 
-  final String race;
-  final String background;
-  final String starterPokemon;
-  final String startingPack;
   final int trainerLevel;
   final String trainerPath;
-  final List<String> skillProficiencies;
   final List<String> specializations;
+  final VoidCallback onTrainerPathTap;
+  final void Function(int slotIndex) onSpecializationTap;
 
   @override
   Widget build(BuildContext context) {
-    final items = [
-      _ChecklistItem('Razza', race.isNotEmpty),
-      _ChecklistItem('Background', background.isNotEmpty),
-      _ChecklistItem('Starter Pokémon', starterPokemon.isNotEmpty),
-      _ChecklistItem('Pack iniziale', startingPack.isNotEmpty),
-      _ChecklistItem('2 competenze scelte', skillProficiencies.length == 2),
-      _ChecklistItem('Specializzazione', specializations.isNotEmpty),
-      _ChecklistItem(
-        trainerLevel >= 2 ? 'Trainer Path' : 'Trainer Path dal livello 2',
-        trainerLevel < 2 || trainerPath.isNotEmpty,
+    final slots = <Widget>[
+      _ProgressionChoiceBox(
+        title: 'Specialization',
+        level: 1,
+        value: _specializationAt(0).isEmpty
+            ? 'Scegli specializzazione'
+            : _specializationAt(0),
+        detail: _specializationDetail(0),
+        onTap: () => onSpecializationTap(0),
       ),
     ];
-    final completed = items.where((item) => item.isComplete).length;
 
-    return Card(
+    if (trainerLevel >= 2) {
+      slots.add(
+        _ProgressionChoiceBox(
+          title: 'Trainer Path',
+          level: 2,
+          value: trainerPath.isEmpty ? 'Scegli trainer path' : trainerPath,
+          detail: trainerPath.isEmpty
+              ? 'Tocca per scegliere dal pool dei path.'
+              : TrainerManualOptions.trainerPathNotes[trainerPath] ?? '',
+          onTap: onTrainerPathTap,
+        ),
+      );
+    }
+
+    for (final level in [5, 9, 15]) {
+      if (trainerLevel >= level) {
+        slots.add(
+          _ProgressionChoiceBox(
+            title: 'Trainer Path',
+            level: level,
+            value: trainerPath.isEmpty ? 'Path non scelto' : trainerPath,
+            detail: trainerPath.isEmpty
+                ? 'Scegli il path al livello 2 per vedere la feature.'
+                : 'Feature del path. ${TrainerManualOptions.trainerPathNotes[trainerPath] ?? ''}',
+            onTap: onTrainerPathTap,
+          ),
+        );
+      }
+    }
+
+    if (trainerLevel >= 7) {
+      slots.add(
+        _ProgressionChoiceBox(
+          title: 'Specialization',
+          level: 7,
+          value: _specializationAt(1).isEmpty
+              ? 'Scegli specializzazione'
+              : _specializationAt(1),
+          detail: _specializationDetail(1),
+          onTap: () => onSpecializationTap(1),
+        ),
+      );
+    }
+
+    if (trainerLevel >= 18) {
+      slots.add(
+        _ProgressionChoiceBox(
+          title: 'Specialization',
+          level: 18,
+          value: _specializationAt(2).isEmpty
+              ? 'Scegli specializzazione'
+              : _specializationAt(2),
+          detail: _specializationDetail(2),
+          onTap: () => onSpecializationTap(2),
+        ),
+      );
+    }
+
+    slots.sort((a, b) {
+      final first = a is _ProgressionChoiceBox ? a.level : 0;
+      final second = b is _ProgressionChoiceBox ? b.level : 0;
+      return first.compareTo(second);
+    });
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _SheetSectionTitle(
+          title: 'AVANZAMENTO',
+          trailing: 'LEVEL $trainerLevel',
+        ),
+        const SizedBox(height: 8),
+        for (final slot in slots) ...[
+          slot,
+          const SizedBox(height: 8),
+        ],
+      ],
+    );
+  }
+
+  String _specializationAt(int index) {
+    return index < specializations.length ? specializations[index] : '';
+  }
+
+  String _specializationDetail(int index) {
+    final specialization = _specializationAt(index);
+    if (specialization.isEmpty) {
+      return 'Tocca il box e scegli dal pool disponibile.';
+    }
+
+    return TrainerManualOptions.specializationNotes[specialization] ?? '';
+  }
+}
+
+class _SheetSectionTitle extends StatelessWidget {
+  const _SheetSectionTitle({required this.title, this.trailing});
+
+  final String title;
+  final String? trailing;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        border: Border(
+          bottom: BorderSide(color: Theme.of(context).colorScheme.outline),
+        ),
+      ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        padding: const EdgeInsets.only(bottom: 5),
+        child: Row(
           children: [
-            Text(
-              'Compilazione guidata',
-              style: Theme.of(
-                context,
-              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+            Expanded(
+              child: Text(
+                title,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 0.6,
+                ),
+              ),
             ),
-            const SizedBox(height: 4),
-            Text('$completed/${items.length} passaggi completati'),
-            const SizedBox(height: 12),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                for (final item in items)
-                  Chip(
-                    avatar: Icon(
-                      item.isComplete
-                          ? Icons.check_circle
-                          : Icons.radio_button_unchecked,
-                      size: 18,
-                    ),
-                    label: Text(item.label),
-                  ),
-              ],
-            ),
+            if (trailing != null)
+              Text(
+                trailing!,
+                style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
           ],
         ),
       ),
@@ -776,11 +1198,398 @@ class _TrainerCompletionChecklist extends StatelessWidget {
   }
 }
 
-class _ChecklistItem {
-  const _ChecklistItem(this.label, this.isComplete);
+class _SheetTextBox extends StatelessWidget {
+  const _SheetTextBox({
+    required this.label,
+    required this.controller,
+    this.width = 220,
+    this.prefixText,
+    this.keyboardType,
+    this.inputFormatters,
+  });
 
   final String label;
-  final bool isComplete;
+  final TextEditingController controller;
+  final double width;
+  final String? prefixText;
+  final TextInputType? keyboardType;
+  final List<TextInputFormatter>? inputFormatters;
+
+  @override
+  Widget build(BuildContext context) {
+    return _SheetBoxFrame(
+      width: width,
+      child: TextField(
+        controller: controller,
+        keyboardType: keyboardType,
+        inputFormatters: inputFormatters,
+        decoration: InputDecoration(
+          labelText: label,
+          prefixText: prefixText,
+          isDense: true,
+          border: InputBorder.none,
+        ),
+        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+          fontWeight: FontWeight.w800,
+        ),
+      ),
+    );
+  }
+}
+
+class _SheetInfoBox extends StatelessWidget {
+  const _SheetInfoBox({
+    required this.label,
+    required this.value,
+    this.detail,
+    this.width = 132,
+  });
+
+  final String label;
+  final String value;
+  final String? detail;
+  final double width;
+
+  @override
+  Widget build(BuildContext context) {
+    return _SheetBoxFrame(
+      width: width,
+      child: _SheetBoxText(label: label, value: value, detail: detail),
+    );
+  }
+}
+
+class _SheetChoiceBox extends StatelessWidget {
+  const _SheetChoiceBox({
+    required this.label,
+    required this.value,
+    required this.onTap,
+    this.detail,
+    this.width,
+  });
+
+  final String label;
+  final String value;
+  final String? detail;
+  final VoidCallback onTap;
+  final double? width;
+
+  @override
+  Widget build(BuildContext context) {
+    return _SheetBoxFrame(
+      width: width,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(6),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.only(right: 2),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: _SheetBoxText(
+                  label: label,
+                  value: value,
+                  detail: detail,
+                ),
+              ),
+              const Padding(
+                padding: EdgeInsets.only(top: 4),
+                child: Icon(Icons.expand_more, size: 18),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _SheetCounterBox extends StatelessWidget {
+  const _SheetCounterBox({
+    required this.label,
+    required this.value,
+    this.subtitle,
+    this.onDecrease,
+    this.onIncrease,
+  });
+
+  final String label;
+  final String value;
+  final String? subtitle;
+  final VoidCallback? onDecrease;
+  final VoidCallback? onIncrease;
+
+  @override
+  Widget build(BuildContext context) {
+    return _SheetBoxFrame(
+      width: 150,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label, style: Theme.of(context).textTheme.labelSmall),
+          Row(
+            children: [
+              IconButton(
+                visualDensity: VisualDensity.compact,
+                tooltip: 'Diminuisci $label',
+                onPressed: onDecrease,
+                icon: const Icon(Icons.remove, size: 18),
+              ),
+              Expanded(
+                child: Text(
+                  value,
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ),
+              IconButton(
+                visualDensity: VisualDensity.compact,
+                tooltip: 'Aumenta $label',
+                onPressed: onIncrease,
+                icon: const Icon(Icons.add, size: 18),
+              ),
+            ],
+          ),
+          if (subtitle != null)
+            Text(
+              subtitle!,
+              style: Theme.of(context).textTheme.bodySmall,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SheetBoxFrame extends StatelessWidget {
+  const _SheetBoxFrame({
+    required this.child,
+    this.width,
+  });
+
+  final Widget child;
+  final double? width;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: width,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          border: Border.all(color: Theme.of(context).colorScheme.outline),
+          borderRadius: BorderRadius.circular(6),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+          child: child,
+        ),
+      ),
+    );
+  }
+}
+
+class _SheetBoxText extends StatelessWidget {
+  const _SheetBoxText({
+    required this.label,
+    required this.value,
+    this.detail,
+  });
+
+  final String label;
+  final String value;
+  final String? detail;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(label, style: Theme.of(context).textTheme.labelSmall),
+        const SizedBox(height: 3),
+        Text(
+          value,
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(
+            fontWeight: FontWeight.w900,
+          ),
+        ),
+        if (detail != null && detail!.isNotEmpty) ...[
+          const SizedBox(height: 3),
+          Text(
+            detail!,
+            maxLines: 4,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+        ],
+      ],
+    );
+  }
+}
+
+class _StarterSheetBox extends StatelessWidget {
+  const _StarterSheetBox({
+    required this.pokemon,
+    required this.alreadyInTeam,
+    required this.canAddToTeam,
+    required this.onPick,
+    required this.onAddToTeam,
+  });
+
+  final Pokemon? pokemon;
+  final bool alreadyInTeam;
+  final bool canAddToTeam;
+  final VoidCallback onPick;
+  final VoidCallback onAddToTeam;
+
+  @override
+  Widget build(BuildContext context) {
+    final selectedPokemon = pokemon;
+
+    return _SheetBoxFrame(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          InkWell(
+            borderRadius: BorderRadius.circular(6),
+            onTap: onPick,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.only(top: 18),
+                  child: Icon(Icons.catching_pokemon),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: _SheetBoxText(
+                    label: 'Starter Pokémon',
+                    value: selectedPokemon == null
+                        ? 'Scegli starter'
+                        : selectedPokemon.name,
+                    detail: selectedPokemon == null
+                        ? 'Solo primo stadio con SR 1/2 o inferiore.'
+                        : '${selectedPokemon.types.join(' / ')} | SR ${selectedPokemon.sr} | HP ${selectedPokemon.hitPoints} | CA ${selectedPokemon.armorClass}',
+                  ),
+                ),
+                const Padding(
+                  padding: EdgeInsets.only(top: 4),
+                  child: Icon(Icons.expand_more, size: 18),
+                ),
+              ],
+            ),
+          ),
+          if (selectedPokemon != null) ...[
+            const SizedBox(height: 8),
+            if (alreadyInTeam)
+              const Text('Starter gia presente in squadra.')
+            else
+              FilledButton.icon(
+                onPressed: canAddToTeam ? onAddToTeam : null,
+                icon: const Icon(Icons.group_add_outlined),
+                label: const Text('Aggiungi alla squadra'),
+              ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _ProgressionChoiceBox extends StatelessWidget {
+  const _ProgressionChoiceBox({
+    required this.title,
+    required this.level,
+    required this.value,
+    required this.detail,
+    required this.onTap,
+  });
+
+  final String title;
+  final int level;
+  final String value;
+  final String detail;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        border: Border.all(color: Theme.of(context).colorScheme.outline),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x18000000),
+            offset: Offset(3, 3),
+          ),
+        ],
+        color: Theme.of(context).colorScheme.surface,
+      ),
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      title.toUpperCase(),
+                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                  ),
+                  Text(
+                    'LEVEL $level',
+                    style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              DecoratedBox(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primaryContainer
+                      .withValues(alpha: 0.45),
+                  borderRadius: BorderRadius.circular(3),
+                ),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 4,
+                    ),
+                    child: Text(
+                      value,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                detail,
+                maxLines: 4,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class _AbilityScoreTile extends StatelessWidget {
@@ -842,408 +1651,6 @@ class _AbilityScoreTile extends StatelessWidget {
   }
 }
 
-class _DescriptionListCard extends StatelessWidget {
-  const _DescriptionListCard({required this.title, required this.entries});
-
-  final String title;
-  final Map<String, String> entries;
-
-  @override
-  Widget build(BuildContext context) {
-    return _ManualBulletCard(
-      title: title,
-      bullets: [
-        for (final entry in entries.entries)
-          entry.value.isEmpty ? entry.key : '${entry.key}: ${entry.value}',
-      ],
-    );
-  }
-}
-
-class _StarterSelector extends StatelessWidget {
-  const _StarterSelector({
-    required this.pokemon,
-    required this.alreadyInTeam,
-    required this.canAddToTeam,
-    required this.onPick,
-    required this.onAddToTeam,
-  });
-
-  final Pokemon? pokemon;
-  final bool alreadyInTeam;
-  final bool canAddToTeam;
-  final VoidCallback onPick;
-  final VoidCallback onAddToTeam;
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final selectedPokemon = pokemon;
-
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        border: Border.all(color: colorScheme.outlineVariant),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Starter Pokémon',
-              style: Theme.of(context).textTheme.labelLarge,
-            ),
-            const SizedBox(height: 6),
-            InkWell(
-              borderRadius: BorderRadius.circular(8),
-              onTap: onPick,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                child: Row(
-                  children: [
-                    const Icon(Icons.catching_pokemon),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Text(
-                        selectedPokemon == null
-                            ? 'Scegli uno starter valido'
-                            : selectedPokemon.name,
-                        style: Theme.of(context).textTheme.titleMedium
-                            ?.copyWith(fontWeight: FontWeight.w800),
-                      ),
-                    ),
-                    const Icon(Icons.expand_more),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              'Lista filtrata: primo stadio e SR 1/2 o inferiore.',
-              style: TextStyle(color: colorScheme.onSurfaceVariant),
-            ),
-            if (selectedPokemon != null) ...[
-              const SizedBox(height: 10),
-              if (alreadyInTeam)
-                const Text('Starter gia presente in squadra.')
-              else
-                FilledButton.icon(
-                  onPressed: canAddToTeam ? onAddToTeam : null,
-                  icon: const Icon(Icons.group_add_outlined),
-                  label: const Text('Aggiungi alla squadra'),
-                ),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _SmallInfoChip extends StatelessWidget {
-  const _SmallInfoChip({required this.label});
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: colorScheme.primaryContainer.withValues(alpha: 0.55),
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-        child: Text(
-          label,
-          style: Theme.of(context).textTheme.labelSmall?.copyWith(
-            color: colorScheme.onPrimaryContainer,
-            fontWeight: FontWeight.w800,
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _TrainerStat extends StatelessWidget {
-  const _TrainerStat({required this.label, required this.value});
-
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label, style: Theme.of(context).textTheme.bodySmall),
-        const SizedBox(height: 4),
-        Text(
-          value,
-          style: Theme.of(
-            context,
-          ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-        ),
-      ],
-    );
-  }
-}
-
-class _TrainerCreationForm extends StatelessWidget {
-  const _TrainerCreationForm({
-    required this.raceController,
-    required this.backgroundController,
-    required this.selectedStarter,
-    required this.startingPack,
-    required this.trainerLevel,
-    required this.trainerPath,
-    required this.skillProficiencies,
-    required this.specializations,
-    required this.canAddStarterToTeam,
-    required this.starterAlreadyInTeam,
-    required this.onRaceChanged,
-    required this.onBackgroundChanged,
-    required this.onStarterTap,
-    required this.onAddStarterToTeam,
-    required this.onStartingPackChanged,
-    required this.onTrainerPathChanged,
-    required this.onSkillToggle,
-    required this.onSpecializationToggle,
-  });
-
-  final TextEditingController raceController;
-  final TextEditingController backgroundController;
-  final Pokemon? selectedStarter;
-  final String startingPack;
-  final int trainerLevel;
-  final String trainerPath;
-  final List<String> skillProficiencies;
-  final List<String> specializations;
-  final bool canAddStarterToTeam;
-  final bool starterAlreadyInTeam;
-  final ValueChanged<String?> onRaceChanged;
-  final ValueChanged<String?> onBackgroundChanged;
-  final VoidCallback onStarterTap;
-  final VoidCallback onAddStarterToTeam;
-  final ValueChanged<String?> onStartingPackChanged;
-  final ValueChanged<String?> onTrainerPathChanged;
-  final ValueChanged<String> onSkillToggle;
-  final ValueChanged<String> onSpecializationToggle;
-
-  @override
-  Widget build(BuildContext context) {
-    final pathEnabled = trainerLevel >= 2;
-    final selectedPack = TrainerManualOptions.startingPacks.contains(startingPack)
-        ? startingPack
-        : null;
-    final selectedPath =
-        TrainerManualOptions.trainerPaths.contains(trainerPath) ? trainerPath : null;
-    final selectedRace = TrainerManualOptions.trainerRaces.contains(
-      raceController.text.trim(),
-    )
-        ? raceController.text.trim()
-        : null;
-    final selectedBackground = TrainerManualOptions.backgroundOptions.contains(
-      backgroundController.text.trim(),
-    )
-        ? backgroundController.text.trim()
-        : null;
-
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Creazione Trainer',
-              style: Theme.of(
-                context,
-              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              'Dal manuale: razza 5e, classe Pokémon Trainer, Animal Handling, '
-              'due competenze a scelta, starter, pack iniziale e specializzazione.',
-            ),
-            const SizedBox(height: 16),
-            DropdownButtonFormField<String>(
-              initialValue: selectedRace,
-              decoration: const InputDecoration(
-                labelText: 'Razza / origine',
-                helperText: 'Origini regionali Pokémon 5e o razza approvata dal DM.',
-              ),
-              items: [
-                for (final race in TrainerManualOptions.trainerRaces)
-                  DropdownMenuItem(value: race, child: Text(race)),
-              ],
-              onChanged: onRaceChanged,
-            ),
-            if (selectedRace != null) ...[
-              const SizedBox(height: 8),
-              Text(TrainerManualOptions.trainerRaceNotes[selectedRace] ?? ''),
-            ],
-            const SizedBox(height: 12),
-            DropdownButtonFormField<String>(
-              initialValue: selectedBackground,
-              decoration: const InputDecoration(labelText: 'Background'),
-              items: [
-                for (final background in TrainerManualOptions.backgroundOptions)
-                  DropdownMenuItem(value: background, child: Text(background)),
-              ],
-              onChanged: onBackgroundChanged,
-            ),
-            if (selectedBackground != null) ...[
-              const SizedBox(height: 8),
-              Text(
-                TrainerManualOptions.backgroundNotes[selectedBackground] ?? '',
-              ),
-            ],
-            const SizedBox(height: 12),
-            _StarterSelector(
-              pokemon: selectedStarter,
-              alreadyInTeam: starterAlreadyInTeam,
-              canAddToTeam: canAddStarterToTeam,
-              onPick: onStarterTap,
-              onAddToTeam: onAddStarterToTeam,
-            ),
-            if (selectedStarter != null) ...[
-              const SizedBox(height: 8),
-              Wrap(
-                spacing: 6,
-                runSpacing: 6,
-                children: [
-                  for (final type in selectedStarter!.types)
-                    _SmallInfoChip(label: type.toUpperCase()),
-                  _SmallInfoChip(label: 'SR ${selectedStarter!.sr}'),
-                  _SmallInfoChip(label: 'HP ${selectedStarter!.hitPoints}'),
-                  _SmallInfoChip(label: 'CA ${selectedStarter!.armorClass}'),
-                ],
-              ),
-            ],
-            const SizedBox(height: 12),
-            DropdownButtonFormField<String>(
-              initialValue: selectedPack,
-              decoration: const InputDecoration(labelText: 'Pack iniziale'),
-              items: [
-                for (final pack in TrainerManualOptions.startingPacks)
-                  DropdownMenuItem(value: pack, child: Text(pack)),
-              ],
-              onChanged: onStartingPackChanged,
-            ),
-            const SizedBox(height: 16),
-            _ChoiceChipSection(
-              title: 'Competenze',
-              subtitle: 'Animal Handling e Charisma save sono fissi. Scegli due competenze.',
-              options: TrainerManualOptions.skillChoices,
-              selected: skillProficiencies,
-              maxSelections: 2,
-              onToggle: onSkillToggle,
-            ),
-            const SizedBox(height: 16),
-            _ChoiceChipSection(
-              title: 'Specializzazioni',
-              subtitle: 'Scegline una al livello 1; il manuale consente '
-                  'ulteriori scelte piu avanti.',
-              options: TrainerManualOptions.specializations,
-              selected: specializations,
-              onToggle: onSpecializationToggle,
-              descriptions: TrainerManualOptions.specializationNotes,
-            ),
-            const SizedBox(height: 16),
-            DropdownButtonFormField<String>(
-              initialValue: selectedPath,
-              decoration: InputDecoration(
-                labelText: 'Trainer Path',
-                helperText: pathEnabled
-                    ? 'Scelta disponibile dal livello 2.'
-                    : 'Disponibile quando il trainer arriva al livello 2.',
-              ),
-              items: [
-                for (final path in TrainerManualOptions.trainerPaths)
-                  DropdownMenuItem(value: path, child: Text(path)),
-              ],
-              onChanged: pathEnabled ? onTrainerPathChanged : null,
-            ),
-            if (selectedPath != null) ...[
-              const SizedBox(height: 8),
-              Text(TrainerManualOptions.trainerPathNotes[selectedPath] ?? ''),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _ChoiceChipSection extends StatelessWidget {
-  const _ChoiceChipSection({
-    required this.title,
-    required this.subtitle,
-    required this.options,
-    required this.selected,
-    required this.onToggle,
-    this.maxSelections,
-    this.descriptions = const {},
-  });
-
-  final String title;
-  final String subtitle;
-  final List<String> options;
-  final List<String> selected;
-  final ValueChanged<String> onToggle;
-  final int? maxSelections;
-  final Map<String, String> descriptions;
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: Theme.of(context).textTheme.labelLarge,
-        ),
-        const SizedBox(height: 4),
-        Text(subtitle),
-        const SizedBox(height: 8),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: [
-            for (final option in options)
-              Tooltip(
-                message: descriptions[option] ?? option,
-                child: FilterChip(
-                  label: Text(option),
-                  selected: selected.contains(option),
-                  onSelected: (_) => onToggle(option),
-                ),
-              ),
-          ],
-        ),
-        if (maxSelections != null) ...[
-          const SizedBox(height: 8),
-          Text(
-            '${selected.length}/$maxSelections selezionate',
-            style: TextStyle(
-              color: selected.length > maxSelections!
-                  ? colorScheme.error
-                  : colorScheme.onSurfaceVariant,
-            ),
-          ),
-        ],
-      ],
-    );
-  }
-}
-
 class _ManualBulletCard extends StatelessWidget {
   const _ManualBulletCard({required this.title, required this.bullets});
 
@@ -1275,230 +1682,6 @@ class _ManualBulletCard extends StatelessWidget {
                 child: Text('• $bullet'),
               ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class _TrainerEditForm extends StatelessWidget {
-  const _TrainerEditForm({
-    required this.nameController,
-    required this.moneyController,
-    required this.trainerLevel,
-    required this.armorClass,
-    required this.maxHp,
-    required this.currentHp,
-    required this.speed,
-    required this.isSaving,
-    required this.errorMessage,
-    required this.onDecreaseLevel,
-    required this.onIncreaseLevel,
-    required this.onArmorClassChanged,
-    required this.onMaxHpChanged,
-    required this.onCurrentHpChanged,
-    required this.onSpeedChanged,
-    required this.onSave,
-  });
-
-  final TextEditingController nameController;
-  final TextEditingController moneyController;
-  final int trainerLevel;
-  final int armorClass;
-  final int maxHp;
-  final int currentHp;
-  final int speed;
-  final bool isSaving;
-  final String? errorMessage;
-  final VoidCallback onDecreaseLevel;
-  final VoidCallback onIncreaseLevel;
-  final ValueChanged<int> onArmorClassChanged;
-  final ValueChanged<int> onMaxHpChanged;
-  final ValueChanged<int> onCurrentHpChanged;
-  final ValueChanged<int> onSpeedChanged;
-  final VoidCallback onSave;
-
-  @override
-  Widget build(BuildContext context) {
-    final pokeslots = TrainerProgression.pokeslotsForLevel(trainerLevel);
-    final maxSr = TrainerProgression.maxControlledSrForLevel(trainerLevel);
-
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Dati allenatore',
-              style: Theme.of(
-                context,
-              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: nameController,
-              decoration: const InputDecoration(labelText: 'Nome allenatore'),
-            ),
-            const SizedBox(height: 20),
-            Text(
-              'Livello allenatore',
-              style: Theme.of(context).textTheme.labelLarge,
-            ),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                IconButton(
-                  tooltip: 'Diminuisci livello',
-                  onPressed: trainerLevel <= TrainerProgression.minLevel
-                      ? null
-                      : onDecreaseLevel,
-                  icon: const Icon(Icons.remove_circle_outline),
-                ),
-                Expanded(
-                  child: Column(
-                    children: [
-                      Text(
-                        'Lv. $trainerLevel',
-                        style: Theme.of(context).textTheme.titleLarge
-                            ?.copyWith(fontWeight: FontWeight.bold),
-                      ),
-                      Text('Pokéslot $pokeslots | SR max $maxSr'),
-                    ],
-                  ),
-                ),
-                IconButton(
-                  tooltip: 'Aumenta livello',
-                  onPressed: trainerLevel >= TrainerProgression.maxLevel
-                      ? null
-                      : onIncreaseLevel,
-                  icon: const Icon(Icons.add_circle_outline),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: moneyController,
-              decoration: const InputDecoration(
-                labelText: 'Soldi',
-                prefixText: '₽ ',
-              ),
-              keyboardType: TextInputType.number,
-              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-            ),
-            const SizedBox(height: 20),
-            Text(
-              'Statistiche D&D',
-              style: Theme.of(context).textTheme.labelLarge,
-            ),
-            const SizedBox(height: 8),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                _NumberStepper(
-                  label: 'CA',
-                  value: armorClass,
-                  onDecrease: () => onArmorClassChanged(-1),
-                  onIncrease: () => onArmorClassChanged(1),
-                ),
-                _NumberStepper(
-                  label: 'PF attuali',
-                  value: currentHp,
-                  onDecrease: () => onCurrentHpChanged(-1),
-                  onIncrease: () => onCurrentHpChanged(1),
-                ),
-                _NumberStepper(
-                  label: 'PF max',
-                  value: maxHp,
-                  onDecrease: () => onMaxHpChanged(-1),
-                  onIncrease: () => onMaxHpChanged(1),
-                ),
-                _NumberStepper(
-                  label: 'Velocità',
-                  value: speed,
-                  onDecrease: () => onSpeedChanged(-5),
-                  onIncrease: () => onSpeedChanged(5),
-                ),
-              ],
-            ),
-            if (errorMessage != null) ...[
-              const SizedBox(height: 12),
-              Text(
-                errorMessage!,
-                style: TextStyle(color: Theme.of(context).colorScheme.error),
-              ),
-            ],
-            const SizedBox(height: 20),
-            SizedBox(
-              width: double.infinity,
-              child: FilledButton.icon(
-                onPressed: isSaving ? null : onSave,
-                icon: isSaving
-                    ? const SizedBox(
-                        width: 18,
-                        height: 18,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Icon(Icons.save_outlined),
-                label: Text(isSaving ? 'Salvataggio...' : 'Salva scheda'),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _NumberStepper extends StatelessWidget {
-  const _NumberStepper({
-    required this.label,
-    required this.value,
-    required this.onDecrease,
-    required this.onIncrease,
-  });
-
-  final String label;
-  final int value;
-  final VoidCallback onDecrease;
-  final VoidCallback onIncrease;
-
-  @override
-  Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: SizedBox(
-        width: 124,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-          child: Column(
-            children: [
-              Text(label, style: Theme.of(context).textTheme.labelMedium),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  IconButton(
-                    visualDensity: VisualDensity.compact,
-                    onPressed: onDecrease,
-                    icon: const Icon(Icons.remove),
-                  ),
-                  Text(
-                    '$value',
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  IconButton(
-                    visualDensity: VisualDensity.compact,
-                    onPressed: onIncrease,
-                    icon: const Icon(Icons.add),
-                  ),
-                ],
-              ),
-            ],
-          ),
         ),
       ),
     );
@@ -1601,6 +1784,198 @@ class _StarterPickerSheetState extends State<_StarterPickerSheet> {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _StringPickerSheet extends StatelessWidget {
+  const _StringPickerSheet({
+    required this.title,
+    required this.options,
+    required this.selected,
+    this.descriptions = const {},
+  });
+
+  final String title;
+  final List<String> options;
+  final String selected;
+  final Map<String, String> descriptions;
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.78,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
+              child: Text(
+                title,
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+            ),
+            Flexible(
+              child: ListView.separated(
+                shrinkWrap: true,
+                padding: const EdgeInsets.fromLTRB(12, 0, 12, 16),
+                itemCount: options.length,
+                separatorBuilder: (_, _) => const SizedBox(height: 6),
+                itemBuilder: (context, index) {
+                  final option = options[index];
+                  final description = descriptions[option] ?? '';
+
+                  return _PickerOptionTile(
+                    title: option,
+                    subtitle: description,
+                    isSelected: option == selected,
+                    onTap: () => Navigator.of(context).pop(option),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _MultiStringPickerSheet extends StatefulWidget {
+  const _MultiStringPickerSheet({
+    required this.title,
+    required this.options,
+    required this.selected,
+    required this.maxSelections,
+    this.descriptions = const {},
+  });
+
+  final String title;
+  final List<String> options;
+  final List<String> selected;
+  final int maxSelections;
+  final Map<String, String> descriptions;
+
+  @override
+  State<_MultiStringPickerSheet> createState() => _MultiStringPickerSheetState();
+}
+
+class _MultiStringPickerSheetState extends State<_MultiStringPickerSheet> {
+  late List<String> _selected;
+
+  @override
+  void initState() {
+    super.initState();
+    _selected = [...widget.selected];
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: SizedBox(
+        height: MediaQuery.of(context).size.height * 0.82,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.title,
+                          style: Theme.of(context).textTheme.titleLarge
+                              ?.copyWith(fontWeight: FontWeight.w900),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          '${_selected.length}/${widget.maxSelections} selezionate',
+                        ),
+                      ],
+                    ),
+                  ),
+                  FilledButton(
+                    onPressed: () => Navigator.of(context).pop(_selected),
+                    child: const Text('Conferma'),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: ListView.separated(
+                padding: const EdgeInsets.fromLTRB(12, 0, 12, 16),
+                itemCount: widget.options.length,
+                separatorBuilder: (_, _) => const SizedBox(height: 6),
+                itemBuilder: (context, index) {
+                  final option = widget.options[index];
+                  final isSelected = _selected.contains(option);
+                  final canSelect = isSelected ||
+                      _selected.length < widget.maxSelections;
+
+                  return _PickerOptionTile(
+                    title: option,
+                    subtitle: widget.descriptions[option] ?? '',
+                    isSelected: isSelected,
+                    isEnabled: canSelect,
+                    onTap: () {
+                      setState(() {
+                        if (isSelected) {
+                          _selected.remove(option);
+                        } else if (canSelect) {
+                          _selected.add(option);
+                        }
+                      });
+                    },
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _PickerOptionTile extends StatelessWidget {
+  const _PickerOptionTile({
+    required this.title,
+    required this.subtitle,
+    required this.isSelected,
+    required this.onTap,
+    this.isEnabled = true,
+  });
+
+  final String title;
+  final String subtitle;
+  final bool isSelected;
+  final bool isEnabled;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: ListTile(
+        enabled: isEnabled,
+        title: Text(
+          title,
+          style: const TextStyle(fontWeight: FontWeight.w800),
+        ),
+        subtitle: subtitle.isEmpty ? null : Text(subtitle),
+        trailing: Icon(
+          isSelected ? Icons.check_circle : Icons.radio_button_unchecked,
+        ),
+        onTap: isEnabled ? onTap : null,
       ),
     );
   }

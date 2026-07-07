@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../models/pokemon.dart';
 import '../../models/team_slot.dart';
+import '../../models/trainer_progression.dart';
 import '../../models/user_profile.dart';
 import '../../repositories/pokemon_repository.dart';
 import '../../repositories/profile_repository.dart';
@@ -75,9 +76,23 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
     return null;
   }
 
+  int get _unlockedPokeslots {
+    final level = _profile?.trainerLevel ?? TrainerProgression.minLevel;
+
+    return TrainerProgression.pokeslotsForLevel(level);
+  }
+
+  List<TeamSlot> get _visibleTeam {
+    return [
+      for (final slot in _team)
+        if (slot.slotIndex < _unlockedPokeslots) slot,
+    ]..sort((a, b) => a.slotIndex.compareTo(b.slotIndex));
+  }
+
   Future<void> _setPokemonInSlot(int slotIndex, int? pokemonId) async {
     final profile = _profile;
     if (profile == null) return;
+    if (slotIndex >= _unlockedPokeslots) return;
 
     await _teamRepository.setPokemonInSlot(
       profileId: profile.id,
@@ -111,7 +126,7 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
           pokemon: pokemon,
           teamSlot: slot,
           allPokemon: _allPokemon,
-          team: _team,
+          team: _visibleTeam,
           onTeamSlotChanged: (updatedSlot) {
             _updateSlot(updatedSlot);
           },
@@ -138,7 +153,10 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
   @override
   Widget build(BuildContext context) {
     final profileName = _profile?.name ?? widget.nickname;
-    final filledSlots = _team.where((slot) => slot.pokemonId != null).length;
+    final visibleTeam = _visibleTeam;
+    final filledSlots = visibleTeam
+        .where((slot) => slot.pokemonId != null)
+        .length;
 
     return Scaffold(
       appBar: AppBar(title: const Text('Squadra')),
@@ -158,10 +176,10 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
               _TeamHeader(
                 profileName: profileName,
                 filledSlots: filledSlots,
-                totalSlots: _team.length,
+                totalSlots: visibleTeam.length,
               ),
               const SizedBox(height: 16),
-              for (final slot in _team)
+              for (final slot in visibleTeam)
                 _TeamSlotCard(
                   slot: slot,
                   pokemon: _pokemonById(slot.pokemonId),

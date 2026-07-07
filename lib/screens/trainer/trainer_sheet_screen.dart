@@ -381,8 +381,14 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
     return _team.any((slot) => slot.pokemonId == starter.id);
   }
 
+  int get _unlockedPokeslots {
+    return TrainerProgression.pokeslotsForLevel(_trainerLevel);
+  }
+
   bool get _hasEmptyTeamSlot {
-    return _team.any((slot) => slot.pokemonId == null);
+    return _team.any(
+      (slot) => slot.slotIndex < _unlockedPokeslots && slot.pokemonId == null,
+    );
   }
 
   Future<void> _openStarterPicker() async {
@@ -472,7 +478,12 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
     final starter = _selectedStarter;
     if (profile == null || starter == null) return;
 
-    final emptySlots = _team.where((slot) => slot.pokemonId == null).toList()
+    final emptySlots = _team
+        .where(
+          (slot) =>
+              slot.slotIndex < _unlockedPokeslots && slot.pokemonId == null,
+        )
+        .toList()
       ..sort((a, b) => a.slotIndex.compareTo(b.slotIndex));
     if (emptySlots.isEmpty) return;
 
@@ -895,13 +906,24 @@ class _TrainerSheetMainColumn extends StatelessWidget {
             _SheetCounterBox(
               label: 'Livello',
               value: trainerLevel.toString(),
-              subtitle: 'Pokéslot $pokeslots | SR max $maxSr',
               onDecrease: trainerLevel <= TrainerProgression.minLevel
                   ? null
                   : onDecreaseLevel,
               onIncrease: trainerLevel >= TrainerProgression.maxLevel
                   ? null
                   : onIncreaseLevel,
+            ),
+            _SheetInfoBox(
+              label: 'Pokéslot',
+              value: '$pokeslots',
+              detail: 'Slot squadra',
+              width: 104,
+            ),
+            _SheetInfoBox(
+              label: 'SR max',
+              value: '$maxSr',
+              detail: 'Controllo',
+              width: 104,
             ),
             _SheetTextBox(
               label: 'Pokédollars',

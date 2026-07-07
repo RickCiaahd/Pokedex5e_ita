@@ -322,8 +322,8 @@ class _ProfileTile extends StatelessWidget {
           padding: const EdgeInsets.only(top: 6),
           child: Text(
             isActive
-                ? 'Usato per Pokédex e squadra'
-                : 'Creato il ${_formatDate(profile.createdAt)}',
+                ? 'Lv. ${profile.trainerLevel} | Usato per Pokédex e squadra'
+                : 'Lv. ${profile.trainerLevel} | Creato il ${_formatDate(profile.createdAt)}',
           ),
         ),
         trailing: isActive

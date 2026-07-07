@@ -5,6 +5,7 @@ import '../profile/profiles_screen.dart';
 import '../team/team_selection_screen.dart';
 import '../../models/pokedex_entry.dart';
 import '../../models/pokemon.dart';
+import '../../models/trainer_progression.dart';
 import '../../models/user_profile.dart';
 import '../../repositories/pokemon_repository.dart';
 import '../../repositories/profile_repository.dart';
@@ -90,7 +91,7 @@ class _HomeScreenState extends State<HomeScreen> {
             else if (_errorMessage != null)
               _ErrorState(message: _errorMessage!, onRetry: _loadDashboard)
             else ...[
-              _TrainerHeader(profileName: profile?.name ?? 'Allenatore'),
+              _TrainerHeader(profile: profile),
               const SizedBox(height: 20),
               _ProgressOverview(total: total, seen: seen, caught: caught),
               const SizedBox(height: 24),
@@ -139,12 +140,18 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 class _TrainerHeader extends StatelessWidget {
-  const _TrainerHeader({required this.profileName});
+  const _TrainerHeader({required this.profile});
 
-  final String profileName;
+  final UserProfile? profile;
 
   @override
   Widget build(BuildContext context) {
+    final profileName = profile?.name ?? 'Allenatore';
+    final trainerLevel = profile?.trainerLevel ?? 1;
+    final money = profile?.money ?? 0;
+    final pokeslots = TrainerProgression.pokeslotsForLevel(trainerLevel);
+    final maxSr = TrainerProgression.maxControlledSrForLevel(trainerLevel);
+
     return Row(
       children: [
         CircleAvatar(
@@ -168,7 +175,9 @@ class _TrainerHeader extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 4),
-              const Text('Ecco il riepilogo della tua avventura.'),
+              Text(
+                'Lv. $trainerLevel | ₽ $money | Pokéslot $pokeslots | SR max $maxSr',
+              ),
             ],
           ),
         ),

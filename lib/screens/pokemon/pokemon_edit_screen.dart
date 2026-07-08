@@ -63,6 +63,7 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
   late final TextEditingController _nicknameController;
   late bool _isShiny;
   late String? _gender;
+  late String? _formName;
   late String _nature;
   late List<String> _selectedMoves;
   late List<String> _abilities;
@@ -71,6 +72,7 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
   late String? _heldItem;
   late Map<String, int> _customAbilityScores;
 
+  List<PokemonFormChoice> _formChoices = const [];
   List<PokemonAbility> _abilityChoices = const [];
   Set<String> _deprecatedAbilityNames = const {};
   Map<String, String> _abilityDescriptions = {};
@@ -78,6 +80,7 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
   Map<String, String> _itemDescriptions = {};
   Map<String, MoveData?> _moveData = {};
 
+  bool _formOpen = true;
   bool _movesOpen = false;
   bool _abilitiesOpen = false;
   bool _featsOpen = false;
@@ -94,6 +97,7 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
     );
     _isShiny = widget.slot.isShiny;
     _gender = widget.slot.gender;
+    _formName = widget.slot.formName;
     _nature = PokemonNature.names.contains(widget.slot.nature)
         ? widget.slot.nature
         : 'No Nature';
@@ -127,6 +131,7 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
     final featDescriptionsFuture = _featRepository.getFeatDescriptions();
     final itemDescriptionsFuture = _itemRepository.getItemDescriptions();
     final moveDataFuture = _moveRepository.getMoves(_allMoveChoices());
+    final formChoicesFuture = PokemonAssetPaths.formChoices(widget.pokemon);
 
     final abilityDescriptions = await abilityDescriptionsFuture;
     final abilityChoices = await abilityChoicesFuture;
@@ -134,8 +139,17 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
     final featDescriptions = await featDescriptionsFuture;
     final itemDescriptions = await itemDescriptionsFuture;
     final moveData = await moveDataFuture;
+    final formChoices = await formChoicesFuture;
 
     if (!mounted) return;
+
+    var formName = _formName;
+    if (formChoices.length <= 1) {
+      formName = null;
+    } else if (formName == null ||
+        !formChoices.any((choice) => choice.name == formName)) {
+      formName = formChoices.first.name;
+    }
 
     setState(() {
       _abilityDescriptions = abilityDescriptions;
@@ -144,6 +158,8 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
       _featDescriptions = featDescriptions;
       _itemDescriptions = itemDescriptions;
       _moveData = moveData;
+      _formChoices = formChoices;
+      _formName = formName;
       _isLoadingChoices = false;
     });
   }
@@ -220,6 +236,7 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
 
   TeamSlot _updatedSlot() {
     final nickname = _nicknameController.text.trim();
+    final formName = _formChoices.length > 1 ? _formName : null;
 
     return widget.slot.copyWith(
       nickname: nickname.isEmpty || nickname == widget.pokemon.name
@@ -227,6 +244,7 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
           : nickname,
       isShiny: _isShiny,
       gender: _gender,
+      formName: formName,
       nature: _nature,
       heldItem: _heldItem?.isEmpty == true ? null : _heldItem,
       selectedMoves: _normalizedMoves(_selectedMoves),
@@ -240,6 +258,25 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
 
   void _save() {
     Navigator.of(context).pop(PokemonEditResult(slot: _updatedSlot()));
+  }
+
+  Future<void> _pickForm() async {
+    if (_formChoices.length <= 1) return;
+
+    final result = await showModalBottomSheet<String>(
+      context: context,
+      showDragHandle: true,
+      isScrollControlled: true,
+      builder: (_) => _FormPickerSheet(
+        pokemon: widget.pokemon,
+        currentFormName: _formName,
+        choices: _formChoices,
+      ),
+    );
+
+    if (!mounted || result == null) return;
+
+    setState(() => _formName = result);
   }
 
   Future<void> _pickMove(int index) async {
@@ -455,6 +492,17 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
                   value: _isShiny,
                   onChanged: (value) => setState(() => _isShiny = value),
                 ),
+                if (_formChoices.length > 1)
+                  _CollapsibleEditSection(
+                    title: 'Forma',
+                    isOpen: _formOpen,
+                    onToggle: () => setState(() => _formOpen = !_formOpen),
+                    child: _FormSelector(
+                      pokemon: widget.pokemon,
+                      formName: _formName ?? _formChoices.first.name,
+                      onTap: _pickForm,
+                    ),
+                  ),
                 _CollapsibleEditSection(
                   title: 'Move set',
                   isOpen: _movesOpen,
@@ -564,6 +612,83 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
         child: Padding(
           padding: const EdgeInsets.all(12),
           child: FilledButton(onPressed: _save, child: const Text('SALVA')),
+        ),
+      ),
+    );
+  }
+}
+
+class _FormSelector extends StatelessWidget {
+  const _FormSelector({
+    required this.pokemon,
+    required this.formName,
+    required this.onTap,
+  });
+
+  final Pokemon pokemon;
+  final String formName;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: ListTile(
+        leading: PokemonAssetImage(
+          pokemon: pokemon,
+          formName: formName,
+          size: 52,
+        ),
+        title: Text(formName.toUpperCase()),
+        subtitle: const Text('Tocca per cambiare forma.'),
+        trailing: const Icon(Icons.swap_horiz),
+        onTap: onTap,
+      ),
+    );
+  }
+}
+
+class _FormPickerSheet extends StatelessWidget {
+  const _FormPickerSheet({
+    required this.pokemon,
+    required this.currentFormName,
+    required this.choices,
+  });
+
+  final Pokemon pokemon;
+  final String? currentFormName;
+  final List<PokemonFormChoice> choices;
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: SizedBox(
+        height: MediaQuery.of(context).size.height * 0.75,
+        child: ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            Text(
+              'Scegli forma',
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+            const SizedBox(height: 12),
+            for (final choice in choices)
+              Card(
+                child: ListTile(
+                  leading: PokemonAssetImage(
+                    pokemon: pokemon,
+                    formName: choice.name,
+                    size: 52,
+                  ),
+                  title: Text(choice.name.toUpperCase()),
+                  trailing: choice.name == currentFormName
+                      ? const Icon(Icons.check_circle)
+                      : const Icon(Icons.radio_button_unchecked),
+                  onTap: () => Navigator.of(context).pop(choice.name),
+                ),
+              ),
+          ],
         ),
       ),
     );

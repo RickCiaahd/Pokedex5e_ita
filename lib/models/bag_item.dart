@@ -20,7 +20,14 @@ class BagItem {
     return description.join('\n\n');
   }
 
-  String? get remoteSpriteUrl {
+  String? get sourceSpriteUrl {
+    final originalPath = _originalWebappSpritePath;
+    if (originalPath == null) return null;
+
+    return Uri.https('poke5e.app', originalPath).toString();
+  }
+
+  String? get githubSpriteUrl {
     final path = spriteAssetPath;
     if (path == null) return null;
 
@@ -28,6 +35,28 @@ class BagItem {
       'raw.githubusercontent.com',
       '/RickCiaahd/Pokedex5e_ita/main/$path',
     ).toString();
+  }
+
+  String? get remoteSpriteUrl => sourceSpriteUrl;
+
+  String? get _originalWebappSpritePath {
+    final path = spriteAssetPath;
+    if (path == null || path.isEmpty) return null;
+
+    const localPrefix = 'assets/textures/textures_webapp/items/';
+    if (path.startsWith(localPrefix)) {
+      return '/assets/items/${path.substring(localPrefix.length)}';
+    }
+
+    if (path.startsWith('/assets/')) {
+      return path;
+    }
+
+    if (path.startsWith('assets/')) {
+      return '/$path';
+    }
+
+    return path.startsWith('/') ? path : '/$path';
   }
 
   factory BagItem.fromWebJson(Map<String, dynamic> json) {

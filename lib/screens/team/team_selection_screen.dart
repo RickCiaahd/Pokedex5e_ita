@@ -532,15 +532,30 @@ class _PokemonPickerSheetState extends State<_PokemonPickerSheet> {
                     child: ListTile(
                       contentPadding: const EdgeInsets.symmetric(
                         horizontal: 12,
-                        vertical: 6,
+                        vertical: 8,
                       ),
-                      leading: const Icon(Icons.catching_pokemon),
+                      leading: _PokemonPickerSprite(pokemon: pokemon),
                       title: Text(
                         pokemon.name,
                         style: const TextStyle(fontWeight: FontWeight.w800),
                       ),
-                      subtitle: Text(
-                        '$number • ${pokemon.types.join(' / ')} • HP ${pokemon.hitPoints} • AC ${pokemon.armorClass}',
+                      subtitle: Padding(
+                        padding: const EdgeInsets.only(top: 5),
+                        child: Wrap(
+                          spacing: 6,
+                          runSpacing: 5,
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          children: [
+                            Text(
+                              number,
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                            for (final type in pokemon.types)
+                              PokemonTypeBadge(type: type, height: 18),
+                            _SmallChip(label: 'HP ${pokemon.hitPoints}'),
+                            _SmallChip(label: 'AC ${pokemon.armorClass}'),
+                          ],
+                        ),
                       ),
                       trailing: const Icon(Icons.add_circle_outline),
                       onTap: () {
@@ -554,6 +569,28 @@ class _PokemonPickerSheetState extends State<_PokemonPickerSheet> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _PokemonPickerSprite extends StatelessWidget {
+  const _PokemonPickerSprite({required this.pokemon});
+
+  final Pokemon pokemon;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Container(
+      width: 52,
+      height: 52,
+      decoration: BoxDecoration(
+        color: colorScheme.primaryContainer.withValues(alpha: 0.48),
+        borderRadius: BorderRadius.circular(14),
+      ),
+      alignment: Alignment.center,
+      child: PokemonAssetImage(pokemon: pokemon, size: 48),
     );
   }
 }

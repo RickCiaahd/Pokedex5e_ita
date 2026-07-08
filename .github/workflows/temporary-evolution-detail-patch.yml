@@ -1,0 +1,244 @@
+name: Temporary evolution detail patch
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/temporary-evolution-detail-patch.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch pokemon detail screen
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+
+          path = Path('lib/screens/pokemon/pokemon_detail_screen.dart')
+          text = path.read_text()
+
+          if "../../repositories/bag_inventory_repository.dart" not in text:
+              text = text.replace(
+                  "import '../../repositories/ability_repository.dart';\n",
+                  "import '../../repositories/ability_repository.dart';\n"
+                  "import '../../repositories/bag_inventory_repository.dart';\n"
+              )
+          if "../../repositories/item_repository.dart" not in text:
+              text = text.replace(
+                  "import '../../repositories/feat_repository.dart';\n",
+                  "import '../../repositories/feat_repository.dart';\n"
+                  "import '../../repositories/item_repository.dart';\n"
+              )
+          if "../../repositories/profile_repository.dart" not in text:
+              text = text.replace(
+                  "import '../../repositories/move_repository.dart';\n",
+                  "import '../../repositories/move_repository.dart';\n"
+                  "import '../../repositories/profile_repository.dart';\n"
+              )
+          if "../../services/evolution_service.dart" not in text:
+              text = text.replace(
+                  "import '../../repositories/profile_repository.dart';\n",
+                  "import '../../repositories/profile_repository.dart';\n"
+                  "import '../../services/evolution_service.dart';\n"
+              )
+          if "evolution_selector_sheet.dart" not in text:
+              text = text.replace(
+                  "import 'pokemon_edit_screen.dart';\n",
+                  "import 'evolution_selector_sheet.dart';\n"
+                  "import 'pokemon_edit_screen.dart';\n"
+              )
+
+          field_marker = "  final FeatRepository _featRepository = FeatRepository();\n"
+          if "_bagInventoryRepository" not in text:
+              text = text.replace(
+                  field_marker,
+                  field_marker +
+                  "  final BagInventoryRepository _bagInventoryRepository =\n"
+                  "      BagInventoryRepository();\n"
+                  "  final ItemRepository _itemRepository = ItemRepository();\n"
+                  "  final ProfileRepository _profileRepository = ProfileRepository();\n"
+                  "  final EvolutionService _evolutionService = const EvolutionService();\n"
+              )
+
+          start = text.index("  Pokemon? _pokemonByName(String name) {")
+          end = text.index("  Future<void> _openEditScreen()", start)
+          new_pokemon_by_name = r'''  Pokemon? _pokemonByName(String name) {
+    final targetKey = _referenceKey(name);
+
+    for (final pokemon in widget.allPokemon) {
+      if (pokemon.name == name || _referenceKey(pokemon.name) == targetKey) {
+        return pokemon;
+      }
+    }
+
+    return null;
+  }
+
+  String _referenceKey(String value) {
+    return value
+        .trim()
+        .toLowerCase()
+        .replaceAll(RegExp(r"[’']"), '')
+        .replaceAll(RegExp(r'[^a-z0-9]+'), '-')
+        .replaceAll(RegExp(r'^-+|-+$'), '');
+  }
+
+'''
+          text = text[:start] + new_pokemon_by_name + text[end:]
+
+          start = text.index("  bool _canEvolveCurrentPokemon() {")
+          end = text.index("  Future<void> _switchPartySlot", start)
+          new_evolution_block = r'''  EvolutionData? _evolutionForCurrentPokemon() {
+    return _evolutions[_pokemon.name] ?? _evolutions[_referenceKey(_pokemon.name)];
+  }
+
+  bool _canEvolveCurrentPokemon() {
+    final evolution = _evolutionForCurrentPokemon();
+    if (!_isPartyMode || evolution == null) return false;
+
+    return evolution.options.isNotEmpty || evolution.evolutions.isNotEmpty;
+  }
+
+  String? _evolutionLabel() {
+    final evolution = _evolutionForCurrentPokemon();
+    if (!_isPartyMode || evolution == null) return null;
+
+    final count = evolution.options.isEmpty
+        ? evolution.evolutions.length
+        : evolution.options.length;
+    if (count == 0) return null;
+
+    if (count == 1) {
+      final name = evolution.options.isEmpty
+          ? evolution.evolutions.first
+          : evolution.options.first.toName;
+      return 'FAI EVOLVERE IN ${name.toUpperCase()}';
+    }
+
+    return 'SCEGLI EVOLUZIONE';
+  }
+
+  Future<void> _evolveCurrentPokemon() async {
+    final slot = _teamSlot;
+    final evolution = _evolutionForCurrentPokemon();
+    if (slot == null || evolution == null) return;
+
+    final profile = await _profileRepository.getActiveProfile();
+    final inventory = await _bagInventoryRepository.getInventory(profile.id);
+    final itemCatalog = await _itemRepository.getWebItems();
+    final choices = _evolutionService.evaluateOptions(
+      pokemon: _pokemon,
+      slot: slot,
+      evolution: evolution,
+      inventory: inventory,
+      itemCatalog: itemCatalog,
+    );
+
+    if (!mounted) return;
+
+    if (choices.isEmpty) {
+      _showEvolutionMessage('Nessuna evoluzione disponibile per ${_pokemon.name}.');
+      return;
+    }
+
+    final selected = await showModalBottomSheet<EvolutionEligibility>(
+      context: context,
+      showDragHandle: true,
+      isScrollControlled: true,
+      builder: (_) => EvolutionSelectorSheet(
+        currentPokemon: _pokemon,
+        choices: choices,
+        pokemonByName: _pokemonByName,
+      ),
+    );
+
+    if (!mounted || selected == null) return;
+
+    await _evolveSlot(slot, selected, profile.id);
+  }
+
+  Future<TeamSlot?> _evolveSlot(
+    TeamSlot slot,
+    EvolutionEligibility selected,
+    String profileId,
+  ) async {
+    if (!selected.isAvailable) return null;
+
+    final evolvedPokemon = _pokemonByName(selected.option.toName);
+    if (evolvedPokemon == null) {
+      _showEvolutionMessage(
+        '${selected.option.toName} non è presente nel catalogo attuale.',
+      );
+      return null;
+    }
+
+    final requiredItemId = selected.requiredItemId;
+    if (requiredItemId != null) {
+      final consumed = await _bagInventoryRepository.consumeItem(
+        profileId: profileId,
+        itemId: requiredItemId,
+      );
+      if (!consumed) {
+        _showEvolutionMessage('Oggetto evolutivo non disponibile nello zaino.');
+        return null;
+      }
+    }
+
+    final wasFullHp = _currentHp >= _maxHp;
+    final oldName = _pokemon.name;
+    final evolvedMaxHp =
+        evolvedPokemon.hitPoints + _loyaltyHpBonus(slot.loyalty, _level);
+    final updatedSlot = slot.copyWith(
+      pokemonId: evolvedPokemon.id,
+      currentHp: wasFullHp ? evolvedMaxHp : _currentHp.clamp(0, evolvedMaxHp).toInt(),
+      selectedMoves: List<String>.from(slot.selectedMoves),
+    );
+
+    if (!mounted) return updatedSlot;
+
+    setState(() {
+      _pokemon = evolvedPokemon;
+      _teamSlot = updatedSlot;
+      _replaceTeamSlot(updatedSlot);
+      _isLoading = true;
+    });
+
+    widget.onTeamSlotChanged?.call(updatedSlot);
+    _showEvolutionMessage('$oldName si è evoluto in ${selected.option.toName}!');
+    await _loadData();
+
+    return updatedSlot;
+  }
+
+  void _showEvolutionMessage(String message) {
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
+  }
+
+'''
+          text = text[:start] + new_evolution_block + text[end:]
+
+          text = text.replace("'LOYALTY: ${_signed(loyalty)}'", "'LEALTÀ: ${_signed(loyalty)}'")
+
+          path.write_text(text)
+
+          workflow = Path('.github/workflows/temporary-evolution-detail-patch.yml')
+          if workflow.exists():
+              workflow.unlink()
+          PY
+
+      - name: Commit patch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add lib/screens/pokemon/pokemon_detail_screen.dart .github/workflows/temporary-evolution-detail-patch.yml
+          git commit -m "Wire evolution selector into detail screen" || exit 0
+          git push

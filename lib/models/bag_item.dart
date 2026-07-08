@@ -175,6 +175,6 @@ class BagItem {
     'evolution': '/assets/items/dawn-stone/sprite.png',
     'trainer-gear': '/assets/items/trainers-license/sprite.png',
     'key-item': '/assets/items/key-stone/sprite.png',
-    'tm': '/assets/items/pp-up/sprite.png',
+    'tm': '/assets/items/normal-memory-disc/sprite.png',
   };
 }

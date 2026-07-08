@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 
 import '../../models/pokedex_entry.dart';
 import '../../models/pokemon.dart';
+import '../../models/pokemon_form_preferences.dart';
 
 class PokemonFormChoice {
   const PokemonFormChoice({required this.name, required this.assetPath});
@@ -37,12 +38,13 @@ class PokemonAssetImage extends StatelessWidget {
     final seen = entry?.seen ?? true;
     final caught = entry?.caught ?? true;
     final visualScale = useLargeArtwork ? 1.08 : 1.12;
+    final effectiveFormName = formName ?? PokemonFormPreferences.formFor(pokemon.id);
 
     Widget image = _AssetFallbackImage(
       assetPaths: PokemonAssetPaths.imageCandidates(
         pokemon: pokemon,
         useLargeArtwork: useLargeArtwork,
-        formName: formName,
+        formName: effectiveFormName,
       ),
       assetPrefixes: PokemonAssetPaths.imageCandidatePrefixes(
         pokemon: pokemon,

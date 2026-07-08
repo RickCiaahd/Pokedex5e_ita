@@ -78,7 +78,10 @@ class BagItem {
 
     const localPrefix = 'assets/textures/textures_webapp/items/';
     if (path.startsWith(localPrefix)) {
-      return '/assets/items/${path.substring(localPrefix.length)}';
+      final relativePath = path.substring(localPrefix.length);
+      if (relativePath.startsWith('mt/')) return null;
+
+      return '/assets/items/$relativePath';
     }
 
     if (path.startsWith('/assets/')) {
@@ -175,6 +178,6 @@ class BagItem {
     'evolution': '/assets/items/dawn-stone/sprite.png',
     'trainer-gear': '/assets/items/trainers-license/sprite.png',
     'key-item': '/assets/items/key-stone/sprite.png',
-    'tm': '/assets/items/normal-memory-disc/sprite.png',
+    'tm': '/assets/items/key-stone/sprite.png',
   };
 }

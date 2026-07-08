@@ -4,6 +4,13 @@ import 'package:flutter/services.dart';
 import '../../models/pokedex_entry.dart';
 import '../../models/pokemon.dart';
 
+class PokemonFormChoice {
+  const PokemonFormChoice({required this.name, required this.assetPath});
+
+  final String name;
+  final String assetPath;
+}
+
 class PokemonAssetImage extends StatelessWidget {
   const PokemonAssetImage({
     super.key,
@@ -12,6 +19,7 @@ class PokemonAssetImage extends StatelessWidget {
     this.fit = BoxFit.contain,
     this.useLargeArtwork = false,
     this.entry,
+    this.formName,
     this.fallback,
   });
 
@@ -20,6 +28,7 @@ class PokemonAssetImage extends StatelessWidget {
   final BoxFit fit;
   final bool useLargeArtwork;
   final PokedexEntry? entry;
+  final String? formName;
   final Widget? fallback;
 
   @override
@@ -33,6 +42,7 @@ class PokemonAssetImage extends StatelessWidget {
       assetPaths: PokemonAssetPaths.imageCandidates(
         pokemon: pokemon,
         useLargeArtwork: useLargeArtwork,
+        formName: formName,
       ),
       assetPrefixes: PokemonAssetPaths.imageCandidatePrefixes(
         pokemon: pokemon,
@@ -141,17 +151,50 @@ class PokemonTypeBadge extends StatelessWidget {
 class PokemonAssetPaths {
   const PokemonAssetPaths._();
 
+  static Future<List<PokemonFormChoice>> formChoices(Pokemon pokemon) async {
+    final assetIndex = await _AssetLookup.assetIndex();
+    final choicesByName = <String, PokemonFormChoice>{};
+    final prefixes = imageCandidatePrefixes(
+      pokemon: pokemon,
+      useLargeArtwork: false,
+    );
+
+    for (final assetPath in assetIndex.sortedPaths) {
+      if (!assetPath.endsWith('.png')) continue;
+      if (!prefixes.any((prefix) => _AssetLookup.matchesPrefix(assetPath, prefix))) {
+        continue;
+      }
+
+      final choice = _formChoiceFromAssetPath(pokemon, assetPath);
+      if (choice == null) continue;
+      choicesByName.putIfAbsent(choice.name, () => choice);
+    }
+
+    final choices = choicesByName.values.toList(growable: false)
+      ..sort((a, b) => a.name.compareTo(b.name));
+
+    return choices;
+  }
+
   static List<String> imageCandidates({
     required Pokemon pokemon,
     required bool useLargeArtwork,
+    String? formName,
   }) {
     final folder = useLargeArtwork ? 'pokemons' : 'sprites';
     final alternateFolder = useLargeArtwork ? 'sprites' : 'pokemons';
     final id = pokemon.id.toString();
     final paddedId = id.padLeft(3, '0');
     final rawName = pokemon.name.trim();
+    final selectedFormAliases = _formAwareAliases(rawName, formName);
     final nameAliases = _nameAliases(rawName);
     final fileNames = <String>{
+      for (final name in selectedFormAliases) ...[
+        '$id$name.png',
+        '$paddedId$name.png',
+        '$name.png',
+        '${name.toLowerCase()}.png',
+      ],
       for (final name in nameAliases) ...[
         '$id$name.png',
         '$paddedId$name.png',
@@ -258,6 +301,65 @@ class PokemonAssetPaths {
       default:
         return type;
     }
+  }
+
+  static PokemonFormChoice? _formChoiceFromAssetPath(
+    Pokemon pokemon,
+    String assetPath,
+  ) {
+    final fileName = assetPath.split('/').last;
+    if (!fileName.endsWith('.png')) return null;
+
+    final baseName = fileName.substring(0, fileName.length - 4);
+    final id = pokemon.id.toString();
+    final paddedId = id.padLeft(3, '0');
+    String nameAndForm;
+
+    if (baseName.startsWith(paddedId)) {
+      nameAndForm = baseName.substring(paddedId.length).trim();
+    } else if (baseName.startsWith(id)) {
+      nameAndForm = baseName.substring(id.length).trim();
+    } else {
+      return null;
+    }
+
+    if (nameAndForm.isEmpty) return null;
+
+    final aliases = _nameAliases(pokemon.name).toList()
+      ..sort((a, b) => b.length.compareTo(a.length));
+    var suffix = nameAndForm;
+
+    for (final alias in aliases) {
+      if (suffix.toLowerCase().startsWith(alias.toLowerCase())) {
+        suffix = suffix.substring(alias.length).trim();
+        break;
+      }
+    }
+
+    suffix = suffix
+        .replaceFirst(RegExp(r'^[-_:\s]+'), '')
+        .replaceAll('_', ' ')
+        .replaceAll(RegExp(r'\s+'), ' ')
+        .trim();
+
+    final label = suffix.isEmpty ? 'Base' : suffix;
+    return PokemonFormChoice(name: label, assetPath: assetPath);
+  }
+
+  static Set<String> _formAwareAliases(String rawName, String? formName) {
+    final form = formName?.trim();
+    if (form == null || form.isEmpty) return const {};
+
+    final aliases = _nameAliases(rawName);
+    return <String>{
+      for (final alias in aliases) ...[
+        '$alias $form',
+        '$alias - $form',
+        '${alias}_$form',
+        _assetName('$alias $form'),
+        _compactAssetName('$alias $form'),
+      ],
+    }..removeWhere((name) => name.isEmpty);
   }
 
   static String _assetName(String value) {
@@ -375,7 +477,7 @@ class _AssetLookup {
 
     for (final prefix in assetPrefixes) {
       for (final assetPath in assetIndex.sortedPaths) {
-        if (_matchesPrefix(assetPath, prefix)) {
+        if (matchesPrefix(assetPath, prefix)) {
           return assetPath;
         }
       }
@@ -384,7 +486,7 @@ class _AssetLookup {
     return null;
   }
 
-  static bool _matchesPrefix(String assetPath, String prefix) {
+  static bool matchesPrefix(String assetPath, String prefix) {
     if (!assetPath.endsWith('.png')) return false;
     if (!assetPath.startsWith(prefix)) return false;
     if (assetPath.length <= prefix.length) return false;
@@ -392,6 +494,8 @@ class _AssetLookup {
     final nextCode = assetPath.codeUnitAt(prefix.length);
     return nextCode < 48 || nextCode > 57;
   }
+
+  static Future<_AssetIndex> assetIndex() => _assetIndex();
 
   static Future<_AssetIndex> _assetIndex() {
     return _assetIndexFuture ??= AssetManifest.loadFromAssetBundle(

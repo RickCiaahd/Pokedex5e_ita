@@ -9,12 +9,14 @@ class EvolutionEligibility {
   const EvolutionEligibility({
     required this.option,
     required this.isAvailable,
+    required this.conditionLabels,
     required this.missingRequirements,
     this.requiredItemId,
   });
 
   final EvolutionOption option;
   final bool isAvailable;
+  final List<String> conditionLabels;
   final List<String> missingRequirements;
   final String? requiredItemId;
 }
@@ -58,60 +60,56 @@ class EvolutionService {
     required Set<String> ownedItemIds,
     required Map<String, BagItem> itemByName,
   }) {
+    final conditionLabels = <String>[];
     final missing = <String>[];
     String? requiredItemId;
     final level = LevelProgression.levelFromExperience(slot.experience);
-    final selectedMoveKeys = slot.selectedMoves.map(_referenceKey).toSet();
 
     for (final condition in option.conditions) {
       switch (condition.type) {
         case 'level':
           final requiredLevel = condition.intValue;
-          if (requiredLevel != null && level < requiredLevel) {
-            missing.add('Richiede livello $requiredLevel');
+          if (requiredLevel != null) {
+            conditionLabels.add('Livello $requiredLevel');
+            if (level < requiredLevel) {
+              missing.add('Richiede livello $requiredLevel');
+            }
           }
           break;
         case 'loyalty':
           final requiredLoyalty = condition.intValue;
-          if (requiredLoyalty != null && slot.loyalty < requiredLoyalty) {
-            missing.add('Richiede lealtà $requiredLoyalty');
-          }
-          break;
-        case 'gender':
-          final requiredGender = _referenceKey(condition.valueLabel);
-          final currentGender = _referenceKey(slot.gender ?? '');
-          if (requiredGender.isNotEmpty && currentGender != requiredGender) {
-            missing.add('Richiede sesso ${condition.valueLabel}');
-          }
-          break;
-        case 'move':
-          final requiredMove = _referenceKey(condition.valueLabel);
-          if (requiredMove.isNotEmpty && !selectedMoveKeys.contains(requiredMove)) {
-            missing.add('Richiede la mossa ${condition.valueLabel}');
+          if (requiredLoyalty != null) {
+            conditionLabels.add('Lealtà $requiredLoyalty');
+            if (slot.loyalty < requiredLoyalty) {
+              missing.add('Richiede lealtà $requiredLoyalty');
+            }
           }
           break;
         case 'item':
           final requiredItem = itemByName[_referenceKey(condition.valueLabel)];
           requiredItemId = requiredItem?.id;
           if (requiredItem == null) {
+            conditionLabels.add(condition.valueLabel);
             missing.add('Oggetto richiesto non trovato: ${condition.valueLabel}');
-          } else if (!ownedItemIds.contains(requiredItem.id)) {
-            missing.add('Richiede ${requiredItem.name} nello zaino');
+          } else {
+            conditionLabels.add(requiredItem.name);
+            if (!ownedItemIds.contains(requiredItem.id)) {
+              missing.add('Richiede ${requiredItem.name} nello zaino');
+            }
           }
-          break;
-        case 'biome':
-          missing.add('Richiede bioma ${condition.valueLabel}');
           break;
         default:
-          if (condition.valueLabel.isNotEmpty) {
-            missing.add(condition.displayLabel);
-          }
+          // Condizioni come giorno/notte, bioma, sesso o mossa richiesta non
+          // sono verificabili dall'app in modo affidabile nel flusso attuale.
+          // Non devono bloccare l'evoluzione e non vanno mostrate tra i requisiti.
+          break;
       }
     }
 
     return EvolutionEligibility(
       option: option,
       isAvailable: missing.isEmpty,
+      conditionLabels: conditionLabels,
       missingRequirements: missing,
       requiredItemId: requiredItemId,
     );

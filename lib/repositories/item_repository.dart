@@ -7,6 +7,7 @@ import '../models/bag_item.dart';
 class ItemRepository {
   Map<String, String>? _descriptionCache;
   List<BagItem>? _webItemCache;
+  Set<String>? _assetPathCache;
 
   Future<Map<String, String>> getItemDescriptions() async {
     if (_descriptionCache != null) {
@@ -32,11 +33,17 @@ class ItemRepository {
     final jsonString = await rootBundle.loadString(
       'assets/data_webapp/items.json',
     );
+    final availableSpriteAssets = await _getAvailableAssetPaths();
     final json = Map<String, dynamic>.from(jsonDecode(jsonString));
     final itemsJson = List<dynamic>.from(json['items'] ?? const []);
 
     _webItemCache = itemsJson
-        .map((value) => BagItem.fromWebJson(Map<String, dynamic>.from(value)))
+        .map(
+          (value) => BagItem.fromWebJson(
+            Map<String, dynamic>.from(value),
+            availableSpriteAssets: availableSpriteAssets,
+          ),
+        )
         .where((item) => item.id.isNotEmpty)
         .toList(growable: false)
       ..sort((a, b) {
@@ -46,5 +53,16 @@ class ItemRepository {
       });
 
     return _webItemCache!;
+  }
+
+  Future<Set<String>> _getAvailableAssetPaths() async {
+    if (_assetPathCache != null) {
+      return _assetPathCache!;
+    }
+
+    final manifest = await AssetManifest.loadFromAssetBundle(rootBundle);
+    _assetPathCache = manifest.listAssets().toSet();
+
+    return _assetPathCache!;
   }
 }

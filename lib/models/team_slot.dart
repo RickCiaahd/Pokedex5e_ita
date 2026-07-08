@@ -9,6 +9,7 @@ class TeamSlot {
   final List<String> selectedMoves;
   final bool isShiny;
   final String? gender;
+  final String? formName;
   final String nature;
   final String? heldItem;
   final List<String> abilities;
@@ -27,6 +28,7 @@ class TeamSlot {
     this.selectedMoves = const [],
     this.isShiny = false,
     this.gender,
+    this.formName,
     this.nature = 'No Nature',
     this.heldItem,
     this.abilities = const [],
@@ -47,6 +49,7 @@ class TeamSlot {
       'selectedMoves': selectedMoves,
       'isShiny': isShiny,
       'gender': gender,
+      'formName': formName,
       'nature': nature,
       'heldItem': heldItem,
       'abilities': abilities,
@@ -68,6 +71,7 @@ class TeamSlot {
       selectedMoves: List<String>.from(json['selectedMoves'] ?? []),
       isShiny: json['isShiny'] ?? false,
       gender: json['gender'],
+      formName: json['formName'],
       nature: json['nature'] ?? 'No Nature',
       heldItem: json['heldItem'],
       abilities: List<String>.from(json['abilities'] ?? []),
@@ -90,6 +94,7 @@ class TeamSlot {
     List<String>? selectedMoves,
     bool? isShiny,
     Object? gender = _unset,
+    Object? formName = _unset,
     String? nature,
     Object? heldItem = _unset,
     List<String>? abilities,
@@ -111,6 +116,9 @@ class TeamSlot {
       selectedMoves: selectedMoves ?? this.selectedMoves,
       isShiny: isShiny ?? this.isShiny,
       gender: identical(gender, _unset) ? this.gender : gender as String?,
+      formName: identical(formName, _unset)
+          ? this.formName
+          : formName as String?,
       nature: nature ?? this.nature,
       heldItem: identical(heldItem, _unset)
           ? this.heldItem

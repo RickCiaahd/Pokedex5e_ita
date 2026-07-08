@@ -8,28 +8,29 @@ class MoveRepository {
   final Map<String, MoveData?> _cache = {};
   Map<String, MoveData>? _webMoveCache;
 
-  Future<MoveData?> getMove(String name) async {
-    if (_cache.containsKey(name)) {
-      return _cache[name];
+  Future<MoveData?> getMove(String reference) async {
+    final cacheKey = _normalizeMoveKey(reference);
+    if (_cache.containsKey(cacheKey)) {
+      return _cache[cacheKey];
     }
 
     final webMoves = await _getWebMoveCatalog();
-    final webMove = webMoves[_normalizeMoveKey(name)];
+    final webMove = webMoves[cacheKey];
     if (webMove != null) {
-      _cache[name] = webMove;
+      _cache[cacheKey] = webMove;
       return webMove;
     }
 
     try {
       final jsonString = await rootBundle.loadString(
-        'assets/data/moves/$name.json',
+        'assets/data/moves/$reference.json',
       );
       final json = Map<String, dynamic>.from(jsonDecode(jsonString));
-      final move = MoveData.fromJson(name, json);
-      _cache[name] = move;
+      final move = MoveData.fromJson(reference, json);
+      _cache[cacheKey] = move;
       return move;
     } catch (_) {
-      _cache[name] = null;
+      _cache[cacheKey] = null;
       return null;
     }
   }
@@ -46,7 +47,11 @@ class MoveRepository {
 
   Future<List<MoveData>> getAllWebMoves() async {
     final catalog = await _getWebMoveCatalog();
-    return catalog.values.toList(growable: false)
+    final seen = <String>{};
+
+    return catalog.values
+        .where((move) => seen.add(move.id))
+        .toList(growable: false)
       ..sort((a, b) => a.name.compareTo(b.name));
   }
 
@@ -63,14 +68,27 @@ class MoveRepository {
     for (final value in movesJson) {
       final move = MoveData.fromWebJson(Map<String, dynamic>.from(value));
       if (move.name.trim().isEmpty) continue;
-      moves[_normalizeMoveKey(move.name)] = move;
+
+      _registerMoveKey(moves, move.id, move);
+      _registerMoveKey(moves, move.name, move);
     }
 
     _webMoveCache = moves;
     return _webMoveCache!;
   }
 
+  void _registerMoveKey(
+    Map<String, MoveData> moves,
+    String reference,
+    MoveData move,
+  ) {
+    final key = _normalizeMoveKey(reference);
+    if (key.isEmpty) return;
+
+    moves[key] = move;
+  }
+
   String _normalizeMoveKey(String value) {
-    return value.trim().toLowerCase();
+    return MoveData.referenceKey(value);
   }
 }

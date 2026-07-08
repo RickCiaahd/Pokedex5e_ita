@@ -3,8 +3,14 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 
 import '../models/bag_item.dart';
+import '../models/tm_data.dart';
+import 'move_repository.dart';
+import 'tm_repository.dart';
 
 class ItemRepository {
+  final MoveRepository _moveRepository = MoveRepository();
+  final TmRepository _tmRepository = TmRepository();
+
   Map<String, String>? _descriptionCache;
   List<BagItem>? _webItemCache;
 
@@ -34,11 +40,14 @@ class ItemRepository {
     );
     final json = Map<String, dynamic>.from(jsonDecode(jsonString));
     final itemsJson = List<dynamic>.from(json['items'] ?? const []);
-
-    _webItemCache = itemsJson
+    final items = itemsJson
         .map((value) => BagItem.fromWebJson(Map<String, dynamic>.from(value)))
         .where((item) => item.id.isNotEmpty)
-        .toList(growable: false)
+        .toList(growable: true);
+
+    items.addAll(await _getTmItems());
+
+    _webItemCache = items
       ..sort((a, b) {
         final typeCompare = a.type.compareTo(b.type);
         if (typeCompare != 0) return typeCompare;
@@ -46,5 +55,42 @@ class ItemRepository {
       });
 
     return _webItemCache!;
+  }
+
+  Future<List<BagItem>> _getTmItems() async {
+    final tms = await _tmRepository.getTms();
+    final items = <BagItem>[];
+
+    for (final tm in tms) {
+      items.add(await _tmToBagItem(tm));
+    }
+
+    return items;
+  }
+
+  Future<BagItem> _tmToBagItem(TmData tm) async {
+    final move = await _moveRepository.getMove(tm.moveId);
+    final moveName = move?.name ?? _labelFromId(tm.moveId);
+    final description = <String>[
+      '${tm.label}: insegna $moveName a un Pokémon compatibile.',
+      if (move?.description.isNotEmpty == true) move!.description,
+    ];
+
+    return BagItem(
+      id: tm.id,
+      name: '${tm.label} - $moveName',
+      type: 'tm',
+      description: description,
+      cost: tm.cost,
+      spriteAssetPath: null,
+    );
+  }
+
+  String _labelFromId(String id) {
+    return id
+        .split('-')
+        .where((part) => part.isNotEmpty)
+        .map((part) => '${part[0].toUpperCase()}${part.substring(1)}')
+        .join(' ');
   }
 }

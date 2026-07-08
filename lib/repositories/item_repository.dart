@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 
 import '../models/bag_item.dart';
+import '../models/move_data.dart';
 import '../models/tm_data.dart';
 import 'move_repository.dart';
 import 'tm_repository.dart';
@@ -82,8 +83,21 @@ class ItemRepository {
       type: 'tm',
       description: description,
       cost: tm.cost,
-      spriteAssetPath: null,
+      spriteAssetPath: _memoryDiscSpritePath(move),
     );
+  }
+
+  String _memoryDiscSpritePath(MoveData? move) {
+    final type = _moveTypeSlug(move?.type ?? 'normal');
+    return 'assets/textures/textures_webapp/items/$type-memory-disc/sprite.png';
+  }
+
+  String _moveTypeSlug(String type) {
+    return type
+        .trim()
+        .toLowerCase()
+        .replaceAll(RegExp(r'[^a-z0-9]+'), '-')
+        .replaceAll(RegExp(r'^-+|-+$'), '');
   }
 
   String _labelFromId(String id) {

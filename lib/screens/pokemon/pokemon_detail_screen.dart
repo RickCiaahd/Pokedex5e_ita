@@ -123,8 +123,8 @@ const _statusEffectInfos = [
 ];
 
 Map<String, _StatusEffectInfo> get _statusEffectInfoByName => {
-  for (final info in _statusEffectInfos) info.name: info,
-};
+      for (final info in _statusEffectInfos) info.name: info,
+    };
 
 class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
   final MoveRepository _moveRepository = MoveRepository();
@@ -144,6 +144,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
   Map<String, String> _abilities = {};
   Map<String, String> _featDescriptions = {};
   Map<String, EvolutionData> _evolutions = {};
+  List<EvolutionEligibility> _evolutionChoices = const [];
   bool _isLoading = true;
   String? _message;
 
@@ -205,6 +206,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
       _replaceTeamSlot(updatedSlot);
     });
     widget.onTeamSlotChanged?.call(updatedSlot);
+    _refreshEvolutionChoices();
   }
 
   void _showMessage(String message) {
@@ -228,15 +230,50 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
       _featRepository.getFeatDescriptions(),
     ]);
 
+    final evolutions = results[2] as Map<String, EvolutionData>;
+    final evolutionChoices = await _buildEvolutionChoices(
+      evolution: _evolutionForPokemon(_pokemon, evolutions),
+      slot: _teamSlot,
+    );
+
     if (!mounted) return;
 
     setState(() {
       _moves = results[0] as Map<String, MoveData?>;
       _abilities = results[1] as Map<String, String>;
-      _evolutions = results[2] as Map<String, EvolutionData>;
+      _evolutions = evolutions;
       _featDescriptions = results[3] as Map<String, String>;
+      _evolutionChoices = evolutionChoices;
       _isLoading = false;
     });
+  }
+
+  Future<void> _refreshEvolutionChoices() async {
+    final choices = await _buildEvolutionChoices(
+      evolution: _evolutionForCurrentPokemon(),
+      slot: _teamSlot,
+    );
+    if (!mounted) return;
+    setState(() => _evolutionChoices = choices);
+  }
+
+  Future<List<EvolutionEligibility>> _buildEvolutionChoices({
+    required EvolutionData? evolution,
+    required TeamSlot? slot,
+  }) async {
+    if (!_isPartyMode || evolution == null || slot == null) return const [];
+
+    final profile = await _profileRepository.getActiveProfile();
+    final inventory = await _bagInventoryRepository.getInventory(profile.id);
+    final itemCatalog = await _itemRepository.getWebItems();
+
+    return _evolutionService.evaluateOptions(
+      pokemon: _pokemon,
+      slot: slot,
+      evolution: evolution,
+      inventory: inventory,
+      itemCatalog: itemCatalog,
+    );
   }
 
   List<String> _learnedMovesFor(Pokemon pokemon, int level) {
@@ -288,7 +325,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
       context: context,
       builder: (_) => _ExperienceDialog(currentExperience: slot.experience),
     );
-    if (input == null) return;
+    if (!mounted || input == null) return;
 
     final oldLevel = LevelProgression.levelFromExperience(slot.experience);
     final updatedExperience = LevelProgression.applyExperienceInput(
@@ -303,6 +340,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
     }
 
     _saveTeamSlot(updatedSlot);
+    await _loadData();
   }
 
   Future<void> _editHp() async {
@@ -313,7 +351,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
       context: context,
       builder: (_) => _HpDialog(currentHp: _currentHp, maxHp: _maxHp),
     );
-    if (input == null) return;
+    if (!mounted || input == null) return;
 
     final updatedHp = _applyHpInput(
       currentHp: _currentHp,
@@ -380,7 +418,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
       barrierDismissible: true,
       builder: (_) => const _PokemonCenterDialog(),
     );
-    if (shouldHeal != true || !mounted) return;
+    if (!mounted || shouldHeal != true) return;
 
     _saveTeamSlot(slot.copyWith(currentHp: _maxHp, statusEffects: const []));
     _showMessage('${_pokemon.name} è stato curato al Pokémon Center.');
@@ -402,10 +440,9 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 10),
               child: Text(
                 'ADD STATUS EFFECT',
-                style: Theme.of(context)
-                    .textTheme
-                    .titleMedium
-                    ?.copyWith(fontWeight: FontWeight.w900),
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w900,
+                    ),
               ),
             ),
             for (final info in _statusEffectInfos.where(
@@ -437,7 +474,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
       ),
     );
 
-    if (result == null) return;
+    if (!mounted || result == null) return;
     if (result == '__clear__') {
       _setStatusEffects([]);
       return;
@@ -475,6 +512,8 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
         }
 
         final moveData = _moves[move] ?? await _moveRepository.getMove(move);
+        if (!mounted) return slot.copyWith(selectedMoves: selectedMoves);
+
         final replacedMove = await _askMoveReplacement(
           move,
           selectedMoves,
@@ -483,9 +522,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
         if (replacedMove == null) continue;
 
         final replaceIndex = selectedMoves.indexOf(replacedMove);
-        if (replaceIndex >= 0) {
-          selectedMoves[replaceIndex] = move;
-        }
+        if (replaceIndex >= 0) selectedMoves[replaceIndex] = move;
       }
     }
 
@@ -578,38 +615,39 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
       ),
     );
 
-    if (result == null) return;
+    if (!mounted || result == null) return;
 
     _saveTeamSlot(result.slot);
     await _loadData();
   }
 
-  EvolutionData? _evolutionForCurrentPokemon() {
-    return _evolutions[_pokemon.name] ?? _evolutions[_referenceKey(_pokemon.name)];
+  EvolutionData? _evolutionForPokemon(
+    Pokemon pokemon,
+    Map<String, EvolutionData> evolutions,
+  ) {
+    return evolutions[pokemon.name] ?? evolutions[_referenceKey(pokemon.name)];
   }
 
-  bool _canEvolveCurrentPokemon() {
-    final evolution = _evolutionForCurrentPokemon();
-    if (!_isPartyMode || evolution == null) return false;
-    return evolution.options.isNotEmpty || evolution.evolutions.isNotEmpty;
+  EvolutionData? _evolutionForCurrentPokemon() {
+    return _evolutionForPokemon(_pokemon, _evolutions);
+  }
+
+  bool _canShowEvolutionButton() {
+    return _isPartyMode && _evolutionChoices.isNotEmpty;
+  }
+
+  List<EvolutionEligibility> _availableEvolutionChoices() {
+    return _evolutionChoices
+        .where((choice) => choice.isAvailable && _pokemonByName(choice.option.toName) != null)
+        .toList(growable: false);
   }
 
   String? _evolutionLabel() {
-    final evolution = _evolutionForCurrentPokemon();
-    if (!_isPartyMode || evolution == null) return null;
+    if (!_canShowEvolutionButton()) return null;
 
-    final count = evolution.options.isEmpty
-        ? evolution.evolutions.length
-        : evolution.options.length;
-    if (count == 0) return null;
-
-    if (count == 1) {
-      final name = evolution.options.isEmpty
-          ? evolution.evolutions.first
-          : evolution.options.first.toName;
-      return 'FAI EVOLVERE IN ${name.toUpperCase()}';
-    }
-
+    final availableChoices = _availableEvolutionChoices();
+    if (availableChoices.isEmpty) return 'REQUISITI EVOLUZIONE';
+    if (availableChoices.length == 1) return 'FAI EVOLVERE';
     return 'SCEGLI EVOLUZIONE';
   }
 
@@ -618,18 +656,10 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
     final evolution = _evolutionForCurrentPokemon();
     if (slot == null || evolution == null) return;
 
-    final profile = await _profileRepository.getActiveProfile();
-    final inventory = await _bagInventoryRepository.getInventory(profile.id);
-    final itemCatalog = await _itemRepository.getWebItems();
-    final choices = _evolutionService.evaluateOptions(
-      pokemon: _pokemon,
-      slot: slot,
-      evolution: evolution,
-      inventory: inventory,
-      itemCatalog: itemCatalog,
-    );
-
+    final choices = await _buildEvolutionChoices(evolution: evolution, slot: slot);
     if (!mounted) return;
+
+    setState(() => _evolutionChoices = choices);
 
     if (choices.isEmpty) {
       _showMessage('Nessuna evoluzione disponibile per ${_pokemon.name}.');
@@ -649,13 +679,12 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
 
     if (!mounted || selected == null) return;
 
-    await _evolveSlot(slot, selected, profile.id);
+    await _evolveSlot(slot, selected);
   }
 
   Future<TeamSlot?> _evolveSlot(
     TeamSlot slot,
     EvolutionEligibility selected,
-    String profileId,
   ) async {
     if (!selected.isAvailable) return null;
 
@@ -667,10 +696,11 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
       return null;
     }
 
+    final profile = await _profileRepository.getActiveProfile();
     final requiredItemId = selected.requiredItemId;
     if (requiredItemId != null) {
       final consumed = await _bagInventoryRepository.consumeItem(
-        profileId: profileId,
+        profileId: profile.id,
         itemId: requiredItemId,
       );
       if (!consumed) {
@@ -716,6 +746,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
       _teamSlot = slot;
       _isLoading = true;
       _message = null;
+      _evolutionChoices = const [];
     });
     _ensureSelectedMovesIsSaved();
     await _loadData();
@@ -798,6 +829,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
   Widget build(BuildContext context) {
     final pokemon = _pokemon;
     final attributes = _attributeScores(pokemon, _teamSlot);
+    final evolutionLabel = _evolutionLabel();
 
     return DefaultTabController(
       length: 3,
@@ -844,8 +876,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
                           onIncreaseLoyalty: () => _changeLoyalty(1),
                           onPokemonCenter: _usePokemonCenter,
                           onAddStatusEffect: _pickStatusEffect,
-                          canEvolve: _canEvolveCurrentPokemon(),
-                          evolutionLabel: _evolutionLabel(),
+                          evolutionLabel: evolutionLabel,
                           onEvolve: _evolveCurrentPokemon,
                         ),
                         const TabBar(
@@ -921,7 +952,6 @@ class _Header extends StatelessWidget {
     required this.onIncreaseLoyalty,
     required this.onPokemonCenter,
     required this.onAddStatusEffect,
-    required this.canEvolve,
     required this.evolutionLabel,
     required this.onEvolve,
   });
@@ -949,7 +979,6 @@ class _Header extends StatelessWidget {
   final VoidCallback onIncreaseLoyalty;
   final VoidCallback onPokemonCenter;
   final VoidCallback onAddStatusEffect;
-  final bool canEvolve;
   final String? evolutionLabel;
   final VoidCallback onEvolve;
 
@@ -1107,8 +1136,9 @@ class _Header extends StatelessWidget {
                             child: LinearProgressIndicator(
                               value: hpProgress,
                               minHeight: 16,
-                              backgroundColor:
-                                  Theme.of(context).colorScheme.surfaceContainerHighest,
+                              backgroundColor: Theme.of(context)
+                                  .colorScheme
+                                  .surfaceContainerHighest,
                             ),
                           ),
                         ),
@@ -1125,13 +1155,13 @@ class _Header extends StatelessWidget {
             const SizedBox(height: 8),
             _InlineDetailMessage(message: message!),
           ],
-          if (isPartyMode && canEvolve && evolutionLabel != null) ...[
+          if (isPartyMode && evolutionLabel != null) ...[
             const SizedBox(height: 8),
             SizedBox(
               width: double.infinity,
               child: FilledButton(
                 onPressed: onEvolve,
-                child: Text(evolutionLabel!),
+                child: Text(evolutionLabel),
               ),
             ),
           ],
@@ -1449,7 +1479,10 @@ class _FightStatBox extends StatelessWidget {
                 style: TextStyle(color: muted, fontWeight: FontWeight.w700),
               ),
               const SizedBox(width: 5),
-              Text('$score', style: const TextStyle(fontWeight: FontWeight.w900)),
+              Text(
+                '$score',
+                style: const TextStyle(fontWeight: FontWeight.w900),
+              ),
             ],
           ),
           Text(
@@ -1886,7 +1919,10 @@ class _TraitsView extends StatelessWidget {
               _InfoRow(label: 'Dado vita', value: 'd${pokemon.hitDice}'),
               _InfoRow(label: 'Competenza', value: '+$proficiency'),
               _InfoRow(label: 'Livello minimo', value: '${pokemon.minLevelFound}'),
-              _InfoRow(label: 'Tiri salvezza', value: pokemon.savingThrows.join(', ')),
+              _InfoRow(
+                label: 'Tiri salvezza',
+                value: pokemon.savingThrows.join(', '),
+              ),
               _InfoRow(
                 label: 'Competenze',
                 value: [...pokemon.skills, ...?slot?.extraSkills].join(', '),

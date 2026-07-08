@@ -20,20 +20,24 @@ class BagItem {
     return description.join('\n\n');
   }
 
-  factory BagItem.fromWebJson(
-    Map<String, dynamic> json, {
-    Set<String>? availableSpriteAssets,
-  }) {
+  String? get remoteSpriteUrl {
+    final path = spriteAssetPath;
+    if (path == null) return null;
+
+    return Uri.https(
+      'raw.githubusercontent.com',
+      '/RickCiaahd/Pokedex5e_ita/main/$path',
+    ).toString();
+  }
+
+  factory BagItem.fromWebJson(Map<String, dynamic> json) {
     return BagItem(
       id: json['id']?.toString() ?? '',
       name: json['name']?.toString() ?? 'Oggetto sconosciuto',
       type: _normalizeType(json['type']?.toString() ?? 'other'),
       description: _readDescription(json['description']),
       cost: _readCost(json['cost']),
-      spriteAssetPath: _readSpritePath(
-        json['media'],
-        availableSpriteAssets: availableSpriteAssets,
-      ),
+      spriteAssetPath: _readSpritePath(json['media']),
     );
   }
 
@@ -59,25 +63,17 @@ class BagItem {
     return int.tryParse(value?.toString() ?? '');
   }
 
-  static String? _readSpritePath(
-    dynamic media, {
-    Set<String>? availableSpriteAssets,
-  }) {
+  static String? _readSpritePath(dynamic media) {
     if (media is! Map) return null;
 
     final rawPath = media['sprite']?.toString();
     if (rawPath == null || rawPath.isEmpty) return null;
 
     const webPrefix = '/assets/items/';
-    final assetPath = rawPath.startsWith(webPrefix)
-        ? 'assets/textures/textures_webapp/items/${rawPath.substring(webPrefix.length)}'
-        : rawPath;
-
-    if (availableSpriteAssets != null &&
-        !availableSpriteAssets.contains(assetPath)) {
-      return null;
+    if (rawPath.startsWith(webPrefix)) {
+      return 'assets/textures/textures_webapp/items/${rawPath.substring(webPrefix.length)}';
     }
 
-    return assetPath;
+    return rawPath;
   }
 }

@@ -26,7 +26,7 @@ class AbilityRepository {
         }),
       );
     } catch (_) {
-      // Il vecchio JSON resta solo come fallback durante la migrazione.
+      descriptions.addAll(const <String, String>{});
     }
 
     final webAbilities = await getWebAbilities(includeDeprecated: true);

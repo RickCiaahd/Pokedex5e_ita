@@ -83,21 +83,26 @@ class ItemRepository {
       type: 'tm',
       description: description,
       cost: tm.cost,
-      spriteAssetPath: _memoryDiscSpritePath(move),
+      spriteAssetPath: _tmSpritePath(move),
     );
   }
 
-  String _memoryDiscSpritePath(MoveData? move) {
-    final type = _moveTypeSlug(move?.type ?? 'normal');
-    return 'assets/textures/textures_webapp/items/$type-memory-disc/sprite.png';
+  String _tmSpritePath(MoveData? move) {
+    final type = _moveTypeFileName(move?.type ?? 'Normal');
+    return 'assets/textures/textures_webapp/items/mt/${type}_TM_IX_sprite.png';
   }
 
-  String _moveTypeSlug(String type) {
-    return type
+  String _moveTypeFileName(String type) {
+    final normalized = type
         .trim()
         .toLowerCase()
-        .replaceAll(RegExp(r'[^a-z0-9]+'), '-')
-        .replaceAll(RegExp(r'^-+|-+$'), '');
+        .replaceAll(RegExp(r'[^a-z0-9]+'), '-');
+
+    return normalized
+        .split('-')
+        .where((part) => part.isNotEmpty)
+        .map((part) => '${part[0].toUpperCase()}${part.substring(1)}')
+        .join('-');
   }
 
   String _labelFromId(String id) {

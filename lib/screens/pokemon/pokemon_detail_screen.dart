@@ -1161,7 +1161,7 @@ class _Header extends StatelessWidget {
               width: double.infinity,
               child: FilledButton(
                 onPressed: onEvolve,
-                child: Text(evolutionLabel),
+                child: Text(evolutionLabel!),
               ),
             ),
           ],

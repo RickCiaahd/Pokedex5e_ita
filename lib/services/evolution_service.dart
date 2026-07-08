@@ -64,6 +64,7 @@ class EvolutionService {
     final missing = <String>[];
     String? requiredItemId;
     final level = LevelProgression.levelFromExperience(slot.experience);
+    final selectedMoveKeys = slot.selectedMoves.map(_referenceKey).toSet();
 
     for (final condition in option.conditions) {
       switch (condition.type) {
@@ -85,6 +86,25 @@ class EvolutionService {
             }
           }
           break;
+        case 'gender':
+          final requiredGender = _normalizeGender(condition.valueLabel);
+          final currentGender = _normalizeGender(slot.gender ?? '');
+          if (requiredGender.isNotEmpty) {
+            conditionLabels.add('Sesso: ${_genderLabel(requiredGender)}');
+            if (currentGender != requiredGender) {
+              missing.add('Richiede sesso ${_genderLabel(requiredGender)}');
+            }
+          }
+          break;
+        case 'move':
+          final requiredMove = _referenceKey(condition.valueLabel);
+          if (requiredMove.isNotEmpty) {
+            conditionLabels.add('Mossa: ${condition.valueLabel}');
+            if (!selectedMoveKeys.contains(requiredMove)) {
+              missing.add('Richiede la mossa ${condition.valueLabel}');
+            }
+          }
+          break;
         case 'item':
           final requiredItem = itemByName[_referenceKey(condition.valueLabel)];
           requiredItemId = requiredItem?.id;
@@ -99,9 +119,8 @@ class EvolutionService {
           }
           break;
         default:
-          // Condizioni come giorno/notte, bioma, sesso o mossa richiesta non
-          // sono verificabili dall'app in modo affidabile nel flusso attuale.
-          // Non devono bloccare l'evoluzione e non vanno mostrate tra i requisiti.
+          // Condizioni come giorno/notte, bioma, luogo, meteo o altre regole
+          // non visibili nell'app non devono bloccare l'evoluzione.
           break;
       }
     }
@@ -136,6 +155,39 @@ class EvolutionService {
           ],
         ),
     ];
+  }
+
+  String _normalizeGender(String value) {
+    final normalized = _referenceKey(value);
+    switch (normalized) {
+      case 'm':
+      case 'male':
+      case 'maschio':
+        return 'male';
+      case 'f':
+      case 'female':
+      case 'femmina':
+        return 'female';
+      case 'genderless':
+      case 'none':
+      case 'senza-sesso':
+        return 'genderless';
+      default:
+        return normalized;
+    }
+  }
+
+  String _genderLabel(String value) {
+    switch (value) {
+      case 'male':
+        return 'Maschio';
+      case 'female':
+        return 'Femmina';
+      case 'genderless':
+        return 'Genderless';
+      default:
+        return value;
+    }
   }
 
   String _referenceKey(String value) {

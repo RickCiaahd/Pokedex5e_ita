@@ -19,7 +19,10 @@ class EvolutionSelectorSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final availableChoices = choices
-        .where((choice) => choice.isAvailable && pokemonByName(choice.option.toName) != null)
+        .where(
+          (choice) =>
+              choice.isAvailable && pokemonByName(choice.option.toName) != null,
+        )
         .toList(growable: false);
     final isSingleEvolution = choices.length == 1;
     final title = isSingleEvolution ? 'Evoluzione' : 'Scegli evoluzione';
@@ -44,7 +47,7 @@ class EvolutionSelectorSheet extends StatelessWidget {
             if (availableChoices.isEmpty) ...[
               const SizedBox(height: 8),
               Text(
-                'Nessuna evoluzione soddisfa ancora tutte le condizioni.',
+                'Nessuna evoluzione soddisfa ancora tutte le condizioni gestibili.',
                 style: TextStyle(color: Theme.of(context).colorScheme.error),
               ),
             ],
@@ -78,7 +81,7 @@ class _EvolutionChoiceTile extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final targetPokemon = this.targetPokemon;
     final isAvailable = choice.isAvailable && targetPokemon != null;
-    final conditionLabels = choice.option.conditionLabels;
+    final conditionLabels = choice.conditionLabels;
 
     return Card(
       child: ListTile(
@@ -95,14 +98,18 @@ class _EvolutionChoiceTile extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Wrap(
-                spacing: 6,
-                runSpacing: 6,
-                children: [
-                  for (final label in conditionLabels)
-                    _ConditionChip(label: label, satisfied: choice.isAvailable),
-                ],
-              ),
+              if (conditionLabels.isNotEmpty)
+                Wrap(
+                  spacing: 6,
+                  runSpacing: 6,
+                  children: [
+                    for (final label in conditionLabels)
+                      _ConditionChip(
+                        label: label,
+                        satisfied: choice.isAvailable,
+                      ),
+                  ],
+                ),
               if (targetPokemon == null) ...[
                 const SizedBox(height: 6),
                 Text(

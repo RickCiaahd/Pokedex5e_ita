@@ -75,6 +75,7 @@ class MoveData {
     final saveMap = save is Map ? Map<String, dynamic>.from(save) : null;
     final tm = json['tm'];
     final tmMap = tm is Map ? Map<String, dynamic>.from(tm) : null;
+    final higherLevels = json['higherLevels']?.toString();
 
     return MoveData(
       name: json['name']?.toString() ?? 'Mossa sconosciuta',
@@ -83,9 +84,12 @@ class MoveData {
       range: json['range']?.toString() ?? '-',
       duration: json['duration']?.toString() ?? '-',
       moveTime: json['time']?.toString() ?? '-',
-      description: _readDescription(json['description']),
-      scaling: json['higherLevels']?.toString(),
-      higherLevels: json['higherLevels']?.toString(),
+      description: _readDescription(
+        json['description'],
+        higherLevels: higherLevels,
+      ),
+      scaling: higherLevels,
+      higherLevels: higherLevels,
       damageByLevel: diceMap.map(
         (key, value) => MapEntry(
           int.tryParse(key) ?? 1,
@@ -142,14 +146,24 @@ class MoveData {
     return const [];
   }
 
-  static String _readDescription(dynamic value) {
-    if (value is String) return value;
+  static String _readDescription(dynamic value, {String? higherLevels}) {
+    final parts = <String>[];
 
-    if (value is List) {
-      return value.map(_descriptionBlockToText).join('\n\n');
+    if (value is String && value.trim().isNotEmpty) {
+      parts.add(value.trim());
+    } else if (value is List) {
+      parts.addAll(
+        value
+            .map(_descriptionBlockToText)
+            .where((entry) => entry.trim().isNotEmpty),
+      );
     }
 
-    return '';
+    if (higherLevels != null && higherLevels.trim().isNotEmpty) {
+      parts.add('Livelli superiori: ${higherLevels.trim()}');
+    }
+
+    return parts.join('\n\n');
   }
 
   static String _descriptionBlockToText(dynamic block) {

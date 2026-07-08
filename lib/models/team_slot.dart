@@ -1,3 +1,5 @@
+import 'pokemon_form_preferences.dart';
+
 class TeamSlot {
   static const Object _unset = Object();
 
@@ -37,7 +39,15 @@ class TeamSlot {
     this.statusEffects = const [],
     this.customAbilityScores = const {},
     this.loyalty = 0,
-  });
+  }) {
+    final pokemonId = this.pokemonId;
+    if (pokemonId != null) {
+      PokemonFormPreferences.setForm(
+        pokemonId: pokemonId,
+        formName: formName,
+      );
+    }
+  }
 
   Map<String, dynamic> toJson() {
     return {
@@ -105,9 +115,18 @@ class TeamSlot {
     int? loyalty,
     bool clearPokemon = false,
   }) {
+    final nextPokemonId = clearPokemon ? null : pokemonId ?? this.pokemonId;
+    final pokemonChanged = pokemonId != null && pokemonId != this.pokemonId;
+    final nextFormName = clearPokemon ||
+            (pokemonChanged && identical(formName, _unset))
+        ? null
+        : identical(formName, _unset)
+            ? this.formName
+            : formName as String?;
+
     return TeamSlot(
       slotIndex: slotIndex ?? this.slotIndex,
-      pokemonId: clearPokemon ? null : pokemonId ?? this.pokemonId,
+      pokemonId: nextPokemonId,
       experience: experience ?? this.experience,
       currentHp: currentHp ?? this.currentHp,
       nickname: identical(nickname, _unset)
@@ -116,9 +135,7 @@ class TeamSlot {
       selectedMoves: selectedMoves ?? this.selectedMoves,
       isShiny: isShiny ?? this.isShiny,
       gender: identical(gender, _unset) ? this.gender : gender as String?,
-      formName: identical(formName, _unset)
-          ? this.formName
-          : formName as String?,
+      formName: nextFormName,
       nature: nature ?? this.nature,
       heldItem: identical(heldItem, _unset)
           ? this.heldItem

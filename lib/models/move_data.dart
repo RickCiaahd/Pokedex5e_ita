@@ -1,5 +1,6 @@
 class MoveData {
   const MoveData({
+    required this.id,
     required this.name,
     required this.type,
     required this.pp,
@@ -20,6 +21,7 @@ class MoveData {
     this.tmCost,
   });
 
+  final String id;
   final String name;
   final String type;
   final String pp;
@@ -43,6 +45,7 @@ class MoveData {
     final damageJson = Map<String, dynamic>.from(json['Damage'] ?? {});
 
     return MoveData(
+      id: referenceKey(name),
       name: name,
       type: json['Type']?.toString() ?? 'Typeless',
       pp: json['PP']?.toString() ?? '-',
@@ -76,9 +79,11 @@ class MoveData {
     final tm = json['tm'];
     final tmMap = tm is Map ? Map<String, dynamic>.from(tm) : null;
     final higherLevels = json['higherLevels']?.toString();
+    final name = json['name']?.toString() ?? 'Mossa sconosciuta';
 
     return MoveData(
-      name: json['name']?.toString() ?? 'Mossa sconosciuta',
+      id: json['id']?.toString() ?? referenceKey(name),
+      name: name,
       type: _titleCase(json['type']?.toString() ?? 'Typeless'),
       pp: json['pp']?.toString() ?? '-',
       range: json['range']?.toString() ?? '-',
@@ -122,6 +127,15 @@ class MoveData {
     }
 
     return selected;
+  }
+
+  static String referenceKey(String value) {
+    return value
+        .trim()
+        .toLowerCase()
+        .replaceAll(RegExp(r"[’']"), '')
+        .replaceAll(RegExp(r'[^a-z0-9]+'), '-')
+        .replaceAll(RegExp(r'^-+|-+$'), '');
   }
 
   static List<String> _normalizePowers(dynamic value) {

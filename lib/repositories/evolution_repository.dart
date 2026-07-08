@@ -28,6 +28,8 @@ class EvolutionRepository {
     final grouped = <String, List<EvolutionOption>>{};
 
     for (final item in items) {
+      if (item is! Map) continue;
+
       final option = EvolutionOption.fromWebJson(
         Map<String, dynamic>.from(item),
         displayNameBuilder: _displayNameFromKey,
@@ -65,12 +67,30 @@ class EvolutionRepository {
         return 'Nidoran ♀';
       case 'nidoran-m':
         return 'Nidoran ♂';
+      case 'farfetchd':
+        return "Farfetch'd";
+      case 'sirfetchd':
+        return "Sirfetch'd";
       case 'mr-mime':
         return 'Mr. Mime';
       case 'mime-jr':
         return 'Mime Jr.';
+      case 'mr-rime':
+        return 'Mr. Rime';
+      case 'porygon-z':
+        return 'Porygon-Z';
       case 'type-null':
         return 'Type: Null';
+      case 'ho-oh':
+        return 'Ho-Oh';
+      case 'flabebe':
+        return 'Flabébé';
+      case 'jangmo-o':
+        return 'Jangmo-o';
+      case 'hakamo-o':
+        return 'Hakamo-o';
+      case 'kommo-o':
+        return 'Kommo-o';
       case 'tapu-koko':
         return 'Tapu Koko';
       case 'tapu-lele':

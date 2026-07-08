@@ -464,8 +464,33 @@ class _ItemSprite extends StatelessWidget {
         spritePath,
         fit: BoxFit.contain,
         filterQuality: FilterQuality.none,
-        errorBuilder: (_, __, ___) => Icon(_iconForType(item.type)),
+        errorBuilder: (_, __, ___) => _RemoteItemSprite(item: item),
       ),
+    );
+  }
+}
+
+class _RemoteItemSprite extends StatelessWidget {
+  const _RemoteItemSprite({required this.item});
+
+  final BagItem item;
+
+  @override
+  Widget build(BuildContext context) {
+    final url = item.remoteSpriteUrl;
+    if (url == null) {
+      return Icon(_iconForType(item.type));
+    }
+
+    return Image.network(
+      url,
+      fit: BoxFit.contain,
+      filterQuality: FilterQuality.none,
+      loadingBuilder: (context, child, loadingProgress) {
+        if (loadingProgress == null) return child;
+        return Icon(_iconForType(item.type));
+      },
+      errorBuilder: (_, __, ___) => Icon(_iconForType(item.type)),
     );
   }
 }

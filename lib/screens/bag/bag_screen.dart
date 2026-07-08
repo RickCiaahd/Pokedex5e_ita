@@ -2,11 +2,20 @@ import 'package:flutter/material.dart';
 
 import '../../models/bag_inventory_entry.dart';
 import '../../models/bag_item.dart';
+import '../../models/move_data.dart';
+import '../../models/pokemon.dart';
+import '../../models/team_slot.dart';
+import '../../models/tm_data.dart';
 import '../../models/user_profile.dart';
 import '../../repositories/bag_inventory_repository.dart';
 import '../../repositories/item_repository.dart';
+import '../../repositories/move_repository.dart';
+import '../../repositories/pokemon_repository.dart';
 import '../../repositories/profile_repository.dart';
+import '../../repositories/team_repository.dart';
+import '../../repositories/tm_repository.dart';
 import '../../widgets/navigation/home_leading_button.dart';
+import '../../widgets/pokemon/pokemon_asset_image.dart';
 
 class BagScreen extends StatefulWidget {
   const BagScreen({super.key});
@@ -19,6 +28,10 @@ class _BagScreenState extends State<BagScreen> {
   final ItemRepository _itemRepository = ItemRepository();
   final ProfileRepository _profileRepository = ProfileRepository();
   final BagInventoryRepository _bagRepository = BagInventoryRepository();
+  final MoveRepository _moveRepository = MoveRepository();
+  final PokemonRepository _pokemonRepository = PokemonRepository();
+  final TeamRepository _teamRepository = TeamRepository();
+  final TmRepository _tmRepository = TmRepository();
 
   late Future<_BagData> _dataFuture;
   String? _selectedType;
@@ -43,6 +56,8 @@ class _BagScreenState extends State<BagScreen> {
   }
 
   Future<void> _reload({String? message}) async {
+    if (!mounted) return;
+
     setState(() {
       _message = message;
       _dataFuture = _loadBagData();
@@ -60,7 +75,7 @@ class _BagScreenState extends State<BagScreen> {
       ),
     );
 
-    if (item == null) return;
+    if (!mounted || item == null) return;
 
     if (action == _BagAction.buy) {
       final cost = item.cost;
@@ -84,6 +99,164 @@ class _BagScreenState extends State<BagScreen> {
 
     await _bagRepository.addItem(profileId: data.profile.id, itemId: item.id);
     await _reload(message: '${item.name} aggiunto allo zaino.');
+  }
+
+  Future<void> _useBagItem(_BagData data, _OwnedBagItem entry) async {
+    final item = entry.item;
+
+    if (item.type == 'tm') {
+      await _useTm(data, entry);
+      return;
+    }
+
+    await _reload(message: '${item.name} non è ancora utilizzabile dallo zaino.');
+  }
+
+  Future<void> _useTm(_BagData data, _OwnedBagItem entry) async {
+    final tmNumber = _tmNumberFromItemId(entry.item.id);
+    if (tmNumber == null) {
+      await _reload(message: 'Questa MT non è collegata a una mossa valida.');
+      return;
+    }
+
+    final tmMap = await _tmRepository.getTmMap();
+    final tm = tmMap[tmNumber];
+    if (tm == null) {
+      await _reload(message: 'Dati della MT non disponibili.');
+      return;
+    }
+
+    final move = await _moveRepository.getMove(tm.moveId);
+    if (move == null) {
+      await _reload(message: 'Dati della mossa non disponibili.');
+      return;
+    }
+
+    final team = await _teamRepository.getTeam(data.profile.id);
+    final pokemonList = await _pokemonRepository.getAllPokemon();
+    final pokemonById = {for (final pokemon in pokemonList) pokemon.id: pokemon};
+    final candidates = <_TmCandidate>[];
+
+    for (final slot in team) {
+      final pokemonId = slot.pokemonId;
+      if (pokemonId == null) continue;
+
+      final pokemon = pokemonById[pokemonId];
+      if (pokemon == null) continue;
+
+      if (pokemon.moves.tmMoves.contains(tm.number)) {
+        candidates.add(_TmCandidate(slot: slot, pokemon: pokemon));
+      }
+    }
+
+    if (candidates.isEmpty) {
+      await _reload(
+        message:
+            'Nessun Pokémon in squadra può imparare ${move.name} tramite ${entry.item.name}.',
+      );
+      return;
+    }
+
+    if (!mounted) return;
+
+    final candidate = await showModalBottomSheet<_TmCandidate>(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) => _TmPokemonPickerSheet(
+        item: entry.item,
+        tm: tm,
+        move: move,
+        candidates: candidates,
+      ),
+    );
+
+    if (!mounted || candidate == null) return;
+
+    final selectedMoves = _normalizedMoves(candidate.slot.selectedMoves);
+    if (_knowsMove(selectedMoves, move)) {
+      final pokemonName = candidate.slot.nickname ?? candidate.pokemon.name;
+      await _reload(message: '$pokemonName conosce già ${move.name}.');
+      return;
+    }
+
+    final learnedMoveReference = move.id.isNotEmpty
+        ? move.id
+        : MoveData.referenceKey(move.name);
+    final updatedMoves = [...selectedMoves];
+    String? replacedMoveName;
+
+    if (updatedMoves.length < 4) {
+      updatedMoves.add(learnedMoveReference);
+    } else {
+      final currentMoveData = <String, MoveData?>{};
+      for (final reference in updatedMoves) {
+        currentMoveData[reference] = await _moveRepository.getMove(reference);
+      }
+
+      if (!mounted) return;
+
+      final replaceIndex = await showModalBottomSheet<int>(
+        context: context,
+        isScrollControlled: true,
+        builder: (_) => _MoveReplaceSheet(
+          pokemonName: candidate.slot.nickname ?? candidate.pokemon.name,
+          newMove: move,
+          selectedMoves: updatedMoves,
+          moveData: currentMoveData,
+        ),
+      );
+
+      if (!mounted || replaceIndex == null) return;
+
+      replacedMoveName = currentMoveData[updatedMoves[replaceIndex]]?.name ??
+          updatedMoves[replaceIndex];
+      updatedMoves[replaceIndex] = learnedMoveReference;
+    }
+
+    final consumed = await _bagRepository.consumeItem(
+      profileId: data.profile.id,
+      itemId: entry.item.id,
+    );
+    if (!consumed) {
+      await _reload(message: 'Non hai più ${entry.item.name} nello zaino.');
+      return;
+    }
+
+    await _teamRepository.updateSlot(
+      profileId: data.profile.id,
+      updatedSlot: candidate.slot.copyWith(selectedMoves: updatedMoves),
+    );
+
+    final pokemonName = candidate.slot.nickname ?? candidate.pokemon.name;
+    final replacementText = replacedMoveName == null
+        ? ''
+        : ' al posto di $replacedMoveName';
+    await _reload(
+      message:
+          '$pokemonName ha imparato ${move.name}$replacementText usando ${entry.item.name}.',
+    );
+  }
+
+  int? _tmNumberFromItemId(String itemId) {
+    final match = RegExp(r'^tm-(\d+)$').firstMatch(itemId);
+    if (match == null) return null;
+
+    return int.tryParse(match.group(1) ?? '');
+  }
+
+  List<String> _normalizedMoves(List<String> moves) {
+    return moves.where((move) => move.trim().isNotEmpty).take(4).toList();
+  }
+
+  bool _knowsMove(List<String> selectedMoves, MoveData move) {
+    final moveKeys = {
+      MoveData.referenceKey(move.id),
+      MoveData.referenceKey(move.name),
+    }..removeWhere((key) => key.isEmpty);
+
+    return selectedMoves.any(
+      (reference) => moveKeys.contains(MoveData.referenceKey(reference)),
+    );
   }
 
   @override
@@ -120,6 +293,7 @@ class _BagScreenState extends State<BagScreen> {
             },
             onFindItem: () => _openFinder(data, _BagAction.find),
             onBuyItem: () => _openFinder(data, _BagAction.buy),
+            onUseItem: (entry) => _useBagItem(data, entry),
           );
         },
       ),
@@ -166,6 +340,13 @@ class _OwnedBagItem {
   final int quantity;
 }
 
+class _TmCandidate {
+  const _TmCandidate({required this.slot, required this.pokemon});
+
+  final TeamSlot slot;
+  final Pokemon pokemon;
+}
+
 enum _BagAction { find, buy }
 
 class _BagContent extends StatelessWidget {
@@ -176,6 +357,7 @@ class _BagContent extends StatelessWidget {
     required this.onTypeSelected,
     required this.onFindItem,
     required this.onBuyItem,
+    required this.onUseItem,
   });
 
   final _BagData data;
@@ -184,6 +366,7 @@ class _BagContent extends StatelessWidget {
   final ValueChanged<String?> onTypeSelected;
   final VoidCallback onFindItem;
   final VoidCallback onBuyItem;
+  final ValueChanged<_OwnedBagItem> onUseItem;
 
   @override
   Widget build(BuildContext context) {
@@ -225,7 +408,8 @@ class _BagContent extends StatelessWidget {
         if (filteredItems.isEmpty)
           const _BagEmpty()
         else
-          for (final entry in filteredItems) _BagItemCard(entry: entry),
+          for (final entry in filteredItems)
+            _BagItemCard(entry: entry, onUse: () => onUseItem(entry)),
       ],
     );
   }
@@ -411,9 +595,10 @@ class _BagTypeFilters extends StatelessWidget {
 }
 
 class _BagItemCard extends StatelessWidget {
-  const _BagItemCard({required this.entry});
+  const _BagItemCard({required this.entry, required this.onUse});
 
   final _OwnedBagItem entry;
+  final VoidCallback onUse;
 
   @override
   Widget build(BuildContext context) {
@@ -438,6 +623,17 @@ class _BagItemCard extends StatelessWidget {
             alignment: Alignment.centerLeft,
             child: Text(item.displayDescription),
           ),
+          if (item.type == 'tm') ...[
+            const SizedBox(height: 12),
+            Align(
+              alignment: Alignment.centerRight,
+              child: FilledButton.icon(
+                onPressed: onUse,
+                icon: const Icon(Icons.school_outlined),
+                label: const Text('Usa MT'),
+              ),
+            ),
+          ],
         ],
       ),
     );
@@ -469,6 +665,140 @@ class _ItemSprite extends StatelessWidget {
           return Icon(_iconForType(item.type));
         },
         errorBuilder: (_, __, ___) => Icon(_iconForType(item.type)),
+      ),
+    );
+  }
+}
+
+class _TmPokemonPickerSheet extends StatelessWidget {
+  const _TmPokemonPickerSheet({
+    required this.item,
+    required this.tm,
+    required this.move,
+    required this.candidates,
+  });
+
+  final BagItem item;
+  final TmData tm;
+  final MoveData move;
+  final List<_TmCandidate> candidates;
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: SizedBox(
+        height: MediaQuery.of(context).size.height * 0.75,
+        child: ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            Text(
+              'Usa ${item.name}',
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text('Scegli un Pokémon compatibile con ${move.name}.'),
+            const SizedBox(height: 12),
+            for (final candidate in candidates)
+              Card(
+                child: ListTile(
+                  leading: PokemonAssetImage(
+                    pokemon: candidate.pokemon,
+                    size: 46,
+                  ),
+                  title: Text(
+                    candidate.slot.nickname ?? candidate.pokemon.name,
+                    style: const TextStyle(fontWeight: FontWeight.w800),
+                  ),
+                  subtitle: Text(
+                    'Slot ${candidate.slot.slotIndex + 1} • ${candidate.pokemon.name}',
+                  ),
+                  trailing: const Text('Scegli'),
+                  onTap: () => Navigator.of(context).pop(candidate),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _MoveReplaceSheet extends StatelessWidget {
+  const _MoveReplaceSheet({
+    required this.pokemonName,
+    required this.newMove,
+    required this.selectedMoves,
+    required this.moveData,
+  });
+
+  final String pokemonName;
+  final MoveData newMove;
+  final List<String> selectedMoves;
+  final Map<String, MoveData?> moveData;
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: SizedBox(
+        height: MediaQuery.of(context).size.height * 0.75,
+        child: ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            Text(
+              '$pokemonName sta imparando ${newMove.name}',
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+            const SizedBox(height: 4),
+            const Text('Il moveset è pieno. Scegli quale mossa sostituire.'),
+            const SizedBox(height: 12),
+            for (final entry in selectedMoves.asMap().entries)
+              _MoveReplacementTile(
+                index: entry.key,
+                reference: entry.value,
+                move: moveData[entry.value],
+              ),
+            const SizedBox(height: 8),
+            OutlinedButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Annulla'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _MoveReplacementTile extends StatelessWidget {
+  const _MoveReplacementTile({
+    required this.index,
+    required this.reference,
+    required this.move,
+  });
+
+  final int index;
+  final String reference;
+  final MoveData? move;
+
+  @override
+  Widget build(BuildContext context) {
+    final move = this.move;
+
+    return Card(
+      child: ListTile(
+        leading: move == null
+            ? const Icon(Icons.radio_button_unchecked)
+            : PokemonTypeBadge(type: move.type, height: 24),
+        title: Text((move?.name ?? reference).toUpperCase()),
+        subtitle: move?.description.isNotEmpty == true
+            ? Text(move!.description, maxLines: 3, overflow: TextOverflow.ellipsis)
+            : null,
+        trailing: const Text('Sostituisci'),
+        onTap: () => Navigator.of(context).pop(index),
       ),
     );
   }

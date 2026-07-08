@@ -65,7 +65,7 @@ class _BagScreenState extends State<BagScreen> {
     if (action == _BagAction.buy) {
       final cost = item.cost;
       if (cost == null) {
-        await _reload(message: '${item.name} non si puo acquistare.');
+        await _reload(message: '${item.name} non si può acquistare.');
         return;
       }
 
@@ -202,7 +202,10 @@ class _BagContent extends StatelessWidget {
         _BagHeader(
           money: data.profile.money,
           ownedCount: ownedItems.length,
-          totalQuantity: ownedItems.fold<int>(0, (sum, entry) => sum + entry.quantity),
+          totalQuantity: ownedItems.fold<int>(
+            0,
+            (sum, entry) => sum + entry.quantity,
+          ),
         ),
         if (message != null) ...[
           const SizedBox(height: 12),
@@ -236,6 +239,7 @@ class _BagContent extends StatelessWidget {
       'berry',
       'held-item',
       'evolution',
+      'trainer-gear',
       'key-item',
       'tm',
     ];
@@ -418,7 +422,7 @@ class _BagItemCard extends StatelessWidget {
 
     return Card(
       child: ExpansionTile(
-        leading: Icon(_iconForType(item.type)),
+        leading: _ItemSprite(item: item),
         title: Text(
           item.name,
           style: const TextStyle(fontWeight: FontWeight.w900),
@@ -435,6 +439,32 @@ class _BagItemCard extends StatelessWidget {
             child: Text(item.displayDescription),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _ItemSprite extends StatelessWidget {
+  const _ItemSprite({required this.item});
+
+  final BagItem item;
+
+  @override
+  Widget build(BuildContext context) {
+    final spritePath = item.spriteAssetPath;
+
+    if (spritePath == null) {
+      return Icon(_iconForType(item.type));
+    }
+
+    return SizedBox(
+      width: 42,
+      height: 42,
+      child: Image.asset(
+        spritePath,
+        fit: BoxFit.contain,
+        filterQuality: FilterQuality.none,
+        errorBuilder: (_, __, ___) => Icon(_iconForType(item.type)),
       ),
     );
   }
@@ -473,7 +503,8 @@ class _ItemPickerSheetState extends State<_ItemPickerSheet> {
       if (query.isEmpty) return true;
 
       return item.name.toLowerCase().contains(query) ||
-          item.type.toLowerCase().contains(query);
+          item.type.toLowerCase().contains(query) ||
+          _typeLabel(item.type).toLowerCase().contains(query);
     }).toList(growable: false);
 
     return SafeArea(
@@ -523,7 +554,7 @@ class _ItemPickerSheetState extends State<_ItemPickerSheet> {
                         : '₽ ${item.cost}';
 
                     return ListTile(
-                      leading: Icon(_iconForType(item.type)),
+                      leading: _ItemSprite(item: item),
                       title: Text(item.name),
                       subtitle: Text('${_typeLabel(item.type)} • $costLabel'),
                       trailing: Text(isBuy ? 'Compra' : 'Aggiungi'),
@@ -596,6 +627,8 @@ IconData _iconForType(String type) {
       return Icons.inventory_2_outlined;
     case 'evolution':
       return Icons.auto_awesome;
+    case 'trainer-gear':
+      return Icons.hiking_outlined;
     case 'key-item':
       return Icons.vpn_key_outlined;
     case 'tm':
@@ -619,6 +652,8 @@ String _typeLabel(String type) {
       return 'Oggetti tenuti';
     case 'evolution':
       return 'Evoluzione';
+    case 'trainer-gear':
+      return 'Equipaggiamento';
     case 'key-item':
       return 'Oggetti chiave';
     case 'tm':

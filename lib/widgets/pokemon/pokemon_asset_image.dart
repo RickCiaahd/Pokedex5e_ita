@@ -34,6 +34,10 @@ class PokemonAssetImage extends StatelessWidget {
         pokemon: pokemon,
         useLargeArtwork: useLargeArtwork,
       ),
+      assetPrefixes: PokemonAssetPaths.imageCandidatePrefixes(
+        pokemon: pokemon,
+        useLargeArtwork: useLargeArtwork,
+      ),
       width: size,
       height: size,
       fit: fit,
@@ -165,6 +169,24 @@ class PokemonAssetPaths {
     ];
   }
 
+  static List<String> imageCandidatePrefixes({
+    required Pokemon pokemon,
+    required bool useLargeArtwork,
+  }) {
+    final folder = useLargeArtwork ? 'pokemons' : 'sprites';
+    final alternateFolder = useLargeArtwork ? 'sprites' : 'pokemons';
+    final id = pokemon.id.toString();
+    final paddedId = id.padLeft(3, '0');
+    final prefixes = <String>{
+      'assets/textures/$folder/$id',
+      'assets/textures/$folder/$paddedId',
+      'assets/textures/$alternateFolder/$id',
+      'assets/textures/$alternateFolder/$paddedId',
+    };
+
+    return prefixes.toList(growable: false);
+  }
+
   static List<String> typeCandidates(String type) {
     final localized = localizedTypeLabel(type);
     final assetName = _assetName(localized);
@@ -260,17 +282,29 @@ class PokemonAssetPaths {
         .replaceAll('-', '');
   }
 
+  static String _punctuationAsSpaceName(String value) {
+    return value
+        .trim()
+        .replaceAll(RegExp(r'[:._-]+'), ' ')
+        .replaceAll(RegExp(r'\s+'), ' ')
+        .trim();
+  }
+
   static Set<String> _nameAliases(String value) {
     final genderName = value
         .replaceAll(' ♀', '-f')
         .replaceAll('♀', '-f')
         .replaceAll(' ♂', '-m')
         .replaceAll('♂', '-m');
+    final punctuationAsSpaceName = _punctuationAsSpaceName(value);
 
     return <String>{
       value.trim(),
       _assetName(value),
       _compactAssetName(value),
+      punctuationAsSpaceName,
+      _assetName(punctuationAsSpaceName),
+      _compactAssetName(punctuationAsSpaceName),
       genderName.trim(),
       _assetName(genderName),
       _compactAssetName(genderName),
@@ -282,12 +316,14 @@ class _AssetFallbackImage extends StatelessWidget {
   const _AssetFallbackImage({
     required this.assetPaths,
     required this.fallback,
+    this.assetPrefixes = const [],
     this.width,
     this.height,
     this.fit = BoxFit.contain,
   });
 
   final List<String> assetPaths;
+  final List<String> assetPrefixes;
   final Widget fallback;
   final double? width;
   final double? height;
@@ -296,7 +332,10 @@ class _AssetFallbackImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<String?>(
-      future: _AssetLookup.firstExisting(assetPaths),
+      future: _AssetLookup.firstExisting(
+        assetPaths,
+        assetPrefixes: assetPrefixes,
+      ),
       builder: (context, snapshot) {
         final assetPath = snapshot.data;
 
@@ -320,23 +359,56 @@ class _AssetFallbackImage extends StatelessWidget {
 class _AssetLookup {
   const _AssetLookup._();
 
-  static Future<Set<String>>? _assetPathsFuture;
+  static Future<_AssetIndex>? _assetIndexFuture;
 
-  static Future<String?> firstExisting(List<String> candidates) async {
-    final assetPaths = await _assetPaths();
+  static Future<String?> firstExisting(
+    List<String> candidates, {
+    List<String> assetPrefixes = const [],
+  }) async {
+    final assetIndex = await _assetIndex();
 
     for (final candidate in candidates) {
-      if (assetPaths.contains(candidate)) {
+      if (assetIndex.pathSet.contains(candidate)) {
         return candidate;
+      }
+    }
+
+    for (final prefix in assetPrefixes) {
+      for (final assetPath in assetIndex.sortedPaths) {
+        if (_matchesPrefix(assetPath, prefix)) {
+          return assetPath;
+        }
       }
     }
 
     return null;
   }
 
-  static Future<Set<String>> _assetPaths() {
-    return _assetPathsFuture ??= AssetManifest.loadFromAssetBundle(
-      rootBundle,
-    ).then((manifest) => manifest.listAssets().toSet());
+  static bool _matchesPrefix(String assetPath, String prefix) {
+    if (!assetPath.endsWith('.png')) return false;
+    if (!assetPath.startsWith(prefix)) return false;
+    if (assetPath.length <= prefix.length) return false;
+
+    final nextCode = assetPath.codeUnitAt(prefix.length);
+    return nextCode < 48 || nextCode > 57;
   }
+
+  static Future<_AssetIndex> _assetIndex() {
+    return _assetIndexFuture ??= AssetManifest.loadFromAssetBundle(
+      rootBundle,
+    ).then((manifest) {
+      final sortedPaths = manifest.listAssets()..sort();
+      return _AssetIndex(
+        pathSet: sortedPaths.toSet(),
+        sortedPaths: sortedPaths,
+      );
+    });
+  }
+}
+
+class _AssetIndex {
+  const _AssetIndex({required this.pathSet, required this.sortedPaths});
+
+  final Set<String> pathSet;
+  final List<String> sortedPaths;
 }

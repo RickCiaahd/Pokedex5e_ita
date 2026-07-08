@@ -5,7 +5,6 @@ import '../../models/bag_item.dart';
 import '../../models/move_data.dart';
 import '../../models/pokemon.dart';
 import '../../models/team_slot.dart';
-import '../../models/tm_data.dart';
 import '../../models/user_profile.dart';
 import '../../repositories/bag_inventory_repository.dart';
 import '../../repositories/item_repository.dart';
@@ -164,7 +163,6 @@ class _BagScreenState extends State<BagScreen> {
       isScrollControlled: true,
       builder: (_) => _TmPokemonPickerSheet(
         item: entry.item,
-        tm: tm,
         move: move,
         candidates: candidates,
       ),
@@ -179,9 +177,7 @@ class _BagScreenState extends State<BagScreen> {
       return;
     }
 
-    final learnedMoveReference = move.id.isNotEmpty
-        ? move.id
-        : MoveData.referenceKey(move.name);
+    final learnedMoveReference = move.name;
     final updatedMoves = [...selectedMoves];
     String? replacedMoveName;
 
@@ -673,13 +669,11 @@ class _ItemSprite extends StatelessWidget {
 class _TmPokemonPickerSheet extends StatelessWidget {
   const _TmPokemonPickerSheet({
     required this.item,
-    required this.tm,
     required this.move,
     required this.candidates,
   });
 
   final BagItem item;
-  final TmData tm;
   final MoveData move;
   final List<_TmCandidate> candidates;
 

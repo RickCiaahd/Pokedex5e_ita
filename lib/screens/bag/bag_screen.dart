@@ -451,46 +451,25 @@ class _ItemSprite extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final spritePath = item.spriteAssetPath;
+    final remoteUrl = item.remoteSpriteUrl;
 
-    if (spritePath == null) {
+    if (remoteUrl == null) {
       return Icon(_iconForType(item.type));
     }
 
     return SizedBox(
       width: 42,
       height: 42,
-      child: Image.asset(
-        spritePath,
+      child: Image.network(
+        remoteUrl,
         fit: BoxFit.contain,
         filterQuality: FilterQuality.none,
-        errorBuilder: (_, __, ___) => _RemoteItemSprite(item: item),
+        loadingBuilder: (context, child, loadingProgress) {
+          if (loadingProgress == null) return child;
+          return Icon(_iconForType(item.type));
+        },
+        errorBuilder: (_, __, ___) => Icon(_iconForType(item.type)),
       ),
-    );
-  }
-}
-
-class _RemoteItemSprite extends StatelessWidget {
-  const _RemoteItemSprite({required this.item});
-
-  final BagItem item;
-
-  @override
-  Widget build(BuildContext context) {
-    final url = item.remoteSpriteUrl;
-    if (url == null) {
-      return Icon(_iconForType(item.type));
-    }
-
-    return Image.network(
-      url,
-      fit: BoxFit.contain,
-      filterQuality: FilterQuality.none,
-      loadingBuilder: (context, child, loadingProgress) {
-        if (loadingProgress == null) return child;
-        return Icon(_iconForType(item.type));
-      },
-      errorBuilder: (_, __, ___) => Icon(_iconForType(item.type)),
     );
   }
 }

@@ -19,8 +19,13 @@ class EvolutionSelectorSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final availableChoices = choices
-        .where((choice) => choice.isAvailable)
+        .where((choice) => choice.isAvailable && pokemonByName(choice.option.toName) != null)
         .toList(growable: false);
+    final isSingleEvolution = choices.length == 1;
+    final title = isSingleEvolution ? 'Evoluzione' : 'Scegli evoluzione';
+    final description = isSingleEvolution
+        ? 'Controlla i requisiti per far evolvere ${currentPokemon.name}.'
+        : '${currentPokemon.name} può evolversi in ${choices.length} forme.';
 
     return SafeArea(
       child: SizedBox(
@@ -29,15 +34,13 @@ class EvolutionSelectorSheet extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           children: [
             Text(
-              'Scegli evoluzione',
+              title,
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.w900,
-              ),
+                    fontWeight: FontWeight.w900,
+                  ),
             ),
             const SizedBox(height: 4),
-            Text(
-              '${currentPokemon.name} può evolversi in ${choices.length == 1 ? 'questa forma' : '${choices.length} forme'}.',
-            ),
+            Text(description),
             if (availableChoices.isEmpty) ...[
               const SizedBox(height: 8),
               Text(
@@ -50,6 +53,7 @@ class EvolutionSelectorSheet extends StatelessWidget {
               _EvolutionChoiceTile(
                 choice: choice,
                 targetPokemon: pokemonByName(choice.option.toName),
+                actionLabel: isSingleEvolution ? 'Evolvi' : 'Scegli',
               ),
           ],
         ),
@@ -59,10 +63,15 @@ class EvolutionSelectorSheet extends StatelessWidget {
 }
 
 class _EvolutionChoiceTile extends StatelessWidget {
-  const _EvolutionChoiceTile({required this.choice, required this.targetPokemon});
+  const _EvolutionChoiceTile({
+    required this.choice,
+    required this.targetPokemon,
+    required this.actionLabel,
+  });
 
   final EvolutionEligibility choice;
   final Pokemon? targetPokemon;
+  final String actionLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -111,10 +120,15 @@ class _EvolutionChoiceTile extends StatelessWidget {
             ],
           ),
         ),
-        trailing: Icon(
-          isAvailable ? Icons.arrow_forward : Icons.lock_outline,
-          color: isAvailable ? colorScheme.primary : colorScheme.outline,
-        ),
+        trailing: isAvailable
+            ? Text(
+                actionLabel,
+                style: TextStyle(
+                  color: colorScheme.primary,
+                  fontWeight: FontWeight.w900,
+                ),
+              )
+            : Icon(Icons.lock_outline, color: colorScheme.outline),
         onTap: isAvailable ? () => Navigator.of(context).pop(choice) : null,
       ),
     );
@@ -130,7 +144,9 @@ class _ConditionChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final color = satisfied ? colorScheme.primaryContainer : colorScheme.errorContainer;
+    final color = satisfied
+        ? colorScheme.primaryContainer
+        : colorScheme.errorContainer;
     final foreground = satisfied
         ? colorScheme.onPrimaryContainer
         : colorScheme.onErrorContainer;
@@ -145,9 +161,9 @@ class _ConditionChip extends StatelessWidget {
         child: Text(
           label,
           style: Theme.of(context).textTheme.labelSmall?.copyWith(
-            color: foreground,
-            fontWeight: FontWeight.w900,
-          ),
+                color: foreground,
+                fontWeight: FontWeight.w900,
+              ),
         ),
       ),
     );

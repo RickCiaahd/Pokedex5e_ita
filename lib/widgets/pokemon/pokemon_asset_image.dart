@@ -397,7 +397,7 @@ class _AssetLookup {
     return _assetIndexFuture ??= AssetManifest.loadFromAssetBundle(
       rootBundle,
     ).then((manifest) {
-      final sortedPaths = manifest.listAssets()..sort();
+      final sortedPaths = manifest.listAssets().toList()..sort();
       return _AssetIndex(
         pathSet: sortedPaths.toSet(),
         sortedPaths: sortedPaths,

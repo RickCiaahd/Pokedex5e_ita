@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../models/move_data.dart';
 import '../../models/pokemon.dart';
+import '../../models/pokemon_ability.dart';
 import '../../models/pokemon_nature.dart';
 import '../../models/team_slot.dart';
 import '../../repositories/ability_repository.dart';
@@ -69,10 +70,14 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
   late List<String> _extraSkills;
   late String? _heldItem;
   late Map<String, int> _customAbilityScores;
+
+  List<PokemonAbility> _abilityChoices = const [];
+  Set<String> _deprecatedAbilityNames = const {};
   Map<String, String> _abilityDescriptions = {};
   Map<String, String> _featDescriptions = {};
   Map<String, String> _itemDescriptions = {};
   Map<String, MoveData?> _moveData = {};
+
   bool _movesOpen = false;
   bool _abilitiesOpen = false;
   bool _featsOpen = false;
@@ -117,21 +122,25 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
 
   Future<void> _loadChoices() async {
     final abilityDescriptionsFuture = _abilityRepository.getAbilityDescriptions();
+    final abilityChoicesFuture = _abilityRepository.getWebAbilities();
+    final deprecatedAbilitiesFuture = _abilityRepository.getDeprecatedAbilityNames();
     final featDescriptionsFuture = _featRepository.getFeatDescriptions();
     final itemDescriptionsFuture = _itemRepository.getItemDescriptions();
     final moveDataFuture = _moveRepository.getMoves(_allMoveChoices());
 
     final abilityDescriptions = await abilityDescriptionsFuture;
+    final abilityChoices = await abilityChoicesFuture;
+    final deprecatedAbilities = await deprecatedAbilitiesFuture;
     final featDescriptions = await featDescriptionsFuture;
     final itemDescriptions = await itemDescriptionsFuture;
     final moveData = await moveDataFuture;
 
-    if (!mounted) {
-      return;
-    }
+    if (!mounted) return;
 
     setState(() {
       _abilityDescriptions = abilityDescriptions;
+      _abilityChoices = abilityChoices;
+      _deprecatedAbilityNames = deprecatedAbilities;
       _featDescriptions = featDescriptions;
       _itemDescriptions = itemDescriptions;
       _moveData = moveData;
@@ -149,23 +158,36 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
     return _unique(selected.isEmpty ? fallback : selected).take(2).toList();
   }
 
-  List<String> _availableAbilities() {
+  List<String> _naturalAbilities() {
     return _unique([
       ...widget.pokemon.abilities,
       if (widget.pokemon.hiddenAbility != null) widget.pokemon.hiddenAbility!,
-    ]);
+    ]).where((ability) => !_deprecatedAbilityNames.contains(ability)).toList();
+  }
+
+  List<String> _availableAbilities() {
+    final naturalAbilities = _naturalAbilities();
+    final naturalSet = naturalAbilities.toSet();
+    final catalogAbilities = _abilityChoices
+        .map((ability) => ability.name)
+        .where((ability) => !naturalSet.contains(ability))
+        .toList(growable: false)
+      ..sort();
+
+    return _unique([...naturalAbilities, ...catalogAbilities]);
   }
 
   List<String> _movesUpToLevel(int level) {
     final names = <String>[...widget.pokemon.moves.startingMoves];
-    final entries =
-        widget.pokemon.moves.levelMoves.entries
-            .where((entry) => entry.key <= level)
-            .toList()
-          ..sort((a, b) => a.key.compareTo(b.key));
+    final entries = widget.pokemon.moves.levelMoves.entries
+        .where((entry) => entry.key <= level)
+        .toList()
+      ..sort((a, b) => a.key.compareTo(b.key));
+
     for (final entry in entries) {
       names.addAll(entry.value);
     }
+
     return _unique(names);
   }
 
@@ -188,11 +210,11 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
   List<String> _unique(Iterable<String> values) {
     final seen = <String>{};
     final result = <String>[];
+
     for (final value in values) {
-      if (seen.add(value)) {
-        result.add(value);
-      }
+      if (seen.add(value)) result.add(value);
     }
+
     return result;
   }
 
@@ -241,9 +263,7 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
       ),
     );
 
-    if (result == null) {
-      return;
-    }
+    if (result == null) return;
 
     setState(() {
       while (_selectedMoves.length <= index) {
@@ -261,6 +281,7 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
         .where((entry) => entry.key != index)
         .map((entry) => entry.value)
         .toSet();
+
     final result = await Navigator.of(context).push<String>(
       MaterialPageRoute(
         builder: (_) => _ChoicePickerScreen(
@@ -272,9 +293,8 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
       ),
     );
 
-    if (result == null) {
-      return;
-    }
+    if (result == null) return;
+
     setState(() {
       if (index == null) {
         _feats = [..._feats, result];
@@ -291,20 +311,22 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
         .where((entry) => entry.key != index)
         .map((entry) => entry.value)
         .toSet();
+
     final result = await Navigator.of(context).push<String>(
       MaterialPageRoute(
         builder: (_) => _ChoicePickerScreen(
-          title: 'Scegli abilita',
+          title: 'Scegli abilità',
           options: _availableAbilities(),
+          pinnedOptions: _naturalAbilities().toSet(),
           blockedOptions: blocked,
           descriptions: _abilityDescriptions,
+          pinnedLabel: 'Abilità naturali del Pokémon',
         ),
       ),
     );
 
-    if (result == null) {
-      return;
-    }
+    if (result == null) return;
+
     setState(() {
       if (index == null) {
         _abilities = _normalizedAbilities([..._abilities, result]);
@@ -321,6 +343,7 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
         .where((entry) => entry.key != index)
         .map((entry) => entry.value)
         .toSet();
+
     final result = await Navigator.of(context).push<String>(
       MaterialPageRoute(
         builder: (_) => _ChoicePickerScreen(
@@ -331,9 +354,8 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
       ),
     );
 
-    if (result == null) {
-      return;
-    }
+    if (result == null) return;
+
     setState(() {
       if (index == null) {
         _extraSkills = [..._extraSkills, result];
@@ -355,9 +377,8 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
       ),
     );
 
-    if (result == null) {
-      return;
-    }
+    if (result == null) return;
+
     setState(
       () => _heldItem = result == _ChoicePickerScreen.noneValue ? null : result,
     );
@@ -398,15 +419,10 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
                         ),
                         items: [
                           for (final nature in PokemonNature.names)
-                            DropdownMenuItem(
-                              value: nature,
-                              child: Text(nature),
-                            ),
+                            DropdownMenuItem(value: nature, child: Text(nature)),
                         ],
                         onChanged: (value) {
-                          if (value == null) {
-                            return;
-                          }
+                          if (value == null) return;
                           setState(() => _nature = value);
                         },
                       ),
@@ -420,18 +436,9 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
                           border: OutlineInputBorder(),
                         ),
                         items: const [
-                          DropdownMenuItem(
-                            value: null,
-                            child: Text('Qualsiasi'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'male',
-                            child: Text('Maschio'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'female',
-                            child: Text('Femmina'),
-                          ),
+                          DropdownMenuItem(value: null, child: Text('Qualsiasi')),
+                          DropdownMenuItem(value: 'male', child: Text('Maschio')),
+                          DropdownMenuItem(value: 'female', child: Text('Femmina')),
                           DropdownMenuItem(
                             value: 'genderless',
                             child: Text('Genderless'),
@@ -470,14 +477,26 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
                   isOpen: _abilitiesOpen,
                   onToggle: () =>
                       setState(() => _abilitiesOpen = !_abilitiesOpen),
-                  child: _ChipSlots(
-                    values: _abilities,
-                    emptyLabel: 'ABILITY',
-                    onAdd: _abilities.length >= 2 ? null : _pickAbility,
-                    onPick: _pickAbility,
-                    onRemove: (index) {
-                      setState(() => _abilities.removeAt(index));
-                    },
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _ChipSlots(
+                        values: _abilities,
+                        emptyLabel: 'ABILITY',
+                        onAdd: _abilities.length >= 2
+                            ? null
+                            : () => _pickAbility(),
+                        onPick: _pickAbility,
+                        onRemove: (index) {
+                          setState(() => _abilities.removeAt(index));
+                        },
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Puoi scegliere tra le abilità naturali del Pokémon o dal catalogo completo. Le abilità deprecated non sono selezionabili.',
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                    ],
                   ),
                 ),
                 _CollapsibleEditSection(
@@ -487,7 +506,7 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
                   child: _ChipSlots(
                     values: _feats,
                     emptyLabel: 'FEAT',
-                    onAdd: _pickFeat,
+                    onAdd: () => _pickFeat(),
                     onPick: _pickFeat,
                     onRemove: (index) {
                       setState(() => _feats.removeAt(index));
@@ -501,7 +520,7 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
                   child: _ChipSlots(
                     values: _extraSkills,
                     emptyLabel: 'SKILL',
-                    onAdd: _pickSkill,
+                    onAdd: () => _pickSkill(),
                     onPick: _pickSkill,
                     onRemove: (index) {
                       setState(() => _extraSkills.removeAt(index));
@@ -691,6 +710,7 @@ class _SingleSlot extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final type = this.type;
+
     return Stack(
       clipBehavior: Clip.none,
       children: [
@@ -847,6 +867,7 @@ class _MovePickerScreenState extends State<_MovePickerScreen> {
           _PickerTile(
             label: move,
             type: widget.moveData[move]?.type,
+            subtitle: widget.moveData[move]?.description,
             onTap: () => Navigator.of(context).pop(move),
           ),
         if (_activeMoves.isEmpty)
@@ -863,6 +884,8 @@ class _ChoicePickerScreen extends StatefulWidget {
   const _ChoicePickerScreen({
     required this.title,
     required this.options,
+    this.pinnedOptions = const {},
+    this.pinnedLabel,
     this.blockedOptions = const {},
     this.descriptions = const {},
     this.includeNone = false,
@@ -872,6 +895,8 @@ class _ChoicePickerScreen extends StatefulWidget {
 
   final String title;
   final List<String> options;
+  final Set<String> pinnedOptions;
+  final String? pinnedLabel;
   final Set<String> blockedOptions;
   final Map<String, String> descriptions;
   final bool includeNone;
@@ -884,14 +909,28 @@ class _ChoicePickerScreenState extends State<_ChoicePickerScreen> {
   String _search = '';
 
   List<String> get _options {
+    final search = _search.trim().toLowerCase();
+
     return widget.options
         .where((option) => !widget.blockedOptions.contains(option))
-        .where((option) => option.toLowerCase().contains(_search.toLowerCase()))
+        .where((option) {
+          if (search.isEmpty) return true;
+          return option.toLowerCase().contains(search) ||
+              (widget.descriptions[option] ?? '').toLowerCase().contains(search);
+        })
         .toList();
   }
 
   @override
   Widget build(BuildContext context) {
+    final options = _options;
+    final pinnedOptions = options
+        .where((option) => widget.pinnedOptions.contains(option))
+        .toList(growable: false);
+    final otherOptions = options
+        .where((option) => !widget.pinnedOptions.contains(option))
+        .toList(growable: false);
+
     return _ChoiceShell(
       title: widget.title,
       searchLabel: 'Cerca',
@@ -900,17 +939,26 @@ class _ChoicePickerScreenState extends State<_ChoicePickerScreen> {
         if (widget.includeNone)
           _PickerTile(
             label: 'Nessuno',
-            onTap: () {
-              Navigator.of(context).pop(_ChoicePickerScreen.noneValue);
-            },
+            onTap: () => Navigator.of(context).pop(_ChoicePickerScreen.noneValue),
           ),
-        for (final option in _options)
+        if (pinnedOptions.isNotEmpty && widget.pinnedLabel != null)
+          _PickerGroupLabel(label: widget.pinnedLabel!),
+        for (final option in pinnedOptions)
+          _PickerTile(
+            label: option,
+            subtitle: widget.descriptions[option],
+            pinned: true,
+            onTap: () => Navigator.of(context).pop(option),
+          ),
+        if (pinnedOptions.isNotEmpty && otherOptions.isNotEmpty)
+          const _PickerGroupLabel(label: 'Catalogo completo'),
+        for (final option in otherOptions)
           _PickerTile(
             label: option,
             subtitle: widget.descriptions[option],
             onTap: () => Navigator.of(context).pop(option),
           ),
-        if (_options.isEmpty && !widget.includeNone)
+        if (options.isEmpty && !widget.includeNone)
           const Padding(
             padding: EdgeInsets.all(24),
             child: Text('Nessun elemento disponibile.'),
@@ -976,6 +1024,26 @@ class _ChoiceShell extends StatelessWidget {
   }
 }
 
+class _PickerGroupLabel extends StatelessWidget {
+  const _PickerGroupLabel({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(4, 10, 4, 6),
+      child: Text(
+        label.toUpperCase(),
+        style: Theme.of(context).textTheme.labelLarge?.copyWith(
+          color: Theme.of(context).colorScheme.primary,
+          fontWeight: FontWeight.w900,
+        ),
+      ),
+    );
+  }
+}
+
 class _FilterButton extends StatelessWidget {
   const _FilterButton({
     required this.label,
@@ -1009,20 +1077,23 @@ class _PickerTile extends StatelessWidget {
     required this.onTap,
     this.subtitle,
     this.type,
+    this.pinned = false,
   });
 
   final String label;
   final String? subtitle;
   final String? type;
+  final bool pinned;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     final type = this.type;
+
     return Card(
       child: ListTile(
         leading: type == null
-            ? const Icon(Icons.radio_button_unchecked)
+            ? Icon(pinned ? Icons.star : Icons.radio_button_unchecked)
             : SizedBox(
                 width: 74,
                 child: Align(
@@ -1033,7 +1104,7 @@ class _PickerTile extends StatelessWidget {
         title: Text(label.toUpperCase()),
         subtitle: subtitle == null || subtitle!.isEmpty
             ? null
-            : Text(subtitle!),
+            : Text(subtitle!, maxLines: 5, overflow: TextOverflow.ellipsis),
         onTap: onTap,
       ),
     );

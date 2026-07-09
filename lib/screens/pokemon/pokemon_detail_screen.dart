@@ -671,6 +671,39 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
     );
   }
 
+  Future<void> _distributePendingAsi() async {
+    final slot = _teamSlot;
+    if (slot == null) return;
+
+    final oldMaxHp = _maxHp;
+    final oldCurrentHp = _currentHp;
+    final wasFullHp = oldCurrentHp >= oldMaxHp;
+    var updatedSlot = slot;
+
+    while (_availableAsiPointsForSlot(updatedSlot) > 0) {
+      final remaining = _availableAsiPointsForSlot(updatedSlot);
+      final attribute = await _pickAbilityScoreIncrease(updatedSlot, remaining);
+      if (!mounted || attribute == null) break;
+
+      final currentAttributes = _attributeScores(_pokemon, updatedSlot);
+      if ((currentAttributes[attribute] ?? 0) >= 20) continue;
+
+      final customScores = Map<String, int>.from(updatedSlot.customAbilityScores);
+      customScores[attribute] = (customScores[attribute] ?? 0) + 1;
+      updatedSlot = updatedSlot.copyWith(customAbilityScores: customScores);
+    }
+
+    final updatedMaxHp = _maxHpFor(_pokemon, updatedSlot);
+    updatedSlot = updatedSlot.copyWith(
+      currentHp: wasFullHp
+          ? updatedMaxHp
+          : oldCurrentHp.clamp(0, updatedMaxHp).toInt(),
+    );
+
+    _saveTeamSlot(updatedSlot);
+    await _loadData();
+  }
+
   Future<String?> _askMoveReplacement(
     String newMove,
     List<String> selectedMoves,
@@ -1047,6 +1080,10 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
                                 attributes: attributes,
                                 modifierBuilder: _modifier,
                                 proficiency: _proficiency(_level),
+                                availableAsiPoints: _teamSlot == null
+                                    ? 0
+                                    : _availableAsiPointsForSlot(_teamSlot!),
+                                onDistributeAsi: _distributePendingAsi,
                               ),
                             ],
                           ),
@@ -2028,6 +2065,8 @@ class _TraitsView extends StatelessWidget {
     required this.attributes,
     required this.modifierBuilder,
     required this.proficiency,
+    required this.availableAsiPoints,
+    required this.onDistributeAsi,
   });
 
   final Pokemon pokemon;
@@ -2035,12 +2074,18 @@ class _TraitsView extends StatelessWidget {
   final Map<String, int> attributes;
   final int Function(int score) modifierBuilder;
   final int proficiency;
+  final int availableAsiPoints;
+  final VoidCallback onDistributeAsi;
 
   @override
   Widget build(BuildContext context) {
     return ListView(
       padding: const EdgeInsets.all(12),
       children: [
+        _PendingAsiCard(
+          availablePoints: availableAsiPoints,
+          onDistribute: onDistributeAsi,
+        ),
         Card(
           child: Padding(
             padding: const EdgeInsets.all(8),
@@ -2085,6 +2130,66 @@ class _TraitsView extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _PendingAsiCard extends StatelessWidget {
+  const _PendingAsiCard({
+    required this.availablePoints,
+    required this.onDistribute,
+  });
+
+  final int availablePoints;
+  final VoidCallback onDistribute;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final hasPoints = availablePoints > 0;
+
+    return Card(
+      color: hasPoints ? colorScheme.primaryContainer : null,
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Row(
+          children: [
+            Icon(
+              Icons.trending_up,
+              color: hasPoints ? colorScheme.onPrimaryContainer : null,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'ASI DISPONIBILI',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w900,
+                          color: hasPoints ? colorScheme.onPrimaryContainer : null,
+                        ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    hasPoints
+                        ? 'Hai $availablePoints punti accumulati da distribuire.'
+                        : 'Nessun punto ASI disponibile.',
+                    style: TextStyle(
+                      color: hasPoints ? colorScheme.onPrimaryContainer : null,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 12),
+            FilledButton(
+              onPressed: hasPoints ? onDistribute : null,
+              child: const Text('DISTRIBUISCI'),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

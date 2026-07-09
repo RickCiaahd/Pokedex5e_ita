@@ -73,7 +73,7 @@ class _BagScreenState extends State<BagScreen> {
   }
 
   Future<void> _openFinder(_BagData data, _BagAction action) async {
-    final item = await showModalBottomSheet<BagItem>(
+    final result = await showModalBottomSheet<_ItemPickerResult>(
       context: context,
       isScrollControlled: true,
       builder: (_) => _ItemPickerSheet(
@@ -83,7 +83,10 @@ class _BagScreenState extends State<BagScreen> {
       ),
     );
 
-    if (!mounted || item == null) return;
+    if (!mounted || result == null) return;
+
+    final item = result.item;
+    final quantity = result.quantity.clamp(1, 99).toInt();
 
     if (action == _BagAction.buy) {
       final cost = item.cost;
@@ -92,21 +95,29 @@ class _BagScreenState extends State<BagScreen> {
         return;
       }
 
-      if (data.profile.money < cost) {
-        await _reload(message: 'Pokédollari insufficienti per ${item.name}.');
+      final totalCost = cost * quantity;
+      if (data.profile.money < totalCost) {
+        await _reload(
+          message:
+              'Pokédollari insufficienti per acquistare ${item.name} x$quantity.',
+        );
         return;
       }
 
       await _profileRepository.saveProfile(
-        data.profile.copyWith(money: data.profile.money - cost),
+        data.profile.copyWith(money: data.profile.money - totalCost),
       );
-      await _bagRepository.addItem(profileId: data.profile.id, itemId: item.id);
-      await _reload(message: '${item.name} acquistato e aggiunto allo zaino.');
-      return;
     }
 
-    await _bagRepository.addItem(profileId: data.profile.id, itemId: item.id);
-    await _reload(message: '${item.name} aggiunto allo zaino.');
+    for (var index = 0; index < quantity; index++) {
+      await _bagRepository.addItem(profileId: data.profile.id, itemId: item.id);
+    }
+
+    final quantityText = quantity == 1 ? '' : ' x$quantity';
+    final actionText = action == _BagAction.buy ? 'acquistato' : 'aggiunto';
+    await _reload(
+      message: '${item.name}$quantityText $actionText e aggiunto allo zaino.',
+    );
   }
 
   Future<void> _useBagItem(_BagData data, _OwnedBagItem entry) async {
@@ -123,21 +134,7 @@ class _BagScreenState extends State<BagScreen> {
     }
 
     if (item.type == 'berry') {
-      if (!mounted) return;
-
-      final action = await showModalBottomSheet<_BerryBagAction>(
-        context: context,
-        showDragHandle: true,
-        builder: (_) => _BerryActionSheet(item: item),
-      );
-      if (!mounted || action == null) return;
-
-      if (action == _BerryBagAction.use) {
-        await _useMedicine(data, entry);
-        return;
-      }
-
-      await _useHeldItem(data, entry);
+      await _useBerry(data, entry);
       return;
     }
 
@@ -147,6 +144,76 @@ class _BagScreenState extends State<BagScreen> {
     }
 
     await _reload(message: '${item.name} non è ancora utilizzabile dallo zaino.');
+  }
+
+  Future<void> _useBerry(_BagData data, _OwnedBagItem entry) async {
+    if (!_berryMedicineItemIds.contains(entry.item.id)) {
+      await _reload(
+        message:
+            '${entry.item.name} può essere data a un Pokémon, ma non usata direttamente.',
+      );
+      return;
+    }
+
+    final candidates = <_MedicineCandidate>[];
+
+    for (final slot in data.team) {
+      final pokemonId = slot.pokemonId;
+      if (pokemonId == null) continue;
+
+      final pokemon = data.pokemonById[pokemonId];
+      if (pokemon == null) continue;
+
+      candidates.add(_MedicineCandidate(slot: slot, pokemon: pokemon));
+    }
+
+    if (candidates.isEmpty) {
+      await _reload(message: 'Non hai Pokémon in squadra su cui usare ${entry.item.name}.');
+      return;
+    }
+
+    if (!mounted) return;
+
+    final candidate = await showModalBottomSheet<_MedicineCandidate>(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) => _MedicinePokemonPickerSheet(
+        item: entry.item,
+        candidates: candidates,
+        maxHpBuilder: _maxHpFor,
+      ),
+    );
+
+    if (!mounted || candidate == null) return;
+
+    final result = _applyMedicine(
+      item: entry.item,
+      slot: candidate.slot,
+      pokemon: candidate.pokemon,
+    );
+
+    final consumed = await _bagRepository.consumeItem(
+      profileId: data.profile.id,
+      itemId: entry.item.id,
+    );
+    if (!consumed) {
+      await _reload(message: 'Non hai più ${entry.item.name} nello zaino.');
+      return;
+    }
+
+    if (result != null) {
+      await _teamRepository.updateSlot(
+        profileId: data.profile.id,
+        updatedSlot: result.updatedSlot,
+      );
+      await _reload(message: result.message);
+      return;
+    }
+
+    await _reload(
+      message:
+          '${candidate.displayName} ha consumato ${entry.item.name}, ma non ha avuto effetto.',
+    );
   }
 
   Future<void> _useHeldItem(_BagData data, _OwnedBagItem entry) async {
@@ -629,6 +696,7 @@ class _BagScreenState extends State<BagScreen> {
             onFindItem: () => _openFinder(data, _BagAction.find),
             onBuyItem: () => _openFinder(data, _BagAction.buy),
             onUseItem: (entry) => _useBagItem(data, entry),
+             onEquipItem: (entry) => _useHeldItem(data, entry),
              onRemoveHeldItem: (entry) => _removeHeldItem(data, entry),
           );
         },
@@ -771,7 +839,6 @@ class _MedicineUseResult {
 
 enum _BagAction { find, buy }
 
-enum _BerryBagAction { use, equip }
 
 const Set<String> _healingItemIds = {
   'potion',
@@ -841,6 +908,7 @@ class _BagContent extends StatelessWidget {
     required this.onFindItem,
     required this.onBuyItem,
     required this.onUseItem,
+    required this.onEquipItem,
     required this.onRemoveHeldItem,
   });
 
@@ -851,6 +919,7 @@ class _BagContent extends StatelessWidget {
   final VoidCallback onFindItem;
   final VoidCallback onBuyItem;
   final ValueChanged<_OwnedBagItem> onUseItem;
+  final ValueChanged<_OwnedBagItem> onEquipItem;
   final ValueChanged<_EquippedHeldItem> onRemoveHeldItem;
 
   @override
@@ -892,7 +961,11 @@ class _BagContent extends StatelessWidget {
           const _BagEmpty()
         else
           for (final entry in filteredItems)
-            _BagItemCard(entry: entry, onUse: () => onUseItem(entry)),
+            _BagItemCard(
+              entry: entry,
+              onUse: () => onUseItem(entry),
+              onEquip: () => onEquipItem(entry),
+            ),
       ],
     );
   }
@@ -1078,10 +1151,11 @@ class _BagTypeFilters extends StatelessWidget {
 }
 
 class _BagItemCard extends StatefulWidget {
-  const _BagItemCard({required this.entry, required this.onUse});
+  const _BagItemCard({required this.entry, required this.onUse, this.onEquip});
 
   final _OwnedBagItem entry;
   final VoidCallback onUse;
+  final VoidCallback? onEquip;
 
   @override
   State<_BagItemCard> createState() => _BagItemCardState();
@@ -1182,11 +1256,29 @@ class _BagItemCardState extends State<_BagItemCard> {
             const SizedBox(height: 12),
             Align(
               alignment: Alignment.centerRight,
-              child: FilledButton.icon(
-                onPressed: widget.onUse,
-                icon: Icon(_useIconForItemType(item.type)),
-                label: Text(_useLabelForItemType(item.type)),
-              ),
+              child: item.type == 'berry'
+                  ? Wrap(
+                      alignment: WrapAlignment.end,
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        OutlinedButton.icon(
+                          onPressed: widget.onUse,
+                          icon: const Icon(Icons.medical_services_outlined),
+                          label: const Text('Usa bacca'),
+                        ),
+                        FilledButton.icon(
+                          onPressed: widget.onEquip,
+                          icon: const Icon(Icons.inventory_2_outlined),
+                          label: const Text('Dai a Pokémon'),
+                        ),
+                      ],
+                    )
+                  : FilledButton.icon(
+                      onPressed: widget.onUse,
+                      icon: Icon(_useIconForItemType(item.type)),
+                      label: Text(_useLabelForItemType(item.type)),
+                    ),
             ),
           ],
         ],
@@ -1222,44 +1314,6 @@ class _ItemSprite extends StatelessWidget {
   }
 }
 
-class _BerryActionSheet extends StatelessWidget {
-  const _BerryActionSheet({required this.item});
-
-  final BagItem item;
-
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      child: ListView(
-        shrinkWrap: true,
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-        children: [
-          Text(
-            item.name,
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w900,
-                ),
-          ),
-          const SizedBox(height: 4),
-          Text(item.displayDescription),
-          const SizedBox(height: 12),
-          ListTile(
-            leading: const Icon(Icons.medical_services_outlined),
-            title: const Text('Usa oggetto'),
-            subtitle: const Text('Consuma subito la bacca su un Pokémon della squadra.'),
-            onTap: () => Navigator.of(context).pop(_BerryBagAction.use),
-          ),
-          ListTile(
-            leading: const Icon(Icons.inventory_2_outlined),
-            title: const Text('Dai a Pokémon'),
-            subtitle: const Text('Il Pokémon terrà la bacca e potrà consumarla al trigger.'),
-            onTap: () => Navigator.of(context).pop(_BerryBagAction.equip),
-          ),
-        ],
-      ),
-    );
-  }
-}
 
 class _EquippedHeldItemsSection extends StatelessWidget {
   const _EquippedHeldItemsSection({
@@ -1682,6 +1736,13 @@ String _damageSummary(MoveData move) {
   return entries.map((entry) => 'Lv.${entry.key} ${entry.value.label}').join(' / ');
 }
 
+class _ItemPickerResult {
+  const _ItemPickerResult({required this.item, required this.quantity});
+
+  final BagItem item;
+  final int quantity;
+}
+
 class _ItemPickerSheet extends StatefulWidget {
   const _ItemPickerSheet({
     required this.action,
@@ -1699,6 +1760,7 @@ class _ItemPickerSheet extends StatefulWidget {
 
 class _ItemPickerSheetState extends State<_ItemPickerSheet> {
   final TextEditingController _controller = TextEditingController();
+  final Map<String, int> _quantities = {};
   String _query = '';
 
   @override
@@ -1707,9 +1769,38 @@ class _ItemPickerSheetState extends State<_ItemPickerSheet> {
     super.dispose();
   }
 
+  bool get _isBuy => widget.action == _BagAction.buy;
+
+  int _quantityFor(BagItem item) => _quantities[item.id] ?? 1;
+
+  int _maxQuantityFor(BagItem item) {
+    if (!_isBuy) return 99;
+
+    final cost = item.cost;
+    if (cost == null || cost <= 0) return 0;
+
+    return (widget.availableMoney ~/ cost).clamp(0, 99).toInt();
+  }
+
+  void _setQuantity(BagItem item, int value) {
+    final maxQuantity = _maxQuantityFor(item);
+    if (maxQuantity <= 0) return;
+
+    setState(() {
+      _quantities[item.id] = value.clamp(1, maxQuantity).toInt();
+    });
+  }
+
+  void _confirm(BagItem item) {
+    final maxQuantity = _maxQuantityFor(item);
+    if (maxQuantity <= 0) return;
+
+    final quantity = _quantityFor(item).clamp(1, maxQuantity).toInt();
+    Navigator.of(context).pop(_ItemPickerResult(item: item, quantity: quantity));
+  }
+
   @override
   Widget build(BuildContext context) {
-    final isBuy = widget.action == _BagAction.buy;
     final filteredItems = widget.items.where((item) {
       final query = _query.trim().toLowerCase();
       if (query.isEmpty) return true;
@@ -1728,17 +1819,17 @@ class _ItemPickerSheetState extends State<_ItemPickerSheet> {
           bottom: 16 + MediaQuery.of(context).viewInsets.bottom,
         ),
         child: SizedBox(
-          height: MediaQuery.of(context).size.height * 0.75,
+          height: MediaQuery.of(context).size.height * 0.78,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                isBuy ? 'Compra oggetto' : 'Trova oggetto',
+                _isBuy ? 'Compra oggetto' : 'Trova oggetto',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.w900,
                     ),
               ),
-              if (isBuy) ...[
+              if (_isBuy) ...[
                 const SizedBox(height: 4),
                 Text('Pokédollari disponibili: ₽ ${widget.availableMoney}'),
               ],
@@ -1759,17 +1850,31 @@ class _ItemPickerSheetState extends State<_ItemPickerSheet> {
                   itemCount: filteredItems.length,
                   itemBuilder: (context, index) {
                     final item = filteredItems[index];
-                    final canBuy = !isBuy ||
-                        (item.cost != null && item.cost! <= widget.availableMoney);
+                    final maxQuantity = _maxQuantityFor(item);
+                    final canSelect = maxQuantity > 0;
+                    final quantity = _quantityFor(item)
+                        .clamp(1, maxQuantity <= 0 ? 1 : maxQuantity)
+                        .toInt();
                     final costLabel = item.cost == null ? 'Non acquistabile' : '₽ ${item.cost}';
+                    final totalLabel = _isBuy && item.cost != null
+                        ? 'Totale ₽ ${item.cost! * quantity}'
+                        : 'Quantità $quantity';
 
-                    return ListTile(
-                      leading: _ItemSprite(item: item),
-                      title: Text(item.name),
-                      subtitle: Text('${_typeLabel(item.type)} • $costLabel'),
-                      trailing: Text(isBuy ? 'Compra' : 'Aggiungi'),
-                      enabled: canBuy,
-                      onTap: canBuy ? () => Navigator.of(context).pop(item) : null,
+                    return Card(
+                      child: ListTile(
+                        leading: _ItemSprite(item: item),
+                        title: Text(item.name),
+                        subtitle: Text('${_typeLabel(item.type)} • $costLabel • $totalLabel'),
+                        enabled: canSelect,
+                        onTap: canSelect ? () => _confirm(item) : null,
+                        trailing: _QuantitySelector(
+                          quantity: quantity,
+                          canDecrease: canSelect && quantity > 1,
+                          canIncrease: canSelect && quantity < maxQuantity,
+                          onDecrease: () => _setQuantity(item, quantity - 1),
+                          onIncrease: () => _setQuantity(item, quantity + 1),
+                        ),
+                      ),
                     );
                   },
                 ),
@@ -1781,6 +1886,54 @@ class _ItemPickerSheetState extends State<_ItemPickerSheet> {
     );
   }
 }
+
+class _QuantitySelector extends StatelessWidget {
+  const _QuantitySelector({
+    required this.quantity,
+    required this.canDecrease,
+    required this.canIncrease,
+    required this.onDecrease,
+    required this.onIncrease,
+  });
+
+  final int quantity;
+  final bool canDecrease;
+  final bool canIncrease;
+  final VoidCallback onDecrease;
+  final VoidCallback onIncrease;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 116,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          IconButton(
+            visualDensity: VisualDensity.compact,
+            onPressed: canDecrease ? onDecrease : null,
+            icon: const Icon(Icons.remove),
+          ),
+          SizedBox(
+            width: 28,
+            child: Text(
+              '$quantity',
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontWeight: FontWeight.w800),
+            ),
+          ),
+          IconButton(
+            visualDensity: VisualDensity.compact,
+            onPressed: canIncrease ? onIncrease : null,
+            icon: const Icon(Icons.add),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 
 class _BagError extends StatelessWidget {
   const _BagError({required this.message});

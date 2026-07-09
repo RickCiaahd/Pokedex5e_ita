@@ -5,10 +5,12 @@ import '../../models/pokemon.dart';
 import '../../models/pokemon_ability.dart';
 import '../../models/pokemon_nature.dart';
 import '../../models/team_slot.dart';
+import '../../models/tm_data.dart';
 import '../../repositories/ability_repository.dart';
 import '../../repositories/feat_repository.dart';
 import '../../repositories/item_repository.dart';
 import '../../repositories/move_repository.dart';
+import '../../repositories/tm_repository.dart';
 import '../../widgets/pokemon/pokemon_asset_image.dart';
 
 class PokemonEditResult {
@@ -59,6 +61,7 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
   final FeatRepository _featRepository = FeatRepository();
   final ItemRepository _itemRepository = ItemRepository();
   final MoveRepository _moveRepository = MoveRepository();
+  final TmRepository _tmRepository = TmRepository();
 
   late final TextEditingController _nicknameController;
   late bool _isShiny;
@@ -75,6 +78,7 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
   List<PokemonFormChoice> _formChoices = const [];
   List<PokemonAbility> _abilityChoices = const [];
   Set<String> _deprecatedAbilityNames = const {};
+  List<String> _tmMoveNames = const [];
   Map<String, String> _abilityDescriptions = {};
   Map<String, String> _featDescriptions = {};
   Map<String, String> _itemDescriptions = {};
@@ -130,16 +134,18 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
     final deprecatedAbilitiesFuture = _abilityRepository.getDeprecatedAbilityNames();
     final featDescriptionsFuture = _featRepository.getFeatDescriptions();
     final itemDescriptionsFuture = _itemRepository.getItemDescriptions();
-    final moveDataFuture = _moveRepository.getMoves(_allMoveChoices());
     final formChoicesFuture = PokemonAssetPaths.formChoices(widget.pokemon);
+    final tmMapFuture = _tmRepository.getTmMap();
 
     final abilityDescriptions = await abilityDescriptionsFuture;
     final abilityChoices = await abilityChoicesFuture;
     final deprecatedAbilities = await deprecatedAbilitiesFuture;
     final featDescriptions = await featDescriptionsFuture;
     final itemDescriptions = await itemDescriptionsFuture;
-    final moveData = await moveDataFuture;
     final formChoices = await formChoicesFuture;
+    final tmMap = await tmMapFuture;
+    final tmMoveNames = await _tmMoveNamesFromRepository(tmMap);
+    final moveData = await _moveRepository.getMoves(_allMoveChoices(tmMoveNames));
 
     if (!mounted) return;
 
@@ -158,10 +164,25 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
       _featDescriptions = featDescriptions;
       _itemDescriptions = itemDescriptions;
       _moveData = moveData;
+      _tmMoveNames = tmMoveNames;
       _formChoices = formChoices;
       _formName = formName;
       _isLoadingChoices = false;
     });
+  }
+
+  Future<List<String>> _tmMoveNamesFromRepository(Map<int, TmData> tmMap) async {
+    final tmMoveNames = <String>[];
+
+    for (final tmNumber in widget.pokemon.moves.tmMoves) {
+      final tm = tmMap[tmNumber];
+      if (tm == null) continue;
+
+      final move = await _moveRepository.getMove(tm.moveId);
+      tmMoveNames.add(move?.name ?? _labelFromId(tm.moveId));
+    }
+
+    return _unique(tmMoveNames);
   }
 
   List<String> _normalizedMoves(List<String> moves) {
@@ -207,19 +228,12 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
     return _unique(names);
   }
 
-  List<String> _tmMoves() {
-    return _unique(
-      widget.pokemon.moves.tmMoves
-          .map((tm) => _tmMovesByNumber[tm])
-          .whereType<String>(),
-    );
-  }
-
-  List<String> _allMoveChoices() {
+  List<String> _allMoveChoices([List<String>? tmMoves]) {
     return _unique([
       ..._movesUpToLevel(20),
-      ..._tmMoves(),
+      ...(tmMoves ?? _tmMoveNames),
       ...widget.availableMoves,
+      ..._selectedMoves,
     ])..sort();
   }
 
@@ -228,10 +242,20 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
     final result = <String>[];
 
     for (final value in values) {
-      if (seen.add(value)) result.add(value);
+      final normalized = value.trim();
+      if (normalized.isEmpty) continue;
+      if (seen.add(MoveData.referenceKey(normalized))) result.add(normalized);
     }
 
     return result;
+  }
+
+  String _labelFromId(String id) {
+    return id
+        .split('-')
+        .where((part) => part.isNotEmpty)
+        .map((part) => '${part[0].toUpperCase()}${part.substring(1)}')
+        .join(' ');
   }
 
   TeamSlot _updatedSlot() {
@@ -292,7 +316,7 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
         builder: (_) => _MovePickerScreen(
           currentLevelMoves: widget.availableMoves,
           level20Moves: _movesUpToLevel(20),
-          tmMoves: _tmMoves(),
+          tmMoves: _tmMoveNames,
           allMoves: _allMoveChoices(),
           blockedMoves: blocked,
           moveData: _moveData,
@@ -300,7 +324,7 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
       ),
     );
 
-    if (result == null) return;
+    if (!mounted || result == null) return;
 
     setState(() {
       while (_selectedMoves.length <= index) {
@@ -330,7 +354,7 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
       ),
     );
 
-    if (result == null) return;
+    if (!mounted || result == null) return;
 
     setState(() {
       if (index == null) {
@@ -362,7 +386,7 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
       ),
     );
 
-    if (result == null) return;
+    if (!mounted || result == null) return;
 
     setState(() {
       if (index == null) {
@@ -391,7 +415,7 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
       ),
     );
 
-    if (result == null) return;
+    if (!mounted || result == null) return;
 
     setState(() {
       if (index == null) {
@@ -414,7 +438,7 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
       ),
     );
 
-    if (result == null) return;
+    if (!mounted || result == null) return;
 
     setState(
       () => _heldItem = result == _ChoicePickerScreen.noneValue ? null : result,
@@ -473,10 +497,19 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
                           border: OutlineInputBorder(),
                         ),
                         items: const [
-                          DropdownMenuItem(value: null, child: Text('Qualsiasi')),
-                          DropdownMenuItem(value: 'male', child: Text('Maschio')),
-                          DropdownMenuItem(value: 'female', child: Text('Femmina')),
-                          DropdownMenuItem(
+                          DropdownMenuItem<String?>(
+                            value: null,
+                            child: Text('Qualsiasi'),
+                          ),
+                          DropdownMenuItem<String?>(
+                            value: 'male',
+                            child: Text('Maschio'),
+                          ),
+                          DropdownMenuItem<String?>(
+                            value: 'female',
+                            child: Text('Femmina'),
+                          ),
+                          DropdownMenuItem<String?>(
                             value: 'genderless',
                             child: Text('Genderless'),
                           ),
@@ -595,7 +628,7 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
                       setState(() => _extraAsiOpen = !_extraAsiOpen),
                   child: Column(
                     children: [
-                      for (final key in _customAbilityScores.keys)
+                      for (final key in _customAbilityScores.keys.toList())
                         _ScoreStepper(
                           label: key,
                           value: _customAbilityScores[key] ?? 0,
@@ -669,8 +702,8 @@ class _FormPickerSheet extends StatelessWidget {
             Text(
               'Scegli forma',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.w900,
-              ),
+                    fontWeight: FontWeight.w900,
+                  ),
             ),
             const SizedBox(height: 12),
             for (final choice in choices)
@@ -722,8 +755,8 @@ class _CollapsibleEditSection extends StatelessWidget {
                 Text(
                   title.toUpperCase(),
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
                 const SizedBox(width: 12),
                 Text(
@@ -769,7 +802,7 @@ class _MoveSlotGrid extends StatelessWidget {
         final hasMove = index < selectedMoves.length;
         final moveName = hasMove ? selectedMoves[index] : 'MOVE';
         return _SingleSlot(
-          label: moveName,
+          label: hasMove ? (moveData[moveName]?.name ?? moveName) : moveName,
           type: hasMove ? moveData[moveName]?.type : null,
           onTap: () => onPick(index),
           onRemove: hasMove ? () => onRemove(index) : null,
@@ -951,10 +984,17 @@ class _MovePickerScreenState extends State<_MovePickerScreen> {
       'az' => widget.allMoves,
       _ => widget.currentLevelMoves,
     };
+    final search = _search.trim().toLowerCase();
 
     return source
         .where((move) => !widget.blockedMoves.contains(move))
-        .where((move) => move.toLowerCase().contains(_search.toLowerCase()))
+        .where((move) {
+          if (search.isEmpty) return true;
+          final data = widget.moveData[move];
+          return move.toLowerCase().contains(search) ||
+              (data?.description.toLowerCase().contains(search) ?? false) ||
+              (data?.type.toLowerCase().contains(search) ?? false);
+        })
         .toList()
       ..sort();
   }
@@ -972,7 +1012,7 @@ class _MovePickerScreenState extends State<_MovePickerScreen> {
           onTap: () => setState(() => _filter = 'current'),
         ),
         _FilterButton(
-          label: 'TM',
+          label: 'MT',
           selected: _filter == 'tm',
           onTap: () => setState(() => _filter = 'tm'),
         ),
@@ -990,7 +1030,7 @@ class _MovePickerScreenState extends State<_MovePickerScreen> {
       children: [
         for (final move in _activeMoves)
           _PickerTile(
-            label: move,
+            label: widget.moveData[move]?.name ?? move,
             type: widget.moveData[move]?.type,
             subtitle: widget.moveData[move]?.description,
             onTap: () => Navigator.of(context).pop(move),
@@ -1161,9 +1201,9 @@ class _PickerGroupLabel extends StatelessWidget {
       child: Text(
         label.toUpperCase(),
         style: Theme.of(context).textTheme.labelLarge?.copyWith(
-          color: Theme.of(context).colorScheme.primary,
-          fontWeight: FontWeight.w900,
-        ),
+              color: Theme.of(context).colorScheme.primary,
+              fontWeight: FontWeight.w900,
+            ),
       ),
     );
   }
@@ -1235,106 +1275,3 @@ class _PickerTile extends StatelessWidget {
     );
   }
 }
-
-const _tmMovesByNumber = <int, String>{
-  1: 'Work Up',
-  2: 'Dragon Claw',
-  3: 'Psyshock',
-  4: 'Calm Mind',
-  5: 'Roar',
-  6: 'Toxic',
-  7: 'Hail',
-  8: 'Bulk Up',
-  9: 'Venoshock',
-  10: 'Hidden Power',
-  11: 'Sunny Day',
-  12: 'Taunt',
-  13: 'Ice Beam',
-  14: 'Blizzard',
-  15: 'Hyper Beam',
-  16: 'Light Screen',
-  17: 'Protect',
-  18: 'Rain Dance',
-  19: 'Roost',
-  20: 'Safeguard',
-  21: 'Frustration',
-  22: 'Solar Beam',
-  23: 'Smack Down',
-  24: 'Thunderbolt',
-  25: 'Thunder',
-  26: 'Earthquake',
-  27: 'Return',
-  28: 'Leech Life',
-  29: 'Psychic',
-  30: 'Shadow Ball',
-  31: 'Brick Break',
-  32: 'Double Team',
-  33: 'Reflect',
-  34: 'Sludge Wave',
-  35: 'Flamethrower',
-  36: 'Sludge Bomb',
-  37: 'Sandstorm',
-  38: 'Fire Blast',
-  39: 'Rock Tomb',
-  40: 'Aerial Ace',
-  41: 'Torment',
-  42: 'Facade',
-  43: 'Flame Charge',
-  44: 'Rest',
-  45: 'Attract',
-  46: 'Thief',
-  47: 'Low Sweep',
-  48: 'Round',
-  49: 'Echoed Voice',
-  50: 'Overheat',
-  51: 'Steel Wing',
-  52: 'Focus Blast',
-  53: 'Energy Ball',
-  54: 'False Swipe',
-  55: 'Scald',
-  56: 'Fling',
-  57: 'Charge Beam',
-  58: 'Sky Drop',
-  59: 'Brutal Swing',
-  60: 'Quash',
-  61: 'Will-O-Wisp',
-  62: 'Acrobatics',
-  63: 'Embargo',
-  64: 'Explosion',
-  65: 'Shadow Claw',
-  66: 'Payback',
-  67: 'Smart Strike',
-  68: 'Giga Impact',
-  69: 'Rock Polish',
-  70: 'Aurora Veil',
-  71: 'Stone Edge',
-  72: 'Volt Switch',
-  73: 'Thunder Wave',
-  74: 'Gyro Ball',
-  75: 'Swords Dance',
-  76: 'Fly',
-  77: 'Psych Up',
-  78: 'Bulldoze',
-  79: 'Frost Breath',
-  80: 'Rock Slide',
-  81: 'X-Scissor',
-  82: 'Dragon Tail',
-  83: 'Infestation',
-  84: 'Poison Jab',
-  85: 'Dream Eater',
-  86: 'Grass Knot',
-  87: 'Swagger',
-  88: 'Sleep Talk',
-  89: 'U-turn',
-  90: 'Substitute',
-  91: 'Flash Cannon',
-  92: 'Trick Room',
-  93: 'Wild Charge',
-  94: 'Surf',
-  95: 'Snarl',
-  96: 'Nature Power',
-  97: 'Dark Pulse',
-  98: 'Waterfall',
-  99: 'Dazzling Gleam',
-  100: 'Confide',
-};

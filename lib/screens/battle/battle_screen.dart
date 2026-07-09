@@ -1932,7 +1932,7 @@ class _QuickBagSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final statusParts = [
-      if (nonVolatileStatus != null) nonVolatileStatus!,
+      ?nonVolatileStatus,
       ...volatileStatuses,
     ];
     final statusText = statusParts.isEmpty ? 'nessuno status' : statusParts.join(', ');

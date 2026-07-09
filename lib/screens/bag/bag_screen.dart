@@ -1,7 +1,10 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 import '../../models/bag_inventory_entry.dart';
 import '../../models/bag_item.dart';
+import '../../models/level_progression.dart';
 import '../../models/move_data.dart';
 import '../../models/pokemon.dart';
 import '../../models/team_slot.dart';
@@ -31,6 +34,7 @@ class _BagScreenState extends State<BagScreen> {
   final PokemonRepository _pokemonRepository = PokemonRepository();
   final TeamRepository _teamRepository = TeamRepository();
   final TmRepository _tmRepository = TmRepository();
+  final Random _random = Random();
 
   late Future<_BagData> _dataFuture;
   String? _selectedType;
@@ -101,6 +105,11 @@ class _BagScreenState extends State<BagScreen> {
 
     if (item.type == 'tm') {
       await _useTm(data, entry);
+      return;
+    }
+
+    if (item.type == 'medicine') {
+      await _useMedicine(data, entry);
       return;
     }
 
@@ -228,6 +237,205 @@ class _BagScreenState extends State<BagScreen> {
     );
   }
 
+  Future<void> _useMedicine(_BagData data, _OwnedBagItem entry) async {
+    if (!_isSupportedMedicine(entry.item.id)) {
+      await _reload(
+        message: '${entry.item.name} non è ancora utilizzabile automaticamente.',
+      );
+      return;
+    }
+
+    final team = await _teamRepository.getTeam(data.profile.id);
+    final pokemonList = await _pokemonRepository.getAllPokemon();
+    final pokemonById = {for (final pokemon in pokemonList) pokemon.id: pokemon};
+    final candidates = <_MedicineCandidate>[];
+
+    for (final slot in team) {
+      final pokemonId = slot.pokemonId;
+      if (pokemonId == null) continue;
+
+      final pokemon = pokemonById[pokemonId];
+      if (pokemon == null) continue;
+
+      candidates.add(_MedicineCandidate(slot: slot, pokemon: pokemon));
+    }
+
+    if (candidates.isEmpty) {
+      await _reload(message: 'Non hai Pokémon in squadra su cui usare ${entry.item.name}.');
+      return;
+    }
+
+    if (!mounted) return;
+
+    final candidate = await showModalBottomSheet<_MedicineCandidate>(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) => _MedicinePokemonPickerSheet(
+        item: entry.item,
+        candidates: candidates,
+        maxHpBuilder: _maxHpFor,
+      ),
+    );
+
+    if (!mounted || candidate == null) return;
+
+    final result = _applyMedicine(
+      item: entry.item,
+      slot: candidate.slot,
+      pokemon: candidate.pokemon,
+    );
+
+    if (result == null) {
+      await _reload(
+        message:
+            '${entry.item.name} non avrebbe effetto su ${candidate.displayName}.',
+      );
+      return;
+    }
+
+    final consumed = await _bagRepository.consumeItem(
+      profileId: data.profile.id,
+      itemId: entry.item.id,
+    );
+    if (!consumed) {
+      await _reload(message: 'Non hai più ${entry.item.name} nello zaino.');
+      return;
+    }
+
+    await _teamRepository.updateSlot(
+      profileId: data.profile.id,
+      updatedSlot: result.updatedSlot,
+    );
+
+    await _reload(message: result.message);
+  }
+
+  _MedicineUseResult? _applyMedicine({
+    required BagItem item,
+    required TeamSlot slot,
+    required Pokemon pokemon,
+  }) {
+    final maxHp = _maxHpFor(pokemon, slot);
+    final currentHp = slot.currentHp.clamp(0, maxHp).toInt();
+    final statusEffects = [...slot.statusEffects];
+    var updatedHp = currentHp;
+    var updatedStatuses = [...statusEffects];
+    var healingText = '';
+    var statusText = '';
+
+    final healAmount = _healingAmount(item.id);
+    final isReviveItem = _isReviveMedicine(item.id);
+
+    if (healAmount != null) {
+      if (currentHp <= 0 && !isReviveItem) return null;
+      if (currentHp > 0 && isReviveItem) return null;
+
+      updatedHp = (currentHp + healAmount).clamp(0, maxHp).toInt();
+      if (updatedHp != currentHp) {
+        healingText = 'recupera ${updatedHp - currentHp} HP';
+      }
+    }
+
+    final curedStatuses = _statusesCuredBy(item.id, statusEffects);
+    if (curedStatuses.isNotEmpty) {
+      updatedStatuses = updatedStatuses
+          .where((status) => !curedStatuses.contains(status))
+          .toList(growable: false);
+      statusText = curedStatuses.length == statusEffects.length
+          ? 'guarisce dagli status'
+          : 'guarisce da ${curedStatuses.join(', ')}';
+    }
+
+    if (updatedHp == currentHp && _sameStrings(updatedStatuses, statusEffects)) {
+      return null;
+    }
+
+    final displayName = slot.nickname ?? pokemon.name;
+    final effects = [healingText, statusText].where((part) => part.isNotEmpty).join(' e ');
+
+    return _MedicineUseResult(
+      updatedSlot: slot.copyWith(
+        currentHp: updatedHp,
+        statusEffects: updatedStatuses,
+      ),
+      message: '$displayName $effects usando ${item.name}.',
+    );
+  }
+
+  int _maxHpFor(Pokemon pokemon, TeamSlot slot) {
+    final level = LevelProgression.levelFromExperience(slot.experience);
+    return pokemon.hitPoints + _loyaltyHpBonus(slot.loyalty, level);
+  }
+
+  int _loyaltyHpBonus(int loyalty, int level) {
+    if (loyalty == 2) return (level / 2).ceil();
+    if (loyalty == 3) return level;
+    return 0;
+  }
+
+  bool _isSupportedMedicine(String itemId) {
+    return _healingItemIds.contains(itemId) || _statusMedicineItemIds.contains(itemId);
+  }
+
+  bool _isReviveMedicine(String itemId) {
+    return const {'revive', 'max-revive', 'revival-herb'}.contains(itemId);
+  }
+
+  int? _healingAmount(String itemId) {
+    switch (itemId) {
+      case 'potion':
+      case 'revive':
+        return _rollDice(2, 4, 2);
+      case 'super-potion':
+      case 'energy-powder':
+        return _rollDice(3, 6, 6);
+      case 'hyper-potion':
+      case 'energy-root':
+      case 'max-revive':
+      case 'revival-herb':
+        return _rollDice(4, 12, 10);
+      case 'max-potion':
+      case 'full-restore':
+        return 70;
+      case 'fresh-water':
+        return 7;
+      case 'soda-pop':
+        return 10;
+      case 'berry-juice':
+        return 20;
+      case 'lemonade':
+        return 30;
+      case 'moomoo-milk':
+        return 50;
+      default:
+        return null;
+    }
+  }
+
+  int _rollDice(int diceCount, int sides, int bonus) {
+    var total = bonus;
+    for (var i = 0; i < diceCount; i++) {
+      total += _random.nextInt(sides) + 1;
+    }
+    return total;
+  }
+
+  List<String> _statusesCuredBy(String itemId, List<String> statuses) {
+    final targets = _statusTargetsByMedicine[itemId];
+    if (targets == null) return const [];
+    if (targets.contains('*')) return List<String>.from(statuses);
+
+    return statuses.where(targets.contains).toList(growable: false);
+  }
+
+  bool _sameStrings(List<String> a, List<String> b) {
+    if (a.length != b.length) return false;
+    for (var index = 0; index < a.length; index++) {
+      if (a[index] != b[index]) return false;
+    }
+    return true;
+  }
+
   int? _tmNumberFromItemId(String itemId) {
     final match = RegExp(r'^tm-(\d+)$').firstMatch(itemId);
     if (match == null) return null;
@@ -332,7 +540,63 @@ class _TmCandidate {
   final Pokemon pokemon;
 }
 
+class _MedicineCandidate {
+  const _MedicineCandidate({required this.slot, required this.pokemon});
+
+  final TeamSlot slot;
+  final Pokemon pokemon;
+
+  String get displayName => slot.nickname ?? pokemon.name;
+}
+
+class _MedicineUseResult {
+  const _MedicineUseResult({required this.updatedSlot, required this.message});
+
+  final TeamSlot updatedSlot;
+  final String message;
+}
+
 enum _BagAction { find, buy }
+
+const Set<String> _healingItemIds = {
+  'potion',
+  'super-potion',
+  'hyper-potion',
+  'max-potion',
+  'full-restore',
+  'revive',
+  'max-revive',
+  'fresh-water',
+  'soda-pop',
+  'berry-juice',
+  'lemonade',
+  'moomoo-milk',
+  'energy-powder',
+  'energy-root',
+  'revival-herb',
+};
+
+const Set<String> _statusMedicineItemIds = {
+  'antidote',
+  'burn-heal',
+  'ice-heal',
+  'awakening',
+  'paralyze-heal',
+  'full-heal',
+  'full-restore',
+  'heal-powder',
+};
+
+const Map<String, Set<String>> _statusTargetsByMedicine = {
+  'antidote': {'Poisoned'},
+  'burn-heal': {'Burned'},
+  'ice-heal': {'Frozen'},
+  'awakening': {'Asleep'},
+  'paralyze-heal': {'Paralyzed'},
+  'full-heal': {'*'},
+  'full-restore': {'*'},
+  'heal-powder': {'*'},
+};
 
 class _BagContent extends StatelessWidget {
   const _BagContent({
@@ -627,6 +891,7 @@ class _BagItemCardState extends State<_BagItemCard> {
   Widget build(BuildContext context) {
     final item = widget.entry.item;
     final costLabel = item.cost == null ? 'Non acquistabile' : '₽ ${item.cost}';
+    final canUse = item.type == 'tm' || item.type == 'medicine';
 
     return Card(
       child: ExpansionTile(
@@ -673,13 +938,17 @@ class _BagItemCardState extends State<_BagItemCard> {
                 );
               },
             ),
+          ],
+          if (canUse) ...[
             const SizedBox(height: 12),
             Align(
               alignment: Alignment.centerRight,
               child: FilledButton.icon(
                 onPressed: widget.onUse,
-                icon: const Icon(Icons.school_outlined),
-                label: const Text('Usa MT'),
+                icon: Icon(item.type == 'tm'
+                    ? Icons.school_outlined
+                    : Icons.medical_services_outlined),
+                label: Text(item.type == 'tm' ? 'Usa MT' : 'Usa oggetto'),
               ),
             ),
           ],
@@ -713,6 +982,63 @@ class _ItemSprite extends StatelessWidget {
         errorBuilder: (_, __, ___) => Icon(_iconForType(item.type)),
       ),
     );
+  }
+}
+
+class _MedicinePokemonPickerSheet extends StatelessWidget {
+  const _MedicinePokemonPickerSheet({
+    required this.item,
+    required this.candidates,
+    required this.maxHpBuilder,
+  });
+
+  final BagItem item;
+  final List<_MedicineCandidate> candidates;
+  final int Function(Pokemon pokemon, TeamSlot slot) maxHpBuilder;
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: SizedBox(
+        height: MediaQuery.of(context).size.height * 0.75,
+        child: ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            Text(
+              'Usa ${item.name}',
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.w900,
+                  ),
+            ),
+            const SizedBox(height: 4),
+            const Text('Scegli il Pokémon della squadra.'),
+            const SizedBox(height: 12),
+            for (final candidate in candidates)
+              Card(
+                child: ListTile(
+                  leading: PokemonAssetImage(pokemon: candidate.pokemon, size: 46),
+                  title: Text(
+                    candidate.displayName,
+                    style: const TextStyle(fontWeight: FontWeight.w800),
+                  ),
+                  subtitle: Text(_medicineCandidateSummary(candidate)),
+                  trailing: const Text('Scegli'),
+                  onTap: () => Navigator.of(context).pop(candidate),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _medicineCandidateSummary(_MedicineCandidate candidate) {
+    final maxHp = maxHpBuilder(candidate.pokemon, candidate.slot);
+    final currentHp = candidate.slot.currentHp.clamp(0, maxHp).toInt();
+    final statuses = candidate.slot.statusEffects;
+    final statusText = statuses.isEmpty ? 'nessuno status' : statuses.join(', ');
+
+    return 'Slot ${candidate.slot.slotIndex + 1} • HP $currentHp/$maxHp • $statusText';
   }
 }
 

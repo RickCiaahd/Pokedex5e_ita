@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
+import '../../models/bag_inventory_entry.dart';
 import '../../models/bag_item.dart';
 import '../../models/level_progression.dart';
 import '../../models/move_data.dart';
@@ -9,6 +10,7 @@ import '../../models/pokemon.dart';
 import '../../models/pokemon_nature.dart';
 import '../../models/team_slot.dart';
 import '../../models/user_profile.dart';
+import '../../repositories/bag_inventory_repository.dart';
 import '../../repositories/item_repository.dart';
 import '../../repositories/move_repository.dart';
 import '../../repositories/pokemon_repository.dart';
@@ -16,7 +18,6 @@ import '../../repositories/profile_repository.dart';
 import '../../repositories/team_repository.dart';
 import '../../widgets/navigation/home_leading_button.dart';
 import '../../widgets/pokemon/pokemon_asset_image.dart';
-import '../bag/bag_screen.dart';
 
 class BattleScreen extends StatefulWidget {
   const BattleScreen({super.key});
@@ -31,6 +32,7 @@ class _BattleScreenState extends State<BattleScreen> {
   final PokemonRepository _pokemonRepository = PokemonRepository();
   final MoveRepository _moveRepository = MoveRepository();
   final ItemRepository _itemRepository = ItemRepository();
+  final BagInventoryRepository _bagInventoryRepository = BagInventoryRepository();
   final Random _random = Random();
 
   late Future<_BattleData> _dataFuture;
@@ -63,6 +65,7 @@ class _BattleScreenState extends State<BattleScreen> {
     final pokemonList = await _pokemonRepository.getAllPokemon();
     final pokemonById = {for (final pokemon in pokemonList) pokemon.id: pokemon};
     final items = await _itemRepository.getWebItems();
+    final inventory = await _bagInventoryRepository.getInventory(profile.id);
     final moveReferences = <String>{'Struggle'};
 
     for (final slot in team) {
@@ -83,6 +86,7 @@ class _BattleScreenState extends State<BattleScreen> {
       pokemonById: pokemonById,
       moves: moves,
       items: items,
+      inventory: inventory,
     );
   }
 
@@ -264,23 +268,86 @@ class _BattleScreenState extends State<BattleScreen> {
     if (pokemon == null || heldItem == null || heldItem.type != 'berry') return;
 
     final result = _applyMedicine(item: heldItem, slot: slot, pokemon: pokemon);
-    if (result == null) {
-      await _reload(message: '${heldItem.name} non avrebbe effetto su ${_displayName(slot, pokemon)}.');
-      return;
-    }
+    final updatedSlot = (result?.updatedSlot ?? slot).copyWith(heldItem: null);
+    final message = result?.message ??
+        '${heldItem.name} è stata consumata. Applica manualmente il suo effetto se necessario.';
 
     await _teamRepository.updateSlot(
       profileId: data.profile.id,
-      updatedSlot: result.updatedSlot.copyWith(heldItem: null),
+      updatedSlot: updatedSlot,
     );
-    await _reload(message: '${result.message} ${heldItem.name} è stata consumata.');
+    await _reload(message: message);
   }
 
-  Future<void> _openBag() async {
-    await Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => const BagScreen()),
+  Future<void> _openBattleItemPicker(_BattleData data, TeamSlot slot) async {
+    final pokemon = _pokemonForSlot(data, slot);
+    if (pokemon == null) return;
+
+    final consumables = data.ownedConsumables;
+    if (consumables.isEmpty) {
+      await _reload(message: 'Non hai consumabili nello zaino.');
+      return;
+    }
+
+    final selected = await showModalBottomSheet<_OwnedBattleItem>(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      builder: (_) => _BattleItemPickerSheet(
+        items: consumables,
+        pokemonName: _displayName(slot, pokemon),
+        currentHp: _currentHpFor(slot, pokemon),
+        maxHp: _maxHpFor(pokemon, slot),
+        statuses: slot.statusEffects,
+      ),
     );
-    await _reload();
+    if (!mounted || selected == null) return;
+
+    await _useBattleItem(data, slot, pokemon, selected);
+  }
+
+  Future<void> _useBattleItem(
+    _BattleData data,
+    TeamSlot slot,
+    Pokemon pokemon,
+    _OwnedBattleItem selected,
+  ) async {
+    final item = selected.item;
+    final isBerry = item.type == 'berry';
+    final isAutomaticMedicine = _isSupportedMedicine(item.id);
+
+    if (!isBerry && !isAutomaticMedicine) {
+      await _reload(message: '${item.name} non è utilizzabile automaticamente qui.');
+      return;
+    }
+
+    final result = _applyMedicine(item: item, slot: slot, pokemon: pokemon);
+    if (result == null && !isBerry) {
+      await _reload(message: '${item.name} non avrebbe effetto su ${_displayName(slot, pokemon)}.');
+      return;
+    }
+
+    final consumed = await _bagInventoryRepository.consumeItem(
+      profileId: data.profile.id,
+      itemId: item.id,
+    );
+    if (!consumed) {
+      await _reload(message: 'Non hai più ${item.name} nello zaino.');
+      return;
+    }
+
+    if (result != null) {
+      await _teamRepository.updateSlot(
+        profileId: data.profile.id,
+        updatedSlot: result.updatedSlot,
+      );
+      await _reload(message: result.message);
+      return;
+    }
+
+    await _reload(
+      message: '${item.name} è stata consumata. Applica manualmente il suo effetto se necessario.',
+    );
   }
 
   _MedicineUseResult? _applyMedicine({
@@ -688,7 +755,7 @@ class _BattleScreenState extends State<BattleScreen> {
                   onUseHeldBerry: heldItem?.type == 'berry'
                       ? () => _useHeldBerry(data, activeSlot)
                       : null,
-                  onOpenBag: _openBag,
+                  onOpenBag: () => _openBattleItemPicker(data, activeSlot),
                 ),
                 const SizedBox(height: 12),
                 Text(
@@ -744,6 +811,7 @@ class _BattleData {
     required this.pokemonById,
     required this.moves,
     required this.items,
+    required this.inventory,
   });
 
   final UserProfile profile;
@@ -751,6 +819,7 @@ class _BattleData {
   final Map<int, Pokemon> pokemonById;
   final Map<String, MoveData?> moves;
   final List<BagItem> items;
+  final List<BagInventoryEntry> inventory;
 
   List<TeamSlot> get occupiedSlots {
     return team
@@ -760,10 +829,32 @@ class _BattleData {
         .toList(growable: false);
   }
 
+  List<_OwnedBattleItem> get ownedConsumables {
+    final owned = <_OwnedBattleItem>[];
+    for (final entry in inventory) {
+      final item = _itemByReference(entry.itemId);
+      if (item == null) continue;
+      if (item.type != 'berry' && !_isConsumableType(item.type)) continue;
+
+      owned.add(_OwnedBattleItem(item: item, quantity: entry.quantity));
+    }
+
+    owned.sort((a, b) {
+      final typeCompare = _itemTypeLabel(a.item.type).compareTo(_itemTypeLabel(b.item.type));
+      if (typeCompare != 0) return typeCompare;
+      return a.item.name.compareTo(b.item.name);
+    });
+
+    return owned;
+  }
+
   BagItem? heldItemFor(TeamSlot slot) {
     final reference = slot.heldItem;
     if (reference == null || reference.trim().isEmpty) return null;
+    return _itemByReference(reference);
+  }
 
+  BagItem? _itemByReference(String reference) {
     final normalizedReference = _itemReferenceKey(reference);
     for (final item in items) {
       if (item.id == reference ||
@@ -775,6 +866,17 @@ class _BattleData {
 
     return null;
   }
+
+  bool _isConsumableType(String type) {
+    return const {'medicine', 'berry'}.contains(type);
+  }
+}
+
+class _OwnedBattleItem {
+  const _OwnedBattleItem({required this.item, required this.quantity});
+
+  final BagItem item;
+  final int quantity;
 }
 
 class _MedicineUseResult {
@@ -900,6 +1002,12 @@ String _itemReferenceKey(String value) {
       .replaceAll(RegExp(r"[’']"), '')
       .replaceAll(RegExp(r'[^a-z0-9]+'), '-')
       .replaceAll(RegExp(r'^-+|-+$'), '');
+}
+
+String _fallbackStatusLabel(String value) {
+  final normalized = value.trim().toUpperCase();
+  if (normalized.length <= 3) return normalized;
+  return normalized.substring(0, 3);
 }
 
 class _BattleHeader extends StatelessWidget {
@@ -1232,9 +1340,9 @@ class _HeldItemPanel extends StatelessWidget {
                   ),
                   Text(
                     item == null
-                        ? 'Apri lo zaino per usare consumabili o assegnare strumenti.'
+                        ? 'Apri lo zaino rapido per usare un consumabile.'
                         : item.type == 'berry'
-                            ? 'Bacca tenuta: puoi usarla subito in combattimento.'
+                            ? 'Bacca tenuta: puoi consumarla subito in combattimento.'
                             : 'Strumento tenuto: ${_itemTypeLabel(item.type)}.',
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
@@ -1253,6 +1361,64 @@ class _HeldItemPanel extends StatelessWidget {
               onPressed: onOpenBag,
               child: const Text('ZAINO'),
             ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _BattleItemPickerSheet extends StatelessWidget {
+  const _BattleItemPickerSheet({
+    required this.items,
+    required this.pokemonName,
+    required this.currentHp,
+    required this.maxHp,
+    required this.statuses,
+  });
+
+  final List<_OwnedBattleItem> items;
+  final String pokemonName;
+  final int currentHp;
+  final int maxHp;
+  final List<String> statuses;
+
+  @override
+  Widget build(BuildContext context) {
+    final statusText = statuses.isEmpty ? 'nessuno status' : statuses.join(', ');
+
+    return SafeArea(
+      child: SizedBox(
+        height: MediaQuery.of(context).size.height * 0.78,
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 18),
+          children: [
+            Text(
+              'Zaino rapido',
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.w900,
+                  ),
+            ),
+            const SizedBox(height: 4),
+            Text('$pokemonName • HP $currentHp/$maxHp • $statusText'),
+            const SizedBox(height: 12),
+            for (final entry in items)
+              Card(
+                child: ListTile(
+                  leading: _ItemSprite(item: entry.item, size: 42),
+                  title: Text(
+                    entry.item.name,
+                    style: const TextStyle(fontWeight: FontWeight.w800),
+                  ),
+                  subtitle: Text(
+                    '${_itemTypeLabel(entry.item.type)} • x${entry.quantity}\n${entry.item.displayDescription}',
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  trailing: const Text('USA'),
+                  onTap: () => Navigator.of(context).pop(entry),
+                ),
+              ),
           ],
         ),
       ),
@@ -1304,9 +1470,6 @@ class _BattleMoveCard extends StatelessWidget {
 
     return Card(
       child: ExpansionTile(
-        leading: move == null
-            ? const Icon(Icons.radio_button_unchecked)
-            : PokemonTypeBadge(type: move.type, height: 24),
         title: Text(
           title.toUpperCase(),
           style: const TextStyle(fontWeight: FontWeight.w900),
@@ -1386,9 +1549,10 @@ class _StatusIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     final info = _statusInfoByName[status];
     final assetPath = info?.assetPath;
+    final fallbackLabel = info?.shortLabel ?? _fallbackStatusLabel(status);
 
     if (assetPath == null) {
-      return _StatusFallback(label: info?.shortLabel ?? status.characters.take(3).toString(), size: size);
+      return _StatusFallback(label: fallbackLabel, size: size);
     }
 
     return SizedBox(
@@ -1399,7 +1563,7 @@ class _StatusIcon extends StatelessWidget {
         fit: BoxFit.contain,
         filterQuality: FilterQuality.none,
         errorBuilder: (_, __, ___) => _StatusFallback(
-          label: info?.shortLabel ?? status.characters.take(3).toString(),
+          label: fallbackLabel,
           size: size,
         ),
       ),

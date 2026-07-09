@@ -364,7 +364,24 @@ class _BagScreenState extends State<BagScreen> {
 
   int _maxHpFor(Pokemon pokemon, TeamSlot slot) {
     final level = LevelProgression.levelFromExperience(slot.experience);
-    return pokemon.hitPoints + _loyaltyHpBonus(slot.loyalty, level);
+    final safeLevel = level.clamp(1, LevelProgression.maxLevel).toInt();
+    final minimumLevel = pokemon.minLevelFound <= 0 ? 1 : pokemon.minLevelFound;
+    final levelsGained = (safeLevel - minimumLevel)
+        .clamp(0, LevelProgression.maxLevel)
+        .toInt();
+    final hitDieAverage = ((pokemon.hitDice + 1) / 2).ceil();
+    final customCon = slot.customAbilityScores['CON'] ?? 0;
+    final constitution = pokemon.attributes.constitution + customCon;
+    final constitutionModifier = ((constitution - 10) / 2).floor();
+    final toughBonus = slot.feats.contains('Tough') ? safeLevel * 2 : 0;
+    final loyaltyBonus = _loyaltyHpBonus(slot.loyalty, safeLevel);
+    final scaledHp = pokemon.hitPoints +
+        (hitDieAverage * levelsGained) +
+        (constitutionModifier * safeLevel) +
+        toughBonus +
+        loyaltyBonus;
+
+    return scaledHp < 1 ? 1 : scaledHp;
   }
 
   int _loyaltyHpBonus(int loyalty, int level) {

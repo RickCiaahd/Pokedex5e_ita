@@ -158,7 +158,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
   List<String> get _currentStatusEffects =>
       _teamSlot?.statusEffects ?? const [];
 
-  int get _maxHp => _pokemon.hitPoints + _loyaltyHpBonus(_loyalty, _level);
+  int get _maxHp => _maxHpFor(_pokemon, _teamSlot);
 
   int get _currentHp {
     final savedHp = _teamSlot?.currentHp ?? 0;
@@ -186,6 +186,31 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
     if (loyalty == 2) return (level / 2).ceil();
     if (loyalty == 3) return level;
     return 0;
+  }
+
+  int _maxHpFor(Pokemon pokemon, TeamSlot? slot) {
+    final level = slot == null
+        ? pokemon.minLevelFound
+        : LevelProgression.levelFromExperience(slot.experience);
+    final safeLevel = level.clamp(1, LevelProgression.maxLevel).toInt();
+    final minimumLevel = pokemon.minLevelFound <= 0 ? 1 : pokemon.minLevelFound;
+    final levelsGained = (safeLevel - minimumLevel)
+        .clamp(0, LevelProgression.maxLevel)
+        .toInt();
+    final hitDieAverage = ((pokemon.hitDice + 1) / 2).ceil();
+    final attributes = _attributeScores(pokemon, slot);
+    final constitutionModifier = _modifier(
+      attributes['CON'] ?? pokemon.attributes.constitution,
+    );
+    final toughBonus = slot?.feats.contains('Tough') == true ? safeLevel * 2 : 0;
+    final loyaltyBonus = _loyaltyHpBonus(slot?.loyalty ?? 0, safeLevel);
+    final scaledHp = pokemon.hitPoints +
+        (hitDieAverage * levelsGained) +
+        (constitutionModifier * safeLevel) +
+        toughBonus +
+        loyaltyBonus;
+
+    return scaledHp < 1 ? 1 : scaledHp;
   }
 
   void _replaceTeamSlot(TeamSlot updatedSlot) {
@@ -321,6 +346,10 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
     final slot = _teamSlot;
     if (slot == null) return;
 
+    final oldMaxHp = _maxHp;
+    final oldCurrentHp = _currentHp;
+    final wasFullHp = oldCurrentHp >= oldMaxHp;
+
     final input = await showDialog<String>(
       context: context,
       builder: (_) => _ExperienceDialog(currentExperience: slot.experience),
@@ -335,9 +364,30 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
     final newLevel = LevelProgression.levelFromExperience(updatedExperience);
     var updatedSlot = slot.copyWith(experience: updatedExperience);
 
+    final scaledMaxHp = _maxHpFor(_pokemon, updatedSlot);
+    updatedSlot = updatedSlot.copyWith(
+      currentHp: wasFullHp
+          ? scaledMaxHp
+          : oldCurrentHp.clamp(0, scaledMaxHp).toInt(),
+    );
+
     if (newLevel > oldLevel) {
       updatedSlot = await _applyLevelUpMoves(updatedSlot, oldLevel, newLevel);
+      if (!mounted) return;
+      updatedSlot = await _applyLevelUpAbilityScores(
+        updatedSlot,
+        oldLevel,
+        newLevel,
+      );
+      if (!mounted) return;
     }
+
+    final finalMaxHp = _maxHpFor(_pokemon, updatedSlot);
+    updatedSlot = updatedSlot.copyWith(
+      currentHp: wasFullHp
+          ? finalMaxHp
+          : updatedSlot.currentHp.clamp(0, finalMaxHp).toInt(),
+    );
 
     _saveTeamSlot(updatedSlot);
     await _loadData();
@@ -393,14 +443,15 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
 
     final oldMaxHp = _maxHp;
     final oldCurrentHp = _currentHp;
+    final wasFullHp = oldCurrentHp >= oldMaxHp;
     final updatedLoyalty = (slot.loyalty + delta).clamp(-3, 3).toInt();
-    final updatedMaxHp =
-        _pokemon.hitPoints + _loyaltyHpBonus(updatedLoyalty, _level);
-    final updatedHp = oldCurrentHp >= oldMaxHp
+    final updatedSlot = slot.copyWith(loyalty: updatedLoyalty);
+    final updatedMaxHp = _maxHpFor(_pokemon, updatedSlot);
+    final updatedHp = wasFullHp
         ? updatedMaxHp
         : oldCurrentHp.clamp(0, updatedMaxHp).toInt();
 
-    _saveTeamSlot(slot.copyWith(loyalty: updatedLoyalty, currentHp: updatedHp));
+    _saveTeamSlot(updatedSlot.copyWith(currentHp: updatedHp));
   }
 
   void _setStatusEffects(List<String> statuses) {
@@ -527,6 +578,97 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
     }
 
     return slot.copyWith(selectedMoves: selectedMoves);
+  }
+
+  Future<TeamSlot> _applyLevelUpAbilityScores(
+    TeamSlot slot,
+    int oldLevel,
+    int newLevel,
+  ) async {
+    if (_asiMilestoneCountForLevel(newLevel) <=
+        _asiMilestoneCountForLevel(oldLevel)) {
+      return slot;
+    }
+
+    var updatedSlot = slot;
+
+    while (_availableAsiPointsForSlot(updatedSlot) > 0) {
+      final remaining = _availableAsiPointsForSlot(updatedSlot);
+      final attribute = await _pickAbilityScoreIncrease(updatedSlot, remaining);
+      if (!mounted || attribute == null) break;
+
+      final currentAttributes = _attributeScores(_pokemon, updatedSlot);
+      if ((currentAttributes[attribute] ?? 0) >= 20) continue;
+
+      final customScores = Map<String, int>.from(updatedSlot.customAbilityScores);
+      customScores[attribute] = (customScores[attribute] ?? 0) + 1;
+      updatedSlot = updatedSlot.copyWith(customAbilityScores: customScores);
+    }
+
+    return updatedSlot;
+  }
+
+  int _availableAsiPointsForSlot(TeamSlot slot) {
+    final level = LevelProgression.levelFromExperience(slot.experience);
+    final evolution = _evolutionForCurrentPokemon();
+    final totalStages = (evolution?.totalStages ?? 1).clamp(1, 5).toInt();
+    final pointsPerMilestone = (5 - totalStages).clamp(0, 4).toInt();
+    final earnedPoints = _asiMilestoneCountForLevel(level) * pointsPerMilestone;
+    final spentPoints = slot.customAbilityScores.values
+        .where((value) => value > 0)
+        .fold<int>(0, (sum, value) => sum + value);
+
+    return (earnedPoints - spentPoints).clamp(0, 999).toInt();
+  }
+
+  int _asiMilestoneCountForLevel(int level) {
+    if (level >= 20) return 5;
+    if (level >= 16) return 4;
+    if (level >= 12) return 3;
+    if (level >= 8) return 2;
+    if (level >= 4) return 1;
+    return 0;
+  }
+
+  Future<String?> _pickAbilityScoreIncrease(
+    TeamSlot slot,
+    int remainingPoints,
+  ) async {
+    final attributes = _attributeScores(_pokemon, slot);
+    const labels = ['STR', 'DEX', 'CON', 'INT', 'WIS', 'CHA'];
+
+    return showDialog<String>(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Aumento Ability Score'),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Punti disponibili: $remainingPoints'),
+              const SizedBox(height: 8),
+              for (final label in labels)
+                ListTile(
+                  title: Text(label),
+                  subtitle: Text(
+                    '${attributes[label] ?? 0} → ${(attributes[label] ?? 0) + 1}',
+                  ),
+                  enabled: (attributes[label] ?? 0) < 20,
+                  onTap: (attributes[label] ?? 0) >= 20
+                      ? null
+                      : () => Navigator.of(context).pop(label),
+                ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Più tardi'),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<String?> _askMoveReplacement(
@@ -711,8 +853,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
 
     final wasFullHp = _currentHp >= _maxHp;
     final oldName = _pokemon.name;
-    final evolvedMaxHp =
-        evolvedPokemon.hitPoints + _loyaltyHpBonus(slot.loyalty, _level);
+    final evolvedMaxHp = _maxHpFor(evolvedPokemon, slot);
     final updatedSlot = slot.copyWith(
       pokemonId: evolvedPokemon.id,
       currentHp: wasFullHp
@@ -1136,6 +1277,9 @@ class _Header extends StatelessWidget {
                             child: LinearProgressIndicator(
                               value: hpProgress,
                               minHeight: 16,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                _hpProgressColor(hpProgress),
+                              ),
                               backgroundColor: Theme.of(context)
                                   .colorScheme
                                   .surfaceContainerHighest,
@@ -1169,6 +1313,12 @@ class _Header extends StatelessWidget {
       ),
     );
   }
+}
+
+Color _hpProgressColor(double value) {
+  if (value <= 0.25) return Colors.red;
+  if (value <= 0.5) return Colors.amber;
+  return Colors.green;
 }
 
 class _InlineDetailMessage extends StatelessWidget {

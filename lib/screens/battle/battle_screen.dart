@@ -49,8 +49,9 @@ class _BattleScreenState extends State<BattleScreen> {
 
   Future<_BattleData> _loadBattleData() async {
     final profile = await _profileRepository.getActiveProfile();
-    final team = await _teamRepository.getTeam(profile.id)
-      ..sort((a, b) => a.slotIndex.compareTo(b.slotIndex));
+    final team = await _teamRepository.getTeam(profile.id);
+    team.sort((a, b) => a.slotIndex.compareTo(b.slotIndex));
+
     final pokemonList = await _pokemonRepository.getAllPokemon();
     final pokemonById = {for (final pokemon in pokemonList) pokemon.id: pokemon};
 
@@ -505,8 +506,6 @@ class _BattleScreenState extends State<BattleScreen> {
                   _BattleMoveCard(
                     reference: reference,
                     move: data.moves[reference],
-                    pokemon: pokemon,
-                    slot: activeSlot,
                     remainingPp: _remainingPp(
                       activeSlot,
                       reference,
@@ -553,7 +552,9 @@ class _BattleData {
 
   List<TeamSlot> get occupiedSlots {
     return team
-        .where((slot) => slot.pokemonId != null && pokemonById[slot.pokemonId] != null)
+        .where(
+          (slot) => slot.pokemonId != null && pokemonById[slot.pokemonId] != null,
+        )
         .toList(growable: false);
   }
 }
@@ -758,21 +759,18 @@ class _ActivePokemonCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 10),
-            Row(
+            Wrap(
+              spacing: 6,
+              runSpacing: 6,
+              alignment: WrapAlignment.center,
               children: [
                 _SmallBattleButton(label: '-5', onTap: onMinusFive),
-                const SizedBox(width: 6),
                 _SmallBattleButton(label: '-1', onTap: onMinusOne),
-                const SizedBox(width: 6),
                 _SmallBattleButton(label: '+1', onTap: onPlusOne),
-                const SizedBox(width: 6),
                 _SmallBattleButton(label: '+5', onTap: onPlusFive),
-                const SizedBox(width: 6),
-                Expanded(
-                  child: FilledButton(
-                    onPressed: onHeal,
-                    child: const Text('POKÉMON CENTER'),
-                  ),
+                FilledButton(
+                  onPressed: onHeal,
+                  child: const Text('POKÉMON CENTER'),
                 ),
               ],
             ),
@@ -782,7 +780,9 @@ class _ActivePokemonCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(10),
               child: DecoratedBox(
                 decoration: BoxDecoration(
-                  border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+                  border: Border.all(
+                    color: Theme.of(context).colorScheme.outlineVariant,
+                  ),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Padding(
@@ -816,8 +816,6 @@ class _BattleMoveCard extends StatelessWidget {
   const _BattleMoveCard({
     required this.reference,
     required this.move,
-    required this.pokemon,
-    required this.slot,
     required this.remainingPp,
     required this.maxPp,
     required this.stats,
@@ -827,8 +825,6 @@ class _BattleMoveCard extends StatelessWidget {
 
   final String reference;
   final MoveData? move;
-  final Pokemon pokemon;
-  final TeamSlot slot;
   final int remainingPp;
   final int maxPp;
   final String? stats;

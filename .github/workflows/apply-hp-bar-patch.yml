@@ -1,0 +1,76 @@
+name: Apply HP Bar Patch
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/pokedex-patch-trigger.txt'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-actions[bot]'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Patch HP bar colors
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+
+          path = Path('lib/screens/pokemon/pokemon_detail_screen.dart')
+          text = path.read_text(encoding='utf-8')
+
+          old = """                            child: LinearProgressIndicator(
+                              value: hpProgress,
+                              minHeight: 16,
+                              backgroundColor: Theme.of(context)
+                                  .colorScheme
+                                  .surfaceContainerHighest,
+                            ),"""
+          new = """                            child: LinearProgressIndicator(
+                              value: hpProgress,
+                              minHeight: 16,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                _hpProgressColor(hpProgress),
+                              ),
+                              backgroundColor: Theme.of(context)
+                                  .colorScheme
+                                  .surfaceContainerHighest,
+                            ),"""
+
+          if old not in text:
+              raise RuntimeError('HP progress indicator block not found; refusing to patch blindly.')
+          text = text.replace(old, new, 1)
+
+          marker = '\nclass _InlineDetailMessage extends StatelessWidget {'
+          helper = """
+Color _hpProgressColor(double value) {
+  if (value <= 0.25) return Colors.red;
+  if (value <= 0.5) return Colors.amber;
+  return Colors.green;
+}
+
+"""
+          if '_hpProgressColor' not in text:
+              if marker not in text:
+                  raise RuntimeError('Inline message marker not found; refusing to patch blindly.')
+              text = text.replace(marker, '\n' + helper + 'class _InlineDetailMessage extends StatelessWidget {', 1)
+
+          path.write_text(text, encoding='utf-8')
+
+          Path('.github/workflows/apply-hp-bar-patch.yml').unlink(missing_ok=True)
+          Path('.github/pokedex-patch-trigger.txt').unlink(missing_ok=True)
+          PY
+
+      - name: Commit HP bar patch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add lib/screens/pokemon/pokemon_detail_screen.dart .github/workflows/apply-hp-bar-patch.yml .github/pokedex-patch-trigger.txt
+          git commit -m "Restore colored Pokemon HP bar"
+          git push

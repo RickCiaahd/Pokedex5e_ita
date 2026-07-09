@@ -1523,6 +1523,46 @@ class _HeldItemSelection {
   final bool clear;
 }
 
+class _DetailItemSprite extends StatelessWidget {
+  const _DetailItemSprite({required this.item});
+
+  final BagItem item;
+
+  @override
+  Widget build(BuildContext context) {
+    final remoteUrl = item.remoteSpriteUrl;
+    if (remoteUrl == null) {
+      return Icon(_detailItemIconForType(item.type));
+    }
+
+    return SizedBox(
+      width: 42,
+      height: 42,
+      child: Image.network(
+        remoteUrl,
+        fit: BoxFit.contain,
+        filterQuality: FilterQuality.none,
+        loadingBuilder: (context, child, loadingProgress) {
+          if (loadingProgress == null) return child;
+          return Icon(_detailItemIconForType(item.type));
+        },
+        errorBuilder: (_, __, ___) => Icon(_detailItemIconForType(item.type)),
+      ),
+    );
+  }
+}
+
+IconData _detailItemIconForType(String type) {
+  switch (type) {
+    case 'berry':
+      return Icons.eco_outlined;
+    case 'held-item':
+      return Icons.inventory_2_outlined;
+    default:
+      return Icons.category_outlined;
+  }
+}
+
 class _HeldItemPickerSheet extends StatelessWidget {
   const _HeldItemPickerSheet({
     required this.currentItem,
@@ -1570,11 +1610,7 @@ class _HeldItemPickerSheet extends StatelessWidget {
               for (final option in options)
                 Card(
                   child: ListTile(
-                    leading: Icon(
-                      option.item.type == 'berry'
-                          ? Icons.eco_outlined
-                          : Icons.inventory_2_outlined,
-                    ),
+                    leading: _DetailItemSprite(item: option.item),
                     title: Text(option.item.name),
                     subtitle: Text(
                       '${_detailItemTypeLabel(option.item.type)} • x${option.quantity}',

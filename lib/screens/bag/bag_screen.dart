@@ -173,7 +173,7 @@ class _BagScreenState extends State<BagScreen> {
       return;
     }
 
-    final learnedMoveReference = move.name;
+    final learnedMoveReference = move.id;
     final updatedMoves = [...selectedMoves];
     String? replacedMoveName;
 

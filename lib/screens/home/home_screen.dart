@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../bag/bag_screen.dart';
+import '../battle/battle_screen.dart';
 import '../capture/capture_pokemon_screen.dart';
 import '../pc/pokemon_pc_screen.dart';
 import '../pokedex/pokedex_screen.dart';
@@ -99,6 +100,17 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 20),
               _ProgressOverview(total: total, seen: seen, caught: caught),
               const SizedBox(height: 24),
+              _HomeActionButton(
+                icon: Icons.flash_on,
+                title: 'Battle Companion',
+                subtitle: 'Traccia round, HP, status e PP durante il combattimento.',
+                onTap: () async {
+                  await Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const BattleScreen()),
+                  );
+                  await _loadDashboard();
+                },
+              ),
               _HomeActionButton(
                 icon: Icons.badge_outlined,
                 title: 'Scheda Allenatore',

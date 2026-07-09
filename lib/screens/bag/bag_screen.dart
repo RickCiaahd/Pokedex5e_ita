@@ -50,8 +50,17 @@ class _BagScreenState extends State<BagScreen> {
     final profile = await _profileRepository.getActiveProfile();
     final catalog = await _itemRepository.getWebItems();
     final inventory = await _bagRepository.getInventory(profile.id);
+    final team = await _teamRepository.getTeam(profile.id);
+    final pokemonList = await _pokemonRepository.getAllPokemon();
+    final pokemonById = {for (final pokemon in pokemonList) pokemon.id: pokemon};
 
-    return _BagData(profile: profile, catalog: catalog, inventory: inventory);
+    return _BagData(
+      profile: profile,
+      catalog: catalog,
+      inventory: inventory,
+      team: team,
+      pokemonById: pokemonById,
+    );
   }
 
   Future<void> _reload({String? message}) async {
@@ -113,7 +122,99 @@ class _BagScreenState extends State<BagScreen> {
       return;
     }
 
+    if (item.type == 'held-item') {
+      await _useHeldItem(data, entry);
+      return;
+    }
+
     await _reload(message: '${item.name} non è ancora utilizzabile dallo zaino.');
+  }
+
+  Future<void> _useHeldItem(_BagData data, _OwnedBagItem entry) async {
+    final candidates = <_HeldItemCandidate>[];
+
+    for (final slot in data.team) {
+      final pokemonId = slot.pokemonId;
+      if (pokemonId == null) continue;
+
+      final pokemon = data.pokemonById[pokemonId];
+      if (pokemon == null) continue;
+
+      candidates.add(_HeldItemCandidate(slot: slot, pokemon: pokemon));
+    }
+
+    if (candidates.isEmpty) {
+      await _reload(message: 'Non hai Pokémon in squadra a cui dare ${entry.item.name}.');
+      return;
+    }
+
+    if (!mounted) return;
+
+    final candidate = await showModalBottomSheet<_HeldItemCandidate>(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) => _HeldItemPokemonPickerSheet(
+        item: entry.item,
+        candidates: candidates,
+        itemByReference: data.itemByReference,
+      ),
+    );
+
+    if (!mounted || candidate == null) return;
+
+    final previousItemReference = candidate.slot.heldItem;
+    final previousItem = previousItemReference == null
+        ? null
+        : data.itemByReference(previousItemReference);
+
+    if (previousItem?.id == entry.item.id) {
+      await _reload(
+        message: '${candidate.displayName} tiene già ${entry.item.name}.',
+      );
+      return;
+    }
+
+    final consumed = await _bagRepository.consumeItem(
+      profileId: data.profile.id,
+      itemId: entry.item.id,
+    );
+    if (!consumed) {
+      await _reload(message: 'Non hai più ${entry.item.name} nello zaino.');
+      return;
+    }
+
+    if (previousItem != null) {
+      await _bagRepository.addItem(
+        profileId: data.profile.id,
+        itemId: previousItem.id,
+      );
+    }
+
+    await _teamRepository.updateSlot(
+      profileId: data.profile.id,
+      updatedSlot: candidate.slot.copyWith(heldItem: entry.item.id),
+    );
+
+    final replacementText = previousItem == null
+        ? ''
+        : ' ${previousItem.name} è tornato nello zaino.';
+    await _reload(
+      message:
+          '${candidate.displayName} ora tiene ${entry.item.name}.$replacementText',
+    );
+  }
+
+  Future<void> _removeHeldItem(_BagData data, _EquippedHeldItem entry) async {
+    await _bagRepository.addItem(profileId: data.profile.id, itemId: entry.item.id);
+    await _teamRepository.updateSlot(
+      profileId: data.profile.id,
+      updatedSlot: entry.slot.copyWith(heldItem: null),
+    );
+
+    await _reload(
+      message:
+          '${entry.displayName} non tiene più ${entry.item.name}. L’oggetto è tornato nello zaino.',
+    );
   }
 
   Future<void> _useTm(_BagData data, _OwnedBagItem entry) async {
@@ -504,6 +605,7 @@ class _BagScreenState extends State<BagScreen> {
             onFindItem: () => _openFinder(data, _BagAction.find),
             onBuyItem: () => _openFinder(data, _BagAction.buy),
             onUseItem: (entry) => _useBagItem(data, entry),
+             onRemoveHeldItem: (entry) => _removeHeldItem(data, entry),
           );
         },
       ),
@@ -516,18 +618,42 @@ class _BagData {
     required this.profile,
     required this.catalog,
     required this.inventory,
+    required this.team,
+    required this.pokemonById,
   });
 
   final UserProfile profile;
   final List<BagItem> catalog;
   final List<BagInventoryEntry> inventory;
+  final List<TeamSlot> team;
+  final Map<int, Pokemon> pokemonById;
+
+  Map<String, BagItem> get itemById => {for (final item in catalog) item.id: item};
+
+  BagItem? itemByReference(String reference) {
+    final trimmed = reference.trim();
+    if (trimmed.isEmpty) return null;
+
+    final direct = itemById[trimmed];
+    if (direct != null) return direct;
+
+    final target = _itemReferenceKey(trimmed);
+    for (final item in catalog) {
+      if (_itemReferenceKey(item.id) == target ||
+          _itemReferenceKey(item.name) == target) {
+        return item;
+      }
+    }
+
+    return null;
+  }
 
   List<_OwnedBagItem> get ownedItems {
-    final itemById = {for (final item in catalog) item.id: item};
+    final itemsById = itemById;
     final owned = <_OwnedBagItem>[];
 
     for (final entry in inventory) {
-      final item = itemById[entry.itemId];
+      final item = itemsById[entry.itemId];
       if (item != null) {
         owned.add(_OwnedBagItem(item: item, quantity: entry.quantity));
       }
@@ -541,6 +667,29 @@ class _BagData {
 
     return owned;
   }
+
+  List<_EquippedHeldItem> get equippedHeldItems {
+    final equipped = <_EquippedHeldItem>[];
+
+    for (final slot in team) {
+      final pokemonId = slot.pokemonId;
+      final heldItemReference = slot.heldItem;
+      if (pokemonId == null ||
+          heldItemReference == null ||
+          heldItemReference.trim().isEmpty) {
+        continue;
+      }
+
+      final pokemon = pokemonById[pokemonId];
+      final item = itemByReference(heldItemReference);
+      if (pokemon == null || item == null) continue;
+
+      equipped.add(_EquippedHeldItem(slot: slot, pokemon: pokemon, item: item));
+    }
+
+    equipped.sort((a, b) => a.slot.slotIndex.compareTo(b.slot.slotIndex));
+    return equipped;
+  }
 }
 
 class _OwnedBagItem {
@@ -548,6 +697,29 @@ class _OwnedBagItem {
 
   final BagItem item;
   final int quantity;
+}
+
+class _HeldItemCandidate {
+  const _HeldItemCandidate({required this.slot, required this.pokemon});
+
+  final TeamSlot slot;
+  final Pokemon pokemon;
+
+  String get displayName => slot.nickname ?? pokemon.name;
+}
+
+class _EquippedHeldItem {
+  const _EquippedHeldItem({
+    required this.slot,
+    required this.pokemon,
+    required this.item,
+  });
+
+  final TeamSlot slot;
+  final Pokemon pokemon;
+  final BagItem item;
+
+  String get displayName => slot.nickname ?? pokemon.name;
 }
 
 class _TmCandidate {
@@ -624,6 +796,7 @@ class _BagContent extends StatelessWidget {
     required this.onFindItem,
     required this.onBuyItem,
     required this.onUseItem,
+    required this.onRemoveHeldItem,
   });
 
   final _BagData data;
@@ -633,6 +806,7 @@ class _BagContent extends StatelessWidget {
   final VoidCallback onFindItem;
   final VoidCallback onBuyItem;
   final ValueChanged<_OwnedBagItem> onUseItem;
+  final ValueChanged<_EquippedHeldItem> onRemoveHeldItem;
 
   @override
   Widget build(BuildContext context) {
@@ -656,7 +830,10 @@ class _BagContent extends StatelessWidget {
           _InlineBagMessage(message: message!),
         ],
         const SizedBox(height: 16),
-        _BagActions(onFindItem: onFindItem, onBuyItem: onBuyItem),
+        _BagActions(onFindItem: onFindItem, onBuyItem: onBuyItem),        _EquippedHeldItemsSection(
+          equippedItems: data.equippedHeldItems,
+          onRemove: onRemoveHeldItem,
+        ),
         if (types.isNotEmpty) ...[
           const SizedBox(height: 16),
           _BagTypeFilters(
@@ -908,7 +1085,7 @@ class _BagItemCardState extends State<_BagItemCard> {
   Widget build(BuildContext context) {
     final item = widget.entry.item;
     final costLabel = item.cost == null ? 'Non acquistabile' : '₽ ${item.cost}';
-    final canUse = item.type == 'tm' || item.type == 'medicine';
+    final canUse = item.type == 'tm' || item.type == 'medicine' || item.type == 'held-item';
 
     return Card(
       child: ExpansionTile(
@@ -962,10 +1139,8 @@ class _BagItemCardState extends State<_BagItemCard> {
               alignment: Alignment.centerRight,
               child: FilledButton.icon(
                 onPressed: widget.onUse,
-                icon: Icon(item.type == 'tm'
-                    ? Icons.school_outlined
-                    : Icons.medical_services_outlined),
-                label: Text(item.type == 'tm' ? 'Usa MT' : 'Usa oggetto'),
+                icon: Icon(_useIconForItemType(item.type)),
+                label: Text(_useLabelForItemType(item.type)),
               ),
             ),
           ],
@@ -999,6 +1174,109 @@ class _ItemSprite extends StatelessWidget {
         errorBuilder: (_, __, ___) => Icon(_iconForType(item.type)),
       ),
     );
+  }
+}
+
+class _EquippedHeldItemsSection extends StatelessWidget {
+  const _EquippedHeldItemsSection({
+    required this.equippedItems,
+    required this.onRemove,
+  });
+
+  final List<_EquippedHeldItem> equippedItems;
+  final ValueChanged<_EquippedHeldItem> onRemove;
+
+  @override
+  Widget build(BuildContext context) {
+    if (equippedItems.isEmpty) return const SizedBox.shrink();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const SizedBox(height: 16),
+        Text(
+          'Strumenti tenuti',
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w900,
+              ),
+        ),
+        const SizedBox(height: 8),
+        for (final equipped in equippedItems)
+          Card(
+            child: ListTile(
+              leading: _ItemSprite(item: equipped.item),
+              title: Text(
+                equipped.displayName,
+                style: const TextStyle(fontWeight: FontWeight.w800),
+              ),
+              subtitle: Text(
+                'Slot ${equipped.slot.slotIndex + 1} • Tiene ${equipped.item.name}',
+              ),
+              trailing: OutlinedButton(
+                onPressed: () => onRemove(equipped),
+                child: const Text('TOGLI'),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class _HeldItemPokemonPickerSheet extends StatelessWidget {
+  const _HeldItemPokemonPickerSheet({
+    required this.item,
+    required this.candidates,
+    required this.itemByReference,
+  });
+
+  final BagItem item;
+  final List<_HeldItemCandidate> candidates;
+  final BagItem? Function(String reference) itemByReference;
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: SizedBox(
+        height: MediaQuery.of(context).size.height * 0.75,
+        child: ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            Text(
+              'Dai ${item.name}',
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.w900,
+                  ),
+            ),
+            const SizedBox(height: 4),
+            const Text(
+              'Scegli il Pokémon a cui far tenere questo strumento. Se ha già uno strumento, quello vecchio torna nello zaino.',
+            ),
+            const SizedBox(height: 12),
+            for (final candidate in candidates)
+              Card(
+                child: ListTile(
+                  leading: PokemonAssetImage(pokemon: candidate.pokemon, size: 46),
+                  title: Text(
+                    candidate.displayName,
+                    style: const TextStyle(fontWeight: FontWeight.w800),
+                  ),
+                  subtitle: Text(_heldItemCandidateSummary(candidate)),
+                  trailing: const Text('Scegli'),
+                  onTap: () => Navigator.of(context).pop(candidate),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _heldItemCandidateSummary(_HeldItemCandidate candidate) {
+    final heldItemReference = candidate.slot.heldItem;
+    final heldItem = heldItemReference == null ? null : itemByReference(heldItemReference);
+
+    return 'Slot ${candidate.slot.slotIndex + 1} • Tiene: ${heldItem?.name ?? 'nessuno strumento'}';
   }
 }
 
@@ -1460,6 +1738,41 @@ class _BagEmpty extends StatelessWidget {
         child: Text('Nessun oggetto nello zaino.'),
       ),
     );
+  }
+}
+
+String _itemReferenceKey(String value) {
+  return value
+      .trim()
+      .toLowerCase()
+      .replaceAll(RegExp(r"[’']"), '')
+      .replaceAll(RegExp(r'[^a-z0-9]+'), '-')
+      .replaceAll(RegExp(r'^-+|-+$'), '');
+}
+
+IconData _useIconForItemType(String type) {
+  switch (type) {
+    case 'tm':
+      return Icons.school_outlined;
+    case 'medicine':
+      return Icons.medical_services_outlined;
+    case 'held-item':
+      return Icons.inventory_2_outlined;
+    default:
+      return Icons.play_arrow;
+  }
+}
+
+String _useLabelForItemType(String type) {
+  switch (type) {
+    case 'tm':
+      return 'Usa MT';
+    case 'medicine':
+      return 'Usa oggetto';
+    case 'held-item':
+      return 'Dai a Pokémon';
+    default:
+      return 'Usa';
   }
 }
 

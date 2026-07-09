@@ -8,7 +8,6 @@ import '../../models/team_slot.dart';
 import '../../models/tm_data.dart';
 import '../../repositories/ability_repository.dart';
 import '../../repositories/feat_repository.dart';
-import '../../repositories/item_repository.dart';
 import '../../repositories/move_repository.dart';
 import '../../repositories/tm_repository.dart';
 import '../../widgets/pokemon/pokemon_asset_image.dart';
@@ -59,7 +58,6 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
 
   final AbilityRepository _abilityRepository = AbilityRepository();
   final FeatRepository _featRepository = FeatRepository();
-  final ItemRepository _itemRepository = ItemRepository();
   final MoveRepository _moveRepository = MoveRepository();
   final TmRepository _tmRepository = TmRepository();
 
@@ -81,7 +79,6 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
   List<String> _tmMoveNames = const [];
   Map<String, String> _abilityDescriptions = {};
   Map<String, String> _featDescriptions = {};
-  Map<String, String> _itemDescriptions = {};
   Map<String, MoveData?> _moveData = {};
 
   bool _formOpen = true;
@@ -89,7 +86,6 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
   bool _abilitiesOpen = false;
   bool _featsOpen = false;
   bool _skillsOpen = false;
-  bool _heldItemOpen = false;
   bool _extraAsiOpen = false;
   bool _isLoadingChoices = true;
 
@@ -133,7 +129,6 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
     final abilityChoicesFuture = _abilityRepository.getWebAbilities();
     final deprecatedAbilitiesFuture = _abilityRepository.getDeprecatedAbilityNames();
     final featDescriptionsFuture = _featRepository.getFeatDescriptions();
-    final itemDescriptionsFuture = _itemRepository.getItemDescriptions();
     final formChoicesFuture = PokemonAssetPaths.formChoices(widget.pokemon);
     final tmMapFuture = _tmRepository.getTmMap();
 
@@ -141,7 +136,6 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
     final abilityChoices = await abilityChoicesFuture;
     final deprecatedAbilities = await deprecatedAbilitiesFuture;
     final featDescriptions = await featDescriptionsFuture;
-    final itemDescriptions = await itemDescriptionsFuture;
     final formChoices = await formChoicesFuture;
     final tmMap = await tmMapFuture;
     final tmMoveNames = await _tmMoveNamesFromRepository(tmMap);
@@ -162,7 +156,6 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
       _abilityChoices = abilityChoices;
       _deprecatedAbilityNames = deprecatedAbilities;
       _featDescriptions = featDescriptions;
-      _itemDescriptions = itemDescriptions;
       _moveData = moveData;
       _tmMoveNames = tmMoveNames;
       _formChoices = formChoices;
@@ -426,25 +419,6 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
     });
   }
 
-  Future<void> _pickItem() async {
-    final result = await Navigator.of(context).push<String>(
-      MaterialPageRoute(
-        builder: (_) => _ChoicePickerScreen(
-          title: 'Scegli item',
-          options: _itemDescriptions.keys.toList()..sort(),
-          descriptions: _itemDescriptions,
-          includeNone: true,
-        ),
-      ),
-    );
-
-    if (!mounted || result == null) return;
-
-    setState(
-      () => _heldItem = result == _ChoicePickerScreen.noneValue ? null : result,
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final title = widget.slot.nickname ?? widget.pokemon.name;
@@ -608,19 +582,7 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
                     },
                   ),
                 ),
-                _CollapsibleEditSection(
-                  title: 'Held item',
-                  isOpen: _heldItemOpen,
-                  onToggle: () =>
-                      setState(() => _heldItemOpen = !_heldItemOpen),
-                  child: _SingleSlot(
-                    label: _heldItem ?? 'ITEM',
-                    onTap: _pickItem,
-                    onRemove: _heldItem == null
-                        ? null
-                        : () => setState(() => _heldItem = null),
-                  ),
-                ),
+
                 _CollapsibleEditSection(
                   title: 'Extra ability score',
                   isOpen: _extraAsiOpen,

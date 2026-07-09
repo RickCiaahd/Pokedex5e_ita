@@ -122,6 +122,25 @@ class _BagScreenState extends State<BagScreen> {
       return;
     }
 
+    if (item.type == 'berry') {
+      if (!mounted) return;
+
+      final action = await showModalBottomSheet<_BerryBagAction>(
+        context: context,
+        showDragHandle: true,
+        builder: (_) => _BerryActionSheet(item: item),
+      );
+      if (!mounted || action == null) return;
+
+      if (action == _BerryBagAction.use) {
+        await _useMedicine(data, entry);
+        return;
+      }
+
+      await _useHeldItem(data, entry);
+      return;
+    }
+
     if (item.type == 'held-item') {
       await _useHeldItem(data, entry);
       return;
@@ -492,7 +511,9 @@ class _BagScreenState extends State<BagScreen> {
   }
 
   bool _isSupportedMedicine(String itemId) {
-    return _healingItemIds.contains(itemId) || _statusMedicineItemIds.contains(itemId);
+    return _healingItemIds.contains(itemId) ||
+        _statusMedicineItemIds.contains(itemId) ||
+        _berryMedicineItemIds.contains(itemId);
   }
 
   bool _isReviveMedicine(String itemId) {
@@ -503,6 +524,7 @@ class _BagScreenState extends State<BagScreen> {
     switch (itemId) {
       case 'potion':
       case 'revive':
+      case 'oran-berry':
         return _rollDice(2, 4, 2);
       case 'super-potion':
       case 'energy-powder':
@@ -515,6 +537,8 @@ class _BagScreenState extends State<BagScreen> {
       case 'max-potion':
       case 'full-restore':
         return 70;
+      case 'sitrus-berry':
+        return 30;
       case 'fresh-water':
         return 7;
       case 'soda-pop':
@@ -747,6 +771,8 @@ class _MedicineUseResult {
 
 enum _BagAction { find, buy }
 
+enum _BerryBagAction { use, equip }
+
 const Set<String> _healingItemIds = {
   'potion',
   'super-potion',
@@ -765,6 +791,18 @@ const Set<String> _healingItemIds = {
   'revival-herb',
 };
 
+const Set<String> _berryMedicineItemIds = {
+  'cheri-berry',
+  'chesto-berry',
+  'pecha-berry',
+  'rawst-berry',
+  'aspear-berry',
+  'persim-berry',
+  'lum-berry',
+  'oran-berry',
+  'sitrus-berry',
+};
+
 const Set<String> _statusMedicineItemIds = {
   'antidote',
   'burn-heal',
@@ -777,7 +815,14 @@ const Set<String> _statusMedicineItemIds = {
 };
 
 const Map<String, Set<String>> _statusTargetsByMedicine = {
-  'antidote': {'Poisoned'},
+  'cheri-berry': {'Paralyzed'},
+  'chesto-berry': {'Asleep'},
+  'pecha-berry': {'Poisoned', 'Badly Poisoned'},
+  'rawst-berry': {'Burned'},
+  'aspear-berry': {'Frozen'},
+  'persim-berry': {'Confused'},
+  'lum-berry': {'*'},
+  'antidote': {'Poisoned', 'Badly Poisoned'},
   'burn-heal': {'Burned'},
   'ice-heal': {'Frozen'},
   'awakening': {'Asleep'},
@@ -1085,7 +1130,7 @@ class _BagItemCardState extends State<_BagItemCard> {
   Widget build(BuildContext context) {
     final item = widget.entry.item;
     final costLabel = item.cost == null ? 'Non acquistabile' : '₽ ${item.cost}';
-    final canUse = item.type == 'tm' || item.type == 'medicine' || item.type == 'held-item';
+    final canUse = item.type == 'tm' || item.type == 'medicine' || item.type == 'held-item' || item.type == 'berry';
 
     return Card(
       child: ExpansionTile(
@@ -1172,6 +1217,45 @@ class _ItemSprite extends StatelessWidget {
           return Icon(_iconForType(item.type));
         },
         errorBuilder: (_, __, ___) => Icon(_iconForType(item.type)),
+      ),
+    );
+  }
+}
+
+class _BerryActionSheet extends StatelessWidget {
+  const _BerryActionSheet({required this.item});
+
+  final BagItem item;
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: ListView(
+        shrinkWrap: true,
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+        children: [
+          Text(
+            item.name,
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w900,
+                ),
+          ),
+          const SizedBox(height: 4),
+          Text(item.displayDescription),
+          const SizedBox(height: 12),
+          ListTile(
+            leading: const Icon(Icons.medical_services_outlined),
+            title: const Text('Usa oggetto'),
+            subtitle: const Text('Consuma subito la bacca su un Pokémon della squadra.'),
+            onTap: () => Navigator.of(context).pop(_BerryBagAction.use),
+          ),
+          ListTile(
+            leading: const Icon(Icons.inventory_2_outlined),
+            title: const Text('Dai a Pokémon'),
+            subtitle: const Text('Il Pokémon terrà la bacca e potrà consumarla al trigger.'),
+            onTap: () => Navigator.of(context).pop(_BerryBagAction.equip),
+          ),
+        ],
       ),
     );
   }
@@ -1758,6 +1842,8 @@ IconData _useIconForItemType(String type) {
       return Icons.medical_services_outlined;
     case 'held-item':
       return Icons.inventory_2_outlined;
+    case 'berry':
+      return Icons.eco_outlined;
     default:
       return Icons.play_arrow;
   }
@@ -1771,6 +1857,8 @@ String _useLabelForItemType(String type) {
       return 'Usa oggetto';
     case 'held-item':
       return 'Dai a Pokémon';
+    case 'berry':
+      return 'Usa bacca';
     default:
       return 'Usa';
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../models/bag_item.dart';
 import '../../models/evolution_data.dart';
 import '../../models/level_progression.dart';
 import '../../models/move_data.dart';
@@ -143,6 +144,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
   Map<String, MoveData?> _moves = {};
   Map<String, String> _abilities = {};
   Map<String, String> _featDescriptions = {};
+  Map<String, BagItem> _itemCatalog = {};
   Map<String, EvolutionData> _evolutions = {};
   List<EvolutionEligibility> _evolutionChoices = const [];
   bool _isLoading = true;
@@ -253,9 +255,11 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
       _abilityRepository.getAbilityDescriptions(),
       _evolutionRepository.getEvolutionData(),
       _featRepository.getFeatDescriptions(),
+      _itemRepository.getWebItems(),
     ]);
 
     final evolutions = results[2] as Map<String, EvolutionData>;
+    final items = results[4] as List<BagItem>;
     final evolutionChoices = await _buildEvolutionChoices(
       evolution: _evolutionForPokemon(_pokemon, evolutions),
       slot: _teamSlot,
@@ -268,6 +272,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
       _abilities = results[1] as Map<String, String>;
       _evolutions = evolutions;
       _featDescriptions = results[3] as Map<String, String>;
+      _itemCatalog = {for (final item in items) item.id: item};
       _evolutionChoices = evolutionChoices;
       _isLoading = false;
     });
@@ -473,6 +478,111 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
 
     _saveTeamSlot(slot.copyWith(currentHp: _maxHp, statusEffects: const []));
     _showMessage('${_pokemon.name} è stato curato al Pokémon Center.');
+  }
+
+  String _heldItemDisplayLabel() {
+    final heldItem = _teamSlot?.heldItem;
+    if (heldItem == null || heldItem.trim().isEmpty) return 'NONE';
+
+    return _itemByReference(heldItem)?.name.toUpperCase() ?? heldItem.toUpperCase();
+  }
+
+  BagItem? _itemByReference(String reference) {
+    final trimmed = reference.trim();
+    if (trimmed.isEmpty) return null;
+
+    final direct = _itemCatalog[trimmed];
+    if (direct != null) return direct;
+
+    final target = _itemReferenceKey(trimmed);
+    for (final item in _itemCatalog.values) {
+      if (_itemReferenceKey(item.id) == target ||
+          _itemReferenceKey(item.name) == target) {
+        return item;
+      }
+    }
+
+    return null;
+  }
+
+  Future<void> _changeHeldItemFromDetail() async {
+    final slot = _teamSlot;
+    if (slot == null) return;
+
+    final profile = await _profileRepository.getActiveProfile();
+    final inventory = await _bagInventoryRepository.getInventory(profile.id);
+    final catalog = _itemCatalog.isEmpty
+        ? {for (final item in await _itemRepository.getWebItems()) item.id: item}
+        : _itemCatalog;
+
+    final options = <_HeldItemInventoryOption>[];
+    for (final entry in inventory) {
+      final item = catalog[entry.itemId];
+      if (item == null) continue;
+      if (item.type != 'held-item' && item.type != 'berry') continue;
+      options.add(_HeldItemInventoryOption(item: item, quantity: entry.quantity));
+    }
+    options.sort((a, b) => a.item.name.compareTo(b.item.name));
+
+    final currentItem = slot.heldItem == null ? null : _itemByReference(slot.heldItem!);
+
+    if (!mounted) return;
+
+    final selection = await showModalBottomSheet<_HeldItemSelection>(
+      context: context,
+      showDragHandle: true,
+      isScrollControlled: true,
+      builder: (_) => _HeldItemPickerSheet(
+        currentItem: currentItem,
+        options: options,
+      ),
+    );
+
+    if (!mounted || selection == null) return;
+
+    if (selection.clear) {
+      if (currentItem != null) {
+        await _bagInventoryRepository.addItem(
+          profileId: profile.id,
+          itemId: currentItem.id,
+        );
+      }
+
+      _saveTeamSlot(slot.copyWith(heldItem: null));
+      _showMessage('${_pokemon.name} non tiene più strumenti.');
+      await _loadData();
+      return;
+    }
+
+    final selectedItem = selection.item;
+    if (selectedItem == null) return;
+
+    if (currentItem?.id == selectedItem.id) {
+      _showMessage('${_pokemon.name} tiene già ${selectedItem.name}.');
+      return;
+    }
+
+    final consumed = await _bagInventoryRepository.consumeItem(
+      profileId: profile.id,
+      itemId: selectedItem.id,
+    );
+    if (!consumed) {
+      _showMessage('Non hai più ${selectedItem.name} nello zaino.');
+      return;
+    }
+
+    if (currentItem != null) {
+      await _bagInventoryRepository.addItem(
+        profileId: profile.id,
+        itemId: currentItem.id,
+      );
+    }
+
+    _saveTeamSlot(slot.copyWith(heldItem: selectedItem.id));
+    final replacementText =
+        currentItem == null ? '' : ' ${currentItem.name} è tornato nello zaino.';
+    _showMessage('${_pokemon.name} ora tiene ${selectedItem.name}.$replacementText');
+    await _loadData();
   }
 
   Future<void> _pickStatusEffect() async {
@@ -1042,6 +1152,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
                           savingThrowLoyaltyBonus: _savingThrowLoyaltyBonus,
                           statusEffects: _currentStatusEffects,
                           message: _message,
+                          heldItemLabel: _heldItemDisplayLabel(),
                           onEditExperience: _editExperience,
                           onEditHp: _editHp,
                           onDecreaseHp: () => _changeHp(-1),
@@ -1050,6 +1161,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
                           onIncreaseLoyalty: () => _changeLoyalty(1),
                           onPokemonCenter: _usePokemonCenter,
                           onAddStatusEffect: _pickStatusEffect,
+                          onEditHeldItem: _changeHeldItemFromDetail,
                           evolutionLabel: evolutionLabel,
                           onEvolve: _evolveCurrentPokemon,
                         ),
@@ -1122,6 +1234,7 @@ class _Header extends StatelessWidget {
     required this.savingThrowLoyaltyBonus,
     required this.statusEffects,
     required this.message,
+    required this.heldItemLabel,
     required this.onEditExperience,
     required this.onEditHp,
     required this.onDecreaseHp,
@@ -1130,6 +1243,7 @@ class _Header extends StatelessWidget {
     required this.onIncreaseLoyalty,
     required this.onPokemonCenter,
     required this.onAddStatusEffect,
+    required this.onEditHeldItem,
     required this.evolutionLabel,
     required this.onEvolve,
   });
@@ -1149,6 +1263,7 @@ class _Header extends StatelessWidget {
   final int savingThrowLoyaltyBonus;
   final List<String> statusEffects;
   final String? message;
+  final String heldItemLabel;
   final VoidCallback onEditExperience;
   final VoidCallback onEditHp;
   final VoidCallback onDecreaseHp;
@@ -1157,6 +1272,7 @@ class _Header extends StatelessWidget {
   final VoidCallback onIncreaseLoyalty;
   final VoidCallback onPokemonCenter;
   final VoidCallback onAddStatusEffect;
+  final VoidCallback onEditHeldItem;
   final String? evolutionLabel;
   final VoidCallback onEvolve;
 
@@ -1172,9 +1288,6 @@ class _Header extends StatelessWidget {
     final hpProgress = maxHp <= 0
         ? 0.0
         : (currentHp / maxHp).clamp(0.0, 1.0).toDouble();
-    final itemLabel = slot?.heldItem == null || slot!.heldItem!.trim().isEmpty
-        ? 'NONE'
-        : slot!.heldItem!.toUpperCase();
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(8, 8, 8, 6),
@@ -1286,7 +1399,13 @@ class _Header extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 6),
-              Expanded(child: _PanelButton(label: 'ITEM: $itemLabel')),
+              Expanded(
+                child: InkWell(
+                  onTap: isPartyMode ? onEditHeldItem : null,
+                  borderRadius: BorderRadius.circular(8),
+                  child: _PanelButton(label: 'ITEM: $heldItemLabel'),
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 8),
@@ -1385,6 +1504,110 @@ class _InlineDetailMessage extends StatelessWidget {
       ),
     );
   }
+}
+
+class _HeldItemInventoryOption {
+  const _HeldItemInventoryOption({required this.item, required this.quantity});
+
+  final BagItem item;
+  final int quantity;
+}
+
+class _HeldItemSelection {
+  const _HeldItemSelection._({this.item, this.clear = false});
+
+  const _HeldItemSelection.item(BagItem item) : this._(item: item);
+  const _HeldItemSelection.clear() : this._(clear: true);
+
+  final BagItem? item;
+  final bool clear;
+}
+
+class _HeldItemPickerSheet extends StatelessWidget {
+  const _HeldItemPickerSheet({
+    required this.currentItem,
+    required this.options,
+  });
+
+  final BagItem? currentItem;
+  final List<_HeldItemInventoryOption> options;
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: SizedBox(
+        height: MediaQuery.of(context).size.height * 0.75,
+        child: ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            Text(
+              'Strumento tenuto',
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.w900,
+                  ),
+            ),
+            const SizedBox(height: 4),
+            const Text('Scegli solo tra gli oggetti presenti nello zaino.'),
+            if (currentItem != null) ...[
+              const SizedBox(height: 12),
+              Card(
+                child: ListTile(
+                  leading: const Icon(Icons.remove_circle_outline),
+                  title: Text('Togli ${currentItem!.name}'),
+                  subtitle: const Text('Lo strumento torna nello zaino.'),
+                  onTap: () =>
+                      Navigator.of(context).pop(const _HeldItemSelection.clear()),
+                ),
+              ),
+            ],
+            const SizedBox(height: 12),
+            if (options.isEmpty)
+              const Padding(
+                padding: EdgeInsets.all(16),
+                child: Text('Non hai strumenti tenuti o bacche nello zaino.'),
+              )
+            else
+              for (final option in options)
+                Card(
+                  child: ListTile(
+                    leading: Icon(
+                      option.item.type == 'berry'
+                          ? Icons.eco_outlined
+                          : Icons.inventory_2_outlined,
+                    ),
+                    title: Text(option.item.name),
+                    subtitle: Text(
+                      '${_detailItemTypeLabel(option.item.type)} • x${option.quantity}',
+                    ),
+                    onTap: () => Navigator.of(context)
+                        .pop(_HeldItemSelection.item(option.item)),
+                  ),
+                ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+String _detailItemTypeLabel(String type) {
+  switch (type) {
+    case 'berry':
+      return 'Bacca';
+    case 'held-item':
+      return 'Oggetto tenuto';
+    default:
+      return type;
+  }
+}
+
+String _itemReferenceKey(String value) {
+  return value
+      .trim()
+      .toLowerCase()
+      .replaceAll(RegExp(r"[’']"), '')
+      .replaceAll(RegExp(r'[^a-z0-9]+'), '-')
+      .replaceAll(RegExp(r'^-+|-+$'), '');
 }
 
 class _PokemonCenterButton extends StatelessWidget {

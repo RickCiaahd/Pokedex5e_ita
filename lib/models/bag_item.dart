@@ -112,7 +112,6 @@ class BagItem {
 
   static String _normalizeType(String value) {
     final normalized = value.trim().toLowerCase().replaceAll(' ', '-');
-    if (normalized == 'berry') return 'held-item';
     return normalized;
   }
 

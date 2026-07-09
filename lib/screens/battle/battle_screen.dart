@@ -1,17 +1,22 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
+import '../../models/bag_item.dart';
 import '../../models/level_progression.dart';
 import '../../models/move_data.dart';
 import '../../models/pokemon.dart';
 import '../../models/pokemon_nature.dart';
 import '../../models/team_slot.dart';
 import '../../models/user_profile.dart';
+import '../../repositories/item_repository.dart';
 import '../../repositories/move_repository.dart';
 import '../../repositories/pokemon_repository.dart';
 import '../../repositories/profile_repository.dart';
 import '../../repositories/team_repository.dart';
 import '../../widgets/navigation/home_leading_button.dart';
 import '../../widgets/pokemon/pokemon_asset_image.dart';
+import '../bag/bag_screen.dart';
 
 class BattleScreen extends StatefulWidget {
   const BattleScreen({super.key});
@@ -25,6 +30,8 @@ class _BattleScreenState extends State<BattleScreen> {
   final TeamRepository _teamRepository = TeamRepository();
   final PokemonRepository _pokemonRepository = PokemonRepository();
   final MoveRepository _moveRepository = MoveRepository();
+  final ItemRepository _itemRepository = ItemRepository();
+  final Random _random = Random();
 
   late Future<_BattleData> _dataFuture;
   final Map<int, Map<String, int>> _remainingPpBySlot = {};
@@ -55,6 +62,7 @@ class _BattleScreenState extends State<BattleScreen> {
 
     final pokemonList = await _pokemonRepository.getAllPokemon();
     final pokemonById = {for (final pokemon in pokemonList) pokemon.id: pokemon};
+    final items = await _itemRepository.getWebItems();
     final moveReferences = <String>{'Struggle'};
 
     for (final slot in team) {
@@ -74,6 +82,7 @@ class _BattleScreenState extends State<BattleScreen> {
       team: team,
       pokemonById: pokemonById,
       moves: moves,
+      items: items,
     );
   }
 
@@ -191,6 +200,50 @@ class _BattleScreenState extends State<BattleScreen> {
     await _reload();
   }
 
+  Future<void> _editHp(_BattleData data, TeamSlot slot) async {
+    final pokemon = _pokemonForSlot(data, slot);
+    if (pokemon == null) return;
+
+    final input = await showDialog<String>(
+      context: context,
+      builder: (_) => _HpInputDialog(
+        currentHp: _currentHpFor(slot, pokemon),
+        maxHp: _maxHpFor(pokemon, slot),
+      ),
+    );
+    if (!mounted || input == null) return;
+
+    final updatedHp = _applyHpInput(
+      currentHp: _currentHpFor(slot, pokemon),
+      maxHp: _maxHpFor(pokemon, slot),
+      input: input,
+    );
+
+    await _teamRepository.updateSlot(
+      profileId: data.profile.id,
+      updatedSlot: slot.copyWith(currentHp: updatedHp),
+    );
+    await _reload();
+  }
+
+  int _applyHpInput({
+    required int currentHp,
+    required int maxHp,
+    required String input,
+  }) {
+    final trimmed = input.trim();
+    if (trimmed.isEmpty) return currentHp;
+
+    final value = int.tryParse(trimmed);
+    if (value == null) return currentHp;
+
+    if (trimmed.startsWith('+') || trimmed.startsWith('-')) {
+      return (currentHp + value).clamp(0, maxHp).toInt();
+    }
+
+    return value.clamp(0, maxHp).toInt();
+  }
+
   Future<void> _healFull(_BattleData data, TeamSlot slot) async {
     final pokemon = _pokemonForSlot(data, slot);
     if (pokemon == null) return;
@@ -203,6 +256,154 @@ class _BattleScreenState extends State<BattleScreen> {
       ),
     );
     await _reload(message: '${_displayName(slot, pokemon)} è pronto a combattere.');
+  }
+
+  Future<void> _useHeldBerry(_BattleData data, TeamSlot slot) async {
+    final pokemon = _pokemonForSlot(data, slot);
+    final heldItem = data.heldItemFor(slot);
+    if (pokemon == null || heldItem == null || heldItem.type != 'berry') return;
+
+    final result = _applyMedicine(item: heldItem, slot: slot, pokemon: pokemon);
+    if (result == null) {
+      await _reload(message: '${heldItem.name} non avrebbe effetto su ${_displayName(slot, pokemon)}.');
+      return;
+    }
+
+    await _teamRepository.updateSlot(
+      profileId: data.profile.id,
+      updatedSlot: result.updatedSlot.copyWith(heldItem: null),
+    );
+    await _reload(message: '${result.message} ${heldItem.name} è stata consumata.');
+  }
+
+  Future<void> _openBag() async {
+    await Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => const BagScreen()),
+    );
+    await _reload();
+  }
+
+  _MedicineUseResult? _applyMedicine({
+    required BagItem item,
+    required TeamSlot slot,
+    required Pokemon pokemon,
+  }) {
+    if (!_isSupportedMedicine(item.id)) return null;
+
+    final maxHp = _maxHpFor(pokemon, slot);
+    final currentHp = slot.currentHp.clamp(0, maxHp).toInt();
+    final statusEffects = [...slot.statusEffects];
+    var updatedHp = currentHp;
+    var updatedStatuses = [...statusEffects];
+    var healingText = '';
+    var statusText = '';
+
+    final healAmount = _healingAmount(item.id);
+    final isReviveItem = _isReviveMedicine(item.id);
+
+    if (healAmount != null) {
+      if (currentHp <= 0 && !isReviveItem) return null;
+      if (currentHp > 0 && isReviveItem) return null;
+
+      updatedHp = (currentHp + healAmount).clamp(0, maxHp).toInt();
+      if (updatedHp != currentHp) {
+        healingText = 'recupera ${updatedHp - currentHp} HP';
+      }
+    }
+
+    final curedStatuses = _statusesCuredBy(item.id, statusEffects);
+    if (curedStatuses.isNotEmpty) {
+      updatedStatuses = updatedStatuses
+          .where((status) => !curedStatuses.contains(status))
+          .toList(growable: false);
+      statusText = curedStatuses.length == statusEffects.length
+          ? 'guarisce dagli status'
+          : 'guarisce da ${curedStatuses.join(', ')}';
+    }
+
+    if (updatedHp == currentHp && _sameStrings(updatedStatuses, statusEffects)) {
+      return null;
+    }
+
+    final effects = [healingText, statusText]
+        .where((part) => part.isNotEmpty)
+        .join(' e ');
+
+    return _MedicineUseResult(
+      updatedSlot: slot.copyWith(
+        currentHp: updatedHp,
+        statusEffects: updatedStatuses,
+      ),
+      message: '${_displayName(slot, pokemon)} $effects usando ${item.name}.',
+    );
+  }
+
+  bool _isSupportedMedicine(String itemId) {
+    return _healingItemIds.contains(itemId) ||
+        _statusMedicineItemIds.contains(itemId) ||
+        _berryMedicineItemIds.contains(itemId);
+  }
+
+  bool _isReviveMedicine(String itemId) {
+    return const {'revive', 'max-revive', 'revival-herb'}.contains(itemId);
+  }
+
+  int? _healingAmount(String itemId) {
+    switch (itemId) {
+      case 'potion':
+      case 'revive':
+      case 'oran-berry':
+        return _rollDice(2, 4, 2);
+      case 'super-potion':
+      case 'energy-powder':
+        return _rollDice(3, 6, 6);
+      case 'hyper-potion':
+      case 'energy-root':
+      case 'max-revive':
+      case 'revival-herb':
+        return _rollDice(4, 12, 10);
+      case 'max-potion':
+      case 'full-restore':
+        return 70;
+      case 'sitrus-berry':
+        return 30;
+      case 'fresh-water':
+        return 7;
+      case 'soda-pop':
+        return 10;
+      case 'berry-juice':
+        return 20;
+      case 'lemonade':
+        return 30;
+      case 'moomoo-milk':
+        return 50;
+      default:
+        return null;
+    }
+  }
+
+  int _rollDice(int diceCount, int sides, int bonus) {
+    var total = bonus;
+    for (var i = 0; i < diceCount; i++) {
+      total += _random.nextInt(sides) + 1;
+    }
+    return total;
+  }
+
+  List<String> _statusesCuredBy(String itemId, List<String> statuses) {
+    final targets = _statusTargetsByMedicine[itemId];
+    if (targets == null) return const [];
+    if (targets.contains('*')) return List<String>.from(statuses);
+
+    return statuses.where(targets.contains).toList(growable: false);
+  }
+
+  bool _sameStrings(List<String> a, List<String> b) {
+    if (a.length != b.length) return false;
+    for (var index = 0; index < a.length; index++) {
+      if (a[index] != b[index]) return false;
+    }
+    return true;
   }
 
   Future<void> _setStatusEffects(
@@ -242,6 +443,7 @@ class _BattleScreenState extends State<BattleScreen> {
                   ),
                   for (final status in _statusOptions)
                     CheckboxListTile(
+                      secondary: _StatusIcon(status: status, size: 28),
                       title: Text(status.toUpperCase()),
                       value: selected.contains(status),
                       onChanged: (value) {
@@ -443,6 +645,7 @@ class _BattleScreenState extends State<BattleScreen> {
           final pokemon = _pokemonForSlot(data, activeSlot)!;
           final moveReferences = _movesForSlot(activeSlot, pokemon);
           final noPpLeft = _hasNoPpLeft(activeSlot, moveReferences, data.moves);
+          final heldItem = data.heldItemFor(activeSlot);
 
           return RefreshIndicator(
             onRefresh: () => _reload(),
@@ -468,6 +671,7 @@ class _BattleScreenState extends State<BattleScreen> {
                 _ActivePokemonCard(
                   pokemon: pokemon,
                   slot: activeSlot,
+                  heldItem: heldItem,
                   displayName: _displayName(activeSlot, pokemon),
                   level: _levelForSlot(activeSlot),
                   currentHp: _currentHpFor(activeSlot, pokemon),
@@ -478,8 +682,13 @@ class _BattleScreenState extends State<BattleScreen> {
                   onMinusOne: () => _changeHp(data, activeSlot, -1),
                   onPlusOne: () => _changeHp(data, activeSlot, 1),
                   onPlusFive: () => _changeHp(data, activeSlot, 5),
+                  onEditHp: () => _editHp(data, activeSlot),
                   onHeal: () => _healFull(data, activeSlot),
                   onStatus: () => _openStatusPicker(data, activeSlot),
+                  onUseHeldBerry: heldItem?.type == 'berry'
+                      ? () => _useHeldBerry(data, activeSlot)
+                      : null,
+                  onOpenBag: _openBag,
                 ),
                 const SizedBox(height: 12),
                 Text(
@@ -497,7 +706,11 @@ class _BattleScreenState extends State<BattleScreen> {
                   _BattleMoveCard(
                     reference: reference,
                     move: data.moves[reference],
-                    remainingPp: _remainingPp(activeSlot, reference, data.moves[reference]),
+                    remainingPp: _remainingPp(
+                      activeSlot,
+                      reference,
+                      data.moves[reference],
+                    ),
                     maxPp: _maxPpFor(data.moves[reference]),
                     stats: data.moves[reference] == null
                         ? null
@@ -530,12 +743,14 @@ class _BattleData {
     required this.team,
     required this.pokemonById,
     required this.moves,
+    required this.items,
   });
 
   final UserProfile profile;
   final List<TeamSlot> team;
   final Map<int, Pokemon> pokemonById;
   final Map<String, MoveData?> moves;
+  final List<BagItem> items;
 
   List<TeamSlot> get occupiedSlots {
     return team
@@ -544,6 +759,147 @@ class _BattleData {
         )
         .toList(growable: false);
   }
+
+  BagItem? heldItemFor(TeamSlot slot) {
+    final reference = slot.heldItem;
+    if (reference == null || reference.trim().isEmpty) return null;
+
+    final normalizedReference = _itemReferenceKey(reference);
+    for (final item in items) {
+      if (item.id == reference ||
+          _itemReferenceKey(item.id) == normalizedReference ||
+          _itemReferenceKey(item.name) == normalizedReference) {
+        return item;
+      }
+    }
+
+    return null;
+  }
+}
+
+class _MedicineUseResult {
+  const _MedicineUseResult({required this.updatedSlot, required this.message});
+
+  final TeamSlot updatedSlot;
+  final String message;
+}
+
+class _StatusEffectInfo {
+  const _StatusEffectInfo({
+    required this.name,
+    required this.shortLabel,
+    required this.assetPath,
+  });
+
+  final String name;
+  final String shortLabel;
+  final String? assetPath;
+}
+
+const Map<String, _StatusEffectInfo> _statusInfoByName = {
+  'Asleep': _StatusEffectInfo(
+    name: 'Asleep',
+    shortLabel: 'SLP',
+    assetPath: 'assets/textures/gui/status/sleep_down.png',
+  ),
+  'Burned': _StatusEffectInfo(
+    name: 'Burned',
+    shortLabel: 'BRN',
+    assetPath: 'assets/textures/gui/status/burn_down.png',
+  ),
+  'Confused': _StatusEffectInfo(
+    name: 'Confused',
+    shortLabel: 'CNF',
+    assetPath: 'assets/textures/gui/status/confuse_down.png',
+  ),
+  'Frozen': _StatusEffectInfo(
+    name: 'Frozen',
+    shortLabel: 'FRZ',
+    assetPath: 'assets/textures/gui/status/frozen_down.png',
+  ),
+  'Paralyzed': _StatusEffectInfo(
+    name: 'Paralyzed',
+    shortLabel: 'PAR',
+    assetPath: 'assets/textures/gui/status/paralyze_down.png',
+  ),
+  'Poisoned': _StatusEffectInfo(
+    name: 'Poisoned',
+    shortLabel: 'PSN',
+    assetPath: 'assets/textures/gui/status/poisoned_down.png',
+  ),
+  'Badly Poisoned': _StatusEffectInfo(
+    name: 'Badly Poisoned',
+    shortLabel: 'PSN',
+    assetPath: 'assets/textures/gui/status/poisoned_down.png',
+  ),
+};
+
+const Set<String> _healingItemIds = {
+  'potion',
+  'super-potion',
+  'hyper-potion',
+  'max-potion',
+  'full-restore',
+  'revive',
+  'max-revive',
+  'fresh-water',
+  'soda-pop',
+  'berry-juice',
+  'lemonade',
+  'moomoo-milk',
+  'energy-powder',
+  'energy-root',
+  'revival-herb',
+};
+
+const Set<String> _berryMedicineItemIds = {
+  'cheri-berry',
+  'chesto-berry',
+  'pecha-berry',
+  'rawst-berry',
+  'aspear-berry',
+  'persim-berry',
+  'lum-berry',
+  'oran-berry',
+  'sitrus-berry',
+};
+
+const Set<String> _statusMedicineItemIds = {
+  'antidote',
+  'burn-heal',
+  'ice-heal',
+  'awakening',
+  'paralyze-heal',
+  'full-heal',
+  'full-restore',
+  'heal-powder',
+};
+
+const Map<String, Set<String>> _statusTargetsByMedicine = {
+  'cheri-berry': {'Paralyzed'},
+  'chesto-berry': {'Asleep'},
+  'pecha-berry': {'Poisoned', 'Badly Poisoned'},
+  'rawst-berry': {'Burned'},
+  'aspear-berry': {'Frozen'},
+  'persim-berry': {'Confused'},
+  'lum-berry': {'*'},
+  'antidote': {'Poisoned', 'Badly Poisoned'},
+  'burn-heal': {'Burned'},
+  'ice-heal': {'Frozen'},
+  'awakening': {'Asleep'},
+  'paralyze-heal': {'Paralyzed'},
+  'full-heal': {'*'},
+  'full-restore': {'*'},
+  'heal-powder': {'*'},
+};
+
+String _itemReferenceKey(String value) {
+  return value
+      .trim()
+      .toLowerCase()
+      .replaceAll(RegExp(r"[’']"), '')
+      .replaceAll(RegExp(r'[^a-z0-9]+'), '-')
+      .replaceAll(RegExp(r'^-+|-+$'), '');
 }
 
 class _BattleHeader extends StatelessWidget {
@@ -649,6 +1005,7 @@ class _ActivePokemonCard extends StatelessWidget {
   const _ActivePokemonCard({
     required this.pokemon,
     required this.slot,
+    required this.heldItem,
     required this.displayName,
     required this.level,
     required this.currentHp,
@@ -659,12 +1016,16 @@ class _ActivePokemonCard extends StatelessWidget {
     required this.onMinusOne,
     required this.onPlusOne,
     required this.onPlusFive,
+    required this.onEditHp,
     required this.onHeal,
     required this.onStatus,
+    required this.onUseHeldBerry,
+    required this.onOpenBag,
   });
 
   final Pokemon pokemon;
   final TeamSlot slot;
+  final BagItem? heldItem;
   final String displayName;
   final int level;
   final int currentHp;
@@ -675,8 +1036,11 @@ class _ActivePokemonCard extends StatelessWidget {
   final VoidCallback onMinusOne;
   final VoidCallback onPlusOne;
   final VoidCallback onPlusFive;
+  final VoidCallback onEditHp;
   final VoidCallback onHeal;
   final VoidCallback onStatus;
+  final VoidCallback? onUseHeldBerry;
+  final VoidCallback onOpenBag;
 
   @override
   Widget build(BuildContext context) {
@@ -728,25 +1092,38 @@ class _ActivePokemonCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 12),
-            Row(
-              children: [
-                Text(
-                  'HP $currentHp/$maxHp',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w900,
-                      ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(999),
-                    child: LinearProgressIndicator(
-                      value: hpProgress,
-                      minHeight: 14,
+            InkWell(
+              onTap: onEditHp,
+              borderRadius: BorderRadius.circular(8),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 6),
+                child: Row(
+                  children: [
+                    Text(
+                      'HP $currentHp/$maxHp',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w900,
+                          ),
                     ),
-                  ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(999),
+                        child: LinearProgressIndicator(
+                          value: hpProgress,
+                          minHeight: 16,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            _hpProgressColor(hpProgress),
+                          ),
+                          backgroundColor: Theme.of(context)
+                              .colorScheme
+                              .surfaceContainerHighest,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
             const SizedBox(height: 10),
             Wrap(
@@ -785,11 +1162,17 @@ class _ActivePokemonCard extends StatelessWidget {
                           children: [
                             const Text('STATUS:'),
                             for (final status in statuses)
-                              Chip(label: Text(status.toUpperCase())),
+                              _StatusChip(status: status),
                           ],
                         ),
                 ),
               ),
+            ),
+            const SizedBox(height: 10),
+            _HeldItemPanel(
+              item: heldItem,
+              onUseHeldBerry: onUseHeldBerry,
+              onOpenBag: onOpenBag,
             ),
             if (message != null) ...[
               const SizedBox(height: 10),
@@ -799,6 +1182,98 @@ class _ActivePokemonCard extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+Color _hpProgressColor(double value) {
+  if (value <= 0.25) return Colors.red;
+  if (value <= 0.5) return Colors.amber;
+  return Colors.green;
+}
+
+class _HeldItemPanel extends StatelessWidget {
+  const _HeldItemPanel({
+    required this.item,
+    required this.onUseHeldBerry,
+    required this.onOpenBag,
+  });
+
+  final BagItem? item;
+  final VoidCallback? onUseHeldBerry;
+  final VoidCallback onOpenBag;
+
+  @override
+  Widget build(BuildContext context) {
+    final item = this.item;
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(10),
+        child: Row(
+          children: [
+            if (item == null)
+              const Icon(Icons.inventory_2_outlined)
+            else
+              _ItemSprite(item: item, size: 36),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    item == null ? 'ITEM: NONE' : 'ITEM: ${item.name.toUpperCase()}',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(fontWeight: FontWeight.w900),
+                  ),
+                  Text(
+                    item == null
+                        ? 'Apri lo zaino per usare consumabili o assegnare strumenti.'
+                        : item.type == 'berry'
+                            ? 'Bacca tenuta: puoi usarla subito in combattimento.'
+                            : 'Strumento tenuto: ${_itemTypeLabel(item.type)}.',
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
+            if (item?.type == 'berry')
+              OutlinedButton(
+                onPressed: onUseHeldBerry,
+                child: const Text('USA'),
+              ),
+            const SizedBox(width: 6),
+            FilledButton(
+              onPressed: onOpenBag,
+              child: const Text('ZAINO'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+String _itemTypeLabel(String type) {
+  switch (type) {
+    case 'berry':
+      return 'Bacca';
+    case 'held-item':
+      return 'Strumento tenuto';
+    case 'medicine':
+      return 'Medicina';
+    case 'pokeball':
+      return 'Poké Ball';
+    case 'tm':
+      return 'MT';
+    default:
+      return type;
   }
 }
 
@@ -825,21 +1300,29 @@ class _BattleMoveCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final move = this.move;
     final title = move?.name ?? reference;
-    final type = move?.type ?? 'Sconosciuto';
     final canTrackPp = maxPp > 0;
 
     return Card(
       child: ExpansionTile(
+        leading: move == null
+            ? const Icon(Icons.radio_button_unchecked)
+            : PokemonTypeBadge(type: move.type, height: 24),
         title: Text(
           title.toUpperCase(),
           style: const TextStyle(fontWeight: FontWeight.w900),
         ),
-        subtitle: Text(
-          [
-            type,
-            if (stats != null && stats!.isNotEmpty) stats!,
-            if (canTrackPp) 'PP $remainingPp/$maxPp',
-          ].join('  |  '),
+        subtitle: Padding(
+          padding: const EdgeInsets.only(top: 4),
+          child: Wrap(
+            spacing: 8,
+            runSpacing: 4,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              if (move != null) PokemonTypeBadge(type: move.type, height: 18),
+              if (stats != null && stats!.isNotEmpty) Text(stats!),
+              if (canTrackPp) Text('PP $remainingPp/$maxPp'),
+            ],
+          ),
         ),
         trailing: canTrackPp
             ? Row(
@@ -875,6 +1358,144 @@ class _BattleMoveCard extends StatelessWidget {
           ],
         ],
       ),
+    );
+  }
+}
+
+class _StatusChip extends StatelessWidget {
+  const _StatusChip({required this.status});
+
+  final String status;
+
+  @override
+  Widget build(BuildContext context) {
+    return Chip(
+      avatar: _StatusIcon(status: status, size: 22),
+      label: Text(status.toUpperCase()),
+    );
+  }
+}
+
+class _StatusIcon extends StatelessWidget {
+  const _StatusIcon({required this.status, required this.size});
+
+  final String status;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    final info = _statusInfoByName[status];
+    final assetPath = info?.assetPath;
+
+    if (assetPath == null) {
+      return _StatusFallback(label: info?.shortLabel ?? status.characters.take(3).toString(), size: size);
+    }
+
+    return SizedBox(
+      width: size,
+      height: size,
+      child: Image.asset(
+        assetPath,
+        fit: BoxFit.contain,
+        filterQuality: FilterQuality.none,
+        errorBuilder: (_, __, ___) => _StatusFallback(
+          label: info?.shortLabel ?? status.characters.take(3).toString(),
+          size: size,
+        ),
+      ),
+    );
+  }
+}
+
+class _StatusFallback extends StatelessWidget {
+  const _StatusFallback({required this.label, required this.size});
+
+  final String label;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    return CircleAvatar(
+      radius: size / 2,
+      child: Text(
+        label,
+        style: TextStyle(fontSize: size * 0.32, fontWeight: FontWeight.w900),
+      ),
+    );
+  }
+}
+
+class _ItemSprite extends StatelessWidget {
+  const _ItemSprite({required this.item, this.size = 42});
+
+  final BagItem item;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    final remoteUrl = item.remoteSpriteUrl;
+    if (remoteUrl == null) return Icon(Icons.inventory_2_outlined, size: size);
+
+    return SizedBox(
+      width: size,
+      height: size,
+      child: Image.network(
+        remoteUrl,
+        fit: BoxFit.contain,
+        filterQuality: FilterQuality.none,
+        loadingBuilder: (context, child, loadingProgress) {
+          if (loadingProgress == null) return child;
+          return Icon(Icons.inventory_2_outlined, size: size);
+        },
+        errorBuilder: (_, __, ___) => Icon(Icons.inventory_2_outlined, size: size),
+      ),
+    );
+  }
+}
+
+class _HpInputDialog extends StatefulWidget {
+  const _HpInputDialog({required this.currentHp, required this.maxHp});
+
+  final int currentHp;
+  final int maxHp;
+
+  @override
+  State<_HpInputDialog> createState() => _HpInputDialogState();
+}
+
+class _HpInputDialogState extends State<_HpInputDialog> {
+  final TextEditingController _controller = TextEditingController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Modifica HP'),
+      content: TextField(
+        controller: _controller,
+        autofocus: true,
+        keyboardType: const TextInputType.numberWithOptions(signed: true),
+        decoration: InputDecoration(
+          labelText: 'HP o modifica',
+          helperText: 'Esempi: -12, +8 oppure 35. Attuali ${widget.currentHp}/${widget.maxHp}',
+        ),
+        onSubmitted: (value) => Navigator.of(context).pop(value),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Annulla'),
+        ),
+        FilledButton(
+          onPressed: () => Navigator.of(context).pop(_controller.text),
+          child: const Text('Salva'),
+        ),
+      ],
     );
   }
 }

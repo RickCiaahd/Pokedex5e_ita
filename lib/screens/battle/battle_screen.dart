@@ -28,6 +28,7 @@ class _BattleScreenState extends State<BattleScreen> {
 
   late Future<_BattleData> _dataFuture;
   final Map<int, Map<String, int>> _remainingPpBySlot = {};
+
   int? _activeSlotIndex;
   int _round = 1;
   String? _message;
@@ -54,13 +55,15 @@ class _BattleScreenState extends State<BattleScreen> {
 
     final pokemonList = await _pokemonRepository.getAllPokemon();
     final pokemonById = {for (final pokemon in pokemonList) pokemon.id: pokemon};
-
     final moveReferences = <String>{'Struggle'};
+
     for (final slot in team) {
       final pokemonId = slot.pokemonId;
       if (pokemonId == null) continue;
+
       final pokemon = pokemonById[pokemonId];
       if (pokemon == null) continue;
+
       moveReferences.addAll(_movesForSlot(slot, pokemon));
     }
 
@@ -84,14 +87,13 @@ class _BattleScreenState extends State<BattleScreen> {
   }
 
   TeamSlot? _activeSlotFor(_BattleData data) {
-    final occupiedSlots = data.occupiedSlots;
-    if (occupiedSlots.isEmpty) return null;
+    if (data.occupiedSlots.isEmpty) return null;
 
-    for (final slot in occupiedSlots) {
+    for (final slot in data.occupiedSlots) {
       if (slot.slotIndex == _activeSlotIndex) return slot;
     }
 
-    return occupiedSlots.first;
+    return data.occupiedSlots.first;
   }
 
   Pokemon? _pokemonForSlot(_BattleData data, TeamSlot slot) {
@@ -108,10 +110,6 @@ class _BattleScreenState extends State<BattleScreen> {
     return _defaultSelectedMoves(pokemon, _levelForSlot(slot));
   }
 
-  int _levelForSlot(TeamSlot slot) {
-    return LevelProgression.levelFromExperience(slot.experience);
-  }
-
   List<String> _defaultSelectedMoves(Pokemon pokemon, int level) {
     final names = <String>[...pokemon.moves.startingMoves];
     final levelEntries = pokemon.moves.levelMoves.entries
@@ -126,6 +124,10 @@ class _BattleScreenState extends State<BattleScreen> {
     return names.toSet().take(4).toList(growable: false);
   }
 
+  int _levelForSlot(TeamSlot slot) {
+    return LevelProgression.levelFromExperience(slot.experience);
+  }
+
   int _maxPpFor(MoveData? move) {
     if (move == null) return 0;
 
@@ -133,9 +135,7 @@ class _BattleScreenState extends State<BattleScreen> {
     if (direct != null) return direct;
 
     final match = RegExp(r'\d+').firstMatch(move.pp);
-    if (match == null) return 0;
-
-    return int.tryParse(match.group(0) ?? '') ?? 0;
+    return int.tryParse(match?.group(0) ?? '') ?? 0;
   }
 
   String _ppKey(String reference, MoveData? move) {
@@ -173,8 +173,7 @@ class _BattleScreenState extends State<BattleScreen> {
     if (trackableMoves.isEmpty) return false;
 
     return trackableMoves.every((reference) {
-      final move = moves[reference];
-      return _remainingPp(slot, reference, move) <= 0;
+      return _remainingPp(slot, reference, moves[reference]) <= 0;
     });
   }
 
@@ -182,14 +181,12 @@ class _BattleScreenState extends State<BattleScreen> {
     final pokemon = _pokemonForSlot(data, slot);
     if (pokemon == null) return;
 
-    final updatedHp = (_currentHpFor(slot, pokemon) + delta)
-        .clamp(0, _maxHpFor(pokemon, slot))
-        .toInt();
-    final updatedSlot = slot.copyWith(currentHp: updatedHp);
+    final maxHp = _maxHpFor(pokemon, slot);
+    final updatedHp = (_currentHpFor(slot, pokemon) + delta).clamp(0, maxHp).toInt();
 
     await _teamRepository.updateSlot(
       profileId: data.profile.id,
-      updatedSlot: updatedSlot,
+      updatedSlot: slot.copyWith(currentHp: updatedHp),
     );
     await _reload();
   }
@@ -198,14 +195,12 @@ class _BattleScreenState extends State<BattleScreen> {
     final pokemon = _pokemonForSlot(data, slot);
     if (pokemon == null) return;
 
-    final updatedSlot = slot.copyWith(
-      currentHp: _maxHpFor(pokemon, slot),
-      statusEffects: const [],
-    );
-
     await _teamRepository.updateSlot(
       profileId: data.profile.id,
-      updatedSlot: updatedSlot,
+      updatedSlot: slot.copyWith(
+        currentHp: _maxHpFor(pokemon, slot),
+        statusEffects: const [],
+      ),
     );
     await _reload(message: '${_displayName(slot, pokemon)} è pronto a combattere.');
   }
@@ -223,12 +218,11 @@ class _BattleScreenState extends State<BattleScreen> {
   }
 
   Future<void> _openStatusPicker(_BattleData data, TeamSlot slot) async {
-    final current = slot.statusEffects;
     final result = await showModalBottomSheet<List<String>>(
       context: context,
       showDragHandle: true,
       builder: (context) {
-        final selected = current.toSet();
+        final selected = slot.statusEffects.toSet();
 
         return StatefulBuilder(
           builder: (context, setSheetState) {
@@ -310,20 +304,17 @@ class _BattleScreenState extends State<BattleScreen> {
   }
 
   int _maxHpFor(Pokemon pokemon, TeamSlot slot) {
-    final level = _levelForSlot(slot);
-    final safeLevel = level.clamp(1, LevelProgression.maxLevel).toInt();
+    final level = _levelForSlot(slot).clamp(1, LevelProgression.maxLevel).toInt();
     final minimumLevel = pokemon.minLevelFound <= 0 ? 1 : pokemon.minLevelFound;
-    final levelsGained = (safeLevel - minimumLevel)
-        .clamp(0, LevelProgression.maxLevel)
-        .toInt();
+    final levelsGained = (level - minimumLevel).clamp(0, LevelProgression.maxLevel).toInt();
     final hitDieAverage = ((pokemon.hitDice + 1) / 2).ceil();
     final attributes = _attributeScores(pokemon, slot);
     final constitutionModifier = _modifier(attributes['CON'] ?? 10);
-    final toughBonus = slot.feats.contains('Tough') ? safeLevel * 2 : 0;
-    final loyaltyBonus = _loyaltyHpBonus(slot.loyalty, safeLevel);
+    final toughBonus = slot.feats.contains('Tough') ? level * 2 : 0;
+    final loyaltyBonus = _loyaltyHpBonus(slot.loyalty, level);
     final scaledHp = pokemon.hitPoints +
         (hitDieAverage * levelsGained) +
-        (constitutionModifier * safeLevel) +
+        (constitutionModifier * level) +
         toughBonus +
         loyaltyBonus;
 
@@ -380,9 +371,9 @@ class _BattleScreenState extends State<BattleScreen> {
 
   String _moveStats(MoveData move, Pokemon pokemon, TeamSlot slot) {
     final level = _levelForSlot(slot);
-    final parts = <String>[];
     final moveModifier = _bestMoveModifier(move, pokemon, slot);
     final proficiency = _proficiency(level);
+    final parts = <String>[];
 
     if (move.isAttack) {
       final attackBonus = moveModifier + proficiency;
@@ -506,11 +497,7 @@ class _BattleScreenState extends State<BattleScreen> {
                   _BattleMoveCard(
                     reference: reference,
                     move: data.moves[reference],
-                    remainingPp: _remainingPp(
-                      activeSlot,
-                      reference,
-                      data.moves[reference],
-                    ),
+                    remainingPp: _remainingPp(activeSlot, reference, data.moves[reference]),
                     maxPp: _maxPpFor(data.moves[reference]),
                     stats: data.moves[reference] == null
                         ? null
@@ -603,7 +590,8 @@ class _BattleHeader extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             DropdownButtonFormField<int>(
-              value: activeSlot.slotIndex,
+              key: ValueKey(activeSlot.slotIndex),
+              initialValue: activeSlot.slotIndex,
               decoration: const InputDecoration(labelText: 'Pokémon attivo'),
               items: [
                 for (final slot in occupiedSlots)
@@ -647,10 +635,12 @@ class _BattleHeader extends StatelessWidget {
 
   String _slotLabel(TeamSlot slot, Pokemon? pokemon) {
     if (pokemon == null) return 'Slot ${slot.slotIndex + 1}';
+
     final nickname = slot.nickname?.trim();
     if (nickname != null && nickname.isNotEmpty) {
       return '$nickname (${pokemon.name})';
     }
+
     return pokemon.name;
   }
 }

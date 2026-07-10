@@ -1,30 +1,12 @@
 name: pokedex_5e_ita
 description: "A new Flutter project."
-# The following line prevents the package from being accidentally published to
-# pub.dev using `flutter pub publish`. This is preferred for private packages.
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: 'none'
 
-# The following defines the version and build number for your application.
-# A version number is three numbers separated by dots, like 1.2.43
-# followed by an optional build number separated by a +.
-# Both the version and the builder number may be overridden in flutter
-# build by specifying --build-name and --build-number, respectively.
-# In Android, build-name is used as versionName while build-number used as versionCode.
-# Read more about Android versioning at https://developer.android.com/studio/publish/versioning
-# In iOS, build-name is used as CFBundleShortVersionString while build-number is used as CFBundleVersion.
-# Read more about iOS versioning at
-# https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 version: 1.0.0+1
 
 environment:
   sdk: ^3.12.2
 
-# Dependencies specify other packages that your package needs to work.
-# To automatically upgrade your package dependencies to the latest versions
-# consider running `flutter pub upgrade --major-versions`. Alternatively,
-# dependencies can be manually updated by changing the version numbers below
-# to the latest version available on pub.dev. To see which dependencies have
-# newer versions available, run `flutter pub outdated`.
 dependencies:
   flutter:
     sdk: flutter
@@ -34,29 +16,16 @@ dependencies:
   hive: ^2.2.3
   hive_flutter: ^1.1.0
 
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  # The "flutter_lints" package below contains a set of recommended lints to
-  # encourage good coding practices. The lint set provided by the package is
-  # activated in the `analysis_options.yaml` file located at the root of your
-  # package. See that file for information about deactivating specific lint
-  # rules and activating additional additional rules.
   flutter_lints: ^6.0.0
 
-# For information on the generic Dart part of this file, see the following page:
-# https://dart.dev/tools/pub/pubspec
-
-# The following section is specific to Flutter packages.
 flutter:
 
-  # The following line ensures that the Material Icons font is included with the
-  # application, so that Material Icons can be used.
   uses-material-design: true
 
   assets:
@@ -76,29 +45,219 @@ flutter:
     - assets/textures/textures_webapp/items/
     - assets/textures/textures_webapp/pokemon/
     - assets/textures/textures_webapp/pokemon_transforms/
-
-  # An image asset can refer to one or more resolution-specific "variants", see
-  # https://flutter.dev/to/resolution-aware-images
-
-  # For details regarding assets from package dependencies, see
-  # https://flutter.dev/to/asset-from-package
-
-  # To add custom fonts to your application, add a fonts section here,
-  # in this "flutter" section. Each entry in this list should have a
-  # "family" key with the font family name, and a "fonts" key with a
-  # list giving the asset and other descriptors for the font. For
-  # example:
-  # fonts:
-  #   - family: Schyler
-  #     fonts:
-  #       - asset: fonts/Schyler-Regular.ttf
-  #       - asset: fonts/Schyler-Italic.ttf
-  #         style: italic
-  #   - family: Trajan Pro
-  #     fonts:
-  #       - asset: fonts/TrajanPro.ttf
-  #       - asset: fonts/TrajanPro_Bold.ttf
-  #         weight: 700
-  #
-  # For details regarding fonts from package dependencies,
-  # see https://flutter.dev/to/font-from-package
+    - assets/textures/textures_webapp/pokemon/grookey/
+    - assets/textures/textures_webapp/pokemon/thwackey/
+    - assets/textures/textures_webapp/pokemon/rillaboom/
+    - assets/textures/textures_webapp/pokemon/scorbunny/
+    - assets/textures/textures_webapp/pokemon/raboot/
+    - assets/textures/textures_webapp/pokemon/cinderace/
+    - assets/textures/textures_webapp/pokemon/sobble/
+    - assets/textures/textures_webapp/pokemon/drizzile/
+    - assets/textures/textures_webapp/pokemon/inteleon/
+    - assets/textures/textures_webapp/pokemon/skwovet/
+    - assets/textures/textures_webapp/pokemon/greedent/
+    - assets/textures/textures_webapp/pokemon/rookidee/
+    - assets/textures/textures_webapp/pokemon/corvisquire/
+    - assets/textures/textures_webapp/pokemon/corviknight/
+    - assets/textures/textures_webapp/pokemon/blipbug/
+    - assets/textures/textures_webapp/pokemon/dottler/
+    - assets/textures/textures_webapp/pokemon/orbeetle/
+    - assets/textures/textures_webapp/pokemon/nickit/
+    - assets/textures/textures_webapp/pokemon/thievul/
+    - assets/textures/textures_webapp/pokemon/gossifleur/
+    - assets/textures/textures_webapp/pokemon/eldegoss/
+    - assets/textures/textures_webapp/pokemon/wooloo/
+    - assets/textures/textures_webapp/pokemon/dubwool/
+    - assets/textures/textures_webapp/pokemon/chewtle/
+    - assets/textures/textures_webapp/pokemon/drednaw/
+    - assets/textures/textures_webapp/pokemon/yamper/
+    - assets/textures/textures_webapp/pokemon/boltund/
+    - assets/textures/textures_webapp/pokemon/rolycoly/
+    - assets/textures/textures_webapp/pokemon/carkol/
+    - assets/textures/textures_webapp/pokemon/coalossal/
+    - assets/textures/textures_webapp/pokemon/applin/
+    - assets/textures/textures_webapp/pokemon/flapple/
+    - assets/textures/textures_webapp/pokemon/appletun/
+    - assets/textures/textures_webapp/pokemon/silicobra/
+    - assets/textures/textures_webapp/pokemon/sandaconda/
+    - assets/textures/textures_webapp/pokemon/cramorant/
+    - assets/textures/textures_webapp/pokemon/arrokuda/
+    - assets/textures/textures_webapp/pokemon/barraskewda/
+    - assets/textures/textures_webapp/pokemon/toxel/
+    - assets/textures/textures_webapp/pokemon/toxtricity/
+    - assets/textures/textures_webapp/pokemon/sizzlipede/
+    - assets/textures/textures_webapp/pokemon/centiskorch/
+    - assets/textures/textures_webapp/pokemon/clobbopus/
+    - assets/textures/textures_webapp/pokemon/grapploct/
+    - assets/textures/textures_webapp/pokemon/sinistea/
+    - assets/textures/textures_webapp/pokemon/polteageist/
+    - assets/textures/textures_webapp/pokemon/hatenna/
+    - assets/textures/textures_webapp/pokemon/hattrem/
+    - assets/textures/textures_webapp/pokemon/hatterene/
+    - assets/textures/textures_webapp/pokemon/impidimp/
+    - assets/textures/textures_webapp/pokemon/morgrem/
+    - assets/textures/textures_webapp/pokemon/grimmsnarl/
+    - assets/textures/textures_webapp/pokemon/obstagoon/
+    - assets/textures/textures_webapp/pokemon/perrserker/
+    - assets/textures/textures_webapp/pokemon/cursola/
+    - assets/textures/textures_webapp/pokemon/sirfetchd/
+    - assets/textures/textures_webapp/pokemon/mr-rime/
+    - assets/textures/textures_webapp/pokemon/runerigus/
+    - assets/textures/textures_webapp/pokemon/milcery/
+    - assets/textures/textures_webapp/pokemon/alcremie/
+    - assets/textures/textures_webapp/pokemon/falinks/
+    - assets/textures/textures_webapp/pokemon/pincurchin/
+    - assets/textures/textures_webapp/pokemon/snom/
+    - assets/textures/textures_webapp/pokemon/frosmoth/
+    - assets/textures/textures_webapp/pokemon/stonjourner/
+    - assets/textures/textures_webapp/pokemon/eiscue/
+    - assets/textures/textures_webapp/pokemon/indeedee/
+    - assets/textures/textures_webapp/pokemon/morpeko/
+    - assets/textures/textures_webapp/pokemon/cufant/
+    - assets/textures/textures_webapp/pokemon/copperajah/
+    - assets/textures/textures_webapp/pokemon/dracozolt/
+    - assets/textures/textures_webapp/pokemon/arctozolt/
+    - assets/textures/textures_webapp/pokemon/dracovish/
+    - assets/textures/textures_webapp/pokemon/arctovish/
+    - assets/textures/textures_webapp/pokemon/duraludon/
+    - assets/textures/textures_webapp/pokemon/dreepy/
+    - assets/textures/textures_webapp/pokemon/drakloak/
+    - assets/textures/textures_webapp/pokemon/dragapult/
+    - assets/textures/textures_webapp/pokemon/zacian/
+    - assets/textures/textures_webapp/pokemon/zamazenta/
+    - assets/textures/textures_webapp/pokemon/eternatus/
+    - assets/textures/textures_webapp/pokemon/kubfu/
+    - assets/textures/textures_webapp/pokemon/urshifu/
+    - assets/textures/textures_webapp/pokemon/zarude/
+    - assets/textures/textures_webapp/pokemon/regieleki/
+    - assets/textures/textures_webapp/pokemon/regidrago/
+    - assets/textures/textures_webapp/pokemon/glastrier/
+    - assets/textures/textures_webapp/pokemon/spectrier/
+    - assets/textures/textures_webapp/pokemon/calyrex/
+    - assets/textures/textures_webapp/pokemon/wyrdeer/
+    - assets/textures/textures_webapp/pokemon/kleavor/
+    - assets/textures/textures_webapp/pokemon/ursaluna/
+    - assets/textures/textures_webapp/pokemon/basculegion/
+    - assets/textures/textures_webapp/pokemon/sneasler/
+    - assets/textures/textures_webapp/pokemon/overqwil/
+    - assets/textures/textures_webapp/pokemon/enamorus/
+    - assets/textures/textures_webapp/pokemon/sprigatito/
+    - assets/textures/textures_webapp/pokemon/floragato/
+    - assets/textures/textures_webapp/pokemon/meowscarada/
+    - assets/textures/textures_webapp/pokemon/fuecoco/
+    - assets/textures/textures_webapp/pokemon/crocalor/
+    - assets/textures/textures_webapp/pokemon/skeledirge/
+    - assets/textures/textures_webapp/pokemon/quaxly/
+    - assets/textures/textures_webapp/pokemon/quaxwell/
+    - assets/textures/textures_webapp/pokemon/quaquaval/
+    - assets/textures/textures_webapp/pokemon/lechonk/
+    - assets/textures/textures_webapp/pokemon/oinkologne/
+    - assets/textures/textures_webapp/pokemon/tarountula/
+    - assets/textures/textures_webapp/pokemon/spidops/
+    - assets/textures/textures_webapp/pokemon/nymble/
+    - assets/textures/textures_webapp/pokemon/lokix/
+    - assets/textures/textures_webapp/pokemon/pawmi/
+    - assets/textures/textures_webapp/pokemon/pawmo/
+    - assets/textures/textures_webapp/pokemon/pawmot/
+    - assets/textures/textures_webapp/pokemon/tandemaus/
+    - assets/textures/textures_webapp/pokemon/maushold/
+    - assets/textures/textures_webapp/pokemon/fidough/
+    - assets/textures/textures_webapp/pokemon/dachsbun/
+    - assets/textures/textures_webapp/pokemon/smoliv/
+    - assets/textures/textures_webapp/pokemon/dolliv/
+    - assets/textures/textures_webapp/pokemon/arboliva/
+    - assets/textures/textures_webapp/pokemon/squawkabilly/
+    - assets/textures/textures_webapp/pokemon/nacli/
+    - assets/textures/textures_webapp/pokemon/naclstack/
+    - assets/textures/textures_webapp/pokemon/garganacl/
+    - assets/textures/textures_webapp/pokemon/charcadet/
+    - assets/textures/textures_webapp/pokemon/armarouge/
+    - assets/textures/textures_webapp/pokemon/ceruledge/
+    - assets/textures/textures_webapp/pokemon/tadbulb/
+    - assets/textures/textures_webapp/pokemon/bellibolt/
+    - assets/textures/textures_webapp/pokemon/wattrel/
+    - assets/textures/textures_webapp/pokemon/kilowattrel/
+    - assets/textures/textures_webapp/pokemon/maschiff/
+    - assets/textures/textures_webapp/pokemon/mabosstiff/
+    - assets/textures/textures_webapp/pokemon/shroodle/
+    - assets/textures/textures_webapp/pokemon/grafaiai/
+    - assets/textures/textures_webapp/pokemon/bramblin/
+    - assets/textures/textures_webapp/pokemon/brambleghast/
+    - assets/textures/textures_webapp/pokemon/toedscool/
+    - assets/textures/textures_webapp/pokemon/toedscruel/
+    - assets/textures/textures_webapp/pokemon/klawf/
+    - assets/textures/textures_webapp/pokemon/capsakid/
+    - assets/textures/textures_webapp/pokemon/scovillain/
+    - assets/textures/textures_webapp/pokemon/rellor/
+    - assets/textures/textures_webapp/pokemon/rabsca/
+    - assets/textures/textures_webapp/pokemon/flittle/
+    - assets/textures/textures_webapp/pokemon/espathra/
+    - assets/textures/textures_webapp/pokemon/tinkatink/
+    - assets/textures/textures_webapp/pokemon/tinkatuff/
+    - assets/textures/textures_webapp/pokemon/tinkaton/
+    - assets/textures/textures_webapp/pokemon/wiglett/
+    - assets/textures/textures_webapp/pokemon/wugtrio/
+    - assets/textures/textures_webapp/pokemon/bombirdier/
+    - assets/textures/textures_webapp/pokemon/finizen/
+    - assets/textures/textures_webapp/pokemon/palafin/
+    - assets/textures/textures_webapp/pokemon/varoom/
+    - assets/textures/textures_webapp/pokemon/revavroom/
+    - assets/textures/textures_webapp/pokemon/cyclizar/
+    - assets/textures/textures_webapp/pokemon/orthworm/
+    - assets/textures/textures_webapp/pokemon/glimmet/
+    - assets/textures/textures_webapp/pokemon/glimmora/
+    - assets/textures/textures_webapp/pokemon/greavard/
+    - assets/textures/textures_webapp/pokemon/houndstone/
+    - assets/textures/textures_webapp/pokemon/flamigo/
+    - assets/textures/textures_webapp/pokemon/cetoddle/
+    - assets/textures/textures_webapp/pokemon/cetitan/
+    - assets/textures/textures_webapp/pokemon/veluza/
+    - assets/textures/textures_webapp/pokemon/dondozo/
+    - assets/textures/textures_webapp/pokemon/tatsugiri/
+    - assets/textures/textures_webapp/pokemon/annihilape/
+    - assets/textures/textures_webapp/pokemon/clodsire/
+    - assets/textures/textures_webapp/pokemon/farigiraf/
+    - assets/textures/textures_webapp/pokemon/dudunsparce/
+    - assets/textures/textures_webapp/pokemon/kingambit/
+    - assets/textures/textures_webapp/pokemon/great-tusk/
+    - assets/textures/textures_webapp/pokemon/scream-tail/
+    - assets/textures/textures_webapp/pokemon/brute-bonnet/
+    - assets/textures/textures_webapp/pokemon/flutter-mane/
+    - assets/textures/textures_webapp/pokemon/slither-wing/
+    - assets/textures/textures_webapp/pokemon/sandy-shocks/
+    - assets/textures/textures_webapp/pokemon/iron-treads/
+    - assets/textures/textures_webapp/pokemon/iron-bundle/
+    - assets/textures/textures_webapp/pokemon/iron-hands/
+    - assets/textures/textures_webapp/pokemon/iron-jugulis/
+    - assets/textures/textures_webapp/pokemon/iron-moth/
+    - assets/textures/textures_webapp/pokemon/iron-thorns/
+    - assets/textures/textures_webapp/pokemon/frigibax/
+    - assets/textures/textures_webapp/pokemon/arctibax/
+    - assets/textures/textures_webapp/pokemon/baxcalibur/
+    - assets/textures/textures_webapp/pokemon/gimmighoul/
+    - assets/textures/textures_webapp/pokemon/gholdengo/
+    - assets/textures/textures_webapp/pokemon/wo-chien/
+    - assets/textures/textures_webapp/pokemon/chien-pao/
+    - assets/textures/textures_webapp/pokemon/ting-lu/
+    - assets/textures/textures_webapp/pokemon/chi-yu/
+    - assets/textures/textures_webapp/pokemon/roaring-moon/
+    - assets/textures/textures_webapp/pokemon/iron-valiant/
+    - assets/textures/textures_webapp/pokemon/koraidon/
+    - assets/textures/textures_webapp/pokemon/miraidon/
+    - assets/textures/textures_webapp/pokemon/walking-wake/
+    - assets/textures/textures_webapp/pokemon/iron-leaves/
+    - assets/textures/textures_webapp/pokemon/dipplin/
+    - assets/textures/textures_webapp/pokemon/poltchageist/
+    - assets/textures/textures_webapp/pokemon/sinistcha/
+    - assets/textures/textures_webapp/pokemon/okidogi/
+    - assets/textures/textures_webapp/pokemon/munkidori/
+    - assets/textures/textures_webapp/pokemon/fezandipiti/
+    - assets/textures/textures_webapp/pokemon/ogerpon/
+    - assets/textures/textures_webapp/pokemon/archaludon/
+    - assets/textures/textures_webapp/pokemon/hydrapple/
+    - assets/textures/textures_webapp/pokemon/gouging-fire/
+    - assets/textures/textures_webapp/pokemon/raging-bolt/
+    - assets/textures/textures_webapp/pokemon/iron-boulder/
+    - assets/textures/textures_webapp/pokemon/iron-crown/
+    - assets/textures/textures_webapp/pokemon/terapagos/
+    - assets/textures/textures_webapp/pokemon/pecharunt/

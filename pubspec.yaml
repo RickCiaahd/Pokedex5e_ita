@@ -84,7 +84,6 @@ flutter:
     - assets/textures/textures_webapp/pokemon/arrokuda/
     - assets/textures/textures_webapp/pokemon/barraskewda/
     - assets/textures/textures_webapp/pokemon/toxel/
-    - assets/textures/textures_webapp/pokemon/toxtricity/
     - assets/textures/textures_webapp/pokemon/sizzlipede/
     - assets/textures/textures_webapp/pokemon/centiskorch/
     - assets/textures/textures_webapp/pokemon/clobbopus/
@@ -111,7 +110,6 @@ flutter:
     - assets/textures/textures_webapp/pokemon/frosmoth/
     - assets/textures/textures_webapp/pokemon/stonjourner/
     - assets/textures/textures_webapp/pokemon/eiscue/
-    - assets/textures/textures_webapp/pokemon/indeedee/
     - assets/textures/textures_webapp/pokemon/morpeko/
     - assets/textures/textures_webapp/pokemon/cufant/
     - assets/textures/textures_webapp/pokemon/copperajah/
@@ -127,7 +125,6 @@ flutter:
     - assets/textures/textures_webapp/pokemon/zamazenta/
     - assets/textures/textures_webapp/pokemon/eternatus/
     - assets/textures/textures_webapp/pokemon/kubfu/
-    - assets/textures/textures_webapp/pokemon/urshifu/
     - assets/textures/textures_webapp/pokemon/zarude/
     - assets/textures/textures_webapp/pokemon/regieleki/
     - assets/textures/textures_webapp/pokemon/regidrago/
@@ -137,7 +134,6 @@ flutter:
     - assets/textures/textures_webapp/pokemon/wyrdeer/
     - assets/textures/textures_webapp/pokemon/kleavor/
     - assets/textures/textures_webapp/pokemon/ursaluna/
-    - assets/textures/textures_webapp/pokemon/basculegion/
     - assets/textures/textures_webapp/pokemon/sneasler/
     - assets/textures/textures_webapp/pokemon/overqwil/
     - assets/textures/textures_webapp/pokemon/enamorus/
@@ -151,7 +147,6 @@ flutter:
     - assets/textures/textures_webapp/pokemon/quaxwell/
     - assets/textures/textures_webapp/pokemon/quaquaval/
     - assets/textures/textures_webapp/pokemon/lechonk/
-    - assets/textures/textures_webapp/pokemon/oinkologne/
     - assets/textures/textures_webapp/pokemon/tarountula/
     - assets/textures/textures_webapp/pokemon/spidops/
     - assets/textures/textures_webapp/pokemon/nymble/

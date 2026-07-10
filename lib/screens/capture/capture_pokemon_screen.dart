@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../models/bag_inventory_entry.dart';
 import '../../models/bag_item.dart';
 import '../../models/pokemon.dart';
+import '../../models/pokemon_nature.dart';
 import '../../models/team_slot.dart';
 import '../../models/trainer_progression.dart';
 import '../../models/user_profile.dart';
@@ -32,6 +33,9 @@ class _CapturePokemonScreenState extends State<CapturePokemonScreen> {
   final ItemRepository _itemRepository = ItemRepository();
   final BagInventoryRepository _bagRepository = BagInventoryRepository();
   final TextEditingController _searchController = TextEditingController();
+  final TextEditingController _nicknameController = TextEditingController();
+  final TextEditingController _formController = TextEditingController();
+  final TextEditingController _initialHpController = TextEditingController();
 
   UserProfile? _profile;
   List<Pokemon> _pokemon = [];
@@ -42,8 +46,11 @@ class _CapturePokemonScreenState extends State<CapturePokemonScreen> {
   Pokemon? _selectedPokemon;
   bool _isLoading = true;
   bool _isSaving = false;
+  bool _isShiny = false;
   String _query = '';
+  String _selectedNature = 'No Nature';
   String? _selectedBallId;
+  String? _selectedGender;
   int _ballQuantity = 1;
   String? _successMessage;
   String? _errorMessage;
@@ -57,6 +64,9 @@ class _CapturePokemonScreenState extends State<CapturePokemonScreen> {
   @override
   void dispose() {
     _searchController.dispose();
+    _nicknameController.dispose();
+    _formController.dispose();
+    _initialHpController.dispose();
     super.dispose();
   }
 
@@ -160,6 +170,12 @@ class _CapturePokemonScreenState extends State<CapturePokemonScreen> {
       _selectedPokemon = pokemon;
       _successMessage = null;
       _errorMessage = null;
+      _nicknameController.clear();
+      _formController.clear();
+      _initialHpController.text = pokemon.hitPoints.toString();
+      _selectedGender = null;
+      _selectedNature = 'No Nature';
+      _isShiny = false;
     });
   }
 
@@ -167,6 +183,12 @@ class _CapturePokemonScreenState extends State<CapturePokemonScreen> {
     final profile = _profile;
     final pokemon = _selectedPokemon;
     if (profile == null || pokemon == null || _isSaving) return;
+
+    final initialHp = int.tryParse(_initialHpController.text.trim());
+    if (initialHp == null || initialHp < 0) {
+      setState(() => _errorMessage = 'Inserisci un valore HP iniziali valido.');
+      return;
+    }
 
     setState(() {
       _isSaving = true;
@@ -199,15 +221,32 @@ class _CapturePokemonScreenState extends State<CapturePokemonScreen> {
         }
       }
 
-      final destination = await _addPokemonToCollection(profile, pokemon);
+      final nickname = _emptyToNull(_nicknameController.text);
+      final formName = _emptyToNull(_formController.text);
+      final destination = await _addPokemonToCollection(
+        profile,
+        pokemon,
+        currentHp: initialHp,
+        nickname: nickname,
+        gender: _selectedGender,
+        isShiny: _isShiny,
+        nature: _selectedNature,
+        formName: formName,
+      );
       await _loadData(clearMessages: false);
 
       if (!mounted) return;
       setState(() {
         _selectedPokemon = null;
         _selectedBallId = null;
+        _selectedGender = null;
+        _selectedNature = 'No Nature';
+        _isShiny = false;
         _ballQuantity = 1;
-        _successMessage = '${pokemon.name} registrato come catturato e $destination.';
+        _nicknameController.clear();
+        _formController.clear();
+        _initialHpController.clear();
+        _successMessage = '${nickname ?? pokemon.name} registrato come catturato e $destination.';
       });
     } catch (error) {
       if (!mounted) return;
@@ -233,18 +272,41 @@ class _CapturePokemonScreenState extends State<CapturePokemonScreen> {
     setState(() => _successMessage = '${pokemon.name} registrato come visto.');
   }
 
-  Future<String> _addPokemonToCollection(UserProfile profile, Pokemon pokemon) async {
+  Future<String> _addPokemonToCollection(
+    UserProfile profile,
+    Pokemon pokemon, {
+    required int currentHp,
+    String? nickname,
+    String? gender,
+    required bool isShiny,
+    required String nature,
+    String? formName,
+  }) async {
     final teamSlot = _firstFreeTeamSlot;
     if (teamSlot != null) {
-      await _teamRepository.setPokemonInSlot(
+      await _teamRepository.updateSlot(
         profileId: profile.id,
-        slotIndex: teamSlot.slotIndex,
-        pokemonId: pokemon.id,
+        updatedSlot: TeamSlot(
+          slotIndex: teamSlot.slotIndex,
+          pokemonId: pokemon.id,
+          currentHp: currentHp,
+          nickname: nickname,
+          isShiny: isShiny,
+          gender: gender,
+          formName: formName,
+          nature: nature,
+        ),
       );
     } else {
       await _pokemonPcRepository.depositPokemon(
         profileId: profile.id,
         pokemonId: pokemon.id,
+        currentHp: currentHp,
+        nickname: nickname,
+        isShiny: isShiny,
+        gender: gender,
+        formName: formName,
+        nature: nature,
       );
     }
 
@@ -258,6 +320,11 @@ class _CapturePokemonScreenState extends State<CapturePokemonScreen> {
     return teamSlot == null
         ? 'inviato al PC'
         : 'aggiunto allo slot squadra ${teamSlot.slotIndex + 1}';
+  }
+
+  String? _emptyToNull(String value) {
+    final trimmed = value.trim();
+    return trimmed.isEmpty ? null : trimmed;
   }
 
   @override
@@ -309,10 +376,16 @@ class _CapturePokemonScreenState extends State<CapturePokemonScreen> {
                 const SizedBox(height: 12),
                 _RegisterCaughtPanel(
                   pokemon: selectedPokemon,
+                  nicknameController: _nicknameController,
+                  formController: _formController,
+                  initialHpController: _initialHpController,
                   ownedPokeballs: _ownedPokeballs,
                   selectedBallId: _selectedBallId,
                   selectedOwnedBall: selectedOwnedBall,
                   ballQuantity: _ballQuantity,
+                  selectedGender: _selectedGender,
+                  selectedNature: _selectedNature,
+                  isShiny: _isShiny,
                   isSaving: _isSaving,
                   onBallChanged: (value) {
                     setState(() {
@@ -323,6 +396,12 @@ class _CapturePokemonScreenState extends State<CapturePokemonScreen> {
                   onQuantityChanged: (value) {
                     setState(() => _ballQuantity = value.clamp(1, 99).toInt());
                   },
+                  onGenderChanged: (value) => setState(() => _selectedGender = value),
+                  onNatureChanged: (value) {
+                    if (value == null) return;
+                    setState(() => _selectedNature = value);
+                  },
+                  onShinyChanged: (value) => setState(() => _isShiny = value),
                   onRegister: _registerCaughtPokemon,
                   onMarkSeen: _markSeen,
                   onClose: () => setState(() => _selectedPokemon = null),
@@ -418,26 +497,44 @@ class _CaptureHeader extends StatelessWidget {
 class _RegisterCaughtPanel extends StatelessWidget {
   const _RegisterCaughtPanel({
     required this.pokemon,
+    required this.nicknameController,
+    required this.formController,
+    required this.initialHpController,
     required this.ownedPokeballs,
     required this.selectedBallId,
     required this.selectedOwnedBall,
     required this.ballQuantity,
+    required this.selectedGender,
+    required this.selectedNature,
+    required this.isShiny,
     required this.isSaving,
     required this.onBallChanged,
     required this.onQuantityChanged,
+    required this.onGenderChanged,
+    required this.onNatureChanged,
+    required this.onShinyChanged,
     required this.onRegister,
     required this.onMarkSeen,
     required this.onClose,
   });
 
   final Pokemon pokemon;
+  final TextEditingController nicknameController;
+  final TextEditingController formController;
+  final TextEditingController initialHpController;
   final List<_OwnedPokeball> ownedPokeballs;
   final String? selectedBallId;
   final _OwnedPokeball? selectedOwnedBall;
   final int ballQuantity;
+  final String? selectedGender;
+  final String selectedNature;
+  final bool isShiny;
   final bool isSaving;
   final ValueChanged<String?> onBallChanged;
   final ValueChanged<int> onQuantityChanged;
+  final ValueChanged<String?> onGenderChanged;
+  final ValueChanged<String?> onNatureChanged;
+  final ValueChanged<bool> onShinyChanged;
   final VoidCallback onRegister;
   final VoidCallback onMarkSeen;
   final VoidCallback onClose;
@@ -492,6 +589,86 @@ class _RegisterCaughtPanel extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 12),
+            Text(
+              'DETTAGLI CATTURA',
+              style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                    fontWeight: FontWeight.w900,
+                  ),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: nicknameController,
+              enabled: !isSaving,
+              decoration: const InputDecoration(
+                labelText: 'Nickname',
+                hintText: 'Lascia vuoto per usare il nome originale',
+              ),
+            ),
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                Expanded(
+                  child: DropdownButtonFormField<String?>(
+                    key: ValueKey(selectedGender ?? 'none'),
+                    initialValue: selectedGender,
+                    decoration: const InputDecoration(labelText: 'Sesso'),
+                    items: const [
+                      DropdownMenuItem<String?>(value: null, child: Text('Non specificato')),
+                      DropdownMenuItem<String?>(value: 'Male', child: Text('Maschio')),
+                      DropdownMenuItem<String?>(value: 'Female', child: Text('Femmina')),
+                      DropdownMenuItem<String?>(value: 'Genderless', child: Text('Senza sesso')),
+                    ],
+                    onChanged: isSaving ? null : onGenderChanged,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: DropdownButtonFormField<String>(
+                    key: ValueKey(selectedNature),
+                    initialValue: selectedNature,
+                    decoration: const InputDecoration(labelText: 'Natura'),
+                    items: [
+                      for (final nature in PokemonNature.names)
+                        DropdownMenuItem<String>(value: nature, child: Text(nature)),
+                    ],
+                    onChanged: isSaving ? null : onNatureChanged,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: initialHpController,
+                    enabled: !isSaving,
+                    keyboardType: TextInputType.number,
+                    decoration: const InputDecoration(labelText: 'HP iniziali'),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: TextField(
+                    controller: formController,
+                    enabled: !isSaving,
+                    decoration: const InputDecoration(
+                      labelText: 'Forma',
+                      hintText: 'Opzionale',
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 6),
+            SwitchListTile(
+              contentPadding: EdgeInsets.zero,
+              value: isShiny,
+              onChanged: isSaving ? null : onShinyChanged,
+              title: const Text('Shiny'),
+              subtitle: const Text('Salva lo sprite shiny dove disponibile.'),
+            ),
+            const Divider(height: 22),
             DropdownButtonFormField<String?>(
               key: ValueKey(selectedBallId ?? 'none'),
               initialValue: selectedBallId,

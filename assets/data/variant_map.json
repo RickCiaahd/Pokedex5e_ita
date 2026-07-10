@@ -192,5 +192,411 @@
   "Graveler": [
     "Graveler",
     "Alolan Graveler"
+  ],
+  "Deoxys": [
+    "Deoxys Normal Forme",
+    "Deoxys Attack Forme",
+    "Deoxys Defense Forme",
+    "Deoxys Speed Forme"
+  ],
+  "Burmy": [
+    "Burmy Plant Cloak",
+    "Burmy Sandy Cloak",
+    "Burmy Trash Cloak"
+  ],
+  "Cherrim": [
+    "Cherrim Overcast Form",
+    "Cherrim Sunshine Form"
+  ],
+  "Shellos": [
+    "Shellos West Sea",
+    "Shellos East Sea"
+  ],
+  "Gastrodon": [
+    "Gastrodon West Sea",
+    "Gastrodon East Sea"
+  ],
+  "Dialga": [
+    "Dialga Altered Forme",
+    "Dialga Origin Forme"
+  ],
+  "Palkia": [
+    "Palkia Altered Forme",
+    "Palkia Origin Forme"
+  ],
+  "Basculin": [
+    "Basculin Red-Striped Form",
+    "Basculin Blue-Striped Form",
+    "Basculin White-Striped Form"
+  ],
+  "Darmanitan": [
+    "Darmanitan Standard Mode",
+    "Darmanitan Zen Mode",
+    "Galarian Darmanitan Standard Mode",
+    "Galarian Darmanitan Zen Mode"
+  ],
+  "Deerling": [
+    "Deerling Spring Form",
+    "Deerling Summer Form",
+    "Deerling Autumn Form",
+    "Deerling Winter Form"
+  ],
+  "Sawsbuck": [
+    "Sawsbuck Spring Form",
+    "Sawsbuck Summer Form",
+    "Sawsbuck Autumn Form",
+    "Sawsbuck Winter Form"
+  ],
+  "Tornadus": [
+    "Tornadus Incarnate Forme",
+    "Tornadus Therian Forme"
+  ],
+  "Thundurus": [
+    "Thundurus Incarnate Forme",
+    "Thundurus Therian Forme"
+  ],
+  "Landorus": [
+    "Landorus Incarnate Forme",
+    "Landorus Therian Forme"
+  ],
+  "Keldeo": [
+    "Keldeo Ordinary Form",
+    "Keldeo Resolute Form"
+  ],
+  "Genesect": [
+    "Genesect Normal Drive",
+    "Genesect Douse Drive",
+    "Genesect Shock Drive",
+    "Genesect Burn Drive",
+    "Genesect Chill Drive"
+  ],
+  "Vivillon": [
+    "Vivillon Icy Snow Pattern",
+    "Vivillon Polar Pattern",
+    "Vivillon Tundra Pattern",
+    "Vivillon Continental Pattern",
+    "Vivillon Garden Pattern",
+    "Vivillon Elegant Pattern",
+    "Vivillon Meadow Pattern",
+    "Vivillon Modern Pattern",
+    "Vivillon Marine Pattern",
+    "Vivillon Archipelago Pattern",
+    "Vivillon High Plains Pattern",
+    "Vivillon Sandstorm Pattern",
+    "Vivillon River Pattern",
+    "Vivillon Monsoon Pattern",
+    "Vivillon Savanna Pattern",
+    "Vivillon Sun Pattern",
+    "Vivillon Ocean Pattern",
+    "Vivillon Jungle Pattern",
+    "Vivillon Fancy Pattern",
+    "Vivillon Poké Ball Pattern"
+  ],
+  "Flabebe": [
+    "Flabebe Red Flower",
+    "Flabebe Yellow Flower",
+    "Flabebe Orange Flower",
+    "Flabebe Blue Flower",
+    "Flabebe White Flower"
+  ],
+  "Floette": [
+    "Floette Red Flower",
+    "Floette Yellow Flower",
+    "Floette Orange Flower",
+    "Floette Blue Flower",
+    "Floette White Flower",
+    "Floette Eternal Flower"
+  ],
+  "Florges": [
+    "Florges Red Flower",
+    "Florges Yellow Flower",
+    "Florges Orange Flower",
+    "Florges Blue Flower",
+    "Florges White Flower"
+  ],
+  "Furfrou": [
+    "Furfrou Natural Form",
+    "Furfrou Heart Trim",
+    "Furfrou Star Trim",
+    "Furfrou Diamond Trim",
+    "Furfrou Debutante Trim",
+    "Furfrou Matron Trim",
+    "Furfrou Dandy Trim",
+    "Furfrou La Reine Trim",
+    "Furfrou Kabuki Trim",
+    "Furfrou Pharaoh Trim"
+  ],
+  "Aegislash": [
+    "Aegislash Shield Forme",
+    "Aegislash Blade Forme"
+  ],
+  "Xerneas": [
+    "Xerneas Neutral Mode",
+    "Xerneas Active Mode"
+  ],
+  "Mimikyu": [
+    "Mimikyu Disguised Form",
+    "Mimikyu Busted Form"
+  ],
+  "Magearna": [
+    "Magearna",
+    "Magearna Original Color"
+  ],
+  "Cramorant": [
+    "Cramorant",
+    "Cramorant Gulping Form",
+    "Cramorant Gorging Form"
+  ],
+  "Toxtricity": [
+    "Toxtricity Amped Form",
+    "Toxtricity Low Key Form"
+  ],
+  "Sinistea": [
+    "Sinistea Phony Form",
+    "Sinistea Antique Form"
+  ],
+  "Polteageist": [
+    "Polteageist Phony Form",
+    "Polteageist Antique Form"
+  ],
+  "Alcremie": [
+    "Alcremie Vanilla Cream",
+    "Alcremie Ruby Cream",
+    "Alcremie Matcha Cream",
+    "Alcremie Mint Cream",
+    "Alcremie Lemon Cream",
+    "Alcremie Salted Cream",
+    "Alcremie Ruby Swirl",
+    "Alcremie Caramel Swirl",
+    "Alcremie Rainbow Swirl"
+  ],
+  "Eiscue": [
+    "Eiscue Ice Face",
+    "Eiscue Noice Face"
+  ],
+  "Indeedee": [
+    "Indeedee Male",
+    "Indeedee Female"
+  ],
+  "Morpeko": [
+    "Morpeko Full Belly Mode",
+    "Morpeko Hangry Mode"
+  ],
+  "Zacian": [
+    "Zacian Hero of Many Battles",
+    "Zacian Crowned Sword"
+  ],
+  "Zamazenta": [
+    "Zamazenta Hero of Many Battles",
+    "Zamazenta Crowned Shield"
+  ],
+  "Eternatus": [
+    "Eternatus",
+    "Eternatus Eternamax"
+  ],
+  "Urshifu": [
+    "Urshifu Single Strike Style",
+    "Urshifu Rapid Strike Style"
+  ],
+  "Zarude": [
+    "Zarude",
+    "Dada Zarude"
+  ],
+  "Calyrex": [
+    "Calyrex",
+    "Ice Rider Calyrex",
+    "Shadow Rider Calyrex"
+  ],
+  "Enamorus": [
+    "Enamorus Incarnate Forme",
+    "Enamorus Therian Forme"
+  ],
+  "Basculegion": [
+    "Basculegion Male",
+    "Basculegion Female"
+  ],
+  "Oinkologne": [
+    "Oinkologne Male",
+    "Oinkologne Female"
+  ],
+  "Maushold": [
+    "Maushold Family of Four",
+    "Maushold Family of Three"
+  ],
+  "Squawkabilly": [
+    "Squawkabilly Green Plumage",
+    "Squawkabilly Blue Plumage",
+    "Squawkabilly Yellow Plumage",
+    "Squawkabilly White Plumage"
+  ],
+  "Palafin": [
+    "Palafin Zero Form",
+    "Palafin Hero Form"
+  ],
+  "Tatsugiri": [
+    "Tatsugiri Curly Form",
+    "Tatsugiri Droopy Form",
+    "Tatsugiri Stretchy Form"
+  ],
+  "Dudunsparce": [
+    "Dudunsparce Two-Segment Form",
+    "Dudunsparce Three-Segment Form"
+  ],
+  "Gimmighoul": [
+    "Gimmighoul Chest Form",
+    "Gimmighoul Roaming Form"
+  ],
+  "Tauros": [
+    "Tauros",
+    "Paldean Tauros Combat Breed",
+    "Paldean Tauros Blaze Breed",
+    "Paldean Tauros Aqua Breed"
+  ],
+  "Wooper": [
+    "Wooper",
+    "Paldean Wooper"
+  ],
+  "Ogerpon": [
+    "Ogerpon Teal Mask",
+    "Ogerpon Wellspring Mask",
+    "Ogerpon Hearthflame Mask",
+    "Ogerpon Cornerstone Mask"
+  ],
+  "Terapagos": [
+    "Terapagos Normal Form",
+    "Terapagos Terastal Form",
+    "Terapagos Stellar Form"
+  ],
+  "Ponyta": [
+    "Ponyta",
+    "Galarian Ponyta"
+  ],
+  "Rapidash": [
+    "Rapidash",
+    "Galarian Rapidash"
+  ],
+  "Slowpoke": [
+    "Slowpoke",
+    "Galarian Slowpoke"
+  ],
+  "Slowbro": [
+    "Slowbro",
+    "Galarian Slowbro"
+  ],
+  "Farfetch'd": [
+    "Farfetch'd",
+    "Galarian Farfetch'd"
+  ],
+  "Weezing": [
+    "Weezing",
+    "Galarian Weezing"
+  ],
+  "Mr. Mime": [
+    "Mr. Mime",
+    "Galarian Mr. Mime"
+  ],
+  "Articuno": [
+    "Articuno",
+    "Galarian Articuno"
+  ],
+  "Zapdos": [
+    "Zapdos",
+    "Galarian Zapdos"
+  ],
+  "Moltres": [
+    "Moltres",
+    "Galarian Moltres"
+  ],
+  "Slowking": [
+    "Slowking",
+    "Galarian Slowking"
+  ],
+  "Corsola": [
+    "Corsola",
+    "Galarian Corsola"
+  ],
+  "Zigzagoon": [
+    "Zigzagoon",
+    "Galarian Zigzagoon"
+  ],
+  "Linoone": [
+    "Linoone",
+    "Galarian Linoone"
+  ],
+  "Darumaka": [
+    "Darumaka",
+    "Galarian Darumaka"
+  ],
+  "Yamask": [
+    "Yamask",
+    "Galarian Yamask"
+  ],
+  "Stunfisk": [
+    "Stunfisk",
+    "Galarian Stunfisk"
+  ],
+  "Growlithe": [
+    "Growlithe",
+    "Hisuian Growlithe"
+  ],
+  "Arcanine": [
+    "Arcanine",
+    "Hisuian Arcanine"
+  ],
+  "Voltorb": [
+    "Voltorb",
+    "Hisuian Voltorb"
+  ],
+  "Electrode": [
+    "Electrode",
+    "Hisuian Electrode"
+  ],
+  "Typhlosion": [
+    "Typhlosion",
+    "Hisuian Typhlosion"
+  ],
+  "Qwilfish": [
+    "Qwilfish",
+    "Hisuian Qwilfish"
+  ],
+  "Sneasel": [
+    "Sneasel",
+    "Hisuian Sneasel"
+  ],
+  "Samurott": [
+    "Samurott",
+    "Hisuian Samurott"
+  ],
+  "Lilligant": [
+    "Lilligant",
+    "Hisuian Lilligant"
+  ],
+  "Zorua": [
+    "Zorua",
+    "Hisuian Zorua"
+  ],
+  "Zoroark": [
+    "Zoroark",
+    "Hisuian Zoroark"
+  ],
+  "Braviary": [
+    "Braviary",
+    "Hisuian Braviary"
+  ],
+  "Sliggoo": [
+    "Sliggoo",
+    "Hisuian Sliggoo"
+  ],
+  "Goodra": [
+    "Goodra",
+    "Hisuian Goodra"
+  ],
+  "Avalugg": [
+    "Avalugg",
+    "Hisuian Avalugg"
+  ],
+  "Decidueye": [
+    "Decidueye",
+    "Hisuian Decidueye"
   ]
 }

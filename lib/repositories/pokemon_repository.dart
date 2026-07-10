@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../models/pokemon.dart';
-
 import '../models/pokemon_flavor.dart';
 
 class PokemonRepository {
@@ -24,7 +23,10 @@ class PokemonRepository {
 
     for (final pokemon in await _getWebappPokemon()) {
       if (pokemon.id <= 0) continue;
-      pokemonByNumber.putIfAbsent(pokemon.id, () => pokemon);
+      final existing = pokemonByNumber[pokemon.id];
+      pokemonByNumber[pokemon.id] = existing == null
+          ? pokemon
+          : existing.withAdditionalFormDefinitions(pokemon.formDefinitions);
     }
 
     final pokemonList = pokemonByNumber.values.toList(growable: false)
@@ -77,7 +79,7 @@ class PokemonRepository {
       );
       final json = Map<String, dynamic>.from(jsonDecode(jsonString));
       final items = List<dynamic>.from(json['items'] ?? const []);
-      final pokemonList = <Pokemon>[];
+      final grouped = <int, List<Pokemon>>{};
 
       for (final item in items) {
         if (item is! Map) continue;
@@ -85,18 +87,136 @@ class PokemonRepository {
         try {
           final pokemon = Pokemon.fromWebJson(Map<String, dynamic>.from(item));
           if (pokemon.id > 0 && pokemon.name.trim().isNotEmpty) {
-            pokemonList.add(pokemon);
+            grouped.putIfAbsent(pokemon.id, () => []).add(pokemon);
           }
         } catch (error) {
           debugPrint('Errore convertendo Pokemon webapp: $error');
         }
       }
 
-      return pokemonList;
+      return [for (final group in grouped.values) _mergeWebFormGroup(group)];
     } catch (error) {
       debugPrint('Catalogo Pokemon webapp non disponibile: $error');
       return const [];
     }
+  }
+
+  Pokemon _mergeWebFormGroup(List<Pokemon> group) {
+    if (group.length <= 1) return group.first;
+
+    final speciesSlug = _commonSlugPrefix(
+      group.map((pokemon) => pokemon.assetSlug ?? _slug(pokemon.name)),
+    );
+    Pokemon? explicitBase;
+    for (final pokemon in group) {
+      if ((pokemon.assetSlug ?? _slug(pokemon.name)) == speciesSlug) {
+        explicitBase = pokemon;
+        break;
+      }
+    }
+
+    final sorted = [...group]
+      ..sort((a, b) {
+        final aSlug = a.assetSlug ?? _slug(a.name);
+        final bSlug = b.assetSlug ?? _slug(b.name);
+        final lengthCompare = aSlug.length.compareTo(bSlug.length);
+        return lengthCompare != 0 ? lengthCompare : aSlug.compareTo(bSlug);
+      });
+    final selectedBase = explicitBase ?? sorted.first;
+    final speciesName = explicitBase?.name ?? Pokemon.labelFromId(speciesSlug);
+    final definitions = <PokemonFormDefinition>[];
+
+    for (final candidate in group) {
+      final candidateSlug = candidate.assetSlug ?? _slug(candidate.name);
+      if (explicitBase != null && identical(candidate, explicitBase)) continue;
+      if (candidateSlug == speciesSlug) continue;
+
+      final rawSuffix = candidateSlug.startsWith('$speciesSlug-')
+          ? candidateSlug.substring(speciesSlug.length + 1)
+          : candidateSlug;
+      if (rawSuffix.isEmpty) continue;
+
+      final gender = Pokemon.normalizeGenderValue(rawSuffix);
+      definitions.add(
+        PokemonFormDefinition(
+          key: rawSuffix,
+          displayName: _webFormLabel(rawSuffix),
+          pokemon: candidate.copyWith(
+            name: speciesName,
+            formDefinitions: const [],
+          ),
+          gender: gender,
+        ),
+      );
+    }
+
+    return selectedBase.copyWith(
+      name: speciesName,
+      formDefinitions: definitions,
+    );
+  }
+
+  String _commonSlugPrefix(Iterable<String> values) {
+    final tokenLists = values
+        .map(
+          (value) =>
+              value.split('-').where((token) => token.isNotEmpty).toList(),
+        )
+        .where((tokens) => tokens.isNotEmpty)
+        .toList(growable: false);
+    if (tokenLists.isEmpty) return '';
+
+    final common = <String>[];
+    final shortestLength = tokenLists
+        .map((tokens) => tokens.length)
+        .reduce((a, b) => a < b ? a : b);
+    for (var index = 0; index < shortestLength; index++) {
+      final token = tokenLists.first[index];
+      if (tokenLists.every((tokens) => tokens[index] == token)) {
+        common.add(token);
+      } else {
+        break;
+      }
+    }
+
+    return common.isEmpty ? tokenLists.first.first : common.join('-');
+  }
+
+  String _webFormLabel(String rawSuffix) {
+    switch (rawSuffix) {
+      case 'm':
+      case 'male':
+        return 'Male';
+      case 'f':
+      case 'female':
+        return 'Female';
+      case 'alola':
+      case 'alolan':
+        return 'Alolan';
+      case 'galar':
+      case 'galarian':
+        return 'Galarian';
+      case 'hisui':
+      case 'hisuian':
+        return 'Hisuian';
+      case 'paldea':
+      case 'paldean':
+        return 'Paldean';
+      default:
+        return Pokemon.labelFromId(rawSuffix);
+    }
+  }
+
+  String _slug(String value) {
+    return value
+        .trim()
+        .toLowerCase()
+        .replaceAll('♀', '-f')
+        .replaceAll('♂', '-m')
+        .replaceAll(RegExp(r"[’']"), '')
+        .replaceAll(RegExp(r'[^a-z0-9]+'), '-')
+        .replaceAll(RegExp(r'-+'), '-')
+        .replaceAll(RegExp(r'^-+|-+$'), '');
   }
 
   Future<Map<int, PokemonFlavor>> getPokemonFlavors() async {

@@ -89,6 +89,9 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
   bool _extraAsiOpen = false;
   bool _isLoadingChoices = true;
 
+  Pokemon get _formPokemon =>
+      widget.pokemon.resolveVariant(formName: _formName, gender: _gender);
+
   @override
   void initState() {
     super.initState();
@@ -125,9 +128,11 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
   }
 
   Future<void> _loadChoices() async {
-    final abilityDescriptionsFuture = _abilityRepository.getAbilityDescriptions();
+    final abilityDescriptionsFuture = _abilityRepository
+        .getAbilityDescriptions();
     final abilityChoicesFuture = _abilityRepository.getWebAbilities();
-    final deprecatedAbilitiesFuture = _abilityRepository.getDeprecatedAbilityNames();
+    final deprecatedAbilitiesFuture = _abilityRepository
+        .getDeprecatedAbilityNames();
     final featDescriptionsFuture = _featRepository.getFeatDescriptions();
     final formChoicesFuture = PokemonAssetPaths.formChoices(widget.pokemon);
     final tmMapFuture = _tmRepository.getTmMap();
@@ -139,16 +144,29 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
     final formChoices = await formChoicesFuture;
     final tmMap = await tmMapFuture;
     final tmMoveNames = await _tmMoveNamesFromRepository(tmMap);
-    final moveData = await _moveRepository.getMoves(_allMoveChoices(tmMoveNames));
+    final moveData = await _moveRepository.getMoves(
+      _allMoveChoices(tmMoveNames),
+    );
 
     if (!mounted) return;
 
     var formName = _formName;
     if (formChoices.length <= 1) {
       formName = null;
-    } else if (formName == null ||
-        !formChoices.any((choice) => choice.name == formName)) {
-      formName = formChoices.first.name;
+    } else {
+      final currentKey = Pokemon.formReferenceKey(
+        formName ?? '',
+        widget.pokemon.name,
+      );
+      PokemonFormChoice? matchingChoice;
+      for (final choice in formChoices) {
+        if (Pokemon.formReferenceKey(choice.name, widget.pokemon.name) ==
+            currentKey) {
+          matchingChoice = choice;
+          break;
+        }
+      }
+      formName = matchingChoice?.name ?? formChoices.first.name;
     }
 
     setState(() {
@@ -164,10 +182,12 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
     });
   }
 
-  Future<List<String>> _tmMoveNamesFromRepository(Map<int, TmData> tmMap) async {
+  Future<List<String>> _tmMoveNamesFromRepository(
+    Map<int, TmData> tmMap,
+  ) async {
     final tmMoveNames = <String>[];
 
-    for (final tmNumber in widget.pokemon.moves.tmMoves) {
+    for (final tmNumber in _formPokemon.moves.tmMoves) {
       final tm = tmMap[tmNumber];
       if (tm == null) continue;
 
@@ -184,35 +204,37 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
 
   List<String> _normalizedAbilities(List<String> abilities) {
     final selected = abilities.where((ability) => ability.trim().isNotEmpty);
-    final fallback = widget.pokemon.abilities;
+    final fallback = _formPokemon.abilities;
     return _unique(selected.isEmpty ? fallback : selected).take(2).toList();
   }
 
   List<String> _naturalAbilities() {
     return _unique([
-      ...widget.pokemon.abilities,
-      if (widget.pokemon.hiddenAbility != null) widget.pokemon.hiddenAbility!,
+      ..._formPokemon.abilities,
+      if (_formPokemon.hiddenAbility != null) _formPokemon.hiddenAbility!,
     ]).where((ability) => !_deprecatedAbilityNames.contains(ability)).toList();
   }
 
   List<String> _availableAbilities() {
     final naturalAbilities = _naturalAbilities();
     final naturalSet = naturalAbilities.toSet();
-    final catalogAbilities = _abilityChoices
-        .map((ability) => ability.name)
-        .where((ability) => !naturalSet.contains(ability))
-        .toList(growable: false)
-      ..sort();
+    final catalogAbilities =
+        _abilityChoices
+            .map((ability) => ability.name)
+            .where((ability) => !naturalSet.contains(ability))
+            .toList(growable: false)
+          ..sort();
 
     return _unique([...naturalAbilities, ...catalogAbilities]);
   }
 
   List<String> _movesUpToLevel(int level) {
-    final names = <String>[...widget.pokemon.moves.startingMoves];
-    final entries = widget.pokemon.moves.levelMoves.entries
-        .where((entry) => entry.key <= level)
-        .toList()
-      ..sort((a, b) => a.key.compareTo(b.key));
+    final names = <String>[..._formPokemon.moves.startingMoves];
+    final entries =
+        _formPokemon.moves.levelMoves.entries
+            .where((entry) => entry.key <= level)
+            .toList()
+          ..sort((a, b) => a.key.compareTo(b.key));
 
     for (final entry in entries) {
       names.addAll(entry.value);
@@ -277,6 +299,25 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
     Navigator.of(context).pop(PokemonEditResult(slot: _updatedSlot()));
   }
 
+  Future<void> _reloadVariantDependentChoices() async {
+    final tmMap = await _tmRepository.getTmMap();
+    final tmMoveNames = await _tmMoveNamesFromRepository(tmMap);
+    final moveData = await _moveRepository.getMoves(
+      _allMoveChoices(tmMoveNames),
+    );
+    if (!mounted) return;
+
+    setState(() {
+      _tmMoveNames = tmMoveNames;
+      _moveData = moveData;
+    });
+  }
+
+  Future<void> _setGender(String? value) async {
+    setState(() => _gender = value);
+    await _reloadVariantDependentChoices();
+  }
+
   Future<void> _pickForm() async {
     if (_formChoices.length <= 1) return;
 
@@ -296,6 +337,7 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
     if (!mounted || result == null) return;
 
     setState(() => _formName = result);
+    await _reloadVariantDependentChoices();
   }
 
   Future<void> _pickMove(int index) async {
@@ -456,7 +498,10 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
                         ),
                         items: [
                           for (final nature in PokemonNature.names)
-                            DropdownMenuItem(value: nature, child: Text(nature)),
+                            DropdownMenuItem(
+                              value: nature,
+                              child: Text(nature),
+                            ),
                         ],
                         onChanged: (value) {
                           if (value == null) return;
@@ -490,7 +535,9 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
                             child: Text('Genderless'),
                           ),
                         ],
-                        onChanged: (value) => setState(() => _gender = value),
+                        onChanged: (value) {
+                          _setGender(value);
+                        },
                       ),
                     ),
                   ],
@@ -677,9 +724,9 @@ class _FormPickerSheet extends StatelessWidget {
           children: [
             Text(
               'Scegli forma',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w900,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
             ),
             const SizedBox(height: 12),
             for (final choice in choices)
@@ -733,8 +780,8 @@ class _CollapsibleEditSection extends StatelessWidget {
                 Text(
                   title.toUpperCase(),
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(width: 12),
                 Text(
@@ -964,17 +1011,15 @@ class _MovePickerScreenState extends State<_MovePickerScreen> {
     };
     final search = _search.trim().toLowerCase();
 
-    return source
-        .where((move) => !widget.blockedMoves.contains(move))
-        .where((move) {
-          if (search.isEmpty) return true;
-          final data = widget.moveData[move];
-          return move.toLowerCase().contains(search) ||
-              (data?.description.toLowerCase().contains(search) ?? false) ||
-              (data?.type.toLowerCase().contains(search) ?? false);
-        })
-        .toList()
-      ..sort();
+    return source.where((move) => !widget.blockedMoves.contains(move)).where((
+      move,
+    ) {
+      if (search.isEmpty) return true;
+      final data = widget.moveData[move];
+      return move.toLowerCase().contains(search) ||
+          (data?.description.toLowerCase().contains(search) ?? false) ||
+          (data?.type.toLowerCase().contains(search) ?? false);
+    }).toList()..sort();
   }
 
   @override
@@ -1059,7 +1104,9 @@ class _ChoicePickerScreenState extends State<_ChoicePickerScreen> {
         .where((option) {
           if (search.isEmpty) return true;
           return option.toLowerCase().contains(search) ||
-              (widget.descriptions[option] ?? '').toLowerCase().contains(search);
+              (widget.descriptions[option] ?? '').toLowerCase().contains(
+                search,
+              );
         })
         .toList();
   }
@@ -1082,7 +1129,8 @@ class _ChoicePickerScreenState extends State<_ChoicePickerScreen> {
         if (widget.includeNone)
           _PickerTile(
             label: 'Nessuno',
-            onTap: () => Navigator.of(context).pop(_ChoicePickerScreen.noneValue),
+            onTap: () =>
+                Navigator.of(context).pop(_ChoicePickerScreen.noneValue),
           ),
         if (pinnedOptions.isNotEmpty && widget.pinnedLabel != null)
           _PickerGroupLabel(label: widget.pinnedLabel!),
@@ -1179,9 +1227,9 @@ class _PickerGroupLabel extends StatelessWidget {
       child: Text(
         label.toUpperCase(),
         style: Theme.of(context).textTheme.labelLarge?.copyWith(
-              color: Theme.of(context).colorScheme.primary,
-              fontWeight: FontWeight.w900,
-            ),
+          color: Theme.of(context).colorScheme.primary,
+          fontWeight: FontWeight.w900,
+        ),
       ),
     );
   }

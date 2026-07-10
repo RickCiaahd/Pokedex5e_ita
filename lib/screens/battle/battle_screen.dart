@@ -58,7 +58,9 @@ class _BattleScreenState extends State<BattleScreen> {
     team.sort((a, b) => a.slotIndex.compareTo(b.slotIndex));
 
     final pokemonList = await _pokemonRepository.getAllPokemon();
-    final pokemonById = {for (final pokemon in pokemonList) pokemon.id: pokemon};
+    final pokemonById = {
+      for (final pokemon in pokemonList) pokemon.id: pokemon,
+    };
     final items = await _itemRepository.getWebItems();
     final inventory = await _bagRepository.getInventory(profile.id);
     final moveReferences = <String>{'Struggle'};
@@ -102,7 +104,10 @@ class _BattleScreenState extends State<BattleScreen> {
   Pokemon? _pokemonForSlot(_BattleData data, TeamSlot slot) {
     final pokemonId = slot.pokemonId;
     if (pokemonId == null) return null;
-    return data.pokemonById[pokemonId];
+    return data.pokemonById[pokemonId]?.resolveVariant(
+      formName: slot.formName,
+      gender: slot.gender,
+    );
   }
 
   List<String> _movesForSlot(TeamSlot slot, Pokemon pokemon) {
@@ -111,10 +116,11 @@ class _BattleScreenState extends State<BattleScreen> {
     }
 
     final names = <String>[...pokemon.moves.startingMoves];
-    final learnedMoves = pokemon.moves.levelMoves.entries
-        .where((entry) => entry.key <= _levelForSlot(slot))
-        .toList()
-      ..sort((a, b) => a.key.compareTo(b.key));
+    final learnedMoves =
+        pokemon.moves.levelMoves.entries
+            .where((entry) => entry.key <= _levelForSlot(slot))
+            .toList()
+          ..sort((a, b) => a.key.compareTo(b.key));
 
     for (final entry in learnedMoves) {
       names.addAll(entry.value);
@@ -192,7 +198,9 @@ class _BattleScreenState extends State<BattleScreen> {
     if (pokemon == null) return;
 
     final maxHp = _maxHpFor(pokemon, slot);
-    final updatedHp = (_currentHpFor(slot, pokemon) + delta).clamp(0, maxHp).toInt();
+    final updatedHp = (_currentHpFor(slot, pokemon) + delta)
+        .clamp(0, maxHp)
+        .toInt();
 
     await _teamRepository.updateSlot(
       profileId: data.profile.id,
@@ -218,7 +226,8 @@ class _BattleScreenState extends State<BattleScreen> {
     if (value == null) return;
 
     final maxHp = _maxHpFor(pokemon, slot);
-    final updatedHp = input.trim().startsWith('+') || input.trim().startsWith('-')
+    final updatedHp =
+        input.trim().startsWith('+') || input.trim().startsWith('-')
         ? (_currentHpFor(slot, pokemon) + value).clamp(0, maxHp).toInt()
         : value.clamp(0, maxHp).toInt();
 
@@ -241,7 +250,9 @@ class _BattleScreenState extends State<BattleScreen> {
         statusEffects: const [],
       ),
     );
-    await _reload(message: '${_displayName(slot, pokemon)} è pronto a combattere.');
+    await _reload(
+      message: '${_displayName(slot, pokemon)} è pronto a combattere.',
+    );
   }
 
   Future<void> _useHeldBerry(_BattleData data, TeamSlot slot) async {
@@ -265,7 +276,8 @@ class _BattleScreenState extends State<BattleScreen> {
       _volatileStatusesBySlot[slot.slotIndex] = result.volatileStatuses;
     }
     await _reload(
-      message: result?.message ??
+      message:
+          result?.message ??
           '${heldItem.name} è stata consumata. Applica manualmente il suo effetto se necessario.',
     );
   }
@@ -320,7 +332,10 @@ class _BattleScreenState extends State<BattleScreen> {
     );
 
     if (result == null && !isBerry) {
-      await _reload(message: '${item.name} non avrebbe effetto su ${_displayName(slot, pokemon)}.');
+      await _reload(
+        message:
+            '${item.name} non avrebbe effetto su ${_displayName(slot, pokemon)}.',
+      );
       return;
     }
 
@@ -344,7 +359,8 @@ class _BattleScreenState extends State<BattleScreen> {
     }
 
     await _reload(
-      message: '${item.name} è stata consumata. Applica manualmente il suo effetto se necessario.',
+      message:
+          '${item.name} è stata consumata. Applica manualmente il suo effetto se necessario.',
     );
   }
 
@@ -389,7 +405,9 @@ class _BattleScreenState extends State<BattleScreen> {
       return;
     }
 
-    await _reload(message: '${ball.name} consumata. Registra il Pokémon catturato.');
+    await _reload(
+      message: '${ball.name} consumata. Registra il Pokémon catturato.',
+    );
     if (!mounted) return;
     await Navigator.of(context).push(
       MaterialPageRoute<void>(builder: (_) => const CapturePokemonScreen()),
@@ -422,7 +440,8 @@ class _BattleScreenState extends State<BattleScreen> {
       if (currentHp <= 0 && !isRevive) return null;
       if (currentHp > 0 && isRevive) return null;
       updatedHp = (currentHp + healingAmount).clamp(0, maxHp).toInt();
-      if (updatedHp != currentHp) hpText = 'recupera ${updatedHp - currentHp} HP';
+      if (updatedHp != currentHp)
+        hpText = 'recupera ${updatedHp - currentHp} HP';
     }
 
     final curedNonVolatile = _statusesCuredBy(item.id, nonVolatileStatuses);
@@ -436,7 +455,9 @@ class _BattleScreenState extends State<BattleScreen> {
       updatedVolatile = updatedVolatile
           .where((status) => !curedVolatile.contains(status))
           .toList(growable: false);
-      statusText = curedStatuses.length == nonVolatileStatuses.length + currentVolatileStatuses.length
+      statusText =
+          curedStatuses.length ==
+              nonVolatileStatuses.length + currentVolatileStatuses.length
           ? 'guarisce dagli status'
           : 'guarisce da ${curedStatuses.join(', ')}';
     }
@@ -447,9 +468,10 @@ class _BattleScreenState extends State<BattleScreen> {
       return null;
     }
 
-    final effects = [hpText, statusText]
-        .where((effect) => effect.isNotEmpty)
-        .join(' e ');
+    final effects = [
+      hpText,
+      statusText,
+    ].where((effect) => effect.isNotEmpty).join(' e ');
 
     return _MedicineUseResult(
       updatedSlot: slot.copyWith(
@@ -567,7 +589,9 @@ class _BattleScreenState extends State<BattleScreen> {
 
   void _ensureInitiative(_BattleData data, TeamSlot slot, Pokemon pokemon) {
     final label = '${data.profile.name} + ${_displayName(slot, pokemon)}';
-    final index = _initiativeEntries.indexWhere((entry) => entry.isTrainerGroup);
+    final index = _initiativeEntries.indexWhere(
+      (entry) => entry.isTrainerGroup,
+    );
 
     if (index == -1) {
       _initiativeEntries.add(
@@ -580,7 +604,9 @@ class _BattleScreenState extends State<BattleScreen> {
       );
       _sortInitiative();
     } else if (_initiativeEntries[index].name != label) {
-      _initiativeEntries[index] = _initiativeEntries[index].copyWith(name: label);
+      _initiativeEntries[index] = _initiativeEntries[index].copyWith(
+        name: label,
+      );
     }
   }
 
@@ -588,7 +614,8 @@ class _BattleScreenState extends State<BattleScreen> {
     _initiativeEntries.sort((a, b) {
       final initiativeCompare = b.initiative.compareTo(a.initiative);
       if (initiativeCompare != 0) return initiativeCompare;
-      if (a.isTrainerGroup != b.isTrainerGroup) return a.isTrainerGroup ? -1 : 1;
+      if (a.isTrainerGroup != b.isTrainerGroup)
+        return a.isTrainerGroup ? -1 : 1;
       return a.name.compareTo(b.name);
     });
     _turnIndex = _initiativeEntries.isEmpty
@@ -598,7 +625,9 @@ class _BattleScreenState extends State<BattleScreen> {
 
   void _rerollTrainerInitiative(UserProfile profile) {
     setState(() {
-      final index = _initiativeEntries.indexWhere((entry) => entry.isTrainerGroup);
+      final index = _initiativeEntries.indexWhere(
+        (entry) => entry.isTrainerGroup,
+      );
       final roll = _rollTrainerInitiative(profile);
       if (index == -1) {
         _initiativeEntries.add(
@@ -610,7 +639,9 @@ class _BattleScreenState extends State<BattleScreen> {
           ),
         );
       } else {
-        _initiativeEntries[index] = _initiativeEntries[index].copyWith(initiative: roll);
+        _initiativeEntries[index] = _initiativeEntries[index].copyWith(
+          initiative: roll,
+        );
       }
       _turnIndex = 0;
       _sortInitiative();
@@ -673,14 +704,19 @@ class _BattleScreenState extends State<BattleScreen> {
       _turnIndex = 0;
       _remainingPpBySlot.clear();
       _volatileStatusesBySlot.clear();
-      _message = 'Tracker combattimento azzerato. Gli status volatili sono stati rimossi.';
+      _message =
+          'Tracker combattimento azzerato. Gli status volatili sono stati rimossi.';
     });
   }
 
   int _maxHpFor(Pokemon pokemon, TeamSlot slot) {
-    final level = _levelForSlot(slot).clamp(1, LevelProgression.maxLevel).toInt();
+    final level = _levelForSlot(
+      slot,
+    ).clamp(1, LevelProgression.maxLevel).toInt();
     final minimumLevel = pokemon.minLevelFound <= 0 ? 1 : pokemon.minLevelFound;
-    final levelsGained = (level - minimumLevel).clamp(0, LevelProgression.maxLevel).toInt();
+    final levelsGained = (level - minimumLevel)
+        .clamp(0, LevelProgression.maxLevel)
+        .toInt();
     final hitDieAverage = ((pokemon.hitDice + 1) / 2).ceil();
     final attributes = _attributeScores(pokemon, slot);
     final constitutionModifier = _modifier(attributes['CON'] ?? 10);
@@ -688,9 +724,10 @@ class _BattleScreenState extends State<BattleScreen> {
     final loyaltyBonus = slot.loyalty == 2
         ? (level / 2).ceil()
         : slot.loyalty == 3
-            ? level
-            : 0;
-    final hp = pokemon.hitPoints +
+        ? level
+        : 0;
+    final hp =
+        pokemon.hitPoints +
         (hitDieAverage * levelsGained) +
         (constitutionModifier * level) +
         toughBonus +
@@ -704,12 +741,30 @@ class _BattleScreenState extends State<BattleScreen> {
     final nature = PokemonNature.forName(slot.nature);
 
     return {
-      'STR': pokemon.attributes.strength + (custom['STR'] ?? 0) + (nature['STR'] ?? 0),
-      'DEX': pokemon.attributes.dexterity + (custom['DEX'] ?? 0) + (nature['DEX'] ?? 0),
-      'CON': pokemon.attributes.constitution + (custom['CON'] ?? 0) + (nature['CON'] ?? 0),
-      'INT': pokemon.attributes.intelligence + (custom['INT'] ?? 0) + (nature['INT'] ?? 0),
-      'WIS': pokemon.attributes.wisdom + (custom['WIS'] ?? 0) + (nature['WIS'] ?? 0),
-      'CHA': pokemon.attributes.charisma + (custom['CHA'] ?? 0) + (nature['CHA'] ?? 0),
+      'STR':
+          pokemon.attributes.strength +
+          (custom['STR'] ?? 0) +
+          (nature['STR'] ?? 0),
+      'DEX':
+          pokemon.attributes.dexterity +
+          (custom['DEX'] ?? 0) +
+          (nature['DEX'] ?? 0),
+      'CON':
+          pokemon.attributes.constitution +
+          (custom['CON'] ?? 0) +
+          (nature['CON'] ?? 0),
+      'INT':
+          pokemon.attributes.intelligence +
+          (custom['INT'] ?? 0) +
+          (nature['INT'] ?? 0),
+      'WIS':
+          pokemon.attributes.wisdom +
+          (custom['WIS'] ?? 0) +
+          (nature['WIS'] ?? 0),
+      'CHA':
+          pokemon.attributes.charisma +
+          (custom['CHA'] ?? 0) +
+          (nature['CHA'] ?? 0),
     };
   }
 
@@ -723,11 +778,12 @@ class _BattleScreenState extends State<BattleScreen> {
 
   int _bestMoveModifier(MoveData move, Pokemon pokemon, TeamSlot slot) {
     final attributes = _attributeScores(pokemon, slot);
-    final modifiers = move.movePowers
-        .where(attributes.containsKey)
-        .map((power) => _modifier(attributes[power]!))
-        .toList()
-      ..sort();
+    final modifiers =
+        move.movePowers
+            .where(attributes.containsKey)
+            .map((power) => _modifier(attributes[power]!))
+            .toList()
+          ..sort();
 
     return modifiers.isEmpty ? 0 : modifiers.last;
   }
@@ -793,7 +849,8 @@ class _BattleScreenState extends State<BattleScreen> {
             return _BattleEmptyState(
               icon: Icons.groups_outlined,
               title: 'Nessun Pokémon in squadra',
-              message: 'Aggiungi almeno un Pokémon alla squadra prima di aprire il tracker.',
+              message:
+                  'Aggiungi almeno un Pokémon alla squadra prima di aprire il tracker.',
               actionLabel: 'Ricarica',
               onAction: () => _reload(),
             );
@@ -870,8 +927,8 @@ class _BattleScreenState extends State<BattleScreen> {
                 Text(
                   'MOSSE DA COMBATTIMENTO',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w900,
-                      ),
+                    fontWeight: FontWeight.w900,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 if (noPpLeft) ...[
@@ -890,7 +947,11 @@ class _BattleScreenState extends State<BattleScreen> {
                     maxPp: _maxPpFor(data.moves[reference]),
                     stats: data.moves[reference] == null
                         ? null
-                        : _moveStats(data.moves[reference]!, pokemon, activeSlot),
+                        : _moveStats(
+                            data.moves[reference]!,
+                            pokemon,
+                            activeSlot,
+                          ),
                     onUse: () => _changePp(
                       activeSlot,
                       reference,
@@ -932,7 +993,10 @@ class _BattleData {
 
   List<TeamSlot> get occupiedSlots {
     return team
-        .where((slot) => slot.pokemonId != null && pokemonById[slot.pokemonId] != null)
+        .where(
+          (slot) =>
+              slot.pokemonId != null && pokemonById[slot.pokemonId] != null,
+        )
         .toList(growable: false);
   }
 
@@ -941,13 +1005,17 @@ class _BattleData {
     for (final entry in inventory) {
       final item = _itemByReference(entry.itemId);
       if (item == null) continue;
-      if (item.type == 'berry' || item.type == 'medicine' || item.type == 'pokeball') {
+      if (item.type == 'berry' ||
+          item.type == 'medicine' ||
+          item.type == 'pokeball') {
         owned.add(_OwnedBattleItem(item: item, quantity: entry.quantity));
       }
     }
 
     owned.sort((a, b) {
-      final typeCompare = _itemTypeLabel(a.item.type).compareTo(_itemTypeLabel(b.item.type));
+      final typeCompare = _itemTypeLabel(
+        a.item.type,
+      ).compareTo(_itemTypeLabel(b.item.type));
       if (typeCompare != 0) return typeCompare;
       return a.item.name.compareTo(b.item.name);
     });
@@ -1047,10 +1115,7 @@ const List<String> _nonVolatileStatusOptions = [
   'Poisoned',
 ];
 
-const List<String> _volatileStatusOptions = [
-  'Confused',
-  'Flinched',
-];
+const List<String> _volatileStatusOptions = ['Confused', 'Flinched'];
 
 const Map<String, _StatusInfo> _statusInfoByName = {
   'Asleep': _StatusInfo(
@@ -1125,11 +1190,7 @@ const Set<String> _statusMedicineItemIds = {
   'heal-powder',
 };
 
-const Set<String> _reviveItemIds = {
-  'revive',
-  'max-revive',
-  'revival-herb',
-};
+const Set<String> _reviveItemIds = {'revive', 'max-revive', 'revival-herb'};
 
 const Map<String, Set<String>> _statusTargetsByItem = {
   'cheri-berry': {'Paralyzed'},
@@ -1227,15 +1288,19 @@ class _BattleHeader extends StatelessWidget {
                   child: Text(
                     'Round $round',
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.w900,
-                        ),
+                      fontWeight: FontWeight.w900,
+                    ),
                   ),
                 ),
-                Text('INIZ. ${trainerInitiativeBonus >= 0 ? '+' : ''}$trainerInitiativeBonus'),
+                Text(
+                  'INIZ. ${trainerInitiativeBonus >= 0 ? '+' : ''}$trainerInitiativeBonus',
+                ),
               ],
             ),
             const SizedBox(height: 4),
-            Text('${profile.name} e il Pokémon usano un unico tiro iniziativa.'),
+            Text(
+              '${profile.name} e il Pokémon usano un unico tiro iniziativa.',
+            ),
             const SizedBox(height: 12),
             Row(
               children: [
@@ -1286,9 +1351,9 @@ class _PartyBar extends StatelessWidget {
           children: [
             Text(
               'SQUADRA',
-              style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                    fontWeight: FontWeight.w900,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w900),
             ),
             const SizedBox(height: 8),
             SingleChildScrollView(
@@ -1341,9 +1406,13 @@ class _PartyPokemonButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         child: DecoratedBox(
           decoration: BoxDecoration(
-            color: selected ? colorScheme.primaryContainer : colorScheme.surface,
+            color: selected
+                ? colorScheme.primaryContainer
+                : colorScheme.surface,
             border: Border.all(
-              color: selected ? colorScheme.primary : colorScheme.outlineVariant,
+              color: selected
+                  ? colorScheme.primary
+                  : colorScheme.outlineVariant,
               width: selected ? 2 : 1,
             ),
             borderRadius: BorderRadius.circular(12),
@@ -1369,8 +1438,8 @@ class _PartyPokemonButton extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          fontWeight: FontWeight.w800,
-                        ),
+                      fontWeight: FontWeight.w800,
+                    ),
                   ),
                 ),
               ],
@@ -1421,8 +1490,8 @@ class _InitiativeTracker extends StatelessWidget {
                   child: Text(
                     'INIZIATIVA',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w900,
-                        ),
+                      fontWeight: FontWeight.w900,
+                    ),
                   ),
                 ),
                 Text('Round $round'),
@@ -1433,9 +1502,9 @@ class _InitiativeTracker extends StatelessWidget {
               currentEntry == null
                   ? 'Nessun turno impostato.'
                   : 'Turno: ${currentEntry.name}',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 10),
             Wrap(
@@ -1450,7 +1519,9 @@ class _InitiativeTracker extends StatelessWidget {
                 OutlinedButton.icon(
                   onPressed: onRollTrainer,
                   icon: const Icon(Icons.casino_outlined),
-                  label: Text('RITIRA TRAINER (${trainerInitiativeBonus >= 0 ? '+' : ''}$trainerInitiativeBonus)'),
+                  label: Text(
+                    'RITIRA TRAINER (${trainerInitiativeBonus >= 0 ? '+' : ''}$trainerInitiativeBonus)',
+                  ),
                 ),
                 OutlinedButton.icon(
                   onPressed: onAddEntry,
@@ -1494,7 +1565,9 @@ class _InitiativeTile extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 6),
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: active ? colorScheme.primaryContainer : colorScheme.surfaceContainerHighest,
+          color: active
+              ? colorScheme.primaryContainer
+              : colorScheme.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(10),
         ),
         child: ListTile(
@@ -1504,7 +1577,11 @@ class _InitiativeTile extends StatelessWidget {
             entry.name,
             style: const TextStyle(fontWeight: FontWeight.w800),
           ),
-          subtitle: Text(entry.isTrainerGroup ? 'Allenatore + Pokémon' : 'Creatura / avversario'),
+          subtitle: Text(
+            entry.isTrainerGroup
+                ? 'Allenatore + Pokémon'
+                : 'Creatura / avversario',
+          ),
           trailing: onRemove == null
               ? null
               : IconButton(
@@ -1540,7 +1617,9 @@ class _InitiativeEntryDialogState extends State<_InitiativeEntryDialog> {
     final name = _nameController.text.trim();
     final initiative = int.tryParse(_initiativeController.text.trim());
     if (name.isEmpty || initiative == null) return;
-    Navigator.of(context).pop(_InitiativeEntryInput(name: name, initiative: initiative));
+    Navigator.of(
+      context,
+    ).pop(_InitiativeEntryInput(name: name, initiative: initiative));
   }
 
   @override
@@ -1651,11 +1730,13 @@ class _ActivePokemonCard extends StatelessWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                              fontWeight: FontWeight.w900,
-                            ),
+                          fontWeight: FontWeight.w900,
+                        ),
                       ),
                       const SizedBox(height: 4),
-                      Text('#${pokemon.id.toString().padLeft(3, '0')}  |  Lv. $level'),
+                      Text(
+                        '#${pokemon.id.toString().padLeft(3, '0')}  |  Lv. $level',
+                      ),
                       const SizedBox(height: 6),
                       Wrap(
                         spacing: 6,
@@ -1681,8 +1762,8 @@ class _ActivePokemonCard extends StatelessWidget {
                     Text(
                       'HP $currentHp/$maxHp',
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w900,
-                          ),
+                        fontWeight: FontWeight.w900,
+                      ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
@@ -1694,9 +1775,9 @@ class _ActivePokemonCard extends StatelessWidget {
                           valueColor: AlwaysStoppedAnimation<Color>(
                             _hpProgressColor(hpProgress),
                           ),
-                          backgroundColor: Theme.of(context)
-                              .colorScheme
-                              .surfaceContainerHighest,
+                          backgroundColor: Theme.of(
+                            context,
+                          ).colorScheme.surfaceContainerHighest,
                         ),
                       ),
                     ),
@@ -1714,7 +1795,10 @@ class _ActivePokemonCard extends StatelessWidget {
                 _SmallBattleButton(label: '-1', onTap: onMinusOne),
                 _SmallBattleButton(label: '+1', onTap: onPlusOne),
                 _SmallBattleButton(label: '+5', onTap: onPlusFive),
-                FilledButton(onPressed: onHeal, child: const Text('POKÉMON CENTER')),
+                FilledButton(
+                  onPressed: onHeal,
+                  child: const Text('POKÉMON CENTER'),
+                ),
               ],
             ),
             const SizedBox(height: 10),
@@ -1753,14 +1837,17 @@ class _StatusPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final hasStatuses = nonVolatileStatus != null || volatileStatuses.isNotEmpty;
+    final hasStatuses =
+        nonVolatileStatus != null || volatileStatuses.isNotEmpty;
 
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(10),
       child: DecoratedBox(
         decoration: BoxDecoration(
-          border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+          border: Border.all(
+            color: Theme.of(context).colorScheme.outlineVariant,
+          ),
           borderRadius: BorderRadius.circular(10),
         ),
         child: Padding(
@@ -1823,9 +1910,9 @@ class _StatusPickerSheetState extends State<_StatusPickerSheet> {
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
             child: Text(
               'STATUS IN COMBATTIMENTO',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w900,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
             ),
           ),
           const Padding(
@@ -1838,9 +1925,9 @@ class _StatusPickerSheetState extends State<_StatusPickerSheet> {
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
             child: Text(
               'NON-VOLATILE',
-              style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                    fontWeight: FontWeight.w900,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w900),
             ),
           ),
           Padding(
@@ -1859,7 +1946,8 @@ class _StatusPickerSheetState extends State<_StatusPickerSheet> {
                     avatar: _StatusIcon(status: status, size: 22),
                     label: Text(status.toUpperCase()),
                     selected: _nonVolatileStatus == status,
-                    onSelected: (_) => setState(() => _nonVolatileStatus = status),
+                    onSelected: (_) =>
+                        setState(() => _nonVolatileStatus = status),
                   ),
               ],
             ),
@@ -1869,9 +1957,9 @@ class _StatusPickerSheetState extends State<_StatusPickerSheet> {
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
             child: Text(
               'VOLATILE',
-              style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                    fontWeight: FontWeight.w900,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w900),
             ),
           ),
           for (final status in _volatileStatusOptions)
@@ -1951,7 +2039,9 @@ class _HeldItemPanel extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    item == null ? 'ITEM: NONE' : 'ITEM: ${item.name.toUpperCase()}',
+                    item == null
+                        ? 'ITEM: NONE'
+                        : 'ITEM: ${item.name.toUpperCase()}',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(fontWeight: FontWeight.w900),
@@ -1960,8 +2050,8 @@ class _HeldItemPanel extends StatelessWidget {
                     item == null
                         ? 'Apri lo zaino rapido per usare un consumabile o lanciare una Poké Ball.'
                         : item.type == 'berry'
-                            ? 'Bacca tenuta: puoi consumarla subito in combattimento.'
-                            : 'Strumento tenuto: ${_itemTypeLabel(item.type)}.',
+                        ? 'Bacca tenuta: puoi consumarla subito in combattimento.'
+                        : 'Strumento tenuto: ${_itemTypeLabel(item.type)}.',
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -2002,11 +2092,10 @@ class _QuickBagSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final statusParts = [
-      ?nonVolatileStatus,
-      ...volatileStatuses,
-    ];
-    final statusText = statusParts.isEmpty ? 'nessuno status' : statusParts.join(', ');
+    final statusParts = [?nonVolatileStatus, ...volatileStatuses];
+    final statusText = statusParts.isEmpty
+        ? 'nessuno status'
+        : statusParts.join(', ');
 
     return SafeArea(
       child: SizedBox(
@@ -2016,9 +2105,9 @@ class _QuickBagSheet extends StatelessWidget {
           children: [
             Text(
               'Zaino rapido',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w900,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
             ),
             const SizedBox(height: 4),
             Text('$pokemonName • HP $currentHp/$maxHp • $statusText'),
@@ -2083,8 +2172,7 @@ class _MoveCard extends StatelessWidget {
                 style: const TextStyle(fontWeight: FontWeight.w900),
               ),
             ),
-            if (canTrackPp)
-              _PpBadge(remainingPp: remainingPp, maxPp: maxPp),
+            if (canTrackPp) _PpBadge(remainingPp: remainingPp, maxPp: maxPp),
           ],
         ),
         subtitle: Padding(
@@ -2123,10 +2211,15 @@ class _MoveCard extends StatelessWidget {
           else ...[
             Align(
               alignment: Alignment.centerLeft,
-              child: Text('Tempo: ${move.moveTime}  |  Durata: ${move.duration}'),
+              child: Text(
+                'Tempo: ${move.moveTime}  |  Durata: ${move.duration}',
+              ),
             ),
             const SizedBox(height: 8),
-            Align(alignment: Alignment.centerLeft, child: Text(move.description)),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(move.description),
+            ),
           ],
         ],
       ),
@@ -2147,13 +2240,13 @@ class _PpBadge extends StatelessWidget {
     final background = remainingPp <= 0
         ? colorScheme.errorContainer
         : progress <= 0.33
-            ? Colors.amber.shade200
-            : colorScheme.primaryContainer;
+        ? Colors.amber.shade200
+        : colorScheme.primaryContainer;
     final foreground = remainingPp <= 0
         ? colorScheme.onErrorContainer
         : progress <= 0.33
-            ? Colors.black87
-            : colorScheme.onPrimaryContainer;
+        ? Colors.black87
+        : colorScheme.onPrimaryContainer;
 
     return DecoratedBox(
       decoration: BoxDecoration(
@@ -2165,9 +2258,9 @@ class _PpBadge extends StatelessWidget {
         child: Text(
           'PP $remainingPp/$maxPp',
           style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                color: foreground,
-                fontWeight: FontWeight.w900,
-              ),
+            color: foreground,
+            fontWeight: FontWeight.w900,
+          ),
         ),
       ),
     );
@@ -2212,10 +2305,8 @@ class _StatusIcon extends StatelessWidget {
         assetPath,
         fit: BoxFit.contain,
         filterQuality: FilterQuality.none,
-        errorBuilder: (_, __, ___) => _StatusFallback(
-          label: fallbackLabel,
-          size: size,
-        ),
+        errorBuilder: (_, __, ___) =>
+            _StatusFallback(label: fallbackLabel, size: size),
       ),
     );
   }
@@ -2261,7 +2352,8 @@ class _ItemSprite extends StatelessWidget {
           if (loadingProgress == null) return child;
           return Icon(Icons.inventory_2_outlined, size: size);
         },
-        errorBuilder: (_, __, ___) => Icon(Icons.inventory_2_outlined, size: size),
+        errorBuilder: (_, __, ___) =>
+            Icon(Icons.inventory_2_outlined, size: size),
       ),
     );
   }
@@ -2296,7 +2388,8 @@ class _HpInputDialogState extends State<_HpInputDialog> {
         keyboardType: const TextInputType.numberWithOptions(signed: true),
         decoration: InputDecoration(
           labelText: 'HP o modifica',
-          helperText: 'Esempi: -12, +8 oppure 35. Attuali ${widget.currentHp}/${widget.maxHp}',
+          helperText:
+              'Esempi: -12, +8 oppure 35. Attuali ${widget.currentHp}/${widget.maxHp}',
         ),
         onSubmitted: (value) => Navigator.of(context).pop(value),
       ),
@@ -2331,14 +2424,17 @@ class _StruggleWarning extends StatelessWidget {
             Text(
               'STRUGGLE DISPONIBILE',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onErrorContainer,
-                    fontWeight: FontWeight.w900,
-                  ),
+                color: Theme.of(context).colorScheme.onErrorContainer,
+                fontWeight: FontWeight.w900,
+              ),
             ),
             const SizedBox(height: 6),
             Text(
-              move?.description ?? 'Tutti i PP delle mosse tracciabili sono a zero. Usa Struggle.',
-              style: TextStyle(color: Theme.of(context).colorScheme.onErrorContainer),
+              move?.description ??
+                  'Tutti i PP delle mosse tracciabili sono a zero. Usa Struggle.',
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onErrorContainer,
+              ),
             ),
           ],
         ),
@@ -2412,9 +2508,9 @@ class _BattleEmptyState extends StatelessWidget {
             Text(
               title,
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w900,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
             ),
             const SizedBox(height: 8),
             Text(message, textAlign: TextAlign.center),

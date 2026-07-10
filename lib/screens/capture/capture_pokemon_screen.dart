@@ -100,10 +100,11 @@ class _CapturePokemonScreenState extends State<CapturePokemonScreen> {
   }
 
   TeamSlot? get _firstFreeTeamSlot {
-    final unlockedSlots = _team
-        .where((slot) => slot.slotIndex < _unlockedPokeslots)
-        .toList(growable: true)
-      ..sort((a, b) => a.slotIndex.compareTo(b.slotIndex));
+    final unlockedSlots =
+        _team
+            .where((slot) => slot.slotIndex < _unlockedPokeslots)
+            .toList(growable: true)
+          ..sort((a, b) => a.slotIndex.compareTo(b.slotIndex));
 
     for (final slot in unlockedSlots) {
       if (slot.pokemonId == null) return slot;
@@ -113,12 +114,14 @@ class _CapturePokemonScreenState extends State<CapturePokemonScreen> {
 
   List<Pokemon> get _filteredPokemon {
     final query = _query.toLowerCase().trim();
-    return _pokemon.where((pokemon) {
-      return query.isEmpty ||
-          pokemon.name.toLowerCase().contains(query) ||
-          pokemon.id.toString().contains(query) ||
-          pokemon.types.any((type) => type.toLowerCase().contains(query));
-    }).toList(growable: false);
+    return _pokemon
+        .where((pokemon) {
+          return query.isEmpty ||
+              pokemon.name.toLowerCase().contains(query) ||
+              pokemon.id.toString().contains(query) ||
+              pokemon.types.any((type) => type.toLowerCase().contains(query));
+        })
+        .toList(growable: false);
   }
 
   List<_OwnedPokeball> get _ownedPokeballs {
@@ -195,7 +198,8 @@ class _CapturePokemonScreenState extends State<CapturePokemonScreen> {
         if (selectedBall.quantity < result.ballQuantity) {
           if (!mounted) return;
           setState(() {
-            _errorMessage = 'Non hai abbastanza ${selectedBall.item.name} nello zaino.';
+            _errorMessage =
+                'Non hai abbastanza ${selectedBall.item.name} nello zaino.';
           });
           return;
         }
@@ -208,18 +212,24 @@ class _CapturePokemonScreenState extends State<CapturePokemonScreen> {
         if (!consumed) {
           if (!mounted) return;
           setState(() {
-            _errorMessage = 'Non è stato possibile consumare ${selectedBall.item.name}.';
+            _errorMessage =
+                'Non è stato possibile consumare ${selectedBall.item.name}.';
           });
           return;
         }
       }
 
-      final destination = await _addPokemonToCollection(profile, pokemon, result);
+      final destination = await _addPokemonToCollection(
+        profile,
+        pokemon,
+        result,
+      );
       await _loadData(clearMessages: false);
 
       if (!mounted) return;
       setState(() {
-        _successMessage = '${pokemon.name} registrato come catturato e $destination.';
+        _successMessage =
+            '${pokemon.name} registrato come catturato e $destination.';
       });
     } catch (error) {
       if (!mounted) return;
@@ -250,7 +260,19 @@ class _CapturePokemonScreenState extends State<CapturePokemonScreen> {
     _CaptureRegistrationResult result,
   ) async {
     final teamSlot = _firstFreeTeamSlot;
-    final nickname = result.nickname.trim().isEmpty ? null : result.nickname.trim();
+    final nickname = result.nickname.trim().isEmpty
+        ? null
+        : result.nickname.trim();
+    final selectedPokemon = pokemon.resolveVariant(
+      formName: result.formName,
+      gender: result.gender,
+    );
+    final startingMoves = selectedPokemon.moves.startingMoves
+        .take(4)
+        .toList(growable: false);
+    final naturalAbilities = selectedPokemon.abilities
+        .take(2)
+        .toList(growable: false);
 
     if (teamSlot != null) {
       await _teamRepository.updateSlot(
@@ -264,6 +286,8 @@ class _CapturePokemonScreenState extends State<CapturePokemonScreen> {
           gender: result.gender,
           formName: result.formName,
           nature: result.nature,
+          selectedMoves: startingMoves,
+          abilities: naturalAbilities,
         ),
       );
     } else {
@@ -276,6 +300,8 @@ class _CapturePokemonScreenState extends State<CapturePokemonScreen> {
         gender: result.gender,
         formName: result.formName,
         nature: result.nature,
+        selectedMoves: startingMoves,
+        abilities: naturalAbilities,
       );
     }
 
@@ -311,10 +337,7 @@ class _CapturePokemonScreenState extends State<CapturePokemonScreen> {
                 child: Center(child: CircularProgressIndicator()),
               )
             else if (_errorMessage != null && _pokemon.isEmpty)
-              _CaptureErrorState(
-                message: _errorMessage!,
-                onRetry: _loadData,
-              )
+              _CaptureErrorState(message: _errorMessage!, onRetry: _loadData)
             else ...[
               _CaptureHeader(
                 freeSlotIndex: freeSlot?.slotIndex,
@@ -403,7 +426,10 @@ class _CaptureRegistrationResult {
 }
 
 class _CaptureHeader extends StatelessWidget {
-  const _CaptureHeader({required this.freeSlotIndex, required this.unlockedSlots});
+  const _CaptureHeader({
+    required this.freeSlotIndex,
+    required this.unlockedSlots,
+  });
 
   final int? freeSlotIndex;
   final int unlockedSlots;
@@ -434,9 +460,9 @@ class _CaptureHeader extends StatelessWidget {
                   Text(
                     'Registra Pokémon catturato',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: colorScheme.onPrimaryContainer,
-                          fontWeight: FontWeight.w900,
-                        ),
+                      color: colorScheme.onPrimaryContainer,
+                      fontWeight: FontWeight.w900,
+                    ),
                   ),
                   const SizedBox(height: 4),
                   Text(
@@ -485,13 +511,22 @@ class _RegisterCaughtSheetState extends State<_RegisterCaughtSheet> {
   String? _formName;
   bool _isShiny = false;
 
+  Pokemon get _selectedPokemon =>
+      widget.pokemon.resolveVariant(formName: _formName, gender: _gender);
+
   @override
   void initState() {
     super.initState();
     _nicknameController = TextEditingController();
-    _hpController = TextEditingController(text: widget.pokemon.hitPoints.toString());
-    _gender = widget.genderOptions.length == 1 ? widget.genderOptions.first.value : null;
-    _formName = widget.formChoices.isEmpty ? null : widget.formChoices.first.name;
+    _hpController = TextEditingController(
+      text: widget.pokemon.hitPoints.toString(),
+    );
+    _gender = widget.genderOptions.length == 1
+        ? widget.genderOptions.first.value
+        : null;
+    _formName = widget.formChoices.isEmpty
+        ? null
+        : widget.formChoices.first.name;
   }
 
   @override
@@ -507,6 +542,26 @@ class _RegisterCaughtSheetState extends State<_RegisterCaughtSheet> {
       if (ball.item.id == _selectedBallId) return ball;
     }
     return null;
+  }
+
+  void _setGender(String? value) {
+    final oldPokemon = _selectedPokemon;
+    final usedDefaultHp =
+        _hpController.text.trim() == oldPokemon.hitPoints.toString();
+    setState(() => _gender = value);
+    if (usedDefaultHp) {
+      _hpController.text = _selectedPokemon.hitPoints.toString();
+    }
+  }
+
+  void _setForm(String? value) {
+    final oldPokemon = _selectedPokemon;
+    final usedDefaultHp =
+        _hpController.text.trim() == oldPokemon.hitPoints.toString();
+    setState(() => _formName = value);
+    if (usedDefaultHp) {
+      _hpController.text = _selectedPokemon.hitPoints.toString();
+    }
   }
 
   void _submit(_CaptureRegistrationAction action) {
@@ -528,7 +583,9 @@ class _RegisterCaughtSheetState extends State<_RegisterCaughtSheet> {
         nature: _nature,
         formName: _formName,
         isShiny: _isShiny,
-        currentHp: (parsedHp ?? widget.pokemon.hitPoints).clamp(0, 9999).toInt(),
+        currentHp: (parsedHp ?? _selectedPokemon.hitPoints)
+            .clamp(0, 9999)
+            .toInt(),
       ),
     );
   }
@@ -540,6 +597,7 @@ class _RegisterCaughtSheetState extends State<_RegisterCaughtSheet> {
     final genderOptions = widget.genderOptions;
     final genderLocked = genderOptions.length == 1;
     final formChoices = widget.formChoices;
+    final selectedPokemon = _selectedPokemon;
 
     return SafeArea(
       child: Padding(
@@ -569,8 +627,8 @@ class _RegisterCaughtSheetState extends State<_RegisterCaughtSheet> {
                       Text(
                         widget.pokemon.name.toUpperCase(),
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                              fontWeight: FontWeight.w900,
-                            ),
+                          fontWeight: FontWeight.w900,
+                        ),
                       ),
                       const SizedBox(height: 4),
                       Text('#${widget.pokemon.id.toString().padLeft(3, '0')}'),
@@ -579,7 +637,7 @@ class _RegisterCaughtSheetState extends State<_RegisterCaughtSheet> {
                         spacing: 6,
                         runSpacing: 4,
                         children: [
-                          for (final type in widget.pokemon.types)
+                          for (final type in selectedPokemon.types)
                             PokemonTypeBadge(type: type, height: 20),
                         ],
                       ),
@@ -610,9 +668,7 @@ class _RegisterCaughtSheetState extends State<_RegisterCaughtSheet> {
                           child: Text(option.label),
                         ),
                     ],
-                    onChanged: genderLocked
-                        ? null
-                        : (value) => setState(() => _gender = value),
+                    onChanged: genderLocked ? null : _setGender,
                   ),
                 ),
                 const SizedBox(width: 10),
@@ -641,7 +697,7 @@ class _RegisterCaughtSheetState extends State<_RegisterCaughtSheet> {
                   for (final form in formChoices)
                     DropdownMenuItem(value: form.name, child: Text(form.name)),
                 ],
-                onChanged: (value) => setState(() => _formName = value),
+                onChanged: _setForm,
               ),
             ],
             const SizedBox(height: 10),
@@ -693,7 +749,9 @@ class _RegisterCaughtSheetState extends State<_RegisterCaughtSheet> {
               const SizedBox(height: 10),
               Row(
                 children: [
-                  Expanded(child: Text('Ball usate da scalare: $_ballQuantity')),
+                  Expanded(
+                    child: Text('Ball usate da scalare: $_ballQuantity'),
+                  ),
                   IconButton(
                     onPressed: _ballQuantity <= 1
                         ? null

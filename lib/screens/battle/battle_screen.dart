@@ -18,6 +18,7 @@ import '../../repositories/profile_repository.dart';
 import '../../repositories/team_repository.dart';
 import '../../widgets/navigation/home_leading_button.dart';
 import '../../widgets/pokemon/pokemon_asset_image.dart';
+import '../capture/capture_pokemon_screen.dart';
 
 class BattleScreen extends StatefulWidget {
   const BattleScreen({super.key});
@@ -273,9 +274,9 @@ class _BattleScreenState extends State<BattleScreen> {
     final pokemon = _pokemonForSlot(data, slot);
     if (pokemon == null) return;
 
-    final items = data.ownedConsumables;
+    final items = data.ownedQuickItems;
     if (items.isEmpty) {
-      await _reload(message: 'Non hai consumabili nello zaino.');
+      await _reload(message: 'Non hai consumabili o Poké Ball nello zaino.');
       return;
     }
 
@@ -304,6 +305,12 @@ class _BattleScreenState extends State<BattleScreen> {
     _OwnedBattleItem selected,
   ) async {
     final item = selected.item;
+
+    if (item.type == 'pokeball') {
+      await _throwPokeball(data, item);
+      return;
+    }
+
     final isBerry = item.type == 'berry';
     final result = _applyMedicine(
       item: item,
@@ -339,6 +346,55 @@ class _BattleScreenState extends State<BattleScreen> {
     await _reload(
       message: '${item.name} è stata consumata. Applica manualmente il suo effetto se necessario.',
     );
+  }
+
+  Future<void> _throwPokeball(_BattleData data, BagItem ball) async {
+    final caught = await showDialog<bool>(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: Text('Lancia ${ball.name}?'),
+        content: const Text(
+          'Dopo il tiro, inserisci l’esito comunicato dal Master. La Poké Ball verrà consumata in ogni caso.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Annulla'),
+          ),
+          OutlinedButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('NO, FALLITA'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('SÌ, CATTURATO'),
+          ),
+        ],
+      ),
+    );
+
+    if (!mounted || caught == null) return;
+
+    final consumed = await _bagRepository.consumeItem(
+      profileId: data.profile.id,
+      itemId: ball.id,
+    );
+    if (!consumed) {
+      await _reload(message: 'Non hai più ${ball.name} nello zaino.');
+      return;
+    }
+
+    if (!caught) {
+      await _reload(message: '${ball.name} consumata. Cattura fallita.');
+      return;
+    }
+
+    await _reload(message: '${ball.name} consumata. Registra il Pokémon catturato.');
+    if (!mounted) return;
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(builder: (_) => const CapturePokemonScreen()),
+    );
+    await _reload();
   }
 
   _MedicineUseResult? _applyMedicine({
@@ -880,12 +936,12 @@ class _BattleData {
         .toList(growable: false);
   }
 
-  List<_OwnedBattleItem> get ownedConsumables {
+  List<_OwnedBattleItem> get ownedQuickItems {
     final owned = <_OwnedBattleItem>[];
     for (final entry in inventory) {
       final item = _itemByReference(entry.itemId);
       if (item == null) continue;
-      if (item.type == 'berry' || item.type == 'medicine') {
+      if (item.type == 'berry' || item.type == 'medicine' || item.type == 'pokeball') {
         owned.add(_OwnedBattleItem(item: item, quantity: entry.quantity));
       }
     }
@@ -1123,6 +1179,17 @@ String _itemTypeLabel(String type) {
     default:
       return type;
   }
+}
+
+String _quickItemActionLabel(String type) {
+  return type == 'pokeball' ? 'LANCIA' : 'USA';
+}
+
+String _quickItemDescription(BagItem item) {
+  if (item.type == 'pokeball') {
+    return 'Lancia la Poké Ball. Dopo la risposta del Master verrà consumata.';
+  }
+  return item.displayDescription;
 }
 
 Color _hpProgressColor(double value) {
@@ -1887,7 +1954,7 @@ class _HeldItemPanel extends StatelessWidget {
                   ),
                   Text(
                     item == null
-                        ? 'Apri lo zaino rapido per usare un consumabile.'
+                        ? 'Apri lo zaino rapido per usare un consumabile o lanciare una Poké Ball.'
                         : item.type == 'berry'
                             ? 'Bacca tenuta: puoi consumarla subito in combattimento.'
                             : 'Strumento tenuto: ${_itemTypeLabel(item.type)}.',
@@ -1961,11 +2028,11 @@ class _QuickBagSheet extends StatelessWidget {
                     style: const TextStyle(fontWeight: FontWeight.w800),
                   ),
                   subtitle: Text(
-                    '${_itemTypeLabel(entry.item.type)} • x${entry.quantity}\n${entry.item.displayDescription}',
+                    '${_itemTypeLabel(entry.item.type)} • x${entry.quantity}\n${_quickItemDescription(entry.item)}',
                     maxLines: 3,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  trailing: const Text('USA'),
+                  trailing: Text(_quickItemActionLabel(entry.item.type)),
                   onTap: () => Navigator.of(context).pop(entry),
                 ),
               ),

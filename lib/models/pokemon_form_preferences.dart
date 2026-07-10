@@ -5,8 +5,45 @@ class PokemonFormPreferences {
   static final Map<int, bool> _shinyByPokemonId = {};
   static final Map<int, String> _genderByPokemonId = {};
 
-  static void setForm({required int pokemonId, required String? formName}) {
+  static String? normalizeGender(String? gender) {
+    final normalizedGender = gender?.trim().toLowerCase();
+    if (normalizedGender == null || normalizedGender.isEmpty) return null;
+
+    switch (normalizedGender) {
+      case 'male':
+      case 'm':
+      case 'maschio':
+        return 'male';
+      case 'female':
+      case 'f':
+      case 'femmina':
+        return 'female';
+      case 'genderless':
+      case 'sesso sconosciuto':
+      case 'senza sesso':
+      case 'none':
+      case 'unknown':
+        return 'genderless';
+      default:
+        return normalizedGender;
+    }
+  }
+
+  static String? normalizeFormName({required String? formName, String? gender}) {
     final normalizedForm = formName?.trim();
+    if (normalizedForm == null || normalizedForm.isEmpty) return null;
+
+    final normalizedGender = normalizeGender(gender);
+    final formAsGender = normalizeGender(normalizedForm);
+    if (normalizedGender != null && formAsGender == normalizedGender) {
+      return null;
+    }
+
+    return normalizedForm;
+  }
+
+  static void setForm({required int pokemonId, required String? formName}) {
+    final normalizedForm = normalizeFormName(formName: formName, gender: null);
     if (normalizedForm == null || normalizedForm.isEmpty) {
       _formByPokemonId.remove(pokemonId);
       return;
@@ -25,7 +62,7 @@ class PokemonFormPreferences {
   }
 
   static void setGender({required int pokemonId, required String? gender}) {
-    final normalizedGender = gender?.trim();
+    final normalizedGender = normalizeGender(gender);
     if (normalizedGender == null || normalizedGender.isEmpty) {
       _genderByPokemonId.remove(pokemonId);
       return;

@@ -8,7 +8,33 @@ import '../models/pokemon.dart';
 import '../models/pokemon_flavor.dart';
 
 class PokemonRepository {
+  static List<Pokemon>? _cachedAllPokemon;
+
   Future<List<Pokemon>> getAllPokemon() async {
+    if (_cachedAllPokemon != null) {
+      return List<Pokemon>.from(_cachedAllPokemon!);
+    }
+
+    final pokemonByNumber = <int, Pokemon>{};
+
+    for (final pokemon in await _getLegacyPokemon()) {
+      if (pokemon.id <= 0) continue;
+      pokemonByNumber[pokemon.id] = pokemon;
+    }
+
+    for (final pokemon in await _getWebappPokemon()) {
+      if (pokemon.id <= 0) continue;
+      pokemonByNumber.putIfAbsent(pokemon.id, () => pokemon);
+    }
+
+    final pokemonList = pokemonByNumber.values.toList(growable: false)
+      ..sort((a, b) => a.id.compareTo(b.id));
+    _cachedAllPokemon = pokemonList;
+
+    return List<Pokemon>.from(pokemonList);
+  }
+
+  Future<List<Pokemon>> _getLegacyPokemon() async {
     final indexString = await rootBundle.loadString(
       'assets/data/index_order.json',
     );
@@ -42,6 +68,35 @@ class PokemonRepository {
     }
 
     return pokemonList;
+  }
+
+  Future<List<Pokemon>> _getWebappPokemon() async {
+    try {
+      final jsonString = await rootBundle.loadString(
+        'assets/data_webapp/pokemon.json',
+      );
+      final json = Map<String, dynamic>.from(jsonDecode(jsonString));
+      final items = List<dynamic>.from(json['items'] ?? const []);
+      final pokemonList = <Pokemon>[];
+
+      for (final item in items) {
+        if (item is! Map) continue;
+
+        try {
+          final pokemon = Pokemon.fromWebJson(Map<String, dynamic>.from(item));
+          if (pokemon.id > 0 && pokemon.name.trim().isNotEmpty) {
+            pokemonList.add(pokemon);
+          }
+        } catch (error) {
+          debugPrint('Errore convertendo Pokemon webapp: $error');
+        }
+      }
+
+      return pokemonList;
+    } catch (error) {
+      debugPrint('Catalogo Pokemon webapp non disponibile: $error');
+      return const [];
+    }
   }
 
   Future<Map<int, PokemonFlavor>> getPokemonFlavors() async {

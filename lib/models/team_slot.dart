@@ -29,7 +29,7 @@ class TeamSlot {
     this.nickname,
     this.selectedMoves = const [],
     this.isShiny = false,
-    this.gender,
+    String? gender,
     String? formName,
     this.nature = 'No Nature',
     this.heldItem,
@@ -39,7 +39,11 @@ class TeamSlot {
     this.statusEffects = const [],
     this.customAbilityScores = const {},
     this.loyalty = 0,
-  }) : formName = _normalizeFormNameForGender(formName, gender) {
+  })  : gender = PokemonFormPreferences.normalizeGender(gender),
+        formName = PokemonFormPreferences.normalizeFormName(
+          formName: formName,
+          gender: gender,
+        ) {
     final pokemonId = this.pokemonId;
     if (pokemonId != null) {
       PokemonFormPreferences.setForm(
@@ -52,7 +56,7 @@ class TeamSlot {
       );
       PokemonFormPreferences.setGender(
         pokemonId: pokemonId,
-        gender: gender,
+        gender: this.gender,
       );
     }
   }
@@ -156,31 +160,5 @@ class TeamSlot {
       customAbilityScores: customAbilityScores ?? this.customAbilityScores,
       loyalty: loyalty ?? this.loyalty,
     );
-  }
-
-  static String? _normalizeFormNameForGender(String? formName, String? gender) {
-    final normalizedGender = gender?.toLowerCase().trim();
-    final normalizedForm = formName?.toLowerCase().trim();
-    if (normalizedForm == null || normalizedForm.isEmpty) return formName;
-
-    final isMaleForm = normalizedForm == 'male' ||
-        normalizedForm == 'm' ||
-        normalizedForm == 'maschio' ||
-        normalizedForm.endsWith(' male') ||
-        normalizedForm.endsWith(' m');
-    final isFemaleForm = normalizedForm == 'female' ||
-        normalizedForm == 'f' ||
-        normalizedForm == 'femmina' ||
-        normalizedForm.endsWith(' female') ||
-        normalizedForm.endsWith(' f');
-
-    if ((normalizedGender == 'female' || normalizedGender == 'f' || normalizedGender == 'femmina') && isMaleForm) {
-      return null;
-    }
-    if ((normalizedGender == 'male' || normalizedGender == 'm' || normalizedGender == 'maschio') && isFemaleForm) {
-      return null;
-    }
-
-    return formName;
   }
 }

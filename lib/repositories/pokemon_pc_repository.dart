@@ -2,6 +2,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 import '../database/hive_boxes.dart';
 import '../models/pc_pokemon.dart';
+import '../models/team_slot.dart';
 
 class PokemonPcRepository {
   Future<Box> _box() => Hive.openBox(HiveBoxes.pcPokemon);
@@ -30,12 +31,56 @@ class PokemonPcRepository {
   Future<PcPokemon> depositPokemon({
     required String profileId,
     required int pokemonId,
+    int experience = 0,
+    int currentHp = 0,
+    String? nickname,
+    List<String> selectedMoves = const [],
+    bool isShiny = false,
+    String? gender,
+    String? formName,
+    String nature = 'No Nature',
+    String? heldItem,
+    List<String> abilities = const [],
+    List<String> feats = const [],
+    List<String> extraSkills = const [],
+    List<String> statusEffects = const [],
+    Map<String, int> customAbilityScores = const {},
+    int loyalty = 0,
+    String notes = '',
   }) async {
     final storedPokemon = await getPokemon(profileId);
     final item = PcPokemon(
       id: DateTime.now().microsecondsSinceEpoch.toString(),
       pokemonId: pokemonId,
+      experience: experience,
+      currentHp: currentHp,
+      nickname: nickname,
+      selectedMoves: selectedMoves,
+      isShiny: isShiny,
+      gender: gender,
+      formName: formName,
+      nature: nature,
+      heldItem: heldItem,
+      abilities: abilities,
+      feats: feats,
+      extraSkills: extraSkills,
+      statusEffects: statusEffects,
+      customAbilityScores: customAbilityScores,
+      loyalty: loyalty,
+      notes: notes,
     );
+
+    await savePokemon(profileId, [item, ...storedPokemon]);
+
+    return item;
+  }
+
+  Future<PcPokemon> depositTeamSlot({
+    required String profileId,
+    required TeamSlot slot,
+  }) async {
+    final storedPokemon = await getPokemon(profileId);
+    final item = PcPokemon.fromTeamSlot(slot);
 
     await savePokemon(profileId, [item, ...storedPokemon]);
 

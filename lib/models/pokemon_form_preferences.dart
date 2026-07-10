@@ -29,9 +29,29 @@ class PokemonFormPreferences {
     }
   }
 
-  static String? normalizeFormName({required String? formName, String? gender}) {
+  static String? normalizeFormName({
+    required String? formName,
+    String? gender,
+  }) {
     final normalizedForm = formName?.trim();
     if (normalizedForm == null || normalizedForm.isEmpty) return null;
+
+    final lowerForm = normalizedForm.toLowerCase();
+    switch (lowerForm) {
+      case 'base':
+      case 'default':
+      case 'forma base':
+        return null;
+      case 'male':
+      case 'm':
+      case 'maschio':
+      case 'female':
+      case 'f':
+      case 'femmina':
+        return null;
+      default:
+        break;
+    }
 
     final normalizedGender = normalizeGender(gender);
     final formAsGender = normalizeGender(normalizedForm);
@@ -42,8 +62,14 @@ class PokemonFormPreferences {
     return normalizedForm;
   }
 
-  static void setForm({required int pokemonId, required String? formName}) {
-    final normalizedForm = normalizeFormName(formName: formName, gender: null);
+  static void setForm({
+    required int pokemonId,
+    required String? formName,
+  }) {
+    final normalizedForm = normalizeFormName(
+      formName: formName,
+      gender: null,
+    );
     if (normalizedForm == null || normalizedForm.isEmpty) {
       _formByPokemonId.remove(pokemonId);
       return;
@@ -52,7 +78,10 @@ class PokemonFormPreferences {
     _formByPokemonId[pokemonId] = normalizedForm;
   }
 
-  static void setShiny({required int pokemonId, required bool isShiny}) {
+  static void setShiny({
+    required int pokemonId,
+    required bool isShiny,
+  }) {
     if (!isShiny) {
       _shinyByPokemonId.remove(pokemonId);
       return;
@@ -61,7 +90,10 @@ class PokemonFormPreferences {
     _shinyByPokemonId[pokemonId] = true;
   }
 
-  static void setGender({required int pokemonId, required String? gender}) {
+  static void setGender({
+    required int pokemonId,
+    required String? gender,
+  }) {
     final normalizedGender = normalizeGender(gender);
     if (normalizedGender == null || normalizedGender.isEmpty) {
       _genderByPokemonId.remove(pokemonId);
@@ -73,7 +105,9 @@ class PokemonFormPreferences {
 
   static String? formFor(int pokemonId) => _formByPokemonId[pokemonId];
 
-  static bool shinyFor(int pokemonId) => _shinyByPokemonId[pokemonId] ?? false;
+  static bool shinyFor(int pokemonId) =>
+      _shinyByPokemonId[pokemonId] ?? false;
 
-  static String? genderFor(int pokemonId) => _genderByPokemonId[pokemonId];
+  static String? genderFor(int pokemonId) =>
+      _genderByPokemonId[pokemonId];
 }

@@ -1357,6 +1357,8 @@ class _PartyPokemonButton extends StatelessWidget {
                   pokemon: pokemon,
                   size: 52,
                   formName: slot.formName,
+                  gender: slot.gender,
+                  isShiny: slot.isShiny,
                 ),
                 const SizedBox(height: 2),
                 SizedBox(
@@ -1636,6 +1638,8 @@ class _ActivePokemonCard extends StatelessWidget {
                   useLargeArtwork: true,
                   size: 96,
                   formName: slot.formName,
+                  gender: slot.gender,
+                  isShiny: slot.isShiny,
                 ),
                 const SizedBox(width: 12),
                 Expanded(

@@ -858,7 +858,7 @@ class PokemonAssetPaths {
   static String _stripGenericFormWords(String value) {
     return _cleanFormLabel(
       value.replaceAll(
-        RegExp(r'(form|forme|style|mode)', caseSensitive: false),
+        RegExp(r'\b(form|forme|style|mode)\b', caseSensitive: false),
         ' ',
       ),
     );

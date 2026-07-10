@@ -52,7 +52,9 @@ class _BagScreenState extends State<BagScreen> {
     final inventory = await _bagRepository.getInventory(profile.id);
     final team = await _teamRepository.getTeam(profile.id);
     final pokemonList = await _pokemonRepository.getAllPokemon();
-    final pokemonById = {for (final pokemon in pokemonList) pokemon.id: pokemon};
+    final pokemonById = {
+      for (final pokemon in pokemonList) pokemon.id: pokemon,
+    };
 
     return _BagData(
       profile: profile,
@@ -143,7 +145,9 @@ class _BagScreenState extends State<BagScreen> {
       return;
     }
 
-    await _reload(message: '${item.name} non è ancora utilizzabile dallo zaino.');
+    await _reload(
+      message: '${item.name} non è ancora utilizzabile dallo zaino.',
+    );
   }
 
   Future<void> _useBerry(_BagData data, _OwnedBagItem entry) async {
@@ -161,14 +165,20 @@ class _BagScreenState extends State<BagScreen> {
       final pokemonId = slot.pokemonId;
       if (pokemonId == null) continue;
 
-      final pokemon = data.pokemonById[pokemonId];
-      if (pokemon == null) continue;
+      final basePokemon = data.pokemonById[pokemonId];
+      if (basePokemon == null) continue;
+      final pokemon = basePokemon.resolveVariant(
+        formName: slot.formName,
+        gender: slot.gender,
+      );
 
       candidates.add(_MedicineCandidate(slot: slot, pokemon: pokemon));
     }
 
     if (candidates.isEmpty) {
-      await _reload(message: 'Non hai Pokémon in squadra su cui usare ${entry.item.name}.');
+      await _reload(
+        message: 'Non hai Pokémon in squadra su cui usare ${entry.item.name}.',
+      );
       return;
     }
 
@@ -223,14 +233,20 @@ class _BagScreenState extends State<BagScreen> {
       final pokemonId = slot.pokemonId;
       if (pokemonId == null) continue;
 
-      final pokemon = data.pokemonById[pokemonId];
-      if (pokemon == null) continue;
+      final basePokemon = data.pokemonById[pokemonId];
+      if (basePokemon == null) continue;
+      final pokemon = basePokemon.resolveVariant(
+        formName: slot.formName,
+        gender: slot.gender,
+      );
 
       candidates.add(_HeldItemCandidate(slot: slot, pokemon: pokemon));
     }
 
     if (candidates.isEmpty) {
-      await _reload(message: 'Non hai Pokémon in squadra a cui dare ${entry.item.name}.');
+      await _reload(
+        message: 'Non hai Pokémon in squadra a cui dare ${entry.item.name}.',
+      );
       return;
     }
 
@@ -291,7 +307,10 @@ class _BagScreenState extends State<BagScreen> {
   }
 
   Future<void> _removeHeldItem(_BagData data, _EquippedHeldItem entry) async {
-    await _bagRepository.addItem(profileId: data.profile.id, itemId: entry.item.id);
+    await _bagRepository.addItem(
+      profileId: data.profile.id,
+      itemId: entry.item.id,
+    );
     await _teamRepository.updateSlot(
       profileId: data.profile.id,
       updatedSlot: entry.slot.copyWith(heldItem: null),
@@ -325,15 +344,21 @@ class _BagScreenState extends State<BagScreen> {
 
     final team = await _teamRepository.getTeam(data.profile.id);
     final pokemonList = await _pokemonRepository.getAllPokemon();
-    final pokemonById = {for (final pokemon in pokemonList) pokemon.id: pokemon};
+    final pokemonById = {
+      for (final pokemon in pokemonList) pokemon.id: pokemon,
+    };
     final candidates = <_TmCandidate>[];
 
     for (final slot in team) {
       final pokemonId = slot.pokemonId;
       if (pokemonId == null) continue;
 
-      final pokemon = pokemonById[pokemonId];
-      if (pokemon == null) continue;
+      final basePokemon = pokemonById[pokemonId];
+      if (basePokemon == null) continue;
+      final pokemon = basePokemon.resolveVariant(
+        formName: slot.formName,
+        gender: slot.gender,
+      );
 
       if (pokemon.moves.tmMoves.contains(tm.number)) {
         candidates.add(_TmCandidate(slot: slot, pokemon: pokemon));
@@ -396,7 +421,8 @@ class _BagScreenState extends State<BagScreen> {
 
       if (!mounted || replaceIndex == null) return;
 
-      replacedMoveName = currentMoveData[updatedMoves[replaceIndex]]?.name ??
+      replacedMoveName =
+          currentMoveData[updatedMoves[replaceIndex]]?.name ??
           updatedMoves[replaceIndex];
       updatedMoves[replaceIndex] = learnedMoveReference;
     }
@@ -416,8 +442,9 @@ class _BagScreenState extends State<BagScreen> {
     );
 
     final pokemonName = candidate.slot.nickname ?? candidate.pokemon.name;
-    final replacementText =
-        replacedMoveName == null ? '' : ' al posto di $replacedMoveName';
+    final replacementText = replacedMoveName == null
+        ? ''
+        : ' al posto di $replacedMoveName';
     await _reload(
       message:
           '$pokemonName ha imparato ${move.name}$replacementText usando ${entry.item.name}.',
@@ -427,14 +454,17 @@ class _BagScreenState extends State<BagScreen> {
   Future<void> _useMedicine(_BagData data, _OwnedBagItem entry) async {
     if (!_isSupportedMedicine(entry.item.id)) {
       await _reload(
-        message: '${entry.item.name} non è ancora utilizzabile automaticamente.',
+        message:
+            '${entry.item.name} non è ancora utilizzabile automaticamente.',
       );
       return;
     }
 
     final team = await _teamRepository.getTeam(data.profile.id);
     final pokemonList = await _pokemonRepository.getAllPokemon();
-    final pokemonById = {for (final pokemon in pokemonList) pokemon.id: pokemon};
+    final pokemonById = {
+      for (final pokemon in pokemonList) pokemon.id: pokemon,
+    };
     final candidates = <_MedicineCandidate>[];
 
     for (final slot in team) {
@@ -448,7 +478,9 @@ class _BagScreenState extends State<BagScreen> {
     }
 
     if (candidates.isEmpty) {
-      await _reload(message: 'Non hai Pokémon in squadra su cui usare ${entry.item.name}.');
+      await _reload(
+        message: 'Non hai Pokémon in squadra su cui usare ${entry.item.name}.',
+      );
       return;
     }
 
@@ -533,12 +565,16 @@ class _BagScreenState extends State<BagScreen> {
           : 'guarisce da ${curedStatuses.join(', ')}';
     }
 
-    if (updatedHp == currentHp && _sameStrings(updatedStatuses, statusEffects)) {
+    if (updatedHp == currentHp &&
+        _sameStrings(updatedStatuses, statusEffects)) {
       return null;
     }
 
     final displayName = slot.nickname ?? pokemon.name;
-    final effects = [healingText, statusText].where((part) => part.isNotEmpty).join(' e ');
+    final effects = [
+      healingText,
+      statusText,
+    ].where((part) => part.isNotEmpty).join(' e ');
 
     return _MedicineUseResult(
       updatedSlot: slot.copyWith(
@@ -562,7 +598,8 @@ class _BagScreenState extends State<BagScreen> {
     final constitutionModifier = ((constitution - 10) / 2).floor();
     final toughBonus = slot.feats.contains('Tough') ? safeLevel * 2 : 0;
     final loyaltyBonus = _loyaltyHpBonus(slot.loyalty, safeLevel);
-    final scaledHp = pokemon.hitPoints +
+    final scaledHp =
+        pokemon.hitPoints +
         (hitDieAverage * levelsGained) +
         (constitutionModifier * safeLevel) +
         toughBonus +
@@ -696,8 +733,8 @@ class _BagScreenState extends State<BagScreen> {
             onFindItem: () => _openFinder(data, _BagAction.find),
             onBuyItem: () => _openFinder(data, _BagAction.buy),
             onUseItem: (entry) => _useBagItem(data, entry),
-             onEquipItem: (entry) => _useHeldItem(data, entry),
-             onRemoveHeldItem: (entry) => _removeHeldItem(data, entry),
+            onEquipItem: (entry) => _useHeldItem(data, entry),
+            onRemoveHeldItem: (entry) => _removeHeldItem(data, entry),
           );
         },
       ),
@@ -720,7 +757,9 @@ class _BagData {
   final List<TeamSlot> team;
   final Map<int, Pokemon> pokemonById;
 
-  Map<String, BagItem> get itemById => {for (final item in catalog) item.id: item};
+  Map<String, BagItem> get itemById => {
+    for (final item in catalog) item.id: item,
+  };
 
   BagItem? itemByReference(String reference) {
     final trimmed = reference.trim();
@@ -839,7 +878,6 @@ class _MedicineUseResult {
 
 enum _BagAction { find, buy }
 
-
 const Set<String> _healingItemIds = {
   'potion',
   'super-potion',
@@ -937,14 +975,18 @@ class _BagContent extends StatelessWidget {
         _BagHeader(
           money: data.profile.money,
           ownedCount: ownedItems.length,
-          totalQuantity: ownedItems.fold<int>(0, (sum, entry) => sum + entry.quantity),
+          totalQuantity: ownedItems.fold<int>(
+            0,
+            (sum, entry) => sum + entry.quantity,
+          ),
         ),
         if (message != null) ...[
           const SizedBox(height: 12),
           _InlineBagMessage(message: message!),
         ],
         const SizedBox(height: 16),
-        _BagActions(onFindItem: onFindItem, onBuyItem: onBuyItem),        _EquippedHeldItemsSection(
+        _BagActions(onFindItem: onFindItem, onBuyItem: onBuyItem),
+        _EquippedHeldItemsSection(
           equippedItems: data.equippedHeldItems,
           onRemove: onRemoveHeldItem,
         ),
@@ -1035,9 +1077,9 @@ class _BagHeader extends StatelessWidget {
                   Text(
                     'Zaino allenatore',
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          color: colorScheme.onTertiaryContainer,
-                          fontWeight: FontWeight.w900,
-                        ),
+                      color: colorScheme.onTertiaryContainer,
+                      fontWeight: FontWeight.w900,
+                    ),
                   ),
                   const SizedBox(height: 4),
                   Text(
@@ -1204,7 +1246,11 @@ class _BagItemCardState extends State<_BagItemCard> {
   Widget build(BuildContext context) {
     final item = widget.entry.item;
     final costLabel = item.cost == null ? 'Non acquistabile' : '₽ ${item.cost}';
-    final canUse = item.type == 'tm' || item.type == 'medicine' || item.type == 'held-item' || item.type == 'berry';
+    final canUse =
+        item.type == 'tm' ||
+        item.type == 'medicine' ||
+        item.type == 'held-item' ||
+        item.type == 'berry';
 
     return Card(
       child: ExpansionTile(
@@ -1220,7 +1266,10 @@ class _BagItemCardState extends State<_BagItemCard> {
         ),
         childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
         children: [
-          Align(alignment: Alignment.centerLeft, child: Text(item.displayDescription)),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Text(item.displayDescription),
+          ),
           if (item.type == 'tm') ...[
             const SizedBox(height: 12),
             FutureBuilder<MoveData?>(
@@ -1314,7 +1363,6 @@ class _ItemSprite extends StatelessWidget {
   }
 }
 
-
 class _EquippedHeldItemsSection extends StatelessWidget {
   const _EquippedHeldItemsSection({
     required this.equippedItems,
@@ -1334,9 +1382,9 @@ class _EquippedHeldItemsSection extends StatelessWidget {
         const SizedBox(height: 16),
         Text(
           'Strumenti tenuti',
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w900,
-              ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
         ),
         const SizedBox(height: 8),
         for (final equipped in equippedItems)
@@ -1382,9 +1430,9 @@ class _HeldItemPokemonPickerSheet extends StatelessWidget {
           children: [
             Text(
               'Dai ${item.name}',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w900,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
             ),
             const SizedBox(height: 4),
             const Text(
@@ -1394,7 +1442,10 @@ class _HeldItemPokemonPickerSheet extends StatelessWidget {
             for (final candidate in candidates)
               Card(
                 child: ListTile(
-                  leading: PokemonAssetImage(pokemon: candidate.pokemon, size: 46),
+                  leading: PokemonAssetImage(
+                    pokemon: candidate.pokemon,
+                    size: 46,
+                  ),
                   title: Text(
                     candidate.displayName,
                     style: const TextStyle(fontWeight: FontWeight.w800),
@@ -1412,7 +1463,9 @@ class _HeldItemPokemonPickerSheet extends StatelessWidget {
 
   String _heldItemCandidateSummary(_HeldItemCandidate candidate) {
     final heldItemReference = candidate.slot.heldItem;
-    final heldItem = heldItemReference == null ? null : itemByReference(heldItemReference);
+    final heldItem = heldItemReference == null
+        ? null
+        : itemByReference(heldItemReference);
 
     return 'Slot ${candidate.slot.slotIndex + 1} • Tiene: ${heldItem?.name ?? 'nessuno strumento'}';
   }
@@ -1439,9 +1492,9 @@ class _MedicinePokemonPickerSheet extends StatelessWidget {
           children: [
             Text(
               'Usa ${item.name}',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w900,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
             ),
             const SizedBox(height: 4),
             const Text('Scegli il Pokémon della squadra.'),
@@ -1449,7 +1502,10 @@ class _MedicinePokemonPickerSheet extends StatelessWidget {
             for (final candidate in candidates)
               Card(
                 child: ListTile(
-                  leading: PokemonAssetImage(pokemon: candidate.pokemon, size: 46),
+                  leading: PokemonAssetImage(
+                    pokemon: candidate.pokemon,
+                    size: 46,
+                  ),
                   title: Text(
                     candidate.displayName,
                     style: const TextStyle(fontWeight: FontWeight.w800),
@@ -1469,7 +1525,9 @@ class _MedicinePokemonPickerSheet extends StatelessWidget {
     final maxHp = maxHpBuilder(candidate.pokemon, candidate.slot);
     final currentHp = candidate.slot.currentHp.clamp(0, maxHp).toInt();
     final statuses = candidate.slot.statusEffects;
-    final statusText = statuses.isEmpty ? 'nessuno status' : statuses.join(', ');
+    final statusText = statuses.isEmpty
+        ? 'nessuno status'
+        : statuses.join(', ');
 
     return 'Slot ${candidate.slot.slotIndex + 1} • HP $currentHp/$maxHp • $statusText';
   }
@@ -1496,9 +1554,9 @@ class _TmPokemonPickerSheet extends StatelessWidget {
           children: [
             Text(
               'Usa ${item.name}',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w900,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
             ),
             const SizedBox(height: 4),
             Text('Scegli un Pokémon compatibile con ${move.name}.'),
@@ -1508,7 +1566,10 @@ class _TmPokemonPickerSheet extends StatelessWidget {
             for (final candidate in candidates)
               Card(
                 child: ListTile(
-                  leading: PokemonAssetImage(pokemon: candidate.pokemon, size: 46),
+                  leading: PokemonAssetImage(
+                    pokemon: candidate.pokemon,
+                    size: 46,
+                  ),
                   title: Text(
                     candidate.slot.nickname ?? candidate.pokemon.name,
                     style: const TextStyle(fontWeight: FontWeight.w800),
@@ -1550,20 +1611,22 @@ class _MoveReplaceSheet extends StatelessWidget {
           children: [
             Text(
               '$pokemonName sta imparando ${newMove.name}',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w900,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
             ),
             const SizedBox(height: 4),
-            const Text('Il moveset è pieno. Controlla la nuova mossa e scegli quale dimenticare.'),
+            const Text(
+              'Il moveset è pieno. Controlla la nuova mossa e scegli quale dimenticare.',
+            ),
             const SizedBox(height: 12),
             _MoveDetailsCard(move: newMove, title: 'Nuova mossa'),
             const SizedBox(height: 16),
             Text(
               'Mosse da dimenticare',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w900,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
             ),
             const SizedBox(height: 8),
             for (final entry in selectedMoves.asMap().entries)
@@ -1622,7 +1685,8 @@ class _MoveCompactInfo extends StatelessWidget {
   Widget build(BuildContext context) {
     final parts = <String>[
       'PP ${move.pp}',
-      if (move.range.trim().isNotEmpty && move.range != '-') 'Raggio ${move.range}',
+      if (move.range.trim().isNotEmpty && move.range != '-')
+        'Raggio ${move.range}',
       if (move.damageByLevel.isNotEmpty) 'Danni ${_damageSummary(move)}',
       if (move.save != null) 'TS ${move.save}',
     ];
@@ -1656,10 +1720,7 @@ class _MoveDetailsCard extends StatelessWidget {
       child: ExpansionTile(
         initiallyExpanded: initiallyExpanded,
         leading: PokemonTypeBadge(type: move.type, height: 26),
-        title: Text(
-          title,
-          style: const TextStyle(fontWeight: FontWeight.w900),
-        ),
+        title: Text(title, style: const TextStyle(fontWeight: FontWeight.w900)),
         subtitle: Text(move.name.toUpperCase()),
         childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
         children: [
@@ -1667,7 +1728,8 @@ class _MoveDetailsCard extends StatelessWidget {
             spacing: 8,
             runSpacing: 8,
             children: [
-              for (final detail in details) _MoveInfoChip(label: detail.$1, value: detail.$2),
+              for (final detail in details)
+                _MoveInfoChip(label: detail.$1, value: detail.$2),
             ],
           ),
           if (move.description.trim().isNotEmpty) ...[
@@ -1715,7 +1777,8 @@ List<(String, String)> _moveDetailRows(MoveData move) {
     ('PP', move.pp),
     if (move.moveTime.trim().isNotEmpty && move.moveTime != '-')
       ('Tempo', move.moveTime),
-    if (move.range.trim().isNotEmpty && move.range != '-') ('Raggio', move.range),
+    if (move.range.trim().isNotEmpty && move.range != '-')
+      ('Raggio', move.range),
     if (move.duration.trim().isNotEmpty && move.duration != '-')
       ('Durata', move.duration),
     if (move.movePowers.isNotEmpty) ('Power', move.movePowers.join('/')),
@@ -1733,7 +1796,9 @@ String _damageSummary(MoveData move) {
   final entries = move.damageByLevel.entries.toList()
     ..sort((a, b) => a.key.compareTo(b.key));
 
-  return entries.map((entry) => 'Lv.${entry.key} ${entry.value.label}').join(' / ');
+  return entries
+      .map((entry) => 'Lv.${entry.key} ${entry.value.label}')
+      .join(' / ');
 }
 
 class _ItemPickerResult {
@@ -1796,7 +1861,9 @@ class _ItemPickerSheetState extends State<_ItemPickerSheet> {
     if (maxQuantity <= 0) return;
 
     final quantity = _quantityFor(item).clamp(1, maxQuantity).toInt();
-    Navigator.of(context).pop(_ItemPickerResult(item: item, quantity: quantity));
+    Navigator.of(
+      context,
+    ).pop(_ItemPickerResult(item: item, quantity: quantity));
   }
 
   @override
@@ -1825,9 +1892,9 @@ class _ItemPickerSheetState extends State<_ItemPickerSheet> {
             children: [
               Text(
                 _isBuy ? 'Compra oggetto' : 'Trova oggetto',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.w900,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
               ),
               if (_isBuy) ...[
                 const SizedBox(height: 4),
@@ -1852,10 +1919,12 @@ class _ItemPickerSheetState extends State<_ItemPickerSheet> {
                     final item = filteredItems[index];
                     final maxQuantity = _maxQuantityFor(item);
                     final canSelect = maxQuantity > 0;
-                    final quantity = _quantityFor(item)
-                        .clamp(1, maxQuantity <= 0 ? 1 : maxQuantity)
-                        .toInt();
-                    final costLabel = item.cost == null ? 'Non acquistabile' : '₽ ${item.cost}';
+                    final quantity = _quantityFor(
+                      item,
+                    ).clamp(1, maxQuantity <= 0 ? 1 : maxQuantity).toInt();
+                    final costLabel = item.cost == null
+                        ? 'Non acquistabile'
+                        : '₽ ${item.cost}';
                     final totalLabel = _isBuy && item.cost != null
                         ? 'Totale ₽ ${item.cost! * quantity}'
                         : 'Quantità $quantity';
@@ -1864,7 +1933,9 @@ class _ItemPickerSheetState extends State<_ItemPickerSheet> {
                       child: ListTile(
                         leading: _ItemSprite(item: item),
                         title: Text(item.name),
-                        subtitle: Text('${_typeLabel(item.type)} • $costLabel • $totalLabel'),
+                        subtitle: Text(
+                          '${_typeLabel(item.type)} • $costLabel • $totalLabel',
+                        ),
                         enabled: canSelect,
                         onTap: canSelect ? () => _confirm(item) : null,
                         trailing: _QuantitySelector(
@@ -1933,7 +2004,6 @@ class _QuantitySelector extends StatelessWidget {
     );
   }
 }
-
 
 class _BagError extends StatelessWidget {
   const _BagError({required this.message});

@@ -124,8 +124,8 @@ const _statusEffectInfos = [
 ];
 
 Map<String, _StatusEffectInfo> get _statusEffectInfoByName => {
-      for (final info in _statusEffectInfos) info.name: info,
-    };
+  for (final info in _statusEffectInfos) info.name: info,
+};
 
 class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
   final MoveRepository _moveRepository = MoveRepository();
@@ -138,6 +138,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
   final ProfileRepository _profileRepository = ProfileRepository();
   final EvolutionService _evolutionService = const EvolutionService();
 
+  late Pokemon _basePokemon;
   late Pokemon _pokemon;
   late List<TeamSlot> _team;
   TeamSlot? _teamSlot;
@@ -177,9 +178,13 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
   @override
   void initState() {
     super.initState();
-    _pokemon = widget.pokemon;
+    _basePokemon = widget.pokemon;
     _team = [...widget.team];
     _teamSlot = widget.teamSlot;
+    _pokemon = _basePokemon.resolveVariant(
+      formName: _teamSlot?.formName,
+      gender: _teamSlot?.gender,
+    );
     _ensureSelectedMovesIsSaved();
     _loadData();
   }
@@ -204,9 +209,12 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
     final constitutionModifier = _modifier(
       attributes['CON'] ?? pokemon.attributes.constitution,
     );
-    final toughBonus = slot?.feats.contains('Tough') == true ? safeLevel * 2 : 0;
+    final toughBonus = slot?.feats.contains('Tough') == true
+        ? safeLevel * 2
+        : 0;
     final loyaltyBonus = _loyaltyHpBonus(slot?.loyalty ?? 0, safeLevel);
-    final scaledHp = pokemon.hitPoints +
+    final scaledHp =
+        pokemon.hitPoints +
         (hitDieAverage * levelsGained) +
         (constitutionModifier * safeLevel) +
         toughBonus +
@@ -230,6 +238,10 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
   void _saveTeamSlot(TeamSlot updatedSlot) {
     setState(() {
       _teamSlot = updatedSlot;
+      _pokemon = _basePokemon.resolveVariant(
+        formName: updatedSlot.formName,
+        gender: updatedSlot.gender,
+      );
       _replaceTeamSlot(updatedSlot);
     });
     widget.onTeamSlotChanged?.call(updatedSlot);
@@ -308,10 +320,11 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
 
   List<String> _learnedMovesFor(Pokemon pokemon, int level) {
     final names = <String>[...pokemon.moves.startingMoves];
-    final levelEntries = pokemon.moves.levelMoves.entries
-        .where((entry) => entry.key <= level)
-        .toList()
-      ..sort((a, b) => a.key.compareTo(b.key));
+    final levelEntries =
+        pokemon.moves.levelMoves.entries
+            .where((entry) => entry.key <= level)
+            .toList()
+          ..sort((a, b) => a.key.compareTo(b.key));
 
     for (final entry in levelEntries) {
       names.addAll(entry.value);
@@ -484,7 +497,8 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
     final heldItem = _teamSlot?.heldItem;
     if (heldItem == null || heldItem.trim().isEmpty) return 'NONE';
 
-    return _itemByReference(heldItem)?.name.toUpperCase() ?? heldItem.toUpperCase();
+    return _itemByReference(heldItem)?.name.toUpperCase() ??
+        heldItem.toUpperCase();
   }
 
   BagItem? _itemByReference(String reference) {
@@ -512,7 +526,10 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
     final profile = await _profileRepository.getActiveProfile();
     final inventory = await _bagInventoryRepository.getInventory(profile.id);
     final catalog = _itemCatalog.isEmpty
-        ? {for (final item in await _itemRepository.getWebItems()) item.id: item}
+        ? {
+            for (final item in await _itemRepository.getWebItems())
+              item.id: item,
+          }
         : _itemCatalog;
 
     final options = <_HeldItemInventoryOption>[];
@@ -520,11 +537,15 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
       final item = catalog[entry.itemId];
       if (item == null) continue;
       if (item.type != 'held-item' && item.type != 'berry') continue;
-      options.add(_HeldItemInventoryOption(item: item, quantity: entry.quantity));
+      options.add(
+        _HeldItemInventoryOption(item: item, quantity: entry.quantity),
+      );
     }
     options.sort((a, b) => a.item.name.compareTo(b.item.name));
 
-    final currentItem = slot.heldItem == null ? null : _itemByReference(slot.heldItem!);
+    final currentItem = slot.heldItem == null
+        ? null
+        : _itemByReference(slot.heldItem!);
 
     if (!mounted) return;
 
@@ -532,10 +553,8 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
       context: context,
       showDragHandle: true,
       isScrollControlled: true,
-      builder: (_) => _HeldItemPickerSheet(
-        currentItem: currentItem,
-        options: options,
-      ),
+      builder: (_) =>
+          _HeldItemPickerSheet(currentItem: currentItem, options: options),
     );
 
     if (!mounted || selection == null) return;
@@ -579,9 +598,12 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
     }
 
     _saveTeamSlot(slot.copyWith(heldItem: selectedItem.id));
-    final replacementText =
-        currentItem == null ? '' : ' ${currentItem.name} è tornato nello zaino.';
-    _showMessage('${_pokemon.name} ora tiene ${selectedItem.name}.$replacementText');
+    final replacementText = currentItem == null
+        ? ''
+        : ' ${currentItem.name} è tornato nello zaino.';
+    _showMessage(
+      '${_pokemon.name} ora tiene ${selectedItem.name}.$replacementText',
+    );
     await _loadData();
   }
 
@@ -601,9 +623,9 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 10),
               child: Text(
                 'ADD STATUS EFFECT',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w900,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
               ),
             ),
             for (final info in _statusEffectInfos.where(
@@ -659,10 +681,11 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
         ? _defaultSelectedMoves(_pokemon, oldLevel)
         : slot.selectedMoves.take(4).toList();
 
-    final learnedEntries = _pokemon.moves.levelMoves.entries
-        .where((entry) => entry.key > oldLevel && entry.key <= newLevel)
-        .toList()
-      ..sort((a, b) => a.key.compareTo(b.key));
+    final learnedEntries =
+        _pokemon.moves.levelMoves.entries
+            .where((entry) => entry.key > oldLevel && entry.key <= newLevel)
+            .toList()
+          ..sort((a, b) => a.key.compareTo(b.key));
 
     for (final entry in learnedEntries) {
       for (final move in entry.value) {
@@ -710,7 +733,9 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
       final currentAttributes = _attributeScores(_pokemon, updatedSlot);
       if ((currentAttributes[attribute] ?? 0) >= 20) continue;
 
-      final customScores = Map<String, int>.from(updatedSlot.customAbilityScores);
+      final customScores = Map<String, int>.from(
+        updatedSlot.customAbilityScores,
+      );
       customScores[attribute] = (customScores[attribute] ?? 0) + 1;
       updatedSlot = updatedSlot.copyWith(customAbilityScores: customScores);
     }
@@ -798,7 +823,9 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
       final currentAttributes = _attributeScores(_pokemon, updatedSlot);
       if ((currentAttributes[attribute] ?? 0) >= 20) continue;
 
-      final customScores = Map<String, int>.from(updatedSlot.customAbilityScores);
+      final customScores = Map<String, int>.from(
+        updatedSlot.customAbilityScores,
+      );
       customScores[attribute] = (customScores[attribute] ?? 0) + 1;
       updatedSlot = updatedSlot.copyWith(customAbilityScores: customScores);
     }
@@ -893,7 +920,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
     final result = await Navigator.of(context).push<PokemonEditResult>(
       MaterialPageRoute(
         builder: (_) => PokemonEditScreen(
-          pokemon: _pokemon,
+          pokemon: _basePokemon,
           slot: slot,
           availableMoves: _learnedMovesFor(_pokemon, _level),
         ),
@@ -923,7 +950,11 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
 
   List<EvolutionEligibility> _availableEvolutionChoices() {
     return _evolutionChoices
-        .where((choice) => choice.isAvailable && _pokemonByName(choice.option.toName) != null)
+        .where(
+          (choice) =>
+              choice.isAvailable &&
+              _pokemonByName(choice.option.toName) != null,
+        )
         .toList(growable: false);
   }
 
@@ -941,7 +972,10 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
     final evolution = _evolutionForCurrentPokemon();
     if (slot == null || evolution == null) return;
 
-    final choices = await _buildEvolutionChoices(evolution: evolution, slot: slot);
+    final choices = await _buildEvolutionChoices(
+      evolution: evolution,
+      slot: slot,
+    );
     if (!mounted) return;
 
     setState(() => _evolutionChoices = choices);
@@ -1008,6 +1042,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
     if (!mounted) return updatedSlot;
 
     setState(() {
+      _basePokemon = evolvedPokemon;
       _pokemon = evolvedPokemon;
       _teamSlot = updatedSlot;
       _replaceTeamSlot(updatedSlot);
@@ -1026,7 +1061,11 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
     if (pokemon == null) return;
 
     setState(() {
-      _pokemon = pokemon;
+      _basePokemon = pokemon;
+      _pokemon = pokemon.resolveVariant(
+        formName: slot.formName,
+        gender: slot.gender,
+      );
       _teamSlot = slot;
       _isLoading = true;
       _message = null;
@@ -1051,22 +1090,28 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
     final natureScores = PokemonNature.forName(slot?.nature ?? 'No Nature');
 
     return {
-      'STR': pokemon.attributes.strength +
+      'STR':
+          pokemon.attributes.strength +
           (customScores['STR'] ?? 0) +
           (natureScores['STR'] ?? 0),
-      'DEX': pokemon.attributes.dexterity +
+      'DEX':
+          pokemon.attributes.dexterity +
           (customScores['DEX'] ?? 0) +
           (natureScores['DEX'] ?? 0),
-      'CON': pokemon.attributes.constitution +
+      'CON':
+          pokemon.attributes.constitution +
           (customScores['CON'] ?? 0) +
           (natureScores['CON'] ?? 0),
-      'INT': pokemon.attributes.intelligence +
+      'INT':
+          pokemon.attributes.intelligence +
           (customScores['INT'] ?? 0) +
           (natureScores['INT'] ?? 0),
-      'WIS': pokemon.attributes.wisdom +
+      'WIS':
+          pokemon.attributes.wisdom +
           (customScores['WIS'] ?? 0) +
           (natureScores['WIS'] ?? 0),
-      'CHA': pokemon.attributes.charisma +
+      'CHA':
+          pokemon.attributes.charisma +
           (customScores['CHA'] ?? 0) +
           (natureScores['CHA'] ?? 0),
     };
@@ -1360,9 +1405,13 @@ class _Header extends StatelessWidget {
                     const SizedBox(height: 6),
                     Row(
                       children: [
-                        Expanded(child: _MetricBox(label: 'Lv.', value: '$level')),
+                        Expanded(
+                          child: _MetricBox(label: 'Lv.', value: '$level'),
+                        ),
                         const SizedBox(width: 6),
-                        Expanded(child: _MetricBox(label: 'AC:', value: '$armorClass')),
+                        Expanded(
+                          child: _MetricBox(label: 'AC:', value: '$armorClass'),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 6),
@@ -1439,9 +1488,9 @@ class _Header extends StatelessWidget {
                               valueColor: AlwaysStoppedAnimation<Color>(
                                 _hpProgressColor(hpProgress),
                               ),
-                              backgroundColor: Theme.of(context)
-                                  .colorScheme
-                                  .surfaceContainerHighest,
+                              backgroundColor: Theme.of(
+                                context,
+                              ).colorScheme.surfaceContainerHighest,
                             ),
                           ),
                         ),
@@ -1585,9 +1634,9 @@ class _HeldItemPickerSheet extends StatelessWidget {
           children: [
             Text(
               'Strumento tenuto',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w900,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
             ),
             const SizedBox(height: 4),
             const Text('Scegli solo tra gli oggetti presenti nello zaino.'),
@@ -1598,8 +1647,9 @@ class _HeldItemPickerSheet extends StatelessWidget {
                   leading: const Icon(Icons.remove_circle_outline),
                   title: Text('Togli ${currentItem!.name}'),
                   subtitle: const Text('Lo strumento torna nello zaino.'),
-                  onTap: () =>
-                      Navigator.of(context).pop(const _HeldItemSelection.clear()),
+                  onTap: () => Navigator.of(
+                    context,
+                  ).pop(const _HeldItemSelection.clear()),
                 ),
               ),
             ],
@@ -1618,8 +1668,9 @@ class _HeldItemPickerSheet extends StatelessWidget {
                     subtitle: Text(
                       '${_detailItemTypeLabel(option.item.type)} • x${option.quantity}',
                     ),
-                    onTap: () => Navigator.of(context)
-                        .pop(_HeldItemSelection.item(option.item)),
+                    onTap: () => Navigator.of(
+                      context,
+                    ).pop(_HeldItemSelection.item(option.item)),
                   ),
                 ),
           ],
@@ -1741,9 +1792,7 @@ class _LoyaltyRow extends StatelessWidget {
       children: [
         _FightIconButton(icon: Icons.remove, onPressed: onDecrease),
         const SizedBox(width: 6),
-        Expanded(
-          child: _PanelButton(label: 'LEALTÀ: ${_signed(loyalty)}'),
-        ),
+        Expanded(child: _PanelButton(label: 'LEALTÀ: ${_signed(loyalty)}')),
         const SizedBox(width: 6),
         _FightIconButton(icon: Icons.add, onPressed: onIncrease),
       ],
@@ -1937,9 +1986,9 @@ class _FightStatBox extends StatelessWidget {
           Text(
             _signed(modifier),
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.w900,
-                  height: 1,
-                ),
+              fontWeight: FontWeight.w900,
+              height: 1,
+            ),
           ),
         ],
       ),
@@ -1971,9 +2020,9 @@ class _SavingThrowsRow extends StatelessWidget {
         Text(
           'SAVING THROWS',
           style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-                fontWeight: FontWeight.w800,
-              ),
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+            fontWeight: FontWeight.w800,
+          ),
         ),
         const SizedBox(height: 2),
         Row(
@@ -2016,7 +2065,9 @@ class _SaveBox extends StatelessWidget {
       alignment: Alignment.center,
       decoration: BoxDecoration(
         color: proficient
-            ? Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.72)
+            ? Theme.of(
+                context,
+              ).colorScheme.primaryContainer.withValues(alpha: 0.72)
             : Colors.white,
         borderRadius: BorderRadius.circular(5),
         border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
@@ -2065,7 +2116,10 @@ class _StatusPanelButton extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   for (final status in statuses.take(5)) ...[
-                    _StatusIcon(info: _statusEffectInfoByName[status], size: 32),
+                    _StatusIcon(
+                      info: _statusEffectInfoByName[status],
+                      size: 32,
+                    ),
                     const SizedBox(width: 4),
                   ],
                   if (statuses.length > 5)
@@ -2289,7 +2343,8 @@ class _FeaturesView extends StatelessWidget {
         ? slot!.abilities
         : [
             ...pokemon.abilities,
-            if (pokemon.hiddenAbility != null && feats.contains('Hidden Ability'))
+            if (pokemon.hiddenAbility != null &&
+                feats.contains('Hidden Ability'))
               pokemon.hiddenAbility!,
           ];
 
@@ -2375,7 +2430,10 @@ class _TraitsView extends StatelessWidget {
               _InfoRow(label: 'Velocità', value: '${pokemon.speed} ft'),
               _InfoRow(label: 'Dado vita', value: 'd${pokemon.hitDice}'),
               _InfoRow(label: 'Competenza', value: '+$proficiency'),
-              _InfoRow(label: 'Livello minimo', value: '${pokemon.minLevelFound}'),
+              _InfoRow(
+                label: 'Livello minimo',
+                value: '${pokemon.minLevelFound}',
+              ),
               _InfoRow(
                 label: 'Tiri salvezza',
                 value: pokemon.savingThrows.join(', '),
@@ -2386,7 +2444,10 @@ class _TraitsView extends StatelessWidget {
               ),
               _InfoRow(label: 'Natura', value: slot?.nature ?? 'No Nature'),
               _InfoRow(label: 'Forma', value: slot?.formName ?? '-'),
-              _InfoRow(label: 'Shiny', value: slot?.isShiny == true ? 'Si' : 'No'),
+              _InfoRow(
+                label: 'Shiny',
+                value: slot?.isShiny == true ? 'Si' : 'No',
+              ),
               _InfoRow(label: 'Sesso', value: slot?.gender ?? '-'),
             ],
           ),
@@ -2428,9 +2489,9 @@ class _PendingAsiCard extends StatelessWidget {
                   Text(
                     'ASI DISPONIBILI',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w900,
-                          color: hasPoints ? colorScheme.onPrimaryContainer : null,
-                        ),
+                      fontWeight: FontWeight.w900,
+                      color: hasPoints ? colorScheme.onPrimaryContainer : null,
+                    ),
                   ),
                   const SizedBox(height: 4),
                   Text(

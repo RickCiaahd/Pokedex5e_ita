@@ -72,10 +72,7 @@ class Pokemon {
     return basePokemon.copyWith(formDefinitions: formDefinitions);
   }
 
-  factory Pokemon._fromLegacyJson(
-    String name,
-    Map<String, dynamic> json,
-  ) {
+  factory Pokemon._fromLegacyJson(String name, Map<String, dynamic> json) {
     return Pokemon(
       id: _readInt(json['index']),
       name: name,
@@ -120,9 +117,9 @@ class Pokemon {
       abilities: abilities.normal,
       hiddenAbility: abilities.hidden,
       skills: _readStringList(json['skills']).map(labelFromId).toList(),
-      savingThrows: _readStringList(json['savingThrows'])
-          .map((value) => value.toUpperCase())
-          .toList(),
+      savingThrows: _readStringList(
+        json['savingThrows'],
+      ).map((value) => value.toUpperCase()).toList(),
       moves: PokemonMoves.fromWebJson(
         Map<String, dynamic>.from(json['moves'] ?? const {}),
       ),
@@ -261,8 +258,12 @@ class Pokemon {
           ? key
           : displayName;
       final keyIdentity = formReferenceKey(key, speciesName);
-      final displayIdentity = formReferenceKey(resolvedDisplayName, speciesName);
-      final isDefault = keyIdentity == defaultIdentity ||
+      final displayIdentity = formReferenceKey(
+        resolvedDisplayName,
+        speciesName,
+      );
+      final isDefault =
+          keyIdentity == defaultIdentity ||
           displayIdentity == 'base' ||
           displayIdentity.isEmpty;
       if (isDefault) continue;
@@ -272,7 +273,8 @@ class Pokemon {
           : const <String, dynamic>{};
       final mergedJson = _deepMergeMaps(baseJson, diff);
       final formPokemon = Pokemon._fromLegacyJson(speciesName, mergedJson);
-      final gender = normalizeGenderValue(key) ??
+      final gender =
+          normalizeGenderValue(key) ??
           normalizeGenderValue(resolvedDisplayName);
 
       definitions.add(
@@ -309,9 +311,7 @@ class Pokemon {
   }
 
   static Map<String, dynamic> _copyMap(Map<String, dynamic> value) {
-    return value.map(
-      (key, item) => MapEntry(key, _copyJsonValue(item)),
-    );
+    return value.map((key, item) => MapEntry(key, _copyJsonValue(item)));
   }
 
   static dynamic _copyJsonValue(dynamic value) {
@@ -444,11 +444,19 @@ class Pokemon {
     for (final suffix in removableSuffixes) {
       final dashedSuffix = '-$suffix';
       if (rawSlug.endsWith(dashedSuffix)) {
-        final baseSlug = rawSlug.substring(0, rawSlug.length - dashedSuffix.length);
+        final baseSlug = rawSlug.substring(
+          0,
+          rawSlug.length - dashedSuffix.length,
+        );
         if (baseSlug.isNotEmpty) return labelFromId(baseSlug);
       }
-      if (idSlug.isNotEmpty && rawSlug == idSlug && idSlug.endsWith(dashedSuffix)) {
-        final baseSlug = idSlug.substring(0, idSlug.length - dashedSuffix.length);
+      if (idSlug.isNotEmpty &&
+          rawSlug == idSlug &&
+          idSlug.endsWith(dashedSuffix)) {
+        final baseSlug = idSlug.substring(
+          0,
+          idSlug.length - dashedSuffix.length,
+        );
         if (baseSlug.isNotEmpty) return labelFromId(baseSlug);
       }
     }

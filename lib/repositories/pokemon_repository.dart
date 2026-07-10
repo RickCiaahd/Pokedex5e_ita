@@ -94,9 +94,7 @@ class PokemonRepository {
         }
       }
 
-      return [
-        for (final group in grouped.values) _mergeWebFormGroup(group),
-      ];
+      return [for (final group in grouped.values) _mergeWebFormGroup(group)];
     } catch (error) {
       debugPrint('Catalogo Pokemon webapp non disponibile: $error');
       return const [];
@@ -161,10 +159,8 @@ class PokemonRepository {
   String _commonSlugPrefix(Iterable<String> values) {
     final tokenLists = values
         .map(
-          (value) => value
-              .split('-')
-              .where((token) => token.isNotEmpty)
-              .toList(),
+          (value) =>
+              value.split('-').where((token) => token.isNotEmpty).toList(),
         )
         .where((tokens) => tokens.isNotEmpty)
         .toList(growable: false);

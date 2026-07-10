@@ -204,6 +204,11 @@ class PokemonAssetPaths {
       }
     }
 
+    for (final definition in pokemon.formDefinitions) {
+      if (definition.gender != null) continue;
+      addChoice(PokemonFormChoice(name: definition.displayName, assetPath: ''));
+    }
+
     for (final assetPath in assetIndex.sortedPaths) {
       if (!assetPath.endsWith('.png')) continue;
       if (!prefixes.any(

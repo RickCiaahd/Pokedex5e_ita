@@ -1,0 +1,57 @@
+name: Fix Pokemon form resolution
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/fix-pokemon-form-resolution.yml
+
+permissions:
+  contents: write
+
+jobs:
+  fix-forms:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Apply form resolution fix
+        run: python3 tool/fix_pokemon_form_resolution.py
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Format changed Dart files
+        run: dart format lib/widgets/pokemon/pokemon_asset_image.dart test/pokemon_asset_paths_test.dart
+
+      - name: Check generated diff
+        run: git diff --check
+
+      - name: Analyze project
+        run: flutter analyze --no-fatal-infos
+
+      - name: Test Pokemon asset resolution
+        run: flutter test test/pokemon_asset_paths_test.dart
+
+      - name: Remove temporary automation files
+        run: |
+          rm tool/fix_pokemon_form_resolution.py
+          rm .github/workflows/fix-pokemon-form-resolution.yml
+
+      - name: Commit and push changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Fix duplicate Pokemon forms and alternate assets"
+          git push origin main

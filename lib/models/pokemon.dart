@@ -69,10 +69,11 @@ class Pokemon {
 
   factory Pokemon.fromWebJson(Map<String, dynamic> json) {
     final abilities = _readWebAbilities(json['abilities']);
+    final assetSlug = json['id']?.toString();
 
     return Pokemon(
       id: _readInt(json['number']),
-      name: json['name']?.toString() ?? 'Unknown',
+      name: _readWebDisplayName(json),
       types: _readStringList(json['type']),
       armorClass: _readInt(json['ac']),
       hitPoints: _readInt(json['hp']),
@@ -93,10 +94,52 @@ class Pokemon {
       hitDice: _readHitDice(json['hitDice']),
       sr: _readDouble(json['sr']),
       minLevelFound: _readInt(json['minLevel']),
-      assetSlug: json['id']?.toString(),
+      assetSlug: assetSlug,
       genderRatio: json['gender']?.toString(),
       description: json['description']?.toString(),
     );
+  }
+
+  static String _readWebDisplayName(Map<String, dynamic> json) {
+    final rawName = json['name']?.toString().trim() ?? 'Unknown';
+    if (rawName.isEmpty) return 'Unknown';
+
+    final rawSlug = _slug(rawName);
+    final idSlug = _slug(json['id']?.toString() ?? '');
+
+    const removableSuffixes = [
+      'amped',
+      'low-key',
+      'low-key-form',
+      'male',
+      'female',
+      'm',
+      'f',
+      'single',
+      'rapid',
+      'single-strike-style',
+      'rapid-strike-style',
+      'incarnate',
+      'therian',
+      'incarnate-forme',
+      'therian-forme',
+      'altered-forme',
+      'origin-forme',
+    ];
+
+    for (final suffix in removableSuffixes) {
+      final dashedSuffix = '-$suffix';
+      if (rawSlug.endsWith(dashedSuffix)) {
+        final baseSlug = rawSlug.substring(0, rawSlug.length - dashedSuffix.length);
+        if (baseSlug.isNotEmpty) return _labelFromId(baseSlug);
+      }
+      if (idSlug.isNotEmpty && rawSlug == idSlug && idSlug.endsWith(dashedSuffix)) {
+        final baseSlug = idSlug.substring(0, idSlug.length - dashedSuffix.length);
+        if (baseSlug.isNotEmpty) return _labelFromId(baseSlug);
+      }
+    }
+
+    return rawName;
   }
 
   static _WebAbilities _readWebAbilities(dynamic value) {
@@ -178,6 +221,20 @@ class Pokemon {
     }
 
     return const [];
+  }
+
+  static String _slug(String value) {
+    return value
+        .trim()
+        .toLowerCase()
+        .replaceAll('_', '-')
+        .replaceAll(' ♀', '-f')
+        .replaceAll('♀', '-f')
+        .replaceAll(' ♂', '-m')
+        .replaceAll('♂', '-m')
+        .replaceAll(RegExp(r'[^a-z0-9]+'), '-')
+        .replaceAll(RegExp(r'-+'), '-')
+        .replaceAll(RegExp(r'^-|-$'), '');
   }
 
   static String _labelFromId(String value) {

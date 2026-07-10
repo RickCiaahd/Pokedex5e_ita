@@ -23,6 +23,7 @@ class PokemonAssetImage extends StatelessWidget {
     this.useLargeArtwork = false,
     this.entry,
     this.formName,
+    this.isShiny,
     this.fallback,
   });
 
@@ -32,6 +33,7 @@ class PokemonAssetImage extends StatelessWidget {
   final bool useLargeArtwork;
   final PokedexEntry? entry;
   final String? formName;
+  final bool? isShiny;
   final Widget? fallback;
 
   @override
@@ -41,16 +43,19 @@ class PokemonAssetImage extends StatelessWidget {
     final caught = entry?.caught ?? true;
     final visualScale = useLargeArtwork ? 1.08 : 1.12;
     final effectiveFormName = formName ?? PokemonFormPreferences.formFor(pokemon.id);
+    final effectiveShiny = isShiny ?? PokemonFormPreferences.shinyFor(pokemon.id);
 
     Widget image = _AssetFallbackImage(
       assetPaths: PokemonAssetPaths.imageCandidates(
         pokemon: pokemon,
         useLargeArtwork: useLargeArtwork,
         formName: effectiveFormName,
+        isShiny: effectiveShiny,
       ),
       assetPrefixes: PokemonAssetPaths.imageCandidatePrefixes(
         pokemon: pokemon,
         useLargeArtwork: useLargeArtwork,
+        isShiny: effectiveShiny,
       ),
       width: size,
       height: size,
@@ -157,6 +162,7 @@ class PokemonAssetPaths {
 
   static const _webPokemonRoot = 'assets/textures/textures_webapp/pokemon';
   static const _webTransformRoot = 'assets/textures/textures_webapp/pokemon_transforms';
+  static const _transformFolders = ['mega', 'dynamax', 'gigamax', 'terastal'];
 
   static Future<List<PokemonFormChoice>> formChoices(Pokemon pokemon) async {
     final assetIndex = await _AssetLookup.assetIndex();
@@ -164,6 +170,7 @@ class PokemonAssetPaths {
     final prefixes = imageCandidatePrefixes(
       pokemon: pokemon,
       useLargeArtwork: false,
+      isShiny: false,
     );
 
     for (final assetPath in assetIndex.sortedPaths) {
@@ -175,6 +182,7 @@ class PokemonAssetPaths {
       final choice = _formChoiceFromAssetPath(pokemon, assetPath) ??
           _webFormChoiceFromAssetPath(pokemon, assetPath);
       if (choice == null) continue;
+      if (_isBaseSpriteLabel(choice.name)) continue;
       choicesByName.putIfAbsent(choice.name, () => choice);
     }
 
@@ -192,46 +200,32 @@ class PokemonAssetPaths {
     required Pokemon pokemon,
     required bool useLargeArtwork,
     String? formName,
+    bool isShiny = false,
   }) {
-    final folder = useLargeArtwork ? 'pokemons' : 'sprites';
-    final alternateFolder = useLargeArtwork ? 'sprites' : 'pokemons';
-    final id = pokemon.id.toString();
-    final paddedId = id.padLeft(3, '0');
-    final rawName = pokemon.name.trim();
-    final selectedFormAliases = _formAwareAliases(rawName, formName);
-    final nameAliases = _nameAliases(rawName);
-    final fileNames = <String>{
-      for (final name in selectedFormAliases) ...[
-        '$id$name.png',
-        '$paddedId$name.png',
-        '$name.png',
-        '${name.toLowerCase()}.png',
-      ],
-      for (final name in nameAliases) ...[
-        '$id$name.png',
-        '$paddedId$name.png',
-        '$name.png',
-        '${name.toLowerCase()}.png',
-      ],
-      '$paddedId.png',
-      '$id.png',
-    };
+    final oldCandidates = _legacyImageCandidates(
+      pokemon: pokemon,
+      useLargeArtwork: useLargeArtwork,
+      formName: formName,
+      isShiny: isShiny,
+    );
+    final webCandidates = _webImageCandidates(
+      pokemon: pokemon,
+      useLargeArtwork: useLargeArtwork,
+      formName: formName,
+      isShiny: isShiny,
+    );
 
-    return <String>[
-      ..._webImageCandidates(
-        pokemon: pokemon,
-        useLargeArtwork: useLargeArtwork,
-        formName: formName,
-      ),
-      for (final fileName in fileNames) 'assets/textures/$folder/$fileName',
-      for (final fileName in fileNames)
-        'assets/textures/$alternateFolder/$fileName',
-    ];
+    if (pokemon.assetSlug == null || pokemon.assetSlug!.trim().isEmpty) {
+      return [...oldCandidates, ...webCandidates];
+    }
+
+    return [...webCandidates, ...oldCandidates];
   }
 
   static List<String> imageCandidatePrefixes({
     required Pokemon pokemon,
     required bool useLargeArtwork,
+    bool isShiny = false,
   }) {
     final folder = useLargeArtwork ? 'pokemons' : 'sprites';
     final alternateFolder = useLargeArtwork ? 'sprites' : 'pokemons';
@@ -244,25 +238,122 @@ class PokemonAssetPaths {
       'assets/textures/$alternateFolder/$id',
       'assets/textures/$alternateFolder/$paddedId',
       '$_webPokemonRoot/$webSlug/',
+      '$_webPokemonRoot/$webSlug-',
+      '$_webPokemonRoot/$webSlug_',
       for (final transform in _transformFolders) '$_webTransformRoot/$transform/$webSlug/',
+      for (final transform in _transformFolders) '$_webTransformRoot/$transform/$webSlug-',
+      for (final transform in _transformFolders) '$_webTransformRoot/$transform/$webSlug_',
     };
 
     return prefixes.toList(growable: false);
+  }
+
+  static List<String> _legacyImageCandidates({
+    required Pokemon pokemon,
+    required bool useLargeArtwork,
+    String? formName,
+    bool isShiny = false,
+  }) {
+    final folder = useLargeArtwork ? 'pokemons' : 'sprites';
+    final alternateFolder = useLargeArtwork ? 'sprites' : 'pokemons';
+    final id = pokemon.id.toString();
+    final paddedId = id.padLeft(3, '0');
+    final rawName = pokemon.name.trim();
+    final selectedFormAliases = _formAwareAliases(rawName, formName);
+    final nameAliases = _nameAliases(rawName);
+    final aliases = <String>{...selectedFormAliases, ...nameAliases}
+      ..removeWhere((name) => name.isEmpty);
+    final fileNames = <String>{};
+
+    if (isShiny) {
+      for (final name in aliases) {
+        fileNames.addAll([
+          '$id$name Shiny.png',
+          '$paddedId$name Shiny.png',
+          '$id${name}_shiny.png',
+          '$paddedId${name}_shiny.png',
+          '$name Shiny.png',
+          '${name}_shiny.png',
+          '${name.toLowerCase()}-shiny.png',
+        ]);
+      }
+      fileNames.addAll([
+        '$paddedId-shiny.png',
+        '$id-shiny.png',
+        '${paddedId}_shiny.png',
+        '${id}_shiny.png',
+      ]);
+    }
+
+    for (final name in aliases) {
+      fileNames.addAll([
+        '$id$name.png',
+        '$paddedId$name.png',
+        '$name.png',
+        '${name.toLowerCase()}.png',
+      ]);
+    }
+    fileNames.addAll(['$paddedId.png', '$id.png']);
+
+    return <String>[
+      for (final fileName in fileNames) 'assets/textures/$folder/$fileName',
+      for (final fileName in fileNames) 'assets/textures/$alternateFolder/$fileName',
+    ];
   }
 
   static List<String> _webImageCandidates({
     required Pokemon pokemon,
     required bool useLargeArtwork,
     String? formName,
+    bool isShiny = false,
   }) {
     final slug = _webAssetSlug(pokemon);
-    final baseFolder = '$_webPokemonRoot/$slug';
     final primary = useLargeArtwork ? 'main' : 'sprite';
     final secondary = useLargeArtwork ? 'sprite' : 'main';
     final formSlugs = _formSlugs(pokemon, formName);
-    final paths = <String>[];
+    final folders = <String>{'$_webPokemonRoot/$slug'};
 
     for (final formSlug in formSlugs) {
+      folders.addAll([
+        '$_webPokemonRoot/$slug-$formSlug',
+        '$_webPokemonRoot/${slug}_$formSlug',
+        '$_webPokemonRoot/$slug/$formSlug',
+      ]);
+    }
+
+    final paths = <String>[];
+    for (final folder in folders) {
+      if (isShiny) {
+        paths.addAll([
+          '$folder/$primary-shiny.png',
+          '$folder/$secondary-shiny.png',
+          '$folder/${primary}_shiny.png',
+          '$folder/${secondary}_shiny.png',
+          '$folder/shiny-$primary.png',
+          '$folder/shiny-$secondary.png',
+          '$folder/shiny.png',
+        ]);
+      }
+      paths.addAll([
+        '$folder/$primary.png',
+        '$folder/$secondary.png',
+        '$folder/main.png',
+        '$folder/sprite.png',
+        '$folder/${primary}_default.png',
+        '$folder/${secondary}_default.png',
+      ]);
+    }
+
+    for (final formSlug in formSlugs) {
+      final baseFolder = '$_webPokemonRoot/$slug';
+      if (isShiny) {
+        paths.addAll([
+          '$baseFolder/$formSlug/$primary-shiny.png',
+          '$baseFolder/$formSlug/$secondary-shiny.png',
+          '$baseFolder/$primary-$formSlug-shiny.png',
+          '$baseFolder/$secondary-$formSlug-shiny.png',
+        ]);
+      }
       paths.addAll([
         '$baseFolder/$formSlug/$primary.png',
         '$baseFolder/$formSlug/$secondary.png',
@@ -272,29 +363,24 @@ class PokemonAssetPaths {
         '$baseFolder/${formSlug}_$secondary.png',
         '$baseFolder/$formSlug.png',
       ]);
+    }
 
-      for (final transform in _transformFolders) {
+    for (final transform in _transformFolders) {
+      for (final folder in folders) {
+        final relative = folder.substring(_webPokemonRoot.length + 1);
+        if (isShiny) {
+          paths.addAll([
+            '$_webTransformRoot/$transform/$relative/$primary-shiny.png',
+            '$_webTransformRoot/$transform/$relative/$secondary-shiny.png',
+          ]);
+        }
         paths.addAll([
-          '$_webTransformRoot/$transform/$slug/$formSlug/$primary.png',
-          '$_webTransformRoot/$transform/$slug/$formSlug/$secondary.png',
-          '$_webTransformRoot/$transform/$slug/$primary-$formSlug.png',
-          '$_webTransformRoot/$transform/$slug/$secondary-$formSlug.png',
-          '$_webTransformRoot/$transform/$slug/$formSlug.png',
+          '$_webTransformRoot/$transform/$relative/$primary.png',
+          '$_webTransformRoot/$transform/$relative/$secondary.png',
+          '$_webTransformRoot/$transform/$relative.png',
         ]);
       }
     }
-
-    paths.addAll([
-      '$baseFolder/$primary.png',
-      '$baseFolder/$secondary.png',
-      '$baseFolder/main.png',
-      '$baseFolder/sprite.png',
-      for (final transform in _transformFolders) ...[
-        '$_webTransformRoot/$transform/$slug/$primary.png',
-        '$_webTransformRoot/$transform/$slug/$secondary.png',
-        '$_webTransformRoot/$transform/$slug.png',
-      ],
-    ]);
 
     return paths.toList(growable: false);
   }
@@ -406,7 +492,7 @@ class PokemonAssetPaths {
     }
 
     suffix = _cleanFormLabel(suffix);
-    if (suffix.isEmpty) return null;
+    if (suffix.isEmpty || _isBaseSpriteLabel(suffix)) return null;
 
     return PokemonFormChoice(name: suffix, assetPath: assetPath);
   }
@@ -415,31 +501,45 @@ class PokemonAssetPaths {
     Pokemon pokemon,
     String assetPath,
   ) {
-    final slug = _webAssetSlug(pokemon);
-    final folder = '$_webPokemonRoot/$slug/';
-    if (!assetPath.startsWith(folder) || !assetPath.endsWith('.png')) {
+    if (!assetPath.startsWith('$_webPokemonRoot/') || !assetPath.endsWith('.png')) {
       return null;
     }
 
-    final relative = assetPath.substring(folder.length);
+    final slug = _webAssetSlug(pokemon);
+    final relative = assetPath.substring(_webPokemonRoot.length + 1);
     final parts = relative.split('/');
+    if (parts.isEmpty) return null;
+
+    final folder = parts.first;
     var rawForm = '';
 
-    if (parts.length > 1) {
-      rawForm = parts.first;
+    if (folder == slug) {
+      if (parts.length > 2) {
+        rawForm = parts[1];
+      } else {
+        rawForm = _formFromFileName(parts.last);
+      }
+    } else if (folder.startsWith('$slug-')) {
+      rawForm = folder.substring(slug.length + 1);
+    } else if (folder.startsWith('${slug}_')) {
+      rawForm = folder.substring(slug.length + 1);
     } else {
-      final fileName = parts.last.replaceFirst(RegExp(r'\.png$'), '');
-      rawForm = fileName
-          .replaceFirst(RegExp(r'^(main|sprite)[-_\s]+', caseSensitive: false), '')
-          .replaceFirst(RegExp(r'[-_\s]+(main|sprite)$', caseSensitive: false), '')
-          .replaceFirst(RegExp(r'[-_\s]*shiny$', caseSensitive: false), '')
-          .trim();
+      return null;
     }
 
     rawForm = _cleanFormLabel(rawForm);
     if (rawForm.isEmpty || _isBaseSpriteLabel(rawForm)) return null;
 
     return PokemonFormChoice(name: rawForm, assetPath: assetPath);
+  }
+
+  static String _formFromFileName(String fileName) {
+    return fileName
+        .replaceFirst(RegExp(r'\.png$'), '')
+        .replaceFirst(RegExp(r'^(main|sprite)[-_\s]+', caseSensitive: false), '')
+        .replaceFirst(RegExp(r'[-_\s]+(main|sprite)$', caseSensitive: false), '')
+        .replaceFirst(RegExp(r'[-_\s]*shiny$', caseSensitive: false), '')
+        .trim();
   }
 
   static Future<List<PokemonFormChoice>> _variantMapFormChoices(Pokemon pokemon) async {
@@ -452,7 +552,7 @@ class PokemonAssetPaths {
 
       return variants
           .map((value) => _cleanVariantLabel(pokemon, value.toString()))
-          .where((name) => name.isNotEmpty)
+          .where((name) => name.isNotEmpty && !_isBaseSpriteLabel(name))
           .map((name) => PokemonFormChoice(name: name, assetPath: ''))
           .toList(growable: false);
     } catch (_) {
@@ -505,8 +605,6 @@ class PokemonAssetPaths {
       if (shortForm.isNotEmpty) _webSlug('$pokemonName $shortForm'),
     }.where((value) => value.isNotEmpty).toList(growable: false);
   }
-
-  static const _transformFolders = ['mega', 'dynamax', 'gigamax', 'terastal'];
 
   static String _webAssetSlug(Pokemon pokemon) {
     final slug = pokemon.assetSlug?.trim();
@@ -581,6 +679,7 @@ class PokemonAssetPaths {
       case 'sprite shiny':
       case 'shiny':
       case 'base':
+      case 'default':
         return true;
       default:
         return false;
@@ -686,7 +785,9 @@ class _AssetLookup {
     if (!assetPath.startsWith(prefix)) return false;
     if (assetPath.length <= prefix.length) return false;
 
-    if (prefix.endsWith('/')) return true;
+    if (prefix.endsWith('/') || prefix.endsWith('-') || prefix.endsWith('_')) {
+      return true;
+    }
 
     final nextCode = assetPath.codeUnitAt(prefix.length);
     return nextCode < 48 || nextCode > 57;

@@ -50,6 +50,10 @@ class TeamSlot {
         pokemonId: pokemonId,
         isShiny: isShiny,
       );
+      PokemonFormPreferences.setGender(
+        pokemonId: pokemonId,
+        gender: gender,
+      );
     }
   }
 

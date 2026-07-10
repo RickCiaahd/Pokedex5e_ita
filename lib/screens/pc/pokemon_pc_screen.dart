@@ -508,21 +508,47 @@ class _FixedTeamPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 96,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        itemCount: team.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 8),
-        itemBuilder: (context, index) {
-          final slot = team[index];
-          return _TeamMiniCard(
-            slot: slot,
-            pokemon: pokemonForSlot(slot.pokemonId),
-            onDeposit: slot.pokemonId == null ? null : () => onDeposit(slot),
-          );
-        },
-      ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final compact = constraints.maxWidth < 620;
+        final veryCompact = constraints.maxWidth < 420;
+        final crossAxisCount = compact ? 3 : 6;
+        const spacing = 8.0;
+        final rows = (team.length / crossAxisCount).ceil();
+        final safeRows = rows <= 0 ? 1 : rows;
+        final availableWidth = constraints.maxWidth - (spacing * (crossAxisCount - 1));
+        final cellWidth = availableWidth / crossAxisCount;
+        final childAspectRatio = veryCompact
+            ? 1.20
+            : compact
+                ? 1.45
+                : 1.55;
+        final cellHeight = cellWidth / childAspectRatio;
+        final height = (cellHeight * safeRows) + (spacing * (safeRows - 1));
+
+        return SizedBox(
+          height: height,
+          child: GridView.builder(
+            padding: EdgeInsets.zero,
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: crossAxisCount,
+              mainAxisSpacing: spacing,
+              crossAxisSpacing: spacing,
+              childAspectRatio: childAspectRatio,
+            ),
+            itemCount: team.length,
+            itemBuilder: (context, index) {
+              final slot = team[index];
+              return _TeamMiniCard(
+                slot: slot,
+                pokemon: pokemonForSlot(slot.pokemonId),
+                onDeposit: slot.pokemonId == null ? null : () => onDeposit(slot),
+              );
+            },
+          ),
+        );
+      },
     );
   }
 }
@@ -549,57 +575,68 @@ class _TeamMiniCard extends StatelessWidget {
             ? pokemon.name
             : nickname;
 
-    return SizedBox(
-      width: 142,
-      child: Card(
-        child: Padding(
-          padding: const EdgeInsets.all(8),
-          child: Row(
-            children: [
-              pokemon == null
-                  ? CircleAvatar(
-                      backgroundColor: colorScheme.surfaceContainerHighest,
-                      child: Text('${slot.slotIndex + 1}'),
-                    )
-                  : PokemonAssetImage(
-                      pokemon: pokemon,
-                      size: 46,
-                      formName: slot.formName,
-                    ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      name,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(fontWeight: FontWeight.w900),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      pokemon == null ? 'Vuoto' : '#${pokemon.id.toString().padLeft(3, '0')}',
-                      style: Theme.of(context).textTheme.labelSmall,
-                    ),
-                    if (pokemon != null)
-                      TextButton(
-                        onPressed: onDeposit,
-                        style: TextButton.styleFrom(
-                          padding: EdgeInsets.zero,
-                          minimumSize: const Size(0, 24),
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        ),
-                        child: const Text('Deposita'),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final dense = constraints.maxWidth < 128;
+        final spriteSize = dense ? 34.0 : 42.0;
+        final gap = dense ? 5.0 : 8.0;
+
+        return Card(
+          margin: EdgeInsets.zero,
+          child: Padding(
+            padding: EdgeInsets.all(dense ? 5 : 7),
+            child: Row(
+              children: [
+                pokemon == null
+                    ? CircleAvatar(
+                        radius: spriteSize / 2,
+                        backgroundColor: colorScheme.surfaceContainerHighest,
+                        child: Text('${slot.slotIndex + 1}'),
+                      )
+                    : PokemonAssetImage(
+                        pokemon: pokemon,
+                        size: spriteSize,
+                        formName: slot.formName,
                       ),
-                  ],
+                SizedBox(width: gap),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w900,
+                          fontSize: dense ? 12 : null,
+                        ),
+                      ),
+                      const SizedBox(height: 1),
+                      Text(
+                        pokemon == null ? 'Vuoto' : '#${pokemon.id.toString().padLeft(3, '0')}',
+                        style: Theme.of(context).textTheme.labelSmall,
+                      ),
+                      if (pokemon != null)
+                        TextButton(
+                          onPressed: onDeposit,
+                          style: TextButton.styleFrom(
+                            padding: EdgeInsets.zero,
+                            minimumSize: const Size(0, 20),
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            textStyle: Theme.of(context).textTheme.labelSmall,
+                          ),
+                          child: const Text('Deposita'),
+                        ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

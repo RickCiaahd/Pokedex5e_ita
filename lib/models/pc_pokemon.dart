@@ -1,3 +1,4 @@
+import 'pokemon_form_preferences.dart';
 import 'team_slot.dart';
 
 class PcPokemon {
@@ -21,7 +22,16 @@ class PcPokemon {
     this.customAbilityScores = const {},
     this.loyalty = 0,
     this.notes = '',
-  }) : capturedAt = capturedAt ?? DateTime.now();
+  }) : capturedAt = capturedAt ?? DateTime.now() {
+    PokemonFormPreferences.setForm(
+      pokemonId: pokemonId,
+      formName: formName,
+    );
+    PokemonFormPreferences.setShiny(
+      pokemonId: pokemonId,
+      isShiny: isShiny,
+    );
+  }
 
   final String id;
   final int pokemonId;

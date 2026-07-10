@@ -46,6 +46,10 @@ class TeamSlot {
         pokemonId: pokemonId,
         formName: formName,
       );
+      PokemonFormPreferences.setShiny(
+        pokemonId: pokemonId,
+        isShiny: isShiny,
+      );
     }
   }
 

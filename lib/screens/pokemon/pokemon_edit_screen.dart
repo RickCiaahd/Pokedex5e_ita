@@ -287,6 +287,8 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
       builder: (_) => _FormPickerSheet(
         pokemon: widget.pokemon,
         currentFormName: _formName,
+        gender: _gender,
+        isShiny: _isShiny,
         choices: _formChoices,
       ),
     );
@@ -507,6 +509,8 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
                     child: _FormSelector(
                       pokemon: widget.pokemon,
                       formName: _formName ?? _formChoices.first.name,
+                      gender: _gender,
+                      isShiny: _isShiny,
                       onTap: _pickForm,
                     ),
                   ),
@@ -617,11 +621,15 @@ class _FormSelector extends StatelessWidget {
   const _FormSelector({
     required this.pokemon,
     required this.formName,
+    required this.gender,
+    required this.isShiny,
     required this.onTap,
   });
 
   final Pokemon pokemon;
   final String formName;
+  final String? gender;
+  final bool isShiny;
   final VoidCallback onTap;
 
   @override
@@ -631,6 +639,8 @@ class _FormSelector extends StatelessWidget {
         leading: PokemonAssetImage(
           pokemon: pokemon,
           formName: formName,
+          gender: gender,
+          isShiny: isShiny,
           size: 52,
         ),
         title: Text(formName.toUpperCase()),
@@ -646,11 +656,15 @@ class _FormPickerSheet extends StatelessWidget {
   const _FormPickerSheet({
     required this.pokemon,
     required this.currentFormName,
+    required this.gender,
+    required this.isShiny,
     required this.choices,
   });
 
   final Pokemon pokemon;
   final String? currentFormName;
+  final String? gender;
+  final bool isShiny;
   final List<PokemonFormChoice> choices;
 
   @override
@@ -674,6 +688,8 @@ class _FormPickerSheet extends StatelessWidget {
                   leading: PokemonAssetImage(
                     pokemon: pokemon,
                     formName: choice.name,
+                    gender: gender,
+                    isShiny: isShiny,
                     size: 52,
                   ),
                   title: Text(choice.name.toUpperCase()),

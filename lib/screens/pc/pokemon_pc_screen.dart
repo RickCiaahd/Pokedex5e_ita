@@ -597,6 +597,8 @@ class _TeamMiniCard extends StatelessWidget {
                         pokemon: pokemon,
                         size: spriteSize,
                         formName: slot.formName,
+                        gender: slot.gender,
+                        isShiny: slot.isShiny,
                       ),
                 SizedBox(width: gap),
                 Expanded(
@@ -732,6 +734,8 @@ class _PcGridCell extends StatelessWidget {
                       pokemon: pokemon,
                       size: 58,
                       formName: pcPokemon.formName,
+                      gender: pcPokemon.gender,
+                      isShiny: pcPokemon.isShiny,
                     ),
             ),
             Positioned(
@@ -804,6 +808,8 @@ class _PcPokemonActionSheet extends StatelessWidget {
                         pokemon: pokemon,
                         size: 58,
                         formName: pcPokemon.formName,
+                        gender: pcPokemon.gender,
+                        isShiny: pcPokemon.isShiny,
                       ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -920,6 +926,8 @@ class _ReplacementSlotTile extends StatelessWidget {
                 pokemon: pokemon,
                 size: 48,
                 formName: slot.formName,
+                gender: slot.gender,
+                isShiny: slot.isShiny,
               ),
         title: Text(
           pokemon == null ? 'Slot ${slot.slotIndex + 1} vuoto' : displayName,

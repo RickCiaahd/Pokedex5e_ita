@@ -181,17 +181,27 @@ class PokemonAssetPaths {
 
       final choice = _webFormChoiceFromAssetPath(pokemon, assetPath) ??
           _formChoiceFromAssetPath(pokemon, assetPath);
-      if (choice == null || _isBaseSpriteLabel(choice.name)) continue;
+      if (choice == null ||
+          _isBaseSpriteLabel(choice.name) ||
+          _isGenderOnlyLabel(choice.name)) {
+        continue;
+      }
       choicesByName.putIfAbsent(choice.name, () => choice);
     }
 
     for (final choice in await _variantMapFormChoices(pokemon)) {
+      if (_isGenderOnlyLabel(choice.name)) continue;
       choicesByName.putIfAbsent(choice.name, () => choice);
     }
 
+    if (choicesByName.isEmpty) return const [];
+
     final choices = choicesByName.values.toList(growable: false)
       ..sort(_compareFormChoices);
-    return choices;
+    return [
+      const PokemonFormChoice(name: 'Base', assetPath: ''),
+      ...choices,
+    ];
   }
 
   static List<String> imageCandidates({
@@ -230,27 +240,41 @@ class PokemonAssetPaths {
     final id = pokemon.id.toString();
     final paddedId = id.padLeft(3, '0');
     final prefixes = <String>[];
+    final candidateSlugs = _webCandidateSlugs(pokemon);
+    final formSlugs = _formSlugs(pokemon, formName, gender);
 
     void add(String value) {
       if (!prefixes.contains(value)) prefixes.add(value);
     }
 
-    for (final slug in _webCandidateSlugs(pokemon)) {
-      add('$_webPokemonRoot/$slug/');
-      add('$_webPokemonRoot/$slug-');
-      add('$_webPokemonRoot/${slug}_');
-      for (final transform in _transformFolders) {
-        add('$_webTransformRoot/$transform/$slug/');
-        add('$_webTransformRoot/$transform/$slug-');
-        add('$_webTransformRoot/$transform/${slug}_');
-      }
-    }
-
-    for (final formSlug in _formSlugs(pokemon, formName, gender)) {
-      for (final slug in _webCandidateSlugs(pokemon)) {
+    for (final formSlug in formSlugs) {
+      for (final slug in candidateSlugs) {
         add('$_webPokemonRoot/$slug-$formSlug/');
         add('$_webPokemonRoot/${slug}_$formSlug/');
         add('$_webPokemonRoot/$slug/$formSlug/');
+        for (final transform in _transformFolders) {
+          add('$_webTransformRoot/$transform/$slug-$formSlug/');
+          add('$_webTransformRoot/$transform/${slug}_$formSlug/');
+          add('$_webTransformRoot/$transform/$slug/$formSlug/');
+        }
+      }
+    }
+
+    for (final slug in candidateSlugs) {
+      add('$_webPokemonRoot/$slug/');
+      for (final transform in _transformFolders) {
+        add('$_webTransformRoot/$transform/$slug/');
+      }
+    }
+
+    if (formSlugs.isEmpty) {
+      for (final slug in candidateSlugs) {
+        add('$_webPokemonRoot/$slug-');
+        add('$_webPokemonRoot/${slug}_');
+        for (final transform in _transformFolders) {
+          add('$_webTransformRoot/$transform/$slug-');
+          add('$_webTransformRoot/$transform/${slug}_');
+        }
       }
     }
 
@@ -548,7 +572,12 @@ class PokemonAssetPaths {
 
       return variants
           .map((value) => _cleanVariantLabel(pokemon, value.toString()))
-          .where((name) => name.isNotEmpty && !_isBaseSpriteLabel(name))
+          .where(
+            (name) =>
+                name.isNotEmpty &&
+                !_isBaseSpriteLabel(name) &&
+                !_isGenderOnlyLabel(name),
+          )
           .map((name) => PokemonFormChoice(name: name, assetPath: ''))
           .toList(growable: false);
     } catch (_) {
@@ -559,8 +588,11 @@ class PokemonAssetPaths {
   static String _cleanVariantLabel(Pokemon pokemon, String value) {
     var label = value.trim();
     final pokemonName = pokemon.name.trim();
-    if (label.toLowerCase().startsWith(pokemonName.toLowerCase())) {
-      label = label.substring(pokemonName.length).trim();
+    if (pokemonName.isNotEmpty) {
+      label = label.replaceAll(
+        RegExp(RegExp.escape(pokemonName), caseSensitive: false),
+        ' ',
+      );
     }
     label = label.replaceFirst(RegExp(r'^[-_:(\s]+'), '').trim();
     label = label.replaceFirst(RegExp(r'[)]+$'), '').trim();
@@ -569,7 +601,12 @@ class PokemonAssetPaths {
 
   static Set<String> _formAwareAliases(String rawName, String? formName) {
     final form = formName?.trim();
-    if (form == null || form.isEmpty) return const {};
+    if (form == null ||
+        form.isEmpty ||
+        _isBaseSpriteLabel(form) ||
+        _isGenderOnlyLabel(form)) {
+      return const {};
+    }
 
     final aliases = _nameAliases(rawName);
     return <String>{
@@ -600,7 +637,11 @@ class PokemonAssetPaths {
     }..removeWhere((name) => name.isEmpty);
   }
 
-  static List<String> _formSlugs(Pokemon pokemon, String? formName, String? gender) {
+  static List<String> _formSlugs(
+    Pokemon pokemon,
+    String? formName,
+    String? gender,
+  ) {
     final result = <String>[];
 
     void add(String value) {
@@ -608,27 +649,29 @@ class PokemonAssetPaths {
       if (slug.isNotEmpty && !result.contains(slug)) result.add(slug);
     }
 
-    for (final slug in _genderSlugs(gender)) {
-      add(slug);
-    }
-
     final form = formName?.trim();
-    if (form != null && form.isNotEmpty) {
-      final pokemonName = pokemon.name.trim();
-      var shortForm = form;
-      if (shortForm.toLowerCase().startsWith(pokemonName.toLowerCase())) {
-        shortForm = shortForm.substring(pokemonName.length).trim();
-      }
-      shortForm = _cleanFormLabel(shortForm);
+    if (form != null &&
+        form.isNotEmpty &&
+        !_isBaseSpriteLabel(form) &&
+        !_isGenderOnlyLabel(form)) {
+      final cleanedForm = _cleanFormLabel(form);
+      final shortForm = _removePokemonName(cleanedForm, pokemon.name);
+      final strippedForm = _stripGenericFormWords(shortForm);
 
-      add(form);
-      if (shortForm.isNotEmpty) add(shortForm);
-      add('$pokemonName $form');
-      if (shortForm.isNotEmpty) add('$pokemonName $shortForm');
+      add(cleanedForm);
+      add(shortForm);
+      add(strippedForm);
 
-      for (final alias in _genderSlugs(form)) {
+      for (final alias in _regionalAliases(shortForm)) {
         add(alias);
       }
+      for (final alias in _regionalAliases(strippedForm)) {
+        add(alias);
+      }
+    }
+
+    for (final slug in _genderSlugs(gender)) {
+      add(slug);
     }
 
     return result;
@@ -714,8 +757,6 @@ class PokemonAssetPaths {
 
   static int _formSortWeight(String label) {
     final value = label.toLowerCase().trim();
-    if (value == 'male' || value == 'm' || value == 'maschio') return 0;
-    if (value == 'female' || value == 'f' || value == 'femmina') return 1;
     if (value == 'amped') return 0;
     return 10;
   }
@@ -788,6 +829,73 @@ class PokemonAssetPaths {
         .join(' ');
   }
 
+  static bool _isGenderOnlyLabel(String label) {
+    switch (label.toLowerCase().trim()) {
+      case 'male':
+      case 'm':
+      case 'maschio':
+      case 'female':
+      case 'f':
+      case 'femmina':
+        return true;
+      default:
+        return false;
+    }
+  }
+
+  static String _removePokemonName(String value, String pokemonName) {
+    final cleanName = pokemonName.trim();
+    if (cleanName.isEmpty) return _cleanFormLabel(value);
+
+    return _cleanFormLabel(
+      value.replaceAll(
+        RegExp(RegExp.escape(cleanName), caseSensitive: false),
+        ' ',
+      ),
+    );
+  }
+
+  static String _stripGenericFormWords(String value) {
+    return _cleanFormLabel(
+      value.replaceAll(
+        RegExp(r'(form|forme|style|mode)', caseSensitive: false),
+        ' ',
+      ),
+    );
+  }
+
+  static List<String> _regionalAliases(String value) {
+    final lower = value.toLowerCase();
+    final aliases = <String>[];
+
+    void add(String alias) {
+      if (alias.isNotEmpty && !aliases.contains(alias)) aliases.add(alias);
+    }
+
+    if (lower.contains('alolan')) {
+      add(lower.replaceAll('alolan', 'alola'));
+      add('alola');
+      add('alolan');
+    }
+    if (lower.contains('galarian')) {
+      add(lower.replaceAll('galarian', 'galar'));
+      add('galar');
+      add('galarian');
+    }
+    if (lower.contains('hisuian')) {
+      add(lower.replaceAll('hisuian', 'hisui'));
+      add('hisui');
+      add('hisuian');
+    }
+    if (lower.contains('paldean')) {
+      add(lower.replaceAll('paldean', 'paldea'));
+      add('paldea');
+      add('paldean');
+    }
+
+    return aliases;
+  }
+
   static bool _isBaseSpriteLabel(String label) {
     switch (label.toLowerCase().trim()) {
       case 'main':
@@ -797,6 +905,7 @@ class PokemonAssetPaths {
       case 'shiny':
       case 'base':
       case 'default':
+      case 'forma base':
         return true;
       default:
         return false;

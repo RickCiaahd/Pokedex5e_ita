@@ -305,7 +305,7 @@ class _TeamSlotCard extends StatelessWidget {
           padding: const EdgeInsets.all(12),
           child: Row(
             children: [
-              _SlotAvatar(slotIndex: slot.slotIndex, pokemon: pokemon),
+              _SlotAvatar(slot: slot, pokemon: pokemon),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -395,9 +395,9 @@ class _TeamSlotCard extends StatelessWidget {
 enum _SlotAction { change, remove }
 
 class _SlotAvatar extends StatelessWidget {
-  const _SlotAvatar({required this.slotIndex, required this.pokemon});
+  const _SlotAvatar({required this.slot, required this.pokemon});
 
-  final int slotIndex;
+  final TeamSlot slot;
   final Pokemon? pokemon;
 
   @override
@@ -417,13 +417,19 @@ class _SlotAvatar extends StatelessWidget {
       child: Center(
         child: pokemon == null
             ? Text(
-                '${slotIndex + 1}',
+                '${slot.slotIndex + 1}',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   color: colorScheme.onSurfaceVariant,
                   fontWeight: FontWeight.w900,
                 ),
               )
-            : PokemonAssetImage(pokemon: pokemon, size: 48),
+            : PokemonAssetImage(
+                pokemon: pokemon,
+                formName: slot.formName,
+                gender: slot.gender,
+                isShiny: slot.isShiny,
+                size: 48,
+              ),
       ),
     );
   }

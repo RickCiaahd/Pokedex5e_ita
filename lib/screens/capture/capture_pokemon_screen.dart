@@ -556,6 +556,8 @@ class _RegisterCaughtSheetState extends State<_RegisterCaughtSheet> {
                 PokemonAssetImage(
                   pokemon: widget.pokemon,
                   formName: _formName,
+                  gender: _gender,
+                  isShiny: _isShiny,
                   useLargeArtwork: true,
                   size: 86,
                 ),

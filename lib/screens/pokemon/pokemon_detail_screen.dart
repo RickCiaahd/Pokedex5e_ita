@@ -1309,6 +1309,9 @@ class _Header extends StatelessWidget {
                         Expanded(
                           child: PokemonAssetImage(
                             pokemon: pokemon,
+                            formName: slot?.formName,
+                            gender: slot?.gender,
+                            isShiny: slot?.isShiny,
                             useLargeArtwork: true,
                             size: 112,
                           ),

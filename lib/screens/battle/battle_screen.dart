@@ -440,8 +440,9 @@ class _BattleScreenState extends State<BattleScreen> {
       if (currentHp <= 0 && !isRevive) return null;
       if (currentHp > 0 && isRevive) return null;
       updatedHp = (currentHp + healingAmount).clamp(0, maxHp).toInt();
-      if (updatedHp != currentHp)
+      if (updatedHp != currentHp) {
         hpText = 'recupera ${updatedHp - currentHp} HP';
+      }
     }
 
     final curedNonVolatile = _statusesCuredBy(item.id, nonVolatileStatuses);
@@ -614,8 +615,9 @@ class _BattleScreenState extends State<BattleScreen> {
     _initiativeEntries.sort((a, b) {
       final initiativeCompare = b.initiative.compareTo(a.initiative);
       if (initiativeCompare != 0) return initiativeCompare;
-      if (a.isTrainerGroup != b.isTrainerGroup)
+      if (a.isTrainerGroup != b.isTrainerGroup) {
         return a.isTrainerGroup ? -1 : 1;
+      }
       return a.name.compareTo(b.name);
     });
     _turnIndex = _initiativeEntries.isEmpty

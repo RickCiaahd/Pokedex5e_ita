@@ -25,6 +25,7 @@ class PokemonSummaryDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final number = '#${pokemon.id.toString().padLeft(3, '0')}';
+    final webDescription = pokemon.description?.trim() ?? '';
 
     return AlertDialog(
       title: Text('${pokemon.name} $number'),
@@ -63,6 +64,9 @@ class PokemonSummaryDialog extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Text(flavor!.flavor, textAlign: TextAlign.center),
+            const SizedBox(height: 16),
+          ] else if (webDescription.isNotEmpty) ...[
+            Text(webDescription, textAlign: TextAlign.center),
             const SizedBox(height: 16),
           ],
           if (entry.seen) ...[

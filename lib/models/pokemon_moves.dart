@@ -21,7 +21,53 @@ class PokemonMoves {
       levelMoves: levelJson.map(
         (key, value) => MapEntry(int.parse(key), List<String>.from(value)),
       ),
-      tmMoves: List<int>.from(json['TM'] ?? []),
+      tmMoves: _readIntList(json['TM']),
     );
+  }
+
+  factory PokemonMoves.fromWebJson(Map<String, dynamic>? json) {
+    if (json == null) {
+      return const PokemonMoves(startingMoves: [], levelMoves: {}, tmMoves: []);
+    }
+
+    final levelMoves = <int, List<String>>{};
+    for (final entry in json.entries) {
+      final key = entry.key.toLowerCase().trim();
+      if (!key.startsWith('level')) continue;
+
+      final level = int.tryParse(key.replaceFirst('level', ''));
+      if (level == null) continue;
+
+      levelMoves[level] = _readStringList(entry.value);
+    }
+
+    return PokemonMoves(
+      startingMoves: _readStringList(json['start']),
+      levelMoves: levelMoves,
+      tmMoves: _readIntList(json['tm']),
+    );
+  }
+
+  static List<String> _readStringList(dynamic value) {
+    if (value is List) {
+      return value.map((item) => item.toString()).toList(growable: false);
+    }
+
+    return const [];
+  }
+
+  static List<int> _readIntList(dynamic value) {
+    if (value is List) {
+      return value
+          .map((item) {
+            if (item is int) return item;
+            if (item is num) return item.toInt();
+            return int.tryParse(item.toString());
+          })
+          .whereType<int>()
+          .toList(growable: false);
+    }
+
+    return const [];
   }
 }

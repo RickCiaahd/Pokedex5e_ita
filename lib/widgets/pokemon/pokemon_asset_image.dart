@@ -43,9 +43,12 @@ class PokemonAssetImage extends StatelessWidget {
     final entry = this.entry;
     final seen = entry?.seen ?? true;
     final caught = entry?.caught ?? true;
-    final effectiveFormName = formName ?? PokemonFormPreferences.formFor(pokemon.id);
-    final effectiveGender = gender ?? PokemonFormPreferences.genderFor(pokemon.id);
-    final effectiveShiny = isShiny ?? PokemonFormPreferences.shinyFor(pokemon.id);
+    final effectiveFormName =
+        formName ?? PokemonFormPreferences.formFor(pokemon.id);
+    final effectiveGender =
+        gender ?? PokemonFormPreferences.genderFor(pokemon.id);
+    final effectiveShiny =
+        isShiny ?? PokemonFormPreferences.shinyFor(pokemon.id);
     final visualScale = useLargeArtwork ? 1.08 : 1.12;
 
     Widget image = _AssetFallbackImage(
@@ -65,7 +68,8 @@ class PokemonAssetImage extends StatelessWidget {
       width: size,
       height: size,
       fit: fit,
-      fallback: fallback ??
+      fallback:
+          fallback ??
           Icon(
             seen ? Icons.catching_pokemon : Icons.question_mark,
             size: size * 0.48,
@@ -114,7 +118,9 @@ class PokemonAssetImage extends StatelessWidget {
     return SizedBox(
       width: size,
       height: size,
-      child: Center(child: Transform.scale(scale: visualScale, child: image)),
+      child: Center(
+        child: Transform.scale(scale: visualScale, child: image),
+      ),
     );
   }
 }
@@ -146,11 +152,12 @@ class PokemonTypeBadge extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
           child: Text(
             PokemonAssetPaths.localizedTypeLabel(type).toUpperCase(),
-            style: fallbackTextStyle ??
+            style:
+                fallbackTextStyle ??
                 Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: Theme.of(context).colorScheme.onPrimaryContainer,
-                      fontWeight: FontWeight.w900,
-                    ),
+                  color: Theme.of(context).colorScheme.onPrimaryContainer,
+                  fontWeight: FontWeight.w900,
+                ),
           ),
         ),
       ),
@@ -162,46 +169,64 @@ class PokemonAssetPaths {
   const PokemonAssetPaths._();
 
   static const _webPokemonRoot = 'assets/textures/textures_webapp/pokemon';
-  static const _webTransformRoot = 'assets/textures/textures_webapp/pokemon_transforms';
+  static const _webTransformRoot =
+      'assets/textures/textures_webapp/pokemon_transforms';
   static const _transformFolders = ['mega', 'dynamax', 'gigamax', 'terastal'];
 
   static Future<List<PokemonFormChoice>> formChoices(Pokemon pokemon) async {
     final assetIndex = await _AssetLookup.assetIndex();
-    final choicesByName = <String, PokemonFormChoice>{};
+    final choicesByKey = <String, PokemonFormChoice>{};
     final prefixes = imageCandidatePrefixes(
       pokemon: pokemon,
       useLargeArtwork: false,
     );
 
+    void addChoice(PokemonFormChoice choice) {
+      final canonicalName = _canonicalFormLabel(pokemon, choice.name);
+      if (canonicalName.isEmpty ||
+          _isBaseSpriteLabel(canonicalName) ||
+          _isGenderOnlyLabel(canonicalName)) {
+        return;
+      }
+
+      final key = _formIdentityKey(pokemon, canonicalName);
+      if (key.isEmpty) return;
+
+      final normalizedChoice = PokemonFormChoice(
+        name: canonicalName,
+        assetPath: choice.assetPath,
+      );
+      final current = choicesByKey[key];
+      if (current == null ||
+          (current.assetPath.isEmpty &&
+              normalizedChoice.assetPath.isNotEmpty)) {
+        choicesByKey[key] = normalizedChoice;
+      }
+    }
+
     for (final assetPath in assetIndex.sortedPaths) {
       if (!assetPath.endsWith('.png')) continue;
-      if (!prefixes.any((prefix) => _AssetLookup.matchesPrefix(assetPath, prefix))) {
+      if (!prefixes.any(
+        (prefix) => _AssetLookup.matchesPrefix(assetPath, prefix),
+      )) {
         continue;
       }
 
-      final choice = _webFormChoiceFromAssetPath(pokemon, assetPath) ??
+      final choice =
+          _webFormChoiceFromAssetPath(pokemon, assetPath) ??
           _formChoiceFromAssetPath(pokemon, assetPath);
-      if (choice == null ||
-          _isBaseSpriteLabel(choice.name) ||
-          _isGenderOnlyLabel(choice.name)) {
-        continue;
-      }
-      choicesByName.putIfAbsent(choice.name, () => choice);
+      if (choice != null) addChoice(choice);
     }
 
     for (final choice in await _variantMapFormChoices(pokemon)) {
-      if (_isGenderOnlyLabel(choice.name)) continue;
-      choicesByName.putIfAbsent(choice.name, () => choice);
+      addChoice(choice);
     }
 
-    if (choicesByName.isEmpty) return const [];
+    if (choicesByKey.isEmpty) return const [];
 
-    final choices = choicesByName.values.toList(growable: false)
+    final choices = choicesByKey.values.toList(growable: false)
       ..sort(_compareFormChoices);
-    return [
-      const PokemonFormChoice(name: 'Base', assetPath: ''),
-      ...choices,
-    ];
+    return [const PokemonFormChoice(name: 'Base', assetPath: ''), ...choices];
   }
 
   static List<String> imageCandidates({
@@ -211,22 +236,62 @@ class PokemonAssetPaths {
     String? gender,
     bool isShiny = false,
   }) {
-    final webCandidates = _webImageCandidates(
-      pokemon: pokemon,
-      useLargeArtwork: useLargeArtwork,
-      formName: formName,
-      gender: gender,
-      isShiny: isShiny,
+    final canonicalFormName = formName == null
+        ? null
+        : _canonicalFormLabel(pokemon, formName);
+    final hasSpecificForm =
+        canonicalFormName != null &&
+        canonicalFormName.isNotEmpty &&
+        !_isBaseSpriteLabel(canonicalFormName) &&
+        !_isGenderOnlyLabel(canonicalFormName);
+    final hasSpecificGender = _genderSlugs(gender).isNotEmpty;
+    final candidates = <String>[];
+
+    void addAll(Iterable<String> values) {
+      for (final value in values) {
+        if (!candidates.contains(value)) candidates.add(value);
+      }
+    }
+
+    if (hasSpecificForm || hasSpecificGender) {
+      addAll(
+        _webImageCandidates(
+          pokemon: pokemon,
+          useLargeArtwork: useLargeArtwork,
+          formName: hasSpecificForm ? canonicalFormName : null,
+          gender: gender,
+          isShiny: isShiny,
+          includeBaseFolders: false,
+        ),
+      );
+      addAll(
+        _legacyImageCandidates(
+          pokemon: pokemon,
+          useLargeArtwork: useLargeArtwork,
+          formName: hasSpecificForm ? canonicalFormName : null,
+          gender: gender,
+          isShiny: isShiny,
+          includeBaseAliases: false,
+        ),
+      );
+    }
+
+    addAll(
+      _webImageCandidates(
+        pokemon: pokemon,
+        useLargeArtwork: useLargeArtwork,
+        isShiny: isShiny,
+      ),
     );
-    final oldCandidates = _legacyImageCandidates(
-      pokemon: pokemon,
-      useLargeArtwork: useLargeArtwork,
-      formName: formName,
-      gender: gender,
-      isShiny: isShiny,
+    addAll(
+      _legacyImageCandidates(
+        pokemon: pokemon,
+        useLargeArtwork: useLargeArtwork,
+        isShiny: isShiny,
+      ),
     );
 
-    return [...webCandidates, ...oldCandidates];
+    return candidates;
   }
 
   static List<String> imageCandidatePrefixes({
@@ -292,15 +357,16 @@ class PokemonAssetPaths {
     String? formName,
     String? gender,
     bool isShiny = false,
+    bool includeBaseAliases = true,
   }) {
     final folder = useLargeArtwork ? 'pokemons' : 'sprites';
     final alternateFolder = useLargeArtwork ? 'sprites' : 'pokemons';
     final id = pokemon.id.toString();
     final paddedId = id.padLeft(3, '0');
     final aliases = <String>{
-      ..._genderAwareAliases(pokemon.name, gender),
       ..._formAwareAliases(pokemon.name, formName),
-      ..._nameAliases(pokemon.name),
+      ..._genderAwareAliases(pokemon.name, gender),
+      if (includeBaseAliases) ..._nameAliases(pokemon.name),
     }..removeWhere((name) => name.isEmpty);
     final fileNames = <String>{};
 
@@ -316,12 +382,14 @@ class PokemonAssetPaths {
           '${name.toLowerCase()}-shiny.png',
         ]);
       }
-      fileNames.addAll([
-        '$paddedId-shiny.png',
-        '$id-shiny.png',
-        '${paddedId}_shiny.png',
-        '${id}_shiny.png',
-      ]);
+      if (includeBaseAliases) {
+        fileNames.addAll([
+          '$paddedId-shiny.png',
+          '$id-shiny.png',
+          '${paddedId}_shiny.png',
+          '${id}_shiny.png',
+        ]);
+      }
     }
 
     for (final name in aliases) {
@@ -332,11 +400,14 @@ class PokemonAssetPaths {
         '${name.toLowerCase()}.png',
       ]);
     }
-    fileNames.addAll(['$paddedId.png', '$id.png']);
+    if (includeBaseAliases) {
+      fileNames.addAll(['$paddedId.png', '$id.png']);
+    }
 
     return <String>[
       for (final fileName in fileNames) 'assets/textures/$folder/$fileName',
-      for (final fileName in fileNames) 'assets/textures/$alternateFolder/$fileName',
+      for (final fileName in fileNames)
+        'assets/textures/$alternateFolder/$fileName',
     ];
   }
 
@@ -346,6 +417,7 @@ class PokemonAssetPaths {
     String? formName,
     String? gender,
     bool isShiny = false,
+    bool includeBaseFolders = true,
   }) {
     final primary = useLargeArtwork ? 'main' : 'sprite';
     final secondary = useLargeArtwork ? 'sprite' : 'main';
@@ -366,8 +438,10 @@ class PokemonAssetPaths {
       }
     }
 
-    for (final slug in slugs) {
-      addFolder('$_webPokemonRoot/$slug');
+    if (includeBaseFolders) {
+      for (final slug in slugs) {
+        addFolder('$_webPokemonRoot/$slug');
+      }
     }
 
     final paths = <String>[];
@@ -420,7 +494,8 @@ class PokemonAssetPaths {
 
     return [
       'assets/textures/type_names/$lowercaseAssetName.png',
-      if (assetName != lowercaseAssetName) 'assets/textures/type_names/$assetName.png',
+      if (assetName != lowercaseAssetName)
+        'assets/textures/type_names/$assetName.png',
     ];
   }
 
@@ -485,7 +560,10 @@ class PokemonAssetPaths {
     }
   }
 
-  static PokemonFormChoice? _formChoiceFromAssetPath(Pokemon pokemon, String assetPath) {
+  static PokemonFormChoice? _formChoiceFromAssetPath(
+    Pokemon pokemon,
+    String assetPath,
+  ) {
     final fileName = assetPath.split('/').last;
     if (!fileName.endsWith('.png')) return null;
 
@@ -519,8 +597,12 @@ class PokemonAssetPaths {
     return PokemonFormChoice(name: suffix, assetPath: assetPath);
   }
 
-  static PokemonFormChoice? _webFormChoiceFromAssetPath(Pokemon pokemon, String assetPath) {
-    if (!assetPath.startsWith('$_webPokemonRoot/') || !assetPath.endsWith('.png')) {
+  static PokemonFormChoice? _webFormChoiceFromAssetPath(
+    Pokemon pokemon,
+    String assetPath,
+  ) {
+    if (!assetPath.startsWith('$_webPokemonRoot/') ||
+        !assetPath.endsWith('.png')) {
       return null;
     }
 
@@ -534,7 +616,8 @@ class PokemonAssetPaths {
 
     for (final slug in _webCandidateSlugs(pokemon)) {
       if (folder == slug) {
-        rawForm = _folderSuffixAfterSpecies(folder, speciesSlug) ??
+        rawForm =
+            _folderSuffixAfterSpecies(folder, speciesSlug) ??
             (parts.length > 2 ? parts[1] : _formFromFileName(parts.last));
         break;
       }
@@ -556,15 +639,25 @@ class PokemonAssetPaths {
   static String _formFromFileName(String fileName) {
     return fileName
         .replaceFirst(RegExp(r'\.png$'), '')
-        .replaceFirst(RegExp(r'^(main|sprite)[-_\s]+', caseSensitive: false), '')
-        .replaceFirst(RegExp(r'[-_\s]+(main|sprite)$', caseSensitive: false), '')
+        .replaceFirst(
+          RegExp(r'^(main|sprite)[-_\s]+', caseSensitive: false),
+          '',
+        )
+        .replaceFirst(
+          RegExp(r'[-_\s]+(main|sprite)$', caseSensitive: false),
+          '',
+        )
         .replaceFirst(RegExp(r'[-_\s]*shiny$', caseSensitive: false), '')
         .trim();
   }
 
-  static Future<List<PokemonFormChoice>> _variantMapFormChoices(Pokemon pokemon) async {
+  static Future<List<PokemonFormChoice>> _variantMapFormChoices(
+    Pokemon pokemon,
+  ) async {
     try {
-      final jsonString = await rootBundle.loadString('assets/data/variant_map.json');
+      final jsonString = await rootBundle.loadString(
+        'assets/data/variant_map.json',
+      );
       final json = Map<String, dynamic>.from(jsonDecode(jsonString));
       final variants = List<dynamic>.from(json[pokemon.name] ?? const []);
 
@@ -608,16 +701,46 @@ class PokemonAssetPaths {
       return const {};
     }
 
-    final aliases = _nameAliases(rawName);
-    return <String>{
-      for (final alias in aliases) ...[
-        '$alias $form',
-        '$alias - $form',
-        '${alias}_$form',
-        _assetName('$alias $form'),
-        _compactAssetName('$alias $form'),
-      ],
+    final speciesAliases = _nameAliases(rawName);
+    final cleanedForm = _cleanFormLabel(form);
+    final shortForm = _stripGenericFormWords(
+      _removePokemonName(cleanedForm, rawName),
+    );
+    final formAliases = <String>{
+      if (shortForm.isNotEmpty) shortForm,
+      if (cleanedForm.isNotEmpty &&
+          !cleanedForm.toLowerCase().contains(rawName.toLowerCase()))
+        cleanedForm,
+      for (final alias in _regionalAliases(shortForm)) _cleanFormLabel(alias),
     }..removeWhere((name) => name.isEmpty);
+
+    final result = <String>{};
+    if (cleanedForm.toLowerCase().contains(rawName.toLowerCase())) {
+      result.addAll([
+        cleanedForm,
+        _assetName(cleanedForm),
+        _compactAssetName(cleanedForm),
+      ]);
+    }
+
+    for (final speciesAlias in speciesAliases) {
+      for (final formAlias in formAliases) {
+        result.addAll([
+          '$formAlias $speciesAlias',
+          '$speciesAlias $formAlias',
+          '$formAlias - $speciesAlias',
+          '$speciesAlias - $formAlias',
+          '${formAlias}_$speciesAlias',
+          '${speciesAlias}_$formAlias',
+          _assetName('$formAlias $speciesAlias'),
+          _assetName('$speciesAlias $formAlias'),
+          _compactAssetName('$formAlias $speciesAlias'),
+          _compactAssetName('$speciesAlias $formAlias'),
+        ]);
+      }
+    }
+
+    return result..removeWhere((name) => name.isEmpty);
   }
 
   static Set<String> _genderAwareAliases(String rawName, String? gender) {
@@ -628,10 +751,15 @@ class PokemonAssetPaths {
     return <String>{
       for (final alias in aliases)
         for (final label in labels) ...[
+          '$label $alias',
           '$alias $label',
+          '$label - $alias',
           '$alias - $label',
+          '${label}_$alias',
           '${alias}_$label',
+          _assetName('$label $alias'),
           _assetName('$alias $label'),
+          _compactAssetName('$label $alias'),
           _compactAssetName('$alias $label'),
         ],
     }..removeWhere((name) => name.isEmpty);
@@ -650,23 +778,20 @@ class PokemonAssetPaths {
     }
 
     final form = formName?.trim();
-    if (form != null &&
-        form.isNotEmpty &&
-        !_isBaseSpriteLabel(form) &&
-        !_isGenderOnlyLabel(form)) {
-      final cleanedForm = _cleanFormLabel(form);
-      final shortForm = _removePokemonName(cleanedForm, pokemon.name);
-      final strippedForm = _stripGenericFormWords(shortForm);
+    if (form != null && form.isNotEmpty) {
+      final canonicalForm = _canonicalFormLabel(pokemon, form);
+      if (!_isBaseSpriteLabel(canonicalForm) &&
+          !_isGenderOnlyLabel(canonicalForm)) {
+        add(canonicalForm);
+        final strippedForm = _stripGenericFormWords(canonicalForm);
+        add(strippedForm);
 
-      add(cleanedForm);
-      add(shortForm);
-      add(strippedForm);
-
-      for (final alias in _regionalAliases(shortForm)) {
-        add(alias);
-      }
-      for (final alias in _regionalAliases(strippedForm)) {
-        add(alias);
+        for (final alias in _regionalAliases(canonicalForm)) {
+          add(alias);
+        }
+        for (final alias in _regionalAliases(strippedForm)) {
+          add(alias);
+        }
       }
     }
 
@@ -829,6 +954,40 @@ class PokemonAssetPaths {
         .join(' ');
   }
 
+  static String _canonicalFormLabel(Pokemon pokemon, String value) {
+    var label = _cleanFormLabel(value);
+    if (label.isEmpty || _isBaseSpriteLabel(label)) return 'Base';
+    if (_isGenderOnlyLabel(label)) return label;
+
+    label = _stripGenericFormWords(_removePokemonName(label, pokemon.name));
+    if (label.isEmpty) return 'Base';
+
+    switch (label.toLowerCase()) {
+      case 'regular':
+      case 'kanto':
+        return 'Base';
+      case 'alola':
+      case 'alolan':
+        return 'Alolan';
+      case 'galar':
+      case 'galarian':
+        return 'Galarian';
+      case 'hisui':
+      case 'hisuian':
+        return 'Hisuian';
+      case 'paldea':
+      case 'paldean':
+        return 'Paldean';
+      default:
+        return label;
+    }
+  }
+
+  static String _formIdentityKey(Pokemon pokemon, String value) {
+    final canonical = _canonicalFormLabel(pokemon, value);
+    return _isBaseSpriteLabel(canonical) ? 'base' : _webSlug(canonical);
+  }
+
   static bool _isGenderOnlyLabel(String label) {
     switch (label.toLowerCase().trim()) {
       case 'male':
@@ -874,21 +1033,40 @@ class PokemonAssetPaths {
 
     if (lower.contains('alolan')) {
       add(lower.replaceAll('alolan', 'alola'));
+    } else if (lower.contains('alola')) {
+      add(lower.replaceAll('alola', 'alolan'));
+    }
+    if (lower.contains('alolan') || lower.contains('alola')) {
       add('alola');
       add('alolan');
     }
+
     if (lower.contains('galarian')) {
       add(lower.replaceAll('galarian', 'galar'));
+    } else if (lower.contains('galar')) {
+      add(lower.replaceAll('galar', 'galarian'));
+    }
+    if (lower.contains('galarian') || lower.contains('galar')) {
       add('galar');
       add('galarian');
     }
+
     if (lower.contains('hisuian')) {
       add(lower.replaceAll('hisuian', 'hisui'));
+    } else if (lower.contains('hisui')) {
+      add(lower.replaceAll('hisui', 'hisuian'));
+    }
+    if (lower.contains('hisuian') || lower.contains('hisui')) {
       add('hisui');
       add('hisuian');
     }
+
     if (lower.contains('paldean')) {
       add(lower.replaceAll('paldean', 'paldea'));
+    } else if (lower.contains('paldea')) {
+      add(lower.replaceAll('paldea', 'paldean'));
+    }
+    if (lower.contains('paldean') || lower.contains('paldea')) {
       add('paldea');
       add('paldean');
     }
@@ -954,7 +1132,10 @@ class _AssetFallbackImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<String?>(
-      future: _AssetLookup.firstExisting(assetPaths, assetPrefixes: assetPrefixes),
+      future: _AssetLookup.firstExisting(
+        assetPaths,
+        assetPrefixes: assetPrefixes,
+      ),
       builder: (context, snapshot) {
         final assetPath = snapshot.data;
         if (assetPath == null) return fallback;
@@ -1012,10 +1193,14 @@ class _AssetLookup {
   static Future<_AssetIndex> assetIndex() => _assetIndex();
 
   static Future<_AssetIndex> _assetIndex() {
-    return _assetIndexFuture ??= AssetManifest.loadFromAssetBundle(rootBundle).then((manifest) {
-      final sortedPaths = manifest.listAssets().toList()..sort();
-      return _AssetIndex(pathSet: sortedPaths.toSet(), sortedPaths: sortedPaths);
-    });
+    return _assetIndexFuture ??= AssetManifest.loadFromAssetBundle(rootBundle)
+        .then((manifest) {
+          final sortedPaths = manifest.listAssets().toList()..sort();
+          return _AssetIndex(
+            pathSet: sortedPaths.toSet(),
+            sortedPaths: sortedPaths,
+          );
+        });
   }
 }
 

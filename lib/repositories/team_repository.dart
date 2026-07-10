@@ -103,12 +103,15 @@ class TeamRepository {
           selectedMoves: changedPokemon ? [] : slot.selectedMoves,
           isShiny: changedPokemon ? false : slot.isShiny,
           gender: changedPokemon ? null : slot.gender,
+          formName: changedPokemon ? null : slot.formName,
           nature: changedPokemon ? 'No Nature' : slot.nature,
           heldItem: changedPokemon ? null : slot.heldItem,
           abilities: changedPokemon ? [] : slot.abilities,
           feats: changedPokemon ? [] : slot.feats,
           extraSkills: changedPokemon ? [] : slot.extraSkills,
+          statusEffects: changedPokemon ? [] : slot.statusEffects,
           customAbilityScores: changedPokemon ? {} : slot.customAbilityScores,
+          loyalty: changedPokemon ? 0 : slot.loyalty,
         );
       }
 

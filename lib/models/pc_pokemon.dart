@@ -12,7 +12,7 @@ class PcPokemon {
     this.selectedMoves = const [],
     this.isShiny = false,
     this.gender,
-    this.formName,
+    String? formName,
     this.nature = 'No Nature',
     this.heldItem,
     this.abilities = const [],
@@ -22,10 +22,11 @@ class PcPokemon {
     this.customAbilityScores = const {},
     this.loyalty = 0,
     this.notes = '',
-  }) : capturedAt = capturedAt ?? DateTime.now() {
+  })  : capturedAt = capturedAt ?? DateTime.now(),
+        formName = _normalizeFormNameForGender(formName, gender) {
     PokemonFormPreferences.setForm(
       pokemonId: pokemonId,
-      formName: formName,
+      formName: this.formName,
     );
     PokemonFormPreferences.setShiny(
       pokemonId: pokemonId,
@@ -163,5 +164,31 @@ class PcPokemon {
     if (value is int) return value;
     if (value is num) return value.toInt();
     return int.tryParse(value?.toString() ?? '') ?? 0;
+  }
+
+  static String? _normalizeFormNameForGender(String? formName, String? gender) {
+    final normalizedGender = gender?.toLowerCase().trim();
+    final normalizedForm = formName?.toLowerCase().trim();
+    if (normalizedForm == null || normalizedForm.isEmpty) return formName;
+
+    final isMaleForm = normalizedForm == 'male' ||
+        normalizedForm == 'm' ||
+        normalizedForm == 'maschio' ||
+        normalizedForm.endsWith(' male') ||
+        normalizedForm.endsWith(' m');
+    final isFemaleForm = normalizedForm == 'female' ||
+        normalizedForm == 'f' ||
+        normalizedForm == 'femmina' ||
+        normalizedForm.endsWith(' female') ||
+        normalizedForm.endsWith(' f');
+
+    if ((normalizedGender == 'female' || normalizedGender == 'f' || normalizedGender == 'femmina') && isMaleForm) {
+      return null;
+    }
+    if ((normalizedGender == 'male' || normalizedGender == 'm' || normalizedGender == 'maschio') && isFemaleForm) {
+      return null;
+    }
+
+    return formName;
   }
 }

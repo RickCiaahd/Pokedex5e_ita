@@ -31,6 +31,10 @@ class PcPokemon {
       pokemonId: pokemonId,
       isShiny: isShiny,
     );
+    PokemonFormPreferences.setGender(
+      pokemonId: pokemonId,
+      gender: gender,
+    );
   }
 
   final String id;

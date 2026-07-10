@@ -24,12 +24,15 @@ class _PokemonPcScreenState extends State<PokemonPcScreen> {
   final PokemonRepository _pokemonRepository = PokemonRepository();
   final PokemonPcRepository _pokemonPcRepository = PokemonPcRepository();
   final TeamRepository _teamRepository = TeamRepository();
+  final TextEditingController _pcSearchController = TextEditingController();
 
   UserProfile? _profile;
   List<Pokemon> _allPokemon = [];
   List<PcPokemon> _pcPokemon = [];
   List<TeamSlot> _team = [];
   bool _isLoading = true;
+  bool _showPcSearch = false;
+  String _pcQuery = '';
   String? _successMessage;
   String? _errorMessage;
 
@@ -37,6 +40,12 @@ class _PokemonPcScreenState extends State<PokemonPcScreen> {
   void initState() {
     super.initState();
     _loadPc();
+  }
+
+  @override
+  void dispose() {
+    _pcSearchController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadPc({bool clearMessages = true}) async {
@@ -95,6 +104,24 @@ class _PokemonPcScreenState extends State<PokemonPcScreen> {
     ]..sort((a, b) => a.slotIndex.compareTo(b.slotIndex));
   }
 
+  List<PcPokemon> get _filteredPcPokemon {
+    final query = _pcQuery.trim().toLowerCase();
+    if (query.isEmpty) return _pcPokemon;
+
+    return _pcPokemon.where((item) {
+      final pokemon = _pokemonById(item.pokemonId);
+      final baseName = pokemon?.name.toLowerCase() ?? '';
+      final nickname = item.displayName.toLowerCase();
+      final number = item.pokemonId.toString();
+      final types = pokemon?.types.any((type) => type.toLowerCase().contains(query)) ?? false;
+
+      return baseName.contains(query) ||
+          nickname.contains(query) ||
+          number.contains(query) ||
+          types;
+    }).toList(growable: false);
+  }
+
   TeamSlot? get _firstFreeTeamSlot {
     for (final slot in _visibleTeam) {
       if (slot.pokemonId == null) return slot;
@@ -148,17 +175,22 @@ class _PokemonPcScreenState extends State<PokemonPcScreen> {
 
   Future<void> _moveToTeam(PcPokemon pcPokemon) async {
     final profile = _profile;
-    final freeSlot = _firstFreeTeamSlot;
     final pokemon = _pokemonById(pcPokemon.pokemonId);
     if (profile == null) return;
 
-    if (freeSlot == null) {
-      setState(() => _errorMessage = 'Non ci sono slot squadra liberi. Deposita prima un Pokémon nel PC.');
-      return;
+    final freeSlot = _firstFreeTeamSlot;
+    final targetSlot = freeSlot ?? await _chooseReplacementSlot(pcPokemon);
+    if (!mounted || targetSlot == null) return;
+
+    final replacingPokemon = _pokemonById(targetSlot.pokemonId);
+    final replacingExisting = targetSlot.pokemonId != null;
+
+    if (replacingExisting) {
+      await _pokemonPcRepository.depositTeamSlot(profileId: profile.id, slot: targetSlot);
     }
 
     final updatedSlot = pcPokemon.toTeamSlot(
-      slotIndex: freeSlot.slotIndex,
+      slotIndex: targetSlot.slotIndex,
       fallbackCurrentHp: pokemon?.hitPoints ?? 0,
     );
 
@@ -170,9 +202,30 @@ class _PokemonPcScreenState extends State<PokemonPcScreen> {
 
     await _loadPc(clearMessages: false);
     if (!mounted) return;
+
+    final pcName = _pcDisplayName(pcPokemon, pokemon);
+    final replacedName = replacingExisting
+        ? _slotDisplayName(targetSlot, replacingPokemon)
+        : null;
     setState(() {
-      _successMessage = '${_pcDisplayName(pcPokemon, pokemon)} spostato nello slot ${freeSlot.slotIndex + 1}.';
+      _successMessage = replacedName == null
+          ? '$pcName spostato nello slot ${targetSlot.slotIndex + 1}.'
+          : '$pcName è entrato in squadra. $replacedName è stato depositato nel PC.';
     });
+  }
+
+  Future<TeamSlot?> _chooseReplacementSlot(PcPokemon pcPokemon) async {
+    return showModalBottomSheet<TeamSlot>(
+      context: context,
+      showDragHandle: true,
+      builder: (_) => _ReplacementSlotSheet(
+        pcPokemon: pcPokemon,
+        pokemon: _pokemonById(pcPokemon.pokemonId),
+        team: _visibleTeam,
+        pokemonForSlot: _pokemonById,
+        displayNameForSlot: _slotDisplayName,
+      ),
+    );
   }
 
   Future<void> _releaseFromPc(PcPokemon pcPokemon) async {
@@ -210,6 +263,16 @@ class _PokemonPcScreenState extends State<PokemonPcScreen> {
     setState(() => _successMessage = '$name rimosso dal PC.');
   }
 
+  void _togglePcSearch() {
+    setState(() {
+      _showPcSearch = !_showPcSearch;
+      if (!_showPcSearch) {
+        _pcQuery = '';
+        _pcSearchController.clear();
+      }
+    });
+  }
+
   String _slotDisplayName(TeamSlot slot, Pokemon? pokemon) {
     final nickname = slot.nickname?.trim() ?? '';
     return nickname.isEmpty ? pokemon?.name ?? 'Pokémon' : nickname;
@@ -225,78 +288,129 @@ class _PokemonPcScreenState extends State<PokemonPcScreen> {
   Widget build(BuildContext context) {
     final profileName = _profile?.name ?? 'Allenatore';
     final visibleTeam = _visibleTeam;
-    final hasFreeTeamSlot = _firstFreeTeamSlot != null;
+    final filteredPcPokemon = _filteredPcPokemon;
 
     return Scaffold(
       appBar: AppBar(
         leading: const HomeLeadingButton(),
         title: const Text('PC Pokémon'),
+        actions: [
+          IconButton(
+            tooltip: 'Ricarica',
+            onPressed: () => _loadPc(clearMessages: false),
+            icon: const Icon(Icons.refresh),
+          ),
+        ],
       ),
-      body: RefreshIndicator(
-        onRefresh: () => _loadPc(clearMessages: false),
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-          children: [
-            if (_isLoading)
-              const Padding(
-                padding: EdgeInsets.only(top: 120),
-                child: Center(child: CircularProgressIndicator()),
-              )
-            else if (_errorMessage != null && _allPokemon.isEmpty)
-              _PcErrorState(message: _errorMessage!, onRetry: _loadPc)
-            else ...[
-              _PcHeader(
-                profileName: profileName,
-                storedCount: _pcPokemon.length,
-                filledTeamSlots: _filledTeamSlots,
-                totalTeamSlots: visibleTeam.length,
-                hasFreeTeamSlot: hasFreeTeamSlot,
-              ),
-              if (_successMessage != null) ...[
-                const SizedBox(height: 12),
-                _PcStatusMessage(message: _successMessage!),
-              ],
-              if (_errorMessage != null) ...[
-                const SizedBox(height: 12),
-                Text(
-                  _errorMessage!,
-                  style: TextStyle(color: Theme.of(context).colorScheme.error),
-                ),
-              ],
-              const SizedBox(height: 16),
-              _SectionTitle(
-                title: 'Squadra',
-                subtitle: 'Deposita nel PC senza perdere dati del Pokémon.',
-              ),
-              const SizedBox(height: 8),
-              for (final slot in visibleTeam)
-                _TeamStorageCard(
-                  slot: slot,
-                  pokemon: _pokemonById(slot.pokemonId),
-                  onDeposit: slot.pokemonId == null ? null : () => _depositTeamSlot(slot),
-                ),
-              const SizedBox(height: 18),
-              _SectionTitle(
-                title: 'PC',
-                subtitle: 'Ritira in squadra o rilascia i Pokémon depositati.',
-              ),
-              const SizedBox(height: 8),
-              if (_pcPokemon.isEmpty)
-                const _PcEmptyState()
-              else
-                for (final item in _pcPokemon)
-                  _PcPokemonCard(
-                    pcPokemon: item,
-                    pokemon: _pokemonById(item.pokemonId),
-                    canMoveToTeam: hasFreeTeamSlot,
-                    onMoveToTeam: () => _moveToTeam(item),
-                    onRelease: () => _releaseFromPc(item),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : _errorMessage != null && _allPokemon.isEmpty
+              ? _PcErrorState(message: _errorMessage!, onRetry: _loadPc)
+              : SafeArea(
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                        child: Column(
+                          children: [
+                            _PcHeader(
+                              profileName: profileName,
+                              storedCount: _pcPokemon.length,
+                              filledTeamSlots: _filledTeamSlots,
+                              totalTeamSlots: visibleTeam.length,
+                            ),
+                            if (_successMessage != null) ...[
+                              const SizedBox(height: 8),
+                              _PcStatusMessage(message: _successMessage!),
+                            ],
+                            if (_errorMessage != null) ...[
+                              const SizedBox(height: 8),
+                              Text(
+                                _errorMessage!,
+                                style: TextStyle(color: Theme.of(context).colorScheme.error),
+                              ),
+                            ],
+                            const SizedBox(height: 10),
+                            _SectionTitle(
+                              title: 'Squadra',
+                              subtitle: 'Fissa: deposita o scegli chi sostituire quando ritiri dal PC.',
+                            ),
+                            const SizedBox(height: 8),
+                            _FixedTeamPanel(
+                              team: visibleTeam,
+                              pokemonForSlot: _pokemonById,
+                              onDeposit: _depositTeamSlot,
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: _PcToolbar(
+                          storedCount: filteredPcPokemon.length,
+                          totalCount: _pcPokemon.length,
+                          showSearch: _showPcSearch,
+                          controller: _pcSearchController,
+                          onSearchTap: _togglePcSearch,
+                          onQueryChanged: (value) => setState(() => _pcQuery = value),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Expanded(
+                        child: _pcPokemon.isEmpty
+                            ? const Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 16),
+                                child: _PcEmptyState(),
+                              )
+                            : filteredPcPokemon.isEmpty
+                                ? const _PcNoSearchResults()
+                                : GridView.builder(
+                                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 18),
+                                    gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                                      maxCrossAxisExtent: 88,
+                                      mainAxisSpacing: 8,
+                                      crossAxisSpacing: 8,
+                                      childAspectRatio: 1,
+                                    ),
+                                    itemCount: filteredPcPokemon.length,
+                                    itemBuilder: (context, index) {
+                                      final item = filteredPcPokemon[index];
+                                      return _PcGridCell(
+                                        pcPokemon: item,
+                                        pokemon: _pokemonById(item.pokemonId),
+                                        onTap: () => _openPcPokemonActions(item),
+                                      );
+                                    },
+                                  ),
+                      ),
+                    ],
                   ),
-            ],
-          ],
-        ),
+                ),
+    );
+  }
+
+  Future<void> _openPcPokemonActions(PcPokemon item) async {
+    final action = await showModalBottomSheet<_PcAction>(
+      context: context,
+      showDragHandle: true,
+      builder: (_) => _PcPokemonActionSheet(
+        pcPokemon: item,
+        pokemon: _pokemonById(item.pokemonId),
+        displayName: _pcDisplayName(item, _pokemonById(item.pokemonId)),
+        teamIsFull: _firstFreeTeamSlot == null,
       ),
     );
+
+    if (!mounted || action == null) return;
+    switch (action) {
+      case _PcAction.moveToTeam:
+        await _moveToTeam(item);
+        break;
+      case _PcAction.release:
+        await _releaseFromPc(item);
+        break;
+    }
   }
 }
 
@@ -306,14 +420,12 @@ class _PcHeader extends StatelessWidget {
     required this.storedCount,
     required this.filledTeamSlots,
     required this.totalTeamSlots,
-    required this.hasFreeTeamSlot,
   });
 
   final String profileName;
   final int storedCount;
   final int filledTeamSlots;
   final int totalTeamSlots;
-  final bool hasFreeTeamSlot;
 
   @override
   Widget build(BuildContext context) {
@@ -322,32 +434,25 @@ class _PcHeader extends StatelessWidget {
     return Card(
       color: colorScheme.secondaryContainer,
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(14),
         child: Row(
           children: [
-            Icon(Icons.computer, color: colorScheme.onSecondaryContainer, size: 42),
-            const SizedBox(width: 14),
+            Icon(Icons.computer, color: colorScheme.onSecondaryContainer, size: 36),
+            const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     'PC di $profileName',
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
                           color: colorScheme.onSecondaryContainer,
                           fontWeight: FontWeight.w900,
                         ),
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 3),
                   Text(
                     '$storedCount nel PC • $filledTeamSlots/$totalTeamSlots in squadra',
-                    style: TextStyle(color: colorScheme.onSecondaryContainer),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    hasFreeTeamSlot
-                        ? 'Puoi ritirare un Pokémon dal PC.'
-                        : 'Squadra piena: deposita prima un Pokémon.',
                     style: TextStyle(color: colorScheme.onSecondaryContainer),
                   ),
                 ],
@@ -368,24 +473,62 @@ class _SectionTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return Row(
       children: [
-        Text(
-          title.toUpperCase(),
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w900,
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title.toUpperCase(),
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.w900,
+                    ),
               ),
+              const SizedBox(height: 2),
+              Text(subtitle, style: Theme.of(context).textTheme.bodySmall),
+            ],
+          ),
         ),
-        const SizedBox(height: 2),
-        Text(subtitle, style: Theme.of(context).textTheme.bodySmall),
       ],
     );
   }
 }
 
-class _TeamStorageCard extends StatelessWidget {
-  const _TeamStorageCard({
+class _FixedTeamPanel extends StatelessWidget {
+  const _FixedTeamPanel({
+    required this.team,
+    required this.pokemonForSlot,
+    required this.onDeposit,
+  });
+
+  final List<TeamSlot> team;
+  final Pokemon? Function(int? pokemonId) pokemonForSlot;
+  final ValueChanged<TeamSlot> onDeposit;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 96,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        itemCount: team.length,
+        separatorBuilder: (_, __) => const SizedBox(width: 8),
+        itemBuilder: (context, index) {
+          final slot = team[index];
+          return _TeamMiniCard(
+            slot: slot,
+            pokemon: pokemonForSlot(slot.pokemonId),
+            onDeposit: slot.pokemonId == null ? null : () => onDeposit(slot),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _TeamMiniCard extends StatelessWidget {
+  const _TeamMiniCard({
     required this.slot,
     required this.pokemon,
     required this.onDeposit,
@@ -400,11 +543,337 @@ class _TeamStorageCard extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final pokemon = this.pokemon;
     final nickname = slot.nickname?.trim() ?? '';
-    final title = pokemon == null
-        ? 'Slot ${slot.slotIndex + 1} vuoto'
+    final name = pokemon == null
+        ? 'Slot ${slot.slotIndex + 1}'
         : nickname.isEmpty
             ? pokemon.name
             : nickname;
+
+    return SizedBox(
+      width: 142,
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.all(8),
+          child: Row(
+            children: [
+              pokemon == null
+                  ? CircleAvatar(
+                      backgroundColor: colorScheme.surfaceContainerHighest,
+                      child: Text('${slot.slotIndex + 1}'),
+                    )
+                  : PokemonAssetImage(
+                      pokemon: pokemon,
+                      size: 46,
+                      formName: slot.formName,
+                    ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(fontWeight: FontWeight.w900),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      pokemon == null ? 'Vuoto' : '#${pokemon.id.toString().padLeft(3, '0')}',
+                      style: Theme.of(context).textTheme.labelSmall,
+                    ),
+                    if (pokemon != null)
+                      TextButton(
+                        onPressed: onDeposit,
+                        style: TextButton.styleFrom(
+                          padding: EdgeInsets.zero,
+                          minimumSize: const Size(0, 24),
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        ),
+                        child: const Text('Deposita'),
+                      ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _PcToolbar extends StatelessWidget {
+  const _PcToolbar({
+    required this.storedCount,
+    required this.totalCount,
+    required this.showSearch,
+    required this.controller,
+    required this.onSearchTap,
+    required this.onQueryChanged,
+  });
+
+  final int storedCount;
+  final int totalCount;
+  final bool showSearch;
+  final TextEditingController controller;
+  final VoidCallback onSearchTap;
+  final ValueChanged<String> onQueryChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                'PC BOX',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w900,
+                    ),
+              ),
+            ),
+            Text('$storedCount/$totalCount'),
+            const SizedBox(width: 6),
+            IconButton.filledTonal(
+              tooltip: showSearch ? 'Chiudi ricerca' : 'Cerca nel PC',
+              onPressed: onSearchTap,
+              icon: Icon(showSearch ? Icons.close : Icons.search),
+            ),
+          ],
+        ),
+        if (showSearch) ...[
+          const SizedBox(height: 8),
+          TextField(
+            controller: controller,
+            autofocus: true,
+            decoration: const InputDecoration(
+              hintText: 'Cerca per nome, numero o tipo...',
+              prefixIcon: Icon(Icons.search),
+            ),
+            onChanged: onQueryChanged,
+          ),
+        ],
+      ],
+    );
+  }
+}
+
+class _PcGridCell extends StatelessWidget {
+  const _PcGridCell({
+    required this.pcPokemon,
+    required this.pokemon,
+    required this.onTap,
+  });
+
+  final PcPokemon pcPokemon;
+  final Pokemon? pokemon;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final pokemon = this.pokemon;
+    final selectedName = pcPokemon.displayName.isEmpty
+        ? pokemon?.name ?? 'Sconosciuto'
+        : pcPokemon.displayName;
+
+    return Material(
+      color: colorScheme.surfaceContainerHighest,
+      borderRadius: BorderRadius.circular(12),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Stack(
+          children: [
+            Center(
+              child: pokemon == null
+                  ? Icon(Icons.help_outline, color: colorScheme.onSurfaceVariant)
+                  : PokemonAssetImage(
+                      pokemon: pokemon,
+                      size: 58,
+                      formName: pcPokemon.formName,
+                    ),
+            ),
+            Positioned(
+              left: 4,
+              top: 4,
+              child: Text(
+                '#${pcPokemon.pokemonId.toString().padLeft(3, '0')}',
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                      fontWeight: FontWeight.w900,
+                    ),
+              ),
+            ),
+            if (pcPokemon.isShiny)
+              const Positioned(
+                right: 5,
+                top: 4,
+                child: Icon(Icons.auto_awesome, size: 14),
+              ),
+            Positioned(
+              left: 4,
+              right: 4,
+              bottom: 3,
+              child: Text(
+                selectedName,
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      fontWeight: FontWeight.w800,
+                    ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _PcPokemonActionSheet extends StatelessWidget {
+  const _PcPokemonActionSheet({
+    required this.pcPokemon,
+    required this.pokemon,
+    required this.displayName,
+    required this.teamIsFull,
+  });
+
+  final PcPokemon pcPokemon;
+  final Pokemon? pokemon;
+  final String displayName;
+  final bool teamIsFull;
+
+  @override
+  Widget build(BuildContext context) {
+    final pokemon = this.pokemon;
+
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              children: [
+                pokemon == null
+                    ? const CircleAvatar(child: Icon(Icons.help_outline))
+                    : PokemonAssetImage(
+                        pokemon: pokemon,
+                        size: 58,
+                        formName: pcPokemon.formName,
+                      ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        displayName.toUpperCase(),
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w900,
+                            ),
+                      ),
+                      Text(
+                        pokemon == null
+                            ? '#${pcPokemon.pokemonId.toString().padLeft(3, '0')}'
+                            : '#${pokemon.id.toString().padLeft(3, '0')} • ${pokemon.types.join(' / ')}',
+                      ),
+                      if (teamIsFull)
+                        const Text('Squadra piena: sceglierai chi sostituire.'),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 14),
+            FilledButton.icon(
+              onPressed: () => Navigator.of(context).pop(_PcAction.moveToTeam),
+              icon: const Icon(Icons.swap_horiz),
+              label: Text(teamIsFull ? 'SOSTITUISCI IN SQUADRA' : 'SPOSTA IN SQUADRA'),
+            ),
+            const SizedBox(height: 8),
+            OutlinedButton.icon(
+              onPressed: () => Navigator.of(context).pop(_PcAction.release),
+              icon: const Icon(Icons.delete_outline),
+              label: const Text('RILASCIA'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ReplacementSlotSheet extends StatelessWidget {
+  const _ReplacementSlotSheet({
+    required this.pcPokemon,
+    required this.pokemon,
+    required this.team,
+    required this.pokemonForSlot,
+    required this.displayNameForSlot,
+  });
+
+  final PcPokemon pcPokemon;
+  final Pokemon? pokemon;
+  final List<TeamSlot> team;
+  final Pokemon? Function(int? pokemonId) pokemonForSlot;
+  final String Function(TeamSlot slot, Pokemon? pokemon) displayNameForSlot;
+
+  @override
+  Widget build(BuildContext context) {
+    final name = pcPokemon.displayName.isEmpty
+        ? pokemon?.name ?? 'Pokémon'
+        : pcPokemon.displayName;
+
+    return SafeArea(
+      child: ListView(
+        shrinkWrap: true,
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 18),
+        children: [
+          Text(
+            'Sostituisci chi?',
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w900,
+                ),
+          ),
+          const SizedBox(height: 4),
+          Text('$name entrerà in squadra. Il Pokémon sostituito verrà depositato nel PC.'),
+          const SizedBox(height: 12),
+          for (final slot in team)
+            _ReplacementSlotTile(
+              slot: slot,
+              pokemon: pokemonForSlot(slot.pokemonId),
+              displayName: displayNameForSlot(slot, pokemonForSlot(slot.pokemonId)),
+              onTap: () => Navigator.of(context).pop(slot),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ReplacementSlotTile extends StatelessWidget {
+  const _ReplacementSlotTile({
+    required this.slot,
+    required this.pokemon,
+    required this.displayName,
+    required this.onTap,
+  });
+
+  final TeamSlot slot;
+  final Pokemon? pokemon;
+  final String displayName;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final pokemon = this.pokemon;
 
     return Card(
       child: ListTile(
@@ -416,139 +885,14 @@ class _TeamStorageCard extends StatelessWidget {
                 formName: slot.formName,
               ),
         title: Text(
-          title,
+          pokemon == null ? 'Slot ${slot.slotIndex + 1} vuoto' : displayName,
           style: const TextStyle(fontWeight: FontWeight.w900),
         ),
         subtitle: pokemon == null
-            ? const Text('Nessun Pokémon in questo slot.')
-            : Wrap(
-                spacing: 6,
-                runSpacing: 4,
-                crossAxisAlignment: WrapCrossAlignment.center,
-                children: [
-                  Text('#${pokemon.id.toString().padLeft(3, '0')}'),
-                  for (final type in pokemon.types) PokemonTypeBadge(type: type, height: 18),
-                  if (slot.nature != 'No Nature') _MiniChip(label: slot.nature),
-                  if (slot.isShiny) const _MiniChip(label: 'Shiny'),
-                ],
-              ),
-        trailing: OutlinedButton(
-          onPressed: onDeposit,
-          child: const Text('Deposita'),
-        ),
-        iconColor: colorScheme.primary,
-      ),
-    );
-  }
-}
-
-class _PcPokemonCard extends StatelessWidget {
-  const _PcPokemonCard({
-    required this.pcPokemon,
-    required this.pokemon,
-    required this.canMoveToTeam,
-    required this.onMoveToTeam,
-    required this.onRelease,
-  });
-
-  final PcPokemon pcPokemon;
-  final Pokemon? pokemon;
-  final bool canMoveToTeam;
-  final VoidCallback onMoveToTeam;
-  final VoidCallback onRelease;
-
-  @override
-  Widget build(BuildContext context) {
-    final pokemon = this.pokemon;
-    final name = pcPokemon.displayName.isEmpty
-        ? pokemon?.name ?? 'Pokémon sconosciuto'
-        : pcPokemon.displayName;
-    final number = pokemon == null ? '' : '#${pokemon.id.toString().padLeft(3, '0')}';
-
-    return Card(
-      child: ListTile(
-        leading: pokemon == null
-            ? const CircleAvatar(child: Icon(Icons.help_outline))
-            : PokemonAssetImage(
-                pokemon: pokemon,
-                size: 48,
-                formName: pcPokemon.formName,
-              ),
-        title: Text(
-          name,
-          style: const TextStyle(fontWeight: FontWeight.w900),
-        ),
-        subtitle: Wrap(
-          spacing: 6,
-          runSpacing: 4,
-          crossAxisAlignment: WrapCrossAlignment.center,
-          children: [
-            if (number.isNotEmpty) Text(number),
-            if (pokemon != null)
-              for (final type in pokemon.types) PokemonTypeBadge(type: type, height: 18),
-            if (pcPokemon.nature != 'No Nature') _MiniChip(label: pcPokemon.nature),
-            if (pcPokemon.isShiny) const _MiniChip(label: 'Shiny'),
-            _MiniChip(label: 'PC ${_formatDate(pcPokemon.capturedAt)}'),
-          ],
-        ),
-        trailing: PopupMenuButton<_PcAction>(
-          tooltip: 'Azioni PC',
-          onSelected: (action) {
-            switch (action) {
-              case _PcAction.moveToTeam:
-                onMoveToTeam();
-                break;
-              case _PcAction.release:
-                onRelease();
-                break;
-            }
-          },
-          itemBuilder: (context) => [
-            PopupMenuItem(
-              value: _PcAction.moveToTeam,
-              enabled: canMoveToTeam,
-              child: const Text('Sposta in squadra'),
-            ),
-            const PopupMenuItem(
-              value: _PcAction.release,
-              child: Text('Rilascia'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  String _formatDate(DateTime date) {
-    final day = date.day.toString().padLeft(2, '0');
-    final month = date.month.toString().padLeft(2, '0');
-    final year = date.year.toString();
-    return '$day/$month/$year';
-  }
-}
-
-class _MiniChip extends StatelessWidget {
-  const _MiniChip({required this.label});
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-        child: Text(
-          label,
-          style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                fontWeight: FontWeight.w800,
-              ),
-        ),
+            ? const Text('Slot libero')
+            : Text('#${pokemon.id.toString().padLeft(3, '0')} • ${pokemon.types.join(' / ')}'),
+        trailing: const Icon(Icons.chevron_right),
+        onTap: onTap,
       ),
     );
   }
@@ -605,6 +949,20 @@ class _PcEmptyState extends StatelessWidget {
   }
 }
 
+class _PcNoSearchResults extends StatelessWidget {
+  const _PcNoSearchResults();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(
+      child: Padding(
+        padding: EdgeInsets.all(24),
+        child: Text('Nessun Pokémon trovato nel PC.'),
+      ),
+    );
+  }
+}
+
 class _PcErrorState extends StatelessWidget {
   const _PcErrorState({required this.message, required this.onRetry});
 
@@ -615,6 +973,7 @@ class _PcErrorState extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           const Icon(Icons.error_outline, size: 48),
           const SizedBox(height: 16),

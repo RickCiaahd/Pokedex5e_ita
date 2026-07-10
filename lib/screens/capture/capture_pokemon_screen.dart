@@ -221,7 +221,7 @@ class _CapturePokemonScreenState extends State<CapturePokemonScreen> {
     return 15 + (pokemon.sr * 2).round() + levelPressure;
   }
 
-  int _hpDcReduction {
+  int get _hpDcReduction {
     if (_wildMaxHp <= 0) return 0;
     final ratio = _wildCurrentHp / _wildMaxHp;
     if (ratio <= 0.25) return 10;
@@ -272,7 +272,7 @@ class _CapturePokemonScreenState extends State<CapturePokemonScreen> {
     return dc.clamp(2, 99).toInt();
   }
 
-  String _hpConditionLabel {
+  String get _hpConditionLabel {
     if (_wildMaxHp <= 0) return 'Sconosciuto';
     final ratio = _wildCurrentHp / _wildMaxHp;
     if (_wildCurrentHp <= 0) return 'KO / esausto';

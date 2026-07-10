@@ -23,6 +23,7 @@ class PokemonAssetImage extends StatelessWidget {
     this.useLargeArtwork = false,
     this.entry,
     this.formName,
+    this.gender,
     this.isShiny,
     this.fallback,
   });
@@ -33,6 +34,7 @@ class PokemonAssetImage extends StatelessWidget {
   final bool useLargeArtwork;
   final PokedexEntry? entry;
   final String? formName;
+  final String? gender;
   final bool? isShiny;
   final Widget? fallback;
 
@@ -42,6 +44,7 @@ class PokemonAssetImage extends StatelessWidget {
     final seen = entry?.seen ?? true;
     final caught = entry?.caught ?? true;
     final effectiveFormName = formName ?? PokemonFormPreferences.formFor(pokemon.id);
+    final effectiveGender = gender ?? PokemonFormPreferences.genderFor(pokemon.id);
     final effectiveShiny = isShiny ?? PokemonFormPreferences.shinyFor(pokemon.id);
     final visualScale = useLargeArtwork ? 1.08 : 1.12;
 
@@ -50,12 +53,14 @@ class PokemonAssetImage extends StatelessWidget {
         pokemon: pokemon,
         useLargeArtwork: useLargeArtwork,
         formName: effectiveFormName,
+        gender: effectiveGender,
         isShiny: effectiveShiny,
       ),
       assetPrefixes: PokemonAssetPaths.imageCandidatePrefixes(
         pokemon: pokemon,
         useLargeArtwork: useLargeArtwork,
-        isShiny: effectiveShiny,
+        formName: effectiveFormName,
+        gender: effectiveGender,
       ),
       width: size,
       height: size,
@@ -166,7 +171,6 @@ class PokemonAssetPaths {
     final prefixes = imageCandidatePrefixes(
       pokemon: pokemon,
       useLargeArtwork: false,
-      isShiny: false,
     );
 
     for (final assetPath in assetIndex.sortedPaths) {
@@ -175,8 +179,8 @@ class PokemonAssetPaths {
         continue;
       }
 
-      final choice = _formChoiceFromAssetPath(pokemon, assetPath) ??
-          _webFormChoiceFromAssetPath(pokemon, assetPath);
+      final choice = _webFormChoiceFromAssetPath(pokemon, assetPath) ??
+          _formChoiceFromAssetPath(pokemon, assetPath);
       if (choice == null || _isBaseSpriteLabel(choice.name)) continue;
       choicesByName.putIfAbsent(choice.name, () => choice);
     }
@@ -186,7 +190,7 @@ class PokemonAssetPaths {
     }
 
     final choices = choicesByName.values.toList(growable: false)
-      ..sort((a, b) => a.name.compareTo(b.name));
+      ..sort(_compareFormChoices);
     return choices;
   }
 
@@ -194,54 +198,75 @@ class PokemonAssetPaths {
     required Pokemon pokemon,
     required bool useLargeArtwork,
     String? formName,
+    String? gender,
     bool isShiny = false,
   }) {
-    final oldCandidates = _legacyImageCandidates(
-      pokemon: pokemon,
-      useLargeArtwork: useLargeArtwork,
-      formName: formName,
-      isShiny: isShiny,
-    );
     final webCandidates = _webImageCandidates(
       pokemon: pokemon,
       useLargeArtwork: useLargeArtwork,
       formName: formName,
+      gender: gender,
+      isShiny: isShiny,
+    );
+    final oldCandidates = _legacyImageCandidates(
+      pokemon: pokemon,
+      useLargeArtwork: useLargeArtwork,
+      formName: formName,
+      gender: gender,
       isShiny: isShiny,
     );
 
-    final usesWebData = pokemon.assetSlug != null && pokemon.assetSlug!.trim().isNotEmpty;
-    return usesWebData ? [...webCandidates, ...oldCandidates] : [...oldCandidates, ...webCandidates];
+    return [...webCandidates, ...oldCandidates];
   }
 
   static List<String> imageCandidatePrefixes({
     required Pokemon pokemon,
     required bool useLargeArtwork,
-    bool isShiny = false,
+    String? formName,
+    String? gender,
   }) {
     final folder = useLargeArtwork ? 'pokemons' : 'sprites';
     final alternateFolder = useLargeArtwork ? 'sprites' : 'pokemons';
     final id = pokemon.id.toString();
     final paddedId = id.padLeft(3, '0');
-    final webSlug = _webAssetSlug(pokemon);
+    final prefixes = <String>[];
 
-    return <String>{
-      'assets/textures/$folder/$id',
-      'assets/textures/$folder/$paddedId',
-      'assets/textures/$alternateFolder/$id',
-      'assets/textures/$alternateFolder/$paddedId',
-      '$_webPokemonRoot/$webSlug/',
-      '$_webPokemonRoot/$webSlug-',
-      '$_webPokemonRoot/${webSlug}_',
-      for (final transform in _transformFolders) '$_webTransformRoot/$transform/$webSlug/',
-      for (final transform in _transformFolders) '$_webTransformRoot/$transform/$webSlug-',
-      for (final transform in _transformFolders) '$_webTransformRoot/$transform/${webSlug}_',
-    }.toList(growable: false);
+    void add(String value) {
+      if (!prefixes.contains(value)) prefixes.add(value);
+    }
+
+    for (final slug in _webCandidateSlugs(pokemon)) {
+      add('$_webPokemonRoot/$slug/');
+      add('$_webPokemonRoot/$slug-');
+      add('$_webPokemonRoot/${slug}_');
+      for (final transform in _transformFolders) {
+        add('$_webTransformRoot/$transform/$slug/');
+        add('$_webTransformRoot/$transform/$slug-');
+        add('$_webTransformRoot/$transform/${slug}_');
+      }
+    }
+
+    for (final formSlug in _formSlugs(pokemon, formName, gender)) {
+      for (final slug in _webCandidateSlugs(pokemon)) {
+        add('$_webPokemonRoot/$slug-$formSlug/');
+        add('$_webPokemonRoot/${slug}_$formSlug/');
+        add('$_webPokemonRoot/$slug/$formSlug/');
+      }
+    }
+
+    add('assets/textures/$folder/$id');
+    add('assets/textures/$folder/$paddedId');
+    add('assets/textures/$alternateFolder/$id');
+    add('assets/textures/$alternateFolder/$paddedId');
+
+    return prefixes;
   }
 
   static List<String> _legacyImageCandidates({
     required Pokemon pokemon,
     required bool useLargeArtwork,
     String? formName,
+    String? gender,
     bool isShiny = false,
   }) {
     final folder = useLargeArtwork ? 'pokemons' : 'sprites';
@@ -249,6 +274,7 @@ class PokemonAssetPaths {
     final id = pokemon.id.toString();
     final paddedId = id.padLeft(3, '0');
     final aliases = <String>{
+      ..._genderAwareAliases(pokemon.name, gender),
       ..._formAwareAliases(pokemon.name, formName),
       ..._nameAliases(pokemon.name),
     }..removeWhere((name) => name.isEmpty);
@@ -294,20 +320,30 @@ class PokemonAssetPaths {
     required Pokemon pokemon,
     required bool useLargeArtwork,
     String? formName,
+    String? gender,
     bool isShiny = false,
   }) {
-    final slug = _webAssetSlug(pokemon);
     final primary = useLargeArtwork ? 'main' : 'sprite';
     final secondary = useLargeArtwork ? 'sprite' : 'main';
-    final formSlugs = _formSlugs(pokemon, formName);
-    final folders = <String>{'$_webPokemonRoot/$slug'};
+    final folders = <String>[];
+
+    void addFolder(String value) {
+      if (!folders.contains(value)) folders.add(value);
+    }
+
+    final slugs = _webCandidateSlugs(pokemon);
+    final formSlugs = _formSlugs(pokemon, formName, gender);
 
     for (final formSlug in formSlugs) {
-      folders.addAll([
-        '$_webPokemonRoot/$slug-$formSlug',
-        '$_webPokemonRoot/${slug}_$formSlug',
-        '$_webPokemonRoot/$slug/$formSlug',
-      ]);
+      for (final slug in slugs) {
+        addFolder('$_webPokemonRoot/$slug-$formSlug');
+        addFolder('$_webPokemonRoot/${slug}_$formSlug');
+        addFolder('$_webPokemonRoot/$slug/$formSlug');
+      }
+    }
+
+    for (final slug in slugs) {
+      addFolder('$_webPokemonRoot/$slug');
     }
 
     final paths = <String>[];
@@ -330,27 +366,6 @@ class PokemonAssetPaths {
         '$folder/sprite.png',
         '$folder/${primary}_default.png',
         '$folder/${secondary}_default.png',
-      ]);
-    }
-
-    for (final formSlug in formSlugs) {
-      final baseFolder = '$_webPokemonRoot/$slug';
-      if (isShiny) {
-        paths.addAll([
-          '$baseFolder/$formSlug/$primary-shiny.png',
-          '$baseFolder/$formSlug/$secondary-shiny.png',
-          '$baseFolder/$primary-$formSlug-shiny.png',
-          '$baseFolder/$secondary-$formSlug-shiny.png',
-        ]);
-      }
-      paths.addAll([
-        '$baseFolder/$formSlug/$primary.png',
-        '$baseFolder/$formSlug/$secondary.png',
-        '$baseFolder/$primary-$formSlug.png',
-        '$baseFolder/$secondary-$formSlug.png',
-        '$baseFolder/${formSlug}_$primary.png',
-        '$baseFolder/${formSlug}_$secondary.png',
-        '$baseFolder/$formSlug.png',
       ]);
     }
 
@@ -485,21 +500,28 @@ class PokemonAssetPaths {
       return null;
     }
 
-    final slug = _webAssetSlug(pokemon);
     final relative = assetPath.substring(_webPokemonRoot.length + 1);
     final parts = relative.split('/');
     if (parts.isEmpty) return null;
 
     final folder = parts.first;
+    final speciesSlug = _webBaseSlug(pokemon);
     var rawForm = '';
-    if (folder == slug) {
-      rawForm = parts.length > 2 ? parts[1] : _formFromFileName(parts.last);
-    } else if (folder.startsWith('$slug-')) {
-      rawForm = folder.substring(slug.length + 1);
-    } else if (folder.startsWith('${slug}_')) {
-      rawForm = folder.substring(slug.length + 1);
-    } else {
-      return null;
+
+    for (final slug in _webCandidateSlugs(pokemon)) {
+      if (folder == slug) {
+        rawForm = _folderSuffixAfterSpecies(folder, speciesSlug) ??
+            (parts.length > 2 ? parts[1] : _formFromFileName(parts.last));
+        break;
+      }
+      if (folder.startsWith('$slug-')) {
+        rawForm = folder.substring(slug.length + 1);
+        break;
+      }
+      if (folder.startsWith('${slug}_')) {
+        rawForm = folder.substring(slug.length + 1);
+        break;
+      }
     }
 
     rawForm = _cleanFormLabel(rawForm);
@@ -561,29 +583,141 @@ class PokemonAssetPaths {
     }..removeWhere((name) => name.isEmpty);
   }
 
-  static List<String> _formSlugs(Pokemon pokemon, String? formName) {
-    final form = formName?.trim();
-    if (form == null || form.isEmpty) return const [];
+  static Set<String> _genderAwareAliases(String rawName, String? gender) {
+    final labels = _genderLabels(gender);
+    if (labels.isEmpty) return const {};
 
-    final pokemonName = pokemon.name.trim();
-    var shortForm = form;
-    if (shortForm.toLowerCase().startsWith(pokemonName.toLowerCase())) {
-      shortForm = shortForm.substring(pokemonName.length).trim();
-    }
-    shortForm = _cleanFormLabel(shortForm);
-
+    final aliases = _nameAliases(rawName);
     return <String>{
-      _webSlug(form),
-      if (shortForm.isNotEmpty) _webSlug(shortForm),
-      _webSlug('$pokemonName $form'),
-      if (shortForm.isNotEmpty) _webSlug('$pokemonName $shortForm'),
-    }.where((value) => value.isNotEmpty).toList(growable: false);
+      for (final alias in aliases)
+        for (final label in labels) ...[
+          '$alias $label',
+          '$alias - $label',
+          '${alias}_$label',
+          _assetName('$alias $label'),
+          _compactAssetName('$alias $label'),
+        ],
+    }..removeWhere((name) => name.isEmpty);
+  }
+
+  static List<String> _formSlugs(Pokemon pokemon, String? formName, String? gender) {
+    final result = <String>[];
+
+    void add(String value) {
+      final slug = _webSlug(value);
+      if (slug.isNotEmpty && !result.contains(slug)) result.add(slug);
+    }
+
+    for (final slug in _genderSlugs(gender)) {
+      add(slug);
+    }
+
+    final form = formName?.trim();
+    if (form != null && form.isNotEmpty) {
+      final pokemonName = pokemon.name.trim();
+      var shortForm = form;
+      if (shortForm.toLowerCase().startsWith(pokemonName.toLowerCase())) {
+        shortForm = shortForm.substring(pokemonName.length).trim();
+      }
+      shortForm = _cleanFormLabel(shortForm);
+
+      add(form);
+      if (shortForm.isNotEmpty) add(shortForm);
+      add('$pokemonName $form');
+      if (shortForm.isNotEmpty) add('$pokemonName $shortForm');
+
+      for (final alias in _genderSlugs(form)) {
+        add(alias);
+      }
+    }
+
+    return result;
+  }
+
+  static List<String> _genderSlugs(String? gender) {
+    final value = gender?.toLowerCase().trim();
+    switch (value) {
+      case 'male':
+      case 'm':
+      case 'maschio':
+        return const ['m', 'male'];
+      case 'female':
+      case 'f':
+      case 'femmina':
+        return const ['f', 'female'];
+      default:
+        return const [];
+    }
+  }
+
+  static List<String> _genderLabels(String? gender) {
+    final value = gender?.toLowerCase().trim();
+    switch (value) {
+      case 'male':
+      case 'm':
+      case 'maschio':
+        return const ['Male', 'M', 'Maschio'];
+      case 'female':
+      case 'f':
+      case 'femmina':
+        return const ['Female', 'F', 'Femmina'];
+      default:
+        return const [];
+    }
   }
 
   static String _webAssetSlug(Pokemon pokemon) {
     final slug = pokemon.assetSlug?.trim();
     if (slug != null && slug.isNotEmpty) return slug;
     return _webSlug(pokemon.name);
+  }
+
+  static String _webBaseSlug(Pokemon pokemon) => _webSlug(pokemon.name);
+
+  static List<String> _webCandidateSlugs(Pokemon pokemon) {
+    final exactSlug = _webAssetSlug(pokemon);
+    final baseSlug = _webBaseSlug(pokemon);
+    final slugs = <String>[];
+
+    void add(String value) {
+      if (value.isNotEmpty && !slugs.contains(value)) slugs.add(value);
+    }
+
+    add(exactSlug);
+    add(baseSlug);
+
+    final suffix = _folderSuffixAfterSpecies(exactSlug, baseSlug);
+    if (suffix != null && suffix.isNotEmpty) {
+      add('$baseSlug-$suffix');
+    }
+
+    return slugs;
+  }
+
+  static String? _folderSuffixAfterSpecies(String folder, String speciesSlug) {
+    if (folder == speciesSlug) return null;
+    if (folder.startsWith('$speciesSlug-')) {
+      return folder.substring(speciesSlug.length + 1);
+    }
+    if (folder.startsWith('${speciesSlug}_')) {
+      return folder.substring(speciesSlug.length + 1);
+    }
+    return null;
+  }
+
+  static int _compareFormChoices(PokemonFormChoice a, PokemonFormChoice b) {
+    final weightA = _formSortWeight(a.name);
+    final weightB = _formSortWeight(b.name);
+    if (weightA != weightB) return weightA.compareTo(weightB);
+    return a.name.compareTo(b.name);
+  }
+
+  static int _formSortWeight(String label) {
+    final value = label.toLowerCase().trim();
+    if (value == 'male' || value == 'm' || value == 'maschio') return 0;
+    if (value == 'female' || value == 'f' || value == 'femmina') return 1;
+    if (value == 'amped') return 0;
+    return 10;
   }
 
   static String _webSlug(String value) {
@@ -636,6 +770,15 @@ class PokemonAssetPaths {
         .replaceAll('-', ' ')
         .replaceAll(RegExp(r'\s+'), ' ')
         .trim();
+
+    switch (cleaned.toLowerCase()) {
+      case 'm':
+        return 'Male';
+      case 'f':
+        return 'Female';
+      default:
+        break;
+    }
 
     if (cleaned.isEmpty) return '';
     return cleaned

@@ -6,6 +6,9 @@ on:
       - fix/bundle-all-shiny-assets
     paths:
       - '.github/workflows/bundle-all-pokemon-assets.yml'
+  pull_request:
+    branches:
+      - main
 
 permissions:
   contents: write

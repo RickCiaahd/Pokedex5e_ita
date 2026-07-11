@@ -25,11 +25,29 @@ jobs:
           fetch-depth: 0
 
       - name: Apply implementation patch
-        run: python3 tool/apply_battle_session_patch.py
+        id: patch
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          python3 tool/apply_battle_session_patch.py 2>&1 | tee tool/battle_patch_error.txt
+
+      - name: Commit patch diagnostics
+        if: steps.patch.outcome == 'failure'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add tool/battle_patch_error.txt
+          git commit -m "Record battle session patch failure"
+          git push origin feat/persistent-battle-session
+
+      - name: Stop after patch failure
+        if: steps.patch.outcome == 'failure'
+        run: exit 1
 
       - name: Remove temporary implementation files
         run: |
           rm -f tool/apply_battle_session_patch.py
+          rm -f tool/battle_patch_error.txt
           rm -f .github/workflows/implement-persistent-battle-session.yml
 
       - name: Set up Flutter

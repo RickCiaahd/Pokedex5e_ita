@@ -62,4 +62,21 @@ void main() {
     expect(candidates, contains(base));
     expect(candidates.indexOf(alternate), lessThan(candidates.indexOf(base)));
   });
+
+  test('Abomasnow shiny artwork is resolved before normal detail artwork', () {
+    final candidates = PokemonAssetPaths.imageCandidates(
+      pokemon: _pokemon(460, 'Abomasnow'),
+      useLargeArtwork: true,
+      isShiny: true,
+    );
+
+    const shiny =
+        'assets/textures/textures_webapp/pokemon/abomasnow/main-shiny.png';
+    const normal =
+        'assets/textures/textures_webapp/pokemon/abomasnow/main.png';
+
+    expect(candidates, contains(shiny));
+    expect(candidates, contains(normal));
+    expect(candidates.indexOf(shiny), lessThan(candidates.indexOf(normal)));
+  });
 }

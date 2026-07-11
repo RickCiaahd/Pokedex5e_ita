@@ -1,0 +1,71 @@
+name: Implement profile backup transfer
+
+on:
+  push:
+    branches:
+      - feat/profile-backup-transfer
+    paths:
+      - '.github/workflows/implement-profile-backup-transfer.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout feature branch
+        uses: actions/checkout@v4
+        with:
+          ref: feat/profile-backup-transfer
+          fetch-depth: 0
+
+      - name: Add file picker dependency
+        run: python3 tool/apply_profile_backup_dependency.py
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Format changed Dart files
+        run: |
+          dart format \
+            lib/models/profile_backup.dart \
+            lib/services/profile_backup_service.dart \
+            lib/repositories/bag_inventory_repository.dart \
+            lib/screens/profile/profiles_screen.dart \
+            test/profile_backup_test.dart \
+            test/profile_backup_service_test.dart
+
+      - name: Check diff
+        run: git diff --check
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Run profile backup tests
+        run: |
+          flutter test test/profile_backup_test.dart
+          flutter test test/profile_backup_service_test.dart
+
+      - name: Run full test suite
+        run: flutter test
+
+      - name: Remove temporary implementation files
+        run: |
+          rm -f tool/apply_profile_backup_dependency.py
+          rm -f .github/workflows/implement-profile-backup-transfer.yml
+
+      - name: Commit validated implementation
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Add profile backup import export and duplication"
+          git push origin feat/profile-backup-transfer

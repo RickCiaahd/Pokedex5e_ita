@@ -3,15 +3,16 @@ import 'package:flutter/material.dart';
 import '../../models/pokemon.dart';
 import '../../models/pokemon_evolution_alias_registry.dart';
 import '../../models/team_slot.dart';
+import '../../services/evolution_form_alias_service.dart';
 import 'pokemon_detail_screen_legacy.dart' as legacy;
 
 /// Compatibility shell around the full detail screen.
 ///
 /// Evolution data can reference a concrete form (for example
 /// `alolan-raichu`) even though owned Pokémon are persisted as a Pokédex
-/// species id plus [TeamSlot.formName]. The legacy detail screen resolves an
-/// evolution by display name only, so this shell exposes temporary catalog
-/// aliases and translates them back to the canonical species/form pair before
+/// species id plus [TeamSlot.formName]. The full detail screen resolves an
+/// evolution by display name, so this shell exposes temporary catalog aliases
+/// and translates them back to the canonical species/form pair before
 /// anything is persisted.
 class PokemonDetailScreen extends StatefulWidget {
   const PokemonDetailScreen({
@@ -34,17 +35,13 @@ class PokemonDetailScreen extends StatefulWidget {
 }
 
 class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
-  static const _regionalForms = {
-    'alolan',
-    'galarian',
-    'hisuian',
-    'paldean',
-  };
+  final EvolutionFormAliasService _aliasService =
+      const EvolutionFormAliasService();
 
   late Pokemon _basePokemon;
   late TeamSlot? _slot;
   late List<TeamSlot> _team;
-  late _EvolutionAliasCatalog _aliasCatalog;
+  late EvolutionFormAliasCatalog _aliasCatalog;
   int _detailGeneration = 0;
 
   @override
@@ -109,122 +106,14 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
     _team = [..._team]..[index] = updatedSlot;
   }
 
-  _EvolutionAliasCatalog _buildAliasCatalog() {
-    final bySyntheticId = <int, PokemonEvolutionAlias>{};
-    final preferredRegionalAliases = <Pokemon>[];
-    final explicitAliases = <Pokemon>[];
-    final currentRegionalKey = _currentRegionalFormKey();
-
-    for (final basePokemon in widget.allPokemon) {
-      for (var index = 0;
-          index < basePokemon.formDefinitions.length;
-          index += 1) {
-        final definition = basePokemon.formDefinitions[index];
-        if (definition.gender != null ||
-            _isTemporaryTransformation(basePokemon, definition)) {
-          continue;
-        }
-
-        final formName = definition.displayName.trim().isEmpty
-            ? definition.key
-            : definition.displayName;
-        final formKey = Pokemon.formReferenceKey(
-          formName,
-          basePokemon.name,
-        );
-        if (formKey.isEmpty || formKey == 'base') continue;
-
-        final syntheticId = _syntheticId(basePokemon.id, index);
-        final alias = PokemonEvolutionAlias(
-          basePokemon: basePokemon,
-          formName: formName,
-        );
-        bySyntheticId[syntheticId] = alias;
-
-        final variant = definition.pokemon.copyWith(
-          id: syntheticId,
-          name: _explicitEvolutionName(basePokemon, definition),
-          formDefinitions: basePokemon.formDefinitions,
-        );
-        explicitAliases.add(variant);
-
-        if (currentRegionalKey != null && formKey == currentRegionalKey) {
-          preferredRegionalAliases.add(
-            variant.copyWith(name: basePokemon.name),
-          );
-        }
-      }
-    }
-
-    PokemonEvolutionAliasRegistry.replace(bySyntheticId);
-    return _EvolutionAliasCatalog(
-      pokemon: [
-        ...preferredRegionalAliases,
-        ...explicitAliases,
-        ...widget.allPokemon,
-      ],
-      bySyntheticId: bySyntheticId,
+  EvolutionFormAliasCatalog _buildAliasCatalog() {
+    final result = _aliasService.build(
+      currentBasePokemon: _basePokemon,
+      slot: _slot,
+      catalog: widget.allPokemon,
     );
-  }
-
-  String? _currentRegionalFormKey() {
-    final slot = _slot;
-    if (slot == null) return null;
-    final key = Pokemon.formReferenceKey(
-      slot.formName ?? '',
-      _basePokemon.name,
-    );
-    return _regionalForms.contains(key) ? key : null;
-  }
-
-  bool _isTemporaryTransformation(
-    Pokemon pokemon,
-    PokemonFormDefinition definition,
-  ) {
-    final key = Pokemon.formReferenceKey(
-      '${definition.key} ${definition.displayName}',
-      pokemon.name,
-    );
-    final tokens = key.split('-').toSet();
-    return tokens.contains('mega') ||
-        tokens.contains('dynamax') ||
-        tokens.contains('gigamax') ||
-        tokens.contains('gigantamax') ||
-        tokens.contains('gmax') ||
-        tokens.contains('terastal') ||
-        tokens.contains('tera');
-  }
-
-  String _explicitEvolutionName(
-    Pokemon pokemon,
-    PokemonFormDefinition definition,
-  ) {
-    final formName = definition.displayName.trim().isEmpty
-        ? definition.key.trim()
-        : definition.displayName.trim();
-    if (formName.isEmpty) return pokemon.name;
-
-    final formKey = _referenceKey(formName);
-    final speciesKey = _referenceKey(pokemon.name);
-    if (formKey == speciesKey ||
-        formKey.startsWith('$speciesKey-') ||
-        formKey.endsWith('-$speciesKey')) {
-      return formName;
-    }
-    return '$formName ${pokemon.name}';
-  }
-
-  int _syntheticId(int pokemonId, int formIndex) {
-    return -((pokemonId * 1000) + formIndex + 1);
-  }
-
-  String _referenceKey(String value) {
-    return value
-        .trim()
-        .toLowerCase()
-        .replaceAll(RegExp(r"[’']"), '')
-        .replaceAll(RegExp(r'[^a-z0-9]+'), '-')
-        .replaceAll(RegExp(r'^-+|-+$'), '');
+    PokemonEvolutionAliasRegistry.replace(result.bySyntheticId);
+    return result;
   }
 
   @override
@@ -238,14 +127,4 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
       onTeamSlotChanged: _handleSlotChanged,
     );
   }
-}
-
-class _EvolutionAliasCatalog {
-  const _EvolutionAliasCatalog({
-    required this.pokemon,
-    required this.bySyntheticId,
-  });
-
-  final List<Pokemon> pokemon;
-  final Map<int, PokemonEvolutionAlias> bySyntheticId;
 }

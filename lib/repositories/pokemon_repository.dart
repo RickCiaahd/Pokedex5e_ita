@@ -26,7 +26,9 @@ class PokemonRepository {
       final existing = pokemonByNumber[pokemon.id];
       pokemonByNumber[pokemon.id] = existing == null
           ? pokemon
-          : existing.withAdditionalFormDefinitions(pokemon.formDefinitions);
+          : existing
+                .withMetadataFrom(pokemon)
+                .withAdditionalFormDefinitions(pokemon.formDefinitions);
     }
 
     final pokemonList = pokemonByNumber.values.toList(growable: false)
@@ -79,13 +81,21 @@ class PokemonRepository {
       );
       final json = Map<String, dynamic>.from(jsonDecode(jsonString));
       final items = List<dynamic>.from(json['items'] ?? const []);
+      final physicalMetadata = await _getWebappPhysicalMetadata();
       final grouped = <int, List<Pokemon>>{};
 
       for (final item in items) {
         if (item is! Map) continue;
 
         try {
-          final pokemon = Pokemon.fromWebJson(Map<String, dynamic>.from(item));
+          final itemJson = Map<String, dynamic>.from(item);
+          final assetSlug = itemJson['id']?.toString();
+          final pokemon = Pokemon.fromWebJson(
+            itemJson,
+            physicalMetadata: assetSlug == null
+                ? null
+                : physicalMetadata[assetSlug],
+          );
           if (pokemon.id > 0 && pokemon.name.trim().isNotEmpty) {
             grouped.putIfAbsent(pokemon.id, () => []).add(pokemon);
           }
@@ -98,6 +108,26 @@ class PokemonRepository {
     } catch (error) {
       debugPrint('Catalogo Pokemon webapp non disponibile: $error');
       return const [];
+    }
+  }
+
+  Future<Map<String, Map<String, dynamic>>> _getWebappPhysicalMetadata() async {
+    try {
+      final jsonString = await rootBundle.loadString(
+        'assets/data_webapp/pokemon_physical.json',
+      );
+      final json = Map<String, dynamic>.from(jsonDecode(jsonString));
+      final rawItems = json['items'];
+      if (rawItems is! Map) return const {};
+
+      return {
+        for (final entry in rawItems.entries)
+          if (entry.value is Map)
+            entry.key.toString(): Map<String, dynamic>.from(entry.value as Map),
+      };
+    } catch (error) {
+      debugPrint('Metadati fisici delle forme non disponibili: $error');
+      return const {};
     }
   }
 

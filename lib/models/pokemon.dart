@@ -36,6 +36,9 @@ class Pokemon {
     this.assetSlug,
     this.genderRatio,
     this.description,
+    this.genus,
+    this.height,
+    this.weight,
     this.formDefinitions = const [],
   });
 
@@ -58,7 +61,13 @@ class Pokemon {
   final String? assetSlug;
   final String? genderRatio;
   final String? description;
+  final String? genus;
+  final int? height;
+  final int? weight;
   final List<PokemonFormDefinition> formDefinitions;
+
+  double? get heightMeters => height == null ? null : height! / 10;
+  double? get weightKg => weight == null ? null : weight! / 10;
 
   factory Pokemon.fromJson(String name, Map<String, dynamic> json) {
     final baseJson = _copyMap(json)..remove('variant_data');
@@ -99,9 +108,13 @@ class Pokemon {
     );
   }
 
-  factory Pokemon.fromWebJson(Map<String, dynamic> json) {
+  factory Pokemon.fromWebJson(
+    Map<String, dynamic> json, {
+    Map<String, dynamic>? physicalMetadata,
+  }) {
     final abilities = _readWebAbilities(json['abilities']);
     final assetSlug = json['id']?.toString();
+    final description = _parseWebDescription(json['description']?.toString());
 
     return Pokemon(
       id: _readInt(json['number']),
@@ -128,7 +141,10 @@ class Pokemon {
       minLevelFound: _readInt(json['minLevel']),
       assetSlug: assetSlug,
       genderRatio: json['gender']?.toString(),
-      description: json['description']?.toString(),
+      description: description.flavor,
+      genus: description.genus,
+      height: _readNullableInt(physicalMetadata?['height']),
+      weight: _readNullableInt(physicalMetadata?['weight']),
     );
   }
 
@@ -179,11 +195,34 @@ class Pokemon {
       definitionsByKey.putIfAbsent(identity(definition), () => definition);
     }
     for (final definition in additionalDefinitions) {
-      definitionsByKey.putIfAbsent(identity(definition), () => definition);
+      final key = identity(definition);
+      final existing = definitionsByKey[key];
+      if (existing == null) {
+        definitionsByKey[key] = definition;
+        continue;
+      }
+
+      definitionsByKey[key] = PokemonFormDefinition(
+        key: existing.key,
+        displayName: existing.displayName,
+        pokemon: existing.pokemon.withMetadataFrom(definition.pokemon),
+        gender: existing.gender ?? definition.gender,
+      );
     }
 
     return copyWith(
       formDefinitions: definitionsByKey.values.toList(growable: false),
+    );
+  }
+
+  Pokemon withMetadataFrom(Pokemon metadata) {
+    return copyWith(
+      assetSlug: metadata.assetSlug,
+      genderRatio: metadata.genderRatio,
+      description: metadata.description,
+      genus: metadata.genus,
+      height: metadata.height,
+      weight: metadata.weight,
     );
   }
 
@@ -207,6 +246,9 @@ class Pokemon {
     String? assetSlug,
     String? genderRatio,
     String? description,
+    String? genus,
+    int? height,
+    int? weight,
     List<PokemonFormDefinition>? formDefinitions,
   }) {
     return Pokemon(
@@ -229,6 +271,9 @@ class Pokemon {
       assetSlug: assetSlug ?? this.assetSlug,
       genderRatio: genderRatio ?? this.genderRatio,
       description: description ?? this.description,
+      genus: genus ?? this.genus,
+      height: height ?? this.height,
+      weight: weight ?? this.weight,
       formDefinitions: formDefinitions ?? this.formDefinitions,
     );
   }
@@ -523,6 +568,31 @@ class Pokemon {
     }
 
     return int.tryParse(text) ?? 0;
+  }
+
+  static ({String? genus, String? flavor}) _parseWebDescription(String? value) {
+    final text = value?.trim() ?? '';
+    if (text.isEmpty) return (genus: null, flavor: null);
+
+    final match = RegExp(
+      r'^The (.+? Pokémon)\.\s*(.*)$',
+      caseSensitive: false,
+    ).firstMatch(text);
+    if (match == null) return (genus: null, flavor: text);
+
+    final genus = match.group(1)?.trim();
+    final flavor = match.group(2)?.trim();
+    return (
+      genus: genus == null || genus.isEmpty ? null : genus,
+      flavor: flavor == null || flavor.isEmpty ? null : flavor,
+    );
+  }
+
+  static int? _readNullableInt(dynamic value) {
+    if (value == null) return null;
+    if (value is int) return value;
+    if (value is num) return value.toInt();
+    return int.tryParse(value.toString());
   }
 
   static int _readInt(dynamic value) {

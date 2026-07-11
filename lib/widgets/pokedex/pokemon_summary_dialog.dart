@@ -47,6 +47,7 @@ class _PokemonSummaryDialogState extends State<PokemonSummaryDialog> {
     final updated = _entry.withFormStatus(
       formKey: _selectedForm.key,
       formName: _selectedForm.name,
+      aliases: _selectedForm.aliases,
       seen: seen,
       caught: caught,
     );

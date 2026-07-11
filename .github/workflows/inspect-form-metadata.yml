@@ -26,11 +26,27 @@ jobs:
         run: |
           python3 - <<'PY'
           import json
+          import traceback
           from pathlib import Path
-          data = json.loads(Path('assets/data_webapp/pokemon.json').read_text(encoding='utf-8'))
-          items = [item for item in data.get('items', []) if item.get('number') == 19]
-          Path('tool/rattata_form_metadata.json').write_text(
-              json.dumps(items, ensure_ascii=False, indent=2),
+
+          output = Path('tool/rattata_form_metadata.json')
+          output.parent.mkdir(parents=True, exist_ok=True)
+          try:
+              raw = Path('assets/data_webapp/pokemon.json').read_text(encoding='utf-8-sig')
+              data = json.loads(raw)
+              items = [
+                  item
+                  for item in data.get('items', [])
+                  if str(item.get('number')) == '19'
+              ]
+              payload = {
+                  'count': len(items),
+                  'items': items,
+              }
+          except Exception:
+              payload = {'error': traceback.format_exc()}
+          output.write_text(
+              json.dumps(payload, ensure_ascii=False, indent=2),
               encoding='utf-8',
           )
           PY

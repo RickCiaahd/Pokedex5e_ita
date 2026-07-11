@@ -16,6 +16,7 @@ permissions:
 jobs:
   implement-and-validate:
     runs-on: ubuntu-latest
+    timeout-minutes: 25
     steps:
       - name: Checkout feature branch
         uses: actions/checkout@v4

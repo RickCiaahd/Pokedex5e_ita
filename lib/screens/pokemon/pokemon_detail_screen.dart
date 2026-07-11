@@ -73,12 +73,23 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
   void _handleSlotChanged(TeamSlot updatedSlot) {
     final alias = _aliasCatalog.bySyntheticId[updatedSlot.pokemonId];
     if (alias == null) {
-      setState(() {
-        _slot = updatedSlot;
-        _replaceTeamSlot(updatedSlot);
-        _aliasCatalog = _buildAliasCatalog();
-        _detailGeneration += 1;
-      });
+      final previous = _slot;
+      final visualIdentityChanged =
+          previous?.pokemonId != updatedSlot.pokemonId ||
+          previous?.formName != updatedSlot.formName ||
+          previous?.gender != updatedSlot.gender ||
+          previous?.isShiny != updatedSlot.isShiny;
+
+      _slot = updatedSlot;
+      _replaceTeamSlot(updatedSlot);
+
+      if (visualIdentityChanged) {
+        setState(() {
+          _aliasCatalog = _buildAliasCatalog();
+          _detailGeneration += 1;
+        });
+      }
+
       widget.onTeamSlotChanged?.call(updatedSlot);
       return;
     }

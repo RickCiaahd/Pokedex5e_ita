@@ -1,9 +1,11 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
 
 import '../../models/bag_inventory_entry.dart';
 import '../../models/bag_item.dart';
+import '../../models/battle_session.dart';
 import '../../models/level_progression.dart';
 import '../../models/move_data.dart';
 import '../../models/pokemon.dart';
@@ -11,11 +13,13 @@ import '../../models/pokemon_nature.dart';
 import '../../models/team_slot.dart';
 import '../../models/user_profile.dart';
 import '../../repositories/bag_inventory_repository.dart';
+import '../../repositories/battle_session_repository.dart';
 import '../../repositories/item_repository.dart';
 import '../../repositories/move_repository.dart';
 import '../../repositories/pokemon_repository.dart';
 import '../../repositories/profile_repository.dart';
 import '../../repositories/team_repository.dart';
+import '../../services/battle_quick_item_service.dart';
 import '../../widgets/navigation/home_leading_button.dart';
 import '../../widgets/pokemon/pokemon_asset_image.dart';
 import '../capture/capture_pokemon_screen.dart';
@@ -34,17 +38,20 @@ class _BattleScreenState extends State<BattleScreen> {
   final MoveRepository _moveRepository = MoveRepository();
   final ItemRepository _itemRepository = ItemRepository();
   final BagInventoryRepository _bagRepository = BagInventoryRepository();
+  final BattleSessionRepository _battleSessionRepository =
+      BattleSessionRepository();
   final Random _random = Random();
 
   late Future<_BattleData> _future;
   final Map<int, Map<String, int>> _remainingPpBySlot = {};
   final Map<int, Set<String>> _volatileStatusesBySlot = {};
-  final List<_InitiativeEntry> _initiativeEntries = [];
+  final List<BattleInitiativeEntry> _initiativeEntries = [];
 
   int? _activeSlotIndex;
   int _round = 1;
   int _turnIndex = 0;
   String? _message;
+  String? _restoredProfileId;
 
   @override
   void initState() {
@@ -75,7 +82,7 @@ class _BattleScreenState extends State<BattleScreen> {
 
     final moves = await _moveRepository.getMoves(moveReferences);
 
-    return _BattleData(
+    final data = _BattleData(
       profile: profile,
       team: team,
       pokemonById: pokemonById,
@@ -83,6 +90,8 @@ class _BattleScreenState extends State<BattleScreen> {
       items: items,
       inventory: inventory,
     );
+    await _restoreOrStartSession(data);
+    return data;
   }
 
   Future<void> _reload({String? message}) async {
@@ -91,6 +100,87 @@ class _BattleScreenState extends State<BattleScreen> {
       _message = message;
       _future = _loadBattleData();
     });
+  }
+
+  Future<void> _restoreOrStartSession(_BattleData data) async {
+    if (_restoredProfileId == data.profile.id) return;
+    _restoredProfileId = data.profile.id;
+
+    _remainingPpBySlot.clear();
+    _volatileStatusesBySlot.clear();
+    _initiativeEntries.clear();
+    _round = 1;
+    _turnIndex = 0;
+    _activeSlotIndex = null;
+
+    final session = await _battleSessionRepository.getSession(data.profile.id);
+    if (session != null) {
+      _round = session.round;
+      _initiativeEntries.addAll(session.initiativeEntries);
+
+      for (final state in session.pokemonStates.values) {
+        TeamSlot? matchingSlot;
+        for (final slot in data.occupiedSlots) {
+          if (state.matches(slot)) {
+            matchingSlot = slot;
+            break;
+          }
+        }
+        if (matchingSlot == null) continue;
+        _remainingPpBySlot[matchingSlot.slotIndex] = {...state.remainingPp};
+        _volatileStatusesBySlot[matchingSlot.slotIndex] = {
+          ...state.volatileStatuses,
+        };
+      }
+
+      final savedActiveSlot = session.activeSlotIndex;
+      if (savedActiveSlot != null &&
+          data.occupiedSlots.any((slot) => slot.slotIndex == savedActiveSlot)) {
+        _activeSlotIndex = savedActiveSlot;
+      }
+      _turnIndex = _initiativeEntries.isEmpty
+          ? 0
+          : session.turnIndex.clamp(0, _initiativeEntries.length - 1).toInt();
+    }
+
+    final activeSlot = _activeSlotFor(data);
+    if (activeSlot != null) {
+      _activeSlotIndex = activeSlot.slotIndex;
+      final pokemon = _pokemonForSlot(data, activeSlot);
+      if (pokemon != null) _ensureInitiative(data, activeSlot, pokemon);
+    }
+    await _saveSession(data);
+  }
+
+  Future<void> _saveSession(_BattleData data) async {
+    final states = <int, BattlePokemonState>{};
+    for (final slot in data.occupiedSlots) {
+      final pokemonId = slot.pokemonId;
+      if (pokemonId == null) continue;
+      states[slot.slotIndex] = BattlePokemonState(
+        slotIndex: slot.slotIndex,
+        pokemonId: pokemonId,
+        identityKey: BattlePokemonState.identityKeyFor(slot),
+        remainingPp: {...?_remainingPpBySlot[slot.slotIndex]},
+        volatileStatuses: {...?_volatileStatusesBySlot[slot.slotIndex]},
+      );
+    }
+
+    await _battleSessionRepository.saveSession(
+      BattleSession(
+        profileId: data.profile.id,
+        round: _round,
+        turnIndex: _turnIndex,
+        activeSlotIndex: _activeSlotIndex,
+        pokemonStates: states,
+        initiativeEntries: List<BattleInitiativeEntry>.from(_initiativeEntries),
+        updatedAt: DateTime.now(),
+      ),
+    );
+  }
+
+  void _scheduleSessionSave(_BattleData data) {
+    unawaited(_saveSession(data));
   }
 
   TeamSlot? _activeSlotFor(_BattleData data) {
@@ -161,7 +251,13 @@ class _BattleScreenState extends State<BattleScreen> {
     return slotPp.putIfAbsent(_ppKey(reference, move), () => maxPp);
   }
 
-  void _changePp(TeamSlot slot, String reference, MoveData? move, int delta) {
+  void _changePp(
+    _BattleData data,
+    TeamSlot slot,
+    String reference,
+    MoveData? move,
+    int delta,
+  ) {
     final maxPp = _maxPpFor(move);
     if (maxPp <= 0) return;
 
@@ -172,6 +268,7 @@ class _BattleScreenState extends State<BattleScreen> {
     setState(() {
       slotPp[key] = (current + delta).clamp(0, maxPp).toInt();
     });
+    _scheduleSessionSave(data);
   }
 
   bool _hasNoPpLeft(
@@ -250,6 +347,7 @@ class _BattleScreenState extends State<BattleScreen> {
         statusEffects: const [],
       ),
     );
+    await _saveSession(data);
     await _reload(
       message: '${_displayName(slot, pokemon)} è pronto a combattere.',
     );
@@ -275,6 +373,7 @@ class _BattleScreenState extends State<BattleScreen> {
     if (result != null) {
       _volatileStatusesBySlot[slot.slotIndex] = result.volatileStatuses;
     }
+    await _saveSession(data);
     await _reload(
       message:
           result?.message ??
@@ -286,44 +385,64 @@ class _BattleScreenState extends State<BattleScreen> {
     final pokemon = _pokemonForSlot(data, slot);
     if (pokemon == null) return;
 
-    final items = data.ownedQuickItems;
-    if (items.isEmpty) {
-      await _reload(message: 'Non hai consumabili o Poké Ball nello zaino.');
-      return;
+    try {
+      final inventory = await _bagRepository.getInventory(data.profile.id);
+      final items = BattleQuickItemService.resolve(
+        catalog: data.items,
+        inventory: inventory,
+      );
+      if (!mounted) return;
+
+      if (items.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Non hai medicine, bacche utilizzabili o Poké Ball nello zaino.',
+            ),
+          ),
+        );
+        return;
+      }
+
+      final selected = await showModalBottomSheet<BattleQuickItem>(
+        context: context,
+        isScrollControlled: true,
+        useSafeArea: true,
+        showDragHandle: true,
+        builder: (_) => _QuickBagSheet(
+          items: items,
+          pokemonName: _displayName(slot, pokemon),
+          currentHp: _currentHpFor(slot, pokemon),
+          maxHp: _maxHpFor(pokemon, slot),
+          nonVolatileStatus: _nonVolatileStatusFor(slot),
+          volatileStatuses: _volatileStatusesFor(slot),
+        ),
+      );
+      if (!mounted || selected == null) return;
+
+      await _useBattleItem(data, slot, pokemon, selected);
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Impossibile aprire lo zaino rapido: $error')),
+      );
     }
-
-    final selected = await showModalBottomSheet<_OwnedBattleItem>(
-      context: context,
-      isScrollControlled: true,
-      showDragHandle: true,
-      builder: (_) => _QuickBagSheet(
-        items: items,
-        pokemonName: _displayName(slot, pokemon),
-        currentHp: _currentHpFor(slot, pokemon),
-        maxHp: _maxHpFor(pokemon, slot),
-        nonVolatileStatus: _nonVolatileStatusFor(slot),
-        volatileStatuses: _volatileStatusesFor(slot),
-      ),
-    );
-    if (!mounted || selected == null) return;
-
-    await _useBattleItem(data, slot, pokemon, selected);
   }
 
   Future<void> _useBattleItem(
     _BattleData data,
     TeamSlot slot,
     Pokemon pokemon,
-    _OwnedBattleItem selected,
+    BattleQuickItem selected,
   ) async {
     final item = selected.item;
 
-    if (item.type == 'pokeball') {
+    if (BattleQuickItemService.isPokeball(item)) {
       await _throwPokeball(data, item);
       return;
     }
 
-    final isBerry = item.type == 'berry';
+    final isBerry = BattleQuickItemService.isBerry(item);
     final result = _applyMedicine(
       item: item,
       slot: slot,
@@ -354,6 +473,7 @@ class _BattleScreenState extends State<BattleScreen> {
         updatedSlot: result.updatedSlot,
       );
       _volatileStatusesBySlot[slot.slotIndex] = result.volatileStatuses;
+      await _saveSession(data);
       await _reload(message: result.message);
       return;
     }
@@ -585,6 +705,7 @@ class _BattleScreenState extends State<BattleScreen> {
             : [result.nonVolatileStatus!],
       ),
     );
+    await _saveSession(data);
     await _reload();
   }
 
@@ -596,7 +717,7 @@ class _BattleScreenState extends State<BattleScreen> {
 
     if (index == -1) {
       _initiativeEntries.add(
-        _InitiativeEntry(
+        BattleInitiativeEntry(
           id: 'trainer',
           name: label,
           initiative: _rollTrainerInitiative(data.profile),
@@ -625,17 +746,17 @@ class _BattleScreenState extends State<BattleScreen> {
         : _turnIndex.clamp(0, _initiativeEntries.length - 1).toInt();
   }
 
-  void _rerollTrainerInitiative(UserProfile profile) {
+  void _rerollTrainerInitiative(_BattleData data) {
     setState(() {
       final index = _initiativeEntries.indexWhere(
         (entry) => entry.isTrainerGroup,
       );
-      final roll = _rollTrainerInitiative(profile);
+      final roll = _rollTrainerInitiative(data.profile);
       if (index == -1) {
         _initiativeEntries.add(
-          _InitiativeEntry(
+          BattleInitiativeEntry(
             id: 'trainer',
-            name: '${profile.name} + Pokémon',
+            name: '${data.profile.name} + Pokémon',
             initiative: roll,
             isTrainerGroup: true,
           ),
@@ -649,9 +770,10 @@ class _BattleScreenState extends State<BattleScreen> {
       _sortInitiative();
       _message = 'Iniziativa allenatore/Pokémon: $roll.';
     });
+    _scheduleSessionSave(data);
   }
 
-  Future<void> _addInitiativeEntry() async {
+  Future<void> _addInitiativeEntry(_BattleData data) async {
     final input = await showDialog<_InitiativeEntryInput>(
       context: context,
       builder: (_) => const _InitiativeEntryDialog(),
@@ -660,7 +782,7 @@ class _BattleScreenState extends State<BattleScreen> {
 
     setState(() {
       _initiativeEntries.add(
-        _InitiativeEntry(
+        BattleInitiativeEntry(
           id: DateTime.now().microsecondsSinceEpoch.toString(),
           name: input.name,
           initiative: input.initiative,
@@ -669,16 +791,18 @@ class _BattleScreenState extends State<BattleScreen> {
       );
       _sortInitiative();
     });
+    _scheduleSessionSave(data);
   }
 
-  void _removeInitiativeEntry(_InitiativeEntry entry) {
+  void _removeInitiativeEntry(_BattleData data, BattleInitiativeEntry entry) {
     setState(() {
       _initiativeEntries.removeWhere((candidate) => candidate.id == entry.id);
       _sortInitiative();
     });
+    _scheduleSessionSave(data);
   }
 
-  void _nextTurn() {
+  void _nextTurn(_BattleData data) {
     setState(() {
       if (_initiativeEntries.isEmpty) return;
       if (_turnIndex + 1 >= _initiativeEntries.length) {
@@ -690,25 +814,46 @@ class _BattleScreenState extends State<BattleScreen> {
         _message = null;
       }
     });
+    _scheduleSessionSave(data);
   }
 
-  void _nextRound() {
+  void _nextRound(_BattleData data) {
     setState(() {
       _round += 1;
       _turnIndex = 0;
       _message = 'Round $_round iniziato.';
     });
+    _scheduleSessionSave(data);
   }
 
-  void _resetBattle() {
-    setState(() {
-      _round = 1;
-      _turnIndex = 0;
-      _remainingPpBySlot.clear();
-      _volatileStatusesBySlot.clear();
-      _message =
-          'Tracker combattimento azzerato. Gli status volatili sono stati rimossi.';
-    });
+  Future<void> _endBattle(_BattleData data) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Terminare la battaglia?'),
+        content: const Text(
+          'Round, iniziativa, PP temporanei e status volatili verranno rimossi. HP, status persistenti e oggetti consumati resteranno salvati.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('ANNULLA'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('TERMINA'),
+          ),
+        ],
+      ),
+    );
+    if (!mounted || confirmed != true) return;
+
+    await _battleSessionRepository.deleteSession(data.profile.id);
+    _remainingPpBySlot.clear();
+    _volatileStatusesBySlot.clear();
+    _initiativeEntries.clear();
+    if (!mounted) return;
+    Navigator.of(context).pop();
   }
 
   int _maxHpFor(Pokemon pokemon, TeamSlot slot) {
@@ -821,13 +966,6 @@ class _BattleScreenState extends State<BattleScreen> {
       appBar: AppBar(
         leading: const HomeLeadingButton(),
         title: const Text('Battle Companion'),
-        actions: [
-          IconButton(
-            tooltip: 'Reset combattimento',
-            onPressed: _resetBattle,
-            icon: const Icon(Icons.refresh),
-          ),
-        ],
       ),
       body: FutureBuilder<_BattleData>(
         future: _future,
@@ -860,8 +998,6 @@ class _BattleScreenState extends State<BattleScreen> {
 
           final activeSlot = _activeSlotFor(data)!;
           final pokemon = _pokemonForSlot(data, activeSlot)!;
-          _ensureInitiative(data, activeSlot, pokemon);
-
           final moveReferences = _movesForSlot(activeSlot, pokemon);
           final noPpLeft = _hasNoPpLeft(activeSlot, moveReferences, data.moves);
           final heldItem = data.heldItemFor(activeSlot);
@@ -875,8 +1011,8 @@ class _BattleScreenState extends State<BattleScreen> {
                   round: _round,
                   profile: data.profile,
                   trainerInitiativeBonus: _trainerInitiativeBonus(data.profile),
-                  onNextRound: _nextRound,
-                  onReset: _resetBattle,
+                  onNextRound: () => _nextRound(data),
+                  onEnd: () => _endBattle(data),
                 ),
                 const SizedBox(height: 12),
                 _PartyBar(
@@ -888,6 +1024,7 @@ class _BattleScreenState extends State<BattleScreen> {
                       _activeSlotIndex = slotIndex;
                       _message = null;
                     });
+                    _scheduleSessionSave(data);
                   },
                 ),
                 const SizedBox(height: 12),
@@ -896,10 +1033,10 @@ class _BattleScreenState extends State<BattleScreen> {
                   entries: _initiativeEntries,
                   currentTurnIndex: _turnIndex,
                   trainerInitiativeBonus: _trainerInitiativeBonus(data.profile),
-                  onRollTrainer: () => _rerollTrainerInitiative(data.profile),
-                  onAddEntry: _addInitiativeEntry,
-                  onRemoveEntry: _removeInitiativeEntry,
-                  onNextTurn: _nextTurn,
+                  onRollTrainer: () => _rerollTrainerInitiative(data),
+                  onAddEntry: () => _addInitiativeEntry(data),
+                  onRemoveEntry: (entry) => _removeInitiativeEntry(data, entry),
+                  onNextTurn: () => _nextTurn(data),
                 ),
                 const SizedBox(height: 12),
                 _ActivePokemonCard(
@@ -955,12 +1092,14 @@ class _BattleScreenState extends State<BattleScreen> {
                             activeSlot,
                           ),
                     onUse: () => _changePp(
+                      data,
                       activeSlot,
                       reference,
                       data.moves[reference],
                       -1,
                     ),
                     onRestore: () => _changePp(
+                      data,
                       activeSlot,
                       reference,
                       data.moves[reference],
@@ -1002,26 +1141,8 @@ class _BattleData {
         .toList(growable: false);
   }
 
-  List<_OwnedBattleItem> get ownedQuickItems {
-    final owned = <_OwnedBattleItem>[];
-    for (final entry in inventory) {
-      final item = _itemByReference(entry.itemId);
-      if (item == null) continue;
-      if (item.type == 'berry' ||
-          item.type == 'medicine' ||
-          item.type == 'pokeball') {
-        owned.add(_OwnedBattleItem(item: item, quantity: entry.quantity));
-      }
-    }
-
-    owned.sort((a, b) {
-      final typeCompare = _itemTypeLabel(
-        a.item.type,
-      ).compareTo(_itemTypeLabel(b.item.type));
-      if (typeCompare != 0) return typeCompare;
-      return a.item.name.compareTo(b.item.name);
-    });
-    return owned;
+  List<BattleQuickItem> get ownedQuickItems {
+    return BattleQuickItemService.resolve(catalog: items, inventory: inventory);
   }
 
   BagItem? heldItemFor(TeamSlot slot) {
@@ -1043,13 +1164,6 @@ class _BattleData {
   }
 }
 
-class _OwnedBattleItem {
-  const _OwnedBattleItem({required this.item, required this.quantity});
-
-  final BagItem item;
-  final int quantity;
-}
-
 class _MedicineUseResult {
   const _MedicineUseResult({
     required this.updatedSlot,
@@ -1060,29 +1174,6 @@ class _MedicineUseResult {
   final TeamSlot updatedSlot;
   final Set<String> volatileStatuses;
   final String message;
-}
-
-class _InitiativeEntry {
-  const _InitiativeEntry({
-    required this.id,
-    required this.name,
-    required this.initiative,
-    required this.isTrainerGroup,
-  });
-
-  final String id;
-  final String name;
-  final int initiative;
-  final bool isTrainerGroup;
-
-  _InitiativeEntry copyWith({String? name, int? initiative}) {
-    return _InitiativeEntry(
-      id: id,
-      name: name ?? this.name,
-      initiative: initiative ?? this.initiative,
-      isTrainerGroup: isTrainerGroup,
-    );
-  }
 }
 
 class _InitiativeEntryInput {
@@ -1244,12 +1335,12 @@ String _itemTypeLabel(String type) {
   }
 }
 
-String _quickItemActionLabel(String type) {
-  return type == 'pokeball' ? 'LANCIA' : 'USA';
+String _quickItemActionLabel(BagItem item) {
+  return BattleQuickItemService.isPokeball(item) ? 'LANCIA' : 'USA';
 }
 
 String _quickItemDescription(BagItem item) {
-  if (item.type == 'pokeball') {
+  if (BattleQuickItemService.isPokeball(item)) {
     return 'Lancia la Poké Ball. Dopo la risposta del Master verrà consumata.';
   }
   return item.displayDescription;
@@ -1267,14 +1358,14 @@ class _BattleHeader extends StatelessWidget {
     required this.profile,
     required this.trainerInitiativeBonus,
     required this.onNextRound,
-    required this.onReset,
+    required this.onEnd,
   });
 
   final int round;
   final UserProfile profile;
   final int trainerInitiativeBonus;
   final VoidCallback onNextRound;
-  final VoidCallback onReset;
+  final VoidCallback onEnd;
 
   @override
   Widget build(BuildContext context) {
@@ -1316,9 +1407,9 @@ class _BattleHeader extends StatelessWidget {
                 const SizedBox(width: 8),
                 Expanded(
                   child: OutlinedButton.icon(
-                    onPressed: onReset,
-                    icon: const Icon(Icons.refresh),
-                    label: const Text('RESET'),
+                    onPressed: onEnd,
+                    icon: const Icon(Icons.stop_circle_outlined),
+                    label: const Text('TERMINA'),
                   ),
                 ),
               ],
@@ -1466,12 +1557,12 @@ class _InitiativeTracker extends StatelessWidget {
   });
 
   final int round;
-  final List<_InitiativeEntry> entries;
+  final List<BattleInitiativeEntry> entries;
   final int currentTurnIndex;
   final int trainerInitiativeBonus;
   final VoidCallback onRollTrainer;
   final VoidCallback onAddEntry;
-  final ValueChanged<_InitiativeEntry> onRemoveEntry;
+  final ValueChanged<BattleInitiativeEntry> onRemoveEntry;
   final VoidCallback onNextTurn;
 
   @override
@@ -1555,7 +1646,7 @@ class _InitiativeTile extends StatelessWidget {
     required this.onRemove,
   });
 
-  final _InitiativeEntry entry;
+  final BattleInitiativeEntry entry;
   final bool active;
   final VoidCallback? onRemove;
 
@@ -1582,7 +1673,7 @@ class _InitiativeTile extends StatelessWidget {
           subtitle: Text(
             entry.isTrainerGroup
                 ? 'Allenatore + Pokémon'
-                : 'Creatura / avversario',
+                : 'Partecipante esterno',
           ),
           trailing: onRemove == null
               ? null
@@ -1634,7 +1725,7 @@ class _InitiativeEntryDialogState extends State<_InitiativeEntryDialog> {
           TextField(
             controller: _nameController,
             autofocus: true,
-            decoration: const InputDecoration(labelText: 'Nome creatura'),
+            decoration: const InputDecoration(labelText: 'Nome partecipante'),
             onSubmitted: (_) => _submit(),
           ),
           const SizedBox(height: 10),
@@ -2085,7 +2176,7 @@ class _QuickBagSheet extends StatelessWidget {
     required this.volatileStatuses,
   });
 
-  final List<_OwnedBattleItem> items;
+  final List<BattleQuickItem> items;
   final String pokemonName;
   final int currentHp;
   final int maxHp;
@@ -2127,7 +2218,7 @@ class _QuickBagSheet extends StatelessWidget {
                     maxLines: 3,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  trailing: Text(_quickItemActionLabel(entry.item.type)),
+                  trailing: Text(_quickItemActionLabel(entry.item)),
                   onTap: () => Navigator.of(context).pop(entry),
                 ),
               ),

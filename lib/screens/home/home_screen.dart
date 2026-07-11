@@ -12,6 +12,7 @@ import '../../models/pokedex_entry.dart';
 import '../../models/pokemon.dart';
 import '../../models/trainer_progression.dart';
 import '../../models/user_profile.dart';
+import '../../repositories/battle_session_repository.dart';
 import '../../repositories/pokemon_repository.dart';
 import '../../repositories/profile_repository.dart';
 import '../../services/profile_storage_service.dart';
@@ -25,6 +26,8 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final ProfileRepository _profileRepository = ProfileRepository();
+  final BattleSessionRepository _battleSessionRepository =
+      BattleSessionRepository();
   final PokemonRepository _pokemonRepository = PokemonRepository();
   final ProfileStorageService _profileStorageService = ProfileStorageService();
 
@@ -33,6 +36,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Map<int, PokedexEntry> _entries = {};
 
   bool _isLoading = true;
+  bool _hasActiveBattle = false;
   String? _errorMessage;
 
   @override
@@ -51,6 +55,9 @@ class _HomeScreenState extends State<HomeScreen> {
       final profile = await _profileRepository.getActiveProfile();
       final pokemon = await _pokemonRepository.getAllPokemon();
       final entries = await _profileStorageService.loadPokedexEntries();
+      final hasActiveBattle = await _battleSessionRepository.hasSession(
+        profile.id,
+      );
 
       if (!mounted) return;
 
@@ -58,6 +65,7 @@ class _HomeScreenState extends State<HomeScreen> {
         _profile = profile;
         _pokemon = pokemon;
         _entries = entries;
+        _hasActiveBattle = hasActiveBattle;
         _isLoading = false;
       });
     } catch (e) {
@@ -102,8 +110,12 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 24),
               _HomeActionButton(
                 icon: Icons.flash_on,
-                title: 'Battle Companion',
-                subtitle: 'Traccia round, HP, status e PP durante il combattimento.',
+                title: _hasActiveBattle
+                    ? 'Riprendi battaglia'
+                    : 'Battle Companion',
+                subtitle: _hasActiveBattle
+                    ? 'Continua dal round, turno, PP e status salvati.'
+                    : 'Traccia round, HP, status e PP durante il combattimento.',
                 onTap: () async {
                   await Navigator.of(context).push(
                     MaterialPageRoute(builder: (_) => const BattleScreen()),
@@ -180,9 +192,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 title: 'Zaino',
                 subtitle: 'Equipaggiamento, cure e oggetti da cattura.',
                 onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const BagScreen()),
-                  );
+                  Navigator.of(
+                    context,
+                  ).push(MaterialPageRoute(builder: (_) => const BagScreen()));
                 },
               ),
               _HomeActionButton(

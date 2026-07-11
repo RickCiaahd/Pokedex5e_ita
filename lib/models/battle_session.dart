@@ -37,9 +37,7 @@ class BattleSession {
 
   factory BattleSession.fromJson(Map<String, dynamic> json) {
     final states = <int, BattlePokemonState>{};
-    for (final value in List<dynamic>.from(
-      json['pokemonStates'] ?? const [],
-    )) {
+    for (final value in List<dynamic>.from(json['pokemonStates'] ?? const [])) {
       if (value is! Map) continue;
       final state = BattlePokemonState.fromJson(
         Map<String, dynamic>.from(value),
@@ -58,9 +56,7 @@ class BattleSession {
           json['initiativeEntries'] ?? const [],
         ))
           if (value is Map)
-            BattleInitiativeEntry.fromJson(
-              Map<String, dynamic>.from(value),
-            ),
+            BattleInitiativeEntry.fromJson(Map<String, dynamic>.from(value)),
       ],
       updatedAt:
           DateTime.tryParse(json['updatedAt']?.toString() ?? '') ??
@@ -125,9 +121,9 @@ class BattlePokemonState {
           entry.key.toString(): _readInt(entry.value),
       },
       volatileStatuses: Set<String>.from(
-        List<dynamic>.from(json['volatileStatuses'] ?? const []).map(
-          (value) => value.toString(),
-        ),
+        List<dynamic>.from(
+          json['volatileStatuses'] ?? const [],
+        ).map((value) => value.toString()),
       ),
     );
   }

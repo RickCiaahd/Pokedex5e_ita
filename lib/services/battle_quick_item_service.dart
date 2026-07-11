@@ -30,9 +30,9 @@ class BattleQuickItemService {
     }
 
     owned.sort((a, b) {
-      final typeCompare = typeLabel(a.item.type).compareTo(
-        typeLabel(b.item.type),
-      );
+      final typeCompare = typeLabel(
+        a.item.type,
+      ).compareTo(typeLabel(b.item.type));
       if (typeCompare != 0) return typeCompare;
       return a.item.name.compareTo(b.item.name);
     });

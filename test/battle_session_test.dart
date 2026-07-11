@@ -53,29 +53,32 @@ void main() {
     expect(restored.initiativeEntries.last.name, 'Boss');
   });
 
-  test('saved transient state is rejected for a different Pokémon instance', () {
-    final original = TeamSlot(
-      slotIndex: 0,
-      pokemonId: 19,
-      nickname: 'Morsi',
-      formName: 'Alolan',
-    );
-    final state = BattlePokemonState(
-      slotIndex: 0,
-      pokemonId: 19,
-      identityKey: BattlePokemonState.identityKeyFor(original),
-      remainingPp: const {'bite': 2},
-      volatileStatuses: const {'Flinched'},
-    );
+  test(
+    'saved transient state is rejected for a different Pokémon instance',
+    () {
+      final original = TeamSlot(
+        slotIndex: 0,
+        pokemonId: 19,
+        nickname: 'Morsi',
+        formName: 'Alolan',
+      );
+      final state = BattlePokemonState(
+        slotIndex: 0,
+        pokemonId: 19,
+        identityKey: BattlePokemonState.identityKeyFor(original),
+        remainingPp: const {'bite': 2},
+        volatileStatuses: const {'Flinched'},
+      );
 
-    final replacement = TeamSlot(
-      slotIndex: 0,
-      pokemonId: 19,
-      nickname: 'Un altro Rattata',
-      formName: 'Alolan',
-    );
+      final replacement = TeamSlot(
+        slotIndex: 0,
+        pokemonId: 19,
+        nickname: 'Un altro Rattata',
+        formName: 'Alolan',
+      );
 
-    expect(state.matches(original), isTrue);
-    expect(state.matches(replacement), isFalse);
-  });
+      expect(state.matches(original), isTrue);
+      expect(state.matches(replacement), isFalse);
+    },
+  );
 }

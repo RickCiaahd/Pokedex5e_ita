@@ -1,0 +1,81 @@
+name: Validate form-aware Pokédex
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'feat/form-aware-pokedex-v2'
+    paths:
+      - '.github/workflows/validate-form-aware-pokedex.yml'
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  migrate-and-validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: feat/form-aware-pokedex-v2
+
+      - name: Apply Pokédex migrations
+        run: |
+          python3 tool/apply_form_pokedex_screen.py
+          python3 tool/apply_form_pokedex_followups.py
+
+      - name: Remove temporary migration files
+        run: |
+          rm tool/apply_form_pokedex_screen.py
+          rm tool/apply_form_pokedex_followups.py
+          rm .github/workflows/validate-form-aware-pokedex.yml
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Format changed Dart files
+        run: |
+          dart format \
+            lib/models/pokedex_entry.dart \
+            lib/repositories/pokedex_repositry.dart \
+            lib/repositories/team_repository.dart \
+            lib/repositories/pokemon_pc_repository.dart \
+            lib/screens/capture/capture_pokemon_screen.dart \
+            lib/screens/pokedex/pokedex_screen.dart \
+            lib/widgets/pokedex/pokemon_summary_dialog.dart \
+            lib/widgets/pokedex/pokemon_tile.dart \
+            test/pokedex_form_entry_test.dart
+
+      - name: Check diff
+        run: git diff --check
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Run focused Pokédex tests
+        run: flutter test test/pokedex_form_entry_test.dart
+
+      - name: Run asset resolver tests
+        run: flutter test test/pokemon_asset_paths_test.dart
+
+      - name: Run full test suite
+        run: flutter test
+
+      - name: Commit validated implementation
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Implement form-aware automatic Pokédex tracking"
+          git push origin feat/form-aware-pokedex-v2

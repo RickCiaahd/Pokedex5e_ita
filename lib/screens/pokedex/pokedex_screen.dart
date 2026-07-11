@@ -139,9 +139,10 @@ class _PokedexScreenState extends State<PokedexScreen> {
         ViewFilter.unseen => !entry.seen,
         ViewFilter.caught => entry.caught,
       };
-      final localizedTypes = pokemon.types
-          .map(PokemonAssetPaths.localizedTypeLabel)
-          .toSet();
+      final localizedTypes = <String>{
+        for (final form in PokedexFormCatalog.optionsFor(pokemon))
+          ...form.pokemon.types.map(PokemonAssetPaths.localizedTypeLabel),
+      };
       final matchesTypes = _selectedTypes.isEmpty ||
           _selectedTypes.every(localizedTypes.contains);
       final matchesRegion = selectedRegion == null ||
@@ -198,6 +199,7 @@ class _PokedexScreenState extends State<PokedexScreen> {
         updated = entry.withFormStatus(
           formKey: preview.key,
           formName: preview.name,
+          aliases: preview.aliases,
           seen: true,
           caught: status.caught,
         );
@@ -209,6 +211,7 @@ class _PokedexScreenState extends State<PokedexScreen> {
         updated = entry.withFormStatus(
           formKey: preview.key,
           formName: preview.name,
+          aliases: preview.aliases,
           seen: true,
           caught: true,
         );
@@ -228,7 +231,6 @@ class _PokedexScreenState extends State<PokedexScreen> {
   List<String> get _availableTypes {
     final result = <String>{};
     for (final pokemon in _allPokemon) {
-      result.addAll(pokemon.types.map(PokemonAssetPaths.localizedTypeLabel));
       for (final form in PokedexFormCatalog.optionsFor(pokemon)) {
         result.addAll(
           form.pokemon.types.map(PokemonAssetPaths.localizedTypeLabel),
@@ -248,9 +250,13 @@ class _PokedexScreenState extends State<PokedexScreen> {
   }
 
   List<String> get _visibleRegions {
-    return _regions.keys
+    final regions = _regions.keys
         .where((region) => _pokemonForRegion(region).isNotEmpty)
-        .toList(growable: false);
+        .toList(growable: true);
+    if (_sortMode == SortMode.numberDesc) {
+      return regions.reversed.toList(growable: false);
+    }
+    return regions;
   }
 
   List<Pokemon> _pokemonForRegion(String region) {
@@ -300,6 +306,13 @@ class _PokedexScreenState extends State<PokedexScreen> {
     return {'count': count, 'total': regionPokemon.length};
   }
 
+  String _regionMenuSubtitle(String region) {
+    final seen = _regionProgress(region, false);
+    final caught = _regionProgress(region, true);
+    return 'Visti ${seen['count']}/${seen['total']} · '
+        'Presi ${caught['count']}/${caught['total']}';
+  }
+
   Future<void> _pickTypeFilters() async {
     final working = Set<String>.from(_selectedTypes);
     final result = await showModalBottomSheet<Set<String>>(
@@ -322,7 +335,8 @@ class _PokedexScreenState extends State<PokedexScreen> {
                         ),
                   ),
                   const SizedBox(height: 12),
-                  Flexible(
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(maxHeight: 420),
                     child: SingleChildScrollView(
                       child: Wrap(
                         spacing: 8,
@@ -463,7 +477,13 @@ class _PokedexScreenState extends State<PokedexScreen> {
                                   for (final region in _regions.keys)
                                     PopupMenuItem(
                                       value: region,
-                                      child: Text(region),
+                                      child: ListTile(
+                                        contentPadding: EdgeInsets.zero,
+                                        title: Text(region),
+                                        subtitle: Text(
+                                          _regionMenuSubtitle(region),
+                                        ),
+                                      ),
                                     ),
                                 ],
                                 child: Chip(
@@ -481,7 +501,9 @@ class _PokedexScreenState extends State<PokedexScreen> {
                                 onPressed: _pickTypeFilters,
                               ),
                               Chip(
-                                label: Text('${_filteredPokemon.length} risultati'),
+                                label: Text(
+                                  '${_filteredPokemon.length} risultati',
+                                ),
                               ),
                             ],
                           ),

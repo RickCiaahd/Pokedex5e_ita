@@ -1,5 +1,6 @@
 name: Fix Pokemon detail form refresh
 
+# This follow-up commit triggers the workflow after it exists on main.
 on:
   push:
     branches:

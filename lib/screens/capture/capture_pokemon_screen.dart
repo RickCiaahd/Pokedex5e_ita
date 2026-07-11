@@ -174,7 +174,7 @@ class _CapturePokemonScreenState extends State<CapturePokemonScreen> {
         await _registerCaughtPokemon(pokemon, result);
         break;
       case _CaptureRegistrationAction.markSeen:
-        await _markSeen(pokemon);
+        await _markSeen(pokemon, result.formName);
         break;
     }
   }
@@ -239,15 +239,14 @@ class _CapturePokemonScreenState extends State<CapturePokemonScreen> {
     }
   }
 
-  Future<void> _markSeen(Pokemon pokemon) async {
+  Future<void> _markSeen(Pokemon pokemon, String? formName) async {
     final profile = _profile;
     if (profile == null) return;
 
-    await _pokedexRepository.updateMarkMode(
+    await _pokedexRepository.registerSeen(
       profileId: profile.id,
       pokemonId: pokemon.id,
-      seen: true,
-      caught: false,
+      formName: formName,
     );
 
     if (!mounted) return;
@@ -305,11 +304,10 @@ class _CapturePokemonScreenState extends State<CapturePokemonScreen> {
       );
     }
 
-    await _pokedexRepository.updateMarkMode(
+    await _pokedexRepository.registerCaught(
       profileId: profile.id,
       pokemonId: pokemon.id,
-      seen: true,
-      caught: true,
+      formName: result.formName,
     );
 
     return teamSlot == null

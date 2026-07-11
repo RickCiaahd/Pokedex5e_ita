@@ -7,7 +7,7 @@ import 'pokedex_repositry.dart';
 
 class PokemonPcRepository {
   PokemonPcRepository({PokedexRepository? pokedexRepository})
-      : _pokedexRepository = pokedexRepository ?? PokedexRepository();
+    : _pokedexRepository = pokedexRepository ?? PokedexRepository();
 
   final PokedexRepository _pokedexRepository;
 
@@ -109,13 +109,10 @@ class PokemonPcRepository {
   }) async {
     final storedPokemon = await getPokemon(profileId);
 
-    await savePokemon(
-      profileId,
-      [
-        for (final item in storedPokemon)
-          if (item.id != pcPokemonId) item,
-      ],
-    );
+    await savePokemon(profileId, [
+      for (final item in storedPokemon)
+        if (item.id != pcPokemonId) item,
+    ]);
   }
 
   Future<void> deletePc(String profileId) async {

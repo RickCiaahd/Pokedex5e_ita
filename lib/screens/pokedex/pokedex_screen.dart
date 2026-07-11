@@ -127,38 +127,45 @@ class _PokedexScreenState extends State<PokedexScreen> {
     final query = _searchController.text.toLowerCase().trim();
     final selectedRegion = _selectedRegion;
 
-    _filteredPokemon = _allPokemon.where((pokemon) {
-      final entry = _entryFor(pokemon);
-      final matchesSearch = query.isEmpty ||
-          pokemon.name.toLowerCase().contains(query) ||
-          pokemon.id.toString().contains(query) ||
-          pokemon.types.any((type) => type.toLowerCase().contains(query));
-      final matchesView = switch (_viewFilter) {
-        ViewFilter.all => true,
-        ViewFilter.seen => entry.seen,
-        ViewFilter.unseen => !entry.seen,
-        ViewFilter.caught => entry.caught,
-      };
-      final localizedTypes = <String>{
-        for (final form in PokedexFormCatalog.optionsFor(pokemon))
-          ...form.pokemon.types.map(PokemonAssetPaths.localizedTypeLabel),
-      };
-      final matchesTypes = _selectedTypes.isEmpty ||
-          _selectedTypes.every(localizedTypes.contains);
-      final matchesRegion = selectedRegion == null ||
-          _regionForPokemon(pokemon) == selectedRegion;
+    _filteredPokemon = _allPokemon
+        .where((pokemon) {
+          final entry = _entryFor(pokemon);
+          final matchesSearch =
+              query.isEmpty ||
+              pokemon.name.toLowerCase().contains(query) ||
+              pokemon.id.toString().contains(query) ||
+              pokemon.types.any((type) => type.toLowerCase().contains(query));
+          final matchesView = switch (_viewFilter) {
+            ViewFilter.all => true,
+            ViewFilter.seen => entry.seen,
+            ViewFilter.unseen => !entry.seen,
+            ViewFilter.caught => entry.caught,
+          };
+          final localizedTypes = <String>{
+            for (final form in PokedexFormCatalog.optionsFor(pokemon))
+              ...form.pokemon.types.map(PokemonAssetPaths.localizedTypeLabel),
+          };
+          final matchesTypes =
+              _selectedTypes.isEmpty ||
+              _selectedTypes.every(localizedTypes.contains);
+          final matchesRegion =
+              selectedRegion == null ||
+              _regionForPokemon(pokemon) == selectedRegion;
 
-      return matchesSearch && matchesView && matchesTypes && matchesRegion;
-    }).toList(growable: false);
+          return matchesSearch && matchesView && matchesTypes && matchesRegion;
+        })
+        .toList(growable: false);
 
     _filteredPokemon.sort((a, b) {
       return switch (_sortMode) {
         SortMode.numberAsc => a.id.compareTo(b.id),
         SortMode.numberDesc => b.id.compareTo(a.id),
-        SortMode.nameAsc =>
-          a.name.toLowerCase().compareTo(b.name.toLowerCase()),
-        SortMode.nameDesc =>
-          b.name.toLowerCase().compareTo(a.name.toLowerCase()),
+        SortMode.nameAsc => a.name.toLowerCase().compareTo(
+          b.name.toLowerCase(),
+        ),
+        SortMode.nameDesc => b.name.toLowerCase().compareTo(
+          a.name.toLowerCase(),
+        ),
       };
     });
   }
@@ -264,8 +271,7 @@ class _PokedexScreenState extends State<PokedexScreen> {
     if (range == null) return const [];
     return _filteredPokemon
         .where(
-          (pokemon) =>
-              pokemon.id >= range.first && pokemon.id <= range.last,
+          (pokemon) => pokemon.id >= range.first && pokemon.id <= range.last,
         )
         .toList(growable: false);
   }
@@ -331,8 +337,8 @@ class _PokedexScreenState extends State<PokedexScreen> {
                   Text(
                     'Filtra per tipo',
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.w900,
-                        ),
+                      fontWeight: FontWeight.w900,
+                    ),
                   ),
                   const SizedBox(height: 12),
                   ConstrainedBox(
@@ -398,166 +404,163 @@ class _PokedexScreenState extends State<PokedexScreen> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _errorMessage != null
-              ? Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text('Errore: $_errorMessage'),
-                      const SizedBox(height: 12),
-                      FilledButton(
-                        onPressed: _loadPokemon,
-                        child: const Text('Riprova'),
-                      ),
-                    ],
+          ? Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text('Errore: $_errorMessage'),
+                  const SizedBox(height: 12),
+                  FilledButton(
+                    onPressed: _loadPokemon,
+                    child: const Text('Riprova'),
                   ),
-                )
-              : Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 10, 16, 6),
-                      child: Column(
+                ],
+              ),
+            )
+          : Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 10, 16, 6),
+                  child: Column(
+                    children: [
+                      TextField(
+                        controller: _searchController,
+                        onChanged: (_) => setState(_applyFilters),
+                        decoration: const InputDecoration(
+                          hintText: 'Cerca Pokémon...',
+                          prefixIcon: Icon(Icons.search),
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        crossAxisAlignment: WrapCrossAlignment.center,
                         children: [
-                          TextField(
-                            controller: _searchController,
-                            onChanged: (_) => setState(_applyFilters),
-                            decoration: const InputDecoration(
-                              hintText: 'Cerca Pokémon...',
-                              prefixIcon: Icon(Icons.search),
-                              border: OutlineInputBorder(),
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          Wrap(
-                            spacing: 8,
-                            runSpacing: 8,
-                            crossAxisAlignment: WrapCrossAlignment.center,
-                            children: [
-                              DropdownButton<SortMode>(
-                                value: _sortMode,
-                                items: const [
-                                  DropdownMenuItem(
-                                    value: SortMode.numberAsc,
-                                    child: Text('Numero crescente'),
-                                  ),
-                                  DropdownMenuItem(
-                                    value: SortMode.numberDesc,
-                                    child: Text('Numero decrescente'),
-                                  ),
-                                  DropdownMenuItem(
-                                    value: SortMode.nameAsc,
-                                    child: Text('Nome A-Z'),
-                                  ),
-                                  DropdownMenuItem(
-                                    value: SortMode.nameDesc,
-                                    child: Text('Nome Z-A'),
-                                  ),
-                                ],
-                                onChanged: (value) {
-                                  if (value == null) return;
-                                  setState(() {
-                                    _sortMode = value;
-                                    _applyFilters();
-                                  });
-                                },
+                          DropdownButton<SortMode>(
+                            value: _sortMode,
+                            items: const [
+                              DropdownMenuItem(
+                                value: SortMode.numberAsc,
+                                child: Text('Numero crescente'),
                               ),
-                              PopupMenuButton<String>(
-                                tooltip: 'Regione',
-                                onSelected: (value) {
-                                  setState(() {
-                                    _selectedRegion =
-                                        value == '__all__' ? null : value;
-                                    _applyFilters();
-                                  });
-                                },
-                                itemBuilder: (_) => [
-                                  const PopupMenuItem(
-                                    value: '__all__',
-                                    child: Text('Tutte le regioni'),
-                                  ),
-                                  for (final region in _regions.keys)
-                                    PopupMenuItem(
-                                      value: region,
-                                      child: ListTile(
-                                        contentPadding: EdgeInsets.zero,
-                                        title: Text(region),
-                                        subtitle: Text(
-                                          _regionMenuSubtitle(region),
-                                        ),
-                                      ),
-                                    ),
-                                ],
-                                child: Chip(
-                                  avatar: const Icon(Icons.public, size: 18),
-                                  label: Text(_selectedRegion ?? 'Regione'),
-                                ),
+                              DropdownMenuItem(
+                                value: SortMode.numberDesc,
+                                child: Text('Numero decrescente'),
                               ),
-                              ActionChip(
-                                avatar: const Icon(Icons.filter_alt, size: 18),
-                                label: Text(
-                                  _selectedTypes.isEmpty
-                                      ? 'Tipi'
-                                      : 'Tipi (${_selectedTypes.length})',
-                                ),
-                                onPressed: _pickTypeFilters,
+                              DropdownMenuItem(
+                                value: SortMode.nameAsc,
+                                child: Text('Nome A-Z'),
                               ),
-                              Chip(
-                                label: Text(
-                                  '${_filteredPokemon.length} risultati',
-                                ),
+                              DropdownMenuItem(
+                                value: SortMode.nameDesc,
+                                child: Text('Nome Z-A'),
                               ),
                             ],
-                          ),
-                          const SizedBox(height: 8),
-                          _FilterChips<ViewFilter>(
-                            values: ViewFilter.values,
-                            selected: _viewFilter,
-                            label: _viewFilterLabel,
-                            onSelected: (value) {
+                            onChanged: (value) {
+                              if (value == null) return;
                               setState(() {
-                                _viewFilter = value;
+                                _sortMode = value;
                                 _applyFilters();
                               });
                             },
                           ),
-                          const SizedBox(height: 6),
-                          _FilterChips<MarkMode>(
-                            values: MarkMode.values,
-                            selected: _markMode,
-                            label: _markModeLabel,
-                            onSelected: (value) =>
-                                setState(() => _markMode = value),
+                          PopupMenuButton<String>(
+                            tooltip: 'Regione',
+                            onSelected: (value) {
+                              setState(() {
+                                _selectedRegion = value == '__all__'
+                                    ? null
+                                    : value;
+                                _applyFilters();
+                              });
+                            },
+                            itemBuilder: (_) => [
+                              const PopupMenuItem(
+                                value: '__all__',
+                                child: Text('Tutte le regioni'),
+                              ),
+                              for (final region in _regions.keys)
+                                PopupMenuItem(
+                                  value: region,
+                                  child: ListTile(
+                                    contentPadding: EdgeInsets.zero,
+                                    title: Text(region),
+                                    subtitle: Text(_regionMenuSubtitle(region)),
+                                  ),
+                                ),
+                            ],
+                            child: Chip(
+                              avatar: const Icon(Icons.public, size: 18),
+                              label: Text(_selectedRegion ?? 'Regione'),
+                            ),
+                          ),
+                          ActionChip(
+                            avatar: const Icon(Icons.filter_alt, size: 18),
+                            label: Text(
+                              _selectedTypes.isEmpty
+                                  ? 'Tipi'
+                                  : 'Tipi (${_selectedTypes.length})',
+                            ),
+                            onPressed: _pickTypeFilters,
+                          ),
+                          Chip(
+                            label: Text('${_filteredPokemon.length} risultati'),
                           ),
                         ],
                       ),
-                    ),
-                    Expanded(
-                      child: RefreshIndicator(
-                        onRefresh: _loadPokemon,
-                        child: _visibleSections.isEmpty
-                            ? ListView(
-                                children: const [
-                                  SizedBox(height: 160),
-                                  Center(child: Text('Nessun Pokémon trovato.')),
-                                ],
-                              )
-                            : ListView.builder(
-                                itemCount: _visibleSections.length,
-                                itemBuilder: (context, index) {
-                                  final section = _visibleSections[index];
-                                  return _RegionSection(
-                                    region: section,
-                                    pokemon: _pokemonForSection(section),
-                                    columns: _gridColumnCount(context),
-                                    entryFor: _entryFor,
-                                    formFor: _previewFormFor,
-                                    onPokemonTap: _handlePokemonTap,
-                                  );
-                                },
-                              ),
+                      const SizedBox(height: 8),
+                      _FilterChips<ViewFilter>(
+                        values: ViewFilter.values,
+                        selected: _viewFilter,
+                        label: _viewFilterLabel,
+                        onSelected: (value) {
+                          setState(() {
+                            _viewFilter = value;
+                            _applyFilters();
+                          });
+                        },
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 6),
+                      _FilterChips<MarkMode>(
+                        values: MarkMode.values,
+                        selected: _markMode,
+                        label: _markModeLabel,
+                        onSelected: (value) =>
+                            setState(() => _markMode = value),
+                      ),
+                    ],
+                  ),
                 ),
+                Expanded(
+                  child: RefreshIndicator(
+                    onRefresh: _loadPokemon,
+                    child: _visibleSections.isEmpty
+                        ? ListView(
+                            children: const [
+                              SizedBox(height: 160),
+                              Center(child: Text('Nessun Pokémon trovato.')),
+                            ],
+                          )
+                        : ListView.builder(
+                            itemCount: _visibleSections.length,
+                            itemBuilder: (context, index) {
+                              final section = _visibleSections[index];
+                              return _RegionSection(
+                                region: section,
+                                pokemon: _pokemonForSection(section),
+                                columns: _gridColumnCount(context),
+                                entryFor: _entryFor,
+                                formFor: _previewFormFor,
+                                onPokemonTap: _handlePokemonTap,
+                              );
+                            },
+                          ),
+                  ),
+                ),
+              ],
+            ),
     );
   }
 
@@ -606,9 +609,9 @@ class _RegionSection extends StatelessWidget {
         children: [
           Text(
             '${region.toUpperCase()} · ${pokemon.length}',
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w900,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
           ),
           const SizedBox(height: 8),
           Divider(color: Theme.of(context).colorScheme.outlineVariant),

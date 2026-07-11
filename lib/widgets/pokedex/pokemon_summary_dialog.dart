@@ -125,9 +125,9 @@ class _PokemonSummaryDialogState extends State<PokemonSummaryDialog> {
                 _selectedForm.isBase
                     ? widget.pokemon.name
                     : '${widget.pokemon.name} · ${_selectedForm.name}',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w900,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 8),
@@ -188,10 +188,8 @@ class _PokemonSummaryDialogState extends State<PokemonSummaryDialog> {
           child: Text(status.seen ? 'Non visto' : 'Visto'),
         ),
         TextButton(
-          onPressed: () => _updateSelectedStatus(
-            seen: true,
-            caught: !status.caught,
-          ),
+          onPressed: () =>
+              _updateSelectedStatus(seen: true, caught: !status.caught),
           child: Text(status.caught ? 'Non catturato' : 'Catturato'),
         ),
         FilledButton(
@@ -268,16 +266,16 @@ class _FormThumbnail extends StatelessWidget {
               form.name.toUpperCase(),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    fontWeight: FontWeight.w900,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w900),
             ),
             Icon(
               status.caught
                   ? Icons.catching_pokemon
                   : status.seen
-                      ? Icons.visibility
-                      : Icons.lock_outline,
+                  ? Icons.visibility
+                  : Icons.lock_outline,
               size: 14,
               color: status.caught
                   ? colorScheme.primary

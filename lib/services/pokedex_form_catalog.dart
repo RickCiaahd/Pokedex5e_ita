@@ -83,10 +83,7 @@ class PokedexFormCatalog {
     return options;
   }
 
-  static PokedexFormOption preferredFor(
-    Pokemon pokemon,
-    PokedexEntry entry,
-  ) {
+  static PokedexFormOption preferredFor(Pokemon pokemon, PokedexEntry entry) {
     final options = optionsFor(pokemon);
     var preferred = options.first;
     var preferredScore = -1;
@@ -96,8 +93,8 @@ class PokedexFormCatalog {
       final score = status.caught
           ? 2
           : status.seen
-              ? 1
-              : 0;
+          ? 1
+          : 0;
 
       if (score > preferredScore ||
           (score == preferredScore && option.isBase && !preferred.isBase)) {
@@ -109,10 +106,7 @@ class PokedexFormCatalog {
     return preferred;
   }
 
-  static bool _isTemporary(
-    Pokemon pokemon,
-    PokemonFormDefinition definition,
-  ) {
+  static bool _isTemporary(Pokemon pokemon, PokemonFormDefinition definition) {
     final key = Pokemon.formReferenceKey(
       '${definition.key} ${definition.displayName}',
       pokemon.name,
@@ -133,10 +127,7 @@ class PokedexFormCatalog {
     final species = pokemon.name.trim();
     if (species.isNotEmpty) {
       label = label
-          .replaceAll(
-            RegExp(RegExp.escape(species), caseSensitive: false),
-            ' ',
-          )
+          .replaceAll(RegExp(RegExp.escape(species), caseSensitive: false), ' ')
           .replaceAll(RegExp(r'\s+'), ' ')
           .trim();
     }

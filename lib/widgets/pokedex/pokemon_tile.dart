@@ -43,15 +43,15 @@ class PokemonTile extends StatelessWidget {
                 color: status.caught
                     ? Colors.white
                     : status.seen
-                        ? const Color(0xFFF6F6F6)
-                        : const Color(0xFFE4E1DC),
+                    ? const Color(0xFFF6F6F6)
+                    : const Color(0xFFE4E1DC),
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
                   color: status.caught
                       ? colorScheme.primary
                       : status.seen
-                          ? colorScheme.outlineVariant
-                          : colorScheme.outline.withValues(alpha: 0.45),
+                      ? colorScheme.outlineVariant
+                      : colorScheme.outline.withValues(alpha: 0.45),
                   width: status.caught ? 2 : 1,
                 ),
                 boxShadow: status.caught
@@ -82,8 +82,8 @@ class PokemonTile extends StatelessWidget {
                       child: Text(
                         number,
                         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                              fontWeight: FontWeight.w900,
-                            ),
+                          fontWeight: FontWeight.w900,
+                        ),
                       ),
                     ),
                   ),
@@ -132,12 +132,11 @@ class PokemonTile extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                  fontWeight:
-                      status.caught ? FontWeight.w900 : FontWeight.w700,
-                  color: status.seen
-                      ? colorScheme.onSurface
-                      : colorScheme.onSurfaceVariant,
-                ),
+              fontWeight: status.caught ? FontWeight.w900 : FontWeight.w700,
+              color: status.seen
+                  ? colorScheme.onSurface
+                  : colorScheme.onSurfaceVariant,
+            ),
           ),
         ],
       ),

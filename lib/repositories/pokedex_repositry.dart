@@ -68,10 +68,7 @@ class PokedexRepository {
     required bool seen,
     required bool caught,
   }) async {
-    final current = await getEntry(
-      profileId: profileId,
-      pokemonId: pokemonId,
-    );
+    final current = await getEntry(profileId: profileId, pokemonId: pokemonId);
     final updated = current.withFormStatus(
       formKey: formKey,
       formName: formName,
@@ -126,10 +123,7 @@ class PokedexRepository {
     required bool caught,
     String? formName,
   }) async {
-    final current = await getEntry(
-      profileId: profileId,
-      pokemonId: pokemonId,
-    );
+    final current = await getEntry(profileId: profileId, pokemonId: pokemonId);
     final hasKnownAlternate = current.forms.entries.any(
       (entry) =>
           entry.key != PokedexEntry.baseFormKey &&

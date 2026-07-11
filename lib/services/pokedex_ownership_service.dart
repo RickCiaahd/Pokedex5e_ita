@@ -9,9 +9,9 @@ class PokedexOwnershipService {
     PokedexRepository? pokedexRepository,
     TeamRepository? teamRepository,
     PokemonPcRepository? pcRepository,
-  })  : _pokedexRepository = pokedexRepository ?? PokedexRepository(),
-        _teamRepository = teamRepository ?? TeamRepository(),
-        _pcRepository = pcRepository ?? PokemonPcRepository();
+  }) : _pokedexRepository = pokedexRepository ?? PokedexRepository(),
+       _teamRepository = teamRepository ?? TeamRepository(),
+       _pcRepository = pcRepository ?? PokemonPcRepository();
 
   final PokedexRepository _pokedexRepository;
   final TeamRepository _teamRepository;
@@ -39,10 +39,7 @@ class PokedexOwnershipService {
     await _registerPc(profileId, pcPokemon);
   }
 
-  Future<void> _registerTeam(
-    String profileId,
-    List<TeamSlot> team,
-  ) async {
+  Future<void> _registerTeam(String profileId, List<TeamSlot> team) async {
     for (final slot in team) {
       final pokemonId = slot.pokemonId;
       if (pokemonId == null) continue;
@@ -54,10 +51,7 @@ class PokedexOwnershipService {
     }
   }
 
-  Future<void> _registerPc(
-    String profileId,
-    List<PcPokemon> pokemon,
-  ) async {
+  Future<void> _registerPc(String profileId, List<PcPokemon> pokemon) async {
     for (final stored in pokemon) {
       await registerOwned(
         profileId: profileId,

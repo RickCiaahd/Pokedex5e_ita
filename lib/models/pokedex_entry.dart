@@ -83,10 +83,10 @@ class PokedexEntry {
     bool caught = false,
     Map<String, PokedexFormEntry> forms = const {},
     DateTime? updatedAt,
-  })  : forms = Map<String, PokedexFormEntry>.unmodifiable(
-          _seedForms(forms: forms, seen: seen, caught: caught),
-        ),
-        updatedAt = updatedAt ?? DateTime.now();
+  }) : forms = Map<String, PokedexFormEntry>.unmodifiable(
+         _seedForms(forms: forms, seen: seen, caught: caught),
+       ),
+       updatedAt = updatedAt ?? DateTime.now();
 
   static const String baseFormKey = 'base';
 
@@ -167,7 +167,8 @@ class PokedexEntry {
     final normalizedAliases = aliases.map(normalizeFormKey).toSet();
     final matching = <PokedexFormEntry>[
       for (final entry in forms.entries)
-        if (normalizedAliases.contains(normalizeFormKey(entry.key))) entry.value,
+        if (normalizedAliases.contains(normalizeFormKey(entry.key)))
+          entry.value,
     ];
 
     if (matching.isEmpty) {
@@ -198,14 +199,8 @@ class PokedexEntry {
     bool? caught,
   }) {
     final key = normalizeFormKey(formKey);
-    final matchingKeys = <String>{
-      key,
-      ...aliases.map(normalizeFormKey),
-    };
-    final current = formForAliases(
-      matchingKeys,
-      fallbackName: formName,
-    );
+    final matchingKeys = <String>{key, ...aliases.map(normalizeFormKey)};
+    final current = formForAliases(matchingKeys, fallbackName: formName);
     final nextCaught = caught ?? current.caught;
     final nextSeen = nextCaught ? true : seen ?? current.seen;
     final updatedForms = Map<String, PokedexFormEntry>.from(forms)

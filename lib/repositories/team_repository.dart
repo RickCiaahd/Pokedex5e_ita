@@ -3,12 +3,17 @@ import 'package:hive_flutter/hive_flutter.dart';
 import '../database/hive_boxes.dart';
 import '../models/team_slot.dart';
 import 'move_repository.dart';
+import 'pokedex_repositry.dart';
 
 class TeamRepository {
-  TeamRepository({MoveRepository? moveRepository})
-      : _moveRepository = moveRepository ?? MoveRepository();
+  TeamRepository({
+    MoveRepository? moveRepository,
+    PokedexRepository? pokedexRepository,
+  })  : _moveRepository = moveRepository ?? MoveRepository(),
+        _pokedexRepository = pokedexRepository ?? PokedexRepository();
 
   final MoveRepository _moveRepository;
+  final PokedexRepository _pokedexRepository;
 
   Future<Box> _box() => Hive.openBox(HiveBoxes.teams);
 
@@ -119,6 +124,13 @@ class TeamRepository {
     }).toList();
 
     await saveTeam(profileId, updatedTeam);
+
+    if (pokemonId != null) {
+      await _pokedexRepository.registerCaught(
+        profileId: profileId,
+        pokemonId: pokemonId,
+      );
+    }
   }
 
   Future<void> updateSlot({
@@ -136,6 +148,15 @@ class TeamRepository {
     }).toList();
 
     await saveTeam(profileId, updatedTeam);
+
+    final pokemonId = updatedSlot.pokemonId;
+    if (pokemonId != null) {
+      await _pokedexRepository.registerCaught(
+        profileId: profileId,
+        pokemonId: pokemonId,
+        formName: updatedSlot.formName,
+      );
+    }
   }
 
   Future<void> deleteTeam(String profileId) async {

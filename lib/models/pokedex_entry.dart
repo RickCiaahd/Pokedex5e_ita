@@ -193,18 +193,27 @@ class PokedexEntry {
   PokedexEntry withFormStatus({
     required String formKey,
     String? formName,
+    Iterable<String> aliases = const [],
     bool? seen,
     bool? caught,
   }) {
     final key = normalizeFormKey(formKey);
-    final current = formFor(key, formName: formName);
+    final matchingKeys = <String>{
+      key,
+      ...aliases.map(normalizeFormKey),
+    };
+    final current = formForAliases(
+      matchingKeys,
+      fallbackName: formName,
+    );
     final nextCaught = caught ?? current.caught;
     final nextSeen = nextCaught ? true : seen ?? current.seen;
-    final updatedForms = Map<String, PokedexFormEntry>.from(forms);
+    final updatedForms = Map<String, PokedexFormEntry>.from(forms)
+      ..removeWhere(
+        (storedKey, _) => matchingKeys.contains(normalizeFormKey(storedKey)),
+      );
 
-    if (!nextSeen && !nextCaught) {
-      updatedForms.remove(key);
-    } else {
+    if (nextSeen || nextCaught) {
       updatedForms[key] = current.copyWith(
         key: key,
         name: formName ?? current.name,
@@ -235,13 +244,20 @@ class PokedexEntry {
       final currentBase = formFor(baseFormKey, formName: 'Base');
       final nextCaught = caught ?? currentBase.caught;
       final nextSeen = nextCaught ? true : seen ?? currentBase.seen;
+      final updatedForms = Map<String, PokedexFormEntry>.from(this.forms);
+
+      if (!nextSeen && !nextCaught) {
+        updatedForms.remove(baseFormKey);
+      } else {
+        updatedForms[baseFormKey] = currentBase.copyWith(
+          seen: nextSeen,
+          caught: nextCaught,
+        );
+      }
+
       return PokedexEntry(
         pokemonId: pokemonId ?? this.pokemonId,
-        forms: Map<String, PokedexFormEntry>.from(this.forms)
-          ..[baseFormKey] = currentBase.copyWith(
-            seen: nextSeen,
-            caught: nextSeen ? nextCaught : false,
-          ),
+        forms: updatedForms,
         updatedAt: updatedAt ?? DateTime.now(),
       );
     }

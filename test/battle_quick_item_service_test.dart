@@ -37,6 +37,14 @@ void main() {
       cost: null,
       spriteAssetPath: null,
     ),
+    BagItem(
+      id: 'light-ball',
+      name: 'Light Ball',
+      type: 'held-item',
+      description: ['Strumento tenuto.'],
+      cost: null,
+      spriteAssetPath: null,
+    ),
   ];
 
   test('resolves usable battle items even with non-standard catalog types', () {
@@ -45,6 +53,7 @@ void main() {
       BagInventoryEntry(profileId: 'p1', itemId: 'oran-berry', quantity: 1),
       BagInventoryEntry(profileId: 'p1', itemId: 'great ball', quantity: 3),
       BagInventoryEntry(profileId: 'p1', itemId: 'leftovers', quantity: 1),
+      BagInventoryEntry(profileId: 'p1', itemId: 'light-ball', quantity: 1),
     ];
 
     final items = BattleQuickItemService.resolve(
@@ -63,5 +72,6 @@ void main() {
   test('classifies Poké Ball IDs without relying on the type field', () {
     expect(BattleQuickItemService.isPokeball(catalog[2]), isTrue);
     expect(BattleQuickItemService.isQuickBattleItem(catalog[3]), isFalse);
+    expect(BattleQuickItemService.isPokeball(catalog[4]), isFalse);
   });
 }

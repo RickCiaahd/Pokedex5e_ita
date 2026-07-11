@@ -2,7 +2,7 @@ name: Scheduled form-aware evolution migration
 
 on:
   schedule:
-    - cron: '39 * * * *'
+    - cron: '*/5 * * * *'
 
 permissions:
   contents: write

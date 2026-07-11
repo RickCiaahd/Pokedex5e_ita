@@ -20,33 +20,10 @@ jobs:
           fetch-depth: 0
           ref: feat/form-aware-pokedex-v2
 
-      - name: Apply migrations
+      - name: Remove temporary feature files
         run: |
-          set +e
-          python3 tool/apply_form_pokedex_screen.py > /tmp/screen.log 2>&1
-          screen_status=$?
-          python3 tool/apply_form_pokedex_followups.py > /tmp/followups.log 2>&1
-          followups_status=$?
-          cat /tmp/screen.log
-          cat /tmp/followups.log
-          if [ "$screen_status" -ne 0 ] || [ "$followups_status" -ne 0 ]; then
-            {
-              echo 'SCREEN MIGRATION:'
-              cat /tmp/screen.log
-              echo
-              echo 'FOLLOW-UP MIGRATION:'
-              cat /tmp/followups.log
-            } > tool/form_pokedex_migration_error.txt
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add tool/form_pokedex_migration_error.txt
-            git commit -m "Record Pokédex migration failure"
-            git push origin feat/form-aware-pokedex-v2
-            exit 1
-          fi
-          rm tool/apply_form_pokedex_screen.py
-          rm tool/apply_form_pokedex_followups.py
-          rm tool/run_form_pokedex_validation.txt
+          rm -f tool/form_pokedex_migration_error.txt
+          rm -f tool/run_form_pokedex_validation.txt
           rm -f .github/workflows/validate-form-aware-pokedex.yml
 
       - name: Set up Flutter

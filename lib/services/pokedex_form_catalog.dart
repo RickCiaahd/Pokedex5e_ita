@@ -31,7 +31,7 @@ class PokedexFormCatalog {
       PokedexEntry.baseFormKey: PokedexFormOption(
         key: PokedexEntry.baseFormKey,
         name: 'Base',
-        formName: null,
+        formName: 'Base',
         pokemon: pokemon,
         aliases: const {PokedexEntry.baseFormKey},
         isBase: true,
@@ -93,8 +93,8 @@ class PokedexFormCatalog {
       final score = status.caught
           ? 2
           : status.seen
-          ? 1
-          : 0;
+              ? 1
+              : 0;
 
       if (score > preferredScore ||
           (score == preferredScore && option.isBase && !preferred.isBase)) {

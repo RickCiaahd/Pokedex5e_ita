@@ -1,0 +1,6872 @@
+{
+  "source": "https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/pokemon.csv",
+  "units": {
+    "height": "decimetres",
+    "weight": "hectograms"
+  },
+  "generatedCount": 1139,
+  "fallbackCount": 10,
+  "unmappedCount": 12,
+  "fallbackIds": [
+    "basculegion-f",
+    "basculegion-m",
+    "hoopa-confined",
+    "indeedee-f",
+    "indeedee-m",
+    "meowstic-f",
+    "meowstic-m",
+    "minior-core-form",
+    "wormadam-plant-cloak",
+    "wormadam-sand-cloak"
+  ],
+  "unmappedIds": [
+    "aereon",
+    "belseraph",
+    "brawleon",
+    "drakeon",
+    "droideon",
+    "eeveon",
+    "minereon",
+    "pesteon",
+    "rookite",
+    "specteon",
+    "terreon",
+    "toxeon"
+  ],
+  "items": {
+    "abomasnow": {
+      "height": 22,
+      "weight": 1355,
+      "sourceIdentifier": "abomasnow",
+      "matched": true
+    },
+    "abra": {
+      "height": 9,
+      "weight": 195,
+      "sourceIdentifier": "abra",
+      "matched": true
+    },
+    "absol": {
+      "height": 12,
+      "weight": 470,
+      "sourceIdentifier": "absol",
+      "matched": true
+    },
+    "accelgor": {
+      "height": 8,
+      "weight": 253,
+      "sourceIdentifier": "accelgor",
+      "matched": true
+    },
+    "aegislash": {
+      "height": 17,
+      "weight": 530,
+      "sourceIdentifier": "aegislash-shield",
+      "matched": true
+    },
+    "aerodactyl": {
+      "height": 18,
+      "weight": 590,
+      "sourceIdentifier": "aerodactyl",
+      "matched": true
+    },
+    "aggron": {
+      "height": 21,
+      "weight": 3600,
+      "sourceIdentifier": "aggron",
+      "matched": true
+    },
+    "aipom": {
+      "height": 8,
+      "weight": 115,
+      "sourceIdentifier": "aipom",
+      "matched": true
+    },
+    "alakazam": {
+      "height": 15,
+      "weight": 480,
+      "sourceIdentifier": "alakazam",
+      "matched": true
+    },
+    "alcremie": {
+      "height": 3,
+      "weight": 5,
+      "sourceIdentifier": "alcremie",
+      "matched": true
+    },
+    "alolan-diglett": {
+      "height": 2,
+      "weight": 10,
+      "sourceIdentifier": "diglett-alola",
+      "matched": true
+    },
+    "alolan-dugtrio": {
+      "height": 7,
+      "weight": 666,
+      "sourceIdentifier": "dugtrio-alola",
+      "matched": true
+    },
+    "alolan-exeggutor": {
+      "height": 109,
+      "weight": 4156,
+      "sourceIdentifier": "exeggutor-alola",
+      "matched": true
+    },
+    "alolan-geodude": {
+      "height": 4,
+      "weight": 203,
+      "sourceIdentifier": "geodude-alola",
+      "matched": true
+    },
+    "alolan-golem": {
+      "height": 17,
+      "weight": 3160,
+      "sourceIdentifier": "golem-alola",
+      "matched": true
+    },
+    "alolan-graveler": {
+      "height": 10,
+      "weight": 1100,
+      "sourceIdentifier": "graveler-alola",
+      "matched": true
+    },
+    "alolan-grimer": {
+      "height": 7,
+      "weight": 420,
+      "sourceIdentifier": "grimer-alola",
+      "matched": true
+    },
+    "alolan-marowak": {
+      "height": 10,
+      "weight": 340,
+      "sourceIdentifier": "marowak-alola",
+      "matched": true
+    },
+    "alolan-meowth": {
+      "height": 4,
+      "weight": 42,
+      "sourceIdentifier": "meowth-alola",
+      "matched": true
+    },
+    "alolan-muk": {
+      "height": 10,
+      "weight": 520,
+      "sourceIdentifier": "muk-alola",
+      "matched": true
+    },
+    "alolan-ninetales": {
+      "height": 11,
+      "weight": 199,
+      "sourceIdentifier": "ninetales-alola",
+      "matched": true
+    },
+    "alolan-persian": {
+      "height": 11,
+      "weight": 330,
+      "sourceIdentifier": "persian-alola",
+      "matched": true
+    },
+    "alolan-raichu": {
+      "height": 7,
+      "weight": 210,
+      "sourceIdentifier": "raichu-alola",
+      "matched": true
+    },
+    "alolan-raticate": {
+      "height": 7,
+      "weight": 255,
+      "sourceIdentifier": "raticate-alola",
+      "matched": true
+    },
+    "alolan-rattata": {
+      "height": 3,
+      "weight": 38,
+      "sourceIdentifier": "rattata-alola",
+      "matched": true
+    },
+    "alolan-sandshrew": {
+      "height": 7,
+      "weight": 400,
+      "sourceIdentifier": "sandshrew-alola",
+      "matched": true
+    },
+    "alolan-sandslash": {
+      "height": 12,
+      "weight": 550,
+      "sourceIdentifier": "sandslash-alola",
+      "matched": true
+    },
+    "alolan-vulpix": {
+      "height": 6,
+      "weight": 99,
+      "sourceIdentifier": "vulpix-alola",
+      "matched": true
+    },
+    "alomomola": {
+      "height": 12,
+      "weight": 316,
+      "sourceIdentifier": "alomomola",
+      "matched": true
+    },
+    "altaria": {
+      "height": 11,
+      "weight": 206,
+      "sourceIdentifier": "altaria",
+      "matched": true
+    },
+    "amaura": {
+      "height": 13,
+      "weight": 252,
+      "sourceIdentifier": "amaura",
+      "matched": true
+    },
+    "ambipom": {
+      "height": 12,
+      "weight": 203,
+      "sourceIdentifier": "ambipom",
+      "matched": true
+    },
+    "amoonguss": {
+      "height": 6,
+      "weight": 105,
+      "sourceIdentifier": "amoonguss",
+      "matched": true
+    },
+    "ampharos": {
+      "height": 14,
+      "weight": 615,
+      "sourceIdentifier": "ampharos",
+      "matched": true
+    },
+    "annihilape": {
+      "height": 12,
+      "weight": 560,
+      "sourceIdentifier": "annihilape",
+      "matched": true
+    },
+    "anorith": {
+      "height": 7,
+      "weight": 125,
+      "sourceIdentifier": "anorith",
+      "matched": true
+    },
+    "appletun": {
+      "height": 4,
+      "weight": 130,
+      "sourceIdentifier": "appletun",
+      "matched": true
+    },
+    "applin": {
+      "height": 2,
+      "weight": 5,
+      "sourceIdentifier": "applin",
+      "matched": true
+    },
+    "araquanid": {
+      "height": 18,
+      "weight": 820,
+      "sourceIdentifier": "araquanid",
+      "matched": true
+    },
+    "arbok": {
+      "height": 35,
+      "weight": 650,
+      "sourceIdentifier": "arbok",
+      "matched": true
+    },
+    "arboliva": {
+      "height": 14,
+      "weight": 482,
+      "sourceIdentifier": "arboliva",
+      "matched": true
+    },
+    "arcanine": {
+      "height": 19,
+      "weight": 1550,
+      "sourceIdentifier": "arcanine",
+      "matched": true
+    },
+    "arcanine-hisui": {
+      "height": 20,
+      "weight": 1680,
+      "sourceIdentifier": "arcanine-hisui",
+      "matched": true
+    },
+    "arceus": {
+      "height": 32,
+      "weight": 3200,
+      "sourceIdentifier": "arceus",
+      "matched": true
+    },
+    "archaludon": {
+      "height": 20,
+      "weight": 600,
+      "sourceIdentifier": "archaludon",
+      "matched": true
+    },
+    "archen": {
+      "height": 5,
+      "weight": 95,
+      "sourceIdentifier": "archen",
+      "matched": true
+    },
+    "archeops": {
+      "height": 14,
+      "weight": 320,
+      "sourceIdentifier": "archeops",
+      "matched": true
+    },
+    "arctibax": {
+      "height": 8,
+      "weight": 300,
+      "sourceIdentifier": "arctibax",
+      "matched": true
+    },
+    "arctovish": {
+      "height": 20,
+      "weight": 1750,
+      "sourceIdentifier": "arctovish",
+      "matched": true
+    },
+    "arctozolt": {
+      "height": 23,
+      "weight": 1500,
+      "sourceIdentifier": "arctozolt",
+      "matched": true
+    },
+    "ariados": {
+      "height": 11,
+      "weight": 335,
+      "sourceIdentifier": "ariados",
+      "matched": true
+    },
+    "armaldo": {
+      "height": 15,
+      "weight": 682,
+      "sourceIdentifier": "armaldo",
+      "matched": true
+    },
+    "armarouge": {
+      "height": 15,
+      "weight": 850,
+      "sourceIdentifier": "armarouge",
+      "matched": true
+    },
+    "aromatisse": {
+      "height": 8,
+      "weight": 155,
+      "sourceIdentifier": "aromatisse",
+      "matched": true
+    },
+    "aron": {
+      "height": 4,
+      "weight": 600,
+      "sourceIdentifier": "aron",
+      "matched": true
+    },
+    "arrokuda": {
+      "height": 5,
+      "weight": 10,
+      "sourceIdentifier": "arrokuda",
+      "matched": true
+    },
+    "articuno": {
+      "height": 17,
+      "weight": 554,
+      "sourceIdentifier": "articuno",
+      "matched": true
+    },
+    "articuno-galar": {
+      "height": 17,
+      "weight": 509,
+      "sourceIdentifier": "articuno-galar",
+      "matched": true
+    },
+    "audino": {
+      "height": 11,
+      "weight": 310,
+      "sourceIdentifier": "audino",
+      "matched": true
+    },
+    "aurorus": {
+      "height": 27,
+      "weight": 2250,
+      "sourceIdentifier": "aurorus",
+      "matched": true
+    },
+    "avalugg": {
+      "height": 20,
+      "weight": 5050,
+      "sourceIdentifier": "avalugg",
+      "matched": true
+    },
+    "avalugg-hisui": {
+      "height": 14,
+      "weight": 2624,
+      "sourceIdentifier": "avalugg-hisui",
+      "matched": true
+    },
+    "axew": {
+      "height": 6,
+      "weight": 180,
+      "sourceIdentifier": "axew",
+      "matched": true
+    },
+    "azelf": {
+      "height": 3,
+      "weight": 3,
+      "sourceIdentifier": "azelf",
+      "matched": true
+    },
+    "azumarill": {
+      "height": 8,
+      "weight": 285,
+      "sourceIdentifier": "azumarill",
+      "matched": true
+    },
+    "azurill": {
+      "height": 2,
+      "weight": 20,
+      "sourceIdentifier": "azurill",
+      "matched": true
+    },
+    "bagon": {
+      "height": 6,
+      "weight": 421,
+      "sourceIdentifier": "bagon",
+      "matched": true
+    },
+    "baltoy": {
+      "height": 5,
+      "weight": 215,
+      "sourceIdentifier": "baltoy",
+      "matched": true
+    },
+    "banette": {
+      "height": 11,
+      "weight": 125,
+      "sourceIdentifier": "banette",
+      "matched": true
+    },
+    "barbaracle": {
+      "height": 13,
+      "weight": 960,
+      "sourceIdentifier": "barbaracle",
+      "matched": true
+    },
+    "barboach": {
+      "height": 4,
+      "weight": 19,
+      "sourceIdentifier": "barboach",
+      "matched": true
+    },
+    "barraskewda": {
+      "height": 13,
+      "weight": 300,
+      "sourceIdentifier": "barraskewda",
+      "matched": true
+    },
+    "basculegion-f": {
+      "height": 30,
+      "weight": 1100,
+      "sourceIdentifier": "basculegion-male",
+      "matched": false
+    },
+    "basculegion-m": {
+      "height": 30,
+      "weight": 1100,
+      "sourceIdentifier": "basculegion-male",
+      "matched": false
+    },
+    "basculin": {
+      "height": 10,
+      "weight": 180,
+      "sourceIdentifier": "basculin-red-striped",
+      "matched": true
+    },
+    "basculin-blue-striped": {
+      "height": 10,
+      "weight": 180,
+      "sourceIdentifier": "basculin-blue-striped",
+      "matched": true
+    },
+    "basculin-white-striped": {
+      "height": 10,
+      "weight": 180,
+      "sourceIdentifier": "basculin-white-striped",
+      "matched": true
+    },
+    "bastiodon": {
+      "height": 13,
+      "weight": 1495,
+      "sourceIdentifier": "bastiodon",
+      "matched": true
+    },
+    "baxcalibur": {
+      "height": 21,
+      "weight": 2100,
+      "sourceIdentifier": "baxcalibur",
+      "matched": true
+    },
+    "bayleef": {
+      "height": 12,
+      "weight": 158,
+      "sourceIdentifier": "bayleef",
+      "matched": true
+    },
+    "beartic": {
+      "height": 26,
+      "weight": 2600,
+      "sourceIdentifier": "beartic",
+      "matched": true
+    },
+    "beautifly": {
+      "height": 10,
+      "weight": 284,
+      "sourceIdentifier": "beautifly",
+      "matched": true
+    },
+    "beedrill": {
+      "height": 10,
+      "weight": 295,
+      "sourceIdentifier": "beedrill",
+      "matched": true
+    },
+    "beheeyem": {
+      "height": 10,
+      "weight": 345,
+      "sourceIdentifier": "beheeyem",
+      "matched": true
+    },
+    "beldum": {
+      "height": 6,
+      "weight": 952,
+      "sourceIdentifier": "beldum",
+      "matched": true
+    },
+    "bellibolt": {
+      "height": 12,
+      "weight": 1130,
+      "sourceIdentifier": "bellibolt",
+      "matched": true
+    },
+    "bellossom": {
+      "height": 4,
+      "weight": 58,
+      "sourceIdentifier": "bellossom",
+      "matched": true
+    },
+    "bellsprout": {
+      "height": 7,
+      "weight": 40,
+      "sourceIdentifier": "bellsprout",
+      "matched": true
+    },
+    "bergmite": {
+      "height": 10,
+      "weight": 995,
+      "sourceIdentifier": "bergmite",
+      "matched": true
+    },
+    "bewear": {
+      "height": 21,
+      "weight": 1350,
+      "sourceIdentifier": "bewear",
+      "matched": true
+    },
+    "bibarel": {
+      "height": 10,
+      "weight": 315,
+      "sourceIdentifier": "bibarel",
+      "matched": true
+    },
+    "bidoof": {
+      "height": 5,
+      "weight": 200,
+      "sourceIdentifier": "bidoof",
+      "matched": true
+    },
+    "binacle": {
+      "height": 5,
+      "weight": 310,
+      "sourceIdentifier": "binacle",
+      "matched": true
+    },
+    "bisharp": {
+      "height": 16,
+      "weight": 700,
+      "sourceIdentifier": "bisharp",
+      "matched": true
+    },
+    "blacephalon": {
+      "height": 18,
+      "weight": 130,
+      "sourceIdentifier": "blacephalon",
+      "matched": true
+    },
+    "black-kyurem": {
+      "height": 33,
+      "weight": 3250,
+      "sourceIdentifier": "kyurem-black",
+      "matched": true
+    },
+    "blastoise": {
+      "height": 16,
+      "weight": 855,
+      "sourceIdentifier": "blastoise",
+      "matched": true
+    },
+    "blaziken": {
+      "height": 19,
+      "weight": 520,
+      "sourceIdentifier": "blaziken",
+      "matched": true
+    },
+    "blipbug": {
+      "height": 4,
+      "weight": 80,
+      "sourceIdentifier": "blipbug",
+      "matched": true
+    },
+    "blissey": {
+      "height": 15,
+      "weight": 468,
+      "sourceIdentifier": "blissey",
+      "matched": true
+    },
+    "blitzle": {
+      "height": 8,
+      "weight": 298,
+      "sourceIdentifier": "blitzle",
+      "matched": true
+    },
+    "boldore": {
+      "height": 9,
+      "weight": 1020,
+      "sourceIdentifier": "boldore",
+      "matched": true
+    },
+    "boltund": {
+      "height": 10,
+      "weight": 340,
+      "sourceIdentifier": "boltund",
+      "matched": true
+    },
+    "bombirdier": {
+      "height": 15,
+      "weight": 429,
+      "sourceIdentifier": "bombirdier",
+      "matched": true
+    },
+    "bonsly": {
+      "height": 5,
+      "weight": 150,
+      "sourceIdentifier": "bonsly",
+      "matched": true
+    },
+    "bouffalant": {
+      "height": 16,
+      "weight": 946,
+      "sourceIdentifier": "bouffalant",
+      "matched": true
+    },
+    "bounsweet": {
+      "height": 3,
+      "weight": 32,
+      "sourceIdentifier": "bounsweet",
+      "matched": true
+    },
+    "braixen": {
+      "height": 10,
+      "weight": 145,
+      "sourceIdentifier": "braixen",
+      "matched": true
+    },
+    "brambleghast": {
+      "height": 12,
+      "weight": 60,
+      "sourceIdentifier": "brambleghast",
+      "matched": true
+    },
+    "bramblin": {
+      "height": 6,
+      "weight": 6,
+      "sourceIdentifier": "bramblin",
+      "matched": true
+    },
+    "braviary": {
+      "height": 15,
+      "weight": 410,
+      "sourceIdentifier": "braviary",
+      "matched": true
+    },
+    "braviary-hisui": {
+      "height": 17,
+      "weight": 434,
+      "sourceIdentifier": "braviary-hisui",
+      "matched": true
+    },
+    "breloom": {
+      "height": 12,
+      "weight": 392,
+      "sourceIdentifier": "breloom",
+      "matched": true
+    },
+    "brionne": {
+      "height": 6,
+      "weight": 175,
+      "sourceIdentifier": "brionne",
+      "matched": true
+    },
+    "bronzong": {
+      "height": 13,
+      "weight": 1870,
+      "sourceIdentifier": "bronzong",
+      "matched": true
+    },
+    "bronzor": {
+      "height": 5,
+      "weight": 605,
+      "sourceIdentifier": "bronzor",
+      "matched": true
+    },
+    "brute-bonnet": {
+      "height": 12,
+      "weight": 210,
+      "sourceIdentifier": "brute-bonnet",
+      "matched": true
+    },
+    "bruxish": {
+      "height": 9,
+      "weight": 190,
+      "sourceIdentifier": "bruxish",
+      "matched": true
+    },
+    "budew": {
+      "height": 2,
+      "weight": 12,
+      "sourceIdentifier": "budew",
+      "matched": true
+    },
+    "buizel": {
+      "height": 7,
+      "weight": 295,
+      "sourceIdentifier": "buizel",
+      "matched": true
+    },
+    "bulbasaur": {
+      "height": 7,
+      "weight": 69,
+      "sourceIdentifier": "bulbasaur",
+      "matched": true
+    },
+    "buneary": {
+      "height": 4,
+      "weight": 55,
+      "sourceIdentifier": "buneary",
+      "matched": true
+    },
+    "bunnelby": {
+      "height": 4,
+      "weight": 50,
+      "sourceIdentifier": "bunnelby",
+      "matched": true
+    },
+    "burmy": {
+      "height": 2,
+      "weight": 34,
+      "sourceIdentifier": "burmy",
+      "matched": true
+    },
+    "butterfree": {
+      "height": 11,
+      "weight": 320,
+      "sourceIdentifier": "butterfree",
+      "matched": true
+    },
+    "buzzwole": {
+      "height": 24,
+      "weight": 3336,
+      "sourceIdentifier": "buzzwole",
+      "matched": true
+    },
+    "cacnea": {
+      "height": 4,
+      "weight": 513,
+      "sourceIdentifier": "cacnea",
+      "matched": true
+    },
+    "cacturne": {
+      "height": 13,
+      "weight": 774,
+      "sourceIdentifier": "cacturne",
+      "matched": true
+    },
+    "calyrex": {
+      "height": 11,
+      "weight": 77,
+      "sourceIdentifier": "calyrex",
+      "matched": true
+    },
+    "calyrex-ice": {
+      "height": 24,
+      "weight": 8091,
+      "sourceIdentifier": "calyrex-ice",
+      "matched": true
+    },
+    "calyrex-shadow": {
+      "height": 24,
+      "weight": 536,
+      "sourceIdentifier": "calyrex-shadow",
+      "matched": true
+    },
+    "camerupt": {
+      "height": 19,
+      "weight": 2200,
+      "sourceIdentifier": "camerupt",
+      "matched": true
+    },
+    "capsakid": {
+      "height": 3,
+      "weight": 30,
+      "sourceIdentifier": "capsakid",
+      "matched": true
+    },
+    "carbink": {
+      "height": 3,
+      "weight": 57,
+      "sourceIdentifier": "carbink",
+      "matched": true
+    },
+    "carkol": {
+      "height": 11,
+      "weight": 780,
+      "sourceIdentifier": "carkol",
+      "matched": true
+    },
+    "carnivine": {
+      "height": 14,
+      "weight": 270,
+      "sourceIdentifier": "carnivine",
+      "matched": true
+    },
+    "carracosta": {
+      "height": 12,
+      "weight": 810,
+      "sourceIdentifier": "carracosta",
+      "matched": true
+    },
+    "carvanha": {
+      "height": 8,
+      "weight": 208,
+      "sourceIdentifier": "carvanha",
+      "matched": true
+    },
+    "cascoon": {
+      "height": 7,
+      "weight": 115,
+      "sourceIdentifier": "cascoon",
+      "matched": true
+    },
+    "castform": {
+      "height": 3,
+      "weight": 8,
+      "sourceIdentifier": "castform",
+      "matched": true
+    },
+    "caterpie": {
+      "height": 3,
+      "weight": 29,
+      "sourceIdentifier": "caterpie",
+      "matched": true
+    },
+    "celebi": {
+      "height": 6,
+      "weight": 50,
+      "sourceIdentifier": "celebi",
+      "matched": true
+    },
+    "celesteela": {
+      "height": 92,
+      "weight": 9999,
+      "sourceIdentifier": "celesteela",
+      "matched": true
+    },
+    "centiskorch": {
+      "height": 30,
+      "weight": 1200,
+      "sourceIdentifier": "centiskorch",
+      "matched": true
+    },
+    "ceruledge": {
+      "height": 16,
+      "weight": 620,
+      "sourceIdentifier": "ceruledge",
+      "matched": true
+    },
+    "cetitan": {
+      "height": 45,
+      "weight": 7000,
+      "sourceIdentifier": "cetitan",
+      "matched": true
+    },
+    "cetoddle": {
+      "height": 12,
+      "weight": 450,
+      "sourceIdentifier": "cetoddle",
+      "matched": true
+    },
+    "chandelure": {
+      "height": 10,
+      "weight": 343,
+      "sourceIdentifier": "chandelure",
+      "matched": true
+    },
+    "chansey": {
+      "height": 11,
+      "weight": 346,
+      "sourceIdentifier": "chansey",
+      "matched": true
+    },
+    "charcadet": {
+      "height": 6,
+      "weight": 105,
+      "sourceIdentifier": "charcadet",
+      "matched": true
+    },
+    "charizard": {
+      "height": 17,
+      "weight": 905,
+      "sourceIdentifier": "charizard",
+      "matched": true
+    },
+    "charjabug": {
+      "height": 5,
+      "weight": 105,
+      "sourceIdentifier": "charjabug",
+      "matched": true
+    },
+    "charmander": {
+      "height": 6,
+      "weight": 85,
+      "sourceIdentifier": "charmander",
+      "matched": true
+    },
+    "charmeleon": {
+      "height": 11,
+      "weight": 190,
+      "sourceIdentifier": "charmeleon",
+      "matched": true
+    },
+    "chatot": {
+      "height": 5,
+      "weight": 19,
+      "sourceIdentifier": "chatot",
+      "matched": true
+    },
+    "cherrim": {
+      "height": 5,
+      "weight": 93,
+      "sourceIdentifier": "cherrim",
+      "matched": true
+    },
+    "cherubi": {
+      "height": 4,
+      "weight": 33,
+      "sourceIdentifier": "cherubi",
+      "matched": true
+    },
+    "chesnaught": {
+      "height": 16,
+      "weight": 900,
+      "sourceIdentifier": "chesnaught",
+      "matched": true
+    },
+    "chespin": {
+      "height": 4,
+      "weight": 90,
+      "sourceIdentifier": "chespin",
+      "matched": true
+    },
+    "chewtle": {
+      "height": 3,
+      "weight": 85,
+      "sourceIdentifier": "chewtle",
+      "matched": true
+    },
+    "chi-yu": {
+      "height": 4,
+      "weight": 49,
+      "sourceIdentifier": "chi-yu",
+      "matched": true
+    },
+    "chien-pao": {
+      "height": 19,
+      "weight": 1522,
+      "sourceIdentifier": "chien-pao",
+      "matched": true
+    },
+    "chikorita": {
+      "height": 9,
+      "weight": 64,
+      "sourceIdentifier": "chikorita",
+      "matched": true
+    },
+    "chimchar": {
+      "height": 5,
+      "weight": 62,
+      "sourceIdentifier": "chimchar",
+      "matched": true
+    },
+    "chimecho": {
+      "height": 6,
+      "weight": 10,
+      "sourceIdentifier": "chimecho",
+      "matched": true
+    },
+    "chinchou": {
+      "height": 5,
+      "weight": 120,
+      "sourceIdentifier": "chinchou",
+      "matched": true
+    },
+    "chingling": {
+      "height": 2,
+      "weight": 6,
+      "sourceIdentifier": "chingling",
+      "matched": true
+    },
+    "cinccino": {
+      "height": 5,
+      "weight": 75,
+      "sourceIdentifier": "cinccino",
+      "matched": true
+    },
+    "cinderace": {
+      "height": 14,
+      "weight": 330,
+      "sourceIdentifier": "cinderace",
+      "matched": true
+    },
+    "clamperl": {
+      "height": 4,
+      "weight": 525,
+      "sourceIdentifier": "clamperl",
+      "matched": true
+    },
+    "clauncher": {
+      "height": 5,
+      "weight": 83,
+      "sourceIdentifier": "clauncher",
+      "matched": true
+    },
+    "clawitzer": {
+      "height": 13,
+      "weight": 353,
+      "sourceIdentifier": "clawitzer",
+      "matched": true
+    },
+    "claydol": {
+      "height": 15,
+      "weight": 1080,
+      "sourceIdentifier": "claydol",
+      "matched": true
+    },
+    "clefable": {
+      "height": 13,
+      "weight": 400,
+      "sourceIdentifier": "clefable",
+      "matched": true
+    },
+    "clefairy": {
+      "height": 6,
+      "weight": 75,
+      "sourceIdentifier": "clefairy",
+      "matched": true
+    },
+    "cleffa": {
+      "height": 3,
+      "weight": 30,
+      "sourceIdentifier": "cleffa",
+      "matched": true
+    },
+    "clobbopus": {
+      "height": 6,
+      "weight": 40,
+      "sourceIdentifier": "clobbopus",
+      "matched": true
+    },
+    "clodsire": {
+      "height": 18,
+      "weight": 2230,
+      "sourceIdentifier": "clodsire",
+      "matched": true
+    },
+    "cloyster": {
+      "height": 15,
+      "weight": 1325,
+      "sourceIdentifier": "cloyster",
+      "matched": true
+    },
+    "coalossal": {
+      "height": 28,
+      "weight": 3105,
+      "sourceIdentifier": "coalossal",
+      "matched": true
+    },
+    "cobalion": {
+      "height": 21,
+      "weight": 2500,
+      "sourceIdentifier": "cobalion",
+      "matched": true
+    },
+    "cofagrigus": {
+      "height": 17,
+      "weight": 765,
+      "sourceIdentifier": "cofagrigus",
+      "matched": true
+    },
+    "combee": {
+      "height": 3,
+      "weight": 55,
+      "sourceIdentifier": "combee",
+      "matched": true
+    },
+    "combusken": {
+      "height": 9,
+      "weight": 195,
+      "sourceIdentifier": "combusken",
+      "matched": true
+    },
+    "comfey": {
+      "height": 1,
+      "weight": 3,
+      "sourceIdentifier": "comfey",
+      "matched": true
+    },
+    "conkeldurr": {
+      "height": 14,
+      "weight": 870,
+      "sourceIdentifier": "conkeldurr",
+      "matched": true
+    },
+    "copperajah": {
+      "height": 30,
+      "weight": 6500,
+      "sourceIdentifier": "copperajah",
+      "matched": true
+    },
+    "corphish": {
+      "height": 6,
+      "weight": 115,
+      "sourceIdentifier": "corphish",
+      "matched": true
+    },
+    "corsola": {
+      "height": 6,
+      "weight": 50,
+      "sourceIdentifier": "corsola",
+      "matched": true
+    },
+    "corviknight": {
+      "height": 22,
+      "weight": 750,
+      "sourceIdentifier": "corviknight",
+      "matched": true
+    },
+    "corvisquire": {
+      "height": 8,
+      "weight": 160,
+      "sourceIdentifier": "corvisquire",
+      "matched": true
+    },
+    "cosmoem": {
+      "height": 1,
+      "weight": 9999,
+      "sourceIdentifier": "cosmoem",
+      "matched": true
+    },
+    "cosmog": {
+      "height": 2,
+      "weight": 1,
+      "sourceIdentifier": "cosmog",
+      "matched": true
+    },
+    "cottonee": {
+      "height": 3,
+      "weight": 6,
+      "sourceIdentifier": "cottonee",
+      "matched": true
+    },
+    "crabominable": {
+      "height": 17,
+      "weight": 1800,
+      "sourceIdentifier": "crabominable",
+      "matched": true
+    },
+    "crabrawler": {
+      "height": 6,
+      "weight": 70,
+      "sourceIdentifier": "crabrawler",
+      "matched": true
+    },
+    "cradily": {
+      "height": 15,
+      "weight": 604,
+      "sourceIdentifier": "cradily",
+      "matched": true
+    },
+    "cramorant": {
+      "height": 8,
+      "weight": 180,
+      "sourceIdentifier": "cramorant",
+      "matched": true
+    },
+    "cranidos": {
+      "height": 9,
+      "weight": 315,
+      "sourceIdentifier": "cranidos",
+      "matched": true
+    },
+    "crawdaunt": {
+      "height": 11,
+      "weight": 328,
+      "sourceIdentifier": "crawdaunt",
+      "matched": true
+    },
+    "cresselia": {
+      "height": 15,
+      "weight": 856,
+      "sourceIdentifier": "cresselia",
+      "matched": true
+    },
+    "croagunk": {
+      "height": 7,
+      "weight": 230,
+      "sourceIdentifier": "croagunk",
+      "matched": true
+    },
+    "crobat": {
+      "height": 18,
+      "weight": 750,
+      "sourceIdentifier": "crobat",
+      "matched": true
+    },
+    "crocalor": {
+      "height": 10,
+      "weight": 307,
+      "sourceIdentifier": "crocalor",
+      "matched": true
+    },
+    "croconaw": {
+      "height": 11,
+      "weight": 250,
+      "sourceIdentifier": "croconaw",
+      "matched": true
+    },
+    "crustle": {
+      "height": 14,
+      "weight": 2000,
+      "sourceIdentifier": "crustle",
+      "matched": true
+    },
+    "cryogonal": {
+      "height": 11,
+      "weight": 1480,
+      "sourceIdentifier": "cryogonal",
+      "matched": true
+    },
+    "cubchoo": {
+      "height": 5,
+      "weight": 85,
+      "sourceIdentifier": "cubchoo",
+      "matched": true
+    },
+    "cubone": {
+      "height": 4,
+      "weight": 65,
+      "sourceIdentifier": "cubone",
+      "matched": true
+    },
+    "cufant": {
+      "height": 12,
+      "weight": 1000,
+      "sourceIdentifier": "cufant",
+      "matched": true
+    },
+    "cursola": {
+      "height": 10,
+      "weight": 4,
+      "sourceIdentifier": "cursola",
+      "matched": true
+    },
+    "cutiefly": {
+      "height": 1,
+      "weight": 2,
+      "sourceIdentifier": "cutiefly",
+      "matched": true
+    },
+    "cyclizar": {
+      "height": 16,
+      "weight": 630,
+      "sourceIdentifier": "cyclizar",
+      "matched": true
+    },
+    "cyndaquil": {
+      "height": 5,
+      "weight": 79,
+      "sourceIdentifier": "cyndaquil",
+      "matched": true
+    },
+    "dachsbun": {
+      "height": 5,
+      "weight": 149,
+      "sourceIdentifier": "dachsbun",
+      "matched": true
+    },
+    "darkrai": {
+      "height": 15,
+      "weight": 505,
+      "sourceIdentifier": "darkrai",
+      "matched": true
+    },
+    "darmanitan": {
+      "height": 13,
+      "weight": 929,
+      "sourceIdentifier": "darmanitan-standard",
+      "matched": true
+    },
+    "dartrix": {
+      "height": 7,
+      "weight": 160,
+      "sourceIdentifier": "dartrix",
+      "matched": true
+    },
+    "darumaka": {
+      "height": 6,
+      "weight": 375,
+      "sourceIdentifier": "darumaka",
+      "matched": true
+    },
+    "dawn-wings-necrozma": {
+      "height": 42,
+      "weight": 3500,
+      "sourceIdentifier": "necrozma-dawn",
+      "matched": true
+    },
+    "decidueye": {
+      "height": 16,
+      "weight": 366,
+      "sourceIdentifier": "decidueye",
+      "matched": true
+    },
+    "decidueye-hisui": {
+      "height": 16,
+      "weight": 370,
+      "sourceIdentifier": "decidueye-hisui",
+      "matched": true
+    },
+    "dedenne": {
+      "height": 2,
+      "weight": 22,
+      "sourceIdentifier": "dedenne",
+      "matched": true
+    },
+    "deerling": {
+      "height": 6,
+      "weight": 195,
+      "sourceIdentifier": "deerling",
+      "matched": true
+    },
+    "deino": {
+      "height": 8,
+      "weight": 173,
+      "sourceIdentifier": "deino",
+      "matched": true
+    },
+    "delcatty": {
+      "height": 11,
+      "weight": 326,
+      "sourceIdentifier": "delcatty",
+      "matched": true
+    },
+    "delibird": {
+      "height": 9,
+      "weight": 160,
+      "sourceIdentifier": "delibird",
+      "matched": true
+    },
+    "delphox": {
+      "height": 15,
+      "weight": 390,
+      "sourceIdentifier": "delphox",
+      "matched": true
+    },
+    "deoxys": {
+      "height": 17,
+      "weight": 608,
+      "sourceIdentifier": "deoxys-normal",
+      "matched": true
+    },
+    "dewgong": {
+      "height": 17,
+      "weight": 1200,
+      "sourceIdentifier": "dewgong",
+      "matched": true
+    },
+    "dewott": {
+      "height": 8,
+      "weight": 245,
+      "sourceIdentifier": "dewott",
+      "matched": true
+    },
+    "dewpider": {
+      "height": 3,
+      "weight": 40,
+      "sourceIdentifier": "dewpider",
+      "matched": true
+    },
+    "dhelmise": {
+      "height": 39,
+      "weight": 2100,
+      "sourceIdentifier": "dhelmise",
+      "matched": true
+    },
+    "dialga": {
+      "height": 54,
+      "weight": 6830,
+      "sourceIdentifier": "dialga",
+      "matched": true
+    },
+    "dialga-origin": {
+      "height": 70,
+      "weight": 8487,
+      "sourceIdentifier": "dialga-origin",
+      "matched": true
+    },
+    "diancie": {
+      "height": 7,
+      "weight": 88,
+      "sourceIdentifier": "diancie",
+      "matched": true
+    },
+    "diggersby": {
+      "height": 10,
+      "weight": 424,
+      "sourceIdentifier": "diggersby",
+      "matched": true
+    },
+    "diglett": {
+      "height": 2,
+      "weight": 8,
+      "sourceIdentifier": "diglett",
+      "matched": true
+    },
+    "dipplin": {
+      "height": 4,
+      "weight": 97,
+      "sourceIdentifier": "dipplin",
+      "matched": true
+    },
+    "ditto": {
+      "height": 3,
+      "weight": 40,
+      "sourceIdentifier": "ditto",
+      "matched": true
+    },
+    "dodrio": {
+      "height": 18,
+      "weight": 852,
+      "sourceIdentifier": "dodrio",
+      "matched": true
+    },
+    "doduo": {
+      "height": 14,
+      "weight": 392,
+      "sourceIdentifier": "doduo",
+      "matched": true
+    },
+    "dolliv": {
+      "height": 6,
+      "weight": 119,
+      "sourceIdentifier": "dolliv",
+      "matched": true
+    },
+    "dondozo": {
+      "height": 120,
+      "weight": 2200,
+      "sourceIdentifier": "dondozo",
+      "matched": true
+    },
+    "donphan": {
+      "height": 11,
+      "weight": 1200,
+      "sourceIdentifier": "donphan",
+      "matched": true
+    },
+    "dottler": {
+      "height": 4,
+      "weight": 195,
+      "sourceIdentifier": "dottler",
+      "matched": true
+    },
+    "doublade": {
+      "height": 8,
+      "weight": 45,
+      "sourceIdentifier": "doublade",
+      "matched": true
+    },
+    "dracovish": {
+      "height": 23,
+      "weight": 2150,
+      "sourceIdentifier": "dracovish",
+      "matched": true
+    },
+    "dracozolt": {
+      "height": 18,
+      "weight": 1900,
+      "sourceIdentifier": "dracozolt",
+      "matched": true
+    },
+    "dragalge": {
+      "height": 18,
+      "weight": 815,
+      "sourceIdentifier": "dragalge",
+      "matched": true
+    },
+    "dragapult": {
+      "height": 30,
+      "weight": 500,
+      "sourceIdentifier": "dragapult",
+      "matched": true
+    },
+    "dragonair": {
+      "height": 40,
+      "weight": 165,
+      "sourceIdentifier": "dragonair",
+      "matched": true
+    },
+    "dragonite": {
+      "height": 22,
+      "weight": 2100,
+      "sourceIdentifier": "dragonite",
+      "matched": true
+    },
+    "drakloak": {
+      "height": 14,
+      "weight": 110,
+      "sourceIdentifier": "drakloak",
+      "matched": true
+    },
+    "drampa": {
+      "height": 30,
+      "weight": 1850,
+      "sourceIdentifier": "drampa",
+      "matched": true
+    },
+    "drapion": {
+      "height": 13,
+      "weight": 615,
+      "sourceIdentifier": "drapion",
+      "matched": true
+    },
+    "dratini": {
+      "height": 18,
+      "weight": 33,
+      "sourceIdentifier": "dratini",
+      "matched": true
+    },
+    "drednaw": {
+      "height": 10,
+      "weight": 1155,
+      "sourceIdentifier": "drednaw",
+      "matched": true
+    },
+    "dreepy": {
+      "height": 5,
+      "weight": 20,
+      "sourceIdentifier": "dreepy",
+      "matched": true
+    },
+    "drifblim": {
+      "height": 12,
+      "weight": 150,
+      "sourceIdentifier": "drifblim",
+      "matched": true
+    },
+    "drifloon": {
+      "height": 4,
+      "weight": 12,
+      "sourceIdentifier": "drifloon",
+      "matched": true
+    },
+    "drilbur": {
+      "height": 3,
+      "weight": 85,
+      "sourceIdentifier": "drilbur",
+      "matched": true
+    },
+    "drizzile": {
+      "height": 7,
+      "weight": 115,
+      "sourceIdentifier": "drizzile",
+      "matched": true
+    },
+    "drowzee": {
+      "height": 10,
+      "weight": 324,
+      "sourceIdentifier": "drowzee",
+      "matched": true
+    },
+    "druddigon": {
+      "height": 16,
+      "weight": 1390,
+      "sourceIdentifier": "druddigon",
+      "matched": true
+    },
+    "dubwool": {
+      "height": 13,
+      "weight": 430,
+      "sourceIdentifier": "dubwool",
+      "matched": true
+    },
+    "ducklett": {
+      "height": 5,
+      "weight": 55,
+      "sourceIdentifier": "ducklett",
+      "matched": true
+    },
+    "dudunsparce": {
+      "height": 36,
+      "weight": 392,
+      "sourceIdentifier": "dudunsparce-two-segment",
+      "matched": true
+    },
+    "dugtrio": {
+      "height": 7,
+      "weight": 333,
+      "sourceIdentifier": "dugtrio",
+      "matched": true
+    },
+    "dunsparce": {
+      "height": 15,
+      "weight": 140,
+      "sourceIdentifier": "dunsparce",
+      "matched": true
+    },
+    "duosion": {
+      "height": 6,
+      "weight": 80,
+      "sourceIdentifier": "duosion",
+      "matched": true
+    },
+    "duraludon": {
+      "height": 18,
+      "weight": 400,
+      "sourceIdentifier": "duraludon",
+      "matched": true
+    },
+    "durant": {
+      "height": 3,
+      "weight": 330,
+      "sourceIdentifier": "durant",
+      "matched": true
+    },
+    "dusclops": {
+      "height": 16,
+      "weight": 306,
+      "sourceIdentifier": "dusclops",
+      "matched": true
+    },
+    "dusk-mane-necrozma": {
+      "height": 38,
+      "weight": 4600,
+      "sourceIdentifier": "necrozma-dusk",
+      "matched": true
+    },
+    "dusknoir": {
+      "height": 22,
+      "weight": 1066,
+      "sourceIdentifier": "dusknoir",
+      "matched": true
+    },
+    "duskull": {
+      "height": 8,
+      "weight": 150,
+      "sourceIdentifier": "duskull",
+      "matched": true
+    },
+    "dustox": {
+      "height": 12,
+      "weight": 316,
+      "sourceIdentifier": "dustox",
+      "matched": true
+    },
+    "dwebble": {
+      "height": 3,
+      "weight": 145,
+      "sourceIdentifier": "dwebble",
+      "matched": true
+    },
+    "eelektrik": {
+      "height": 12,
+      "weight": 220,
+      "sourceIdentifier": "eelektrik",
+      "matched": true
+    },
+    "eelektross": {
+      "height": 21,
+      "weight": 805,
+      "sourceIdentifier": "eelektross",
+      "matched": true
+    },
+    "eevee": {
+      "height": 3,
+      "weight": 65,
+      "sourceIdentifier": "eevee",
+      "matched": true
+    },
+    "eiscue": {
+      "height": 14,
+      "weight": 890,
+      "sourceIdentifier": "eiscue-ice",
+      "matched": true
+    },
+    "ekans": {
+      "height": 20,
+      "weight": 69,
+      "sourceIdentifier": "ekans",
+      "matched": true
+    },
+    "eldegoss": {
+      "height": 5,
+      "weight": 25,
+      "sourceIdentifier": "eldegoss",
+      "matched": true
+    },
+    "electabuzz": {
+      "height": 11,
+      "weight": 300,
+      "sourceIdentifier": "electabuzz",
+      "matched": true
+    },
+    "electivire": {
+      "height": 18,
+      "weight": 1386,
+      "sourceIdentifier": "electivire",
+      "matched": true
+    },
+    "electrike": {
+      "height": 6,
+      "weight": 152,
+      "sourceIdentifier": "electrike",
+      "matched": true
+    },
+    "electrode": {
+      "height": 12,
+      "weight": 666,
+      "sourceIdentifier": "electrode",
+      "matched": true
+    },
+    "electrode-hisui": {
+      "height": 12,
+      "weight": 710,
+      "sourceIdentifier": "electrode-hisui",
+      "matched": true
+    },
+    "elekid": {
+      "height": 6,
+      "weight": 235,
+      "sourceIdentifier": "elekid",
+      "matched": true
+    },
+    "elgyem": {
+      "height": 5,
+      "weight": 90,
+      "sourceIdentifier": "elgyem",
+      "matched": true
+    },
+    "emboar": {
+      "height": 16,
+      "weight": 1500,
+      "sourceIdentifier": "emboar",
+      "matched": true
+    },
+    "emolga": {
+      "height": 4,
+      "weight": 50,
+      "sourceIdentifier": "emolga",
+      "matched": true
+    },
+    "empoleon": {
+      "height": 17,
+      "weight": 845,
+      "sourceIdentifier": "empoleon",
+      "matched": true
+    },
+    "enamorus": {
+      "height": 16,
+      "weight": 480,
+      "sourceIdentifier": "enamorus-incarnate",
+      "matched": true
+    },
+    "enamorus-therian": {
+      "height": 16,
+      "weight": 480,
+      "sourceIdentifier": "enamorus-therian",
+      "matched": true
+    },
+    "entei": {
+      "height": 21,
+      "weight": 1980,
+      "sourceIdentifier": "entei",
+      "matched": true
+    },
+    "escavalier": {
+      "height": 10,
+      "weight": 330,
+      "sourceIdentifier": "escavalier",
+      "matched": true
+    },
+    "espathra": {
+      "height": 19,
+      "weight": 900,
+      "sourceIdentifier": "espathra",
+      "matched": true
+    },
+    "espeon": {
+      "height": 9,
+      "weight": 265,
+      "sourceIdentifier": "espeon",
+      "matched": true
+    },
+    "espurr": {
+      "height": 3,
+      "weight": 35,
+      "sourceIdentifier": "espurr",
+      "matched": true
+    },
+    "eternatus": {
+      "height": 200,
+      "weight": 9500,
+      "sourceIdentifier": "eternatus",
+      "matched": true
+    },
+    "eternatus-eternamax": {
+      "height": 1000,
+      "weight": 0,
+      "sourceIdentifier": "eternatus-eternamax",
+      "matched": true
+    },
+    "excadrill": {
+      "height": 7,
+      "weight": 404,
+      "sourceIdentifier": "excadrill",
+      "matched": true
+    },
+    "exeggcute": {
+      "height": 4,
+      "weight": 25,
+      "sourceIdentifier": "exeggcute",
+      "matched": true
+    },
+    "exeggutor": {
+      "height": 20,
+      "weight": 1200,
+      "sourceIdentifier": "exeggutor",
+      "matched": true
+    },
+    "exploud": {
+      "height": 15,
+      "weight": 840,
+      "sourceIdentifier": "exploud",
+      "matched": true
+    },
+    "falinks": {
+      "height": 30,
+      "weight": 620,
+      "sourceIdentifier": "falinks",
+      "matched": true
+    },
+    "farfetchd": {
+      "height": 8,
+      "weight": 150,
+      "sourceIdentifier": "farfetchd",
+      "matched": true
+    },
+    "farigiraf": {
+      "height": 32,
+      "weight": 1600,
+      "sourceIdentifier": "farigiraf",
+      "matched": true
+    },
+    "fearow": {
+      "height": 12,
+      "weight": 380,
+      "sourceIdentifier": "fearow",
+      "matched": true
+    },
+    "feebas": {
+      "height": 6,
+      "weight": 74,
+      "sourceIdentifier": "feebas",
+      "matched": true
+    },
+    "fennekin": {
+      "height": 4,
+      "weight": 94,
+      "sourceIdentifier": "fennekin",
+      "matched": true
+    },
+    "feraligatr": {
+      "height": 23,
+      "weight": 888,
+      "sourceIdentifier": "feraligatr",
+      "matched": true
+    },
+    "ferroseed": {
+      "height": 6,
+      "weight": 188,
+      "sourceIdentifier": "ferroseed",
+      "matched": true
+    },
+    "ferrothorn": {
+      "height": 10,
+      "weight": 1100,
+      "sourceIdentifier": "ferrothorn",
+      "matched": true
+    },
+    "fezandipiti": {
+      "height": 14,
+      "weight": 301,
+      "sourceIdentifier": "fezandipiti",
+      "matched": true
+    },
+    "fidough": {
+      "height": 3,
+      "weight": 109,
+      "sourceIdentifier": "fidough",
+      "matched": true
+    },
+    "finizen": {
+      "height": 13,
+      "weight": 602,
+      "sourceIdentifier": "finizen",
+      "matched": true
+    },
+    "finneon": {
+      "height": 4,
+      "weight": 70,
+      "sourceIdentifier": "finneon",
+      "matched": true
+    },
+    "flaaffy": {
+      "height": 8,
+      "weight": 133,
+      "sourceIdentifier": "flaaffy",
+      "matched": true
+    },
+    "flabebe": {
+      "height": 1,
+      "weight": 1,
+      "sourceIdentifier": "flabebe",
+      "matched": true
+    },
+    "flamigo": {
+      "height": 16,
+      "weight": 370,
+      "sourceIdentifier": "flamigo",
+      "matched": true
+    },
+    "flapple": {
+      "height": 3,
+      "weight": 10,
+      "sourceIdentifier": "flapple",
+      "matched": true
+    },
+    "flareon": {
+      "height": 9,
+      "weight": 250,
+      "sourceIdentifier": "flareon",
+      "matched": true
+    },
+    "fletchinder": {
+      "height": 7,
+      "weight": 160,
+      "sourceIdentifier": "fletchinder",
+      "matched": true
+    },
+    "fletchling": {
+      "height": 3,
+      "weight": 17,
+      "sourceIdentifier": "fletchling",
+      "matched": true
+    },
+    "flittle": {
+      "height": 2,
+      "weight": 15,
+      "sourceIdentifier": "flittle",
+      "matched": true
+    },
+    "floatzel": {
+      "height": 11,
+      "weight": 335,
+      "sourceIdentifier": "floatzel",
+      "matched": true
+    },
+    "floette": {
+      "height": 2,
+      "weight": 9,
+      "sourceIdentifier": "floette",
+      "matched": true
+    },
+    "floette-eternal": {
+      "height": 2,
+      "weight": 9,
+      "sourceIdentifier": "floette-eternal",
+      "matched": true
+    },
+    "floragato": {
+      "height": 9,
+      "weight": 122,
+      "sourceIdentifier": "floragato",
+      "matched": true
+    },
+    "florges": {
+      "height": 11,
+      "weight": 100,
+      "sourceIdentifier": "florges",
+      "matched": true
+    },
+    "flutter-mane": {
+      "height": 14,
+      "weight": 40,
+      "sourceIdentifier": "flutter-mane",
+      "matched": true
+    },
+    "flygon": {
+      "height": 20,
+      "weight": 820,
+      "sourceIdentifier": "flygon",
+      "matched": true
+    },
+    "fomantis": {
+      "height": 3,
+      "weight": 15,
+      "sourceIdentifier": "fomantis",
+      "matched": true
+    },
+    "foongus": {
+      "height": 2,
+      "weight": 10,
+      "sourceIdentifier": "foongus",
+      "matched": true
+    },
+    "forretress": {
+      "height": 12,
+      "weight": 1258,
+      "sourceIdentifier": "forretress",
+      "matched": true
+    },
+    "fraxure": {
+      "height": 10,
+      "weight": 360,
+      "sourceIdentifier": "fraxure",
+      "matched": true
+    },
+    "frigibax": {
+      "height": 5,
+      "weight": 170,
+      "sourceIdentifier": "frigibax",
+      "matched": true
+    },
+    "frillish": {
+      "height": 12,
+      "weight": 330,
+      "sourceIdentifier": "frillish-male",
+      "matched": true
+    },
+    "froakie": {
+      "height": 3,
+      "weight": 70,
+      "sourceIdentifier": "froakie",
+      "matched": true
+    },
+    "frogadier": {
+      "height": 6,
+      "weight": 109,
+      "sourceIdentifier": "frogadier",
+      "matched": true
+    },
+    "froslass": {
+      "height": 13,
+      "weight": 266,
+      "sourceIdentifier": "froslass",
+      "matched": true
+    },
+    "frosmoth": {
+      "height": 13,
+      "weight": 420,
+      "sourceIdentifier": "frosmoth",
+      "matched": true
+    },
+    "fuecoco": {
+      "height": 4,
+      "weight": 98,
+      "sourceIdentifier": "fuecoco",
+      "matched": true
+    },
+    "furfrou": {
+      "height": 12,
+      "weight": 280,
+      "sourceIdentifier": "furfrou",
+      "matched": true
+    },
+    "furret": {
+      "height": 18,
+      "weight": 325,
+      "sourceIdentifier": "furret",
+      "matched": true
+    },
+    "gabite": {
+      "height": 14,
+      "weight": 560,
+      "sourceIdentifier": "gabite",
+      "matched": true
+    },
+    "galarian-corsola": {
+      "height": 6,
+      "weight": 5,
+      "sourceIdentifier": "corsola-galar",
+      "matched": true
+    },
+    "galarian-darmanitan": {
+      "height": 17,
+      "weight": 1200,
+      "sourceIdentifier": "darmanitan-galar-standard",
+      "matched": true
+    },
+    "galarian-darumaka": {
+      "height": 7,
+      "weight": 400,
+      "sourceIdentifier": "darumaka-galar",
+      "matched": true
+    },
+    "galarian-farfetchd": {
+      "height": 8,
+      "weight": 420,
+      "sourceIdentifier": "farfetchd-galar",
+      "matched": true
+    },
+    "galarian-linoone": {
+      "height": 5,
+      "weight": 325,
+      "sourceIdentifier": "linoone-galar",
+      "matched": true
+    },
+    "galarian-meowth": {
+      "height": 4,
+      "weight": 75,
+      "sourceIdentifier": "meowth-galar",
+      "matched": true
+    },
+    "galarian-mr-mime": {
+      "height": 14,
+      "weight": 568,
+      "sourceIdentifier": "mr-mime-galar",
+      "matched": true
+    },
+    "galarian-ponyta": {
+      "height": 8,
+      "weight": 240,
+      "sourceIdentifier": "ponyta-galar",
+      "matched": true
+    },
+    "galarian-rapidash": {
+      "height": 17,
+      "weight": 800,
+      "sourceIdentifier": "rapidash-galar",
+      "matched": true
+    },
+    "galarian-slowbro": {
+      "height": 16,
+      "weight": 705,
+      "sourceIdentifier": "slowbro-galar",
+      "matched": true
+    },
+    "galarian-slowking": {
+      "height": 18,
+      "weight": 795,
+      "sourceIdentifier": "slowking-galar",
+      "matched": true
+    },
+    "galarian-slowpoke": {
+      "height": 12,
+      "weight": 360,
+      "sourceIdentifier": "slowpoke-galar",
+      "matched": true
+    },
+    "galarian-stunfisk": {
+      "height": 7,
+      "weight": 205,
+      "sourceIdentifier": "stunfisk-galar",
+      "matched": true
+    },
+    "galarian-weezing": {
+      "height": 30,
+      "weight": 160,
+      "sourceIdentifier": "weezing-galar",
+      "matched": true
+    },
+    "galarian-yamask": {
+      "height": 5,
+      "weight": 15,
+      "sourceIdentifier": "yamask-galar",
+      "matched": true
+    },
+    "galarian-zigzagoon": {
+      "height": 4,
+      "weight": 175,
+      "sourceIdentifier": "zigzagoon-galar",
+      "matched": true
+    },
+    "gallade": {
+      "height": 16,
+      "weight": 520,
+      "sourceIdentifier": "gallade",
+      "matched": true
+    },
+    "galvantula": {
+      "height": 8,
+      "weight": 143,
+      "sourceIdentifier": "galvantula",
+      "matched": true
+    },
+    "garbodor": {
+      "height": 19,
+      "weight": 1073,
+      "sourceIdentifier": "garbodor",
+      "matched": true
+    },
+    "garchomp": {
+      "height": 19,
+      "weight": 950,
+      "sourceIdentifier": "garchomp",
+      "matched": true
+    },
+    "gardevoir": {
+      "height": 16,
+      "weight": 484,
+      "sourceIdentifier": "gardevoir",
+      "matched": true
+    },
+    "garganacl": {
+      "height": 23,
+      "weight": 2400,
+      "sourceIdentifier": "garganacl",
+      "matched": true
+    },
+    "gastly": {
+      "height": 13,
+      "weight": 1,
+      "sourceIdentifier": "gastly",
+      "matched": true
+    },
+    "gastrodon": {
+      "height": 9,
+      "weight": 299,
+      "sourceIdentifier": "gastrodon",
+      "matched": true
+    },
+    "genesect": {
+      "height": 15,
+      "weight": 825,
+      "sourceIdentifier": "genesect",
+      "matched": true
+    },
+    "gengar": {
+      "height": 15,
+      "weight": 405,
+      "sourceIdentifier": "gengar",
+      "matched": true
+    },
+    "geodude": {
+      "height": 4,
+      "weight": 200,
+      "sourceIdentifier": "geodude",
+      "matched": true
+    },
+    "gholdengo": {
+      "height": 12,
+      "weight": 300,
+      "sourceIdentifier": "gholdengo",
+      "matched": true
+    },
+    "gible": {
+      "height": 7,
+      "weight": 205,
+      "sourceIdentifier": "gible",
+      "matched": true
+    },
+    "gigalith": {
+      "height": 17,
+      "weight": 2600,
+      "sourceIdentifier": "gigalith",
+      "matched": true
+    },
+    "gimmighoul": {
+      "height": 3,
+      "weight": 50,
+      "sourceIdentifier": "gimmighoul",
+      "matched": true
+    },
+    "gimmighoul-roaming": {
+      "height": 1,
+      "weight": 10,
+      "sourceIdentifier": "gimmighoul-roaming",
+      "matched": true
+    },
+    "girafarig": {
+      "height": 15,
+      "weight": 415,
+      "sourceIdentifier": "girafarig",
+      "matched": true
+    },
+    "giratina-altered-forme": {
+      "height": 45,
+      "weight": 7500,
+      "sourceIdentifier": "giratina-altered",
+      "matched": true
+    },
+    "giratina-origin-forme": {
+      "height": 69,
+      "weight": 6500,
+      "sourceIdentifier": "giratina-origin",
+      "matched": true
+    },
+    "glaceon": {
+      "height": 8,
+      "weight": 259,
+      "sourceIdentifier": "glaceon",
+      "matched": true
+    },
+    "glalie": {
+      "height": 15,
+      "weight": 2565,
+      "sourceIdentifier": "glalie",
+      "matched": true
+    },
+    "glameow": {
+      "height": 5,
+      "weight": 39,
+      "sourceIdentifier": "glameow",
+      "matched": true
+    },
+    "glastrier": {
+      "height": 22,
+      "weight": 8000,
+      "sourceIdentifier": "glastrier",
+      "matched": true
+    },
+    "gligar": {
+      "height": 11,
+      "weight": 648,
+      "sourceIdentifier": "gligar",
+      "matched": true
+    },
+    "glimmet": {
+      "height": 7,
+      "weight": 80,
+      "sourceIdentifier": "glimmet",
+      "matched": true
+    },
+    "glimmora": {
+      "height": 15,
+      "weight": 450,
+      "sourceIdentifier": "glimmora",
+      "matched": true
+    },
+    "gliscor": {
+      "height": 20,
+      "weight": 425,
+      "sourceIdentifier": "gliscor",
+      "matched": true
+    },
+    "gloom": {
+      "height": 8,
+      "weight": 86,
+      "sourceIdentifier": "gloom",
+      "matched": true
+    },
+    "gogoat": {
+      "height": 17,
+      "weight": 910,
+      "sourceIdentifier": "gogoat",
+      "matched": true
+    },
+    "golbat": {
+      "height": 16,
+      "weight": 550,
+      "sourceIdentifier": "golbat",
+      "matched": true
+    },
+    "goldeen": {
+      "height": 6,
+      "weight": 150,
+      "sourceIdentifier": "goldeen",
+      "matched": true
+    },
+    "golduck": {
+      "height": 17,
+      "weight": 766,
+      "sourceIdentifier": "golduck",
+      "matched": true
+    },
+    "golem": {
+      "height": 14,
+      "weight": 3000,
+      "sourceIdentifier": "golem",
+      "matched": true
+    },
+    "golett": {
+      "height": 10,
+      "weight": 920,
+      "sourceIdentifier": "golett",
+      "matched": true
+    },
+    "golisopod": {
+      "height": 20,
+      "weight": 1080,
+      "sourceIdentifier": "golisopod",
+      "matched": true
+    },
+    "golurk": {
+      "height": 28,
+      "weight": 3300,
+      "sourceIdentifier": "golurk",
+      "matched": true
+    },
+    "goodra": {
+      "height": 20,
+      "weight": 1505,
+      "sourceIdentifier": "goodra",
+      "matched": true
+    },
+    "goodra-hisui": {
+      "height": 17,
+      "weight": 3341,
+      "sourceIdentifier": "goodra-hisui",
+      "matched": true
+    },
+    "goomy": {
+      "height": 3,
+      "weight": 28,
+      "sourceIdentifier": "goomy",
+      "matched": true
+    },
+    "gorebyss": {
+      "height": 18,
+      "weight": 226,
+      "sourceIdentifier": "gorebyss",
+      "matched": true
+    },
+    "gossifleur": {
+      "height": 4,
+      "weight": 22,
+      "sourceIdentifier": "gossifleur",
+      "matched": true
+    },
+    "gothita": {
+      "height": 4,
+      "weight": 58,
+      "sourceIdentifier": "gothita",
+      "matched": true
+    },
+    "gothitelle": {
+      "height": 15,
+      "weight": 440,
+      "sourceIdentifier": "gothitelle",
+      "matched": true
+    },
+    "gothorita": {
+      "height": 7,
+      "weight": 180,
+      "sourceIdentifier": "gothorita",
+      "matched": true
+    },
+    "gouging-fire": {
+      "height": 35,
+      "weight": 5900,
+      "sourceIdentifier": "gouging-fire",
+      "matched": true
+    },
+    "gourgeist": {
+      "height": 9,
+      "weight": 125,
+      "sourceIdentifier": "gourgeist-average",
+      "matched": true
+    },
+    "grafaiai": {
+      "height": 7,
+      "weight": 272,
+      "sourceIdentifier": "grafaiai",
+      "matched": true
+    },
+    "granbull": {
+      "height": 14,
+      "weight": 487,
+      "sourceIdentifier": "granbull",
+      "matched": true
+    },
+    "grapploct": {
+      "height": 16,
+      "weight": 390,
+      "sourceIdentifier": "grapploct",
+      "matched": true
+    },
+    "graveler": {
+      "height": 10,
+      "weight": 1050,
+      "sourceIdentifier": "graveler",
+      "matched": true
+    },
+    "great-tusk": {
+      "height": 22,
+      "weight": 3200,
+      "sourceIdentifier": "great-tusk",
+      "matched": true
+    },
+    "greavard": {
+      "height": 6,
+      "weight": 350,
+      "sourceIdentifier": "greavard",
+      "matched": true
+    },
+    "greedent": {
+      "height": 6,
+      "weight": 60,
+      "sourceIdentifier": "greedent",
+      "matched": true
+    },
+    "greninja": {
+      "height": 15,
+      "weight": 400,
+      "sourceIdentifier": "greninja",
+      "matched": true
+    },
+    "grimer": {
+      "height": 9,
+      "weight": 300,
+      "sourceIdentifier": "grimer",
+      "matched": true
+    },
+    "grimmsnarl": {
+      "height": 15,
+      "weight": 610,
+      "sourceIdentifier": "grimmsnarl",
+      "matched": true
+    },
+    "grookey": {
+      "height": 3,
+      "weight": 50,
+      "sourceIdentifier": "grookey",
+      "matched": true
+    },
+    "grotle": {
+      "height": 11,
+      "weight": 970,
+      "sourceIdentifier": "grotle",
+      "matched": true
+    },
+    "groudon": {
+      "height": 35,
+      "weight": 9500,
+      "sourceIdentifier": "groudon",
+      "matched": true
+    },
+    "groudon-primal": {
+      "height": 50,
+      "weight": 9997,
+      "sourceIdentifier": "groudon-primal",
+      "matched": true
+    },
+    "grovyle": {
+      "height": 9,
+      "weight": 216,
+      "sourceIdentifier": "grovyle",
+      "matched": true
+    },
+    "growlithe": {
+      "height": 7,
+      "weight": 190,
+      "sourceIdentifier": "growlithe",
+      "matched": true
+    },
+    "growlithe-hisui": {
+      "height": 8,
+      "weight": 227,
+      "sourceIdentifier": "growlithe-hisui",
+      "matched": true
+    },
+    "grubbin": {
+      "height": 4,
+      "weight": 44,
+      "sourceIdentifier": "grubbin",
+      "matched": true
+    },
+    "grumpig": {
+      "height": 9,
+      "weight": 715,
+      "sourceIdentifier": "grumpig",
+      "matched": true
+    },
+    "gulpin": {
+      "height": 4,
+      "weight": 103,
+      "sourceIdentifier": "gulpin",
+      "matched": true
+    },
+    "gumshoos": {
+      "height": 7,
+      "weight": 142,
+      "sourceIdentifier": "gumshoos",
+      "matched": true
+    },
+    "gurdurr": {
+      "height": 12,
+      "weight": 400,
+      "sourceIdentifier": "gurdurr",
+      "matched": true
+    },
+    "guzzlord": {
+      "height": 55,
+      "weight": 8880,
+      "sourceIdentifier": "guzzlord",
+      "matched": true
+    },
+    "gyarados": {
+      "height": 65,
+      "weight": 2350,
+      "sourceIdentifier": "gyarados",
+      "matched": true
+    },
+    "hakamo-o": {
+      "height": 12,
+      "weight": 470,
+      "sourceIdentifier": "hakamo-o",
+      "matched": true
+    },
+    "happiny": {
+      "height": 6,
+      "weight": 244,
+      "sourceIdentifier": "happiny",
+      "matched": true
+    },
+    "hariyama": {
+      "height": 23,
+      "weight": 2538,
+      "sourceIdentifier": "hariyama",
+      "matched": true
+    },
+    "hatenna": {
+      "height": 4,
+      "weight": 34,
+      "sourceIdentifier": "hatenna",
+      "matched": true
+    },
+    "hatterene": {
+      "height": 21,
+      "weight": 51,
+      "sourceIdentifier": "hatterene",
+      "matched": true
+    },
+    "hattrem": {
+      "height": 6,
+      "weight": 48,
+      "sourceIdentifier": "hattrem",
+      "matched": true
+    },
+    "haunter": {
+      "height": 16,
+      "weight": 1,
+      "sourceIdentifier": "haunter",
+      "matched": true
+    },
+    "hawlucha": {
+      "height": 8,
+      "weight": 215,
+      "sourceIdentifier": "hawlucha",
+      "matched": true
+    },
+    "haxorus": {
+      "height": 18,
+      "weight": 1055,
+      "sourceIdentifier": "haxorus",
+      "matched": true
+    },
+    "heatmor": {
+      "height": 14,
+      "weight": 580,
+      "sourceIdentifier": "heatmor",
+      "matched": true
+    },
+    "heatran": {
+      "height": 17,
+      "weight": 4300,
+      "sourceIdentifier": "heatran",
+      "matched": true
+    },
+    "heliolisk": {
+      "height": 10,
+      "weight": 210,
+      "sourceIdentifier": "heliolisk",
+      "matched": true
+    },
+    "helioptile": {
+      "height": 5,
+      "weight": 60,
+      "sourceIdentifier": "helioptile",
+      "matched": true
+    },
+    "heracross": {
+      "height": 15,
+      "weight": 540,
+      "sourceIdentifier": "heracross",
+      "matched": true
+    },
+    "herdier": {
+      "height": 9,
+      "weight": 147,
+      "sourceIdentifier": "herdier",
+      "matched": true
+    },
+    "hippopotas": {
+      "height": 8,
+      "weight": 495,
+      "sourceIdentifier": "hippopotas",
+      "matched": true
+    },
+    "hippowdon": {
+      "height": 20,
+      "weight": 3000,
+      "sourceIdentifier": "hippowdon",
+      "matched": true
+    },
+    "hitmonchan": {
+      "height": 14,
+      "weight": 502,
+      "sourceIdentifier": "hitmonchan",
+      "matched": true
+    },
+    "hitmonlee": {
+      "height": 15,
+      "weight": 498,
+      "sourceIdentifier": "hitmonlee",
+      "matched": true
+    },
+    "hitmontop": {
+      "height": 14,
+      "weight": 480,
+      "sourceIdentifier": "hitmontop",
+      "matched": true
+    },
+    "ho-oh": {
+      "height": 38,
+      "weight": 1990,
+      "sourceIdentifier": "ho-oh",
+      "matched": true
+    },
+    "honchkrow": {
+      "height": 9,
+      "weight": 273,
+      "sourceIdentifier": "honchkrow",
+      "matched": true
+    },
+    "honedge": {
+      "height": 8,
+      "weight": 20,
+      "sourceIdentifier": "honedge",
+      "matched": true
+    },
+    "hoopa-confined": {
+      "height": 5,
+      "weight": 90,
+      "sourceIdentifier": "hoopa",
+      "matched": false
+    },
+    "hoopa-unbound": {
+      "height": 65,
+      "weight": 4900,
+      "sourceIdentifier": "hoopa-unbound",
+      "matched": true
+    },
+    "hoothoot": {
+      "height": 7,
+      "weight": 212,
+      "sourceIdentifier": "hoothoot",
+      "matched": true
+    },
+    "hoppip": {
+      "height": 4,
+      "weight": 5,
+      "sourceIdentifier": "hoppip",
+      "matched": true
+    },
+    "horsea": {
+      "height": 4,
+      "weight": 80,
+      "sourceIdentifier": "horsea",
+      "matched": true
+    },
+    "houndoom": {
+      "height": 14,
+      "weight": 350,
+      "sourceIdentifier": "houndoom",
+      "matched": true
+    },
+    "houndour": {
+      "height": 6,
+      "weight": 108,
+      "sourceIdentifier": "houndour",
+      "matched": true
+    },
+    "houndstone": {
+      "height": 20,
+      "weight": 150,
+      "sourceIdentifier": "houndstone",
+      "matched": true
+    },
+    "huntail": {
+      "height": 17,
+      "weight": 270,
+      "sourceIdentifier": "huntail",
+      "matched": true
+    },
+    "hydrapple": {
+      "height": 18,
+      "weight": 930,
+      "sourceIdentifier": "hydrapple",
+      "matched": true
+    },
+    "hydreigon": {
+      "height": 18,
+      "weight": 1600,
+      "sourceIdentifier": "hydreigon",
+      "matched": true
+    },
+    "hypno": {
+      "height": 16,
+      "weight": 756,
+      "sourceIdentifier": "hypno",
+      "matched": true
+    },
+    "igglybuff": {
+      "height": 3,
+      "weight": 10,
+      "sourceIdentifier": "igglybuff",
+      "matched": true
+    },
+    "illumise": {
+      "height": 6,
+      "weight": 177,
+      "sourceIdentifier": "illumise",
+      "matched": true
+    },
+    "impidimp": {
+      "height": 4,
+      "weight": 55,
+      "sourceIdentifier": "impidimp",
+      "matched": true
+    },
+    "incineroar": {
+      "height": 18,
+      "weight": 830,
+      "sourceIdentifier": "incineroar",
+      "matched": true
+    },
+    "indeedee-f": {
+      "height": 9,
+      "weight": 280,
+      "sourceIdentifier": "indeedee-male",
+      "matched": false
+    },
+    "indeedee-m": {
+      "height": 9,
+      "weight": 280,
+      "sourceIdentifier": "indeedee-male",
+      "matched": false
+    },
+    "infernape": {
+      "height": 12,
+      "weight": 550,
+      "sourceIdentifier": "infernape",
+      "matched": true
+    },
+    "inkay": {
+      "height": 4,
+      "weight": 35,
+      "sourceIdentifier": "inkay",
+      "matched": true
+    },
+    "inteleon": {
+      "height": 19,
+      "weight": 452,
+      "sourceIdentifier": "inteleon",
+      "matched": true
+    },
+    "iron-boulder": {
+      "height": 15,
+      "weight": 1625,
+      "sourceIdentifier": "iron-boulder",
+      "matched": true
+    },
+    "iron-bundle": {
+      "height": 6,
+      "weight": 110,
+      "sourceIdentifier": "iron-bundle",
+      "matched": true
+    },
+    "iron-crown": {
+      "height": 16,
+      "weight": 1560,
+      "sourceIdentifier": "iron-crown",
+      "matched": true
+    },
+    "iron-hands": {
+      "height": 18,
+      "weight": 3807,
+      "sourceIdentifier": "iron-hands",
+      "matched": true
+    },
+    "iron-jugulis": {
+      "height": 13,
+      "weight": 1110,
+      "sourceIdentifier": "iron-jugulis",
+      "matched": true
+    },
+    "iron-leaves": {
+      "height": 15,
+      "weight": 1250,
+      "sourceIdentifier": "iron-leaves",
+      "matched": true
+    },
+    "iron-moth": {
+      "height": 12,
+      "weight": 360,
+      "sourceIdentifier": "iron-moth",
+      "matched": true
+    },
+    "iron-thorns": {
+      "height": 16,
+      "weight": 3030,
+      "sourceIdentifier": "iron-thorns",
+      "matched": true
+    },
+    "iron-treads": {
+      "height": 9,
+      "weight": 2400,
+      "sourceIdentifier": "iron-treads",
+      "matched": true
+    },
+    "iron-valiant": {
+      "height": 14,
+      "weight": 350,
+      "sourceIdentifier": "iron-valiant",
+      "matched": true
+    },
+    "ivysaur": {
+      "height": 10,
+      "weight": 130,
+      "sourceIdentifier": "ivysaur",
+      "matched": true
+    },
+    "jangmo-o": {
+      "height": 6,
+      "weight": 297,
+      "sourceIdentifier": "jangmo-o",
+      "matched": true
+    },
+    "jellicent": {
+      "height": 22,
+      "weight": 1350,
+      "sourceIdentifier": "jellicent-male",
+      "matched": true
+    },
+    "jigglypuff": {
+      "height": 5,
+      "weight": 55,
+      "sourceIdentifier": "jigglypuff",
+      "matched": true
+    },
+    "jirachi": {
+      "height": 3,
+      "weight": 11,
+      "sourceIdentifier": "jirachi",
+      "matched": true
+    },
+    "jolteon": {
+      "height": 8,
+      "weight": 245,
+      "sourceIdentifier": "jolteon",
+      "matched": true
+    },
+    "joltik": {
+      "height": 1,
+      "weight": 6,
+      "sourceIdentifier": "joltik",
+      "matched": true
+    },
+    "jumpluff": {
+      "height": 8,
+      "weight": 30,
+      "sourceIdentifier": "jumpluff",
+      "matched": true
+    },
+    "jynx": {
+      "height": 14,
+      "weight": 406,
+      "sourceIdentifier": "jynx",
+      "matched": true
+    },
+    "kabuto": {
+      "height": 5,
+      "weight": 115,
+      "sourceIdentifier": "kabuto",
+      "matched": true
+    },
+    "kabutops": {
+      "height": 13,
+      "weight": 405,
+      "sourceIdentifier": "kabutops",
+      "matched": true
+    },
+    "kadabra": {
+      "height": 13,
+      "weight": 565,
+      "sourceIdentifier": "kadabra",
+      "matched": true
+    },
+    "kakuna": {
+      "height": 6,
+      "weight": 100,
+      "sourceIdentifier": "kakuna",
+      "matched": true
+    },
+    "kangaskhan": {
+      "height": 22,
+      "weight": 800,
+      "sourceIdentifier": "kangaskhan",
+      "matched": true
+    },
+    "karrablast": {
+      "height": 5,
+      "weight": 59,
+      "sourceIdentifier": "karrablast",
+      "matched": true
+    },
+    "kartana": {
+      "height": 3,
+      "weight": 1,
+      "sourceIdentifier": "kartana",
+      "matched": true
+    },
+    "kecleon": {
+      "height": 10,
+      "weight": 220,
+      "sourceIdentifier": "kecleon",
+      "matched": true
+    },
+    "keldeo": {
+      "height": 14,
+      "weight": 485,
+      "sourceIdentifier": "keldeo-ordinary",
+      "matched": true
+    },
+    "kilowattrel": {
+      "height": 14,
+      "weight": 386,
+      "sourceIdentifier": "kilowattrel",
+      "matched": true
+    },
+    "kingambit": {
+      "height": 20,
+      "weight": 1200,
+      "sourceIdentifier": "kingambit",
+      "matched": true
+    },
+    "kingdra": {
+      "height": 18,
+      "weight": 1520,
+      "sourceIdentifier": "kingdra",
+      "matched": true
+    },
+    "kingler": {
+      "height": 13,
+      "weight": 600,
+      "sourceIdentifier": "kingler",
+      "matched": true
+    },
+    "kirlia": {
+      "height": 8,
+      "weight": 202,
+      "sourceIdentifier": "kirlia",
+      "matched": true
+    },
+    "klang": {
+      "height": 6,
+      "weight": 510,
+      "sourceIdentifier": "klang",
+      "matched": true
+    },
+    "klawf": {
+      "height": 13,
+      "weight": 790,
+      "sourceIdentifier": "klawf",
+      "matched": true
+    },
+    "kleavor": {
+      "height": 18,
+      "weight": 890,
+      "sourceIdentifier": "kleavor",
+      "matched": true
+    },
+    "klefki": {
+      "height": 2,
+      "weight": 30,
+      "sourceIdentifier": "klefki",
+      "matched": true
+    },
+    "klink": {
+      "height": 3,
+      "weight": 210,
+      "sourceIdentifier": "klink",
+      "matched": true
+    },
+    "klinklang": {
+      "height": 6,
+      "weight": 810,
+      "sourceIdentifier": "klinklang",
+      "matched": true
+    },
+    "koffing": {
+      "height": 6,
+      "weight": 10,
+      "sourceIdentifier": "koffing",
+      "matched": true
+    },
+    "komala": {
+      "height": 4,
+      "weight": 199,
+      "sourceIdentifier": "komala",
+      "matched": true
+    },
+    "kommo-o": {
+      "height": 16,
+      "weight": 782,
+      "sourceIdentifier": "kommo-o",
+      "matched": true
+    },
+    "koraidon": {
+      "height": 25,
+      "weight": 3030,
+      "sourceIdentifier": "koraidon",
+      "matched": true
+    },
+    "krabby": {
+      "height": 4,
+      "weight": 65,
+      "sourceIdentifier": "krabby",
+      "matched": true
+    },
+    "kricketot": {
+      "height": 3,
+      "weight": 22,
+      "sourceIdentifier": "kricketot",
+      "matched": true
+    },
+    "kricketune": {
+      "height": 10,
+      "weight": 255,
+      "sourceIdentifier": "kricketune",
+      "matched": true
+    },
+    "krokorok": {
+      "height": 10,
+      "weight": 334,
+      "sourceIdentifier": "krokorok",
+      "matched": true
+    },
+    "krookodile": {
+      "height": 15,
+      "weight": 963,
+      "sourceIdentifier": "krookodile",
+      "matched": true
+    },
+    "kubfu": {
+      "height": 6,
+      "weight": 120,
+      "sourceIdentifier": "kubfu",
+      "matched": true
+    },
+    "kyogre": {
+      "height": 45,
+      "weight": 3520,
+      "sourceIdentifier": "kyogre",
+      "matched": true
+    },
+    "kyogre-primal": {
+      "height": 98,
+      "weight": 4300,
+      "sourceIdentifier": "kyogre-primal",
+      "matched": true
+    },
+    "kyurem": {
+      "height": 30,
+      "weight": 3250,
+      "sourceIdentifier": "kyurem",
+      "matched": true
+    },
+    "lairon": {
+      "height": 9,
+      "weight": 1200,
+      "sourceIdentifier": "lairon",
+      "matched": true
+    },
+    "lampent": {
+      "height": 6,
+      "weight": 130,
+      "sourceIdentifier": "lampent",
+      "matched": true
+    },
+    "landorus": {
+      "height": 15,
+      "weight": 680,
+      "sourceIdentifier": "landorus-incarnate",
+      "matched": true
+    },
+    "landorus-therian": {
+      "height": 13,
+      "weight": 680,
+      "sourceIdentifier": "landorus-therian",
+      "matched": true
+    },
+    "lanturn": {
+      "height": 12,
+      "weight": 225,
+      "sourceIdentifier": "lanturn",
+      "matched": true
+    },
+    "lapras": {
+      "height": 25,
+      "weight": 2200,
+      "sourceIdentifier": "lapras",
+      "matched": true
+    },
+    "larvesta": {
+      "height": 11,
+      "weight": 288,
+      "sourceIdentifier": "larvesta",
+      "matched": true
+    },
+    "larvitar": {
+      "height": 6,
+      "weight": 720,
+      "sourceIdentifier": "larvitar",
+      "matched": true
+    },
+    "latias": {
+      "height": 14,
+      "weight": 400,
+      "sourceIdentifier": "latias",
+      "matched": true
+    },
+    "latios": {
+      "height": 20,
+      "weight": 600,
+      "sourceIdentifier": "latios",
+      "matched": true
+    },
+    "leafeon": {
+      "height": 10,
+      "weight": 255,
+      "sourceIdentifier": "leafeon",
+      "matched": true
+    },
+    "leavanny": {
+      "height": 12,
+      "weight": 205,
+      "sourceIdentifier": "leavanny",
+      "matched": true
+    },
+    "lechonk": {
+      "height": 5,
+      "weight": 102,
+      "sourceIdentifier": "lechonk",
+      "matched": true
+    },
+    "ledian": {
+      "height": 14,
+      "weight": 356,
+      "sourceIdentifier": "ledian",
+      "matched": true
+    },
+    "ledyba": {
+      "height": 10,
+      "weight": 108,
+      "sourceIdentifier": "ledyba",
+      "matched": true
+    },
+    "lickilicky": {
+      "height": 17,
+      "weight": 1400,
+      "sourceIdentifier": "lickilicky",
+      "matched": true
+    },
+    "lickitung": {
+      "height": 12,
+      "weight": 655,
+      "sourceIdentifier": "lickitung",
+      "matched": true
+    },
+    "liepard": {
+      "height": 11,
+      "weight": 375,
+      "sourceIdentifier": "liepard",
+      "matched": true
+    },
+    "lileep": {
+      "height": 10,
+      "weight": 238,
+      "sourceIdentifier": "lileep",
+      "matched": true
+    },
+    "lilligant": {
+      "height": 11,
+      "weight": 163,
+      "sourceIdentifier": "lilligant",
+      "matched": true
+    },
+    "lilligant-hisui": {
+      "height": 12,
+      "weight": 192,
+      "sourceIdentifier": "lilligant-hisui",
+      "matched": true
+    },
+    "lillipup": {
+      "height": 4,
+      "weight": 41,
+      "sourceIdentifier": "lillipup",
+      "matched": true
+    },
+    "linoone": {
+      "height": 5,
+      "weight": 325,
+      "sourceIdentifier": "linoone",
+      "matched": true
+    },
+    "litleo": {
+      "height": 6,
+      "weight": 135,
+      "sourceIdentifier": "litleo",
+      "matched": true
+    },
+    "litten": {
+      "height": 4,
+      "weight": 43,
+      "sourceIdentifier": "litten",
+      "matched": true
+    },
+    "litwick": {
+      "height": 3,
+      "weight": 31,
+      "sourceIdentifier": "litwick",
+      "matched": true
+    },
+    "lokix": {
+      "height": 10,
+      "weight": 175,
+      "sourceIdentifier": "lokix",
+      "matched": true
+    },
+    "lombre": {
+      "height": 12,
+      "weight": 325,
+      "sourceIdentifier": "lombre",
+      "matched": true
+    },
+    "lopunny": {
+      "height": 12,
+      "weight": 333,
+      "sourceIdentifier": "lopunny",
+      "matched": true
+    },
+    "lotad": {
+      "height": 5,
+      "weight": 26,
+      "sourceIdentifier": "lotad",
+      "matched": true
+    },
+    "loudred": {
+      "height": 10,
+      "weight": 405,
+      "sourceIdentifier": "loudred",
+      "matched": true
+    },
+    "lucario": {
+      "height": 12,
+      "weight": 540,
+      "sourceIdentifier": "lucario",
+      "matched": true
+    },
+    "ludicolo": {
+      "height": 15,
+      "weight": 550,
+      "sourceIdentifier": "ludicolo",
+      "matched": true
+    },
+    "lugia": {
+      "height": 52,
+      "weight": 2160,
+      "sourceIdentifier": "lugia",
+      "matched": true
+    },
+    "lumineon": {
+      "height": 12,
+      "weight": 240,
+      "sourceIdentifier": "lumineon",
+      "matched": true
+    },
+    "lunala": {
+      "height": 40,
+      "weight": 1200,
+      "sourceIdentifier": "lunala",
+      "matched": true
+    },
+    "lunatone": {
+      "height": 10,
+      "weight": 1680,
+      "sourceIdentifier": "lunatone",
+      "matched": true
+    },
+    "lurantis": {
+      "height": 9,
+      "weight": 185,
+      "sourceIdentifier": "lurantis",
+      "matched": true
+    },
+    "luvdisc": {
+      "height": 6,
+      "weight": 87,
+      "sourceIdentifier": "luvdisc",
+      "matched": true
+    },
+    "luxio": {
+      "height": 9,
+      "weight": 305,
+      "sourceIdentifier": "luxio",
+      "matched": true
+    },
+    "luxray": {
+      "height": 14,
+      "weight": 420,
+      "sourceIdentifier": "luxray",
+      "matched": true
+    },
+    "lycanroc-dusk-form": {
+      "height": 8,
+      "weight": 250,
+      "sourceIdentifier": "lycanroc-dusk",
+      "matched": true
+    },
+    "lycanroc-midday-form": {
+      "height": 8,
+      "weight": 250,
+      "sourceIdentifier": "lycanroc-midday",
+      "matched": true
+    },
+    "lycanroc-midnight-form": {
+      "height": 11,
+      "weight": 250,
+      "sourceIdentifier": "lycanroc-midnight",
+      "matched": true
+    },
+    "mabosstiff": {
+      "height": 11,
+      "weight": 610,
+      "sourceIdentifier": "mabosstiff",
+      "matched": true
+    },
+    "machamp": {
+      "height": 16,
+      "weight": 1300,
+      "sourceIdentifier": "machamp",
+      "matched": true
+    },
+    "machoke": {
+      "height": 15,
+      "weight": 705,
+      "sourceIdentifier": "machoke",
+      "matched": true
+    },
+    "machop": {
+      "height": 8,
+      "weight": 195,
+      "sourceIdentifier": "machop",
+      "matched": true
+    },
+    "magby": {
+      "height": 7,
+      "weight": 214,
+      "sourceIdentifier": "magby",
+      "matched": true
+    },
+    "magcargo": {
+      "height": 8,
+      "weight": 550,
+      "sourceIdentifier": "magcargo",
+      "matched": true
+    },
+    "magearna": {
+      "height": 10,
+      "weight": 805,
+      "sourceIdentifier": "magearna",
+      "matched": true
+    },
+    "magikarp": {
+      "height": 9,
+      "weight": 100,
+      "sourceIdentifier": "magikarp",
+      "matched": true
+    },
+    "magmar": {
+      "height": 13,
+      "weight": 445,
+      "sourceIdentifier": "magmar",
+      "matched": true
+    },
+    "magmortar": {
+      "height": 16,
+      "weight": 680,
+      "sourceIdentifier": "magmortar",
+      "matched": true
+    },
+    "magnemite": {
+      "height": 3,
+      "weight": 60,
+      "sourceIdentifier": "magnemite",
+      "matched": true
+    },
+    "magneton": {
+      "height": 10,
+      "weight": 600,
+      "sourceIdentifier": "magneton",
+      "matched": true
+    },
+    "magnezone": {
+      "height": 12,
+      "weight": 1800,
+      "sourceIdentifier": "magnezone",
+      "matched": true
+    },
+    "makuhita": {
+      "height": 10,
+      "weight": 864,
+      "sourceIdentifier": "makuhita",
+      "matched": true
+    },
+    "malamar": {
+      "height": 15,
+      "weight": 470,
+      "sourceIdentifier": "malamar",
+      "matched": true
+    },
+    "mamoswine": {
+      "height": 25,
+      "weight": 2910,
+      "sourceIdentifier": "mamoswine",
+      "matched": true
+    },
+    "manaphy": {
+      "height": 3,
+      "weight": 14,
+      "sourceIdentifier": "manaphy",
+      "matched": true
+    },
+    "mandibuzz": {
+      "height": 12,
+      "weight": 395,
+      "sourceIdentifier": "mandibuzz",
+      "matched": true
+    },
+    "manectric": {
+      "height": 15,
+      "weight": 402,
+      "sourceIdentifier": "manectric",
+      "matched": true
+    },
+    "mankey": {
+      "height": 5,
+      "weight": 280,
+      "sourceIdentifier": "mankey",
+      "matched": true
+    },
+    "mantine": {
+      "height": 21,
+      "weight": 2200,
+      "sourceIdentifier": "mantine",
+      "matched": true
+    },
+    "mantyke": {
+      "height": 10,
+      "weight": 650,
+      "sourceIdentifier": "mantyke",
+      "matched": true
+    },
+    "maractus": {
+      "height": 10,
+      "weight": 280,
+      "sourceIdentifier": "maractus",
+      "matched": true
+    },
+    "mareanie": {
+      "height": 4,
+      "weight": 80,
+      "sourceIdentifier": "mareanie",
+      "matched": true
+    },
+    "mareep": {
+      "height": 6,
+      "weight": 78,
+      "sourceIdentifier": "mareep",
+      "matched": true
+    },
+    "marill": {
+      "height": 4,
+      "weight": 85,
+      "sourceIdentifier": "marill",
+      "matched": true
+    },
+    "marowak": {
+      "height": 10,
+      "weight": 450,
+      "sourceIdentifier": "marowak",
+      "matched": true
+    },
+    "marshadow": {
+      "height": 7,
+      "weight": 222,
+      "sourceIdentifier": "marshadow",
+      "matched": true
+    },
+    "marshtomp": {
+      "height": 7,
+      "weight": 280,
+      "sourceIdentifier": "marshtomp",
+      "matched": true
+    },
+    "maschiff": {
+      "height": 5,
+      "weight": 160,
+      "sourceIdentifier": "maschiff",
+      "matched": true
+    },
+    "masquerain": {
+      "height": 8,
+      "weight": 36,
+      "sourceIdentifier": "masquerain",
+      "matched": true
+    },
+    "maushold": {
+      "height": 3,
+      "weight": 28,
+      "sourceIdentifier": "maushold-family-of-four",
+      "matched": true
+    },
+    "mawile": {
+      "height": 6,
+      "weight": 115,
+      "sourceIdentifier": "mawile",
+      "matched": true
+    },
+    "medicham": {
+      "height": 13,
+      "weight": 315,
+      "sourceIdentifier": "medicham",
+      "matched": true
+    },
+    "meditite": {
+      "height": 6,
+      "weight": 112,
+      "sourceIdentifier": "meditite",
+      "matched": true
+    },
+    "meganium": {
+      "height": 18,
+      "weight": 1005,
+      "sourceIdentifier": "meganium",
+      "matched": true
+    },
+    "melmetal": {
+      "height": 25,
+      "weight": 8000,
+      "sourceIdentifier": "melmetal",
+      "matched": true
+    },
+    "meloetta---aria": {
+      "height": 6,
+      "weight": 65,
+      "sourceIdentifier": "meloetta-aria",
+      "matched": true
+    },
+    "meloetta---pirouette": {
+      "height": 6,
+      "weight": 65,
+      "sourceIdentifier": "meloetta-pirouette",
+      "matched": true
+    },
+    "meltan": {
+      "height": 2,
+      "weight": 80,
+      "sourceIdentifier": "meltan",
+      "matched": true
+    },
+    "meowscarada": {
+      "height": 15,
+      "weight": 312,
+      "sourceIdentifier": "meowscarada",
+      "matched": true
+    },
+    "meowstic-f": {
+      "height": 6,
+      "weight": 85,
+      "sourceIdentifier": "meowstic-male",
+      "matched": false
+    },
+    "meowstic-m": {
+      "height": 6,
+      "weight": 85,
+      "sourceIdentifier": "meowstic-male",
+      "matched": false
+    },
+    "meowth": {
+      "height": 4,
+      "weight": 42,
+      "sourceIdentifier": "meowth",
+      "matched": true
+    },
+    "mesprit": {
+      "height": 3,
+      "weight": 3,
+      "sourceIdentifier": "mesprit",
+      "matched": true
+    },
+    "metagross": {
+      "height": 16,
+      "weight": 5500,
+      "sourceIdentifier": "metagross",
+      "matched": true
+    },
+    "metang": {
+      "height": 12,
+      "weight": 2025,
+      "sourceIdentifier": "metang",
+      "matched": true
+    },
+    "metapod": {
+      "height": 7,
+      "weight": 99,
+      "sourceIdentifier": "metapod",
+      "matched": true
+    },
+    "mew": {
+      "height": 4,
+      "weight": 40,
+      "sourceIdentifier": "mew",
+      "matched": true
+    },
+    "mewtwo": {
+      "height": 20,
+      "weight": 1220,
+      "sourceIdentifier": "mewtwo",
+      "matched": true
+    },
+    "mienfoo": {
+      "height": 9,
+      "weight": 200,
+      "sourceIdentifier": "mienfoo",
+      "matched": true
+    },
+    "mienshao": {
+      "height": 14,
+      "weight": 355,
+      "sourceIdentifier": "mienshao",
+      "matched": true
+    },
+    "mightyena": {
+      "height": 10,
+      "weight": 370,
+      "sourceIdentifier": "mightyena",
+      "matched": true
+    },
+    "milcery": {
+      "height": 2,
+      "weight": 3,
+      "sourceIdentifier": "milcery",
+      "matched": true
+    },
+    "milotic": {
+      "height": 62,
+      "weight": 1620,
+      "sourceIdentifier": "milotic",
+      "matched": true
+    },
+    "miltank": {
+      "height": 12,
+      "weight": 755,
+      "sourceIdentifier": "miltank",
+      "matched": true
+    },
+    "mime-jr": {
+      "height": 6,
+      "weight": 130,
+      "sourceIdentifier": "mime-jr",
+      "matched": true
+    },
+    "mimikyu": {
+      "height": 2,
+      "weight": 7,
+      "sourceIdentifier": "mimikyu-disguised",
+      "matched": true
+    },
+    "minccino": {
+      "height": 4,
+      "weight": 58,
+      "sourceIdentifier": "minccino",
+      "matched": true
+    },
+    "minior-core-form": {
+      "height": 3,
+      "weight": 400,
+      "sourceIdentifier": "minior-red-meteor",
+      "matched": false
+    },
+    "minior-meteor-form": {
+      "height": 3,
+      "weight": 400,
+      "sourceIdentifier": "minior-red-meteor",
+      "matched": true
+    },
+    "minun": {
+      "height": 4,
+      "weight": 42,
+      "sourceIdentifier": "minun",
+      "matched": true
+    },
+    "miraidon": {
+      "height": 35,
+      "weight": 2400,
+      "sourceIdentifier": "miraidon",
+      "matched": true
+    },
+    "misdreavus": {
+      "height": 7,
+      "weight": 10,
+      "sourceIdentifier": "misdreavus",
+      "matched": true
+    },
+    "mismagius": {
+      "height": 9,
+      "weight": 44,
+      "sourceIdentifier": "mismagius",
+      "matched": true
+    },
+    "moltres": {
+      "height": 20,
+      "weight": 600,
+      "sourceIdentifier": "moltres",
+      "matched": true
+    },
+    "moltres-galar": {
+      "height": 20,
+      "weight": 660,
+      "sourceIdentifier": "moltres-galar",
+      "matched": true
+    },
+    "monferno": {
+      "height": 9,
+      "weight": 220,
+      "sourceIdentifier": "monferno",
+      "matched": true
+    },
+    "morelull": {
+      "height": 2,
+      "weight": 15,
+      "sourceIdentifier": "morelull",
+      "matched": true
+    },
+    "morgrem": {
+      "height": 8,
+      "weight": 125,
+      "sourceIdentifier": "morgrem",
+      "matched": true
+    },
+    "morpeko": {
+      "height": 3,
+      "weight": 30,
+      "sourceIdentifier": "morpeko-full-belly",
+      "matched": true
+    },
+    "mothim": {
+      "height": 9,
+      "weight": 233,
+      "sourceIdentifier": "mothim",
+      "matched": true
+    },
+    "mr-mime": {
+      "height": 13,
+      "weight": 545,
+      "sourceIdentifier": "mr-mime",
+      "matched": true
+    },
+    "mr-rime": {
+      "height": 15,
+      "weight": 582,
+      "sourceIdentifier": "mr-rime",
+      "matched": true
+    },
+    "mudbray": {
+      "height": 10,
+      "weight": 1100,
+      "sourceIdentifier": "mudbray",
+      "matched": true
+    },
+    "mudkip": {
+      "height": 4,
+      "weight": 76,
+      "sourceIdentifier": "mudkip",
+      "matched": true
+    },
+    "mudsdale": {
+      "height": 25,
+      "weight": 9200,
+      "sourceIdentifier": "mudsdale",
+      "matched": true
+    },
+    "muk": {
+      "height": 12,
+      "weight": 300,
+      "sourceIdentifier": "muk",
+      "matched": true
+    },
+    "munchlax": {
+      "height": 6,
+      "weight": 1050,
+      "sourceIdentifier": "munchlax",
+      "matched": true
+    },
+    "munkidori": {
+      "height": 10,
+      "weight": 122,
+      "sourceIdentifier": "munkidori",
+      "matched": true
+    },
+    "munna": {
+      "height": 6,
+      "weight": 233,
+      "sourceIdentifier": "munna",
+      "matched": true
+    },
+    "murkrow": {
+      "height": 5,
+      "weight": 21,
+      "sourceIdentifier": "murkrow",
+      "matched": true
+    },
+    "musharna": {
+      "height": 11,
+      "weight": 605,
+      "sourceIdentifier": "musharna",
+      "matched": true
+    },
+    "nacli": {
+      "height": 4,
+      "weight": 160,
+      "sourceIdentifier": "nacli",
+      "matched": true
+    },
+    "naclstack": {
+      "height": 6,
+      "weight": 1050,
+      "sourceIdentifier": "naclstack",
+      "matched": true
+    },
+    "naganadel": {
+      "height": 36,
+      "weight": 1500,
+      "sourceIdentifier": "naganadel",
+      "matched": true
+    },
+    "natu": {
+      "height": 2,
+      "weight": 20,
+      "sourceIdentifier": "natu",
+      "matched": true
+    },
+    "necrozma": {
+      "height": 24,
+      "weight": 2300,
+      "sourceIdentifier": "necrozma",
+      "matched": true
+    },
+    "nickit": {
+      "height": 6,
+      "weight": 89,
+      "sourceIdentifier": "nickit",
+      "matched": true
+    },
+    "nidoking": {
+      "height": 14,
+      "weight": 620,
+      "sourceIdentifier": "nidoking",
+      "matched": true
+    },
+    "nidoqueen": {
+      "height": 13,
+      "weight": 600,
+      "sourceIdentifier": "nidoqueen",
+      "matched": true
+    },
+    "nidoran-f": {
+      "height": 4,
+      "weight": 70,
+      "sourceIdentifier": "nidoran-f",
+      "matched": true
+    },
+    "nidoran-m": {
+      "height": 5,
+      "weight": 90,
+      "sourceIdentifier": "nidoran-m",
+      "matched": true
+    },
+    "nidorina": {
+      "height": 8,
+      "weight": 200,
+      "sourceIdentifier": "nidorina",
+      "matched": true
+    },
+    "nidorino": {
+      "height": 9,
+      "weight": 195,
+      "sourceIdentifier": "nidorino",
+      "matched": true
+    },
+    "nihilego": {
+      "height": 12,
+      "weight": 555,
+      "sourceIdentifier": "nihilego",
+      "matched": true
+    },
+    "nincada": {
+      "height": 5,
+      "weight": 55,
+      "sourceIdentifier": "nincada",
+      "matched": true
+    },
+    "ninetales": {
+      "height": 11,
+      "weight": 199,
+      "sourceIdentifier": "ninetales",
+      "matched": true
+    },
+    "ninjask": {
+      "height": 8,
+      "weight": 120,
+      "sourceIdentifier": "ninjask",
+      "matched": true
+    },
+    "noctowl": {
+      "height": 16,
+      "weight": 408,
+      "sourceIdentifier": "noctowl",
+      "matched": true
+    },
+    "noibat": {
+      "height": 5,
+      "weight": 80,
+      "sourceIdentifier": "noibat",
+      "matched": true
+    },
+    "noivern": {
+      "height": 15,
+      "weight": 850,
+      "sourceIdentifier": "noivern",
+      "matched": true
+    },
+    "nosepass": {
+      "height": 10,
+      "weight": 970,
+      "sourceIdentifier": "nosepass",
+      "matched": true
+    },
+    "numel": {
+      "height": 7,
+      "weight": 240,
+      "sourceIdentifier": "numel",
+      "matched": true
+    },
+    "nuzleaf": {
+      "height": 10,
+      "weight": 280,
+      "sourceIdentifier": "nuzleaf",
+      "matched": true
+    },
+    "nymble": {
+      "height": 2,
+      "weight": 10,
+      "sourceIdentifier": "nymble",
+      "matched": true
+    },
+    "obstagoon": {
+      "height": 16,
+      "weight": 460,
+      "sourceIdentifier": "obstagoon",
+      "matched": true
+    },
+    "octillery": {
+      "height": 9,
+      "weight": 285,
+      "sourceIdentifier": "octillery",
+      "matched": true
+    },
+    "oddish": {
+      "height": 5,
+      "weight": 54,
+      "sourceIdentifier": "oddish",
+      "matched": true
+    },
+    "ogerpon": {
+      "height": 12,
+      "weight": 398,
+      "sourceIdentifier": "ogerpon",
+      "matched": true
+    },
+    "ogerpon-cornerstone-mask": {
+      "height": 12,
+      "weight": 398,
+      "sourceIdentifier": "ogerpon-cornerstone-mask",
+      "matched": true
+    },
+    "ogerpon-heartflame-mask": {
+      "height": 12,
+      "weight": 398,
+      "sourceIdentifier": "ogerpon-wellspring-mask",
+      "matched": true
+    },
+    "ogerpon-wellspring-mask": {
+      "height": 12,
+      "weight": 398,
+      "sourceIdentifier": "ogerpon-wellspring-mask",
+      "matched": true
+    },
+    "oinkologne-female": {
+      "height": 10,
+      "weight": 1200,
+      "sourceIdentifier": "oinkologne-female",
+      "matched": true
+    },
+    "oinkologne-male": {
+      "height": 10,
+      "weight": 1200,
+      "sourceIdentifier": "oinkologne-male",
+      "matched": true
+    },
+    "okidogi": {
+      "height": 18,
+      "weight": 922,
+      "sourceIdentifier": "okidogi",
+      "matched": true
+    },
+    "omanyte": {
+      "height": 4,
+      "weight": 75,
+      "sourceIdentifier": "omanyte",
+      "matched": true
+    },
+    "omastar": {
+      "height": 10,
+      "weight": 350,
+      "sourceIdentifier": "omastar",
+      "matched": true
+    },
+    "onix": {
+      "height": 88,
+      "weight": 2100,
+      "sourceIdentifier": "onix",
+      "matched": true
+    },
+    "oranguru": {
+      "height": 15,
+      "weight": 760,
+      "sourceIdentifier": "oranguru",
+      "matched": true
+    },
+    "orbeetle": {
+      "height": 4,
+      "weight": 408,
+      "sourceIdentifier": "orbeetle",
+      "matched": true
+    },
+    "oricorio-baile-style": {
+      "height": 6,
+      "weight": 34,
+      "sourceIdentifier": "oricorio-baile",
+      "matched": true
+    },
+    "oricorio-pau-style": {
+      "height": 6,
+      "weight": 34,
+      "sourceIdentifier": "oricorio-pau",
+      "matched": true
+    },
+    "oricorio-pom-pom-style": {
+      "height": 6,
+      "weight": 34,
+      "sourceIdentifier": "oricorio-pom-pom",
+      "matched": true
+    },
+    "oricorio-sensu-style": {
+      "height": 6,
+      "weight": 34,
+      "sourceIdentifier": "oricorio-sensu",
+      "matched": true
+    },
+    "orthworm": {
+      "height": 25,
+      "weight": 3100,
+      "sourceIdentifier": "orthworm",
+      "matched": true
+    },
+    "oshawott": {
+      "height": 5,
+      "weight": 59,
+      "sourceIdentifier": "oshawott",
+      "matched": true
+    },
+    "overqwil": {
+      "height": 25,
+      "weight": 605,
+      "sourceIdentifier": "overqwil",
+      "matched": true
+    },
+    "pachirisu": {
+      "height": 4,
+      "weight": 39,
+      "sourceIdentifier": "pachirisu",
+      "matched": true
+    },
+    "palafin": {
+      "height": 13,
+      "weight": 602,
+      "sourceIdentifier": "palafin-zero",
+      "matched": true
+    },
+    "palkia": {
+      "height": 42,
+      "weight": 3360,
+      "sourceIdentifier": "palkia",
+      "matched": true
+    },
+    "palkia-origin": {
+      "height": 63,
+      "weight": 6590,
+      "sourceIdentifier": "palkia-origin",
+      "matched": true
+    },
+    "palossand": {
+      "height": 13,
+      "weight": 2500,
+      "sourceIdentifier": "palossand",
+      "matched": true
+    },
+    "palpitoad": {
+      "height": 8,
+      "weight": 170,
+      "sourceIdentifier": "palpitoad",
+      "matched": true
+    },
+    "pancham": {
+      "height": 6,
+      "weight": 80,
+      "sourceIdentifier": "pancham",
+      "matched": true
+    },
+    "pangoro": {
+      "height": 21,
+      "weight": 1360,
+      "sourceIdentifier": "pangoro",
+      "matched": true
+    },
+    "panpour": {
+      "height": 6,
+      "weight": 135,
+      "sourceIdentifier": "panpour",
+      "matched": true
+    },
+    "pansage": {
+      "height": 6,
+      "weight": 105,
+      "sourceIdentifier": "pansage",
+      "matched": true
+    },
+    "pansear": {
+      "height": 6,
+      "weight": 110,
+      "sourceIdentifier": "pansear",
+      "matched": true
+    },
+    "paras": {
+      "height": 3,
+      "weight": 54,
+      "sourceIdentifier": "paras",
+      "matched": true
+    },
+    "parasect": {
+      "height": 10,
+      "weight": 295,
+      "sourceIdentifier": "parasect",
+      "matched": true
+    },
+    "passimian": {
+      "height": 20,
+      "weight": 828,
+      "sourceIdentifier": "passimian",
+      "matched": true
+    },
+    "patrat": {
+      "height": 5,
+      "weight": 116,
+      "sourceIdentifier": "patrat",
+      "matched": true
+    },
+    "pawmi": {
+      "height": 3,
+      "weight": 25,
+      "sourceIdentifier": "pawmi",
+      "matched": true
+    },
+    "pawmo": {
+      "height": 4,
+      "weight": 65,
+      "sourceIdentifier": "pawmo",
+      "matched": true
+    },
+    "pawmot": {
+      "height": 9,
+      "weight": 410,
+      "sourceIdentifier": "pawmot",
+      "matched": true
+    },
+    "pawniard": {
+      "height": 5,
+      "weight": 102,
+      "sourceIdentifier": "pawniard",
+      "matched": true
+    },
+    "pecharunt": {
+      "height": 3,
+      "weight": 3,
+      "sourceIdentifier": "pecharunt",
+      "matched": true
+    },
+    "pelipper": {
+      "height": 12,
+      "weight": 280,
+      "sourceIdentifier": "pelipper",
+      "matched": true
+    },
+    "perrserker": {
+      "height": 8,
+      "weight": 280,
+      "sourceIdentifier": "perrserker",
+      "matched": true
+    },
+    "persian": {
+      "height": 10,
+      "weight": 320,
+      "sourceIdentifier": "persian",
+      "matched": true
+    },
+    "petilil": {
+      "height": 5,
+      "weight": 66,
+      "sourceIdentifier": "petilil",
+      "matched": true
+    },
+    "phanpy": {
+      "height": 5,
+      "weight": 335,
+      "sourceIdentifier": "phanpy",
+      "matched": true
+    },
+    "phantump": {
+      "height": 4,
+      "weight": 70,
+      "sourceIdentifier": "phantump",
+      "matched": true
+    },
+    "pheromosa": {
+      "height": 18,
+      "weight": 250,
+      "sourceIdentifier": "pheromosa",
+      "matched": true
+    },
+    "phione": {
+      "height": 4,
+      "weight": 31,
+      "sourceIdentifier": "phione",
+      "matched": true
+    },
+    "pichu": {
+      "height": 3,
+      "weight": 20,
+      "sourceIdentifier": "pichu",
+      "matched": true
+    },
+    "pidgeot": {
+      "height": 15,
+      "weight": 395,
+      "sourceIdentifier": "pidgeot",
+      "matched": true
+    },
+    "pidgeotto": {
+      "height": 11,
+      "weight": 300,
+      "sourceIdentifier": "pidgeotto",
+      "matched": true
+    },
+    "pidgey": {
+      "height": 3,
+      "weight": 18,
+      "sourceIdentifier": "pidgey",
+      "matched": true
+    },
+    "pidove": {
+      "height": 3,
+      "weight": 21,
+      "sourceIdentifier": "pidove",
+      "matched": true
+    },
+    "pignite": {
+      "height": 10,
+      "weight": 555,
+      "sourceIdentifier": "pignite",
+      "matched": true
+    },
+    "pikachu": {
+      "height": 4,
+      "weight": 60,
+      "sourceIdentifier": "pikachu",
+      "matched": true
+    },
+    "pikipek": {
+      "height": 3,
+      "weight": 12,
+      "sourceIdentifier": "pikipek",
+      "matched": true
+    },
+    "piloswine": {
+      "height": 11,
+      "weight": 558,
+      "sourceIdentifier": "piloswine",
+      "matched": true
+    },
+    "pincurchin": {
+      "height": 3,
+      "weight": 10,
+      "sourceIdentifier": "pincurchin",
+      "matched": true
+    },
+    "pineco": {
+      "height": 6,
+      "weight": 72,
+      "sourceIdentifier": "pineco",
+      "matched": true
+    },
+    "pinsir": {
+      "height": 15,
+      "weight": 550,
+      "sourceIdentifier": "pinsir",
+      "matched": true
+    },
+    "piplup": {
+      "height": 4,
+      "weight": 52,
+      "sourceIdentifier": "piplup",
+      "matched": true
+    },
+    "plusle": {
+      "height": 4,
+      "weight": 42,
+      "sourceIdentifier": "plusle",
+      "matched": true
+    },
+    "poipole": {
+      "height": 6,
+      "weight": 18,
+      "sourceIdentifier": "poipole",
+      "matched": true
+    },
+    "politoed": {
+      "height": 11,
+      "weight": 339,
+      "sourceIdentifier": "politoed",
+      "matched": true
+    },
+    "poliwag": {
+      "height": 6,
+      "weight": 124,
+      "sourceIdentifier": "poliwag",
+      "matched": true
+    },
+    "poliwhirl": {
+      "height": 10,
+      "weight": 200,
+      "sourceIdentifier": "poliwhirl",
+      "matched": true
+    },
+    "poliwrath": {
+      "height": 13,
+      "weight": 540,
+      "sourceIdentifier": "poliwrath",
+      "matched": true
+    },
+    "poltchageist": {
+      "height": 1,
+      "weight": 11,
+      "sourceIdentifier": "poltchageist",
+      "matched": true
+    },
+    "polteageist": {
+      "height": 2,
+      "weight": 4,
+      "sourceIdentifier": "polteageist",
+      "matched": true
+    },
+    "ponyta": {
+      "height": 10,
+      "weight": 300,
+      "sourceIdentifier": "ponyta",
+      "matched": true
+    },
+    "poochyena": {
+      "height": 5,
+      "weight": 136,
+      "sourceIdentifier": "poochyena",
+      "matched": true
+    },
+    "popplio": {
+      "height": 4,
+      "weight": 75,
+      "sourceIdentifier": "popplio",
+      "matched": true
+    },
+    "porygon": {
+      "height": 8,
+      "weight": 365,
+      "sourceIdentifier": "porygon",
+      "matched": true
+    },
+    "porygon-z": {
+      "height": 9,
+      "weight": 340,
+      "sourceIdentifier": "porygon-z",
+      "matched": true
+    },
+    "porygon2": {
+      "height": 6,
+      "weight": 325,
+      "sourceIdentifier": "porygon2",
+      "matched": true
+    },
+    "primarina": {
+      "height": 18,
+      "weight": 440,
+      "sourceIdentifier": "primarina",
+      "matched": true
+    },
+    "primeape": {
+      "height": 10,
+      "weight": 320,
+      "sourceIdentifier": "primeape",
+      "matched": true
+    },
+    "prinplup": {
+      "height": 8,
+      "weight": 230,
+      "sourceIdentifier": "prinplup",
+      "matched": true
+    },
+    "probopass": {
+      "height": 14,
+      "weight": 3400,
+      "sourceIdentifier": "probopass",
+      "matched": true
+    },
+    "psyduck": {
+      "height": 8,
+      "weight": 196,
+      "sourceIdentifier": "psyduck",
+      "matched": true
+    },
+    "pumpkaboo": {
+      "height": 4,
+      "weight": 50,
+      "sourceIdentifier": "pumpkaboo-average",
+      "matched": true
+    },
+    "pupitar": {
+      "height": 12,
+      "weight": 1520,
+      "sourceIdentifier": "pupitar",
+      "matched": true
+    },
+    "purrloin": {
+      "height": 4,
+      "weight": 101,
+      "sourceIdentifier": "purrloin",
+      "matched": true
+    },
+    "purugly": {
+      "height": 10,
+      "weight": 438,
+      "sourceIdentifier": "purugly",
+      "matched": true
+    },
+    "pyroar": {
+      "height": 15,
+      "weight": 815,
+      "sourceIdentifier": "pyroar-male",
+      "matched": true
+    },
+    "pyukumuku": {
+      "height": 3,
+      "weight": 12,
+      "sourceIdentifier": "pyukumuku",
+      "matched": true
+    },
+    "quagsire": {
+      "height": 14,
+      "weight": 750,
+      "sourceIdentifier": "quagsire",
+      "matched": true
+    },
+    "quaquaval": {
+      "height": 18,
+      "weight": 619,
+      "sourceIdentifier": "quaquaval",
+      "matched": true
+    },
+    "quaxly": {
+      "height": 5,
+      "weight": 61,
+      "sourceIdentifier": "quaxly",
+      "matched": true
+    },
+    "quaxwell": {
+      "height": 12,
+      "weight": 215,
+      "sourceIdentifier": "quaxwell",
+      "matched": true
+    },
+    "quilava": {
+      "height": 9,
+      "weight": 190,
+      "sourceIdentifier": "quilava",
+      "matched": true
+    },
+    "quilladin": {
+      "height": 7,
+      "weight": 290,
+      "sourceIdentifier": "quilladin",
+      "matched": true
+    },
+    "qwilfish": {
+      "height": 5,
+      "weight": 39,
+      "sourceIdentifier": "qwilfish",
+      "matched": true
+    },
+    "qwilfish-hisui": {
+      "height": 5,
+      "weight": 39,
+      "sourceIdentifier": "qwilfish-hisui",
+      "matched": true
+    },
+    "raboot": {
+      "height": 6,
+      "weight": 90,
+      "sourceIdentifier": "raboot",
+      "matched": true
+    },
+    "rabsca": {
+      "height": 3,
+      "weight": 35,
+      "sourceIdentifier": "rabsca",
+      "matched": true
+    },
+    "raging-bolt": {
+      "height": 52,
+      "weight": 4800,
+      "sourceIdentifier": "raging-bolt",
+      "matched": true
+    },
+    "raichu": {
+      "height": 8,
+      "weight": 300,
+      "sourceIdentifier": "raichu",
+      "matched": true
+    },
+    "raikou": {
+      "height": 19,
+      "weight": 1780,
+      "sourceIdentifier": "raikou",
+      "matched": true
+    },
+    "rainy-castform": {
+      "height": 3,
+      "weight": 8,
+      "sourceIdentifier": "castform-rainy",
+      "matched": true
+    },
+    "ralts": {
+      "height": 4,
+      "weight": 66,
+      "sourceIdentifier": "ralts",
+      "matched": true
+    },
+    "rampardos": {
+      "height": 16,
+      "weight": 1025,
+      "sourceIdentifier": "rampardos",
+      "matched": true
+    },
+    "rapidash": {
+      "height": 17,
+      "weight": 950,
+      "sourceIdentifier": "rapidash",
+      "matched": true
+    },
+    "raticate": {
+      "height": 7,
+      "weight": 185,
+      "sourceIdentifier": "raticate",
+      "matched": true
+    },
+    "rattata": {
+      "height": 3,
+      "weight": 35,
+      "sourceIdentifier": "rattata",
+      "matched": true
+    },
+    "rayquaza": {
+      "height": 70,
+      "weight": 2065,
+      "sourceIdentifier": "rayquaza",
+      "matched": true
+    },
+    "regice": {
+      "height": 18,
+      "weight": 1750,
+      "sourceIdentifier": "regice",
+      "matched": true
+    },
+    "regidrago": {
+      "height": 21,
+      "weight": 2000,
+      "sourceIdentifier": "regidrago",
+      "matched": true
+    },
+    "regieleki": {
+      "height": 12,
+      "weight": 1450,
+      "sourceIdentifier": "regieleki",
+      "matched": true
+    },
+    "regigigas": {
+      "height": 37,
+      "weight": 4200,
+      "sourceIdentifier": "regigigas",
+      "matched": true
+    },
+    "regirock": {
+      "height": 17,
+      "weight": 2300,
+      "sourceIdentifier": "regirock",
+      "matched": true
+    },
+    "registeel": {
+      "height": 19,
+      "weight": 2050,
+      "sourceIdentifier": "registeel",
+      "matched": true
+    },
+    "relicanth": {
+      "height": 10,
+      "weight": 234,
+      "sourceIdentifier": "relicanth",
+      "matched": true
+    },
+    "rellor": {
+      "height": 2,
+      "weight": 10,
+      "sourceIdentifier": "rellor",
+      "matched": true
+    },
+    "remoraid": {
+      "height": 6,
+      "weight": 120,
+      "sourceIdentifier": "remoraid",
+      "matched": true
+    },
+    "reshiram": {
+      "height": 32,
+      "weight": 3300,
+      "sourceIdentifier": "reshiram",
+      "matched": true
+    },
+    "reuniclus": {
+      "height": 10,
+      "weight": 201,
+      "sourceIdentifier": "reuniclus",
+      "matched": true
+    },
+    "revavroom": {
+      "height": 18,
+      "weight": 1200,
+      "sourceIdentifier": "revavroom",
+      "matched": true
+    },
+    "rhydon": {
+      "height": 19,
+      "weight": 1200,
+      "sourceIdentifier": "rhydon",
+      "matched": true
+    },
+    "rhyhorn": {
+      "height": 10,
+      "weight": 1150,
+      "sourceIdentifier": "rhyhorn",
+      "matched": true
+    },
+    "rhyperior": {
+      "height": 24,
+      "weight": 2828,
+      "sourceIdentifier": "rhyperior",
+      "matched": true
+    },
+    "ribombee": {
+      "height": 2,
+      "weight": 5,
+      "sourceIdentifier": "ribombee",
+      "matched": true
+    },
+    "rillaboom": {
+      "height": 21,
+      "weight": 900,
+      "sourceIdentifier": "rillaboom",
+      "matched": true
+    },
+    "riolu": {
+      "height": 7,
+      "weight": 202,
+      "sourceIdentifier": "riolu",
+      "matched": true
+    },
+    "roaring-moon": {
+      "height": 20,
+      "weight": 3800,
+      "sourceIdentifier": "roaring-moon",
+      "matched": true
+    },
+    "rockruff": {
+      "height": 5,
+      "weight": 92,
+      "sourceIdentifier": "rockruff",
+      "matched": true
+    },
+    "roggenrola": {
+      "height": 4,
+      "weight": 180,
+      "sourceIdentifier": "roggenrola",
+      "matched": true
+    },
+    "rolycoly": {
+      "height": 3,
+      "weight": 120,
+      "sourceIdentifier": "rolycoly",
+      "matched": true
+    },
+    "rookidee": {
+      "height": 2,
+      "weight": 18,
+      "sourceIdentifier": "rookidee",
+      "matched": true
+    },
+    "roselia": {
+      "height": 3,
+      "weight": 20,
+      "sourceIdentifier": "roselia",
+      "matched": true
+    },
+    "roserade": {
+      "height": 9,
+      "weight": 145,
+      "sourceIdentifier": "roserade",
+      "matched": true
+    },
+    "rotom": {
+      "height": 3,
+      "weight": 3,
+      "sourceIdentifier": "rotom",
+      "matched": true
+    },
+    "rotom-fan": {
+      "height": 3,
+      "weight": 3,
+      "sourceIdentifier": "rotom-fan",
+      "matched": true
+    },
+    "rotom-frost": {
+      "height": 3,
+      "weight": 3,
+      "sourceIdentifier": "rotom-frost",
+      "matched": true
+    },
+    "rotom-heat": {
+      "height": 3,
+      "weight": 3,
+      "sourceIdentifier": "rotom-heat",
+      "matched": true
+    },
+    "rotom-mow": {
+      "height": 3,
+      "weight": 3,
+      "sourceIdentifier": "rotom-mow",
+      "matched": true
+    },
+    "rotom-wash": {
+      "height": 3,
+      "weight": 3,
+      "sourceIdentifier": "rotom-wash",
+      "matched": true
+    },
+    "rowlet": {
+      "height": 3,
+      "weight": 15,
+      "sourceIdentifier": "rowlet",
+      "matched": true
+    },
+    "rufflet": {
+      "height": 5,
+      "weight": 105,
+      "sourceIdentifier": "rufflet",
+      "matched": true
+    },
+    "runerigus": {
+      "height": 16,
+      "weight": 666,
+      "sourceIdentifier": "runerigus",
+      "matched": true
+    },
+    "sableye": {
+      "height": 5,
+      "weight": 110,
+      "sourceIdentifier": "sableye",
+      "matched": true
+    },
+    "salamence": {
+      "height": 15,
+      "weight": 1026,
+      "sourceIdentifier": "salamence",
+      "matched": true
+    },
+    "salandit": {
+      "height": 6,
+      "weight": 48,
+      "sourceIdentifier": "salandit",
+      "matched": true
+    },
+    "salazzle": {
+      "height": 12,
+      "weight": 222,
+      "sourceIdentifier": "salazzle",
+      "matched": true
+    },
+    "samurott": {
+      "height": 15,
+      "weight": 946,
+      "sourceIdentifier": "samurott",
+      "matched": true
+    },
+    "samurott-hisui": {
+      "height": 15,
+      "weight": 582,
+      "sourceIdentifier": "samurott-hisui",
+      "matched": true
+    },
+    "sandaconda": {
+      "height": 38,
+      "weight": 655,
+      "sourceIdentifier": "sandaconda",
+      "matched": true
+    },
+    "sandile": {
+      "height": 7,
+      "weight": 152,
+      "sourceIdentifier": "sandile",
+      "matched": true
+    },
+    "sandshrew": {
+      "height": 6,
+      "weight": 120,
+      "sourceIdentifier": "sandshrew",
+      "matched": true
+    },
+    "sandslash": {
+      "height": 10,
+      "weight": 295,
+      "sourceIdentifier": "sandslash",
+      "matched": true
+    },
+    "sandy-shocks": {
+      "height": 23,
+      "weight": 600,
+      "sourceIdentifier": "sandy-shocks",
+      "matched": true
+    },
+    "sandygast": {
+      "height": 5,
+      "weight": 700,
+      "sourceIdentifier": "sandygast",
+      "matched": true
+    },
+    "sawk": {
+      "height": 14,
+      "weight": 510,
+      "sourceIdentifier": "sawk",
+      "matched": true
+    },
+    "sawsbuck": {
+      "height": 19,
+      "weight": 925,
+      "sourceIdentifier": "sawsbuck",
+      "matched": true
+    },
+    "scatterbug": {
+      "height": 3,
+      "weight": 25,
+      "sourceIdentifier": "scatterbug",
+      "matched": true
+    },
+    "sceptile": {
+      "height": 17,
+      "weight": 522,
+      "sourceIdentifier": "sceptile",
+      "matched": true
+    },
+    "scizor": {
+      "height": 18,
+      "weight": 1180,
+      "sourceIdentifier": "scizor",
+      "matched": true
+    },
+    "scolipede": {
+      "height": 25,
+      "weight": 2005,
+      "sourceIdentifier": "scolipede",
+      "matched": true
+    },
+    "scorbunny": {
+      "height": 3,
+      "weight": 45,
+      "sourceIdentifier": "scorbunny",
+      "matched": true
+    },
+    "scovillain": {
+      "height": 9,
+      "weight": 150,
+      "sourceIdentifier": "scovillain",
+      "matched": true
+    },
+    "scrafty": {
+      "height": 11,
+      "weight": 300,
+      "sourceIdentifier": "scrafty",
+      "matched": true
+    },
+    "scraggy": {
+      "height": 6,
+      "weight": 118,
+      "sourceIdentifier": "scraggy",
+      "matched": true
+    },
+    "scream-tail": {
+      "height": 12,
+      "weight": 80,
+      "sourceIdentifier": "scream-tail",
+      "matched": true
+    },
+    "scyther": {
+      "height": 15,
+      "weight": 560,
+      "sourceIdentifier": "scyther",
+      "matched": true
+    },
+    "seadra": {
+      "height": 12,
+      "weight": 250,
+      "sourceIdentifier": "seadra",
+      "matched": true
+    },
+    "seaking": {
+      "height": 13,
+      "weight": 390,
+      "sourceIdentifier": "seaking",
+      "matched": true
+    },
+    "sealeo": {
+      "height": 11,
+      "weight": 876,
+      "sourceIdentifier": "sealeo",
+      "matched": true
+    },
+    "seedot": {
+      "height": 5,
+      "weight": 40,
+      "sourceIdentifier": "seedot",
+      "matched": true
+    },
+    "seel": {
+      "height": 11,
+      "weight": 900,
+      "sourceIdentifier": "seel",
+      "matched": true
+    },
+    "seismitoad": {
+      "height": 15,
+      "weight": 620,
+      "sourceIdentifier": "seismitoad",
+      "matched": true
+    },
+    "sentret": {
+      "height": 8,
+      "weight": 60,
+      "sourceIdentifier": "sentret",
+      "matched": true
+    },
+    "serperior": {
+      "height": 33,
+      "weight": 630,
+      "sourceIdentifier": "serperior",
+      "matched": true
+    },
+    "servine": {
+      "height": 8,
+      "weight": 160,
+      "sourceIdentifier": "servine",
+      "matched": true
+    },
+    "seviper": {
+      "height": 27,
+      "weight": 525,
+      "sourceIdentifier": "seviper",
+      "matched": true
+    },
+    "sewaddle": {
+      "height": 3,
+      "weight": 25,
+      "sourceIdentifier": "sewaddle",
+      "matched": true
+    },
+    "sharpedo": {
+      "height": 18,
+      "weight": 888,
+      "sourceIdentifier": "sharpedo",
+      "matched": true
+    },
+    "shaymin-land": {
+      "height": 2,
+      "weight": 21,
+      "sourceIdentifier": "shaymin-land",
+      "matched": true
+    },
+    "shaymin-sky": {
+      "height": 4,
+      "weight": 52,
+      "sourceIdentifier": "shaymin-sky",
+      "matched": true
+    },
+    "shedinja": {
+      "height": 8,
+      "weight": 12,
+      "sourceIdentifier": "shedinja",
+      "matched": true
+    },
+    "shelgon": {
+      "height": 11,
+      "weight": 1105,
+      "sourceIdentifier": "shelgon",
+      "matched": true
+    },
+    "shellder": {
+      "height": 3,
+      "weight": 40,
+      "sourceIdentifier": "shellder",
+      "matched": true
+    },
+    "shellos": {
+      "height": 3,
+      "weight": 63,
+      "sourceIdentifier": "shellos",
+      "matched": true
+    },
+    "shelmet": {
+      "height": 4,
+      "weight": 77,
+      "sourceIdentifier": "shelmet",
+      "matched": true
+    },
+    "shieldon": {
+      "height": 5,
+      "weight": 570,
+      "sourceIdentifier": "shieldon",
+      "matched": true
+    },
+    "shiftry": {
+      "height": 13,
+      "weight": 596,
+      "sourceIdentifier": "shiftry",
+      "matched": true
+    },
+    "shiinotic": {
+      "height": 10,
+      "weight": 115,
+      "sourceIdentifier": "shiinotic",
+      "matched": true
+    },
+    "shinx": {
+      "height": 5,
+      "weight": 95,
+      "sourceIdentifier": "shinx",
+      "matched": true
+    },
+    "shroodle": {
+      "height": 2,
+      "weight": 7,
+      "sourceIdentifier": "shroodle",
+      "matched": true
+    },
+    "shroomish": {
+      "height": 4,
+      "weight": 45,
+      "sourceIdentifier": "shroomish",
+      "matched": true
+    },
+    "shuckle": {
+      "height": 6,
+      "weight": 205,
+      "sourceIdentifier": "shuckle",
+      "matched": true
+    },
+    "shuppet": {
+      "height": 6,
+      "weight": 23,
+      "sourceIdentifier": "shuppet",
+      "matched": true
+    },
+    "sigilyph": {
+      "height": 14,
+      "weight": 140,
+      "sourceIdentifier": "sigilyph",
+      "matched": true
+    },
+    "silcoon": {
+      "height": 6,
+      "weight": 100,
+      "sourceIdentifier": "silcoon",
+      "matched": true
+    },
+    "silicobra": {
+      "height": 22,
+      "weight": 76,
+      "sourceIdentifier": "silicobra",
+      "matched": true
+    },
+    "silvally": {
+      "height": 23,
+      "weight": 1005,
+      "sourceIdentifier": "silvally",
+      "matched": true
+    },
+    "simipour": {
+      "height": 10,
+      "weight": 290,
+      "sourceIdentifier": "simipour",
+      "matched": true
+    },
+    "simisage": {
+      "height": 11,
+      "weight": 305,
+      "sourceIdentifier": "simisage",
+      "matched": true
+    },
+    "simisear": {
+      "height": 10,
+      "weight": 280,
+      "sourceIdentifier": "simisear",
+      "matched": true
+    },
+    "sinistcha": {
+      "height": 2,
+      "weight": 22,
+      "sourceIdentifier": "sinistcha",
+      "matched": true
+    },
+    "sinistea": {
+      "height": 1,
+      "weight": 2,
+      "sourceIdentifier": "sinistea",
+      "matched": true
+    },
+    "sirfetchd": {
+      "height": 8,
+      "weight": 1170,
+      "sourceIdentifier": "sirfetchd",
+      "matched": true
+    },
+    "sizzlipede": {
+      "height": 7,
+      "weight": 10,
+      "sourceIdentifier": "sizzlipede",
+      "matched": true
+    },
+    "skarmory": {
+      "height": 17,
+      "weight": 505,
+      "sourceIdentifier": "skarmory",
+      "matched": true
+    },
+    "skeledirge": {
+      "height": 16,
+      "weight": 3265,
+      "sourceIdentifier": "skeledirge",
+      "matched": true
+    },
+    "skiddo": {
+      "height": 9,
+      "weight": 310,
+      "sourceIdentifier": "skiddo",
+      "matched": true
+    },
+    "skiploom": {
+      "height": 6,
+      "weight": 10,
+      "sourceIdentifier": "skiploom",
+      "matched": true
+    },
+    "skitty": {
+      "height": 6,
+      "weight": 110,
+      "sourceIdentifier": "skitty",
+      "matched": true
+    },
+    "skorupi": {
+      "height": 8,
+      "weight": 120,
+      "sourceIdentifier": "skorupi",
+      "matched": true
+    },
+    "skrelp": {
+      "height": 5,
+      "weight": 73,
+      "sourceIdentifier": "skrelp",
+      "matched": true
+    },
+    "skuntank": {
+      "height": 10,
+      "weight": 380,
+      "sourceIdentifier": "skuntank",
+      "matched": true
+    },
+    "skwovet": {
+      "height": 3,
+      "weight": 25,
+      "sourceIdentifier": "skwovet",
+      "matched": true
+    },
+    "slaking": {
+      "height": 20,
+      "weight": 1305,
+      "sourceIdentifier": "slaking",
+      "matched": true
+    },
+    "slakoth": {
+      "height": 8,
+      "weight": 240,
+      "sourceIdentifier": "slakoth",
+      "matched": true
+    },
+    "sliggoo": {
+      "height": 8,
+      "weight": 175,
+      "sourceIdentifier": "sliggoo",
+      "matched": true
+    },
+    "sliggoo-hisui": {
+      "height": 7,
+      "weight": 685,
+      "sourceIdentifier": "sliggoo-hisui",
+      "matched": true
+    },
+    "slither-wing": {
+      "height": 32,
+      "weight": 920,
+      "sourceIdentifier": "slither-wing",
+      "matched": true
+    },
+    "slowbro": {
+      "height": 16,
+      "weight": 785,
+      "sourceIdentifier": "slowbro",
+      "matched": true
+    },
+    "slowking": {
+      "height": 20,
+      "weight": 795,
+      "sourceIdentifier": "slowking",
+      "matched": true
+    },
+    "slowpoke": {
+      "height": 12,
+      "weight": 360,
+      "sourceIdentifier": "slowpoke",
+      "matched": true
+    },
+    "slugma": {
+      "height": 7,
+      "weight": 350,
+      "sourceIdentifier": "slugma",
+      "matched": true
+    },
+    "slurpuff": {
+      "height": 8,
+      "weight": 50,
+      "sourceIdentifier": "slurpuff",
+      "matched": true
+    },
+    "smeargle": {
+      "height": 12,
+      "weight": 580,
+      "sourceIdentifier": "smeargle",
+      "matched": true
+    },
+    "smoliv": {
+      "height": 3,
+      "weight": 65,
+      "sourceIdentifier": "smoliv",
+      "matched": true
+    },
+    "smoochum": {
+      "height": 4,
+      "weight": 60,
+      "sourceIdentifier": "smoochum",
+      "matched": true
+    },
+    "sneasel": {
+      "height": 9,
+      "weight": 280,
+      "sourceIdentifier": "sneasel",
+      "matched": true
+    },
+    "sneasel-hisui": {
+      "height": 9,
+      "weight": 270,
+      "sourceIdentifier": "sneasel-hisui",
+      "matched": true
+    },
+    "sneasler": {
+      "height": 13,
+      "weight": 430,
+      "sourceIdentifier": "sneasler",
+      "matched": true
+    },
+    "snivy": {
+      "height": 6,
+      "weight": 81,
+      "sourceIdentifier": "snivy",
+      "matched": true
+    },
+    "snom": {
+      "height": 3,
+      "weight": 38,
+      "sourceIdentifier": "snom",
+      "matched": true
+    },
+    "snorlax": {
+      "height": 21,
+      "weight": 4600,
+      "sourceIdentifier": "snorlax",
+      "matched": true
+    },
+    "snorunt": {
+      "height": 7,
+      "weight": 168,
+      "sourceIdentifier": "snorunt",
+      "matched": true
+    },
+    "snover": {
+      "height": 10,
+      "weight": 505,
+      "sourceIdentifier": "snover",
+      "matched": true
+    },
+    "snowy-castform": {
+      "height": 3,
+      "weight": 8,
+      "sourceIdentifier": "castform-snowy",
+      "matched": true
+    },
+    "snubbull": {
+      "height": 6,
+      "weight": 78,
+      "sourceIdentifier": "snubbull",
+      "matched": true
+    },
+    "sobble": {
+      "height": 3,
+      "weight": 40,
+      "sourceIdentifier": "sobble",
+      "matched": true
+    },
+    "solgaleo": {
+      "height": 34,
+      "weight": 2300,
+      "sourceIdentifier": "solgaleo",
+      "matched": true
+    },
+    "solosis": {
+      "height": 3,
+      "weight": 10,
+      "sourceIdentifier": "solosis",
+      "matched": true
+    },
+    "solrock": {
+      "height": 12,
+      "weight": 1540,
+      "sourceIdentifier": "solrock",
+      "matched": true
+    },
+    "spearow": {
+      "height": 3,
+      "weight": 20,
+      "sourceIdentifier": "spearow",
+      "matched": true
+    },
+    "spectrier": {
+      "height": 20,
+      "weight": 445,
+      "sourceIdentifier": "spectrier",
+      "matched": true
+    },
+    "spewpa": {
+      "height": 3,
+      "weight": 84,
+      "sourceIdentifier": "spewpa",
+      "matched": true
+    },
+    "spheal": {
+      "height": 8,
+      "weight": 395,
+      "sourceIdentifier": "spheal",
+      "matched": true
+    },
+    "spidops": {
+      "height": 10,
+      "weight": 165,
+      "sourceIdentifier": "spidops",
+      "matched": true
+    },
+    "spinarak": {
+      "height": 5,
+      "weight": 85,
+      "sourceIdentifier": "spinarak",
+      "matched": true
+    },
+    "spinda": {
+      "height": 11,
+      "weight": 50,
+      "sourceIdentifier": "spinda",
+      "matched": true
+    },
+    "spiritomb": {
+      "height": 10,
+      "weight": 1080,
+      "sourceIdentifier": "spiritomb",
+      "matched": true
+    },
+    "spoink": {
+      "height": 7,
+      "weight": 306,
+      "sourceIdentifier": "spoink",
+      "matched": true
+    },
+    "sprigatito": {
+      "height": 4,
+      "weight": 41,
+      "sourceIdentifier": "sprigatito",
+      "matched": true
+    },
+    "spritzee": {
+      "height": 2,
+      "weight": 5,
+      "sourceIdentifier": "spritzee",
+      "matched": true
+    },
+    "squawkabilly": {
+      "height": 6,
+      "weight": 24,
+      "sourceIdentifier": "squawkabilly-green-plumage",
+      "matched": true
+    },
+    "squirtle": {
+      "height": 5,
+      "weight": 90,
+      "sourceIdentifier": "squirtle",
+      "matched": true
+    },
+    "stakataka": {
+      "height": 55,
+      "weight": 8200,
+      "sourceIdentifier": "stakataka",
+      "matched": true
+    },
+    "stantler": {
+      "height": 14,
+      "weight": 712,
+      "sourceIdentifier": "stantler",
+      "matched": true
+    },
+    "staraptor": {
+      "height": 12,
+      "weight": 249,
+      "sourceIdentifier": "staraptor",
+      "matched": true
+    },
+    "staravia": {
+      "height": 6,
+      "weight": 155,
+      "sourceIdentifier": "staravia",
+      "matched": true
+    },
+    "starly": {
+      "height": 3,
+      "weight": 20,
+      "sourceIdentifier": "starly",
+      "matched": true
+    },
+    "starmie": {
+      "height": 11,
+      "weight": 800,
+      "sourceIdentifier": "starmie",
+      "matched": true
+    },
+    "staryu": {
+      "height": 8,
+      "weight": 345,
+      "sourceIdentifier": "staryu",
+      "matched": true
+    },
+    "steelix": {
+      "height": 92,
+      "weight": 4000,
+      "sourceIdentifier": "steelix",
+      "matched": true
+    },
+    "steenee": {
+      "height": 7,
+      "weight": 82,
+      "sourceIdentifier": "steenee",
+      "matched": true
+    },
+    "stonjourner": {
+      "height": 25,
+      "weight": 5200,
+      "sourceIdentifier": "stonjourner",
+      "matched": true
+    },
+    "stoutland": {
+      "height": 12,
+      "weight": 610,
+      "sourceIdentifier": "stoutland",
+      "matched": true
+    },
+    "stufful": {
+      "height": 5,
+      "weight": 68,
+      "sourceIdentifier": "stufful",
+      "matched": true
+    },
+    "stunfisk": {
+      "height": 7,
+      "weight": 110,
+      "sourceIdentifier": "stunfisk",
+      "matched": true
+    },
+    "stunky": {
+      "height": 4,
+      "weight": 192,
+      "sourceIdentifier": "stunky",
+      "matched": true
+    },
+    "sudowoodo": {
+      "height": 12,
+      "weight": 380,
+      "sourceIdentifier": "sudowoodo",
+      "matched": true
+    },
+    "suicune": {
+      "height": 20,
+      "weight": 1870,
+      "sourceIdentifier": "suicune",
+      "matched": true
+    },
+    "sunflora": {
+      "height": 8,
+      "weight": 85,
+      "sourceIdentifier": "sunflora",
+      "matched": true
+    },
+    "sunkern": {
+      "height": 3,
+      "weight": 18,
+      "sourceIdentifier": "sunkern",
+      "matched": true
+    },
+    "sunny-castform": {
+      "height": 3,
+      "weight": 8,
+      "sourceIdentifier": "castform-sunny",
+      "matched": true
+    },
+    "surskit": {
+      "height": 5,
+      "weight": 17,
+      "sourceIdentifier": "surskit",
+      "matched": true
+    },
+    "swablu": {
+      "height": 4,
+      "weight": 12,
+      "sourceIdentifier": "swablu",
+      "matched": true
+    },
+    "swadloon": {
+      "height": 5,
+      "weight": 73,
+      "sourceIdentifier": "swadloon",
+      "matched": true
+    },
+    "swalot": {
+      "height": 17,
+      "weight": 800,
+      "sourceIdentifier": "swalot",
+      "matched": true
+    },
+    "swampert": {
+      "height": 15,
+      "weight": 819,
+      "sourceIdentifier": "swampert",
+      "matched": true
+    },
+    "swanna": {
+      "height": 13,
+      "weight": 242,
+      "sourceIdentifier": "swanna",
+      "matched": true
+    },
+    "swellow": {
+      "height": 7,
+      "weight": 198,
+      "sourceIdentifier": "swellow",
+      "matched": true
+    },
+    "swinub": {
+      "height": 4,
+      "weight": 65,
+      "sourceIdentifier": "swinub",
+      "matched": true
+    },
+    "swirlix": {
+      "height": 4,
+      "weight": 35,
+      "sourceIdentifier": "swirlix",
+      "matched": true
+    },
+    "swoobat": {
+      "height": 9,
+      "weight": 105,
+      "sourceIdentifier": "swoobat",
+      "matched": true
+    },
+    "sylveon": {
+      "height": 10,
+      "weight": 235,
+      "sourceIdentifier": "sylveon",
+      "matched": true
+    },
+    "tadbulb": {
+      "height": 3,
+      "weight": 4,
+      "sourceIdentifier": "tadbulb",
+      "matched": true
+    },
+    "taillow": {
+      "height": 3,
+      "weight": 23,
+      "sourceIdentifier": "taillow",
+      "matched": true
+    },
+    "talonflame": {
+      "height": 12,
+      "weight": 245,
+      "sourceIdentifier": "talonflame",
+      "matched": true
+    },
+    "tandemaus": {
+      "height": 3,
+      "weight": 18,
+      "sourceIdentifier": "tandemaus",
+      "matched": true
+    },
+    "tangela": {
+      "height": 10,
+      "weight": 350,
+      "sourceIdentifier": "tangela",
+      "matched": true
+    },
+    "tangrowth": {
+      "height": 20,
+      "weight": 1286,
+      "sourceIdentifier": "tangrowth",
+      "matched": true
+    },
+    "tapu-bulu": {
+      "height": 19,
+      "weight": 455,
+      "sourceIdentifier": "tapu-bulu",
+      "matched": true
+    },
+    "tapu-fini": {
+      "height": 13,
+      "weight": 212,
+      "sourceIdentifier": "tapu-fini",
+      "matched": true
+    },
+    "tapu-koko": {
+      "height": 18,
+      "weight": 205,
+      "sourceIdentifier": "tapu-koko",
+      "matched": true
+    },
+    "tapu-lele": {
+      "height": 12,
+      "weight": 186,
+      "sourceIdentifier": "tapu-lele",
+      "matched": true
+    },
+    "tarountula": {
+      "height": 3,
+      "weight": 40,
+      "sourceIdentifier": "tarountula",
+      "matched": true
+    },
+    "tatsugiri": {
+      "height": 3,
+      "weight": 80,
+      "sourceIdentifier": "tatsugiri-curly",
+      "matched": true
+    },
+    "tauros": {
+      "height": 14,
+      "weight": 884,
+      "sourceIdentifier": "tauros",
+      "matched": true
+    },
+    "tauros-paldea-aqua-breed": {
+      "height": 14,
+      "weight": 1100,
+      "sourceIdentifier": "tauros-paldea-aqua-breed",
+      "matched": true
+    },
+    "tauros-paldea-blaze-breed": {
+      "height": 14,
+      "weight": 850,
+      "sourceIdentifier": "tauros-paldea-blaze-breed",
+      "matched": true
+    },
+    "tauros-paldea-combat-breed": {
+      "height": 14,
+      "weight": 1150,
+      "sourceIdentifier": "tauros-paldea-combat-breed",
+      "matched": true
+    },
+    "teddiursa": {
+      "height": 6,
+      "weight": 88,
+      "sourceIdentifier": "teddiursa",
+      "matched": true
+    },
+    "tentacool": {
+      "height": 9,
+      "weight": 455,
+      "sourceIdentifier": "tentacool",
+      "matched": true
+    },
+    "tentacruel": {
+      "height": 16,
+      "weight": 550,
+      "sourceIdentifier": "tentacruel",
+      "matched": true
+    },
+    "tepig": {
+      "height": 5,
+      "weight": 99,
+      "sourceIdentifier": "tepig",
+      "matched": true
+    },
+    "terapagos": {
+      "height": 2,
+      "weight": 65,
+      "sourceIdentifier": "terapagos",
+      "matched": true
+    },
+    "terapagos-stellar-form": {
+      "height": 17,
+      "weight": 770,
+      "sourceIdentifier": "terapagos-stellar",
+      "matched": true
+    },
+    "terapagos-terastal-form": {
+      "height": 3,
+      "weight": 160,
+      "sourceIdentifier": "terapagos-terastal",
+      "matched": true
+    },
+    "terrakion": {
+      "height": 19,
+      "weight": 2600,
+      "sourceIdentifier": "terrakion",
+      "matched": true
+    },
+    "thievul": {
+      "height": 12,
+      "weight": 199,
+      "sourceIdentifier": "thievul",
+      "matched": true
+    },
+    "throh": {
+      "height": 13,
+      "weight": 555,
+      "sourceIdentifier": "throh",
+      "matched": true
+    },
+    "thundurus": {
+      "height": 15,
+      "weight": 610,
+      "sourceIdentifier": "thundurus-incarnate",
+      "matched": true
+    },
+    "thundurus-therian": {
+      "height": 30,
+      "weight": 610,
+      "sourceIdentifier": "thundurus-therian",
+      "matched": true
+    },
+    "thwackey": {
+      "height": 7,
+      "weight": 140,
+      "sourceIdentifier": "thwackey",
+      "matched": true
+    },
+    "timburr": {
+      "height": 6,
+      "weight": 125,
+      "sourceIdentifier": "timburr",
+      "matched": true
+    },
+    "ting-lu": {
+      "height": 27,
+      "weight": 6997,
+      "sourceIdentifier": "ting-lu",
+      "matched": true
+    },
+    "tinkatink": {
+      "height": 4,
+      "weight": 89,
+      "sourceIdentifier": "tinkatink",
+      "matched": true
+    },
+    "tinkaton": {
+      "height": 7,
+      "weight": 1128,
+      "sourceIdentifier": "tinkaton",
+      "matched": true
+    },
+    "tinkatuff": {
+      "height": 7,
+      "weight": 591,
+      "sourceIdentifier": "tinkatuff",
+      "matched": true
+    },
+    "tirtouga": {
+      "height": 7,
+      "weight": 165,
+      "sourceIdentifier": "tirtouga",
+      "matched": true
+    },
+    "toedscool": {
+      "height": 9,
+      "weight": 330,
+      "sourceIdentifier": "toedscool",
+      "matched": true
+    },
+    "toedscruel": {
+      "height": 19,
+      "weight": 580,
+      "sourceIdentifier": "toedscruel",
+      "matched": true
+    },
+    "togedemaru": {
+      "height": 3,
+      "weight": 33,
+      "sourceIdentifier": "togedemaru",
+      "matched": true
+    },
+    "togekiss": {
+      "height": 15,
+      "weight": 380,
+      "sourceIdentifier": "togekiss",
+      "matched": true
+    },
+    "togepi": {
+      "height": 3,
+      "weight": 15,
+      "sourceIdentifier": "togepi",
+      "matched": true
+    },
+    "togetic": {
+      "height": 6,
+      "weight": 32,
+      "sourceIdentifier": "togetic",
+      "matched": true
+    },
+    "torchic": {
+      "height": 4,
+      "weight": 25,
+      "sourceIdentifier": "torchic",
+      "matched": true
+    },
+    "torkoal": {
+      "height": 5,
+      "weight": 804,
+      "sourceIdentifier": "torkoal",
+      "matched": true
+    },
+    "tornadus": {
+      "height": 15,
+      "weight": 630,
+      "sourceIdentifier": "tornadus-incarnate",
+      "matched": true
+    },
+    "tornadus-therian": {
+      "height": 14,
+      "weight": 630,
+      "sourceIdentifier": "tornadus-therian",
+      "matched": true
+    },
+    "torracat": {
+      "height": 7,
+      "weight": 250,
+      "sourceIdentifier": "torracat",
+      "matched": true
+    },
+    "torterra": {
+      "height": 22,
+      "weight": 3100,
+      "sourceIdentifier": "torterra",
+      "matched": true
+    },
+    "totodile": {
+      "height": 6,
+      "weight": 95,
+      "sourceIdentifier": "totodile",
+      "matched": true
+    },
+    "toucannon": {
+      "height": 11,
+      "weight": 260,
+      "sourceIdentifier": "toucannon",
+      "matched": true
+    },
+    "toxapex": {
+      "height": 7,
+      "weight": 145,
+      "sourceIdentifier": "toxapex",
+      "matched": true
+    },
+    "toxel": {
+      "height": 4,
+      "weight": 110,
+      "sourceIdentifier": "toxel",
+      "matched": true
+    },
+    "toxicroak": {
+      "height": 13,
+      "weight": 444,
+      "sourceIdentifier": "toxicroak",
+      "matched": true
+    },
+    "toxtricity-amped": {
+      "height": 16,
+      "weight": 400,
+      "sourceIdentifier": "toxtricity-amped",
+      "matched": true
+    },
+    "toxtricity-low-key": {
+      "height": 16,
+      "weight": 400,
+      "sourceIdentifier": "toxtricity-low-key",
+      "matched": true
+    },
+    "tranquill": {
+      "height": 6,
+      "weight": 150,
+      "sourceIdentifier": "tranquill",
+      "matched": true
+    },
+    "trapinch": {
+      "height": 7,
+      "weight": 150,
+      "sourceIdentifier": "trapinch",
+      "matched": true
+    },
+    "treecko": {
+      "height": 5,
+      "weight": 50,
+      "sourceIdentifier": "treecko",
+      "matched": true
+    },
+    "trevenant": {
+      "height": 15,
+      "weight": 710,
+      "sourceIdentifier": "trevenant",
+      "matched": true
+    },
+    "tropius": {
+      "height": 20,
+      "weight": 1000,
+      "sourceIdentifier": "tropius",
+      "matched": true
+    },
+    "trubbish": {
+      "height": 6,
+      "weight": 310,
+      "sourceIdentifier": "trubbish",
+      "matched": true
+    },
+    "trumbeak": {
+      "height": 6,
+      "weight": 148,
+      "sourceIdentifier": "trumbeak",
+      "matched": true
+    },
+    "tsareena": {
+      "height": 12,
+      "weight": 214,
+      "sourceIdentifier": "tsareena",
+      "matched": true
+    },
+    "turtonator": {
+      "height": 20,
+      "weight": 2120,
+      "sourceIdentifier": "turtonator",
+      "matched": true
+    },
+    "turtwig": {
+      "height": 4,
+      "weight": 102,
+      "sourceIdentifier": "turtwig",
+      "matched": true
+    },
+    "tympole": {
+      "height": 5,
+      "weight": 45,
+      "sourceIdentifier": "tympole",
+      "matched": true
+    },
+    "tynamo": {
+      "height": 2,
+      "weight": 3,
+      "sourceIdentifier": "tynamo",
+      "matched": true
+    },
+    "type-null": {
+      "height": 19,
+      "weight": 1205,
+      "sourceIdentifier": "type-null",
+      "matched": true
+    },
+    "typhlosion": {
+      "height": 17,
+      "weight": 795,
+      "sourceIdentifier": "typhlosion",
+      "matched": true
+    },
+    "typhlosion-hisui": {
+      "height": 16,
+      "weight": 698,
+      "sourceIdentifier": "typhlosion-hisui",
+      "matched": true
+    },
+    "tyranitar": {
+      "height": 20,
+      "weight": 2020,
+      "sourceIdentifier": "tyranitar",
+      "matched": true
+    },
+    "tyrantrum": {
+      "height": 25,
+      "weight": 2700,
+      "sourceIdentifier": "tyrantrum",
+      "matched": true
+    },
+    "tyrogue": {
+      "height": 7,
+      "weight": 210,
+      "sourceIdentifier": "tyrogue",
+      "matched": true
+    },
+    "tyrunt": {
+      "height": 8,
+      "weight": 260,
+      "sourceIdentifier": "tyrunt",
+      "matched": true
+    },
+    "ultra-necrozma": {
+      "height": 75,
+      "weight": 2300,
+      "sourceIdentifier": "necrozma-ultra",
+      "matched": true
+    },
+    "umbreon": {
+      "height": 10,
+      "weight": 270,
+      "sourceIdentifier": "umbreon",
+      "matched": true
+    },
+    "unfezant": {
+      "height": 12,
+      "weight": 290,
+      "sourceIdentifier": "unfezant",
+      "matched": true
+    },
+    "unown": {
+      "height": 5,
+      "weight": 50,
+      "sourceIdentifier": "unown",
+      "matched": true
+    },
+    "ursaluna": {
+      "height": 24,
+      "weight": 2900,
+      "sourceIdentifier": "ursaluna",
+      "matched": true
+    },
+    "ursaluna-bloodmoon": {
+      "height": 24,
+      "weight": 2900,
+      "sourceIdentifier": "ursaluna-bloodmoon",
+      "matched": true
+    },
+    "ursaring": {
+      "height": 18,
+      "weight": 1258,
+      "sourceIdentifier": "ursaring",
+      "matched": true
+    },
+    "urshifu-rapid": {
+      "height": 19,
+      "weight": 1050,
+      "sourceIdentifier": "urshifu-rapid-strike",
+      "matched": true
+    },
+    "urshifu-single": {
+      "height": 19,
+      "weight": 1050,
+      "sourceIdentifier": "urshifu-single-strike",
+      "matched": true
+    },
+    "uxie": {
+      "height": 3,
+      "weight": 3,
+      "sourceIdentifier": "uxie",
+      "matched": true
+    },
+    "vanillish": {
+      "height": 11,
+      "weight": 410,
+      "sourceIdentifier": "vanillish",
+      "matched": true
+    },
+    "vanillite": {
+      "height": 4,
+      "weight": 57,
+      "sourceIdentifier": "vanillite",
+      "matched": true
+    },
+    "vanilluxe": {
+      "height": 13,
+      "weight": 575,
+      "sourceIdentifier": "vanilluxe",
+      "matched": true
+    },
+    "vaporeon": {
+      "height": 10,
+      "weight": 290,
+      "sourceIdentifier": "vaporeon",
+      "matched": true
+    },
+    "varoom": {
+      "height": 10,
+      "weight": 350,
+      "sourceIdentifier": "varoom",
+      "matched": true
+    },
+    "veluza": {
+      "height": 25,
+      "weight": 900,
+      "sourceIdentifier": "veluza",
+      "matched": true
+    },
+    "venipede": {
+      "height": 4,
+      "weight": 53,
+      "sourceIdentifier": "venipede",
+      "matched": true
+    },
+    "venomoth": {
+      "height": 15,
+      "weight": 125,
+      "sourceIdentifier": "venomoth",
+      "matched": true
+    },
+    "venonat": {
+      "height": 10,
+      "weight": 300,
+      "sourceIdentifier": "venonat",
+      "matched": true
+    },
+    "venusaur": {
+      "height": 20,
+      "weight": 1000,
+      "sourceIdentifier": "venusaur",
+      "matched": true
+    },
+    "vespiquen": {
+      "height": 12,
+      "weight": 385,
+      "sourceIdentifier": "vespiquen",
+      "matched": true
+    },
+    "vibrava": {
+      "height": 11,
+      "weight": 153,
+      "sourceIdentifier": "vibrava",
+      "matched": true
+    },
+    "victini": {
+      "height": 4,
+      "weight": 40,
+      "sourceIdentifier": "victini",
+      "matched": true
+    },
+    "victreebel": {
+      "height": 17,
+      "weight": 155,
+      "sourceIdentifier": "victreebel",
+      "matched": true
+    },
+    "vigoroth": {
+      "height": 14,
+      "weight": 465,
+      "sourceIdentifier": "vigoroth",
+      "matched": true
+    },
+    "vikavolt": {
+      "height": 15,
+      "weight": 450,
+      "sourceIdentifier": "vikavolt",
+      "matched": true
+    },
+    "vileplume": {
+      "height": 12,
+      "weight": 186,
+      "sourceIdentifier": "vileplume",
+      "matched": true
+    },
+    "virizion": {
+      "height": 20,
+      "weight": 2000,
+      "sourceIdentifier": "virizion",
+      "matched": true
+    },
+    "vivillon": {
+      "height": 12,
+      "weight": 170,
+      "sourceIdentifier": "vivillon",
+      "matched": true
+    },
+    "volbeat": {
+      "height": 7,
+      "weight": 177,
+      "sourceIdentifier": "volbeat",
+      "matched": true
+    },
+    "volcanion": {
+      "height": 17,
+      "weight": 1950,
+      "sourceIdentifier": "volcanion",
+      "matched": true
+    },
+    "volcarona": {
+      "height": 16,
+      "weight": 460,
+      "sourceIdentifier": "volcarona",
+      "matched": true
+    },
+    "voltorb": {
+      "height": 5,
+      "weight": 104,
+      "sourceIdentifier": "voltorb",
+      "matched": true
+    },
+    "voltorb-hisui": {
+      "height": 5,
+      "weight": 130,
+      "sourceIdentifier": "voltorb-hisui",
+      "matched": true
+    },
+    "vullaby": {
+      "height": 5,
+      "weight": 90,
+      "sourceIdentifier": "vullaby",
+      "matched": true
+    },
+    "vulpix": {
+      "height": 6,
+      "weight": 99,
+      "sourceIdentifier": "vulpix",
+      "matched": true
+    },
+    "wailmer": {
+      "height": 20,
+      "weight": 1300,
+      "sourceIdentifier": "wailmer",
+      "matched": true
+    },
+    "wailord": {
+      "height": 145,
+      "weight": 3980,
+      "sourceIdentifier": "wailord",
+      "matched": true
+    },
+    "walking-wake": {
+      "height": 35,
+      "weight": 2800,
+      "sourceIdentifier": "walking-wake",
+      "matched": true
+    },
+    "walrein": {
+      "height": 14,
+      "weight": 1506,
+      "sourceIdentifier": "walrein",
+      "matched": true
+    },
+    "wartortle": {
+      "height": 10,
+      "weight": 225,
+      "sourceIdentifier": "wartortle",
+      "matched": true
+    },
+    "watchog": {
+      "height": 11,
+      "weight": 270,
+      "sourceIdentifier": "watchog",
+      "matched": true
+    },
+    "wattrel": {
+      "height": 4,
+      "weight": 36,
+      "sourceIdentifier": "wattrel",
+      "matched": true
+    },
+    "weavile": {
+      "height": 11,
+      "weight": 340,
+      "sourceIdentifier": "weavile",
+      "matched": true
+    },
+    "weedle": {
+      "height": 3,
+      "weight": 32,
+      "sourceIdentifier": "weedle",
+      "matched": true
+    },
+    "weepinbell": {
+      "height": 10,
+      "weight": 64,
+      "sourceIdentifier": "weepinbell",
+      "matched": true
+    },
+    "weezing": {
+      "height": 12,
+      "weight": 95,
+      "sourceIdentifier": "weezing",
+      "matched": true
+    },
+    "whimsicott": {
+      "height": 7,
+      "weight": 66,
+      "sourceIdentifier": "whimsicott",
+      "matched": true
+    },
+    "whirlipede": {
+      "height": 12,
+      "weight": 585,
+      "sourceIdentifier": "whirlipede",
+      "matched": true
+    },
+    "whiscash": {
+      "height": 9,
+      "weight": 236,
+      "sourceIdentifier": "whiscash",
+      "matched": true
+    },
+    "whismur": {
+      "height": 6,
+      "weight": 163,
+      "sourceIdentifier": "whismur",
+      "matched": true
+    },
+    "white-kyurem": {
+      "height": 36,
+      "weight": 3250,
+      "sourceIdentifier": "kyurem-white",
+      "matched": true
+    },
+    "wigglytuff": {
+      "height": 10,
+      "weight": 120,
+      "sourceIdentifier": "wigglytuff",
+      "matched": true
+    },
+    "wiglett": {
+      "height": 12,
+      "weight": 18,
+      "sourceIdentifier": "wiglett",
+      "matched": true
+    },
+    "wimpod": {
+      "height": 5,
+      "weight": 120,
+      "sourceIdentifier": "wimpod",
+      "matched": true
+    },
+    "wingull": {
+      "height": 6,
+      "weight": 95,
+      "sourceIdentifier": "wingull",
+      "matched": true
+    },
+    "wishiwashi-school-form": {
+      "height": 82,
+      "weight": 786,
+      "sourceIdentifier": "wishiwashi-school",
+      "matched": true
+    },
+    "wishiwashi-solo-form": {
+      "height": 2,
+      "weight": 3,
+      "sourceIdentifier": "wishiwashi-solo",
+      "matched": true
+    },
+    "wo-chien": {
+      "height": 15,
+      "weight": 742,
+      "sourceIdentifier": "wo-chien",
+      "matched": true
+    },
+    "wobbuffet": {
+      "height": 13,
+      "weight": 285,
+      "sourceIdentifier": "wobbuffet",
+      "matched": true
+    },
+    "woobat": {
+      "height": 4,
+      "weight": 21,
+      "sourceIdentifier": "woobat",
+      "matched": true
+    },
+    "wooloo": {
+      "height": 6,
+      "weight": 60,
+      "sourceIdentifier": "wooloo",
+      "matched": true
+    },
+    "wooper": {
+      "height": 4,
+      "weight": 85,
+      "sourceIdentifier": "wooper",
+      "matched": true
+    },
+    "wooper-paldea": {
+      "height": 4,
+      "weight": 110,
+      "sourceIdentifier": "wooper-paldea",
+      "matched": true
+    },
+    "wormadam-plant-cloak": {
+      "height": 5,
+      "weight": 65,
+      "sourceIdentifier": "wormadam-plant",
+      "matched": false
+    },
+    "wormadam-sand-cloak": {
+      "height": 5,
+      "weight": 65,
+      "sourceIdentifier": "wormadam-plant",
+      "matched": false
+    },
+    "wormadam-trash-cloak": {
+      "height": 5,
+      "weight": 65,
+      "sourceIdentifier": "wormadam-trash",
+      "matched": true
+    },
+    "wugtrio": {
+      "height": 12,
+      "weight": 54,
+      "sourceIdentifier": "wugtrio",
+      "matched": true
+    },
+    "wurmple": {
+      "height": 3,
+      "weight": 36,
+      "sourceIdentifier": "wurmple",
+      "matched": true
+    },
+    "wynaut": {
+      "height": 6,
+      "weight": 140,
+      "sourceIdentifier": "wynaut",
+      "matched": true
+    },
+    "wyrdeer": {
+      "height": 18,
+      "weight": 951,
+      "sourceIdentifier": "wyrdeer",
+      "matched": true
+    },
+    "xatu": {
+      "height": 15,
+      "weight": 150,
+      "sourceIdentifier": "xatu",
+      "matched": true
+    },
+    "xerneas": {
+      "height": 30,
+      "weight": 2150,
+      "sourceIdentifier": "xerneas",
+      "matched": true
+    },
+    "xurkitree": {
+      "height": 38,
+      "weight": 1000,
+      "sourceIdentifier": "xurkitree",
+      "matched": true
+    },
+    "yamask": {
+      "height": 5,
+      "weight": 15,
+      "sourceIdentifier": "yamask",
+      "matched": true
+    },
+    "yamper": {
+      "height": 3,
+      "weight": 135,
+      "sourceIdentifier": "yamper",
+      "matched": true
+    },
+    "yanma": {
+      "height": 12,
+      "weight": 380,
+      "sourceIdentifier": "yanma",
+      "matched": true
+    },
+    "yanmega": {
+      "height": 19,
+      "weight": 515,
+      "sourceIdentifier": "yanmega",
+      "matched": true
+    },
+    "yungoos": {
+      "height": 4,
+      "weight": 60,
+      "sourceIdentifier": "yungoos",
+      "matched": true
+    },
+    "yveltal": {
+      "height": 58,
+      "weight": 2030,
+      "sourceIdentifier": "yveltal",
+      "matched": true
+    },
+    "zacian": {
+      "height": 28,
+      "weight": 1100,
+      "sourceIdentifier": "zacian",
+      "matched": true
+    },
+    "zacian-crowned": {
+      "height": 28,
+      "weight": 3550,
+      "sourceIdentifier": "zacian-crowned",
+      "matched": true
+    },
+    "zamazenta": {
+      "height": 29,
+      "weight": 2100,
+      "sourceIdentifier": "zamazenta",
+      "matched": true
+    },
+    "zamazenta-crowned": {
+      "height": 29,
+      "weight": 7850,
+      "sourceIdentifier": "zamazenta-crowned",
+      "matched": true
+    },
+    "zangoose": {
+      "height": 13,
+      "weight": 403,
+      "sourceIdentifier": "zangoose",
+      "matched": true
+    },
+    "zapdos": {
+      "height": 16,
+      "weight": 526,
+      "sourceIdentifier": "zapdos",
+      "matched": true
+    },
+    "zapdos-galar": {
+      "height": 16,
+      "weight": 582,
+      "sourceIdentifier": "zapdos-galar",
+      "matched": true
+    },
+    "zarude": {
+      "height": 18,
+      "weight": 700,
+      "sourceIdentifier": "zarude",
+      "matched": true
+    },
+    "zebstrika": {
+      "height": 16,
+      "weight": 795,
+      "sourceIdentifier": "zebstrika",
+      "matched": true
+    },
+    "zekrom": {
+      "height": 29,
+      "weight": 3450,
+      "sourceIdentifier": "zekrom",
+      "matched": true
+    },
+    "zeraora": {
+      "height": 15,
+      "weight": 445,
+      "sourceIdentifier": "zeraora",
+      "matched": true
+    },
+    "zigzagoon": {
+      "height": 4,
+      "weight": 175,
+      "sourceIdentifier": "zigzagoon",
+      "matched": true
+    },
+    "zoroark": {
+      "height": 16,
+      "weight": 811,
+      "sourceIdentifier": "zoroark",
+      "matched": true
+    },
+    "zoroark-hisui": {
+      "height": 16,
+      "weight": 730,
+      "sourceIdentifier": "zoroark-hisui",
+      "matched": true
+    },
+    "zorua": {
+      "height": 7,
+      "weight": 125,
+      "sourceIdentifier": "zorua",
+      "matched": true
+    },
+    "zorua-hisui": {
+      "height": 7,
+      "weight": 125,
+      "sourceIdentifier": "zorua-hisui",
+      "matched": true
+    },
+    "zubat": {
+      "height": 8,
+      "weight": 75,
+      "sourceIdentifier": "zubat",
+      "matched": true
+    },
+    "zweilous": {
+      "height": 14,
+      "weight": 500,
+      "sourceIdentifier": "zweilous",
+      "matched": true
+    },
+    "zygarde-10-forme": {
+      "height": 12,
+      "weight": 335,
+      "sourceIdentifier": "zygarde-10",
+      "matched": true
+    },
+    "zygarde-50-forme": {
+      "height": 50,
+      "weight": 3050,
+      "sourceIdentifier": "zygarde-50",
+      "matched": true
+    },
+    "zygarde-complete-forme": {
+      "height": 45,
+      "weight": 6100,
+      "sourceIdentifier": "zygarde-complete",
+      "matched": true
+    }
+  }
+}

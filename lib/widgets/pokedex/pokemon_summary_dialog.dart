@@ -151,10 +151,19 @@ class _PokemonSummaryDialogState extends State<PokemonSummaryDialog> {
     final pokemon = _selectedPokemon;
     final formEntry = _selectedFormEntry;
     final number = '#${widget.pokemon.id.toString().padLeft(3, '0')}';
-    final description = pokemon.description?.trim().isNotEmpty == true
-        ? pokemon.description!.trim()
-        : widget.flavor?.flavor.trim() ?? '';
     final isBase = _selectedFormName == null;
+    final webDescription = pokemon.description?.trim() ?? '';
+    final baseDescription = widget.flavor?.flavor.trim() ?? '';
+    final description = isBase
+        ? (baseDescription.isNotEmpty ? baseDescription : webDescription)
+        : (webDescription.isNotEmpty ? webDescription : baseDescription);
+    final webGenus = pokemon.genus?.trim() ?? '';
+    final baseGenus = widget.flavor?.genus.trim() ?? '';
+    final genus = isBase
+        ? (baseGenus.isNotEmpty ? baseGenus : webGenus)
+        : (webGenus.isNotEmpty ? webGenus : baseGenus);
+    final heightMeters = pokemon.heightMeters ?? widget.flavor?.heightMeters;
+    final weightKg = pokemon.weightKg ?? widget.flavor?.weightKg;
 
     return AlertDialog(
       title: Text('${widget.pokemon.name} $number'),
@@ -210,16 +219,18 @@ class _PokemonSummaryDialogState extends State<PokemonSummaryDialog> {
                 ),
               const SizedBox(height: 16),
               if (formEntry.seen) ...[
-                if (isBase && widget.flavor != null) ...[
+                if (genus.isNotEmpty) ...[
                   Text(
-                    widget.flavor!.genus,
+                    genus,
                     style: const TextStyle(fontWeight: FontWeight.bold),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 4),
+                ],
+                if (heightMeters != null && weightKg != null) ...[
                   Text(
-                    'Altezza: ${widget.flavor!.heightMeters.toStringAsFixed(1)} m · '
-                    'Peso: ${widget.flavor!.weightKg.toStringAsFixed(1)} kg',
+                    'Altezza: ${heightMeters.toStringAsFixed(1)} m · '
+                    'Peso: ${weightKg.toStringAsFixed(1)} kg',
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 10),

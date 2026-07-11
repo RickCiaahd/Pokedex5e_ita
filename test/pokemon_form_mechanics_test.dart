@@ -12,6 +12,10 @@ void main() {
     expect(alolan.types, containsAll(<String>['Dark', 'Normal']));
     expect(alolan.abilities, contains('Gluttony'));
     expect(alolan.moves.startingMoves, contains('Quick Attack'));
+    expect(alolan.genus, 'Mouse Pokémon');
+    expect(alolan.description, startsWith('Night after night'));
+    expect(alolan.heightMeters, 0.3);
+    expect(alolan.weightKg, 3.8);
   });
 
   test('Dusk Mane Necrozma deep-merges stats and types', () async {

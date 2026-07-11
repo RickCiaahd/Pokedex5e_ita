@@ -72,8 +72,7 @@ void main() {
 
     const shiny =
         'assets/textures/textures_webapp/pokemon/abomasnow/main-shiny.png';
-    const normal =
-        'assets/textures/textures_webapp/pokemon/abomasnow/main.png';
+    const normal = 'assets/textures/textures_webapp/pokemon/abomasnow/main.png';
 
     expect(candidates, contains(shiny));
     expect(candidates, contains(normal));

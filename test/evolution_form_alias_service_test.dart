@@ -14,7 +14,7 @@ void main() {
     final rattata = catalog.firstWhere((pokemon) => pokemon.id == 19);
     final result = service.build(
       currentBasePokemon: rattata,
-      slot: const TeamSlot(
+      slot: TeamSlot(
         slotIndex: 0,
         pokemonId: 19,
         formName: 'Alolan',
@@ -41,7 +41,7 @@ void main() {
     final pikachu = catalog.firstWhere((pokemon) => pokemon.id == 25);
     final result = service.build(
       currentBasePokemon: pikachu,
-      slot: const TeamSlot(slotIndex: 0, pokemonId: 25),
+      slot: TeamSlot(slotIndex: 0, pokemonId: 25),
       catalog: catalog,
     );
 
@@ -76,7 +76,7 @@ void main() {
 
     final result = service.build(
       currentBasePokemon: withMega,
-      slot: const TeamSlot(slotIndex: 0, pokemonId: 6),
+      slot: TeamSlot(slotIndex: 0, pokemonId: 6),
       catalog: [withMega],
     );
 

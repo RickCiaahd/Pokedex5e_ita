@@ -31,10 +31,6 @@ def identifier_tokens(value: str) -> set[str]:
     }
 
 
-def slug(value: str) -> str:
-    return re.sub(r"-+", "-", re.sub(r"[^a-z0-9]+", "-", value.lower())).strip("-")
-
-
 def read_pokeapi_rows() -> list[dict[str, str]]:
     request = urllib.request.Request(
         POKEAPI_CSV_URL,
@@ -47,7 +43,6 @@ def read_pokeapi_rows() -> list[dict[str, str]]:
 
 def score_candidate(
     local_id: str,
-    local_name: str,
     candidate: dict[str, str],
     default_identifier: str | None,
 ) -> tuple[int, int, int]:
@@ -61,8 +56,7 @@ def score_candidate(
     local_form_tokens = local_tokens - default_tokens
     candidate_form_tokens = candidate_tokens - default_tokens
 
-    local_name_slug = slug(local_name)
-    looks_base = local_id == local_name_slug or not local_form_tokens
+    looks_base = not local_form_tokens
     is_default = candidate.get("is_default") == "1"
     if looks_base and is_default:
         return (9000, 0, 0)
@@ -105,7 +99,6 @@ def main() -> None:
 
     for item in local_items:
         local_id = str(item.get("id") or "").strip()
-        local_name = str(item.get("name") or local_id).strip()
         try:
             species_id = int(item.get("number"))
         except (TypeError, ValueError):
@@ -123,7 +116,6 @@ def main() -> None:
             candidates,
             key=lambda candidate: score_candidate(
                 local_id,
-                local_name,
                 candidate,
                 default_identifier,
             ),
@@ -131,7 +123,7 @@ def main() -> None:
         )
         selected = ranked[0] if ranked else None
         selected_score = (
-            score_candidate(local_id, local_name, selected, default_identifier)
+            score_candidate(local_id, selected, default_identifier)
             if selected is not None
             else (-9999, 0, 0)
         )

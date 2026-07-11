@@ -1,5 +1,0 @@
-SCREEN MIGRATION:
-python3: can't open file '/home/runner/work/Pokedex5e_ita/Pokedex5e_ita/tool/apply_form_pokedex_screen.py': [Errno 2] No such file or directory
-
-FOLLOW-UP MIGRATION:
-python3: can't open file '/home/runner/work/Pokedex5e_ita/Pokedex5e_ita/tool/apply_form_pokedex_followups.py': [Errno 2] No such file or directory

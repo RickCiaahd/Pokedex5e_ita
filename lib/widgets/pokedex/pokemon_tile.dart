@@ -10,16 +10,22 @@ class PokemonTile extends StatelessWidget {
     required this.pokemon,
     required this.entry,
     required this.onTap,
+    this.previewFormName,
   });
 
   final Pokemon pokemon;
   final PokedexEntry entry;
+  final String? previewFormName;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     final number = '#${pokemon.id.toString().padLeft(3, '0')}';
     final colorScheme = Theme.of(context).colorScheme;
+    final previewEntry = entry.viewForForm(
+      previewFormName,
+      speciesName: pokemon.name,
+    );
 
     return InkWell(
       onTap: onTap,
@@ -31,21 +37,21 @@ class PokemonTile extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.fromLTRB(6, 8, 6, 6),
               decoration: BoxDecoration(
-                color: entry.caught
+                color: previewEntry.caught
                     ? Colors.white
-                    : entry.seen
-                    ? const Color(0xFFF6F6F6)
-                    : const Color(0xFFE4E1DC),
+                    : previewEntry.seen
+                        ? const Color(0xFFF6F6F6)
+                        : const Color(0xFFE4E1DC),
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
-                  color: entry.caught
+                  color: previewEntry.caught
                       ? colorScheme.primary
-                      : entry.seen
-                      ? colorScheme.outlineVariant
-                      : colorScheme.outline.withValues(alpha: 0.45),
-                  width: entry.caught ? 2 : 1,
+                      : previewEntry.seen
+                          ? colorScheme.outlineVariant
+                          : colorScheme.outline.withValues(alpha: 0.45),
+                  width: previewEntry.caught ? 2 : 1,
                 ),
-                boxShadow: entry.caught
+                boxShadow: previewEntry.caught
                     ? [
                         BoxShadow(
                           color: colorScheme.primary.withValues(alpha: 0.14),
@@ -73,21 +79,21 @@ class PokemonTile extends StatelessWidget {
                       child: Text(
                         number,
                         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          fontWeight: FontWeight.w900,
-                        ),
+                              fontWeight: FontWeight.w900,
+                            ),
                       ),
                     ),
                   ),
-                  if (entry.caught || entry.seen)
+                  if (previewEntry.caught || previewEntry.seen)
                     Positioned(
                       top: 0,
                       right: 0,
                       child: Icon(
-                        entry.caught
+                        previewEntry.caught
                             ? Icons.catching_pokemon
                             : Icons.visibility,
                         size: 18,
-                        color: entry.caught
+                        color: previewEntry.caught
                             ? colorScheme.primary
                             : colorScheme.onSurfaceVariant,
                       ),
@@ -99,7 +105,7 @@ class PokemonTile extends StatelessWidget {
                       height: 8,
                       decoration: BoxDecoration(
                         color: Colors.black.withValues(
-                          alpha: entry.seen ? 0.10 : 0.18,
+                          alpha: previewEntry.seen ? 0.10 : 0.18,
                         ),
                         borderRadius: BorderRadius.circular(999),
                       ),
@@ -107,7 +113,8 @@ class PokemonTile extends StatelessWidget {
                   ),
                   PokemonAssetImage(
                     pokemon: pokemon,
-                    entry: entry,
+                    entry: previewEntry,
+                    formName: previewFormName,
                     useLargeArtwork: true,
                     size: 96,
                   ),
@@ -117,16 +124,18 @@ class PokemonTile extends StatelessWidget {
           ),
           const SizedBox(height: 5),
           Text(
-            entry.seen ? pokemon.name : number,
+            previewEntry.seen ? pokemon.name : number,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.labelMedium?.copyWith(
-              fontWeight: entry.caught ? FontWeight.w900 : FontWeight.w700,
-              color: entry.seen
-                  ? colorScheme.onSurface
-                  : colorScheme.onSurfaceVariant,
-            ),
+                  fontWeight: previewEntry.caught
+                      ? FontWeight.w900
+                      : FontWeight.w700,
+                  color: previewEntry.seen
+                      ? colorScheme.onSurface
+                      : colorScheme.onSurfaceVariant,
+                ),
           ),
         ],
       ),

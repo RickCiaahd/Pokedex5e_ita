@@ -73,8 +73,12 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
   void _handleSlotChanged(TeamSlot updatedSlot) {
     final alias = _aliasCatalog.bySyntheticId[updatedSlot.pokemonId];
     if (alias == null) {
-      _slot = updatedSlot;
-      _replaceTeamSlot(updatedSlot);
+      setState(() {
+        _slot = updatedSlot;
+        _replaceTeamSlot(updatedSlot);
+        _aliasCatalog = _buildAliasCatalog();
+        _detailGeneration += 1;
+      });
       widget.onTeamSlotChanged?.call(updatedSlot);
       return;
     }
@@ -119,7 +123,9 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return legacy.PokemonDetailScreen(
-      key: ValueKey<int>(_detailGeneration),
+      key: ValueKey<String>(
+        '$_detailGeneration|${_slot?.pokemonId}|${_slot?.formName ?? 'base'}|${_slot?.gender ?? 'none'}|${_slot?.isShiny ?? false}',
+      ),
       pokemon: _basePokemon,
       teamSlot: _slot,
       allPokemon: _aliasCatalog.pokemon,

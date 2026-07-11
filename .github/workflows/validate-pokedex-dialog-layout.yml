@@ -1,0 +1,34 @@
+name: Validate Pokédex dialog layout
+
+on:
+  push:
+    branches:
+      - fix/pokedex-summary-dialog-layout
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Format check
+        run: dart format --output=none --set-exit-if-changed lib/widgets/pokedex/pokemon_summary_dialog.dart test/pokemon_summary_dialog_layout_test.dart
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Run dialog layout test
+        run: flutter test test/pokemon_summary_dialog_layout_test.dart
+
+      - name: Run Pokédex model tests
+        run: flutter test test/pokedex_form_entry_test.dart

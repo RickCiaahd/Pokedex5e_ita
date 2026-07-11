@@ -100,22 +100,25 @@ class PokedexRepository {
     required String profileId,
     required int pokemonId,
     String? formName,
-  }) {
+  }) async {
     final formKey = PokedexEntry.normalizeFormKey(formName);
-    return updateFormMarkMode(
-      profileId: profileId,
-      pokemonId: pokemonId,
+    final current = await getEntry(profileId: profileId, pokemonId: pokemonId);
+    final currentForm = current.formFor(
+      formKey,
+      formName: formName?.trim().isEmpty == false ? formName : 'Base',
+    );
+    final updated = current.withFormStatus(
       formKey: formKey,
       formName: formName?.trim().isEmpty == false ? formName : 'Base',
       seen: true,
-      caught: false,
+      caught: currentForm.caught,
     );
+
+    await saveEntry(profileId: profileId, entry: updated);
+    return updated;
   }
 
   /// Backward-compatible species update used by older screens.
-  ///
-  /// If a precise alternate form was registered immediately before this call,
-  /// a generic caught update must not also unlock the base form.
   Future<void> updateMarkMode({
     required String profileId,
     required int pokemonId,
@@ -123,17 +126,6 @@ class PokedexRepository {
     required bool caught,
     String? formName,
   }) async {
-    final current = await getEntry(profileId: profileId, pokemonId: pokemonId);
-    final hasKnownAlternate = current.forms.entries.any(
-      (entry) =>
-          entry.key != PokedexEntry.baseFormKey &&
-          (entry.value.seen || entry.value.caught),
-    );
-
-    if (formName == null && caught && hasKnownAlternate) {
-      return;
-    }
-
     await updateFormMarkMode(
       profileId: profileId,
       pokemonId: pokemonId,

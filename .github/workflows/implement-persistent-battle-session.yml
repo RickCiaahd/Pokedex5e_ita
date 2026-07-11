@@ -24,6 +24,27 @@ jobs:
           ref: feat/persistent-battle-session
           fetch-depth: 0
 
+      - name: Fix implementation script bootstrap
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('tool/apply_battle_session_patch.py')
+          text = path.read_text(encoding='utf-8')
+          old = '''replace_once(
+              battle,
+              "        _InitiativeEntry(\\n",
+              "        BattleInitiativeEntry(\\n",
+          )
+          '''
+          new = '''text = Path(battle).read_text(encoding="utf-8")
+          text = text.replace("_InitiativeEntry(", "BattleInitiativeEntry(")
+          Path(battle).write_text(text, encoding="utf-8")
+          '''
+          if old not in text:
+              raise SystemExit('bootstrap replacement target not found')
+          path.write_text(text.replace(old, new, 1), encoding='utf-8')
+          PY
+
       - name: Apply implementation patch
         id: patch
         continue-on-error: true

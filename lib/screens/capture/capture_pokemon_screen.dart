@@ -308,6 +308,8 @@ class _CapturePokemonScreenState extends State<CapturePokemonScreen> {
     await _pokedexRepository.updateMarkMode(
       profileId: profile.id,
       pokemonId: pokemon.id,
+      formName: result.formName,
+      speciesName: pokemon.name,
       seen: true,
       caught: true,
     );

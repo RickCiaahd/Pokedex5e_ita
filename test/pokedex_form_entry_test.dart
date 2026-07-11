@@ -32,10 +32,7 @@ void main() {
         },
       );
 
-      expect(
-        entry.formFor('Alolan', speciesName: 'Rattata').caught,
-        isTrue,
-      );
+      expect(entry.formFor('Alolan', speciesName: 'Rattata').caught, isTrue);
 
       final normalized = entry.setFormState(
         formName: 'Alolan',
@@ -115,7 +112,10 @@ void main() {
 
   test('temporary battle transformations are not tracked as forms', () {
     expect(
-      PokedexEntry.isTrackableForm('Mega Charizard X', speciesName: 'Charizard'),
+      PokedexEntry.isTrackableForm(
+        'Mega Charizard X',
+        speciesName: 'Charizard',
+      ),
       isFalse,
     );
     expect(
@@ -146,10 +146,7 @@ void main() {
     final restored = PokedexEntry.fromJson(original.toJson());
 
     expect(restored.caught, isTrue);
-    expect(
-      restored.formFor('Alolan', speciesName: 'Raichu').caught,
-      isTrue,
-    );
+    expect(restored.formFor('Alolan', speciesName: 'Raichu').caught, isTrue);
     expect(restored.formFor(null, speciesName: 'Raichu').seen, isTrue);
   });
 }

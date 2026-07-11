@@ -74,13 +74,13 @@ class PokedexEntry {
     bool caught = false,
     Map<String, PokedexFormEntry> forms = const {},
     DateTime? updatedAt,
-  })  : forms = _initialForms(
-          forms: forms,
-          seen: seen,
-          caught: caught,
-          updatedAt: updatedAt,
-        ),
-        updatedAt = updatedAt ?? DateTime.now();
+  }) : forms = _initialForms(
+         forms: forms,
+         seen: seen,
+         caught: caught,
+         updatedAt: updatedAt,
+       ),
+       updatedAt = updatedAt ?? DateTime.now();
 
   bool get seen => forms.values.any((entry) => entry.seen);
 
@@ -111,10 +111,7 @@ class PokedexEntry {
     return Pokemon.formReferenceKey(formName ?? '', speciesName);
   }
 
-  static String? displayNameFor(
-    String? formName, {
-    String speciesName = '',
-  }) {
+  static String? displayNameFor(String? formName, {String speciesName = ''}) {
     final key = formKey(formName, speciesName: speciesName);
     switch (key) {
       case 'base':
@@ -136,10 +133,7 @@ class PokedexEntry {
     }
   }
 
-  static bool isTrackableForm(
-    String? formName, {
-    String speciesName = '',
-  }) {
+  static bool isTrackableForm(String? formName, {String speciesName = ''}) {
     final key = formKey(formName, speciesName: speciesName);
     const temporaryTokens = {
       'mega',
@@ -153,16 +147,21 @@ class PokedexEntry {
     return !parts.any(temporaryTokens.contains);
   }
 
-  PokedexFormEntry formFor(
-    String? formName, {
-    String speciesName = '',
-  }) {
+  PokedexFormEntry formFor(String? formName, {String speciesName = ''}) {
     final key = formKey(formName, speciesName: speciesName);
-    return forms[key] ??
-        PokedexFormEntry.empty(
-          key: key,
-          formName: displayNameFor(formName, speciesName: speciesName),
-        );
+    final direct = forms[key];
+    if (direct != null) return direct;
+
+    for (final entry in forms.values) {
+      if (formKey(entry.formName, speciesName: speciesName) == key) {
+        return entry;
+      }
+    }
+
+    return PokedexFormEntry.empty(
+      key: key,
+      formName: displayNameFor(formName, speciesName: speciesName),
+    );
   }
 
   PokedexEntry setFormState({
@@ -177,6 +176,10 @@ class PokedexEntry {
     final normalizedCaught = caught;
     final normalizedSeen = seen || normalizedCaught;
     final nextForms = Map<String, PokedexFormEntry>.of(forms);
+    nextForms.removeWhere((existingKey, entry) {
+      if (existingKey == key) return false;
+      return formKey(entry.formName, speciesName: speciesName) == key;
+    });
 
     if (!normalizedSeen && !normalizedCaught) {
       nextForms.remove(key);
@@ -253,10 +256,7 @@ class PokedexEntry {
     return seenEntry?.formName;
   }
 
-  PokedexEntry viewForForm(
-    String? formName, {
-    String speciesName = '',
-  }) {
+  PokedexEntry viewForForm(String? formName, {String speciesName = ''}) {
     final selected = formFor(formName, speciesName: speciesName);
     if (!selected.seen && !selected.caught) {
       return PokedexEntry.empty(pokemonId);
@@ -287,8 +287,7 @@ class PokedexEntry {
   factory PokedexEntry.fromJson(Map<String, dynamic> json) {
     final markMode = json['markMode'] as String?;
     final updatedAtValue = json['updatedAt']?.toString();
-    final updatedAt =
-        DateTime.tryParse(updatedAtValue ?? '') ?? DateTime.now();
+    final updatedAt = DateTime.tryParse(updatedAtValue ?? '') ?? DateTime.now();
     final rawForms = json['forms'];
     final parsedForms = <String, PokedexFormEntry>{};
 

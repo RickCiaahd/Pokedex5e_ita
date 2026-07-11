@@ -86,19 +86,14 @@ class _PokemonSummaryDialogState extends State<PokemonSummaryDialog> {
     });
   }
 
-  PokedexFormEntry get _selectedFormEntry => _entry.formFor(
-        _selectedFormName,
-        speciesName: widget.pokemon.name,
-      );
+  PokedexFormEntry get _selectedFormEntry =>
+      _entry.formFor(_selectedFormName, speciesName: widget.pokemon.name);
 
-  PokedexEntry get _selectedEntry => _entry.viewForForm(
-        _selectedFormName,
-        speciesName: widget.pokemon.name,
-      );
+  PokedexEntry get _selectedEntry =>
+      _entry.viewForForm(_selectedFormName, speciesName: widget.pokemon.name);
 
-  Pokemon get _selectedPokemon => widget.pokemon.resolveVariant(
-        formName: _selectedFormName,
-      );
+  Pokemon get _selectedPokemon =>
+      widget.pokemon.resolveVariant(formName: _selectedFormName);
 
   String get _selectedLabel => _selectedFormName ?? 'Base';
 
@@ -165,9 +160,9 @@ class _PokemonSummaryDialogState extends State<PokemonSummaryDialog> {
               const SizedBox(height: 10),
               Text(
                 _selectedLabel.toUpperCase(),
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w900,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
               ),
               const SizedBox(height: 14),
               if (_loadingForms)
@@ -243,7 +238,10 @@ class _PokemonSummaryDialogState extends State<PokemonSummaryDialog> {
                     _StatChip(label: 'CA', value: pokemon.armorClass),
                     _StatChip(label: 'PF', value: pokemon.hitPoints),
                     _StatChip(label: 'FOR', value: pokemon.attributes.strength),
-                    _StatChip(label: 'DES', value: pokemon.attributes.dexterity),
+                    _StatChip(
+                      label: 'DES',
+                      value: pokemon.attributes.dexterity,
+                    ),
                     _StatChip(
                       label: 'COS',
                       value: pokemon.attributes.constitution,
@@ -363,8 +361,8 @@ class _FormCard extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    fontWeight: selected ? FontWeight.w900 : FontWeight.w700,
-                  ),
+                fontWeight: selected ? FontWeight.w900 : FontWeight.w700,
+              ),
             ),
           ],
         ),
@@ -389,9 +387,9 @@ class _StatChip extends StatelessWidget {
       ),
       child: Text(
         '$label $value',
-        style: Theme.of(context).textTheme.labelMedium?.copyWith(
-              fontWeight: FontWeight.w800,
-            ),
+        style: Theme.of(
+          context,
+        ).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800),
       ),
     );
   }

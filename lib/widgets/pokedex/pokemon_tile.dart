@@ -40,15 +40,15 @@ class PokemonTile extends StatelessWidget {
                 color: previewEntry.caught
                     ? Colors.white
                     : previewEntry.seen
-                        ? const Color(0xFFF6F6F6)
-                        : const Color(0xFFE4E1DC),
+                    ? const Color(0xFFF6F6F6)
+                    : const Color(0xFFE4E1DC),
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
                   color: previewEntry.caught
                       ? colorScheme.primary
                       : previewEntry.seen
-                          ? colorScheme.outlineVariant
-                          : colorScheme.outline.withValues(alpha: 0.45),
+                      ? colorScheme.outlineVariant
+                      : colorScheme.outline.withValues(alpha: 0.45),
                   width: previewEntry.caught ? 2 : 1,
                 ),
                 boxShadow: previewEntry.caught
@@ -79,8 +79,8 @@ class PokemonTile extends StatelessWidget {
                       child: Text(
                         number,
                         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                              fontWeight: FontWeight.w900,
-                            ),
+                          fontWeight: FontWeight.w900,
+                        ),
                       ),
                     ),
                   ),
@@ -129,13 +129,13 @@ class PokemonTile extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                  fontWeight: previewEntry.caught
-                      ? FontWeight.w900
-                      : FontWeight.w700,
-                  color: previewEntry.seen
-                      ? colorScheme.onSurface
-                      : colorScheme.onSurfaceVariant,
-                ),
+              fontWeight: previewEntry.caught
+                  ? FontWeight.w900
+                  : FontWeight.w700,
+              color: previewEntry.seen
+                  ? colorScheme.onSurface
+                  : colorScheme.onSurfaceVariant,
+            ),
           ),
         ],
       ),

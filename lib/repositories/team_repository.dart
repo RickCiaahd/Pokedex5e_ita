@@ -10,8 +10,8 @@ class TeamRepository {
   TeamRepository({
     MoveRepository? moveRepository,
     PokedexRepository? pokedexRepository,
-  })  : _moveRepository = moveRepository ?? MoveRepository(),
-        _pokedexRepository = pokedexRepository ?? PokedexRepository();
+  }) : _moveRepository = moveRepository ?? MoveRepository(),
+       _pokedexRepository = pokedexRepository ?? PokedexRepository();
 
   final MoveRepository _moveRepository;
   final PokedexRepository _pokedexRepository;
@@ -45,7 +45,9 @@ class TeamRepository {
     return migratedTeam;
   }
 
-  Future<List<TeamSlot>> _migrateSavedMoveReferences(List<TeamSlot> team) async {
+  Future<List<TeamSlot>> _migrateSavedMoveReferences(
+    List<TeamSlot> team,
+  ) async {
     final migratedTeam = <TeamSlot>[];
 
     for (final slot in team) {

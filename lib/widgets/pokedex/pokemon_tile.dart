@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../models/pokedex_entry.dart';
 import '../../models/pokemon.dart';
+import '../../services/pokedex_form_catalog.dart';
 import '../pokemon/pokemon_asset_image.dart';
 
 class PokemonTile extends StatelessWidget {
@@ -9,17 +10,25 @@ class PokemonTile extends StatelessWidget {
     super.key,
     required this.pokemon,
     required this.entry,
+    required this.form,
     required this.onTap,
   });
 
   final Pokemon pokemon;
   final PokedexEntry entry;
+  final PokedexFormOption form;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     final number = '#${pokemon.id.toString().padLeft(3, '0')}';
     final colorScheme = Theme.of(context).colorScheme;
+    final status = form.statusFor(entry);
+    final visibilityEntry = PokedexEntry(
+      pokemonId: pokemon.id,
+      seen: status.seen,
+      caught: status.caught,
+    );
 
     return InkWell(
       onTap: onTap,
@@ -31,21 +40,21 @@ class PokemonTile extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.fromLTRB(6, 8, 6, 6),
               decoration: BoxDecoration(
-                color: entry.caught
+                color: status.caught
                     ? Colors.white
-                    : entry.seen
-                    ? const Color(0xFFF6F6F6)
-                    : const Color(0xFFE4E1DC),
+                    : status.seen
+                        ? const Color(0xFFF6F6F6)
+                        : const Color(0xFFE4E1DC),
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
-                  color: entry.caught
+                  color: status.caught
                       ? colorScheme.primary
-                      : entry.seen
-                      ? colorScheme.outlineVariant
-                      : colorScheme.outline.withValues(alpha: 0.45),
-                  width: entry.caught ? 2 : 1,
+                      : status.seen
+                          ? colorScheme.outlineVariant
+                          : colorScheme.outline.withValues(alpha: 0.45),
+                  width: status.caught ? 2 : 1,
                 ),
-                boxShadow: entry.caught
+                boxShadow: status.caught
                     ? [
                         BoxShadow(
                           color: colorScheme.primary.withValues(alpha: 0.14),
@@ -73,21 +82,21 @@ class PokemonTile extends StatelessWidget {
                       child: Text(
                         number,
                         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          fontWeight: FontWeight.w900,
-                        ),
+                              fontWeight: FontWeight.w900,
+                            ),
                       ),
                     ),
                   ),
-                  if (entry.caught || entry.seen)
+                  if (status.caught || status.seen)
                     Positioned(
                       top: 0,
                       right: 0,
                       child: Icon(
-                        entry.caught
+                        status.caught
                             ? Icons.catching_pokemon
                             : Icons.visibility,
                         size: 18,
-                        color: entry.caught
+                        color: status.caught
                             ? colorScheme.primary
                             : colorScheme.onSurfaceVariant,
                       ),
@@ -99,7 +108,7 @@ class PokemonTile extends StatelessWidget {
                       height: 8,
                       decoration: BoxDecoration(
                         color: Colors.black.withValues(
-                          alpha: entry.seen ? 0.10 : 0.18,
+                          alpha: status.seen ? 0.10 : 0.18,
                         ),
                         borderRadius: BorderRadius.circular(999),
                       ),
@@ -107,7 +116,8 @@ class PokemonTile extends StatelessWidget {
                   ),
                   PokemonAssetImage(
                     pokemon: pokemon,
-                    entry: entry,
+                    entry: visibilityEntry,
+                    formName: form.formName,
                     useLargeArtwork: true,
                     size: 96,
                   ),
@@ -117,16 +127,17 @@ class PokemonTile extends StatelessWidget {
           ),
           const SizedBox(height: 5),
           Text(
-            entry.seen ? pokemon.name : number,
+            status.seen ? pokemon.name : number,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.labelMedium?.copyWith(
-              fontWeight: entry.caught ? FontWeight.w900 : FontWeight.w700,
-              color: entry.seen
-                  ? colorScheme.onSurface
-                  : colorScheme.onSurfaceVariant,
-            ),
+                  fontWeight:
+                      status.caught ? FontWeight.w900 : FontWeight.w700,
+                  color: status.seen
+                      ? colorScheme.onSurface
+                      : colorScheme.onSurfaceVariant,
+                ),
           ),
         ],
       ),

@@ -6,6 +6,9 @@ on:
       - feat/form-aware-pokedex-v2
     paths:
       - '.github/workflows/validate-form-aware-pokedex.yml'
+  pull_request:
+    branches:
+      - main
 
 permissions:
   contents: write

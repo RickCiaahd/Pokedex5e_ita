@@ -62,4 +62,20 @@ void main() {
     expect(candidates, contains(base));
     expect(candidates.indexOf(alternate), lessThan(candidates.indexOf(base)));
   });
+
+  test('shiny artwork is resolved before the normal detail artwork', () {
+    final candidates = PokemonAssetPaths.imageCandidates(
+      pokemon: _pokemon(25, 'Pikachu'),
+      useLargeArtwork: true,
+      isShiny: true,
+    );
+
+    const shiny =
+        'assets/textures/textures_webapp/pokemon/pikachu/main-shiny.png';
+    const normal = 'assets/textures/textures_webapp/pokemon/pikachu/main.png';
+
+    expect(candidates, contains(shiny));
+    expect(candidates, contains(normal));
+    expect(candidates.indexOf(shiny), lessThan(candidates.indexOf(normal)));
+  });
 }

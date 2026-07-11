@@ -2,9 +2,16 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 import '../database/hive_boxes.dart';
 import '../models/pc_pokemon.dart';
+import '../models/pokedex_entry.dart';
 import '../models/team_slot.dart';
+import 'pokedex_repositry.dart';
 
 class PokemonPcRepository {
+  PokemonPcRepository({PokedexRepository? pokedexRepository})
+      : _pokedexRepository = pokedexRepository ?? PokedexRepository();
+
+  final PokedexRepository _pokedexRepository;
+
   Future<Box> _box() => Hive.openBox(HiveBoxes.pcPokemon);
 
   Future<List<PcPokemon>> getPokemon(String profileId) async {
@@ -26,6 +33,16 @@ class PokemonPcRepository {
 
     await box.put(profileId, pokemon.map((item) => item.toJson()).toList());
     await box.flush();
+    await _pokedexRepository.registerCaughtMany(
+      profileId: profileId,
+      pokemon: [
+        for (final item in pokemon)
+          PokedexOwnedForm(
+            pokemonId: item.pokemonId,
+            formName: item.formName,
+          ),
+      ],
+    );
   }
 
   Future<PcPokemon> depositPokemon({

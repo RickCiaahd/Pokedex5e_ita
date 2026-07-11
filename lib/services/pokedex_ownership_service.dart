@@ -1,3 +1,5 @@
+import '../models/pc_pokemon.dart';
+import '../models/team_slot.dart';
 import '../repositories/pokedex_repositry.dart';
 import '../repositories/pokemon_pc_repository.dart';
 import '../repositories/team_repository.dart';
@@ -28,28 +30,39 @@ class PokedexOwnershipService {
   }
 
   Future<void> syncOwnedCollection(String profileId) async {
-    final results = await Future.wait([
-      _teamRepository.getTeam(profileId),
-      _pcRepository.getPokemon(profileId),
-    ]);
-    final team = results[0] as List;
-    final pcPokemon = results[1] as List;
+    final teamFuture = _teamRepository.getTeam(profileId);
+    final pcFuture = _pcRepository.getPokemon(profileId);
+    final team = await teamFuture;
+    final pcPokemon = await pcFuture;
 
+    await _registerTeam(profileId, team);
+    await _registerPc(profileId, pcPokemon);
+  }
+
+  Future<void> _registerTeam(
+    String profileId,
+    List<TeamSlot> team,
+  ) async {
     for (final slot in team) {
-      final pokemonId = slot.pokemonId as int?;
+      final pokemonId = slot.pokemonId;
       if (pokemonId == null) continue;
       await registerOwned(
         profileId: profileId,
         pokemonId: pokemonId,
-        formName: slot.formName as String?,
+        formName: slot.formName,
       );
     }
+  }
 
-    for (final stored in pcPokemon) {
+  Future<void> _registerPc(
+    String profileId,
+    List<PcPokemon> pokemon,
+  ) async {
+    for (final stored in pokemon) {
       await registerOwned(
         profileId: profileId,
-        pokemonId: stored.pokemonId as int,
-        formName: stored.formName as String?,
+        pokemonId: stored.pokemonId,
+        formName: stored.formName,
       );
     }
   }

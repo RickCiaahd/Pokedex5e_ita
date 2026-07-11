@@ -18,8 +18,14 @@ TOKEN_ALIASES = {
     "galarian": "galar",
     "hisuian": "hisui",
     "paldean": "paldea",
+    "f": "female",
+    "m": "male",
+    "sand": "sandy",
 }
-GENERIC_TOKENS = {"form", "forme", "style", "mode"}
+GENERIC_TOKENS = {"form", "forme", "style", "mode", "cloak", "confined"}
+IDENTIFIER_OVERRIDES = {
+    "minior-core-form": "minior-red",
+}
 
 
 def identifier_tokens(value: str) -> set[str]:
@@ -47,6 +53,9 @@ def score_candidate(
     default_identifier: str | None,
 ) -> tuple[int, int, int]:
     candidate_id = candidate["identifier"]
+    override = IDENTIFIER_OVERRIDES.get(local_id)
+    if override is not None:
+        return (11000, 0, 0) if candidate_id == override else (-2000, 0, 0)
     if candidate_id == local_id:
         return (10000, 0, 0)
 

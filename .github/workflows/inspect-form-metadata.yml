@@ -1,0 +1,41 @@
+name: Inspect form metadata
+
+on:
+  push:
+    branches:
+      - feat/form-pokedex-metadata
+    paths:
+      - '.github/workflows/inspect-form-metadata.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: feat/form-pokedex-metadata
+
+      - name: Extract Rattata metadata
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          data = json.loads(Path('assets/data_webapp/pokemon.json').read_text(encoding='utf-8'))
+          items = [item for item in data.get('items', []) if item.get('number') == 19]
+          Path('tool/rattata_form_metadata.json').write_text(
+              json.dumps(items, ensure_ascii=False, indent=2),
+              encoding='utf-8',
+          )
+          PY
+
+      - name: Commit diagnostic
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add tool/rattata_form_metadata.json
+          git commit -m "Record Rattata webapp form metadata"
+          git push origin feat/form-pokedex-metadata

@@ -322,10 +322,16 @@ class PokemonAssetPaths {
         add('$_webPokemonRoot/$slug-$formSlug/');
         add('$_webPokemonRoot/${slug}_$formSlug/');
         add('$_webPokemonRoot/$slug/$formSlug/');
+        add('$_webPokemonRoot/$formSlug-$slug/');
+        add('$_webPokemonRoot/${formSlug}_$slug/');
+        add('$_webPokemonRoot/$formSlug/$slug/');
         for (final transform in _transformFolders) {
           add('$_webTransformRoot/$transform/$slug-$formSlug/');
           add('$_webTransformRoot/$transform/${slug}_$formSlug/');
           add('$_webTransformRoot/$transform/$slug/$formSlug/');
+          add('$_webTransformRoot/$transform/$formSlug-$slug/');
+          add('$_webTransformRoot/$transform/${formSlug}_$slug/');
+          add('$_webTransformRoot/$transform/$formSlug/$slug/');
         }
       }
     }
@@ -440,6 +446,9 @@ class PokemonAssetPaths {
         addFolder('$_webPokemonRoot/$slug-$formSlug');
         addFolder('$_webPokemonRoot/${slug}_$formSlug');
         addFolder('$_webPokemonRoot/$slug/$formSlug');
+        addFolder('$_webPokemonRoot/$formSlug-$slug');
+        addFolder('$_webPokemonRoot/${formSlug}_$slug');
+        addFolder('$_webPokemonRoot/$formSlug/$slug');
       }
     }
 

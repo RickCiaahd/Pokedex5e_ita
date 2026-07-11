@@ -9,19 +9,21 @@ class EvolutionSelectorSheet extends StatelessWidget {
     super.key,
     required this.currentPokemon,
     required this.choices,
-    required this.pokemonByName,
+    required this.targetForChoice,
   });
 
   final Pokemon currentPokemon;
   final List<EvolutionEligibility> choices;
-  final Pokemon? Function(String name) pokemonByName;
+  final EvolutionTarget? Function(EvolutionEligibility choice) targetForChoice;
 
   @override
   Widget build(BuildContext context) {
+    final targets = <EvolutionEligibility, EvolutionTarget?>{
+      for (final choice in choices) choice: targetForChoice(choice),
+    };
     final availableChoices = choices
         .where(
-          (choice) =>
-              choice.isAvailable && pokemonByName(choice.option.toName) != null,
+          (choice) => choice.isAvailable && targets[choice] != null,
         )
         .toList(growable: false);
     final isSingleEvolution = choices.length == 1;
@@ -55,7 +57,7 @@ class EvolutionSelectorSheet extends StatelessWidget {
             for (final choice in choices)
               _EvolutionChoiceTile(
                 choice: choice,
-                targetPokemon: pokemonByName(choice.option.toName),
+                target: targets[choice],
                 actionLabel: isSingleEvolution ? 'Evolvi' : 'Scegli',
               ),
           ],
@@ -68,29 +70,34 @@ class EvolutionSelectorSheet extends StatelessWidget {
 class _EvolutionChoiceTile extends StatelessWidget {
   const _EvolutionChoiceTile({
     required this.choice,
-    required this.targetPokemon,
+    required this.target,
     required this.actionLabel,
   });
 
   final EvolutionEligibility choice;
-  final Pokemon? targetPokemon;
+  final EvolutionTarget? target;
   final String actionLabel;
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final targetPokemon = this.targetPokemon;
-    final isAvailable = choice.isAvailable && targetPokemon != null;
+    final target = this.target;
+    final isAvailable = choice.isAvailable && target != null;
     final conditionLabels = choice.conditionLabels;
 
     return Card(
       child: ListTile(
         enabled: isAvailable,
-        leading: targetPokemon == null
+        leading: target == null
             ? const Icon(Icons.catching_pokemon)
-            : PokemonAssetImage(pokemon: targetPokemon, size: 52),
+            : PokemonAssetImage(
+                pokemon: target.basePokemon,
+                formName: target.formName,
+                useLargeArtwork: false,
+                size: 52,
+              ),
         title: Text(
-          choice.option.toName.toUpperCase(),
+          (target?.displayName ?? choice.option.toName).toUpperCase(),
           style: const TextStyle(fontWeight: FontWeight.w900),
         ),
         subtitle: Padding(
@@ -110,10 +117,10 @@ class _EvolutionChoiceTile extends StatelessWidget {
                       ),
                   ],
                 ),
-              if (targetPokemon == null) ...[
+              if (target == null) ...[
                 const SizedBox(height: 6),
                 Text(
-                  'Pokémon non presente nel catalogo attuale.',
+                  'Pokémon o forma non presenti nel catalogo attuale.',
                   style: TextStyle(color: colorScheme.error),
                 ),
               ] else if (choice.missingRequirements.isNotEmpty) ...[

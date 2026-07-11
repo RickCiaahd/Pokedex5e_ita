@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../models/pokemon.dart';
+import '../../models/pokemon_evolution_alias_registry.dart';
 import '../../models/team_slot.dart';
 import 'pokemon_detail_screen_legacy.dart' as legacy;
 
@@ -109,7 +110,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
   }
 
   _EvolutionAliasCatalog _buildAliasCatalog() {
-    final bySyntheticId = <int, _EvolutionFormAlias>{};
+    final bySyntheticId = <int, PokemonEvolutionAlias>{};
     final preferredRegionalAliases = <Pokemon>[];
     final explicitAliases = <Pokemon>[];
     final currentRegionalKey = _currentRegionalFormKey();
@@ -134,7 +135,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
         if (formKey.isEmpty || formKey == 'base') continue;
 
         final syntheticId = _syntheticId(basePokemon.id, index);
-        final alias = _EvolutionFormAlias(
+        final alias = PokemonEvolutionAlias(
           basePokemon: basePokemon,
           formName: formName,
         );
@@ -155,6 +156,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
       }
     }
 
+    PokemonEvolutionAliasRegistry.replace(bySyntheticId);
     return _EvolutionAliasCatalog(
       pokemon: [
         ...preferredRegionalAliases,
@@ -245,15 +247,5 @@ class _EvolutionAliasCatalog {
   });
 
   final List<Pokemon> pokemon;
-  final Map<int, _EvolutionFormAlias> bySyntheticId;
-}
-
-class _EvolutionFormAlias {
-  const _EvolutionFormAlias({
-    required this.basePokemon,
-    required this.formName,
-  });
-
-  final Pokemon basePokemon;
-  final String formName;
+  final Map<int, PokemonEvolutionAlias> bySyntheticId;
 }

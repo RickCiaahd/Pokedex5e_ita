@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - fix/pokedex-summary-dialog-layout
+  pull_request:
+    branches:
+      - main
 
 jobs:
   validate:

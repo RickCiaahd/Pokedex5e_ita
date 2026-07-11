@@ -10,7 +10,9 @@ class BagInventoryRepository {
     final box = await _box();
 
     return box.values
-        .map((data) => BagInventoryEntry.fromJson(Map<String, dynamic>.from(data)))
+        .map(
+          (data) => BagInventoryEntry.fromJson(Map<String, dynamic>.from(data)),
+        )
         .where((entry) => entry.profileId == profileId && entry.quantity > 0)
         .toList(growable: false);
   }
@@ -61,5 +63,44 @@ class BagInventoryRepository {
 
     await box.flush();
     return true;
+  }
+
+  Future<void> replaceInventory({
+    required String profileId,
+    required Iterable<BagInventoryEntry> entries,
+  }) async {
+    final box = await _box();
+    final keysToDelete = box.keys
+        .where((key) {
+          return key is String && key.startsWith('$profileId::');
+        })
+        .toList(growable: false);
+    await box.deleteAll(keysToDelete);
+
+    final updates = <String, dynamic>{};
+    for (final entry in entries) {
+      if (entry.quantity <= 0 || entry.itemId.trim().isEmpty) continue;
+      final normalized = BagInventoryEntry(
+        profileId: profileId,
+        itemId: entry.itemId,
+        quantity: entry.quantity,
+      );
+      updates[normalized.storageKey] = normalized.toJson();
+    }
+    if (updates.isNotEmpty) {
+      await box.putAll(updates);
+    }
+    await box.flush();
+  }
+
+  Future<void> deleteInventory(String profileId) async {
+    final box = await _box();
+    final keysToDelete = box.keys
+        .where((key) {
+          return key is String && key.startsWith('$profileId::');
+        })
+        .toList(growable: false);
+    await box.deleteAll(keysToDelete);
+    await box.flush();
   }
 }

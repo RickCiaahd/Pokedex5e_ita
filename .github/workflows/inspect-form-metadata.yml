@@ -1,10 +1,91 @@
-name: Form metadata implementation
+name: Implement form-specific Pokédex metadata
 
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - feat/form-pokedex-metadata
+    paths:
+      - '.github/workflows/inspect-form-metadata.yml'
+
+permissions:
+  contents: write
 
 jobs:
-  paused:
+  implement-and-validate:
     runs-on: ubuntu-latest
     steps:
-      - run: echo "Waiting for implementation scripts"
+      - name: Checkout feature branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: feat/form-pokedex-metadata
+
+      - name: Apply Dart changes
+        run: python3 tool/apply_form_metadata_patch.py
+
+      - name: Generate physical metadata
+        run: python3 tool/generate_pokemon_physical_metadata.py
+
+      - name: Verify generated Rattata metadata
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          data = json.loads(Path('assets/data_webapp/pokemon_physical.json').read_text(encoding='utf-8'))
+          alolan = data['items']['alolan-rattata']
+          assert alolan['height'] == 3, alolan
+          assert alolan['weight'] == 38, alolan
+          assert alolan['sourceIdentifier'] == 'rattata-alola', alolan
+          print('generatedCount=', data['generatedCount'])
+          print('fallbackCount=', data['fallbackCount'])
+          print('unmappedCount=', data['unmappedCount'])
+          print('fallbackIds=', data['fallbackIds'])
+          print('unmappedIds=', data['unmappedIds'])
+          PY
+
+      - name: Remove temporary implementation files
+        run: |
+          rm -f tool/apply_form_metadata_patch.py
+          rm -f tool/rattata_form_metadata.json
+          rm -f tool/form_metadata_diagnostic.json
+          rm -f .github/workflows/inspect-form-metadata.yml
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Format changed Dart files
+        run: |
+          dart format \
+            lib/models/pokemon.dart \
+            lib/repositories/pokemon_repository.dart \
+            lib/widgets/pokedex/pokemon_summary_dialog.dart \
+            test/pokemon_form_mechanics_test.dart
+
+      - name: Check diff
+        run: git diff --check
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Run form mechanics tests
+        run: flutter test test/pokemon_form_mechanics_test.dart
+
+      - name: Run Pokédex dialog test
+        run: flutter test test/pokemon_summary_dialog_layout_test.dart
+
+      - name: Run full test suite
+        run: flutter test
+
+      - name: Commit validated implementation
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Add form-specific Pokédex descriptions and dimensions"
+          git push origin feat/form-pokedex-metadata

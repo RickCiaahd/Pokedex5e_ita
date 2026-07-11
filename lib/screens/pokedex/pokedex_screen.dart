@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 import '../../models/pokedex_entry.dart';
 import '../../models/pokemon.dart';
 import '../../models/pokemon_flavor.dart';
+import '../../repositories/pokedex_repositry.dart';
+import '../../repositories/pokemon_pc_repository.dart';
 import '../../repositories/pokemon_repository.dart';
+import '../../repositories/team_repository.dart';
 import '../../services/profile_storage_service.dart';
 import '../../widgets/pokedex/pokemon_summary_dialog.dart';
 import '../../widgets/pokedex/pokemon_tile.dart';
@@ -24,6 +27,9 @@ class PokedexScreen extends StatefulWidget {
 
 class _PokedexScreenState extends State<PokedexScreen> {
   final PokemonRepository _repository = PokemonRepository();
+  final PokedexRepository _pokedexRepository = PokedexRepository();
+  final PokemonPcRepository _pokemonPcRepository = PokemonPcRepository();
+  final TeamRepository _teamRepository = TeamRepository();
   final ProfileStorageService _profileStorageService = ProfileStorageService();
   final TextEditingController _searchController = TextEditingController();
 
@@ -72,6 +78,7 @@ class _PokedexScreenState extends State<PokedexScreen> {
     try {
       final pokemon = await _repository.getAllPokemon();
       final flavors = await _repository.getPokemonFlavors();
+      await _syncOwnedPokemon();
       await _loadEntries();
 
       if (!mounted) return;
@@ -92,46 +99,79 @@ class _PokedexScreenState extends State<PokedexScreen> {
     }
   }
 
+  Future<void> _syncOwnedPokemon() async {
+    final profile = await _profileStorageService.getDefaultProfile();
+    final team = await _teamRepository.getTeam(profile.id);
+    final pcPokemon = await _pokemonPcRepository.getPokemon(profile.id);
+
+    await _pokedexRepository.registerCaughtMany(
+      profileId: profile.id,
+      pokemon: [
+        for (final slot in team)
+          if (slot.pokemonId != null)
+            PokedexOwnedForm(
+              pokemonId: slot.pokemonId!,
+              formName: slot.formName,
+            ),
+        for (final item in pcPokemon)
+          PokedexOwnedForm(pokemonId: item.pokemonId, formName: item.formName),
+      ],
+    );
+  }
+
   void _applyFilters() {
     final query = _searchController.text.toLowerCase().trim();
     final selectedRegion = _selectedRegion;
 
-    _filteredPokemon = _allPokemon.where((pokemon) {
-      final matchesSearch = query.isEmpty ||
-          pokemon.name.toLowerCase().contains(query) ||
-          pokemon.id.toString().contains(query) ||
-          pokemon.types.any((type) => type.toLowerCase().contains(query));
+    _filteredPokemon = _allPokemon
+        .where((pokemon) {
+          final entry = _entryFor(pokemon);
+          final previewPokemon = pokemon.resolveVariant(
+            formName: entry.preferredFormName,
+          );
+          final matchesSearch =
+              query.isEmpty ||
+              pokemon.name.toLowerCase().contains(query) ||
+              pokemon.id.toString().contains(query) ||
+              previewPokemon.types.any(
+                (type) => type.toLowerCase().contains(query),
+              );
 
-      final entry = _entryFor(pokemon);
-      final matchesFilter = switch (_viewFilter) {
-        ViewFilter.all => true,
-        ViewFilter.seen => entry.seen,
-        ViewFilter.unseen => !entry.seen,
-        ViewFilter.caught => entry.caught,
-      };
+          final matchesFilter = switch (_viewFilter) {
+            ViewFilter.all => true,
+            ViewFilter.seen => entry.seen,
+            ViewFilter.unseen => !entry.seen,
+            ViewFilter.caught => entry.caught,
+          };
 
-      final localizedTypes = pokemon.types
-          .map(PokemonAssetPaths.localizedTypeLabel)
-          .toSet();
-      final matchesTypes = _selectedTypes.isEmpty ||
-          _selectedTypes.every(localizedTypes.contains);
+          final localizedTypes = previewPokemon.types
+              .map(PokemonAssetPaths.localizedTypeLabel)
+              .toSet();
+          final matchesTypes =
+              _selectedTypes.isEmpty ||
+              _selectedTypes.every(localizedTypes.contains);
 
-      final matchesRegion = selectedRegion == null ||
-          _regionForPokemon(pokemon) == selectedRegion;
+          final matchesRegion =
+              selectedRegion == null ||
+              _regionForPokemon(pokemon) == selectedRegion;
 
-      return matchesSearch && matchesFilter && matchesTypes && matchesRegion;
-    }).toList(growable: false);
+          return matchesSearch &&
+              matchesFilter &&
+              matchesTypes &&
+              matchesRegion;
+        })
+        .toList(growable: false);
 
     _filteredPokemon.sort((a, b) {
       return switch (_sortMode) {
         SortMode.numberAsc => a.id.compareTo(b.id),
         SortMode.numberDesc => b.id.compareTo(a.id),
         SortMode.nameAsc => a.name.toLowerCase().compareTo(
-              b.name.toLowerCase(),
-            ),
+          b.name.toLowerCase(),
+        ),
         SortMode.nameDesc => b.name.toLowerCase().compareTo(
-              a.name.toLowerCase(),
-            ),
+          a.name.toLowerCase(),
+        ),
       };
     });
   }
@@ -148,9 +188,11 @@ class _PokedexScreenState extends State<PokedexScreen> {
   }
 
   List<String> get _visibleRegions {
-    return _regions.keys.where((region) {
-      return _pokemonForRegion(region).isNotEmpty;
-    }).toList(growable: false);
+    return _regions.keys
+        .where((region) {
+          return _pokemonForRegion(region).isNotEmpty;
+        })
+        .toList(growable: false);
   }
 
   List<String> get _availableTypes {
@@ -182,9 +224,11 @@ class _PokedexScreenState extends State<PokedexScreen> {
     final range = _regions[region];
     if (range == null) return const [];
 
-    return _filteredPokemon.where((pokemon) {
-      return pokemon.id >= range.first && pokemon.id <= range.last;
-    }).toList(growable: false);
+    return _filteredPokemon
+        .where((pokemon) {
+          return pokemon.id >= range.first && pokemon.id <= range.last;
+        })
+        .toList(growable: false);
   }
 
   String? _regionForPokemon(Pokemon pokemon) {
@@ -205,15 +249,21 @@ class _PokedexScreenState extends State<PokedexScreen> {
     return 3;
   }
 
-  void _openPokemonDialog(Pokemon pokemon) {
-    showDialog(
+  Future<void> _openPokemonDialog(Pokemon pokemon) async {
+    await showDialog<void>(
       context: context,
       builder: (_) => PokemonSummaryDialog(
         pokemon: pokemon,
         flavor: _pokemonFlavors[pokemon.id],
         entry: _entryFor(pokemon),
-        onToggleSeen: () => _toggleSeen(pokemon),
-        onToggleCaught: () => _toggleCaught(pokemon),
+        onEntryChanged: (entry) async {
+          if (!mounted) return;
+          setState(() {
+            _entries[pokemon.id] = entry;
+            _applyFilters();
+          });
+          await _saveEntries();
+        },
       ),
     );
   }
@@ -254,40 +304,13 @@ class _PokedexScreenState extends State<PokedexScreen> {
     return _entries[pokemon.id] ?? PokedexEntry(pokemonId: pokemon.id);
   }
 
-  Future<void> _toggleSeen(Pokemon pokemon) async {
-    final entry = _entryFor(pokemon);
-
-    setState(() {
-      _entries[pokemon.id] = entry.copyWith(
-        seen: !entry.seen,
-        caught: entry.seen ? false : entry.caught,
-      );
-    });
-
-    await _saveEntries();
-
-    if (!mounted) return;
-    Navigator.of(context).pop();
-  }
-
-  Future<void> _toggleCaught(Pokemon pokemon) async {
-    final entry = _entryFor(pokemon);
-
-    setState(() {
-      _entries[pokemon.id] = entry.copyWith(seen: true, caught: !entry.caught);
-    });
-
-    await _saveEntries();
-
-    if (!mounted) return;
-    Navigator.of(context).pop();
-  }
-
   Map<String, int> _regionProgress(String region, bool caught) {
     final range = _regions[region]!;
-    final regionPokemon = _allPokemon.where((pokemon) {
-      return pokemon.id >= range.first && pokemon.id <= range.last;
-    }).toList(growable: false);
+    final regionPokemon = _allPokemon
+        .where((pokemon) {
+          return pokemon.id >= range.first && pokemon.id <= range.last;
+        })
+        .toList(growable: false);
 
     final count = regionPokemon.where((pokemon) {
       final entry = _entryFor(pokemon);
@@ -307,13 +330,24 @@ class _PokedexScreenState extends State<PokedexScreen> {
     setState(() {
       switch (_markMode) {
         case MarkMode.seen:
-          _entries[pokemon.id] = entry.copyWith(seen: true);
+          final base = entry.formFor(null, speciesName: pokemon.name);
+          _entries[pokemon.id] = entry.setFormState(
+            formName: null,
+            speciesName: pokemon.name,
+            seen: true,
+            caught: base.caught,
+          );
           break;
         case MarkMode.unseen:
-          _entries[pokemon.id] = entry.copyWith(seen: false, caught: false);
+          _entries[pokemon.id] = entry.clearAllForms();
           break;
         case MarkMode.caught:
-          _entries[pokemon.id] = entry.copyWith(seen: true, caught: true);
+          _entries[pokemon.id] = entry.setFormState(
+            formName: null,
+            speciesName: pokemon.name,
+            seen: true,
+            caught: true,
+          );
           break;
         case MarkMode.none:
           break;
@@ -417,6 +451,8 @@ class _PokedexScreenState extends State<PokedexScreen> {
                         pokemon: pokemonList,
                         columns: _gridColumnCount(context),
                         entryFor: _entryFor,
+                        previewFormFor: (pokemon) =>
+                            _entryFor(pokemon).preferredFormName,
                         onPokemonTap: _handlePokemonTap,
                       );
                     },
@@ -439,6 +475,7 @@ class _RegionSection extends StatelessWidget {
     required this.pokemon,
     required this.columns,
     required this.entryFor,
+    required this.previewFormFor,
     required this.onPokemonTap,
   });
 
@@ -446,6 +483,7 @@ class _RegionSection extends StatelessWidget {
   final List<Pokemon> pokemon;
   final int columns;
   final PokedexEntry Function(Pokemon pokemon) entryFor;
+  final String? Function(Pokemon pokemon) previewFormFor;
   final ValueChanged<Pokemon> onPokemonTap;
 
   @override
@@ -458,9 +496,9 @@ class _RegionSection extends StatelessWidget {
           Text(
             '${region.toUpperCase()} · ${pokemon.length}',
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w900,
-                  color: Theme.of(context).colorScheme.onSurface,
-                ),
+              fontWeight: FontWeight.w900,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
           ),
           const SizedBox(height: 8),
           Divider(color: Theme.of(context).colorScheme.outlineVariant),
@@ -480,6 +518,7 @@ class _RegionSection extends StatelessWidget {
               return PokemonTile(
                 pokemon: currentPokemon,
                 entry: entryFor(currentPokemon),
+                previewFormName: previewFormFor(currentPokemon),
                 onTap: () => onPokemonTap(currentPokemon),
               );
             },
@@ -563,7 +602,8 @@ class _RegionFilterDialog extends StatefulWidget {
 }
 
 class _RegionFilterDialogState extends State<_RegionFilterDialog> {
-  late String _selectedRegion = widget.selectedRegion ?? _RegionFilterDialog.allValue;
+  late String _selectedRegion =
+      widget.selectedRegion ?? _RegionFilterDialog.allValue;
 
   @override
   Widget build(BuildContext context) {
@@ -596,11 +636,13 @@ class _RegionFilterDialogState extends State<_RegionFilterDialog> {
       ),
       actions: [
         TextButton(
-          onPressed: () => Navigator.of(context).pop(_RegionFilterDialog.cancelValue),
+          onPressed: () =>
+              Navigator.of(context).pop(_RegionFilterDialog.cancelValue),
           child: const Text('Annulla'),
         ),
         TextButton(
-          onPressed: () => Navigator.of(context).pop(_RegionFilterDialog.allValue),
+          onPressed: () =>
+              Navigator.of(context).pop(_RegionFilterDialog.allValue),
           child: const Text('Tutte'),
         ),
         FilledButton(
@@ -706,7 +748,9 @@ class _ResultCounter extends StatelessWidget {
       ),
       child: Text(
         '$count',
-        style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
+        style: Theme.of(
+          context,
+        ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
       ),
     );
   }
@@ -729,7 +773,9 @@ class _TypeFilterSelector extends StatelessWidget {
   Widget build(BuildContext context) {
     if (types.isEmpty) return const SizedBox.shrink();
 
-    final label = selectedTypes.isEmpty ? 'Tipi' : 'Tipi (${selectedTypes.length})';
+    final label = selectedTypes.isEmpty
+        ? 'Tipi'
+        : 'Tipi (${selectedTypes.length})';
 
     return Row(
       children: [

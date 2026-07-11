@@ -2,105 +2,278 @@ import 'package:flutter/material.dart';
 
 import '../../models/pokedex_entry.dart';
 import '../../models/pokemon.dart';
-import '../../screens/pokemon/pokemon_detail_screen.dart';
 import '../../models/pokemon_flavor.dart';
+import '../../screens/pokemon/pokemon_detail_screen.dart';
 import '../pokemon/pokemon_asset_image.dart';
 
-class PokemonSummaryDialog extends StatelessWidget {
+typedef PokedexEntryChanged = Future<void> Function(PokedexEntry entry);
+
+class PokemonSummaryDialog extends StatefulWidget {
   const PokemonSummaryDialog({
     super.key,
     required this.pokemon,
     this.flavor,
     required this.entry,
-    required this.onToggleSeen,
-    required this.onToggleCaught,
+    required this.onEntryChanged,
   });
 
   final Pokemon pokemon;
   final PokemonFlavor? flavor;
   final PokedexEntry entry;
-  final VoidCallback onToggleSeen;
-  final VoidCallback onToggleCaught;
+  final PokedexEntryChanged onEntryChanged;
+
+  @override
+  State<PokemonSummaryDialog> createState() => _PokemonSummaryDialogState();
+}
+
+class _PokemonSummaryDialogState extends State<PokemonSummaryDialog> {
+  late PokedexEntry _entry;
+  late String? _selectedFormName;
+  List<String?> _forms = const [null];
+  bool _loadingForms = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _entry = widget.entry;
+    _selectedFormName = widget.entry.preferredFormName;
+    _loadForms();
+  }
+
+  Future<void> _loadForms() async {
+    final formsByKey = <String, String?>{'base': null};
+
+    void addForm(String? rawName) {
+      if (!PokedexEntry.isTrackableForm(
+        rawName,
+        speciesName: widget.pokemon.name,
+      )) {
+        return;
+      }
+      final key = PokedexEntry.formKey(
+        rawName,
+        speciesName: widget.pokemon.name,
+      );
+      formsByKey.putIfAbsent(
+        key,
+        () => PokedexEntry.displayNameFor(
+          rawName,
+          speciesName: widget.pokemon.name,
+        ),
+      );
+    }
+
+    for (final definition in widget.pokemon.formDefinitions) {
+      if (definition.gender != null) continue;
+      addForm(definition.displayName);
+    }
+    for (final choice in await PokemonAssetPaths.formChoices(widget.pokemon)) {
+      addForm(choice.name);
+    }
+    addForm(_selectedFormName);
+
+    final forms = formsByKey.values.toList(growable: false)
+      ..sort((a, b) {
+        if (a == null) return -1;
+        if (b == null) return 1;
+        return a.toLowerCase().compareTo(b.toLowerCase());
+      });
+
+    if (!mounted) return;
+    setState(() {
+      _forms = forms;
+      _loadingForms = false;
+    });
+  }
+
+  PokedexFormEntry get _selectedFormEntry =>
+      _entry.formFor(_selectedFormName, speciesName: widget.pokemon.name);
+
+  PokedexEntry get _selectedEntry =>
+      _entry.viewForForm(_selectedFormName, speciesName: widget.pokemon.name);
+
+  Pokemon get _selectedPokemon =>
+      widget.pokemon.resolveVariant(formName: _selectedFormName);
+
+  String get _selectedLabel => _selectedFormName ?? 'Base';
+
+  Future<void> _toggleSeen() async {
+    final current = _selectedFormEntry;
+    final updated = _entry.setFormState(
+      formName: _selectedFormName,
+      speciesName: widget.pokemon.name,
+      seen: !current.seen,
+      caught: current.seen ? false : current.caught,
+    );
+    setState(() => _entry = updated);
+    await widget.onEntryChanged(updated);
+  }
+
+  Future<void> _toggleCaught() async {
+    final current = _selectedFormEntry;
+    final updated = _entry.setFormState(
+      formName: _selectedFormName,
+      speciesName: widget.pokemon.name,
+      seen: true,
+      caught: !current.caught,
+    );
+    setState(() => _entry = updated);
+    await widget.onEntryChanged(updated);
+  }
 
   @override
   Widget build(BuildContext context) {
-    final number = '#${pokemon.id.toString().padLeft(3, '0')}';
-    final webDescription = pokemon.description?.trim() ?? '';
+    final pokemon = _selectedPokemon;
+    final formEntry = _selectedFormEntry;
+    final number = '#${widget.pokemon.id.toString().padLeft(3, '0')}';
+    final description = pokemon.description?.trim().isNotEmpty == true
+        ? pokemon.description!.trim()
+        : widget.flavor?.flavor.trim() ?? '';
+    final isBase = _selectedFormName == null;
 
     return AlertDialog(
-      title: Text('${pokemon.name} $number'),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          DecoratedBox(
-            decoration: BoxDecoration(
-              color: entry.caught
-                  ? Theme.of(context).colorScheme.primaryContainer
-                  : Theme.of(context).colorScheme.surfaceContainerHighest,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(8),
-              child: PokemonAssetImage(
-                pokemon: pokemon,
-                entry: entry,
-                useLargeArtwork: true,
-                size: 96,
+      title: Text('${widget.pokemon.name} $number'),
+      content: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 560),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              DecoratedBox(
+                decoration: BoxDecoration(
+                  color: formEntry.caught
+                      ? Theme.of(context).colorScheme.primaryContainer
+                      : Theme.of(context).colorScheme.surfaceContainerHighest,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: PokemonAssetImage(
+                    pokemon: widget.pokemon,
+                    entry: _selectedEntry,
+                    formName: _selectedFormName,
+                    useLargeArtwork: true,
+                    size: 132,
+                  ),
+                ),
               ),
-            ),
+              const SizedBox(height: 10),
+              Text(
+                _selectedLabel.toUpperCase(),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
+              ),
+              const SizedBox(height: 14),
+              if (_loadingForms)
+                const LinearProgressIndicator()
+              else
+                SizedBox(
+                  height: 116,
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: _forms.length,
+                    separatorBuilder: (_, __) => const SizedBox(width: 10),
+                    itemBuilder: (context, index) {
+                      final formName = _forms[index];
+                      final key = PokedexEntry.formKey(
+                        formName,
+                        speciesName: widget.pokemon.name,
+                      );
+                      final selectedKey = PokedexEntry.formKey(
+                        _selectedFormName,
+                        speciesName: widget.pokemon.name,
+                      );
+                      final state = _entry.viewForForm(
+                        formName,
+                        speciesName: widget.pokemon.name,
+                      );
+                      return _FormCard(
+                        pokemon: widget.pokemon,
+                        formName: formName,
+                        entry: state,
+                        selected: key == selectedKey,
+                        onTap: () => setState(() {
+                          _selectedFormName = formName;
+                        }),
+                      );
+                    },
+                  ),
+                ),
+              const SizedBox(height: 16),
+              if (formEntry.seen) ...[
+                if (isBase && widget.flavor != null) ...[
+                  Text(
+                    widget.flavor!.genus,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Altezza: ${widget.flavor!.heightMeters.toStringAsFixed(1)} m · '
+                    'Peso: ${widget.flavor!.weightKg.toStringAsFixed(1)} kg',
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 10),
+                ],
+                if (description.isNotEmpty) ...[
+                  Text(description, textAlign: TextAlign.center),
+                  const SizedBox(height: 14),
+                ],
+                Wrap(
+                  alignment: WrapAlignment.center,
+                  spacing: 6,
+                  runSpacing: 6,
+                  children: [
+                    for (final type in pokemon.types)
+                      PokemonTypeBadge(type: type, height: 24),
+                  ],
+                ),
+                const SizedBox(height: 14),
+                Wrap(
+                  alignment: WrapAlignment.center,
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    _StatChip(label: 'CA', value: pokemon.armorClass),
+                    _StatChip(label: 'PF', value: pokemon.hitPoints),
+                    _StatChip(label: 'FOR', value: pokemon.attributes.strength),
+                    _StatChip(
+                      label: 'DES',
+                      value: pokemon.attributes.dexterity,
+                    ),
+                    _StatChip(
+                      label: 'COS',
+                      value: pokemon.attributes.constitution,
+                    ),
+                    _StatChip(
+                      label: 'INT',
+                      value: pokemon.attributes.intelligence,
+                    ),
+                    _StatChip(label: 'SAG', value: pokemon.attributes.wisdom),
+                    _StatChip(label: 'CAR', value: pokemon.attributes.charisma),
+                  ],
+                ),
+              ] else
+                const Text(
+                  'Forma non ancora vista.',
+                  textAlign: TextAlign.center,
+                ),
+            ],
           ),
-          const SizedBox(height: 16),
-          if (flavor != null) ...[
-            Text(
-              flavor!.genus,
-              style: const TextStyle(fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 4),
-            Text(
-              'Altezza: ${flavor!.heightMeters.toStringAsFixed(1)} m · '
-              'Peso: ${flavor!.weightKg.toStringAsFixed(1)} kg',
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 12),
-            Text(flavor!.flavor, textAlign: TextAlign.center),
-            const SizedBox(height: 16),
-          ] else if (webDescription.isNotEmpty) ...[
-            Text(webDescription, textAlign: TextAlign.center),
-            const SizedBox(height: 16),
-          ],
-          if (entry.seen) ...[
-            Wrap(
-              alignment: WrapAlignment.center,
-              spacing: 6,
-              runSpacing: 6,
-              children: [
-                for (final type in pokemon.types)
-                  PokemonTypeBadge(type: type, height: 24),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(child: Text('CA: ${pokemon.armorClass}')),
-                Expanded(child: Text('PF: ${pokemon.hitPoints}')),
-              ],
-            ),
-          ] else
-            const Text('Pokémon non ancora visto.'),
-        ],
+        ),
       ),
       actions: [
         TextButton(
-          onPressed: onToggleSeen,
-          child: Text(entry.seen ? 'Non visto' : 'Visto'),
+          onPressed: _toggleSeen,
+          child: Text(formEntry.seen ? 'Non visto' : 'Visto'),
         ),
         TextButton(
-          onPressed: onToggleCaught,
-          child: Text(entry.caught ? 'Non catturato' : 'Catturato'),
+          onPressed: _toggleCaught,
+          child: Text(formEntry.caught ? 'Non catturato' : 'Catturato'),
         ),
         FilledButton(
-          onPressed: entry.seen
+          onPressed: formEntry.seen
               ? () {
                   Navigator.of(context).pop();
                   Navigator.of(context).push(
@@ -113,6 +286,111 @@ class PokemonSummaryDialog extends StatelessWidget {
           child: const Text('Scheda'),
         ),
       ],
+    );
+  }
+}
+
+class _FormCard extends StatelessWidget {
+  const _FormCard({
+    required this.pokemon,
+    required this.formName,
+    required this.entry,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final Pokemon pokemon;
+  final String? formName;
+  final PokedexEntry entry;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final label = formName ?? 'Base';
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        width: 96,
+        padding: const EdgeInsets.all(6),
+        decoration: BoxDecoration(
+          color: selected
+              ? colorScheme.primaryContainer
+              : colorScheme.surfaceContainerHighest,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: selected ? colorScheme.primary : colorScheme.outlineVariant,
+            width: selected ? 2 : 1,
+          ),
+        ),
+        child: Column(
+          children: [
+            Expanded(
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  PokemonAssetImage(
+                    pokemon: pokemon,
+                    entry: entry,
+                    formName: formName,
+                    useLargeArtwork: true,
+                    size: 72,
+                  ),
+                  if (entry.caught || entry.seen)
+                    Positioned(
+                      top: 0,
+                      right: 0,
+                      child: Icon(
+                        entry.caught
+                            ? Icons.catching_pokemon
+                            : Icons.visibility,
+                        size: 16,
+                        color: entry.caught
+                            ? colorScheme.primary
+                            : colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                fontWeight: selected ? FontWeight.w900 : FontWeight.w700,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _StatChip extends StatelessWidget {
+  const _StatChip({required this.label, required this.value});
+
+  final String label;
+  final int value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Text(
+        '$label $value',
+        style: Theme.of(
+          context,
+        ).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800),
+      ),
     );
   }
 }

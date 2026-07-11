@@ -1,88 +1,10 @@
-name: Inspect form metadata
+name: Form metadata implementation
 
 on:
-  push:
-    branches:
-      - feat/form-pokedex-metadata
-    paths:
-      - '.github/workflows/inspect-form-metadata.yml'
-  pull_request:
-    branches:
-      - main
-
-permissions:
-  contents: write
+  workflow_dispatch:
 
 jobs:
-  inspect:
+  paused:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          ref: feat/form-pokedex-metadata
-
-      - name: Inspect form metadata sources
-        run: |
-          python3 - <<'PY'
-          import json
-          import traceback
-          from collections import Counter
-          from pathlib import Path
-
-          output = Path('tool/form_metadata_diagnostic.json')
-          output.parent.mkdir(parents=True, exist_ok=True)
-          try:
-              raw = Path('assets/data_webapp/pokemon.json').read_text(encoding='utf-8-sig')
-              data = json.loads(raw)
-              items = list(data.get('items', []))
-              rattata = [item for item in items if str(item.get('number')) == '19']
-              key_counts = Counter()
-              matching_paths = Counter()
-
-              def walk(value, path=''):
-                  if isinstance(value, dict):
-                      for key, child in value.items():
-                          next_path = f'{path}.{key}' if path else str(key)
-                          key_counts[str(key)] += 1
-                          if 'height' in str(key).lower() or 'weight' in str(key).lower():
-                              matching_paths[next_path] += 1
-                          walk(child, next_path)
-                  elif isinstance(value, list):
-                      for child in value:
-                          walk(child, f'{path}[]')
-
-              walk(items)
-              text_hits = []
-              for path in Path('assets').rglob('*.json'):
-                  try:
-                      for number, line in enumerate(path.read_text(encoding='utf-8-sig').splitlines(), 1):
-                          lower = line.lower()
-                          if 'height' in lower or 'weight' in lower:
-                              text_hits.append({'path': str(path), 'line': number, 'text': line.strip()})
-                              if len(text_hits) >= 200:
-                                  break
-                  except Exception:
-                      continue
-                  if len(text_hits) >= 200:
-                      break
-
-              payload = {
-                  'pokemon_count': len(items),
-                  'rattata': rattata,
-                  'height_weight_paths': dict(matching_paths),
-                  'top_level_item_keys': sorted({key for item in items if isinstance(item, dict) for key in item}),
-                  'asset_text_hits': text_hits,
-              }
-          except Exception:
-              payload = {'error': traceback.format_exc()}
-          output.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding='utf-8')
-          PY
-
-      - name: Commit diagnostic
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add tool/form_metadata_diagnostic.json
-          git commit -m "Record form metadata sources"
-          git push origin feat/form-pokedex-metadata
+      - run: echo "Waiting for implementation scripts"

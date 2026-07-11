@@ -5,20 +5,9 @@
     "weight": "hectograms"
   },
   "generatedCount": 1139,
-  "fallbackCount": 10,
+  "fallbackCount": 0,
   "unmappedCount": 12,
-  "fallbackIds": [
-    "basculegion-f",
-    "basculegion-m",
-    "hoopa-confined",
-    "indeedee-f",
-    "indeedee-m",
-    "meowstic-f",
-    "meowstic-m",
-    "minior-core-form",
-    "wormadam-plant-cloak",
-    "wormadam-sand-cloak"
-  ],
+  "fallbackIds": [],
   "unmappedIds": [
     "aereon",
     "belseraph",
@@ -469,14 +458,14 @@
     "basculegion-f": {
       "height": 30,
       "weight": 1100,
-      "sourceIdentifier": "basculegion-male",
-      "matched": false
+      "sourceIdentifier": "basculegion-female",
+      "matched": true
     },
     "basculegion-m": {
       "height": 30,
       "weight": 1100,
       "sourceIdentifier": "basculegion-male",
-      "matched": false
+      "matched": true
     },
     "basculin": {
       "height": 10,
@@ -2792,7 +2781,7 @@
       "height": 5,
       "weight": 90,
       "sourceIdentifier": "hoopa",
-      "matched": false
+      "matched": true
     },
     "hoopa-unbound": {
       "height": 65,
@@ -2887,14 +2876,14 @@
     "indeedee-f": {
       "height": 9,
       "weight": 280,
-      "sourceIdentifier": "indeedee-male",
-      "matched": false
+      "sourceIdentifier": "indeedee-female",
+      "matched": true
     },
     "indeedee-m": {
       "height": 9,
       "weight": 280,
       "sourceIdentifier": "indeedee-male",
-      "matched": false
+      "matched": true
     },
     "infernape": {
       "height": 12,
@@ -3739,14 +3728,14 @@
     "meowstic-f": {
       "height": 6,
       "weight": 85,
-      "sourceIdentifier": "meowstic-male",
-      "matched": false
+      "sourceIdentifier": "meowstic-female",
+      "matched": true
     },
     "meowstic-m": {
       "height": 6,
       "weight": 85,
       "sourceIdentifier": "meowstic-male",
-      "matched": false
+      "matched": true
     },
     "meowth": {
       "height": 4,
@@ -3846,9 +3835,9 @@
     },
     "minior-core-form": {
       "height": 3,
-      "weight": 400,
-      "sourceIdentifier": "minior-red-meteor",
-      "matched": false
+      "weight": 3,
+      "sourceIdentifier": "minior-red",
+      "matched": true
     },
     "minior-meteor-form": {
       "height": 3,
@@ -6650,13 +6639,13 @@
       "height": 5,
       "weight": 65,
       "sourceIdentifier": "wormadam-plant",
-      "matched": false
+      "matched": true
     },
     "wormadam-sand-cloak": {
       "height": 5,
       "weight": 65,
-      "sourceIdentifier": "wormadam-plant",
-      "matched": false
+      "sourceIdentifier": "wormadam-sandy",
+      "matched": true
     },
     "wormadam-trash-cloak": {
       "height": 5,

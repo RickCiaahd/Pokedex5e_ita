@@ -121,6 +121,31 @@ class _PokemonSummaryDialogState extends State<PokemonSummaryDialog> {
     await widget.onEntryChanged(updated);
   }
 
+  Widget _buildFormCard(String? formName) {
+    final key = PokedexEntry.formKey(
+      formName,
+      speciesName: widget.pokemon.name,
+    );
+    final selectedKey = PokedexEntry.formKey(
+      _selectedFormName,
+      speciesName: widget.pokemon.name,
+    );
+    final state = _entry.viewForForm(
+      formName,
+      speciesName: widget.pokemon.name,
+    );
+
+    return _FormCard(
+      pokemon: widget.pokemon,
+      formName: formName,
+      entry: state,
+      selected: key == selectedKey,
+      onTap: () => setState(() {
+        _selectedFormName = formName;
+      }),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final pokemon = _selectedPokemon;
@@ -170,34 +195,17 @@ class _PokemonSummaryDialogState extends State<PokemonSummaryDialog> {
               else
                 SizedBox(
                   height: 116,
-                  child: ListView.separated(
+                  child: SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
-                    itemCount: _forms.length,
-                    separatorBuilder: (_, __) => const SizedBox(width: 10),
-                    itemBuilder: (context, index) {
-                      final formName = _forms[index];
-                      final key = PokedexEntry.formKey(
-                        formName,
-                        speciesName: widget.pokemon.name,
-                      );
-                      final selectedKey = PokedexEntry.formKey(
-                        _selectedFormName,
-                        speciesName: widget.pokemon.name,
-                      );
-                      final state = _entry.viewForForm(
-                        formName,
-                        speciesName: widget.pokemon.name,
-                      );
-                      return _FormCard(
-                        pokemon: widget.pokemon,
-                        formName: formName,
-                        entry: state,
-                        selected: key == selectedKey,
-                        onTap: () => setState(() {
-                          _selectedFormName = formName;
-                        }),
-                      );
-                    },
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        for (var index = 0; index < _forms.length; index++) ...[
+                          if (index > 0) const SizedBox(width: 10),
+                          _buildFormCard(_forms[index]),
+                        ],
+                      ],
+                    ),
                   ),
                 ),
               const SizedBox(height: 16),

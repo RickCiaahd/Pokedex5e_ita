@@ -31,11 +31,7 @@ Pokemon _pokemon({
     hiddenAbility: null,
     skills: const [],
     savingThrows: const [],
-    moves: const PokemonMoves(
-      startingMoves: [],
-      levelMoves: {},
-      tmMoves: [],
-    ),
+    moves: const PokemonMoves(startingMoves: [], levelMoves: {}, tmMoves: []),
     hitDice: 6,
     sr: 0.5,
     minLevelFound: 1,
@@ -54,19 +50,16 @@ void main() {
       name: 'Rattata',
       types: const ['Dark', 'Normal'],
     );
-    final pokemon = _pokemon(
-      id: 19,
-      name: 'Rattata',
-      types: const ['Normal'],
-    ).copyWith(
-      formDefinitions: [
-        PokemonFormDefinition(
-          key: 'alolan',
-          displayName: 'Alolan Rattata',
-          pokemon: alolan,
-        ),
-      ],
-    );
+    final pokemon = _pokemon(id: 19, name: 'Rattata', types: const ['Normal'])
+        .copyWith(
+          formDefinitions: [
+            PokemonFormDefinition(
+              key: 'alolan',
+              displayName: 'Alolan Rattata',
+              pokemon: alolan,
+            ),
+          ],
+        );
     final entry = PokedexEntry.empty(19)
         .setFormState(
           formName: null,

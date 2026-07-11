@@ -21,8 +21,29 @@ class EvolutionEligibility {
   final String? requiredItemId;
 }
 
+class EvolutionTarget {
+  const EvolutionTarget({
+    required this.basePokemon,
+    required this.pokemon,
+    required this.displayName,
+    this.formName,
+  });
+
+  final Pokemon basePokemon;
+  final Pokemon pokemon;
+  final String displayName;
+  final String? formName;
+}
+
 class EvolutionService {
   const EvolutionService();
+
+  static const Set<String> _regionalFormKeys = {
+    'alolan',
+    'galarian',
+    'hisuian',
+    'paldean',
+  };
 
   List<EvolutionEligibility> evaluateOptions({
     required Pokemon pokemon,
@@ -52,6 +73,150 @@ class EvolutionService {
           itemByName: itemByName,
         ),
     ];
+  }
+
+  EvolutionTarget? resolveTarget({
+    required EvolutionOption option,
+    required Pokemon currentPokemon,
+    required TeamSlot slot,
+    required Iterable<Pokemon> catalog,
+  }) {
+    final targetKeys = {
+      _referenceKey(option.toKey),
+      _referenceKey(option.toName),
+    }..removeWhere((key) => key.isEmpty);
+    if (targetKeys.isEmpty) return null;
+
+    Pokemon? exactBase;
+    for (final candidate in catalog) {
+      if (targetKeys.contains(_referenceKey(candidate.name))) {
+        exactBase = candidate;
+        break;
+      }
+    }
+
+    if (exactBase != null) {
+      final carriedForm = _regionalFormForTarget(
+        targetPokemon: exactBase,
+        currentPokemon: currentPokemon,
+        currentFormName: slot.formName,
+      );
+      return _buildTarget(
+        basePokemon: exactBase,
+        form: carriedForm,
+        gender: slot.gender,
+      );
+    }
+
+    for (final candidate in catalog) {
+      for (final definition in candidate.formDefinitions) {
+        if (definition.gender != null) continue;
+        final aliases = _targetAliases(candidate, definition);
+        if (targetKeys.any(aliases.contains)) {
+          return _buildTarget(
+            basePokemon: candidate,
+            form: definition,
+            gender: slot.gender,
+          );
+        }
+      }
+    }
+
+    return null;
+  }
+
+  EvolutionTarget _buildTarget({
+    required Pokemon basePokemon,
+    required PokemonFormDefinition? form,
+    required String? gender,
+  }) {
+    final formName = form?.displayName;
+    return EvolutionTarget(
+      basePokemon: basePokemon,
+      pokemon: basePokemon.resolveVariant(
+        formName: formName,
+        gender: gender,
+      ),
+      formName: formName,
+      displayName: form == null
+          ? basePokemon.name
+          : _displayNameForForm(basePokemon, form),
+    );
+  }
+
+  PokemonFormDefinition? _regionalFormForTarget({
+    required Pokemon targetPokemon,
+    required Pokemon currentPokemon,
+    required String? currentFormName,
+  }) {
+    final sourceFormKey = Pokemon.formReferenceKey(
+      currentFormName ?? '',
+      currentPokemon.name,
+    );
+    if (!_regionalFormKeys.contains(sourceFormKey)) return null;
+
+    for (final definition in targetPokemon.formDefinitions) {
+      if (definition.gender != null) continue;
+      final definitionKey = Pokemon.formReferenceKey(
+        definition.key,
+        targetPokemon.name,
+      );
+      final displayKey = Pokemon.formReferenceKey(
+        definition.displayName,
+        targetPokemon.name,
+      );
+      if (definitionKey == sourceFormKey || displayKey == sourceFormKey) {
+        return definition;
+      }
+    }
+
+    return null;
+  }
+
+  Set<String> _targetAliases(
+    Pokemon pokemon,
+    PokemonFormDefinition definition,
+  ) {
+    final speciesKey = _referenceKey(pokemon.name);
+    final formKey = Pokemon.formReferenceKey(
+      definition.displayName,
+      pokemon.name,
+    );
+    final rawKey = Pokemon.formReferenceKey(definition.key, pokemon.name);
+    final aliases = <String>{
+      _referenceKey(definition.key),
+      _referenceKey(definition.displayName),
+      _referenceKey(definition.pokemon.assetSlug ?? ''),
+      _referenceKey('${definition.displayName} ${pokemon.name}'),
+      _referenceKey('${pokemon.name} ${definition.displayName}'),
+    };
+
+    for (final key in {formKey, rawKey}) {
+      if (key.isEmpty || key == 'base') continue;
+      aliases.add('$key-$speciesKey');
+      aliases.add('$speciesKey-$key');
+    }
+
+    aliases.removeWhere((value) => value.isEmpty);
+    return aliases;
+  }
+
+  String _displayNameForForm(
+    Pokemon pokemon,
+    PokemonFormDefinition definition,
+  ) {
+    final displayName = definition.displayName.trim();
+    if (displayName.isEmpty) return pokemon.name;
+
+    final displayKey = _referenceKey(displayName);
+    final speciesKey = _referenceKey(pokemon.name);
+    if (displayKey == speciesKey ||
+        displayKey.startsWith('$speciesKey-') ||
+        displayKey.endsWith('-$speciesKey')) {
+      return displayName;
+    }
+
+    return '$displayName ${pokemon.name}';
   }
 
   EvolutionEligibility _evaluateOption({

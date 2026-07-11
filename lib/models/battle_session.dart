@@ -49,8 +49,8 @@ class BattleSession {
 
     return BattleSession(
       profileId: json['profileId']?.toString() ?? '',
-      round: _readInt(json['round'], fallback: 1).clamp(1, 9999),
-      turnIndex: _readInt(json['turnIndex']).clamp(0, 9999),
+      round: _readInt(json['round'], fallback: 1).clamp(1, 9999).toInt(),
+      turnIndex: _readInt(json['turnIndex']).clamp(0, 9999).toInt(),
       activeSlotIndex: _readNullableInt(json['activeSlotIndex']),
       pokemonStates: states,
       initiativeEntries: [

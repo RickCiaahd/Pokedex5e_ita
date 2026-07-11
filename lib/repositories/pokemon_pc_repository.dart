@@ -3,8 +3,14 @@ import 'package:hive_flutter/hive_flutter.dart';
 import '../database/hive_boxes.dart';
 import '../models/pc_pokemon.dart';
 import '../models/team_slot.dart';
+import 'pokedex_repositry.dart';
 
 class PokemonPcRepository {
+  PokemonPcRepository({PokedexRepository? pokedexRepository})
+      : _pokedexRepository = pokedexRepository ?? PokedexRepository();
+
+  final PokedexRepository _pokedexRepository;
+
   Future<Box> _box() => Hive.openBox(HiveBoxes.pcPokemon);
 
   Future<List<PcPokemon>> getPokemon(String profileId) async {
@@ -71,6 +77,11 @@ class PokemonPcRepository {
     );
 
     await savePokemon(profileId, [item, ...storedPokemon]);
+    await _pokedexRepository.registerCaught(
+      profileId: profileId,
+      pokemonId: pokemonId,
+      formName: formName,
+    );
 
     return item;
   }
@@ -83,6 +94,11 @@ class PokemonPcRepository {
     final item = PcPokemon.fromTeamSlot(slot);
 
     await savePokemon(profileId, [item, ...storedPokemon]);
+    await _pokedexRepository.registerCaught(
+      profileId: profileId,
+      pokemonId: item.pokemonId,
+      formName: item.formName,
+    );
 
     return item;
   }

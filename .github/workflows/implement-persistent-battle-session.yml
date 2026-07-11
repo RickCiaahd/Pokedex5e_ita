@@ -6,6 +6,9 @@ on:
       - feat/persistent-battle-session
     paths:
       - '.github/workflows/implement-persistent-battle-session.yml'
+  pull_request:
+    branches:
+      - main
 
 permissions:
   contents: write

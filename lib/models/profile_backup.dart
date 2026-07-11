@@ -36,10 +36,10 @@ class ProfileBackup {
   int get caughtSpecies => pokedex.where((entry) => entry.caught).length;
 
   int get caughtForms => pokedex.fold(
-        0,
-        (total, entry) =>
-            total + entry.forms.values.where((form) => form.caught).length,
-      );
+    0,
+    (total, entry) =>
+        total + entry.forms.values.where((form) => form.caught).length,
+  );
 
   int get occupiedTeamSlots =>
       team.where((slot) => slot.pokemonId != null).length;
@@ -47,9 +47,9 @@ class ProfileBackup {
   int get bagItemKinds => bag.where((entry) => entry.quantity > 0).length;
 
   int get bagItemQuantity => bag.fold(
-        0,
-        (total, entry) => total + (entry.quantity > 0 ? entry.quantity : 0),
-      );
+    0,
+    (total, entry) => total + (entry.quantity > 0 ? entry.quantity : 0),
+  );
 
   Map<String, dynamic> toJson() {
     return {
@@ -83,7 +83,8 @@ class ProfileBackup {
 
     final backup = ProfileBackup(
       formatVersion: version,
-      exportedAt: DateTime.tryParse(json['exportedAt']?.toString() ?? '') ??
+      exportedAt:
+          DateTime.tryParse(json['exportedAt']?.toString() ?? '') ??
           DateTime.now(),
       profile: UserProfile.fromJson(profileJson),
       pokedex: [
@@ -119,7 +120,9 @@ class ProfileBackup {
       throw const FormatException('Il profilo del backup non ha un ID valido.');
     }
     if (profile.name.trim().isEmpty) {
-      throw const FormatException('Il profilo del backup non ha un nome valido.');
+      throw const FormatException(
+        'Il profilo del backup non ha un nome valido.',
+      );
     }
 
     final teamSlots = <int>{};
@@ -139,7 +142,9 @@ class ProfileBackup {
     final pokedexIds = <int>{};
     for (final entry in pokedex) {
       if (entry.pokemonId <= 0) {
-        throw const FormatException('Il backup contiene un Pokémon non valido.');
+        throw const FormatException(
+          'Il backup contiene un Pokémon non valido.',
+        );
       }
       if (!pokedexIds.add(entry.pokemonId)) {
         throw FormatException(

@@ -401,8 +401,12 @@ class _ProfileStatusBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    final background = isError ? colors.errorContainer : colors.primaryContainer;
-    final foreground = isError ? colors.onErrorContainer : colors.onPrimaryContainer;
+    final background = isError
+        ? colors.errorContainer
+        : colors.primaryContainer;
+    final foreground = isError
+        ? colors.onErrorContainer
+        : colors.onPrimaryContainer;
 
     return DecoratedBox(
       decoration: BoxDecoration(
@@ -418,7 +422,9 @@ class _ProfileStatusBanner extends StatelessWidget {
               color: foreground,
             ),
             const SizedBox(width: 10),
-            Expanded(child: Text(message, style: TextStyle(color: foreground))),
+            Expanded(
+              child: Text(message, style: TextStyle(color: foreground)),
+            ),
             IconButton(
               tooltip: 'Chiudi messaggio',
               onPressed: onDismiss,
@@ -506,7 +512,10 @@ class _ProfileTile extends StatelessWidget {
         ),
       ),
       child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 10,
+        ),
         leading: CircleAvatar(
           backgroundColor: isActive
               ? colorScheme.primary
@@ -724,7 +733,8 @@ class _ProfileImportDialogState extends State<_ProfileImportDialog> {
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.backup.profile.name);
-    _targetProfileId = widget.activeProfileId ??
+    _targetProfileId =
+        widget.activeProfileId ??
         (widget.profiles.isEmpty ? null : widget.profiles.first.id);
   }
 
@@ -768,9 +778,9 @@ class _ProfileImportDialogState extends State<_ProfileImportDialog> {
             children: [
               Text(
                 backup.profile.name,
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w900,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
               ),
               Text(
                 'Formato ${backup.formatVersion} · Esportato il $exportedDate',

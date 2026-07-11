@@ -85,10 +85,14 @@ class ProfileBackupService {
   }
 
   ProfileBackup decodeBackup(String source) {
-    final normalized = source.startsWith('\uFEFF') ? source.substring(1) : source;
+    final normalized = source.startsWith('\uFEFF')
+        ? source.substring(1)
+        : source;
     final decoded = jsonDecode(normalized);
     if (decoded is! Map) {
-      throw const FormatException('Il file selezionato non è un backup valido.');
+      throw const FormatException(
+        'Il file selezionato non è un backup valido.',
+      );
     }
     return ProfileBackup.fromJson(Map<String, dynamic>.from(decoded));
   }
@@ -251,7 +255,9 @@ class ProfileBackupService {
   }
 
   String _nextCopyName(String sourceName, Iterable<String> existingNames) {
-    final existing = existingNames.map((name) => name.trim().toLowerCase()).toSet();
+    final existing = existingNames
+        .map((name) => name.trim().toLowerCase())
+        .toSet();
     final base = '${sourceName.trim()} (copia)'.trim();
     if (!existing.contains(base.toLowerCase())) return base;
 

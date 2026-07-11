@@ -6,6 +6,9 @@ on:
       - feat/form-pokedex-metadata
     paths:
       - '.github/workflows/inspect-form-metadata.yml'
+  pull_request:
+    branches:
+      - main
 
 permissions:
   contents: write

@@ -1,14 +1,20 @@
 import 'package:hive_flutter/hive_flutter.dart';
 
 import '../database/hive_boxes.dart';
+import '../models/pokedex_entry.dart';
 import '../models/team_slot.dart';
 import 'move_repository.dart';
+import 'pokedex_repositry.dart';
 
 class TeamRepository {
-  TeamRepository({MoveRepository? moveRepository})
-      : _moveRepository = moveRepository ?? MoveRepository();
+  TeamRepository({
+    MoveRepository? moveRepository,
+    PokedexRepository? pokedexRepository,
+  })  : _moveRepository = moveRepository ?? MoveRepository(),
+        _pokedexRepository = pokedexRepository ?? PokedexRepository();
 
   final MoveRepository _moveRepository;
+  final PokedexRepository _pokedexRepository;
 
   Future<Box> _box() => Hive.openBox(HiveBoxes.teams);
 
@@ -80,6 +86,17 @@ class TeamRepository {
 
     await box.put(profileId, team.map((slot) => slot.toJson()).toList());
     await box.flush();
+    await _pokedexRepository.registerCaughtMany(
+      profileId: profileId,
+      pokemon: [
+        for (final slot in team)
+          if (slot.pokemonId != null)
+            PokedexOwnedForm(
+              pokemonId: slot.pokemonId!,
+              formName: slot.formName,
+            ),
+      ],
+    );
   }
 
   Future<void> setPokemonInSlot({

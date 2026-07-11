@@ -6,6 +6,9 @@ on:
       - fix/shiny-alternate-forms
     paths:
       - '.github/workflows/fix-alternate-shiny-assets.yml'
+  pull_request:
+    branches:
+      - main
 
 permissions:
   contents: write

@@ -1,0 +1,42 @@
+name: Form-aware Pokédex CI
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'lib/**'
+      - 'test/**'
+      - 'pubspec.yaml'
+      - 'pubspec.lock'
+      - '.github/workflows/form-aware-pokedex-ci.yml'
+
+jobs:
+  analyze-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Run Pokédex and form tests
+        run: |
+          flutter test \
+            test/pokedex_forms_test.dart \
+            test/pokemon_asset_paths_test.dart \
+            test/pokemon_form_mechanics_test.dart \
+            test/evolution_form_alias_service_test.dart
+
+      - name: Run full test suite
+        run: flutter test

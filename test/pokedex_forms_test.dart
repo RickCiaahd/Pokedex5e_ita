@@ -73,6 +73,13 @@ void main() {
     expect(entry.formFor(PokedexEntry.baseFormKey).caught, isTrue);
   });
 
+  test('base form is passed explicitly to the artwork resolver', () {
+    final options = PokedexFormCatalog.optionsFor(rattata);
+    final base = options.firstWhere((form) => form.isBase);
+
+    expect(base.formName, 'Base');
+  });
+
   test('caught alternate form has priority over a seen base form', () {
     final entry = PokedexEntry(pokemonId: 19)
         .withFormStatus(
@@ -112,6 +119,26 @@ void main() {
     final preferred = PokedexFormCatalog.preferredFor(rattata, entry);
 
     expect(preferred.isBase, isTrue);
+  });
+
+  test('equivalent form aliases are merged into one status', () {
+    final entry = PokedexEntry(pokemonId: 19)
+        .withFormStatus(
+          formKey: 'alolan-rattata',
+          formName: 'Alolan Rattata',
+          seen: true,
+          caught: false,
+        )
+        .withFormStatus(
+          formKey: 'alolan',
+          formName: 'Alolan',
+          aliases: const {'alolan-rattata'},
+          seen: true,
+          caught: true,
+        );
+
+    expect(entry.forms, hasLength(1));
+    expect(entry.formFor('alolan').caught, isTrue);
   });
 
   test('temporary battle transformations are excluded from Pokédex forms', () {

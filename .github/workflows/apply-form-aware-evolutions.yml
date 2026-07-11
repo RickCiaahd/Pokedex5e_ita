@@ -224,3 +224,5 @@ jobs:
           git add -A
           git commit -m "Add form-aware Pokemon evolutions"
           git push origin feat/form-aware-evolutions
+
+# trigger validation

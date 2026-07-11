@@ -6,6 +6,9 @@ on:
       - feat/profile-backup-transfer
     paths:
       - '.github/workflows/implement-profile-backup-transfer.yml'
+  pull_request:
+    branches:
+      - main
 
 permissions:
   contents: write

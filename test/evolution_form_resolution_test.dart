@@ -87,3 +87,5 @@ void main() {
     expect(target.pokemon.types, isNot(contains('Dark')));
   });
 }
+
+// PR-target validation trigger.

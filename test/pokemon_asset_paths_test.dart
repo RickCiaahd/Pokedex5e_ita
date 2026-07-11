@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pokedex_5e_ita/models/pokemon.dart';
 import 'package:pokedex_5e_ita/models/pokemon_attributes.dart';
@@ -77,5 +78,18 @@ void main() {
     expect(candidates, contains(shiny));
     expect(candidates, contains(normal));
     expect(candidates.indexOf(shiny), lessThan(candidates.indexOf(normal)));
+  });
+
+  testWidgets('Abomasnow shiny artwork is included in the Flutter asset bundle', (
+    tester,
+  ) async {
+    final manifest = await AssetManifest.loadFromAssetBundle(rootBundle);
+
+    expect(
+      manifest.listAssets(),
+      contains(
+        'assets/textures/textures_webapp/pokemon/abomasnow/main-shiny.png',
+      ),
+    );
   });
 }

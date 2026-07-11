@@ -52,8 +52,7 @@ class BattleQuickItemService {
     final id = _referenceKey(item.id);
     return type == 'pokeball' ||
         type == 'poke-ball' ||
-        id == 'poke-ball' ||
-        id.endsWith('-ball');
+        _knownPokeballIds.contains(id);
   }
 
   static bool isMedicine(BagItem item) {
@@ -81,6 +80,41 @@ class BattleQuickItemService {
         .replaceAll(RegExp(r'[^a-z0-9]+'), '-')
         .replaceAll(RegExp(r'^-+|-+$'), '');
   }
+
+  static const Set<String> _knownPokeballIds = {
+    'poke-ball',
+    'great-ball',
+    'ultra-ball',
+    'master-ball',
+    'safari-ball',
+    'level-ball',
+    'lure-ball',
+    'moon-ball',
+    'friend-ball',
+    'love-ball',
+    'heavy-ball',
+    'fast-ball',
+    'sport-ball',
+    'premier-ball',
+    'repeat-ball',
+    'timer-ball',
+    'nest-ball',
+    'net-ball',
+    'dive-ball',
+    'luxury-ball',
+    'heal-ball',
+    'quick-ball',
+    'dusk-ball',
+    'cherish-ball',
+    'park-ball',
+    'dream-ball',
+    'beast-ball',
+    'strange-ball',
+    'feather-ball',
+    'wing-ball',
+    'jet-ball',
+    'origin-ball',
+  };
 
   static const Set<String> _knownMedicineIds = {
     'potion',

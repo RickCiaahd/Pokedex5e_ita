@@ -93,4 +93,73 @@ void main() {
       );
     },
   );
+
+  test('Alolan Rattata shiny artwork is resolved before all fallbacks', () {
+    final candidates = PokemonAssetPaths.imageCandidates(
+      pokemon: _pokemon(19, 'Rattata'),
+      useLargeArtwork: true,
+      formName: 'Alolan Rattata',
+      isShiny: true,
+    );
+
+    const alternateShiny =
+        'assets/textures/textures_webapp/pokemon/alolan-rattata/main-shiny.png';
+    const alternateNormal =
+        'assets/textures/textures_webapp/pokemon/alolan-rattata/main.png';
+    const baseShiny =
+        'assets/textures/textures_webapp/pokemon/rattata/main-shiny.png';
+
+    expect(candidates, contains(alternateShiny));
+    expect(candidates, contains(alternateNormal));
+    expect(candidates, contains(baseShiny));
+    expect(
+      candidates.indexOf(alternateShiny),
+      lessThan(candidates.indexOf(alternateNormal)),
+    );
+    expect(
+      candidates.indexOf(alternateShiny),
+      lessThan(candidates.indexOf(baseShiny)),
+    );
+  });
+
+  test('Dusk Mane Necrozma shiny artwork uses the form-first folder', () {
+    final candidates = PokemonAssetPaths.imageCandidates(
+      pokemon: _pokemon(800, 'Necrozma'),
+      useLargeArtwork: true,
+      formName: 'Dusk Mane Necrozma',
+      isShiny: true,
+    );
+
+    const alternateShiny =
+        'assets/textures/textures_webapp/pokemon/dusk-mane-necrozma/main-shiny.png';
+    const baseShiny =
+        'assets/textures/textures_webapp/pokemon/necrozma/main-shiny.png';
+
+    expect(candidates, contains(alternateShiny));
+    expect(candidates, contains(baseShiny));
+    expect(
+      candidates.indexOf(alternateShiny),
+      lessThan(candidates.indexOf(baseShiny)),
+    );
+  });
+
+  testWidgets('alternate shiny artwork is included in the Flutter asset bundle', (
+    tester,
+  ) async {
+    final manifest = await AssetManifest.loadFromAssetBundle(rootBundle);
+    final assets = manifest.listAssets();
+
+    expect(
+      assets,
+      contains(
+        'assets/textures/textures_webapp/pokemon/alolan-rattata/main-shiny.png',
+      ),
+    );
+    expect(
+      assets,
+      contains(
+        'assets/textures/textures_webapp/pokemon/dusk-mane-necrozma/main-shiny.png',
+      ),
+    );
+  });
 }

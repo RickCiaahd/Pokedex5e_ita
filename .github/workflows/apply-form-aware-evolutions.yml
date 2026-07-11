@@ -6,6 +6,14 @@ on:
       - feat/form-aware-evolutions
     paths:
       - .github/workflows/apply-form-aware-evolutions.yml
+  pull_request:
+    branches:
+      - main
+    paths:
+      - .github/workflows/apply-form-aware-evolutions.yml
+      - lib/services/evolution_service.dart
+      - lib/screens/pokemon/evolution_selector_sheet.dart
+      - test/evolution_form_resolution_test.dart
 
 permissions:
   contents: write
@@ -17,6 +25,7 @@ jobs:
       - name: Checkout feature branch
         uses: actions/checkout@v4
         with:
+          ref: feat/form-aware-evolutions
           fetch-depth: 0
 
       - name: Connect evolution UI to resolved forms
@@ -224,5 +233,3 @@ jobs:
           git add -A
           git commit -m "Add form-aware Pokemon evolutions"
           git push origin feat/form-aware-evolutions
-
-# trigger validation

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../widgets/navigation/home_leading_button.dart';
+import 'encounter_generator_screen.dart';
 import 'pokemon_generator_screen.dart';
 
 class ToolsScreen extends StatelessWidget {
@@ -37,17 +38,14 @@ class ToolsScreen extends StatelessWidget {
                       children: [
                         Text(
                           'Strumenti per giocatori e Master',
-                          style: Theme.of(context).textTheme.titleLarge
-                              ?.copyWith(
-                                color: colorScheme.onPrimaryContainer,
-                                fontWeight: FontWeight.w900,
-                              ),
+                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            color: colorScheme.onPrimaryContainer,
+                            fontWeight: FontWeight.w900,
+                          ),
                         ),
                         const SizedBox(height: 6),
                         Text(
-                          'Genera Pokémon coerenti con livello, tipo, SR e '
-                          'generazione. Questa area ospiterà in seguito incontri, '
-                          'allenatori PNG e analisi della squadra.',
+                          'Genera Pokémon e incontri coerenti con gruppo, difficoltà, ambiente e raccolte personalizzate.',
                           style: TextStyle(
                             color: colorScheme.onPrimaryContainer,
                           ),
@@ -75,12 +73,19 @@ class ToolsScreen extends StatelessWidget {
             },
           ),
           const SizedBox(height: 10),
-          const _ToolCard(
+          _ToolCard(
             icon: Icons.travel_explore,
             title: 'Generatore incontri',
             subtitle:
-                'Composizione di incontri per difficoltà, ambiente e gruppo di gioco.',
-            actionLabel: 'PROSSIMAMENTE',
+                'Composizione automatica, manuale e raccolte ponderate con stima della difficoltà.',
+            actionLabel: 'APRI',
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => const EncounterGeneratorScreen(),
+                ),
+              );
+            },
           ),
           const SizedBox(height: 10),
           const _ToolCard(

@@ -1,5 +1,6 @@
 import 'bag_inventory_entry.dart';
 import 'battle_session.dart';
+import 'encounter_collection.dart';
 import 'pc_pokemon.dart';
 import 'pokedex_entry.dart';
 import 'profile_settings.dart';
@@ -7,7 +8,7 @@ import 'team_slot.dart';
 import 'user_profile.dart';
 
 class ProfileBackup {
-  static const int currentFormatVersion = 1;
+  static const int currentFormatVersion = 2;
 
   ProfileBackup({
     required this.formatVersion,
@@ -19,6 +20,7 @@ class ProfileBackup {
     required this.bag,
     required this.settings,
     required this.battleSession,
+    this.encounterCollections = const [],
   });
 
   final int formatVersion;
@@ -30,6 +32,7 @@ class ProfileBackup {
   final List<BagInventoryEntry> bag;
   final ProfileSettings settings;
   final BattleSession? battleSession;
+  final List<EncounterCollection> encounterCollections;
 
   int get seenSpecies => pokedex.where((entry) => entry.seen).length;
 
@@ -62,6 +65,9 @@ class ProfileBackup {
       'bag': bag.map((entry) => entry.toJson()).toList(growable: false),
       'settings': settings.toJson(),
       'battleSession': battleSession?.toJson(),
+      'encounterCollections': encounterCollections
+          .map((collection) => collection.toJson())
+          .toList(growable: false),
     };
   }
 
@@ -109,6 +115,13 @@ class ProfileBackup {
       battleSession: battleJson is Map
           ? BattleSession.fromJson(Map<String, dynamic>.from(battleJson))
           : null,
+      encounterCollections: [
+        for (final value in _readMapList(
+          json['encounterCollections'],
+          'encounterCollections',
+        ))
+          EncounterCollection.fromJson(value),
+      ],
     );
 
     backup.validate();
@@ -178,6 +191,25 @@ class ProfileBackup {
       if (!bagIds.add(key)) {
         throw FormatException(
           'L’oggetto ${entry.itemId} è presente più volte nello zaino.',
+        );
+      }
+    }
+
+    final collectionIds = <String>{};
+    for (final collection in encounterCollections) {
+      if (collection.id.trim().isEmpty || collection.name.trim().isEmpty) {
+        throw const FormatException(
+          'Il backup contiene una raccolta incontri non valida.',
+        );
+      }
+      if (!collectionIds.add(collection.id)) {
+        throw FormatException(
+          'La raccolta ${collection.name} è presente più volte.',
+        );
+      }
+      if (!collection.isReady) {
+        throw FormatException(
+          'La raccolta ${collection.name} non totalizza il 100%.',
         );
       }
     }

@@ -9,11 +9,9 @@ import 'pokemon_habitat_service.dart';
 
 class EncounterGeneratorService {
   const EncounterGeneratorService({
-    PokemonGeneratorService pokemonGeneratorService =
-        const PokemonGeneratorService(),
-    PokemonHabitatService habitatService = const PokemonHabitatService(),
-  }) : _pokemonGeneratorService = pokemonGeneratorService,
-       _habitatService = habitatService;
+    this._pokemonGeneratorService = const PokemonGeneratorService(),
+    this._habitatService = const PokemonHabitatService(),
+  });
 
   final PokemonGeneratorService _pokemonGeneratorService;
   final PokemonHabitatService _habitatService;

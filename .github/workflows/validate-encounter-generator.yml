@@ -4,16 +4,12 @@ on:
   push:
     branches:
       - feat/encounter-generator
-  pull_request:
-    branches:
-      - main
 
 permissions:
   contents: write
 
 jobs:
   validate:
-    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
@@ -23,8 +19,37 @@ jobs:
           ref: feat/encounter-generator
           fetch-depth: 0
 
-      - name: Apply compile fixes
-        run: python3 tool/fix_encounter_generator_compile.py
+      - name: Apply final lint fix and clean diagnostics
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path('lib/services/encounter_generator_service.dart')
+          content = path.read_text(encoding='utf-8')
+          old = """  const EncounterGeneratorService({
+              PokemonGeneratorService pokemonGeneratorService =
+                  const PokemonGeneratorService(),
+              PokemonHabitatService habitatService = const PokemonHabitatService(),
+            }) : _pokemonGeneratorService = pokemonGeneratorService,
+                 _habitatService = habitatService;
+          """
+          new = """  const EncounterGeneratorService({
+              this._pokemonGeneratorService = const PokemonGeneratorService(),
+              this._habitatService = const PokemonHabitatService(),
+            });
+          """
+          if old not in content:
+              raise SystemExit('EncounterGeneratorService constructor not found')
+          path.write_text(content.replace(old, new), encoding='utf-8')
+
+          for file_name in (
+              'tool/fix_encounter_generator_compile.py',
+              'tool/encounter-analyze.txt',
+              'tool/encounter-tests.txt',
+              'tool/full-tests.txt',
+          ):
+              Path(file_name).unlink(missing_ok=True)
+          PY
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
@@ -56,38 +81,21 @@ jobs:
         run: git diff --check
 
       - name: Analyze
-        id: analyze
-        continue-on-error: true
-        run: |
-          set -o pipefail
-          flutter analyze 2>&1 | tee tool/encounter-analyze.txt
+        run: flutter analyze
 
       - name: Run encounter tests
-        id: encounter_tests
-        continue-on-error: true
-        run: |
-          set -o pipefail
-          flutter test test/encounter_generator_service_test.dart 2>&1 | tee tool/encounter-tests.txt
+        run: flutter test test/encounter_generator_service_test.dart
 
       - name: Run full test suite
-        id: full_tests
-        continue-on-error: true
-        run: |
-          set -o pipefail
-          flutter test 2>&1 | tee tool/full-tests.txt
+        run: flutter test
 
-      - name: Commit formatted implementation and diagnostics
+      - name: Remove temporary workflow
+        run: rm -f .github/workflows/validate-encounter-generator.yml
+
+      - name: Commit validated implementation
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
-          if git diff --cached --quiet; then
-            echo "No generated changes to commit"
-          else
-            git commit -m "Validate encounter generator implementation"
-            git push origin feat/encounter-generator
-          fi
-
-      - name: Fail on validation errors
-        if: steps.analyze.outcome == 'failure' || steps.encounter_tests.outcome == 'failure' || steps.full_tests.outcome == 'failure'
-        run: exit 1
+          git commit -m "Finalize encounter generator implementation"
+          git push origin feat/encounter-generator

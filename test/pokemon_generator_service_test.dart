@@ -149,6 +149,55 @@ void main() {
     expect(generated.maxHp, greaterThan(0));
   });
 
+  test('uses a form-only type and SR without generating the base form', () {
+    final alolan = _pokemon(
+      id: 19,
+      name: 'Rattata',
+      types: const ['Dark', 'Normal'],
+      sr: 0.5,
+      minLevel: 1,
+    );
+    final rattata = _pokemon(
+      id: 19,
+      name: 'Rattata',
+      types: const ['Normal'],
+      sr: 0.25,
+      minLevel: 1,
+      forms: [
+        PokemonFormDefinition(
+          key: 'alolan',
+          displayName: 'Alolan',
+          pokemon: alolan,
+        ),
+      ],
+    );
+    const filters = PokemonGeneratorFilters(
+      type: 'Dark',
+      minSr: 0.5,
+      maxSr: 0.5,
+      includeForms: true,
+      level: 5,
+    );
+
+    expect(service.filterPokemon([rattata], filters), [rattata]);
+    final generated = service.generate(
+      pokemon: [rattata],
+      filters: filters,
+      random: Random(1),
+    );
+    expect(generated?.formName, 'Alolan');
+    expect(generated?.pokemon.types, contains('Dark'));
+    expect(generated?.pokemon.sr, 0.5);
+
+    expect(
+      service.filterPokemon(
+        [rattata],
+        filters.copyWith(includeForms: false),
+      ),
+      isEmpty,
+    );
+  });
+
   test('includes types from permanent forms in the filter catalog', () {
     final alolan = _pokemon(
       id: 19,

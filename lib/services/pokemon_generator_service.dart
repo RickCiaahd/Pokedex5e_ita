@@ -14,11 +14,8 @@ class PokemonGeneratorService {
     PokemonGeneratorFilters filters,
   ) {
     final query = filters.query.trim().toLowerCase();
-    final selectedType = filters.type?.trim().toLowerCase();
     final minimumGeneration = min(filters.minGeneration, filters.maxGeneration);
     final maximumGeneration = max(filters.minGeneration, filters.maxGeneration);
-    final minimumSr = min(filters.minSr, filters.maxSr);
-    final maximumSr = max(filters.minSr, filters.maxSr);
 
     return pokemon
         .where((candidate) {
@@ -28,30 +25,59 @@ class PokemonGeneratorService {
               generation > maximumGeneration) {
             return false;
           }
-          if (candidate.sr < minimumSr || candidate.sr > maximumSr)
-            return false;
-          if (filters.level > 0 && candidate.minLevelFound > filters.level) {
-            return false;
+
+          final eligibleForms = eligibleFormNames(candidate, filters);
+          if (eligibleForms.isEmpty) return false;
+          if (query.isEmpty) return true;
+          if (candidate.name.toLowerCase().contains(query) ||
+              candidate.id.toString().contains(query)) {
+            return true;
           }
-          if (selectedType != null &&
-              selectedType.isNotEmpty &&
-              !candidate.types.any(
-                (type) => type.trim().toLowerCase() == selectedType,
-              )) {
-            return false;
+
+          for (final formName in eligibleForms) {
+            if (formName?.toLowerCase().contains(query) == true) return true;
+            final variant = candidate.resolveVariant(formName: formName);
+            if (variant.types.any(
+              (type) => type.toLowerCase().contains(query),
+            )) {
+              return true;
+            }
           }
-          if (query.isNotEmpty &&
-              !candidate.name.toLowerCase().contains(query) &&
-              !candidate.id.toString().contains(query) &&
-              !candidate.types.any(
-                (type) => type.toLowerCase().contains(query),
-              )) {
-            return false;
-          }
-          return true;
+          return false;
         })
         .toList(growable: false)
       ..sort((a, b) => a.id.compareTo(b.id));
+  }
+
+  List<String?> eligibleFormNames(
+    Pokemon pokemon,
+    PokemonGeneratorFilters filters,
+  ) {
+    final forms = <String?>[null];
+    final identities = <String>{'base'};
+
+    if (filters.includeForms) {
+      for (final definition in pokemon.formDefinitions) {
+        if (definition.gender != null) continue;
+        if (!PokedexEntry.isTrackableForm(
+          definition.displayName,
+          speciesName: pokemon.name,
+        )) {
+          continue;
+        }
+        final identity = PokedexEntry.formKey(
+          definition.displayName,
+          speciesName: pokemon.name,
+        );
+        if (identity == 'base' || !identities.add(identity)) continue;
+        forms.add(definition.displayName);
+      }
+    }
+
+    return forms.where((formName) {
+      final variant = pokemon.resolveVariant(formName: formName);
+      return _matchesVariantFilters(variant, filters);
+    }).toList(growable: false);
   }
 
   GeneratedPokemon? generate({
@@ -64,14 +90,21 @@ class PokemonGeneratorService {
     if (candidates.isEmpty) return null;
 
     final basePokemon = candidates[rng.nextInt(candidates.length)];
-    final formName = _randomFormName(
-      basePokemon,
-      includeForms: filters.includeForms,
-      random: rng,
+    final eligibleForms = eligibleFormNames(basePokemon, filters);
+    if (eligibleForms.isEmpty) return null;
+    final formName = eligibleForms[rng.nextInt(eligibleForms.length)];
+    final formPokemon = basePokemon.resolveVariant(formName: formName);
+    var gender = _randomGender(formPokemon, rng);
+    var resolvedPokemon = basePokemon.resolveVariant(
+      formName: formName,
+      gender: gender,
     );
-    final resolvedPokemon = basePokemon.resolveVariant(formName: formName);
+    if (!_matchesVariantFilters(resolvedPokemon, filters)) {
+      gender = null;
+      resolvedPokemon = formPokemon;
+    }
+
     final level = _resolveLevel(resolvedPokemon, filters.level);
-    final gender = _randomGender(resolvedPokemon, rng);
     final nature = _randomNature(rng);
     final ability = _randomAbility(resolvedPokemon, rng);
     final selectedMoves = _randomMoves(resolvedPokemon, level, rng);
@@ -97,11 +130,11 @@ class PokemonGeneratorService {
     for (final candidate in pokemon) {
       types.addAll(candidate.types.where((type) => type.trim().isNotEmpty));
       for (final definition in candidate.formDefinitions) {
-        if (definition.gender != null) continue;
-        if (!PokedexEntry.isTrackableForm(
-          definition.displayName,
-          speciesName: candidate.name,
-        )) {
+        if (definition.gender == null &&
+            !PokedexEntry.isTrackableForm(
+              definition.displayName,
+              speciesName: candidate.name,
+            )) {
           continue;
         }
         types.addAll(
@@ -117,6 +150,13 @@ class PokemonGeneratorService {
     for (final candidate in pokemon) {
       maximum = max(maximum, candidate.sr);
       for (final definition in candidate.formDefinitions) {
+        if (definition.gender == null &&
+            !PokedexEntry.isTrackableForm(
+              definition.displayName,
+              speciesName: candidate.name,
+            )) {
+          continue;
+        }
         maximum = max(maximum, definition.pokemon.sr);
       }
     }
@@ -157,6 +197,28 @@ class PokemonGeneratorService {
     return max(1, scaledHp);
   }
 
+  bool _matchesVariantFilters(
+    Pokemon variant,
+    PokemonGeneratorFilters filters,
+  ) {
+    final minimumSr = min(filters.minSr, filters.maxSr);
+    final maximumSr = max(filters.minSr, filters.maxSr);
+    if (variant.sr < minimumSr || variant.sr > maximumSr) return false;
+    if (filters.level > 0 && variant.minLevelFound > filters.level) {
+      return false;
+    }
+
+    final selectedType = filters.type?.trim().toLowerCase();
+    if (selectedType != null &&
+        selectedType.isNotEmpty &&
+        !variant.types.any(
+          (type) => type.trim().toLowerCase() == selectedType,
+        )) {
+      return false;
+    }
+    return true;
+  }
+
   int _resolveLevel(Pokemon pokemon, int requestedLevel) {
     final minimum = max(1, pokemon.minLevelFound);
     if (requestedLevel <= 0) {
@@ -166,33 +228,6 @@ class PokemonGeneratorService {
       minimum,
       requestedLevel,
     ).clamp(1, LevelProgression.maxLevel).toInt();
-  }
-
-  String? _randomFormName(
-    Pokemon pokemon, {
-    required bool includeForms,
-    required Random random,
-  }) {
-    if (!includeForms) return null;
-
-    final forms = <String?>[null];
-    final identities = <String>{'base'};
-    for (final definition in pokemon.formDefinitions) {
-      if (definition.gender != null) continue;
-      if (!PokedexEntry.isTrackableForm(
-        definition.displayName,
-        speciesName: pokemon.name,
-      )) {
-        continue;
-      }
-      final identity = PokedexEntry.formKey(
-        definition.displayName,
-        speciesName: pokemon.name,
-      );
-      if (identity == 'base' || !identities.add(identity)) continue;
-      forms.add(definition.displayName);
-    }
-    return forms[random.nextInt(forms.length)];
   }
 
   String? _randomGender(Pokemon pokemon, Random random) {

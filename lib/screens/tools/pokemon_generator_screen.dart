@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../../models/generated_pokemon.dart';
 import '../../models/move_data.dart';
+import '../../models/pc_pokemon.dart';
 import '../../models/pokemon.dart';
+import '../../models/pokemon_type_localization.dart';
 import '../../models/pokemon_nature.dart';
 import '../../models/team_slot.dart';
 import '../../models/trainer_progression.dart';
@@ -15,6 +17,8 @@ import '../../repositories/team_repository.dart';
 import '../../services/pokemon_generator_service.dart';
 import '../../widgets/navigation/home_leading_button.dart';
 import '../../widgets/pokemon/pokemon_asset_image.dart';
+import '../../widgets/tools/generated_pokemon_batch_card.dart';
+import '../../widgets/tools/pokemon_generator_candidate_selector.dart';
 import '../pokemon/pokemon_detail_screen.dart';
 
 class PokemonGeneratorScreen extends StatefulWidget {
@@ -39,7 +43,9 @@ class _PokemonGeneratorScreenState extends State<PokemonGeneratorScreen> {
   List<String> _types = const [];
   UserProfile? _profile;
   GeneratedPokemon? _generated;
+  List<GeneratedPokemon> _generatedBatch = const [];
   Map<String, MoveData?> _generatedMoves = const {};
+  final Set<int> _selectedPokemonIds = <int>{};
 
   bool _isLoading = true;
   bool _isGenerating = false;
@@ -131,6 +137,7 @@ class _PokemonGeneratorScreenState extends State<PokemonGeneratorScreen> {
         if (!mounted) return;
         setState(() {
           _generated = null;
+          _generatedBatch = const [];
           _generatedMoves = const {};
           _errorMessage =
               'Nessun Pokémon corrisponde ai filtri selezionati. Prova ad ampliare SR, generazioni o livello.';
@@ -142,6 +149,7 @@ class _PokemonGeneratorScreenState extends State<PokemonGeneratorScreen> {
       if (!mounted) return;
       setState(() {
         _generated = generated;
+        _generatedBatch = const [];
         _generatedMoves = moves;
       });
     } catch (error) {
@@ -150,6 +158,164 @@ class _PokemonGeneratorScreenState extends State<PokemonGeneratorScreen> {
     } finally {
       if (mounted) setState(() => _isGenerating = false);
     }
+  }
+
+  void _updateFilters(VoidCallback update) {
+    setState(() {
+      update();
+      final visibleIds = _generatorService
+          .filterPokemon(_pokemon, _filters)
+          .map((pokemon) => pokemon.id)
+          .toSet();
+      _selectedPokemonIds.removeWhere((id) => !visibleIds.contains(id));
+      _generated = null;
+      _generatedBatch = const [];
+      _generatedMoves = const {};
+      _statusMessage = null;
+      _errorMessage = null;
+    });
+  }
+
+  void _toggleCandidate(int pokemonId) {
+    setState(() {
+      if (!_selectedPokemonIds.add(pokemonId)) {
+        _selectedPokemonIds.remove(pokemonId);
+      }
+    });
+  }
+
+  void _selectAllCandidates() {
+    setState(() {
+      _selectedPokemonIds.addAll(_candidates.map((pokemon) => pokemon.id));
+    });
+  }
+
+  void _clearCandidateSelection() {
+    setState(_selectedPokemonIds.clear);
+  }
+
+  Future<bool> _confirmLargeSelection(int count) async {
+    if (count <= 25) return true;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Generare $count Pokémon?'),
+        content: const Text(
+          'La generazione e l’anteprima di un gruppo molto grande possono '
+          'richiedere qualche secondo. Nessun Pokémon verrà ancora salvato.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Annulla'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Continua'),
+          ),
+        ],
+      ),
+    );
+    return confirmed == true;
+  }
+
+  Future<Map<String, MoveData?>> _loadGeneratedMoves(
+    Iterable<GeneratedPokemon> generated,
+  ) {
+    final references = <String>{
+      for (final pokemon in generated) ...pokemon.selectedMoves,
+    };
+    return _moveRepository.getMoves(references);
+  }
+
+  Future<void> _generateSelected() async {
+    if (_isGenerating) return;
+    final selected = _candidates
+        .where((pokemon) => _selectedPokemonIds.contains(pokemon.id))
+        .toList(growable: false);
+    if (selected.isEmpty) {
+      setState(() {
+        _errorMessage = 'Seleziona almeno un Pokémon dall’elenco compatibile.';
+      });
+      return;
+    }
+    if (!await _confirmLargeSelection(selected.length) || !mounted) return;
+
+    setState(() {
+      _isGenerating = true;
+      _statusMessage = null;
+      _errorMessage = null;
+    });
+
+    try {
+      final generated = _generatorService.generateSelected(
+        pokemon: selected,
+        filters: _filters,
+      );
+      final moves = await _loadGeneratedMoves(generated);
+      if (!mounted) return;
+      setState(() {
+        _generated = null;
+        _generatedBatch = generated;
+        _generatedMoves = moves;
+        if (generated.length != selected.length) {
+          _statusMessage =
+              'Generati ${generated.length} Pokémon su ${selected.length} selezionati.';
+        }
+      });
+    } catch (error) {
+      if (!mounted) return;
+      setState(() => _errorMessage = error.toString());
+    } finally {
+      if (mounted) setState(() => _isGenerating = false);
+    }
+  }
+
+  Future<void> _regenerateBatchItem(int index) async {
+    if (_isGenerating || index < 0 || index >= _generatedBatch.length) return;
+    final current = _generatedBatch[index];
+    setState(() {
+      _isGenerating = true;
+      _statusMessage = null;
+      _errorMessage = null;
+    });
+
+    try {
+      final regenerated = _generatorService.generateForPokemon(
+        pokemon: current.basePokemon,
+        filters: _filters,
+      );
+      if (regenerated == null) {
+        if (!mounted) return;
+        setState(() {
+          _errorMessage =
+              '${current.basePokemon.name} non corrisponde più ai filtri attuali.';
+        });
+        return;
+      }
+      final updated = [..._generatedBatch]..[index] = regenerated;
+      final moves = await _loadGeneratedMoves(updated);
+      if (!mounted) return;
+      setState(() {
+        _generatedBatch = updated;
+        _generatedMoves = moves;
+      });
+    } catch (error) {
+      if (!mounted) return;
+      setState(() => _errorMessage = error.toString());
+    } finally {
+      if (mounted) setState(() => _isGenerating = false);
+    }
+  }
+
+  void _removeBatchItem(int index) {
+    if (index < 0 || index >= _generatedBatch.length) return;
+    setState(() {
+      _generatedBatch = [
+        for (var itemIndex = 0; itemIndex < _generatedBatch.length; itemIndex++)
+          if (itemIndex != index) _generatedBatch[itemIndex],
+      ];
+    });
   }
 
   void _resetFilters() {
@@ -162,6 +328,10 @@ class _PokemonGeneratorScreenState extends State<PokemonGeneratorScreen> {
       _level = 0;
       _includeForms = true;
       _shinyChance = 0.01;
+      _selectedPokemonIds.clear();
+      _generated = null;
+      _generatedBatch = const [];
+      _generatedMoves = const {};
       _statusMessage = null;
       _errorMessage = null;
     });
@@ -170,7 +340,10 @@ class _PokemonGeneratorScreenState extends State<PokemonGeneratorScreen> {
   Future<void> _openGeneratedDetails() async {
     final generated = _generated;
     if (generated == null) return;
+    await _openGeneratedDetailsFor(generated);
+  }
 
+  Future<void> _openGeneratedDetailsFor(GeneratedPokemon generated) async {
     await Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => PokemonDetailScreen(
@@ -254,6 +427,119 @@ class _PokemonGeneratorScreenState extends State<PokemonGeneratorScreen> {
     }
   }
 
+  List<String> _resolvedMoveReferences(GeneratedPokemon generated) {
+    return [
+      for (final reference in generated.selectedMoves)
+        _generatedMoves[reference]?.id ?? reference,
+    ];
+  }
+
+  Future<void> _addGeneratedBatchToCollection() async {
+    final profile = _profile;
+    final generatedBatch = [..._generatedBatch];
+    if (profile == null || generatedBatch.isEmpty || _isSaving) return;
+
+    setState(() {
+      _isSaving = true;
+      _statusMessage = null;
+      _errorMessage = null;
+    });
+
+    try {
+      final currentTeam = await _teamRepository.getTeam(profile.id)
+        ..sort((a, b) => a.slotIndex.compareTo(b.slotIndex));
+      final unlocked = TrainerProgression.pokeslotsForLevel(
+        profile.trainerLevel,
+      );
+      final freeSlotIndexes = currentTeam
+          .where((slot) => slot.slotIndex < unlocked && slot.pokemonId == null)
+          .map((slot) => slot.slotIndex)
+          .toList();
+      final updatedTeam = [...currentTeam];
+      final pcAdditions = <PcPokemon>[];
+      var teamCount = 0;
+      final idSeed = DateTime.now().microsecondsSinceEpoch;
+
+      for (var index = 0; index < generatedBatch.length; index++) {
+        final generated = generatedBatch[index];
+        final moves = _resolvedMoveReferences(generated);
+        if (freeSlotIndexes.isNotEmpty) {
+          final slotIndex = freeSlotIndexes.removeAt(0);
+          final replacement = TeamSlot(
+            slotIndex: slotIndex,
+            pokemonId: generated.basePokemon.id,
+            experience: generated.experience,
+            currentHp: generated.maxHp,
+            selectedMoves: moves,
+            isShiny: generated.isShiny,
+            gender: generated.gender,
+            formName: generated.formName,
+            nature: generated.nature,
+            abilities: generated.ability == null
+                ? const []
+                : [generated.ability!],
+          );
+          final teamIndex = updatedTeam.indexWhere(
+            (slot) => slot.slotIndex == slotIndex,
+          );
+          if (teamIndex == -1) {
+            updatedTeam.add(replacement);
+          } else {
+            updatedTeam[teamIndex] = replacement;
+          }
+          teamCount += 1;
+        } else {
+          pcAdditions.add(
+            PcPokemon(
+              id: '$idSeed-$index',
+              pokemonId: generated.basePokemon.id,
+              experience: generated.experience,
+              currentHp: generated.maxHp,
+              selectedMoves: moves,
+              isShiny: generated.isShiny,
+              gender: generated.gender,
+              formName: generated.formName,
+              nature: generated.nature,
+              abilities: generated.ability == null
+                  ? const []
+                  : [generated.ability!],
+              notes: 'Generato dagli Strumenti al livello ${generated.level}.',
+            ),
+          );
+        }
+      }
+
+      if (teamCount > 0) {
+        updatedTeam.sort((a, b) => a.slotIndex.compareTo(b.slotIndex));
+        await _teamRepository.saveTeam(profile.id, updatedTeam);
+      }
+      if (pcAdditions.isNotEmpty) {
+        final existingPc = await _pcRepository.getPokemon(profile.id);
+        await _pcRepository.savePokemon(profile.id, [
+          ...pcAdditions,
+          ...existingPc,
+        ]);
+      }
+
+      final refreshedTeam = await _teamRepository.getTeam(profile.id);
+      if (!mounted) return;
+      setState(() {
+        _team = refreshedTeam
+          ..sort((a, b) => a.slotIndex.compareTo(b.slotIndex));
+        _generatedBatch = const [];
+        _selectedPokemonIds.clear();
+        _statusMessage =
+            '${generatedBatch.length} Pokémon aggiunti: $teamCount in squadra, '
+            '${pcAdditions.length} nel PC.';
+      });
+    } catch (error) {
+      if (!mounted) return;
+      setState(() => _errorMessage = error.toString());
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
+    }
+  }
+
   TeamSlot? _firstFreeUnlockedSlot(UserProfile profile) {
     final unlocked = TrainerProgression.pokeslotsForLevel(profile.trainerLevel);
     final ordered = [..._team]
@@ -309,18 +595,28 @@ class _PokemonGeneratorScreenState extends State<PokemonGeneratorScreen> {
                 shinyChance: _shinyChance,
                 formatSr: _formatSr,
                 shinyLabel: _shinyLabel,
-                onQueryChanged: (value) => setState(() => _query = value),
+                onQueryChanged: (value) => _updateFilters(() => _query = value),
                 onTypeChanged: (value) =>
-                    setState(() => _selectedType = value ?? ''),
-                onSrChanged: (value) => setState(() => _srRange = value),
+                    _updateFilters(() => _selectedType = value ?? ''),
+                onSrChanged: (value) => _updateFilters(() => _srRange = value),
                 onGenerationChanged: (value) =>
-                    setState(() => _generationRange = value),
-                onLevelChanged: (value) => setState(() => _level = value),
+                    _updateFilters(() => _generationRange = value),
+                onLevelChanged: (value) => _updateFilters(() => _level = value),
                 onIncludeFormsChanged: (value) =>
-                    setState(() => _includeForms = value),
+                    _updateFilters(() => _includeForms = value),
                 onShinyChanceChanged: (value) =>
-                    setState(() => _shinyChance = value),
+                    _updateFilters(() => _shinyChance = value),
                 onReset: _resetFilters,
+              ),
+              const SizedBox(height: 12),
+              PokemonGeneratorCandidateSelector(
+                candidates: candidates,
+                selectedIds: _selectedPokemonIds,
+                filters: _filters,
+                generatorService: _generatorService,
+                onToggle: _toggleCandidate,
+                onSelectAll: _selectAllCandidates,
+                onClearSelection: _clearCandidateSelection,
               ),
               if (_errorMessage != null) ...[
                 const SizedBox(height: 12),
@@ -331,22 +627,59 @@ class _PokemonGeneratorScreenState extends State<PokemonGeneratorScreen> {
                 _InlineMessage(message: _statusMessage!),
               ],
               const SizedBox(height: 14),
-              FilledButton.icon(
-                onPressed: candidates.isEmpty || _isGenerating
-                    ? null
-                    : _generate,
-                icon: _isGenerating
-                    ? const SizedBox(
-                        width: 18,
-                        height: 18,
-                        child: CircularProgressIndicator(strokeWidth: 2),
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  final selectedCount = candidates
+                      .where(
+                        (pokemon) => _selectedPokemonIds.contains(pokemon.id),
                       )
-                    : const Icon(Icons.casino_outlined),
-                label: Text(
-                  _isGenerating
-                      ? 'GENERAZIONE...'
-                      : 'GENERA TRA ${candidates.length} POKÉMON',
-                ),
+                      .length;
+                  final randomButton = FilledButton.icon(
+                    onPressed: candidates.isEmpty || _isGenerating
+                        ? null
+                        : _generate,
+                    icon: _isGenerating
+                        ? const SizedBox(
+                            width: 18,
+                            height: 18,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Icon(Icons.casino_outlined),
+                    label: Text(
+                      _isGenerating
+                          ? 'GENERAZIONE...'
+                          : 'GENERA 1 CASUALE TRA ${candidates.length}',
+                    ),
+                  );
+                  final selectedButton = FilledButton.tonalIcon(
+                    onPressed: selectedCount == 0 || _isGenerating
+                        ? null
+                        : _generateSelected,
+                    icon: const Icon(Icons.playlist_add_check),
+                    label: Text(
+                      selectedCount == 0
+                          ? 'GENERA I SELEZIONATI'
+                          : 'GENERA $selectedCount SELEZIONATI',
+                    ),
+                  );
+                  if (constraints.maxWidth < 650) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        randomButton,
+                        const SizedBox(height: 8),
+                        selectedButton,
+                      ],
+                    );
+                  }
+                  return Row(
+                    children: [
+                      Expanded(child: randomButton),
+                      const SizedBox(width: 10),
+                      Expanded(child: selectedButton),
+                    ],
+                  );
+                },
               ),
               if (_generated != null) ...[
                 const SizedBox(height: 18),
@@ -357,6 +690,19 @@ class _PokemonGeneratorScreenState extends State<PokemonGeneratorScreen> {
                   onGenerateAgain: _generate,
                   onOpenDetails: _openGeneratedDetails,
                   onAddToCollection: _addGeneratedToCollection,
+                ),
+              ],
+              if (_generatedBatch.isNotEmpty) ...[
+                const SizedBox(height: 18),
+                GeneratedPokemonBatchCard(
+                  generated: _generatedBatch,
+                  moves: _generatedMoves,
+                  isSaving: _isSaving,
+                  onRegenerate: _regenerateBatchItem,
+                  onOpenDetails: (index) =>
+                      _openGeneratedDetailsFor(_generatedBatch[index]),
+                  onRemove: _removeBatchItem,
+                  onAddAll: _addGeneratedBatchToCollection,
                 ),
               ],
             ],
@@ -507,7 +853,10 @@ class _GeneratorFiltersCard extends StatelessWidget {
                       child: Text('Tutti i tipi'),
                     ),
                     for (final type in types)
-                      DropdownMenuItem(value: type, child: Text(type)),
+                      DropdownMenuItem(
+                        value: type,
+                        child: Text(PokemonTypeLocalization.italianLabel(type)),
+                      ),
                   ],
                   onChanged: onTypeChanged,
                 );

@@ -56,15 +56,27 @@ jobs:
         run: git diff --check
 
       - name: Analyze
-        run: flutter analyze
+        id: analyze
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          flutter analyze 2>&1 | tee tool/encounter-analyze.txt
 
       - name: Run encounter tests
-        run: flutter test test/encounter_generator_service_test.dart
+        id: encounter_tests
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          flutter test test/encounter_generator_service_test.dart 2>&1 | tee tool/encounter-tests.txt
 
       - name: Run full test suite
-        run: flutter test
+        id: full_tests
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          flutter test 2>&1 | tee tool/full-tests.txt
 
-      - name: Commit validated implementation
+      - name: Commit formatted implementation and diagnostics
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -75,3 +87,7 @@ jobs:
             git commit -m "Validate encounter generator implementation"
             git push origin feat/encounter-generator
           fi
+
+      - name: Fail on validation errors
+        if: steps.analyze.outcome == 'failure' || steps.encounter_tests.outcome == 'failure' || steps.full_tests.outcome == 'failure'
+        run: exit 1

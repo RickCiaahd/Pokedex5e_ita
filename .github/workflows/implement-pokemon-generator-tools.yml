@@ -1,0 +1,72 @@
+name: Implement Pokémon generator tools
+
+on:
+  push:
+    branches:
+      - feat/pokemon-generator-tools
+    paths:
+      - '.github/workflows/implement-pokemon-generator-tools.yml'
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Checkout feature branch
+        uses: actions/checkout@v4
+        with:
+          ref: feat/pokemon-generator-tools
+          fetch-depth: 0
+
+      - name: Apply Home tools navigation
+        run: python3 tool/apply_pokemon_generator_home_patch.py
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Format changed Dart files
+        run: |
+          dart format \
+            lib/models/generated_pokemon.dart \
+            lib/services/pokemon_generator_service.dart \
+            lib/screens/tools/tools_screen.dart \
+            lib/screens/tools/pokemon_generator_screen.dart \
+            lib/screens/home/home_screen.dart \
+            test/pokemon_generator_service_test.dart
+
+      - name: Check diff
+        run: git diff --check
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Run generator tests
+        run: flutter test test/pokemon_generator_service_test.dart
+
+      - name: Run full test suite
+        run: flutter test
+
+      - name: Remove temporary implementation files
+        run: |
+          rm -f tool/apply_pokemon_generator_home_patch.py
+          rm -f .github/workflows/implement-pokemon-generator-tools.yml
+
+      - name: Commit validated implementation
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Add Pokémon generator tools"
+          git push origin feat/pokemon-generator-tools

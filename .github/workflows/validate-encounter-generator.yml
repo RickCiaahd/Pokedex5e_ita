@@ -1,0 +1,77 @@
+name: Validate encounter generator
+
+on:
+  push:
+    branches:
+      - feat/encounter-generator
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  validate:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout feature branch
+        uses: actions/checkout@v4
+        with:
+          ref: feat/encounter-generator
+          fetch-depth: 0
+
+      - name: Apply compile fixes
+        run: python3 tool/fix_encounter_generator_compile.py
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Format encounter files
+        run: |
+          dart format \
+            lib/database/hive_boxes.dart \
+            lib/models/encounter_collection.dart \
+            lib/models/generated_encounter.dart \
+            lib/models/profile_backup.dart \
+            lib/repositories/encounter_collection_repository.dart \
+            lib/screens/tools/encounter_collection_editor_screen.dart \
+            lib/screens/tools/encounter_generator_screen.dart \
+            lib/screens/tools/encounter_result_screen.dart \
+            lib/screens/tools/tools_screen.dart \
+            lib/services/encounter_generator_service.dart \
+            lib/services/pokemon_habitat_service.dart \
+            lib/services/profile_backup_service.dart \
+            test/encounter_generator_service_test.dart
+
+      - name: Check diff
+        run: git diff --check
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Run encounter tests
+        run: flutter test test/encounter_generator_service_test.dart
+
+      - name: Run full test suite
+        run: flutter test
+
+      - name: Commit validated implementation
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No generated changes to commit"
+          else
+            git commit -m "Validate encounter generator implementation"
+            git push origin feat/encounter-generator
+          fi

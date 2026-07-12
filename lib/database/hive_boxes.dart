@@ -5,6 +5,7 @@ class HiveBoxes {
   static const pcPokemon = 'pc_pokemon';
   static const bagItems = 'bag_items';
   static const battleSessions = 'battle_sessions';
+  static const encounterCollections = 'encounter_collections';
   static const settings = 'settings';
   static const appState = 'app_state';
 }

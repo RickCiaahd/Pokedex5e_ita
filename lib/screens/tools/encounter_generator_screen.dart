@@ -86,7 +86,9 @@ class _EncounterGeneratorScreenState extends State<EncounterGeneratorScreen> {
     try {
       final profile = await _profileRepository.getActiveProfile();
       final catalog = await _pokemonRepository.getAllPokemon();
-      final collections = await _collectionRepository.getCollections(profile.id);
+      final collections = await _collectionRepository.getCollections(
+        profile.id,
+      );
       final maximumSr = _pokemonGeneratorService.maximumSr(catalog);
       if (!mounted) return;
       setState(() {
@@ -148,10 +150,8 @@ class _EncounterGeneratorScreenState extends State<EncounterGeneratorScreen> {
   Future<void> _openResult(GeneratedEncounter encounter) async {
     await Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) => EncounterResultScreen(
-          encounter: encounter,
-          catalog: _catalog,
-        ),
+        builder: (_) =>
+            EncounterResultScreen(encounter: encounter, catalog: _catalog),
       ),
     );
   }
@@ -204,7 +204,9 @@ class _EncounterGeneratorScreenState extends State<EncounterGeneratorScreen> {
         targetDifficulty: _difficulty,
       );
       if (encounter == null) {
-        _setError('Non è stato possibile generare la composizione selezionata.');
+        _setError(
+          'Non è stato possibile generare la composizione selezionata.',
+        );
         return;
       }
       if (!mounted) return;
@@ -321,7 +323,7 @@ class _EncounterGeneratorScreenState extends State<EncounterGeneratorScreen> {
       if (next <= 0) {
         _manualQuantities.remove(pokemonId);
       } else {
-        _manualQuantities[pokemonId] = next.clamp(1, 12);
+        _manualQuantities[pokemonId] = next.clamp(1, 12).toInt();
       }
       _error = null;
     });
@@ -512,9 +514,9 @@ class _EncounterGeneratorScreenState extends State<EncounterGeneratorScreen> {
             Expanded(
               child: Text(
                 'POKÉMON COMPATIBILI — ${candidates.length}',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w900,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
               ),
             ),
             Text(
@@ -555,7 +557,9 @@ class _EncounterGeneratorScreenState extends State<EncounterGeneratorScreen> {
         ],
         const SizedBox(height: 14),
         FilledButton.icon(
-          onPressed: selectedTotal == 0 || _isGenerating ? null : _generateManual,
+          onPressed: selectedTotal == 0 || _isGenerating
+              ? null
+              : _generateManual,
           icon: const Icon(Icons.playlist_add_check),
           label: Text('GENERA $selectedTotal AVVERSARI'),
         ),
@@ -612,7 +616,10 @@ class _EncounterGeneratorScreenState extends State<EncounterGeneratorScreen> {
                   items: [
                     const DropdownMenuItem(value: 0, child: Text('Automatico')),
                     for (var level = 1; level <= 20; level++)
-                      DropdownMenuItem(value: level, child: Text('Livello $level')),
+                      DropdownMenuItem(
+                        value: level,
+                        child: Text('Livello $level'),
+                      ),
                   ],
                   onChanged: (value) {
                     if (value != null) setState(() => _generatedLevel = value);
@@ -676,8 +683,7 @@ class _EncounterGeneratorScreenState extends State<EncounterGeneratorScreen> {
                     label: 'Allenatori',
                     value: _trainerCount,
                     values: List.generate(8, (index) => index + 1),
-                    onChanged: (value) =>
-                        setState(() => _trainerCount = value),
+                    onChanged: (value) => setState(() => _trainerCount = value),
                   ),
                 ),
                 const SizedBox(width: 10),
@@ -761,8 +767,7 @@ class _EncounterGeneratorScreenState extends State<EncounterGeneratorScreen> {
                   child: Text(PokemonTypeLocalization.italianLabel(type)),
                 ),
             ],
-            onChanged: (value) =>
-                setState(() => _selectedType = value ?? ''),
+            onChanged: (value) => setState(() => _selectedType = value ?? ''),
           ),
           const SizedBox(height: 12),
           Text(
@@ -773,11 +778,8 @@ class _EncounterGeneratorScreenState extends State<EncounterGeneratorScreen> {
             values: _srRange,
             min: 0,
             max: _maximumSr,
-            divisions: (_maximumSr * 2).round().clamp(1, 200),
-            labels: RangeLabels(
-              _format(_srRange.start),
-              _format(_srRange.end),
-            ),
+            divisions: (_maximumSr * 2).round().clamp(1, 200).toInt(),
+            labels: RangeLabels(_format(_srRange.start), _format(_srRange.end)),
             onChanged: (value) => setState(() => _srRange = value),
           ),
           Text(
@@ -941,7 +943,10 @@ class _ManualCandidateCard extends StatelessWidget {
               onPressed: quantity == 0 ? null : onDecrease,
               icon: const Icon(Icons.remove_circle_outline),
             ),
-            Text('$quantity', style: const TextStyle(fontWeight: FontWeight.w900)),
+            Text(
+              '$quantity',
+              style: const TextStyle(fontWeight: FontWeight.w900),
+            ),
             IconButton(
               onPressed: quantity >= 12 ? null : onIncrease,
               icon: const Icon(Icons.add_circle_outline),
@@ -1081,7 +1086,9 @@ class _MessageCard extends StatelessWidget {
         child: Text(
           message,
           style: TextStyle(
-            color: isError ? colors.onErrorContainer : colors.onSecondaryContainer,
+            color: isError
+                ? colors.onErrorContainer
+                : colors.onSecondaryContainer,
           ),
         ),
       ),

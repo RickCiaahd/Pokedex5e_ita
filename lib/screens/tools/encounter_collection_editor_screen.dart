@@ -100,7 +100,7 @@ class _EncounterCollectionEditorScreenState
     final parsed = int.tryParse(rawValue);
     if (parsed == null) return;
     setState(() {
-      _weights[pokemonId] = parsed.clamp(1, 100);
+      _weights[pokemonId] = parsed.clamp(1, 100).toInt();
       _error = null;
     });
   }
@@ -137,10 +137,7 @@ class _EncounterCollectionEditorScreenState
         updatedAt: DateTime.now(),
         entries: [
           for (final entry in _weights.entries)
-            EncounterCollectionEntry(
-              pokemonId: entry.key,
-              weight: entry.value,
-            ),
+            EncounterCollectionEntry(pokemonId: entry.key, weight: entry.value),
         ]..sort((a, b) => b.weight.compareTo(a.weight)),
       );
       await _repository.saveCollection(
@@ -171,7 +168,9 @@ class _EncounterCollectionEditorScreenState
     return Scaffold(
       appBar: AppBar(
         leading: const HomeLeadingButton(),
-        title: Text(widget.collection == null ? 'Nuova raccolta' : 'Modifica raccolta'),
+        title: Text(
+          widget.collection == null ? 'Nuova raccolta' : 'Modifica raccolta',
+        ),
       ),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
@@ -217,7 +216,9 @@ class _EncounterCollectionEditorScreenState
                   if (_searchResults.isNotEmpty) ...[
                     const SizedBox(height: 8),
                     SizedBox(
-                      height: (_searchResults.length * 64.0).clamp(64.0, 260.0),
+                      height: (_searchResults.length * 64.0)
+                          .clamp(64.0, 260.0)
+                          .toDouble(),
                       child: ListView.builder(
                         itemCount: _searchResults.length,
                         itemBuilder: (context, index) {
@@ -306,7 +307,9 @@ class _EncounterCollectionEditorScreenState
                           SizedBox(
                             width: 82,
                             child: TextFormField(
-                              key: ValueKey('$pokemonId-${_weights[pokemonId]}'),
+                              key: ValueKey(
+                                '$pokemonId-${_weights[pokemonId]}',
+                              ),
                               initialValue: '${_weights[pokemonId]}',
                               keyboardType: TextInputType.number,
                               textAlign: TextAlign.center,
@@ -315,7 +318,8 @@ class _EncounterCollectionEditorScreenState
                                 border: OutlineInputBorder(),
                                 isDense: true,
                               ),
-                              onChanged: (value) => _setWeight(pokemonId, value),
+                              onChanged: (value) =>
+                                  _setWeight(pokemonId, value),
                             ),
                           ),
                           IconButton(

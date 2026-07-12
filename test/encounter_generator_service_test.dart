@@ -55,7 +55,10 @@ void main() {
     );
 
     expect(candidates.map((pokemon) => pokemon.name), contains('Zubat'));
-    expect(candidates.map((pokemon) => pokemon.name), isNot(contains('Articuno')));
+    expect(
+      candidates.map((pokemon) => pokemon.name),
+      isNot(contains('Articuno')),
+    );
   });
 
   test('automatic generation respects the requested enemy bounds', () {
@@ -119,9 +122,7 @@ void main() {
     expect(encounter, isNotNull);
     expect(encounter!.members, hasLength(5));
     expect(
-      encounter.members.every(
-        (member) => member.pokemon.basePokemon.id == 19,
-      ),
+      encounter.members.every((member) => member.pokemon.basePokemon.id == 19),
       isTrue,
     );
   });

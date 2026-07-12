@@ -17,7 +17,9 @@ class EncounterCollectionEntry {
     return EncounterCollectionEntry(
       pokemonId: pokemonId ?? this.pokemonId,
       weight: weight ?? this.weight,
-      formName: identical(formName, _unset) ? this.formName : formName as String?,
+      formName: identical(formName, _unset)
+          ? this.formName
+          : formName as String?,
     );
   }
 
@@ -53,7 +55,8 @@ class EncounterCollection {
   final DateTime updatedAt;
   final String notes;
 
-  int get totalWeight => entries.fold(0, (total, entry) => total + entry.weight);
+  int get totalWeight =>
+      entries.fold(0, (total, entry) => total + entry.weight);
 
   bool get isReady =>
       name.trim().isNotEmpty &&
@@ -100,7 +103,8 @@ class EncounterCollection {
             ]
           : const [],
       updatedAt:
-          DateTime.tryParse(json['updatedAt']?.toString() ?? '') ?? DateTime.now(),
+          DateTime.tryParse(json['updatedAt']?.toString() ?? '') ??
+          DateTime.now(),
       notes: json['notes']?.toString() ?? '',
     );
   }

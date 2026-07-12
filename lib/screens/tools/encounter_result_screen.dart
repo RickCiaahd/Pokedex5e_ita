@@ -47,8 +47,7 @@ class _EncounterResultScreenState extends State<EncounterResultScreen> {
 
   Future<void> _loadMoves() async {
     final references = <String>{
-      for (final member in _encounter.members)
-        ...member.pokemon.selectedMoves,
+      for (final member in _encounter.members) ...member.pokemon.selectedMoves,
     };
     final moves = await _moveRepository.getMoves(references);
     if (!mounted) return;
@@ -111,7 +110,9 @@ class _EncounterResultScreenState extends State<EncounterResultScreen> {
       _replaceMembers(members);
       await _loadMoves();
       if (mounted) {
-        setState(() => _message = 'Rigenerati tutti gli avversari non bloccati.');
+        setState(
+          () => _message = 'Rigenerati tutti gli avversari non bloccati.',
+        );
       }
     } finally {
       if (mounted) setState(() => _isWorking = false);
@@ -138,9 +139,11 @@ class _EncounterResultScreenState extends State<EncounterResultScreen> {
 
   void _removeMember(int index) {
     final members = [
-      for (var memberIndex = 0;
-          memberIndex < _encounter.members.length;
-          memberIndex++)
+      for (
+        var memberIndex = 0;
+        memberIndex < _encounter.members.length;
+        memberIndex++
+      )
         if (memberIndex != index) _encounter.members[memberIndex],
     ];
     _replaceMembers(members);

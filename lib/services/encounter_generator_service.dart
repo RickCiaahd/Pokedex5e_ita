@@ -48,8 +48,8 @@ class EncounterGeneratorService {
     final candidates = filterCandidates(catalog, filters);
     if (candidates.isEmpty) return null;
 
-    final safeMin = min(minEnemies, maxEnemies).clamp(1, 12);
-    final safeMax = max(minEnemies, maxEnemies).clamp(safeMin, 12);
+    final safeMin = min(minEnemies, maxEnemies).clamp(1, 12).toInt();
+    final safeMax = max(minEnemies, maxEnemies).clamp(safeMin, 12).toInt();
     final targetBudget = partyBudget(party) * difficulty.targetMultiplier;
     final generated = <GeneratedPokemon>[];
 
@@ -80,7 +80,8 @@ class EncounterGeneratorService {
         );
         final count = (targetBudget / max(0.25, approximateUnit))
             .round()
-            .clamp(safeMin, safeMax);
+            .clamp(safeMin, safeMax)
+            .toInt();
         for (var index = 0; index < count; index++) {
           final result = _pokemonGeneratorService.generateForPokemon(
             pokemon: selected,
@@ -97,13 +98,15 @@ class EncounterGeneratorService {
           final remaining = targetBudget - currentCost;
           if (generated.length >= safeMin && remaining <= 0.15) break;
 
-          final pool = shuffled.where((pokemon) {
-            final level = filters.level <= 0
-                ? max(1, pokemon.minLevelFound)
-                : filters.level;
-            final cost = _candidateCost(pokemon, level);
-            return generated.length < safeMin || cost <= remaining * 1.35;
-          }).toList(growable: false);
+          final pool = shuffled
+              .where((pokemon) {
+                final level = filters.level <= 0
+                    ? max(1, pokemon.minLevelFound)
+                    : filters.level;
+                final cost = _candidateCost(pokemon, level);
+                return generated.length < safeMin || cost <= remaining * 1.35;
+              })
+              .toList(growable: false);
           if (pool.isEmpty) break;
 
           final selected = pool[rng.nextInt(pool.length)];
@@ -118,7 +121,8 @@ class EncounterGeneratorService {
             continue;
           }
           generated.add(result);
-          if (generated.length >= safeMin && encounterCost(generated) >= targetBudget) {
+          if (generated.length >= safeMin &&
+              encounterCost(generated) >= targetBudget) {
             break;
           }
         }
@@ -151,7 +155,7 @@ class EncounterGeneratorService {
     for (final entry in quantities.entries) {
       final pokemon = byId[entry.key];
       if (pokemon == null || entry.value <= 0) continue;
-      for (var index = 0; index < entry.value.clamp(0, 12); index++) {
+      for (var index = 0; index < entry.value.clamp(0, 12).toInt(); index++) {
         final result = _pokemonGeneratorService.generateForPokemon(
           pokemon: pokemon,
           filters: _explicitPokemonFilters(filters),
@@ -188,8 +192,8 @@ class EncounterGeneratorService {
     final available = [...collection.entries];
     final generated = <GeneratedPokemon>[];
     final safeCount = allowDuplicates
-        ? count.clamp(1, 12)
-        : count.clamp(1, min(12, available.length));
+        ? count.clamp(1, 12).toInt()
+        : count.clamp(1, min(12, available.length)).toInt();
 
     for (var index = 0; index < safeCount; index++) {
       if (available.isEmpty) break;
@@ -214,7 +218,9 @@ class EncounterGeneratorService {
       party: party,
       filters: filters,
       targetDifficulty: targetDifficulty,
-      members: [for (final pokemon in generated) EncounterMember(pokemon: pokemon)],
+      members: [
+        for (final pokemon in generated) EncounterMember(pokemon: pokemon),
+      ],
       estimate: estimate(
         party: party,
         generated: generated,
@@ -241,7 +247,9 @@ class EncounterGeneratorService {
       party: party,
       filters: filters,
       targetDifficulty: targetDifficulty,
-      members: [for (final pokemon in generated) EncounterMember(pokemon: pokemon)],
+      members: [
+        for (final pokemon in generated) EncounterMember(pokemon: pokemon),
+      ],
       estimate: estimate(
         party: party,
         generated: generated,
@@ -295,10 +303,13 @@ class EncounterGeneratorService {
   }
 
   double partyBudget(EncounterPartyProfile party) {
-    final active = party.activePokemon.clamp(1, 12);
-    final level = party.averageLevel.clamp(1, 20);
-    final trainers = party.trainerCount.clamp(1, 12);
-    return max(1.0, active * (0.75 + level * 0.55) + trainers * 0.25);
+    final active = party.activePokemon.clamp(1, 12).toInt();
+    final level = party.averageLevel.clamp(1, 20).toInt();
+    final trainers = party.trainerCount.clamp(1, 12).toInt();
+    return max(
+      1.0,
+      active * (0.75 + level * 0.55) + trainers * 0.25,
+    ).toDouble();
   }
 
   double encounterCost(Iterable<GeneratedPokemon> generated) {

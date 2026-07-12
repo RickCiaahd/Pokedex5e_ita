@@ -37,6 +37,8 @@ class _PokemonGeneratorScreenState extends State<PokemonGeneratorScreen> {
   final PokemonGeneratorService _generatorService =
       const PokemonGeneratorService();
   final TextEditingController _searchController = TextEditingController();
+  final GlobalKey _singleResultKey = GlobalKey();
+  final GlobalKey _batchResultKey = GlobalKey();
 
   List<Pokemon> _pokemon = const [];
   List<TeamSlot> _team = const [];
@@ -151,7 +153,10 @@ class _PokemonGeneratorScreenState extends State<PokemonGeneratorScreen> {
         _generated = generated;
         _generatedBatch = const [];
         _generatedMoves = moves;
+        _statusMessage =
+            '${generated.basePokemon.name} generato. Anteprima pronta qui sotto.';
       });
+      _scrollToResult(_singleResultKey);
     } catch (error) {
       if (!mounted) return;
       setState(() => _errorMessage = error.toString());
@@ -228,6 +233,20 @@ class _PokemonGeneratorScreenState extends State<PokemonGeneratorScreen> {
     return _moveRepository.getMoves(references);
   }
 
+  void _scrollToResult(GlobalKey resultKey) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final resultContext = resultKey.currentContext;
+      if (resultContext == null) return;
+      Scrollable.ensureVisible(
+        resultContext,
+        duration: const Duration(milliseconds: 420),
+        curve: Curves.easeOutCubic,
+        alignment: 0.04,
+      );
+    });
+  }
+
   Future<void> _generateSelected() async {
     if (_isGenerating) return;
     final selected = _candidates
@@ -258,11 +277,11 @@ class _PokemonGeneratorScreenState extends State<PokemonGeneratorScreen> {
         _generated = null;
         _generatedBatch = generated;
         _generatedMoves = moves;
-        if (generated.length != selected.length) {
-          _statusMessage =
-              'Generati ${generated.length} Pokémon su ${selected.length} selezionati.';
-        }
+        _statusMessage = generated.length == selected.length
+            ? '${generated.length} Pokémon generati. Anteprima pronta qui sotto.'
+            : 'Generati ${generated.length} Pokémon su ${selected.length} selezionati.';
       });
+      _scrollToResult(_batchResultKey);
     } catch (error) {
       if (!mounted) return;
       setState(() => _errorMessage = error.toString());
@@ -683,26 +702,32 @@ class _PokemonGeneratorScreenState extends State<PokemonGeneratorScreen> {
               ),
               if (_generated != null) ...[
                 const SizedBox(height: 18),
-                _GeneratedPokemonCard(
-                  generated: _generated!,
-                  moves: _generatedMoves,
-                  isSaving: _isSaving,
-                  onGenerateAgain: _generate,
-                  onOpenDetails: _openGeneratedDetails,
-                  onAddToCollection: _addGeneratedToCollection,
+                KeyedSubtree(
+                  key: _singleResultKey,
+                  child: _GeneratedPokemonCard(
+                    generated: _generated!,
+                    moves: _generatedMoves,
+                    isSaving: _isSaving,
+                    onGenerateAgain: _generate,
+                    onOpenDetails: _openGeneratedDetails,
+                    onAddToCollection: _addGeneratedToCollection,
+                  ),
                 ),
               ],
               if (_generatedBatch.isNotEmpty) ...[
                 const SizedBox(height: 18),
-                GeneratedPokemonBatchCard(
-                  generated: _generatedBatch,
-                  moves: _generatedMoves,
-                  isSaving: _isSaving,
-                  onRegenerate: _regenerateBatchItem,
-                  onOpenDetails: (index) =>
-                      _openGeneratedDetailsFor(_generatedBatch[index]),
-                  onRemove: _removeBatchItem,
-                  onAddAll: _addGeneratedBatchToCollection,
+                KeyedSubtree(
+                  key: _batchResultKey,
+                  child: GeneratedPokemonBatchCard(
+                    generated: _generatedBatch,
+                    moves: _generatedMoves,
+                    isSaving: _isSaving,
+                    onRegenerate: _regenerateBatchItem,
+                    onOpenDetails: (index) =>
+                        _openGeneratedDetailsFor(_generatedBatch[index]),
+                    onRemove: _removeBatchItem,
+                    onAddAll: _addGeneratedBatchToCollection,
+                  ),
                 ),
               ],
             ],

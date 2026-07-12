@@ -1,0 +1,101 @@
+name: Validate encounter generator
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout feature branch
+        uses: actions/checkout@v4
+        with:
+          ref: feat/encounter-generator
+          fetch-depth: 0
+
+      - name: Apply final lint fix and clean diagnostics
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path('lib/services/encounter_generator_service.dart')
+          content = path.read_text(encoding='utf-8')
+          old = """  const EncounterGeneratorService({
+              PokemonGeneratorService pokemonGeneratorService =
+                  const PokemonGeneratorService(),
+              PokemonHabitatService habitatService = const PokemonHabitatService(),
+            }) : _pokemonGeneratorService = pokemonGeneratorService,
+                 _habitatService = habitatService;
+          """
+          new = """  const EncounterGeneratorService({
+              this._pokemonGeneratorService = const PokemonGeneratorService(),
+              this._habitatService = const PokemonHabitatService(),
+            });
+          """
+          if old not in content:
+              raise SystemExit('EncounterGeneratorService constructor not found')
+          path.write_text(content.replace(old, new), encoding='utf-8')
+
+          for file_name in (
+              'tool/fix_encounter_generator_compile.py',
+              'tool/encounter-analyze.txt',
+              'tool/encounter-tests.txt',
+              'tool/full-tests.txt',
+          ):
+              Path(file_name).unlink(missing_ok=True)
+          PY
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Format encounter files
+        run: |
+          dart format \
+            lib/database/hive_boxes.dart \
+            lib/models/encounter_collection.dart \
+            lib/models/generated_encounter.dart \
+            lib/models/profile_backup.dart \
+            lib/repositories/encounter_collection_repository.dart \
+            lib/screens/tools/encounter_collection_editor_screen.dart \
+            lib/screens/tools/encounter_generator_screen.dart \
+            lib/screens/tools/encounter_result_screen.dart \
+            lib/screens/tools/tools_screen.dart \
+            lib/services/encounter_generator_service.dart \
+            lib/services/pokemon_habitat_service.dart \
+            lib/services/profile_backup_service.dart \
+            test/encounter_generator_service_test.dart
+
+      - name: Check diff
+        run: git diff --check
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Run encounter tests
+        run: flutter test test/encounter_generator_service_test.dart
+
+      - name: Run full test suite
+        run: flutter test
+
+      - name: Remove temporary workflow
+        run: rm -f .github/workflows/validate-encounter-generator.yml
+
+      - name: Commit validated implementation
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Finalize encounter generator implementation"
+          git push origin feat/encounter-generator

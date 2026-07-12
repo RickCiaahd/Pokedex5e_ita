@@ -190,10 +190,7 @@ void main() {
     expect(generated?.pokemon.sr, 0.5);
 
     expect(
-      service.filterPokemon(
-        [rattata],
-        filters.copyWith(includeForms: false),
-      ),
+      service.filterPokemon([rattata], filters.copyWith(includeForms: false)),
       isEmpty,
     );
   });

@@ -74,10 +74,12 @@ class PokemonGeneratorService {
       }
     }
 
-    return forms.where((formName) {
-      final variant = pokemon.resolveVariant(formName: formName);
-      return _matchesVariantFilters(variant, filters);
-    }).toList(growable: false);
+    return forms
+        .where((formName) {
+          final variant = pokemon.resolveVariant(formName: formName);
+          return _matchesVariantFilters(variant, filters);
+        })
+        .toList(growable: false);
   }
 
   GeneratedPokemon? generate({

@@ -37,10 +37,11 @@ class ToolsScreen extends StatelessWidget {
                       children: [
                         Text(
                           'Strumenti per giocatori e Master',
-                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            color: colorScheme.onPrimaryContainer,
-                            fontWeight: FontWeight.w900,
-                          ),
+                          style: Theme.of(context).textTheme.titleLarge
+                              ?.copyWith(
+                                color: colorScheme.onPrimaryContainer,
+                                fontWeight: FontWeight.w900,
+                              ),
                         ),
                         const SizedBox(height: 6),
                         Text(

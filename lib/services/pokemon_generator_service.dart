@@ -15,44 +15,42 @@ class PokemonGeneratorService {
   ) {
     final query = filters.query.trim().toLowerCase();
     final selectedType = filters.type?.trim().toLowerCase();
-    final minimumGeneration = min(
-      filters.minGeneration,
-      filters.maxGeneration,
-    );
-    final maximumGeneration = max(
-      filters.minGeneration,
-      filters.maxGeneration,
-    );
+    final minimumGeneration = min(filters.minGeneration, filters.maxGeneration);
+    final maximumGeneration = max(filters.minGeneration, filters.maxGeneration);
     final minimumSr = min(filters.minSr, filters.maxSr);
     final maximumSr = max(filters.minSr, filters.maxSr);
 
-    return pokemon.where((candidate) {
-      if (candidate.id <= 0 || candidate.name.trim().isEmpty) return false;
-      final generation = generationForPokemonId(candidate.id);
-      if (generation < minimumGeneration || generation > maximumGeneration) {
-        return false;
-      }
-      if (candidate.sr < minimumSr || candidate.sr > maximumSr) return false;
-      if (filters.level > 0 && candidate.minLevelFound > filters.level) {
-        return false;
-      }
-      if (selectedType != null &&
-          selectedType.isNotEmpty &&
-          !candidate.types.any(
-            (type) => type.trim().toLowerCase() == selectedType,
-          )) {
-        return false;
-      }
-      if (query.isNotEmpty &&
-          !candidate.name.toLowerCase().contains(query) &&
-          !candidate.id.toString().contains(query) &&
-          !candidate.types.any(
-            (type) => type.toLowerCase().contains(query),
-          )) {
-        return false;
-      }
-      return true;
-    }).toList(growable: false)
+    return pokemon
+        .where((candidate) {
+          if (candidate.id <= 0 || candidate.name.trim().isEmpty) return false;
+          final generation = generationForPokemonId(candidate.id);
+          if (generation < minimumGeneration ||
+              generation > maximumGeneration) {
+            return false;
+          }
+          if (candidate.sr < minimumSr || candidate.sr > maximumSr)
+            return false;
+          if (filters.level > 0 && candidate.minLevelFound > filters.level) {
+            return false;
+          }
+          if (selectedType != null &&
+              selectedType.isNotEmpty &&
+              !candidate.types.any(
+                (type) => type.trim().toLowerCase() == selectedType,
+              )) {
+            return false;
+          }
+          if (query.isNotEmpty &&
+              !candidate.name.toLowerCase().contains(query) &&
+              !candidate.id.toString().contains(query) &&
+              !candidate.types.any(
+                (type) => type.toLowerCase().contains(query),
+              )) {
+            return false;
+          }
+          return true;
+        })
+        .toList(growable: false)
       ..sort((a, b) => a.id.compareTo(b.id));
   }
 
@@ -90,11 +88,7 @@ class PokemonGeneratorService {
       ability: ability,
       selectedMoves: selectedMoves,
       isShiny: isShiny,
-      maxHp: maxHpFor(
-        pokemon: resolvedPokemon,
-        level: level,
-        nature: nature,
-      ),
+      maxHp: maxHpFor(pokemon: resolvedPokemon, level: level, nature: nature),
     );
   }
 
@@ -115,8 +109,7 @@ class PokemonGeneratorService {
         );
       }
     }
-    return types.toList(growable: false)
-      ..sort((a, b) => a.compareTo(b));
+    return types.toList(growable: false)..sort((a, b) => a.compareTo(b));
   }
 
   double maximumSr(Iterable<Pokemon> pokemon) {
@@ -169,9 +162,10 @@ class PokemonGeneratorService {
     if (requestedLevel <= 0) {
       return minimum.clamp(1, LevelProgression.maxLevel).toInt();
     }
-    return max(minimum, requestedLevel)
-        .clamp(1, LevelProgression.maxLevel)
-        .toInt();
+    return max(
+      minimum,
+      requestedLevel,
+    ).clamp(1, LevelProgression.maxLevel).toInt();
   }
 
   String? _randomFormName(
@@ -231,7 +225,7 @@ class PokemonGeneratorService {
   double? _percentageFor(String value, String gender) {
     if (value.isEmpty) return null;
     final expression = RegExp(
-      r'(\d+(?:\.\d+)?)\s*%?\s*' + gender + r'\b',
+      '(\\d+(?:\\.\\d+)?)\\s*%?\\s*$gender\\b',
       caseSensitive: false,
     );
     final match = expression.firstMatch(value);

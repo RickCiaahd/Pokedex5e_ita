@@ -21,8 +21,7 @@ class PokemonGeneratorScreen extends StatefulWidget {
   const PokemonGeneratorScreen({super.key});
 
   @override
-  State<PokemonGeneratorScreen> createState() =>
-      _PokemonGeneratorScreenState();
+  State<PokemonGeneratorScreen> createState() => _PokemonGeneratorScreenState();
 }
 
 class _PokemonGeneratorScreenState extends State<PokemonGeneratorScreen> {
@@ -300,7 +299,6 @@ class _PokemonGeneratorScreenState extends State<PokemonGeneratorScreen> {
               const SizedBox(height: 12),
               _GeneratorFiltersCard(
                 searchController: _searchController,
-                query: _query,
                 selectedType: _selectedType,
                 types: _types,
                 srRange: _srRange,
@@ -326,10 +324,7 @@ class _PokemonGeneratorScreenState extends State<PokemonGeneratorScreen> {
               ),
               if (_errorMessage != null) ...[
                 const SizedBox(height: 12),
-                _InlineMessage(
-                  message: _errorMessage!,
-                  isError: true,
-                ),
+                _InlineMessage(message: _errorMessage!, isError: true),
               ],
               if (_statusMessage != null) ...[
                 const SizedBox(height: 12),
@@ -337,7 +332,9 @@ class _PokemonGeneratorScreenState extends State<PokemonGeneratorScreen> {
               ],
               const SizedBox(height: 14),
               FilledButton.icon(
-                onPressed: candidates.isEmpty || _isGenerating ? null : _generate,
+                onPressed: candidates.isEmpty || _isGenerating
+                    ? null
+                    : _generate,
                 icon: _isGenerating
                     ? const SizedBox(
                         width: 18,
@@ -420,7 +417,6 @@ class _GeneratorIntro extends StatelessWidget {
 class _GeneratorFiltersCard extends StatelessWidget {
   const _GeneratorFiltersCard({
     required this.searchController,
-    required this.query,
     required this.selectedType,
     required this.types,
     required this.srRange,
@@ -442,7 +438,6 @@ class _GeneratorFiltersCard extends StatelessWidget {
   });
 
   final TextEditingController searchController;
-  final String query;
   final String selectedType;
   final List<String> types;
   final RangeValues srRange;
@@ -519,11 +514,7 @@ class _GeneratorFiltersCard extends StatelessWidget {
 
                 if (!wide) {
                   return Column(
-                    children: [
-                      search,
-                      const SizedBox(height: 10),
-                      type,
-                    ],
+                    children: [search, const SizedBox(height: 10), type],
                   );
                 }
                 return Row(
@@ -544,7 +535,7 @@ class _GeneratorFiltersCard extends StatelessWidget {
               values: srRange,
               min: 0,
               max: maximumSr,
-              divisions: (maximumSr * 2).round().clamp(1, 200),
+              divisions: (maximumSr * 2).round().clamp(1, 200).toInt(),
               labels: RangeLabels(
                 formatSr(srRange.start),
                 formatSr(srRange.end),
@@ -586,7 +577,9 @@ class _GeneratorFiltersCard extends StatelessWidget {
                   SwitchListTile(
                     contentPadding: EdgeInsets.zero,
                     title: const Text('Forme permanenti'),
-                    subtitle: const Text('Esclude Mega, Gigamax e altre forme temporanee.'),
+                    subtitle: const Text(
+                      'Esclude Mega, Gigamax e altre forme temporanee.',
+                    ),
                     value: includeForms,
                     onChanged: onIncludeFormsChanged,
                   ),
@@ -793,9 +786,9 @@ class _GeneratedSummary extends StatelessWidget {
             Expanded(
               child: Text(
                 generated.basePokemon.name.toUpperCase(),
-                style: Theme.of(
-                  context,
-                ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w900),
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.w900,
+                ),
               ),
             ),
             if (generated.isShiny)
@@ -825,10 +818,7 @@ class _GeneratedSummary extends StatelessWidget {
             _InfoChip(label: 'PF', value: '${generated.maxHp}'),
             _InfoChip(label: 'Sesso', value: _genderLabel(generated.gender)),
             _InfoChip(label: 'Natura', value: generated.nature),
-            _InfoChip(
-              label: 'Abilità',
-              value: generated.ability ?? 'Nessuna',
-            ),
+            _InfoChip(label: 'Abilità', value: generated.ability ?? 'Nessuna'),
           ],
         ),
         const SizedBox(height: 12),
@@ -934,8 +924,12 @@ class _InlineMessage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    final background = isError ? colors.errorContainer : colors.primaryContainer;
-    final foreground = isError ? colors.onErrorContainer : colors.onPrimaryContainer;
+    final background = isError
+        ? colors.errorContainer
+        : colors.primaryContainer;
+    final foreground = isError
+        ? colors.onErrorContainer
+        : colors.onPrimaryContainer;
 
     return DecoratedBox(
       decoration: BoxDecoration(
@@ -951,7 +945,9 @@ class _InlineMessage extends StatelessWidget {
               color: foreground,
             ),
             const SizedBox(width: 10),
-            Expanded(child: Text(message, style: TextStyle(color: foreground))),
+            Expanded(
+              child: Text(message, style: TextStyle(color: foreground)),
+            ),
           ],
         ),
       ),

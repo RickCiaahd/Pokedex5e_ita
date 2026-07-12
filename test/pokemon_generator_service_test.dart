@@ -123,11 +123,7 @@ void main() {
           displayName: 'Alolan',
           pokemon: alolan,
         ),
-        PokemonFormDefinition(
-          key: 'mega',
-          displayName: 'Mega',
-          pokemon: mega,
-        ),
+        PokemonFormDefinition(key: 'mega', displayName: 'Mega', pokemon: mega),
       ],
     );
 

@@ -65,9 +65,9 @@ class PokemonGeneratorCandidateSelector extends StatelessWidget {
                 const Spacer(),
                 Text(
                   '$selectedVisible/${candidates.length}',
-                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                    fontWeight: FontWeight.w900,
-                  ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w900),
                 ),
               ],
             ),
@@ -147,9 +147,7 @@ class _CandidateRow extends StatelessWidget {
         ? pokemon.sr
         : srValues.reduce((a, b) => a > b ? a : b);
     final previewForm = formNames.length == 1 ? formNames.single : null;
-    final formLabel = formNames
-        .map((name) => name ?? 'Base')
-        .join(', ');
+    final formLabel = formNames.map((name) => name ?? 'Base').join(', ');
     final srLabel = minimumSr == maximumSr
         ? _formatSr(minimumSr)
         : '${_formatSr(minimumSr)}–${_formatSr(maximumSr)}';

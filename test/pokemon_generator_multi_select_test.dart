@@ -98,12 +98,16 @@ void main() {
     );
 
     expect(generated, hasLength(3));
-    expect(
-      generated.map((result) => result.basePokemon.id).toSet(),
-      {19, 41, 74},
-    );
+    expect(generated.map((result) => result.basePokemon.id).toSet(), {
+      19,
+      41,
+      74,
+    });
     expect(generated.every((result) => result.level == 5), isTrue);
     expect(generated.every((result) => result.isShiny), isTrue);
-    expect(generated.every((result) => result.selectedMoves.isNotEmpty), isTrue);
+    expect(
+      generated.every((result) => result.selectedMoves.isNotEmpty),
+      isTrue,
+    );
   });
 }

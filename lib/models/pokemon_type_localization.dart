@@ -108,8 +108,8 @@ class PokemonTypeLocalization {
   }
 
   static int compareByItalianLabel(String first, String second) {
-    return italianLabel(first).toLowerCase().compareTo(
-      italianLabel(second).toLowerCase(),
-    );
+    return italianLabel(
+      first,
+    ).toLowerCase().compareTo(italianLabel(second).toLowerCase());
   }
 }

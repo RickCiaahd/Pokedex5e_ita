@@ -73,9 +73,7 @@ class GeneratedPokemonBatchCard extends StatelessWidget {
                     )
                   : const Icon(Icons.add_circle_outline),
               label: Text(
-                isSaving
-                    ? 'SALVATAGGIO...'
-                    : 'AGGIUNGI TUTTI A SQUADRA / PC',
+                isSaving ? 'SALVATAGGIO...' : 'AGGIUNGI TUTTI A SQUADRA / PC',
               ),
             ),
             const SizedBox(height: 6),
@@ -165,9 +163,9 @@ class _GeneratedBatchTile extends StatelessWidget {
           alignment: Alignment.centerLeft,
           child: Text(
             'Mosse',
-            style: Theme.of(context).textTheme.labelLarge?.copyWith(
-              fontWeight: FontWeight.w900,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w900),
           ),
         ),
         const SizedBox(height: 4),

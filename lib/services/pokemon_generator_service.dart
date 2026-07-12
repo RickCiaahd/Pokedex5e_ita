@@ -5,6 +5,7 @@ import '../models/level_progression.dart';
 import '../models/pokedex_entry.dart';
 import '../models/pokemon.dart';
 import '../models/pokemon_nature.dart';
+import '../models/pokemon_type_localization.dart';
 
 class PokemonGeneratorService {
   const PokemonGeneratorService();
@@ -37,9 +38,12 @@ class PokemonGeneratorService {
           for (final formName in eligibleForms) {
             if (formName?.toLowerCase().contains(query) == true) return true;
             final variant = candidate.resolveVariant(formName: formName);
-            if (variant.types.any(
-              (type) => type.toLowerCase().contains(query),
-            )) {
+            if (variant.types.any((type) {
+              return type.toLowerCase().contains(query) ||
+                  PokemonTypeLocalization.italianLabel(
+                    type,
+                  ).toLowerCase().contains(query);
+            })) {
               return true;
             }
           }
@@ -92,11 +96,46 @@ class PokemonGeneratorService {
     if (candidates.isEmpty) return null;
 
     final basePokemon = candidates[rng.nextInt(candidates.length)];
+    return _generateCandidate(basePokemon, filters, rng);
+  }
+
+  GeneratedPokemon? generateForPokemon({
+    required Pokemon pokemon,
+    required PokemonGeneratorFilters filters,
+    Random? random,
+  }) {
+    if (filterPokemon([pokemon], filters).isEmpty) return null;
+    return _generateCandidate(pokemon, filters, random ?? Random());
+  }
+
+  List<GeneratedPokemon> generateSelected({
+    required Iterable<Pokemon> pokemon,
+    required PokemonGeneratorFilters filters,
+    Random? random,
+  }) {
+    final rng = random ?? Random();
+    final generated = <GeneratedPokemon>[];
+    for (final candidate in pokemon) {
+      final result = generateForPokemon(
+        pokemon: candidate,
+        filters: filters,
+        random: rng,
+      );
+      if (result != null) generated.add(result);
+    }
+    return generated;
+  }
+
+  GeneratedPokemon? _generateCandidate(
+    Pokemon basePokemon,
+    PokemonGeneratorFilters filters,
+    Random random,
+  ) {
     final eligibleForms = eligibleFormNames(basePokemon, filters);
     if (eligibleForms.isEmpty) return null;
-    final formName = eligibleForms[rng.nextInt(eligibleForms.length)];
+    final formName = eligibleForms[random.nextInt(eligibleForms.length)];
     final formPokemon = basePokemon.resolveVariant(formName: formName);
-    var gender = _randomGender(formPokemon, rng);
+    var gender = _randomGender(formPokemon, random);
     var resolvedPokemon = basePokemon.resolveVariant(
       formName: formName,
       gender: gender,
@@ -107,11 +146,11 @@ class PokemonGeneratorService {
     }
 
     final level = _resolveLevel(resolvedPokemon, filters.level);
-    final nature = _randomNature(rng);
-    final ability = _randomAbility(resolvedPokemon, rng);
-    final selectedMoves = _randomMoves(resolvedPokemon, level, rng);
+    final nature = _randomNature(random);
+    final ability = _randomAbility(resolvedPokemon, random);
+    final selectedMoves = _randomMoves(resolvedPokemon, level, random);
     final shinyChance = filters.shinyChance.clamp(0.0, 1.0).toDouble();
-    final isShiny = rng.nextDouble() < shinyChance;
+    final isShiny = random.nextDouble() < shinyChance;
 
     return GeneratedPokemon(
       basePokemon: basePokemon,
@@ -128,9 +167,21 @@ class PokemonGeneratorService {
   }
 
   List<String> availableTypes(Iterable<Pokemon> pokemon) {
-    final types = <String>{};
+    final typesByKey = <String, String>{};
+
+    void addTypes(Iterable<String> types) {
+      for (final type in types) {
+        if (type.trim().isEmpty) continue;
+        final key = PokemonTypeLocalization.canonicalKey(type);
+        typesByKey.putIfAbsent(
+          key,
+          () => PokemonTypeLocalization.englishValue(type),
+        );
+      }
+    }
+
     for (final candidate in pokemon) {
-      types.addAll(candidate.types.where((type) => type.trim().isNotEmpty));
+      addTypes(candidate.types);
       for (final definition in candidate.formDefinitions) {
         if (definition.gender == null &&
             !PokedexEntry.isTrackableForm(
@@ -139,12 +190,12 @@ class PokemonGeneratorService {
             )) {
           continue;
         }
-        types.addAll(
-          definition.pokemon.types.where((type) => type.trim().isNotEmpty),
-        );
+        addTypes(definition.pokemon.types);
       }
     }
-    return types.toList(growable: false)..sort((a, b) => a.compareTo(b));
+
+    return typesByKey.values.toList(growable: false)
+      ..sort(PokemonTypeLocalization.compareByItalianLabel);
   }
 
   double maximumSr(Iterable<Pokemon> pokemon) {
@@ -210,11 +261,11 @@ class PokemonGeneratorService {
       return false;
     }
 
-    final selectedType = filters.type?.trim().toLowerCase();
+    final selectedType = filters.type?.trim();
     if (selectedType != null &&
         selectedType.isNotEmpty &&
         !variant.types.any(
-          (type) => type.trim().toLowerCase() == selectedType,
+          (type) => PokemonTypeLocalization.sameType(type, selectedType),
         )) {
       return false;
     }

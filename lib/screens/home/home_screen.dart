@@ -8,6 +8,7 @@ import '../pokedex/pokedex_screen.dart';
 import '../profile/profiles_screen.dart';
 import '../team/team_selection_screen.dart';
 import '../trainer/trainer_sheet_screen.dart';
+import '../tools/tools_screen.dart';
 import '../../models/pokedex_entry.dart';
 import '../../models/pokemon.dart';
 import '../../models/trainer_progression.dart';
@@ -195,6 +196,18 @@ class _HomeScreenState extends State<HomeScreen> {
                   Navigator.of(
                     context,
                   ).push(MaterialPageRoute(builder: (_) => const BagScreen()));
+                },
+              ),
+              _HomeActionButton(
+                icon: Icons.construction,
+                title: 'Strumenti',
+                subtitle:
+                    'Genera Pokémon e prepara i futuri strumenti per giocatori e Master.',
+                onTap: () async {
+                  await Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const ToolsScreen()),
+                  );
+                  await _loadDashboard();
                 },
               ),
               _HomeActionButton(

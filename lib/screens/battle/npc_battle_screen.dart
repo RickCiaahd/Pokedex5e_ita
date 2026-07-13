@@ -525,7 +525,6 @@ class _NpcBattleScreenState extends State<NpcBattleScreen> {
     final participant = _selectedParticipant;
     final state = _focusedState;
     final generated = _generatedFor(state);
-    final pokemon = generated.pokemon;
     final activeCount = _session.participants.fold<int>(
       0,
       (sum, trainer) => sum + trainer.activeSlotIndices.length,
@@ -1116,12 +1115,12 @@ class _NpcMoveCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final damage = move?.damageForLevel(level)?.label;
-    final details = [
-      if (move != null) move!.type,
-      if (damage != null) damage,
-      if (move != null && move!.range != '-') move!.range,
-      if (move != null && move!.save != null) 'TS ${move!.save}',
-    ].join(' · ');
+    final details = <String?>[
+      move?.type,
+      damage,
+      move?.range == '-' ? null : move?.range,
+      move?.save == null ? null : 'TS ${move!.save}',
+    ].whereType<String>().join(' · ');
     return Card(
       child: ExpansionTile(
         title: Text(
@@ -1172,7 +1171,7 @@ class _StatusDialog extends StatefulWidget {
 
 class _StatusDialogState extends State<_StatusDialog> {
   late String? _nonVolatile = widget.nonVolatile;
-  late Set<String> _volatile = {...widget.volatile};
+  late final Set<String> _volatile = {...widget.volatile};
 
   @override
   Widget build(BuildContext context) {
@@ -1188,8 +1187,11 @@ class _StatusDialogState extends State<_StatusDialog> {
               labelText: 'Status persistente',
               border: OutlineInputBorder(),
             ),
-            items: const [
-              DropdownMenuItem<String?>(value: null, child: Text('Nessuno')),
+            items: [
+              const DropdownMenuItem<String?>(
+                value: null,
+                child: Text('Nessuno'),
+              ),
               for (final status in _nonVolatileStatuses)
                 DropdownMenuItem<String?>(value: status, child: Text(status)),
             ],

@@ -153,7 +153,9 @@ class MasterBattleParticipant {
       for (final value in _readList(json['activeSlotIndices'])) _readInt(value),
     }.where((slot) => team.any((pokemon) => pokemon.slotIndex == slot)).toSet();
     if (active.isEmpty && team.isNotEmpty) active.add(team.first.slotIndex);
-    while (active.length > safeLimit) active.remove(active.last);
+    while (active.length > safeLimit) {
+      active.remove(active.last);
+    }
 
     return MasterBattleParticipant(
       trainerId: json['trainerId']?.toString() ?? '',

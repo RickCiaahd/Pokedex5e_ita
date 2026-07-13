@@ -23,4 +23,4 @@ warning • The value of the local variable 'pokemon' isn't used. Try removing t
 warning • Unused import: '../../models/master_battle_session.dart'. Try removing the import directive • lib/screens/tools/npc_trainer_library_screen.dart:5:8 • unused_import
    info • Don't use 'BuildContext's across async gaps. Try rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check • lib/screens/tools/npc_trainer_library_screen.dart:263:7 • use_build_context_synchronously
 
-8 issues found. (ran in 11.7s)
+8 issues found. (ran in 14.7s)

@@ -24,11 +24,11 @@ Try `flutter pub outdated` for more information.
 ✅ /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/npc_trainer_generator_service_test.dart: trainer rank increases the maximum controllable SR
 ✅ /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/npc_trainer_generator_service_test.dart: themed generation fails clearly when the type has no candidates
 ::group::✅ /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/profile_backup_service_test.dart: imports every section with a new ID and deletes it completely
-POKEDEX REPOSITORY: salvato pokemon 25 seen=true caught=true forms=1 profilo=1783955671863371
-POKEDEX REPOSITORY: caricate 2 entries per profilo 1783955671863371
-POKEDEX REPOSITORY: salvato pokemon 1 seen=true caught=true forms=1 profilo=1783955672009527
-POKEDEX REPOSITORY: salvato pokemon 25 seen=true caught=true forms=1 profilo=1783955672009527
-POKEDEX REPOSITORY: caricate 0 entries per profilo 1783955672009527
+POKEDEX REPOSITORY: salvato pokemon 25 seen=true caught=true forms=1 profilo=1783955925426894
+POKEDEX REPOSITORY: caricate 2 entries per profilo 1783955925426894
+POKEDEX REPOSITORY: salvato pokemon 1 seen=true caught=true forms=1 profilo=1783955925557204
+POKEDEX REPOSITORY: salvato pokemon 25 seen=true caught=true forms=1 profilo=1783955925557204
+POKEDEX REPOSITORY: caricate 0 entries per profilo 1783955925557204
 ::endgroup::
 ✅ /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_form_mechanics_test.dart: Alolan Rattata applies mechanical variant data
 ✅ /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_form_mechanics_test.dart: Dusk Mane Necrozma deep-merges stats and types

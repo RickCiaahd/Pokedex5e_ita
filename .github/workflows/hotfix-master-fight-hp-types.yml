@@ -1,0 +1,242 @@
+name: Hotfix Master fight HP and move types
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  hotfix:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Apply fixes
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path('lib/screens/battle/npc_battle_screen.dart')
+          source = path.read_text(encoding='utf-8')
+
+          old_edit = '''  Future<void> _editHp() async {
+    final state = _focusedState;
+    final controller = TextEditingController(text: '${state.currentHp}');
+    final raw = await showDialog<String>(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Modifica PF'),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          keyboardType: TextInputType.number,
+          decoration: InputDecoration(
+            labelText: 'PF attuali',
+            helperText: 'Massimo ${state.pokemon.maxHp}',
+          ),
+          onSubmitted: (value) => Navigator.of(context).pop(value),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Annulla'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(controller.text),
+            child: const Text('Conferma'),
+          ),
+        ],
+      ),
+    );
+    controller.dispose();
+    if (raw == null) return;
+    final value = int.tryParse(raw.trim());
+    if (value == null) return;
+    await _updateFocusedState(
+      state.copyWith(currentHp: value.clamp(0, state.pokemon.maxHp).toInt()),
+    );
+  }
+'''
+          new_edit = '''  Future<void> _editHp() async {
+    final state = _focusedState;
+    final raw = await showDialog<String>(
+      context: context,
+      builder: (_) => _NpcHpInputDialog(
+        currentHp: state.currentHp,
+        maxHp: state.pokemon.maxHp,
+      ),
+    );
+    if (!mounted || raw == null) return;
+
+    final input = raw.trim();
+    final value = int.tryParse(input);
+    if (value == null) return;
+    final updatedHp = input.startsWith('+') || input.startsWith('-')
+        ? (state.currentHp + value).clamp(0, state.pokemon.maxHp).toInt()
+        : value.clamp(0, state.pokemon.maxHp).toInt();
+    await _updateFocusedState(state.copyWith(currentHp: updatedHp));
+  }
+'''
+          if source.count(old_edit) != 1:
+              raise SystemExit('HP edit block not found exactly once')
+          source = source.replace(old_edit, new_edit, 1)
+
+          old_move = '''  @override
+  Widget build(BuildContext context) {
+    final damage = move?.damageForLevel(level)?.label;
+    final details = <String?>[
+      move?.type,
+      damage,
+      move?.range == '-' ? null : move?.range,
+      move?.save == null ? null : 'TS ${move!.save}',
+    ].whereType<String>().join(' · ');
+    return Card(
+      child: ExpansionTile(
+        title: Text(
+          move?.name ?? reference,
+          style: const TextStyle(fontWeight: FontWeight.w900),
+        ),
+        subtitle: Text(
+          maxPp <= 0 ? details : '$details · PP $remainingPp/$maxPp',
+        ),
+'''
+          new_move = '''  @override
+  Widget build(BuildContext context) {
+    final move = this.move;
+    final damage = move?.damageForLevel(level)?.label;
+    final details = <String?>[
+      damage,
+      move?.range == '-' ? null : move?.range,
+      move?.save == null ? null : 'TS ${move.save}',
+    ].whereType<String>().join(' · ');
+    return Card(
+      child: ExpansionTile(
+        title: Text(
+          move?.name ?? reference,
+          style: const TextStyle(fontWeight: FontWeight.w900),
+        ),
+        subtitle: Padding(
+          padding: const EdgeInsets.only(top: 6),
+          child: Wrap(
+            spacing: 8,
+            runSpacing: 4,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              if (move != null) PokemonTypeBadge(type: move.type, height: 18),
+              if (details.isNotEmpty) Text(details),
+              if (maxPp > 0) Text('PP $remainingPp/$maxPp'),
+            ],
+          ),
+        ),
+'''
+          if source.count(old_move) != 1:
+              raise SystemExit('Move card block not found exactly once')
+          source = source.replace(old_move, new_move, 1)
+
+          marker = 'class _StatusDialog extends StatefulWidget {'
+          hp_dialog = '''class _NpcHpInputDialog extends StatefulWidget {
+  const _NpcHpInputDialog({required this.currentHp, required this.maxHp});
+
+  final int currentHp;
+  final int maxHp;
+
+  @override
+  State<_NpcHpInputDialog> createState() => _NpcHpInputDialogState();
+}
+
+class _NpcHpInputDialogState extends State<_NpcHpInputDialog> {
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: '${widget.currentHp}');
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Modifica PF'),
+      content: TextField(
+        controller: _controller,
+        autofocus: true,
+        keyboardType: const TextInputType.numberWithOptions(signed: true),
+        decoration: InputDecoration(
+          labelText: 'PF o modifica',
+          helperText:
+              'Esempi: -12, +8 oppure 35. Attuali ${widget.currentHp}/${widget.maxHp}',
+        ),
+        onSubmitted: (value) => Navigator.of(context).pop(value),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Annulla'),
+        ),
+        FilledButton(
+          onPressed: () => Navigator.of(context).pop(_controller.text),
+          child: const Text('Conferma'),
+        ),
+      ],
+    );
+  }
+}
+
+'''
+          if marker not in source:
+              raise SystemExit('Status dialog marker not found')
+          if 'class _NpcHpInputDialog extends StatefulWidget' not in source:
+              source = source.replace(marker, hp_dialog + marker, 1)
+
+          path.write_text(source, encoding='utf-8')
+          PY
+
+      - name: Remove temporary workflow
+        run: rm .github/workflows/hotfix-master-fight-hp-types.yml
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Format changed file
+        run: dart format lib/screens/battle/npc_battle_screen.dart
+
+      - name: Check diff
+        run: git diff --check
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Run focused tests
+        run: flutter test test/npc_library_master_battle_test.dart
+
+      - name: Run full test suite
+        run: flutter test
+
+      - name: Commit validated hotfix
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Fix Master fight HP dialog and move type labels"
+          git push origin main

@@ -9,6 +9,7 @@ import '../../repositories/pokemon_repository.dart';
 import '../../repositories/profile_repository.dart';
 import '../../repositories/saved_encounter_repository.dart';
 import '../../services/saved_encounter_mapper_service.dart';
+import '../../widgets/battle/wild_master_fight_launcher.dart';
 import '../../widgets/navigation/home_leading_button.dart';
 import 'encounter_result_screen.dart';
 
@@ -92,6 +93,29 @@ class _EncounterLibraryScreenState extends State<EncounterLibraryScreen> {
         ),
       );
       await _load();
+    } catch (error) {
+      _setMessage(_friendlyError(error), isError: true);
+    } finally {
+      if (mounted) setState(() => _isBusy = false);
+    }
+  }
+
+  Future<void> _startFight(SavedEncounter saved) async {
+    final profile = _profile;
+    if (profile == null || _isBusy) return;
+    setState(() => _isBusy = true);
+    try {
+      final encounter = _mapper.toGenerated(saved: saved, catalog: _catalog);
+      final launched = await launchWildMasterFight(
+        context: context,
+        profileId: profile.id,
+        encounter: encounter,
+        catalog: _catalog,
+      );
+      if (!mounted || !launched) return;
+      _setMessage(
+        'Il fight di ${saved.name} è stato salvato e può essere ripreso dagli Strumenti del Master.',
+      );
     } catch (error) {
       _setMessage(_friendlyError(error), isError: true);
     } finally {
@@ -239,6 +263,7 @@ class _EncounterLibraryScreenState extends State<EncounterLibraryScreen> {
                   pokemonById: _pokemonById,
                   isBusy: _isBusy,
                   onOpen: () => _openEncounter(saved),
+                  onFight: () => _startFight(saved),
                   onDuplicate: () => _duplicateEncounter(saved),
                   onDelete: () => _deleteEncounter(saved),
                 ),
@@ -303,6 +328,7 @@ class _SavedEncounterCard extends StatelessWidget {
     required this.pokemonById,
     required this.isBusy,
     required this.onOpen,
+    required this.onFight,
     required this.onDuplicate,
     required this.onDelete,
   });
@@ -311,6 +337,7 @@ class _SavedEncounterCard extends StatelessWidget {
   final Pokemon? Function(int) pokemonById;
   final bool isBusy;
   final VoidCallback onOpen;
+  final VoidCallback onFight;
   final VoidCallback onDuplicate;
   final VoidCallback onDelete;
 
@@ -398,11 +425,25 @@ class _SavedEncounterCard extends StatelessWidget {
               const SizedBox(height: 10),
               Row(
                 children: [
-                  Text(
-                    'Aggiornato ${_formatDate(saved.updatedAt)}',
-                    style: Theme.of(context).textTheme.bodySmall,
+                  Expanded(
+                    child: Text(
+                      'Aggiornato ${_formatDate(saved.updatedAt)}',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
                   ),
-                  const Spacer(),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Wrap(
+                alignment: WrapAlignment.end,
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  OutlinedButton.icon(
+                    onPressed: isBusy ? null : onFight,
+                    icon: const Icon(Icons.sports_mma_outlined),
+                    label: const Text('FIGHT DEL MASTER'),
+                  ),
                   FilledButton.tonalIcon(
                     onPressed: isBusy ? null : onOpen,
                     icon: const Icon(Icons.open_in_new),

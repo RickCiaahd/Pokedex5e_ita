@@ -61,28 +61,12 @@ jobs:
           PY
 
       - name: Apply integration
-        id: integration
-        continue-on-error: true
-        run: |
-          set -o pipefail
-          python3 tool/apply_npc_library_master_fight.py 2>&1 | tee npc-integration.txt
-
-      - name: Upload integration diagnostics
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: npc-integration
-          path: npc-integration.txt
-
-      - name: Stop after integration failure
-        if: steps.integration.outcome == 'failure'
-        run: exit 1
+        run: python3 tool/apply_npc_library_master_fight.py
 
       - name: Remove temporary automation
         run: |
           rm tool/apply_npc_library_master_fight.py
           rm .github/workflows/validate-npc-library-master-fight.yml
-          rm npc-integration.txt
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
@@ -115,19 +99,34 @@ jobs:
       - name: Check diff
         run: git diff --check
 
+      - name: Commit formatted implementation
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Apply NPC library and multi-trainer master fight"
+          git push origin feat/npc-library-master-fight
+
       - name: Analyze
-        run: flutter analyze
+        id: analyze
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          flutter analyze 2>&1 | tee npc-master-analyze.txt
+
+      - name: Upload analyze diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: npc-master-analyze
+          path: npc-master-analyze.txt
+
+      - name: Stop after analyze failure
+        if: steps.analyze.outcome == 'failure'
+        run: exit 1
 
       - name: Run NPC library and fight tests
         run: flutter test test/npc_library_master_battle_test.dart
 
       - name: Run full test suite
         run: flutter test
-
-      - name: Commit validated implementation
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          git commit -m "Add NPC library and multi-trainer master fight"
-          git push origin feat/npc-library-master-fight

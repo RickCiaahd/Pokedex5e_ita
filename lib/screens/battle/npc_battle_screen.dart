@@ -1143,7 +1143,7 @@ class _NpcMoveCard extends StatelessWidget {
           if (move != null)
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-              child: Text(move!.description),
+              child: Text(move.description),
             ),
         ],
       ),

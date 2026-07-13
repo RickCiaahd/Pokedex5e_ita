@@ -24,7 +24,9 @@ jobs:
           fetch-depth: 0
 
       - name: Prepare implementation
-        run: python3 tool/prepare_saved_library_apply.py
+        run: |
+          python3 tool/prepare_saved_library_apply.py
+          python3 tool/patch_saved_library_apply_script.py
 
       - name: Apply implementation
         id: apply
@@ -47,6 +49,7 @@ jobs:
       - name: Remove temporary automation
         run: |
           rm tool/prepare_saved_library_apply.py
+          rm tool/patch_saved_library_apply_script.py
           rm tool/apply_saved_encounter_library.py
           rm .github/workflows/apply-saved-encounter-library.yml
           rm saved-library-apply.log

@@ -24,12 +24,28 @@ jobs:
           fetch-depth: 0
 
       - name: Apply integration
-        run: python3 tool/apply_npc_library_master_fight.py
+        id: integration
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          python3 tool/apply_npc_library_master_fight.py 2>&1 | tee npc-integration.txt
+
+      - name: Upload integration diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: npc-integration
+          path: npc-integration.txt
+
+      - name: Stop after integration failure
+        if: steps.integration.outcome == 'failure'
+        run: exit 1
 
       - name: Remove temporary automation
         run: |
           rm tool/apply_npc_library_master_fight.py
           rm .github/workflows/validate-npc-library-master-fight.yml
+          rm npc-integration.txt
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2

@@ -207,7 +207,7 @@ class _ProfilesScreenState extends State<ProfilesScreen> {
         title: const Text('Eliminare profilo?'),
         content: Text(
           'Vuoi eliminare ${profile.name}? Verranno rimossi scheda allenatore, '
-          'Pokédex, squadra, PC, zaino, impostazioni, incontri e battaglia salvata.',
+          'Pokédex, squadra, PC, zaino, impostazioni, incontri, Allenatori PNG e battaglie salvate.',
         ),
         actions: [
           TextButton(

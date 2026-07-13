@@ -4,6 +4,7 @@ import '../../widgets/navigation/home_leading_button.dart';
 import 'encounter_generator_screen.dart';
 import 'encounter_library_screen.dart';
 import 'npc_trainer_generator_screen.dart';
+import 'npc_trainer_library_screen.dart';
 import 'pokemon_generator_screen.dart';
 
 class ToolsScreen extends StatelessWidget {
@@ -116,6 +117,21 @@ class ToolsScreen extends StatelessWidget {
               Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (_) => const NpcTrainerGeneratorScreen(),
+                ),
+              );
+            },
+          ),
+          const SizedBox(height: 10),
+          _ToolCard(
+            icon: Icons.people_alt_outlined,
+            title: 'Libreria Allenatori PNG',
+            subtitle:
+                'Salva, seleziona e controlla uno o più allenatori nello stesso fight.',
+            actionLabel: 'APRI',
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => const NpcTrainerLibraryScreen(),
                 ),
               );
             },

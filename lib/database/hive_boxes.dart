@@ -7,6 +7,8 @@ class HiveBoxes {
   static const battleSessions = 'battle_sessions';
   static const encounterCollections = 'encounter_collections';
   static const savedEncounters = 'saved_encounters';
+  static const savedNpcTrainers = 'saved_npc_trainers';
+  static const masterBattleSessions = 'master_battle_sessions';
   static const settings = 'settings';
   static const appState = 'app_state';
 }

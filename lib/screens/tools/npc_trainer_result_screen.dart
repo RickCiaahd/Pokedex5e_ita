@@ -8,9 +8,13 @@ import '../../models/move_data.dart';
 import '../../models/pokemon.dart';
 import '../../models/pokemon_nature.dart';
 import '../../models/pokemon_type_localization.dart';
+import '../../models/saved_npc_trainer.dart';
 import '../../models/trainer_manual_content.dart';
 import '../../repositories/move_repository.dart';
+import '../../repositories/profile_repository.dart';
+import '../../repositories/saved_npc_trainer_repository.dart';
 import '../../services/npc_trainer_generator_service.dart';
+import '../../services/saved_npc_trainer_mapper_service.dart';
 import '../../widgets/navigation/home_leading_button.dart';
 import '../../widgets/pokemon/pokemon_asset_image.dart';
 import '../pokemon/pokemon_detail_screen.dart';
@@ -24,6 +28,7 @@ class NpcTrainerResultScreen extends StatefulWidget {
     required this.paths,
     required this.specializations,
     required this.items,
+    this.savedTrainer,
   });
 
   final GeneratedNpcTrainer trainer;
@@ -32,6 +37,7 @@ class NpcTrainerResultScreen extends StatefulWidget {
   final List<TrainerPath> paths;
   final List<String> specializations;
   final List<BagItem> items;
+  final SavedNpcTrainer? savedTrainer;
 
   @override
   State<NpcTrainerResultScreen> createState() => _NpcTrainerResultScreenState();
@@ -41,16 +47,24 @@ class _NpcTrainerResultScreenState extends State<NpcTrainerResultScreen> {
   final NpcTrainerGeneratorService _generatorService =
       const NpcTrainerGeneratorService();
   final MoveRepository _moveRepository = MoveRepository();
+  final ProfileRepository _profileRepository = ProfileRepository();
+  final SavedNpcTrainerRepository _savedRepository =
+      SavedNpcTrainerRepository();
+  final SavedNpcTrainerMapperService _savedMapper =
+      const SavedNpcTrainerMapperService();
 
   late GeneratedNpcTrainer _trainer;
+  SavedNpcTrainer? _savedTrainer;
   Map<String, MoveData?> _moves = const {};
   bool _isWorking = false;
+  bool _isSaving = false;
   String? _message;
 
   @override
   void initState() {
     super.initState();
     _trainer = widget.trainer;
+    _savedTrainer = widget.savedTrainer;
     _loadMoves();
   }
 
@@ -92,6 +106,52 @@ class _NpcTrainerResultScreenState extends State<NpcTrainerResultScreen> {
       await _loadMoves();
     } finally {
       if (mounted) setState(() => _isWorking = false);
+    }
+  }
+
+  Future<void> _saveTrainer() async {
+    if (_isSaving || _trainer.team.isEmpty) return;
+    final details = await showDialog<_NpcSaveDetails>(
+      context: context,
+      builder: (_) => _NpcSaveDialog(
+        initialName: _savedTrainer?.name ?? _trainer.name,
+        initialNotes: _savedTrainer?.notes ?? '',
+        isUpdate: _savedTrainer != null,
+      ),
+    );
+    if (details == null) return;
+
+    setState(() {
+      _isSaving = true;
+      _message = null;
+    });
+    try {
+      final profile = await _profileRepository.getActiveProfile();
+      final saved = _savedMapper.fromGenerated(
+        _trainer,
+        existing: _savedTrainer,
+        name: details.name,
+        notes: details.notes,
+      );
+      await _savedRepository.saveTrainer(profileId: profile.id, trainer: saved);
+      if (!mounted) return;
+      setState(() {
+        final wasUpdate = _savedTrainer != null;
+        _savedTrainer = saved;
+        _message = wasUpdate
+            ? 'Allenatore aggiornato nella libreria.'
+            : 'Allenatore salvato nella libreria.';
+      });
+    } catch (error) {
+      if (!mounted) return;
+      setState(() {
+        _message = error
+            .toString()
+            .replaceFirst('FormatException: ', '')
+            .replaceFirst('Bad state: ', '');
+      });
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
     }
   }
 
@@ -162,8 +222,27 @@ class _NpcTrainerResultScreenState extends State<NpcTrainerResultScreen> {
     return Scaffold(
       appBar: AppBar(
         leading: const HomeLeadingButton(),
-        title: const Text('Allenatore generato'),
+        title: Text(
+          _savedTrainer == null ? 'Allenatore generato' : _savedTrainer!.name,
+        ),
         actions: [
+          IconButton(
+            onPressed: _isSaving || _isWorking ? null : _saveTrainer,
+            tooltip: _savedTrainer == null
+                ? 'Salva nella libreria'
+                : 'Aggiorna allenatore salvato',
+            icon: _isSaving
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : Icon(
+                    _savedTrainer == null
+                        ? Icons.person_add_alt_1_outlined
+                        : Icons.person_pin_circle_outlined,
+                  ),
+          ),
           IconButton(
             onPressed: _copySummary,
             tooltip: 'Copia riepilogo',
@@ -275,7 +354,21 @@ class _NpcTrainerResultScreenState extends State<NpcTrainerResultScreen> {
           ),
           const SizedBox(height: 14),
           FilledButton.icon(
-            onPressed: _isWorking ? null : _regenerate,
+            onPressed: _isWorking || _isSaving ? null : _saveTrainer,
+            icon: Icon(
+              _savedTrainer == null
+                  ? Icons.person_add_alt_1_outlined
+                  : Icons.person_pin_circle_outlined,
+            ),
+            label: Text(
+              _savedTrainer == null
+                  ? 'SALVA NELLA LIBRERIA'
+                  : 'AGGIORNA ALLENATORE SALVATO',
+            ),
+          ),
+          const SizedBox(height: 8),
+          FilledButton.icon(
+            onPressed: _isWorking || _isSaving ? null : _regenerate,
             icon: _isWorking
                 ? const SizedBox(
                     width: 18,
@@ -301,6 +394,104 @@ class _NpcTrainerResultScreenState extends State<NpcTrainerResultScreen> {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _NpcSaveDetails {
+  const _NpcSaveDetails({required this.name, required this.notes});
+
+  final String name;
+  final String notes;
+}
+
+class _NpcSaveDialog extends StatefulWidget {
+  const _NpcSaveDialog({
+    required this.initialName,
+    required this.initialNotes,
+    required this.isUpdate,
+  });
+
+  final String initialName;
+  final String initialNotes;
+  final bool isUpdate;
+
+  @override
+  State<_NpcSaveDialog> createState() => _NpcSaveDialogState();
+}
+
+class _NpcSaveDialogState extends State<_NpcSaveDialog> {
+  late final TextEditingController _nameController = TextEditingController(
+    text: widget.initialName,
+  );
+  late final TextEditingController _notesController = TextEditingController(
+    text: widget.initialNotes,
+  );
+  String? _error;
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _notesController.dispose();
+    super.dispose();
+  }
+
+  void _confirm() {
+    final name = _nameController.text.trim();
+    if (name.isEmpty) {
+      setState(() => _error = 'Inserisci un nome valido.');
+      return;
+    }
+    Navigator.of(
+      context,
+    ).pop(_NpcSaveDetails(name: name, notes: _notesController.text.trim()));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text(
+        widget.isUpdate ? 'Aggiorna Allenatore PNG' : 'Salva Allenatore PNG',
+      ),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TextField(
+            controller: _nameController,
+            autofocus: true,
+            decoration: const InputDecoration(
+              labelText: 'Nome',
+              border: OutlineInputBorder(),
+            ),
+          ),
+          const SizedBox(height: 10),
+          TextField(
+            controller: _notesController,
+            maxLines: 3,
+            decoration: const InputDecoration(
+              labelText: 'Note facoltative',
+              border: OutlineInputBorder(),
+            ),
+          ),
+          if (_error != null) ...[
+            const SizedBox(height: 8),
+            Text(
+              _error!,
+              style: TextStyle(color: Theme.of(context).colorScheme.error),
+            ),
+          ],
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Annulla'),
+        ),
+        FilledButton(
+          onPressed: _confirm,
+          child: Text(widget.isUpdate ? 'Aggiorna' : 'Salva'),
+        ),
+      ],
     );
   }
 }

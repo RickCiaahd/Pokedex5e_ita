@@ -94,7 +94,7 @@ void main() {
           label: 'Pokemon',
           items: items,
           errors: errors,
-          requirePositiveNumber: true,
+          validateNumber: true,
         );
       }
 
@@ -257,7 +257,7 @@ void _validateWebItems({
   required String label,
   required dynamic items,
   required List<String> errors,
-  bool requirePositiveNumber = false,
+  bool validateNumber = false,
 }) {
   if (items is! List || items.isEmpty) {
     errors.add('Il catalogo $label non contiene elementi.');
@@ -281,8 +281,8 @@ void _validateWebItems({
       errors.add('ID $label duplicato: $id.');
     }
 
-    if (requirePositiveNumber && _readInt(item['number']) <= 0) {
-      errors.add('$label $id con numero non positivo: ${item['number']}.');
+    if (validateNumber && _readInt(item['number']) < 0) {
+      errors.add('$label $id con numero negativo: ${item['number']}.');
     }
   }
 }
@@ -294,15 +294,17 @@ void _validatePokemon(Pokemon pokemon, String label, List<String> errors) {
   }
   if (pokemon.armorClass <= 0) errors.add('$label: CA ${pokemon.armorClass}.');
   if (pokemon.hitPoints <= 0) errors.add('$label: PF ${pokemon.hitPoints}.');
-  if (pokemon.speed <= 0) errors.add('$label: velocita ${pokemon.speed}.');
-  if (pokemon.hitDice <= 0) errors.add('$label: dado vita d${pokemon.hitDice}.');
+  if (pokemon.speed < 0) errors.add('$label: velocita ${pokemon.speed}.');
+  if (pokemon.hitDice < 0) errors.add('$label: dado vita d${pokemon.hitDice}.');
   if (pokemon.sr < 0) errors.add('$label: SR ${pokemon.sr}.');
   if (pokemon.minLevelFound < 0) {
     errors.add('$label: livello minimo ${pokemon.minLevelFound}.');
   }
-  if (pokemon.abilities.isEmpty ||
-      pokemon.abilities.any((ability) => ability.trim().isEmpty)) {
-    errors.add('$label: abilita mancanti o vuote.');
+  if (pokemon.abilities.any((ability) => ability.trim().isEmpty)) {
+    errors.add('$label: elenco abilita con valore vuoto.');
+  }
+  if (pokemon.hiddenAbility != null && pokemon.hiddenAbility!.trim().isEmpty) {
+    errors.add('$label: abilita nascosta vuota.');
   }
 
   final scores = <String, int>{
@@ -331,8 +333,8 @@ void _validatePokemon(Pokemon pokemon, String label, List<String> errors) {
       errors.add('$label: livello mossa non valido $level.');
     }
   }
-  if (pokemon.moves.tmMoves.any((tm) => tm <= 0)) {
-    errors.add('$label: numero TM non positivo.');
+  if (pokemon.moves.tmMoves.any((tm) => tm < 0)) {
+    errors.add('$label: numero TM negativo.');
   }
 }
 

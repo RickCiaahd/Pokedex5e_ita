@@ -11,6 +11,7 @@ import '../../repositories/saved_encounter_repository.dart';
 import '../../services/encounter_generator_service.dart';
 import '../../services/pokemon_generator_service.dart';
 import '../../services/saved_encounter_mapper_service.dart';
+import '../../widgets/battle/wild_master_fight_launcher.dart';
 import '../../widgets/navigation/home_leading_button.dart';
 import '../../widgets/pokemon/pokemon_asset_image.dart';
 import '../pokemon/pokemon_detail_screen.dart';
@@ -215,6 +216,44 @@ class _EncounterResultScreenState extends State<EncounterResultScreen> {
     }
   }
 
+  Future<void> _startMasterFight() async {
+    final profileId = widget.profileId;
+    if (profileId == null ||
+        _encounter.members.isEmpty ||
+        _isWorking ||
+        _isSaving) {
+      return;
+    }
+
+    setState(() {
+      _isWorking = true;
+      _message = null;
+    });
+    try {
+      final launched = await launchWildMasterFight(
+        context: context,
+        profileId: profileId,
+        encounter: _encounter,
+        catalog: widget.catalog,
+      );
+      if (!mounted || !launched) return;
+      setState(() {
+        _message =
+            'Il fight selvatico è stato salvato e può essere ripreso dagli Strumenti del Master.';
+      });
+    } catch (error) {
+      if (!mounted) return;
+      setState(() {
+        _message = error
+            .toString()
+            .replaceFirst('FormatException: ', '')
+            .replaceFirst('Bad state: ', '');
+      });
+    } finally {
+      if (mounted) setState(() => _isWorking = false);
+    }
+  }
+
   Future<void> _openDetails(GeneratedPokemon generated) async {
     await Navigator.of(context).push(
       MaterialPageRoute(
@@ -369,6 +408,14 @@ class _EncounterResultScreenState extends State<EncounterResultScreen> {
             ],
           const SizedBox(height: 14),
           if (widget.profileId != null) ...[
+            FilledButton.icon(
+              onPressed: _encounter.members.isEmpty || _isWorking || _isSaving
+                  ? null
+                  : _startMasterFight,
+              icon: const Icon(Icons.sports_mma_outlined),
+              label: const Text('AVVIA NEL FIGHT DEL MASTER'),
+            ),
+            const SizedBox(height: 8),
             OutlinedButton.icon(
               onPressed: _encounter.members.isEmpty || _isWorking || _isSaving
                   ? null

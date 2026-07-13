@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pokedex_5e_ita/models/generated_encounter.dart';
 import 'package:pokedex_5e_ita/models/generated_npc_trainer.dart';
 import 'package:pokedex_5e_ita/models/generated_pokemon.dart';
 import 'package:pokedex_5e_ita/models/master_battle_session.dart';
@@ -83,6 +84,70 @@ void main() {
       );
     },
   );
+
+  test('wild encounter starts a temporary Master fight', () {
+    final rattataGenerated = _generatedPokemon(rattata);
+    final shinyPidgey = GeneratedPokemon(
+      basePokemon: pidgey,
+      pokemon: pidgey,
+      formName: null,
+      level: 7,
+      gender: 'Female',
+      nature: 'Jolly',
+      ability: 'Keen Eye',
+      selectedMoves: const ['Tackle', 'Gust'],
+      isShiny: true,
+      maxHp: 27,
+    );
+    final encounter = GeneratedEncounter(
+      id: 'encounter-1',
+      source: EncounterSource.automatic,
+      title: 'Branco sul sentiero',
+      party: const EncounterPartyProfile(
+        trainerCount: 2,
+        activePokemon: 2,
+        averageLevel: 6,
+      ),
+      filters: const EncounterGeneratorFilters(level: 6),
+      targetDifficulty: EncounterDifficulty.medium,
+      members: [
+        EncounterMember(pokemon: rattataGenerated),
+        EncounterMember(pokemon: shinyPidgey),
+      ],
+      estimate: const EncounterEstimate(
+        partyBudget: 8,
+        encounterCost: 8,
+        difficulty: EncounterDifficulty.medium,
+        targetDifficulty: EncounterDifficulty.medium,
+      ),
+      createdAt: DateTime.utc(2026, 7, 14),
+    );
+
+    final session = battleService.createWildSession(
+      profileId: 'profile-1',
+      encounter: encounter,
+      activeCount: 2,
+      catalog: [rattata, pidgey],
+      random: Random(7),
+    );
+
+    expect(session.participants, hasLength(1));
+    final wildGroup = session.participants.single;
+    expect(wildGroup.name, 'Branco sul sentiero');
+    expect(wildGroup.epithet, 'Incontro selvatico');
+    expect(wildGroup.activeSlotIndices, {0, 1});
+    expect(wildGroup.team, hasLength(2));
+    expect(wildGroup.team.first.pokemon.pokemonId, 19);
+    expect(wildGroup.team.last.pokemon.isShiny, isTrue);
+    expect(wildGroup.team.last.pokemon.level, 7);
+    expect(wildGroup.team.last.pokemon.selectedMoves, ['Tackle', 'Gust']);
+    expect(wildGroup.team.last.currentHp, 27);
+    expect(session.initiativeEntries, hasLength(2));
+
+    final decoded = MasterBattleSession.fromJson(session.toJson());
+    expect(decoded.participants.single.team.last.pokemon.isShiny, isTrue);
+    expect(decoded.participants.single.activeSlotIndices, {0, 1});
+  });
 
   test('master battle session JSON preserves HP, PP and statuses', () {
     final saved = mapper.fromGenerated(

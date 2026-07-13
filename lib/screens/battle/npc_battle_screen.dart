@@ -1098,10 +1098,11 @@ class _NpcMoveCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final move = this.move;
     final damage = move?.damageForLevel(level)?.label;
+    final save = move?.save;
     final details = <String?>[
       damage,
       move?.range == '-' ? null : move?.range,
-      move?.save == null ? null : 'TS ${move.save}',
+      save == null ? null : 'TS $save',
     ].whereType<String>().join(' · ');
     return Card(
       child: ExpansionTile(

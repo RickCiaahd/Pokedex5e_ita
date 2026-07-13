@@ -27,27 +27,37 @@ jobs:
         run: |
           python3 - <<'PY'
           from pathlib import Path
-          path = Path('tool/apply_npc_library_master_fight.py')
-          source = path.read_text(encoding='utf-8')
+          import re
+
+          target = Path('lib/services/profile_backup_service.dart')
+          text = target.read_text(encoding='utf-8')
+          pattern = re.compile(
+              r'(?m)^(?P<indent>\s*)_savedEncounterRepository =\n'
+              r'(?P<continuation>\s*)savedEncounterRepository \?\? SavedEncounterRepository\(\);$'
+          )
+          match = pattern.search(text)
+          if match is None:
+              raise SystemExit('Profile backup initializer not found')
+          indent = match.group('indent')
+          continuation = match.group('continuation')
+          replacement = (
+              f'{indent}_savedEncounterRepository =\n'
+              f'{continuation}savedEncounterRepository ?? SavedEncounterRepository(),\n'
+              f'{indent}_savedNpcTrainerRepository =\n'
+              f'{continuation}savedNpcTrainerRepository ?? SavedNpcTrainerRepository(),\n'
+              f'{indent}_masterBattleSessionRepository = masterBattleSessionRepository ??\n'
+              f'{continuation}MasterBattleSessionRepository();'
+          )
+          target.write_text(pattern.sub(replacement, text, count=1), encoding='utf-8')
+
+          patch = Path('tool/apply_npc_library_master_fight.py')
+          source = patch.read_text(encoding='utf-8')
           marker = "'backup service initializer',"
           marker_index = source.index(marker)
           block_start = source.rfind('source = replace_once(', 0, marker_index)
           block_end = source.index('source = replace_once(', marker_index + len(marker))
-          replacement = '''source = replace_once(
-              source,
-              "_savedEncounterRepository =\\n"
-              "            savedEncounterRepository ?? SavedEncounterRepository();\\n",
-              "_savedEncounterRepository =\\n"
-              "            savedEncounterRepository ?? SavedEncounterRepository(),\\n"
-              "       _savedNpcTrainerRepository =\\n"
-              "            savedNpcTrainerRepository ?? SavedNpcTrainerRepository(),\\n"
-              "       _masterBattleSessionRepository = masterBattleSessionRepository ??\\n"
-              "            MasterBattleSessionRepository();\\n",
-              'backup service initializer',
-          )
-          '''
-          source = source[:block_start] + replacement + source[block_end:]
-          path.write_text(source, encoding='utf-8')
+          source = source[:block_start] + '# initializer patched by workflow\n' + source[block_end:]
+          patch.write_text(source, encoding='utf-8')
           PY
 
       - name: Apply integration

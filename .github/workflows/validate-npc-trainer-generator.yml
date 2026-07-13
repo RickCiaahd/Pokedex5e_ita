@@ -23,6 +23,18 @@ jobs:
           ref: feat/npc-trainer-generator
           fetch-depth: 0
 
+      - name: Apply compile fix
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('lib/screens/tools/npc_trainer_result_screen.dart')
+          source = path.read_text(encoding='utf-8')
+          old = 'Icons.strategy_outlined'
+          if source.count(old) != 1:
+              raise SystemExit(f'Expected one {old}, found {source.count(old)}')
+          path.write_text(source.replace(old, 'Icons.route_outlined', 1), encoding='utf-8')
+          PY
+
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
@@ -46,22 +58,7 @@ jobs:
         run: git diff --check
 
       - name: Analyze
-        id: analyze
-        continue-on-error: true
-        run: |
-          set -o pipefail
-          flutter analyze 2>&1 | tee npc-trainer-analyze.txt
-
-      - name: Upload analyze diagnostics
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: npc-trainer-analyze
-          path: npc-trainer-analyze.txt
-
-      - name: Stop after analyze failure
-        if: steps.analyze.outcome == 'failure'
-        run: exit 1
+        run: flutter analyze
 
       - name: Run NPC trainer tests
         run: flutter test test/npc_trainer_generator_service_test.dart
@@ -72,7 +69,6 @@ jobs:
       - name: Commit validated implementation
         run: |
           rm .github/workflows/validate-npc-trainer-generator.yml
-          rm npc-trainer-analyze.txt
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A

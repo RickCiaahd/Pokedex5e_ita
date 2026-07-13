@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - fix/master-fight-hp-and-move-types
+  pull_request:
+    branches:
+      - main
 
 permissions:
   contents: write

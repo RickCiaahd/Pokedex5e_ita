@@ -2,9 +2,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:pokedex_5e_ita/models/bag_inventory_entry.dart';
 import 'package:pokedex_5e_ita/models/battle_session.dart';
 import 'package:pokedex_5e_ita/models/pc_pokemon.dart';
+import 'package:pokedex_5e_ita/models/generated_encounter.dart';
 import 'package:pokedex_5e_ita/models/pokedex_entry.dart';
 import 'package:pokedex_5e_ita/models/profile_backup.dart';
 import 'package:pokedex_5e_ita/models/profile_settings.dart';
+import 'package:pokedex_5e_ita/models/saved_encounter.dart';
 import 'package:pokedex_5e_ita/models/team_slot.dart';
 import 'package:pokedex_5e_ita/models/user_profile.dart';
 import 'package:pokedex_5e_ita/services/profile_backup_service.dart';
@@ -90,6 +92,29 @@ void main() {
         showOnlySeen: false,
       ),
       battleSession: battleSession,
+      savedEncounters: [
+        SavedEncounter(
+          id: 'route-24',
+          name: 'Percorso 24',
+          source: EncounterSource.collection,
+          party: const EncounterPartyProfile(averageLevel: 5),
+          filters: const EncounterGeneratorFilters(level: 4),
+          targetDifficulty: EncounterDifficulty.medium,
+          members: const [
+            SavedEncounterMember(
+              pokemonId: 19,
+              formName: 'Alolan',
+              level: 4,
+              nature: 'Jolly',
+              selectedMoves: ['Tackle'],
+              isShiny: false,
+              maxHp: 18,
+            ),
+          ],
+          createdAt: now,
+          updatedAt: now,
+        ),
+      ],
     );
 
     final service = ProfileBackupService();
@@ -104,6 +129,8 @@ void main() {
     expect(decoded.bag.single.quantity, 3);
     expect(decoded.settings.selectedRegion, 'Alola');
     expect(decoded.battleSession?.round, 4);
+    expect(decoded.savedEncounters.single.name, 'Percorso 24');
+    expect(decoded.savedEncounters.single.members.single.formName, 'Alolan');
     expect(decoded.battleSession?.pokemonStates[0]?.remainingPp, {
       'quick-attack': 7,
     });

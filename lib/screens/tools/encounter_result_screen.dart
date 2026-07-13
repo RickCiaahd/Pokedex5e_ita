@@ -5,9 +5,12 @@ import '../../models/generated_pokemon.dart';
 import '../../models/move_data.dart';
 import '../../models/pokemon.dart';
 import '../../models/pokemon_nature.dart';
+import '../../models/saved_encounter.dart';
 import '../../repositories/move_repository.dart';
+import '../../repositories/saved_encounter_repository.dart';
 import '../../services/encounter_generator_service.dart';
 import '../../services/pokemon_generator_service.dart';
+import '../../services/saved_encounter_mapper_service.dart';
 import '../../widgets/navigation/home_leading_button.dart';
 import '../../widgets/pokemon/pokemon_asset_image.dart';
 import '../pokemon/pokemon_detail_screen.dart';
@@ -17,10 +20,14 @@ class EncounterResultScreen extends StatefulWidget {
     super.key,
     required this.encounter,
     required this.catalog,
+    this.profileId,
+    this.savedEncounter,
   });
 
   final GeneratedEncounter encounter;
   final List<Pokemon> catalog;
+  final String? profileId;
+  final SavedEncounter? savedEncounter;
 
   @override
   State<EncounterResultScreen> createState() => _EncounterResultScreenState();
@@ -32,16 +39,23 @@ class _EncounterResultScreenState extends State<EncounterResultScreen> {
   final PokemonGeneratorService _pokemonGeneratorService =
       const PokemonGeneratorService();
   final MoveRepository _moveRepository = MoveRepository();
+  final SavedEncounterRepository _savedEncounterRepository =
+      SavedEncounterRepository();
+  final SavedEncounterMapperService _savedEncounterMapper =
+      const SavedEncounterMapperService();
 
   late GeneratedEncounter _encounter;
+  SavedEncounter? _savedEncounter;
   Map<String, MoveData?> _moves = const {};
   bool _isWorking = false;
+  bool _isSaving = false;
   String? _message;
 
   @override
   void initState() {
     super.initState();
     _encounter = widget.encounter;
+    _savedEncounter = widget.savedEncounter;
     _loadMoves();
   }
 
@@ -151,6 +165,56 @@ class _EncounterResultScreenState extends State<EncounterResultScreen> {
     _replaceMembers(members);
   }
 
+  Future<void> _saveEncounter() async {
+    final profileId = widget.profileId;
+    if (profileId == null || _isSaving || _encounter.members.isEmpty) return;
+    final details = await showDialog<_EncounterSaveDetails>(
+      context: context,
+      builder: (_) => _EncounterSaveDialog(
+        initialName: _savedEncounter?.name ?? _encounter.title,
+        initialNotes: _savedEncounter?.notes ?? '',
+        isUpdate: _savedEncounter != null,
+      ),
+    );
+    if (details == null) return;
+
+    setState(() {
+      _isSaving = true;
+      _message = null;
+    });
+    try {
+      final saved = _savedEncounterMapper.fromGenerated(
+        _encounter,
+        name: details.name,
+        notes: details.notes,
+        existing: _savedEncounter,
+      );
+      await _savedEncounterRepository.saveEncounter(
+        profileId: profileId,
+        encounter: saved,
+      );
+      if (!mounted) return;
+      setState(() {
+        final wasUpdate = _savedEncounter != null;
+        _savedEncounter = saved;
+        _encounter = _encounter.copyWith(title: saved.name);
+        _message = wasUpdate
+            ? 'Incontro aggiornato nella libreria.'
+            : 'Incontro salvato nella libreria.';
+      });
+    } catch (error) {
+      if (!mounted) return;
+      setState(() {
+        _message = error
+            .toString()
+            .replaceFirst('FormatException: ', '')
+            .replaceFirst('Bad state: ', '');
+      });
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
+    }
+  }
+
   Future<void> _openDetails(GeneratedPokemon generated) async {
     await Navigator.of(context).push(
       MaterialPageRoute(
@@ -177,6 +241,26 @@ class _EncounterResultScreenState extends State<EncounterResultScreen> {
         leading: const HomeLeadingButton(),
         title: Text(_encounter.title),
         actions: [
+          if (widget.profileId != null)
+            IconButton(
+              onPressed: _encounter.members.isEmpty || _isWorking || _isSaving
+                  ? null
+                  : _saveEncounter,
+              tooltip: _savedEncounter == null
+                  ? 'Salva nella libreria'
+                  : 'Aggiorna incontro salvato',
+              icon: _isSaving
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : Icon(
+                      _savedEncounter == null
+                          ? Icons.bookmark_add_outlined
+                          : Icons.bookmark_added,
+                    ),
+            ),
           IconButton(
             onPressed: _encounter.members.isEmpty || _isWorking
                 ? null
@@ -284,6 +368,24 @@ class _EncounterResultScreenState extends State<EncounterResultScreen> {
                 const SizedBox(height: 10),
             ],
           const SizedBox(height: 14),
+          if (widget.profileId != null) ...[
+            OutlinedButton.icon(
+              onPressed: _encounter.members.isEmpty || _isWorking || _isSaving
+                  ? null
+                  : _saveEncounter,
+              icon: Icon(
+                _savedEncounter == null
+                    ? Icons.bookmark_add_outlined
+                    : Icons.bookmark_added,
+              ),
+              label: Text(
+                _savedEncounter == null
+                    ? 'SALVA NELLA LIBRERIA'
+                    : 'AGGIORNA INCONTRO SALVATO',
+              ),
+            ),
+            const SizedBox(height: 8),
+          ],
           FilledButton.icon(
             onPressed: _encounter.members.isEmpty || _isWorking
                 ? null
@@ -304,6 +406,98 @@ class _EncounterResultScreenState extends State<EncounterResultScreen> {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _EncounterSaveDetails {
+  const _EncounterSaveDetails({required this.name, required this.notes});
+
+  final String name;
+  final String notes;
+}
+
+class _EncounterSaveDialog extends StatefulWidget {
+  const _EncounterSaveDialog({
+    required this.initialName,
+    required this.initialNotes,
+    required this.isUpdate,
+  });
+
+  final String initialName;
+  final String initialNotes;
+  final bool isUpdate;
+
+  @override
+  State<_EncounterSaveDialog> createState() => _EncounterSaveDialogState();
+}
+
+class _EncounterSaveDialogState extends State<_EncounterSaveDialog> {
+  late final TextEditingController _nameController;
+  late final TextEditingController _notesController;
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController(text: widget.initialName);
+    _notesController = TextEditingController(text: widget.initialNotes);
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _notesController.dispose();
+    super.dispose();
+  }
+
+  void _submit() {
+    final name = _nameController.text.trim();
+    if (name.isEmpty) return;
+    Navigator.of(context).pop(
+      _EncounterSaveDetails(name: name, notes: _notesController.text.trim()),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text(widget.isUpdate ? 'Aggiorna incontro' : 'Salva incontro'),
+      content: SizedBox(
+        width: 440,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: _nameController,
+              autofocus: true,
+              decoration: const InputDecoration(
+                labelText: 'Nome incontro',
+                border: OutlineInputBorder(),
+              ),
+              onSubmitted: (_) => _submit(),
+            ),
+            const SizedBox(height: 10),
+            TextField(
+              controller: _notesController,
+              maxLines: 3,
+              decoration: const InputDecoration(
+                labelText: 'Note facoltative',
+                border: OutlineInputBorder(),
+              ),
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Annulla'),
+        ),
+        FilledButton(
+          onPressed: _submit,
+          child: Text(widget.isUpdate ? 'Aggiorna' : 'Salva'),
+        ),
+      ],
     );
   }
 }

@@ -4,11 +4,12 @@ import 'encounter_collection.dart';
 import 'pc_pokemon.dart';
 import 'pokedex_entry.dart';
 import 'profile_settings.dart';
+import 'saved_encounter.dart';
 import 'team_slot.dart';
 import 'user_profile.dart';
 
 class ProfileBackup {
-  static const int currentFormatVersion = 2;
+  static const int currentFormatVersion = 3;
 
   ProfileBackup({
     required this.formatVersion,
@@ -21,6 +22,7 @@ class ProfileBackup {
     required this.settings,
     required this.battleSession,
     this.encounterCollections = const [],
+    this.savedEncounters = const [],
   });
 
   final int formatVersion;
@@ -33,6 +35,7 @@ class ProfileBackup {
   final ProfileSettings settings;
   final BattleSession? battleSession;
   final List<EncounterCollection> encounterCollections;
+  final List<SavedEncounter> savedEncounters;
 
   int get seenSpecies => pokedex.where((entry) => entry.seen).length;
 
@@ -67,6 +70,9 @@ class ProfileBackup {
       'battleSession': battleSession?.toJson(),
       'encounterCollections': encounterCollections
           .map((collection) => collection.toJson())
+          .toList(growable: false),
+      'savedEncounters': savedEncounters
+          .map((encounter) => encounter.toJson())
           .toList(growable: false),
     };
   }
@@ -121,6 +127,13 @@ class ProfileBackup {
           'encounterCollections',
         ))
           EncounterCollection.fromJson(value),
+      ],
+      savedEncounters: [
+        for (final value in _readMapList(
+          json['savedEncounters'],
+          'savedEncounters',
+        ))
+          SavedEncounter.fromJson(value),
       ],
     );
 
@@ -210,6 +223,20 @@ class ProfileBackup {
       if (!collection.isReady) {
         throw FormatException(
           'La raccolta ${collection.name} non totalizza il 100%.',
+        );
+      }
+    }
+
+    final savedEncounterIds = <String>{};
+    for (final encounter in savedEncounters) {
+      if (!encounter.isValid) {
+        throw const FormatException(
+          'Il backup contiene un incontro salvato non valido.',
+        );
+      }
+      if (!savedEncounterIds.add(encounter.id)) {
+        throw FormatException(
+          'L’incontro ${encounter.name} è presente più volte.',
         );
       }
     }

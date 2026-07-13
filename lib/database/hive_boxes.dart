@@ -6,6 +6,7 @@ class HiveBoxes {
   static const bagItems = 'bag_items';
   static const battleSessions = 'battle_sessions';
   static const encounterCollections = 'encounter_collections';
+  static const savedEncounters = 'saved_encounters';
   static const settings = 'settings';
   static const appState = 'app_state';
 }

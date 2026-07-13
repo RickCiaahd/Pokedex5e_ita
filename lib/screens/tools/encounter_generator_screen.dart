@@ -170,10 +170,14 @@ class _EncounterGeneratorScreenState extends State<EncounterGeneratorScreen> {
   }
 
   Future<void> _openResult(GeneratedEncounter encounter) async {
+    final profileId = _profile?.id;
     await Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) =>
-            EncounterResultScreen(encounter: encounter, catalog: _catalog),
+        builder: (_) => EncounterResultScreen(
+          encounter: encounter,
+          catalog: _catalog,
+          profileId: profileId,
+        ),
       ),
     );
   }

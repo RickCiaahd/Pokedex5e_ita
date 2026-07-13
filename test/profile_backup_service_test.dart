@@ -7,12 +7,15 @@ import 'package:pokedex_5e_ita/models/battle_session.dart';
 import 'package:pokedex_5e_ita/models/pc_pokemon.dart';
 import 'package:pokedex_5e_ita/models/pokedex_entry.dart';
 import 'package:pokedex_5e_ita/models/profile_settings.dart';
+import 'package:pokedex_5e_ita/models/generated_encounter.dart';
+import 'package:pokedex_5e_ita/models/saved_encounter.dart';
 import 'package:pokedex_5e_ita/models/team_slot.dart';
 import 'package:pokedex_5e_ita/repositories/bag_inventory_repository.dart';
 import 'package:pokedex_5e_ita/repositories/battle_session_repository.dart';
 import 'package:pokedex_5e_ita/repositories/pokedex_repositry.dart';
 import 'package:pokedex_5e_ita/repositories/pokemon_pc_repository.dart';
 import 'package:pokedex_5e_ita/repositories/profile_repository.dart';
+import 'package:pokedex_5e_ita/repositories/saved_encounter_repository.dart';
 import 'package:pokedex_5e_ita/repositories/setting_repository.dart';
 import 'package:pokedex_5e_ita/repositories/team_repository.dart';
 import 'package:pokedex_5e_ita/services/profile_backup_service.dart';
@@ -28,6 +31,7 @@ void main() {
   final bagRepository = BagInventoryRepository();
   final settingsRepository = SettingsRepository();
   final battleRepository = BattleSessionRepository();
+  final savedEncounterRepository = SavedEncounterRepository();
   final backupService = ProfileBackupService();
 
   setUpAll(() async {
@@ -92,6 +96,29 @@ void main() {
           25,
         ).setFormState(formName: null, seen: true, caught: true),
       );
+      await savedEncounterRepository.saveEncounter(
+        profileId: source.id,
+        encounter: SavedEncounter(
+          id: 'saved-route-24',
+          name: 'Percorso 24',
+          source: EncounterSource.manual,
+          party: const EncounterPartyProfile(averageLevel: 5),
+          filters: const EncounterGeneratorFilters(level: 4),
+          targetDifficulty: EncounterDifficulty.medium,
+          members: const [
+            SavedEncounterMember(
+              pokemonId: 19,
+              level: 4,
+              nature: 'Jolly',
+              selectedMoves: ['Tackle'],
+              isShiny: false,
+              maxHp: 18,
+            ),
+          ],
+          createdAt: DateTime.utc(2026, 7, 11),
+          updatedAt: DateTime.utc(2026, 7, 11),
+        ),
+      );
       await battleRepository.saveSession(
         BattleSession(
           profileId: source.id,
@@ -152,6 +179,11 @@ void main() {
         )).caught,
         isTrue,
       );
+      final importedEncounters = await savedEncounterRepository.getEncounters(
+        imported.id,
+      );
+      expect(importedEncounters.single.name, 'Percorso 24');
+      expect(importedEncounters.single.members.single.pokemonId, 19);
       final importedBattle = await battleRepository.getSession(imported.id);
       expect(importedBattle?.profileId, imported.id);
       expect(importedBattle?.round, 3);
@@ -183,6 +215,10 @@ void main() {
         'Kanto',
       );
       expect(await battleRepository.getSession(imported.id), isNull);
+      expect(
+        await savedEncounterRepository.getEncounters(imported.id),
+        isEmpty,
+      );
     },
   );
 }

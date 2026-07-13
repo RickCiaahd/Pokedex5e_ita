@@ -72,8 +72,9 @@ class _EncounterResultScreenState extends State<EncounterResultScreen> {
       _message = null;
     });
     try {
-      final generated = _pokemonGeneratorService.generateForPokemon(
+      final generated = _pokemonGeneratorService.generateForPokemonForm(
         pokemon: current.pokemon.basePokemon,
+        formName: current.pokemon.formName,
         filters: _generationFilters,
       );
       if (generated == null) return;
@@ -99,8 +100,9 @@ class _EncounterResultScreenState extends State<EncounterResultScreen> {
           members.add(member);
           continue;
         }
-        final generated = _pokemonGeneratorService.generateForPokemon(
+        final generated = _pokemonGeneratorService.generateForPokemonForm(
           pokemon: member.pokemon.basePokemon,
+          formName: member.pokemon.formName,
           filters: _generationFilters,
         );
         members.add(

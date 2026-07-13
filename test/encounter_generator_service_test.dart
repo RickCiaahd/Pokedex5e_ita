@@ -85,7 +85,10 @@ void main() {
   test('manual generation creates the requested quantities', () {
     final encounter = service.generateManual(
       catalog: catalog,
-      quantities: const {19: 2, 16: 1},
+      selections: const [
+        EncounterManualSelection(pokemonId: 19, quantity: 2),
+        EncounterManualSelection(pokemonId: 16, quantity: 1),
+      ],
       party: const EncounterPartyProfile(),
       filters: const EncounterGeneratorFilters(level: 3),
       targetDifficulty: EncounterDifficulty.medium,
@@ -99,6 +102,47 @@ void main() {
           .where((member) => member.pokemon.basePokemon.id == 19)
           .length,
       2,
+    );
+  });
+
+  test('manual generation preserves the selected permanent form', () {
+    final rattata = catalog.firstWhere((pokemon) => pokemon.id == 19);
+    final alolan = PokemonFormDefinition(
+      key: 'Alolan',
+      displayName: 'Alolan',
+      pokemon: rattata.copyWith(types: const ['Dark', 'Normal']),
+    );
+    final formCatalog = [
+      rattata.copyWith(formDefinitions: [alolan]),
+      ...catalog.where((pokemon) => pokemon.id != 19),
+    ];
+
+    final encounter = service.generateManual(
+      catalog: formCatalog,
+      selections: const [
+        EncounterManualSelection(
+          pokemonId: 19,
+          formName: 'Alolan',
+          quantity: 2,
+        ),
+      ],
+      party: const EncounterPartyProfile(),
+      filters: const EncounterGeneratorFilters(level: 3),
+      targetDifficulty: EncounterDifficulty.medium,
+      random: Random(8),
+    );
+
+    expect(encounter, isNotNull);
+    expect(encounter!.members, hasLength(2));
+    expect(
+      encounter.members.every((member) => member.pokemon.formName == 'Alolan'),
+      isTrue,
+    );
+    expect(
+      encounter.members.every(
+        (member) => member.pokemon.pokemon.types.contains('Dark'),
+      ),
+      isTrue,
     );
   });
 
@@ -123,6 +167,47 @@ void main() {
     expect(encounter!.members, hasLength(5));
     expect(
       encounter.members.every((member) => member.pokemon.basePokemon.id == 19),
+      isTrue,
+    );
+  });
+
+  test('weighted collections preserve an explicitly selected form', () {
+    final rattata = catalog.firstWhere((pokemon) => pokemon.id == 19);
+    final alolan = PokemonFormDefinition(
+      key: 'Alolan',
+      displayName: 'Alolan',
+      pokemon: rattata.copyWith(types: const ['Dark', 'Normal']),
+    );
+    final formCatalog = [
+      rattata.copyWith(formDefinitions: [alolan]),
+      ...catalog.where((pokemon) => pokemon.id != 19),
+    ];
+
+    final encounter = service.generateFromCollection(
+      catalog: formCatalog,
+      collection: EncounterCollection(
+        id: 'alola-route',
+        name: 'Percorso Alola',
+        entries: const [
+          EncounterCollectionEntry(
+            pokemonId: 19,
+            formName: 'Alolan',
+            weight: 100,
+          ),
+        ],
+        updatedAt: DateTime(2026),
+      ),
+      count: 3,
+      allowDuplicates: true,
+      party: const EncounterPartyProfile(),
+      filters: const EncounterGeneratorFilters(level: 4),
+      targetDifficulty: EncounterDifficulty.medium,
+      random: Random(11),
+    );
+
+    expect(encounter, isNotNull);
+    expect(
+      encounter!.members.every((member) => member.pokemon.formName == 'Alolan'),
       isTrue,
     );
   });

@@ -140,7 +140,7 @@ class EncounterGeneratorService {
 
   GeneratedEncounter? generateManual({
     required List<Pokemon> catalog,
-    required Map<int, int> quantities,
+    required Iterable<EncounterManualSelection> selections,
     required EncounterPartyProfile party,
     required EncounterGeneratorFilters filters,
     required EncounterDifficulty targetDifficulty,
@@ -150,12 +150,17 @@ class EncounterGeneratorService {
     final byId = {for (final pokemon in catalog) pokemon.id: pokemon};
     final generated = <GeneratedPokemon>[];
 
-    for (final entry in quantities.entries) {
-      final pokemon = byId[entry.key];
-      if (pokemon == null || entry.value <= 0) continue;
-      for (var index = 0; index < entry.value.clamp(0, 12).toInt(); index++) {
-        final result = _pokemonGeneratorService.generateForPokemon(
+    for (final selection in selections) {
+      final pokemon = byId[selection.pokemonId];
+      if (pokemon == null || selection.quantity <= 0) continue;
+      for (
+        var index = 0;
+        index < selection.quantity.clamp(0, 12).toInt();
+        index++
+      ) {
+        final result = _pokemonGeneratorService.generateForPokemonForm(
           pokemon: pokemon,
+          formName: selection.formName,
           filters: _explicitPokemonFilters(filters),
           random: rng,
         );
@@ -198,8 +203,9 @@ class EncounterGeneratorService {
       final selected = _weightedPick(available, rng);
       final pokemon = byId[selected.pokemonId];
       if (pokemon != null) {
-        final result = _pokemonGeneratorService.generateForPokemon(
+        final result = _pokemonGeneratorService.generateForPokemonForm(
           pokemon: pokemon,
+          formName: selected.formName,
           filters: _explicitPokemonFilters(filters),
           random: rng,
         );

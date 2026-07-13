@@ -108,6 +108,39 @@ class PokemonGeneratorService {
     return _generateCandidate(pokemon, filters, random ?? Random());
   }
 
+  GeneratedPokemon? generateForPokemonForm({
+    required Pokemon pokemon,
+    required String? formName,
+    required PokemonGeneratorFilters filters,
+    Random? random,
+  }) {
+    final requestedKey = PokedexEntry.formKey(
+      formName,
+      speciesName: pokemon.name,
+    );
+    String? matchedForm;
+    var found = false;
+    for (final eligibleForm in eligibleFormNames(pokemon, filters)) {
+      final eligibleKey = PokedexEntry.formKey(
+        eligibleForm,
+        speciesName: pokemon.name,
+      );
+      if (eligibleKey != requestedKey) continue;
+      matchedForm = eligibleForm;
+      found = true;
+      break;
+    }
+    if (!found) return null;
+
+    return _generateCandidate(
+      pokemon,
+      filters,
+      random ?? Random(),
+      forceForm: true,
+      forcedFormName: matchedForm,
+    );
+  }
+
   List<GeneratedPokemon> generateSelected({
     required Iterable<Pokemon> pokemon,
     required PokemonGeneratorFilters filters,
@@ -129,11 +162,15 @@ class PokemonGeneratorService {
   GeneratedPokemon? _generateCandidate(
     Pokemon basePokemon,
     PokemonGeneratorFilters filters,
-    Random random,
-  ) {
+    Random random, {
+    bool forceForm = false,
+    String? forcedFormName,
+  }) {
     final eligibleForms = eligibleFormNames(basePokemon, filters);
     if (eligibleForms.isEmpty) return null;
-    final formName = eligibleForms[random.nextInt(eligibleForms.length)];
+    final formName = forceForm
+        ? forcedFormName
+        : eligibleForms[random.nextInt(eligibleForms.length)];
     final formPokemon = basePokemon.resolveVariant(formName: formName);
     var gender = _randomGender(formPokemon, random);
     var resolvedPokemon = basePokemon.resolveVariant(

@@ -24,12 +24,28 @@ jobs:
           fetch-depth: 0
 
       - name: Apply implementation
-        run: python3 tool/apply_saved_encounter_library.py
+        id: apply
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          python3 tool/apply_saved_encounter_library.py 2>&1 | tee saved-library-apply.log
+
+      - name: Upload apply diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: saved-library-apply-log
+          path: saved-library-apply.log
+
+      - name: Stop after apply failure
+        if: steps.apply.outcome == 'failure'
+        run: exit 1
 
       - name: Remove temporary automation
         run: |
           rm tool/apply_saved_encounter_library.py
           rm .github/workflows/apply-saved-encounter-library.yml
+          rm saved-library-apply.log
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2

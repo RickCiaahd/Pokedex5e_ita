@@ -221,8 +221,12 @@ void main() {
 
       if (moves.isEmpty) errors.add('Il catalogo mosse web e vuoto.');
       for (final move in moves) {
-        if (move.id.trim().isEmpty) errors.add('Mossa con ID vuoto: ${move.name}.');
-        if (move.name.trim().isEmpty) errors.add('Mossa con nome vuoto: ${move.id}.');
+        if (move.id.trim().isEmpty) {
+          errors.add('Mossa con ID vuoto: ${move.name}.');
+        }
+        if (move.name.trim().isEmpty) {
+          errors.add('Mossa con nome vuoto: ${move.id}.');
+        }
         if (move.type.trim().isEmpty) errors.add('${move.name}: tipo vuoto.');
         if (move.description.trim().isEmpty) {
           errors.add('${move.name}: descrizione vuota.');
@@ -273,7 +277,9 @@ void _validateWebItems({
     final name = item['name']?.toString().trim() ?? '';
     if (id.isEmpty) errors.add('$label alla posizione $index con ID vuoto.');
     if (name.isEmpty) errors.add('$label $id con nome vuoto.');
-    if (id.isNotEmpty && !ids.add(id)) errors.add('ID $label duplicato: $id.');
+    if (id.isNotEmpty && !ids.add(id)) {
+      errors.add('ID $label duplicato: $id.');
+    }
 
     if (requirePositiveNumber && _readInt(item['number']) <= 0) {
       errors.add('$label $id con numero non positivo: ${item['number']}.');
@@ -342,7 +348,11 @@ bool _hasBundledImage(Pokemon pokemon, Set<String> assets) {
       pokemon: pokemon,
       useLargeArtwork: useLargeArtwork,
     );
-    if (assets.any((asset) => prefixes.any(asset.startsWith))) return true;
+    if (assets.any(
+      (asset) => prefixes.any((prefix) => asset.startsWith(prefix)),
+    )) {
+      return true;
+    }
   }
 
   return false;
@@ -353,7 +363,7 @@ String _legacyFileName(String name) {
       .replaceAll(' ♀', '-f')
       .replaceAll(' ♂', '-m')
       .replaceAll(':', '')
-      .replaceAll('e', 'e');
+      .replaceAll('é', 'e');
 }
 
 int _readInt(dynamic value) {

@@ -1,1 +1,1 @@
-Trigger the branch workflow after the pull request was opened.
+Trigger PR validation after the workflow was added to main.

@@ -23,6 +23,19 @@ jobs:
           ref: feat/npc-library-master-fight
           fetch-depth: 0
 
+      - name: Normalize patch anchor
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('tool/apply_npc_library_master_fight.py')
+          source = path.read_text(encoding='utf-8')
+          source = source.replace(
+              '"        _savedEncounterRepository =\\n"',
+              '"       _savedEncounterRepository =\\n"',
+          )
+          path.write_text(source, encoding='utf-8')
+          PY
+
       - name: Apply integration
         id: integration
         continue-on-error: true

@@ -23,6 +23,9 @@ jobs:
           ref: feat/saved-encounter-library
           fetch-depth: 0
 
+      - name: Prepare implementation
+        run: python3 tool/prepare_saved_library_apply.py
+
       - name: Apply implementation
         id: apply
         continue-on-error: true
@@ -43,6 +46,7 @@ jobs:
 
       - name: Remove temporary automation
         run: |
+          rm tool/prepare_saved_library_apply.py
           rm tool/apply_saved_encounter_library.py
           rm .github/workflows/apply-saved-encounter-library.yml
           rm saved-library-apply.log

@@ -221,40 +221,22 @@ class _NpcBattleScreenState extends State<NpcBattleScreen> {
 
   Future<void> _editHp() async {
     final state = _focusedState;
-    final controller = TextEditingController(text: '${state.currentHp}');
     final raw = await showDialog<String>(
       context: context,
-      builder: (_) => AlertDialog(
-        title: const Text('Modifica PF'),
-        content: TextField(
-          controller: controller,
-          autofocus: true,
-          keyboardType: TextInputType.number,
-          decoration: InputDecoration(
-            labelText: 'PF attuali',
-            helperText: 'Massimo ${state.pokemon.maxHp}',
-          ),
-          onSubmitted: (value) => Navigator.of(context).pop(value),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Annulla'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.of(context).pop(controller.text),
-            child: const Text('Conferma'),
-          ),
-        ],
+      builder: (_) => _NpcHpInputDialog(
+        currentHp: state.currentHp,
+        maxHp: state.pokemon.maxHp,
       ),
     );
-    controller.dispose();
-    if (raw == null) return;
-    final value = int.tryParse(raw.trim());
+    if (!mounted || raw == null) return;
+
+    final input = raw.trim();
+    final value = int.tryParse(input);
     if (value == null) return;
-    await _updateFocusedState(
-      state.copyWith(currentHp: value.clamp(0, state.pokemon.maxHp).toInt()),
-    );
+    final updatedHp = input.startsWith('+') || input.startsWith('-')
+        ? (state.currentHp + value).clamp(0, state.pokemon.maxHp).toInt()
+        : value.clamp(0, state.pokemon.maxHp).toInt();
+    await _updateFocusedState(state.copyWith(currentHp: updatedHp));
   }
 
   Future<void> _healFocused() async {
@@ -1114,12 +1096,12 @@ class _NpcMoveCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final move = this.move;
     final damage = move?.damageForLevel(level)?.label;
     final details = <String?>[
-      move?.type,
       damage,
       move?.range == '-' ? null : move?.range,
-      move?.save == null ? null : 'TS ${move!.save}',
+      move?.save == null ? null : 'TS ${move.save}',
     ].whereType<String>().join(' · ');
     return Card(
       child: ExpansionTile(
@@ -1127,8 +1109,18 @@ class _NpcMoveCard extends StatelessWidget {
           move?.name ?? reference,
           style: const TextStyle(fontWeight: FontWeight.w900),
         ),
-        subtitle: Text(
-          maxPp <= 0 ? details : '$details · PP $remainingPp/$maxPp',
+        subtitle: Padding(
+          padding: const EdgeInsets.only(top: 6),
+          child: Wrap(
+            spacing: 8,
+            runSpacing: 4,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              if (move != null) PokemonTypeBadge(type: move.type, height: 18),
+              if (details.isNotEmpty) Text(details),
+              if (maxPp > 0) Text('PP $remainingPp/$maxPp'),
+            ],
+          ),
         ),
         trailing: maxPp <= 0
             ? null
@@ -1155,6 +1147,60 @@ class _NpcMoveCard extends StatelessWidget {
             ),
         ],
       ),
+    );
+  }
+}
+
+class _NpcHpInputDialog extends StatefulWidget {
+  const _NpcHpInputDialog({required this.currentHp, required this.maxHp});
+
+  final int currentHp;
+  final int maxHp;
+
+  @override
+  State<_NpcHpInputDialog> createState() => _NpcHpInputDialogState();
+}
+
+class _NpcHpInputDialogState extends State<_NpcHpInputDialog> {
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: '${widget.currentHp}');
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Modifica PF'),
+      content: TextField(
+        controller: _controller,
+        autofocus: true,
+        keyboardType: const TextInputType.numberWithOptions(signed: true),
+        decoration: InputDecoration(
+          labelText: 'PF o modifica',
+          helperText:
+              'Esempi: -12, +8 oppure 35. Attuali ${widget.currentHp}/${widget.maxHp}',
+        ),
+        onSubmitted: (value) => Navigator.of(context).pop(value),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Annulla'),
+        ),
+        FilledButton(
+          onPressed: () => Navigator.of(context).pop(_controller.text),
+          child: const Text('Conferma'),
+        ),
+      ],
     );
   }
 }

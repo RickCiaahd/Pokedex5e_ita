@@ -34,8 +34,7 @@ class NpcTrainerResultScreen extends StatefulWidget {
   final List<BagItem> items;
 
   @override
-  State<NpcTrainerResultScreen> createState() =>
-      _NpcTrainerResultScreenState();
+  State<NpcTrainerResultScreen> createState() => _NpcTrainerResultScreenState();
 }
 
 class _NpcTrainerResultScreenState extends State<NpcTrainerResultScreen> {
@@ -209,9 +208,7 @@ class _NpcTrainerResultScreenState extends State<NpcTrainerResultScreen> {
                 _trainer.openingLine,
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: Theme.of(
-                    context,
-                  ).colorScheme.onSecondaryContainer,
+                  color: Theme.of(context).colorScheme.onSecondaryContainer,
                   fontStyle: FontStyle.italic,
                   fontWeight: FontWeight.w800,
                 ),
@@ -220,7 +217,7 @@ class _NpcTrainerResultScreenState extends State<NpcTrainerResultScreen> {
           ),
           const SizedBox(height: 12),
           _InformationCard(
-            icon: Icons.strategy_outlined,
+            icon: Icons.route_outlined,
             title: 'Tattiche',
             children: [Text(_trainer.tactics)],
           ),
@@ -230,9 +227,9 @@ class _NpcTrainerResultScreenState extends State<NpcTrainerResultScreen> {
               Expanded(
                 child: Text(
                   'SQUADRA · ${_trainer.team.length}',
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w900,
-                  ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
                 ),
               ),
               Text(
@@ -256,9 +253,9 @@ class _NpcTrainerResultScreenState extends State<NpcTrainerResultScreen> {
             children: [
               Text(
                 _formatMoney(_trainer.rewardMoney),
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w900,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
               ),
               if (_trainer.rewards.isNotEmpty) ...[
                 const SizedBox(height: 8),
@@ -347,10 +344,11 @@ class _TrainerHeader extends StatelessWidget {
                       ),
                       Text(
                         trainer.epithet,
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: colors.onPrimaryContainer,
-                          fontWeight: FontWeight.w700,
-                        ),
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(
+                              color: colors.onPrimaryContainer,
+                              fontWeight: FontWeight.w700,
+                            ),
                       ),
                     ],
                   ),

@@ -21,8 +21,7 @@ class NpcTrainerGeneratorScreen extends StatefulWidget {
       _NpcTrainerGeneratorScreenState();
 }
 
-class _NpcTrainerGeneratorScreenState
-    extends State<NpcTrainerGeneratorScreen> {
+class _NpcTrainerGeneratorScreenState extends State<NpcTrainerGeneratorScreen> {
   static const String _randomSpecialization = '__random__';
 
   final PokemonRepository _pokemonRepository = PokemonRepository();

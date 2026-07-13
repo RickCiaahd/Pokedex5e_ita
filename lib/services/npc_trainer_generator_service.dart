@@ -58,7 +58,8 @@ class NpcTrainerGeneratorService {
       availableSpecializations,
       rng,
     );
-    final preferredType = specializationTypes[primarySpecialization] ?? 'Normal';
+    final preferredType =
+        specializationTypes[primarySpecialization] ?? 'Normal';
     final selectedSpecializations = _selectSpecializations(
       primary: primarySpecialization,
       available: availableSpecializations,
@@ -337,18 +338,21 @@ class NpcTrainerGeneratorService {
       NpcTrainerRank.elite => 8000,
       NpcTrainerRank.boss => 30000,
     };
-    final candidates = items.where((item) {
-      final cost = item.cost ?? 0;
-      if (cost <= 0 || cost > maximumCost || item.name.trim().isEmpty) {
-        return false;
-      }
-      return !const {
-        'key-item',
-        'trainer-gear',
-        'evolution',
-      }.contains(item.type);
-    }).toList(growable: true)
-      ..shuffle(random);
+    final candidates =
+        items
+            .where((item) {
+              final cost = item.cost ?? 0;
+              if (cost <= 0 || cost > maximumCost || item.name.trim().isEmpty) {
+                return false;
+              }
+              return !const {
+                'key-item',
+                'trainer-gear',
+                'evolution',
+              }.contains(item.type);
+            })
+            .toList(growable: true)
+          ..shuffle(random);
 
     return candidates
         .take(min(desired, candidates.length))

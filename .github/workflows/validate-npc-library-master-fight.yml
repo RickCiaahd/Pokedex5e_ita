@@ -31,7 +31,11 @@ jobs:
           source = path.read_text(encoding='utf-8')
           source = source.replace(
               '"        _savedEncounterRepository =\\n"',
+              '"_savedEncounterRepository =\\n"',
+          )
+          source = source.replace(
               '"       _savedEncounterRepository =\\n"',
+              '"_savedEncounterRepository =\\n"',
           )
           path.write_text(source, encoding='utf-8')
           PY

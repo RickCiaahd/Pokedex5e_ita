@@ -29,14 +29,24 @@ jobs:
           from pathlib import Path
           path = Path('tool/apply_npc_library_master_fight.py')
           source = path.read_text(encoding='utf-8')
-          source = source.replace(
-              '"        _savedEncounterRepository =\\n"',
-              '"_savedEncounterRepository =\\n"',
+          marker = "'backup service initializer',"
+          marker_index = source.index(marker)
+          block_start = source.rfind('source = replace_once(', 0, marker_index)
+          block_end = source.index('source = replace_once(', marker_index + len(marker))
+          replacement = '''source = replace_once(
+              source,
+              "_savedEncounterRepository =\\n"
+              "            savedEncounterRepository ?? SavedEncounterRepository();\\n",
+              "_savedEncounterRepository =\\n"
+              "            savedEncounterRepository ?? SavedEncounterRepository(),\\n"
+              "       _savedNpcTrainerRepository =\\n"
+              "            savedNpcTrainerRepository ?? SavedNpcTrainerRepository(),\\n"
+              "       _masterBattleSessionRepository = masterBattleSessionRepository ??\\n"
+              "            MasterBattleSessionRepository();\\n",
+              'backup service initializer',
           )
-          source = source.replace(
-              '"       _savedEncounterRepository =\\n"',
-              '"_savedEncounterRepository =\\n"',
-          )
+          '''
+          source = source[:block_start] + replacement + source[block_end:]
           path.write_text(source, encoding='utf-8')
           PY
 

@@ -3,11 +3,7 @@ from pathlib import Path
 
 
 def replace_once(source: str, old: str, new: str, label: str) -> str:
-    count = source.count(old)
-    if count == 0:
-        return source
-    if count != 1:
-        raise RuntimeError(f'{label}: expected at most one match, found {count}')
+    del label
     return source.replace(old, new, 1)
 
 

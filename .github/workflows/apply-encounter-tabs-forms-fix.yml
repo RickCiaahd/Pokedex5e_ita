@@ -1,0 +1,70 @@
+name: Apply encounter tabs and forms fix
+
+on:
+  push:
+    branches:
+      - fix/encounter-tabs-and-forms
+
+permissions:
+  contents: write
+
+jobs:
+  apply-and-validate:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          ref: fix/encounter-tabs-and-forms
+          fetch-depth: 0
+
+      - name: Apply implementation
+        run: python3 tool/apply_encounter_forms_fix.py
+
+      - name: Remove temporary automation
+        run: |
+          rm tool/apply_encounter_forms_fix.py
+          rm .github/workflows/apply-encounter-tabs-forms-fix.yml
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Format changed Dart files
+        run: |
+          dart format \
+            lib/models/pokemon_form_choice.dart \
+            lib/models/generated_encounter.dart \
+            lib/services/pokemon_generator_service.dart \
+            lib/services/encounter_generator_service.dart \
+            lib/screens/tools/encounter_generator_screen.dart \
+            lib/screens/tools/encounter_collection_editor_screen.dart \
+            lib/screens/tools/encounter_result_screen.dart \
+            test/encounter_generator_service_test.dart
+
+      - name: Check diff
+        run: git diff --check
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Run encounter tests
+        run: flutter test test/encounter_generator_service_test.dart
+
+      - name: Run full test suite
+        run: flutter test
+
+      - name: Commit validated fix
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Fix encounter tabs and exact form selection"
+          git push origin fix/encounter-tabs-and-forms

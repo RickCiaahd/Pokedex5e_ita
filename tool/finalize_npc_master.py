@@ -1,3 +1,4 @@
+# Applies the last cleanup before merging the NPC Master fight.
 from pathlib import Path
 
 

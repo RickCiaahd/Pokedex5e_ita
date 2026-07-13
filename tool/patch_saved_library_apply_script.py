@@ -7,25 +7,21 @@ source = source.replace(
     "from pathlib import Path\nimport re\n",
     1,
 )
-old = r'''source = replace_once(
-    source,
-    r'''       _encounterCollectionRepository =
-             encounterCollectionRepository ?? EncounterCollectionRepository();
-''',
-    r'''       _encounterCollectionRepository =
-             encounterCollectionRepository ?? EncounterCollectionRepository(),
-        _savedEncounterRepository =
-             savedEncounterRepository ?? SavedEncounterRepository();
-''',
-    'backup service initializer',
-)
-'''
-new = r'''source, initializer_count = re.subn(
-    r"[ \\t]+_encounterCollectionRepository[ \\t]*=[ \\t]*\\n[ \\t]+encounterCollectionRepository[ \\t]*\\?\\?[ \\t]*EncounterCollectionRepository\\(\\);",
-    "       _encounterCollectionRepository =\\n"
-    "            encounterCollectionRepository ?? EncounterCollectionRepository(),\\n"
-    "       _savedEncounterRepository =\\n"
-    "            savedEncounterRepository ?? SavedEncounterRepository();",
+start_marker = "source = replace_once(\n    source,\n    r'''       _encounterCollectionRepository ="
+end_marker = "    'backup service initializer',\n)\n"
+start = source.find(start_marker)
+if start < 0:
+    raise RuntimeError('Could not find backup service initializer patch start')
+end = source.find(end_marker, start)
+if end < 0:
+    raise RuntimeError('Could not find backup service initializer patch end')
+end += len(end_marker)
+new = """source, initializer_count = re.subn(
+    r\"[ \\t]+_encounterCollectionRepository[ \\t]*=[ \\t]*\\n[ \\t]+encounterCollectionRepository[ \\t]*\\?\\?[ \\t]*EncounterCollectionRepository\\(\\);\",
+    \"       _encounterCollectionRepository =\\n\"
+    \"            encounterCollectionRepository ?? EncounterCollectionRepository(),\\n\"
+    \"       _savedEncounterRepository =\\n\"
+    \"            savedEncounterRepository ?? SavedEncounterRepository();\",
     source,
     count=1,
 )
@@ -33,7 +29,5 @@ if initializer_count != 1:
     raise RuntimeError(
         f'backup service initializer: expected one match, found {initializer_count}'
     )
-'''
-if old not in source:
-    raise RuntimeError('Could not find backup service initializer patch block')
-path.write_text(source.replace(old, new, 1), encoding='utf-8')
+"""
+path.write_text(source[:start] + new + source[end:], encoding='utf-8')

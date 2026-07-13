@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../widgets/navigation/home_leading_button.dart';
 import 'encounter_generator_screen.dart';
+import 'encounter_library_screen.dart';
 import 'pokemon_generator_screen.dart';
 
 class ToolsScreen extends StatelessWidget {
@@ -84,6 +85,21 @@ class ToolsScreen extends StatelessWidget {
               Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (_) => const EncounterGeneratorScreen(),
+                ),
+              );
+            },
+          ),
+          const SizedBox(height: 10),
+          _ToolCard(
+            icon: Icons.bookmarks_outlined,
+            title: 'Libreria incontri',
+            subtitle:
+                'Salva, riapri, duplica e modifica gli incontri preparati per le sessioni.',
+            actionLabel: 'APRI',
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => const EncounterLibraryScreen(),
                 ),
               );
             },

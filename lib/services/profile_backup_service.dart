@@ -11,6 +11,7 @@ import '../repositories/encounter_collection_repository.dart';
 import '../repositories/pokedex_repositry.dart';
 import '../repositories/pokemon_pc_repository.dart';
 import '../repositories/profile_repository.dart';
+import '../repositories/saved_encounter_repository.dart';
 import '../repositories/setting_repository.dart';
 import '../repositories/team_repository.dart';
 
@@ -24,6 +25,7 @@ class ProfileBackupService {
     SettingsRepository? settingsRepository,
     BattleSessionRepository? battleSessionRepository,
     EncounterCollectionRepository? encounterCollectionRepository,
+    SavedEncounterRepository? savedEncounterRepository,
   }) : _profileRepository = profileRepository ?? ProfileRepository(),
        _pokedexRepository = pokedexRepository ?? PokedexRepository(),
        _teamRepository = teamRepository ?? TeamRepository(),
@@ -33,7 +35,9 @@ class ProfileBackupService {
        _battleSessionRepository =
            battleSessionRepository ?? BattleSessionRepository(),
        _encounterCollectionRepository =
-           encounterCollectionRepository ?? EncounterCollectionRepository();
+           encounterCollectionRepository ?? EncounterCollectionRepository(),
+       _savedEncounterRepository =
+           savedEncounterRepository ?? SavedEncounterRepository();
 
   final ProfileRepository _profileRepository;
   final PokedexRepository _pokedexRepository;
@@ -43,6 +47,7 @@ class ProfileBackupService {
   final SettingsRepository _settingsRepository;
   final BattleSessionRepository _battleSessionRepository;
   final EncounterCollectionRepository _encounterCollectionRepository;
+  final SavedEncounterRepository _savedEncounterRepository;
 
   Future<ProfileBackup> createBackup(String profileId) async {
     final profiles = await _profileRepository.getProfiles();
@@ -67,6 +72,9 @@ class ProfileBackupService {
     final battleSession = await _battleSessionRepository.getSession(profileId);
     final encounterCollections = await _encounterCollectionRepository
         .getCollections(profileId);
+    final savedEncounters = await _savedEncounterRepository.getEncounters(
+      profileId,
+    );
 
     final pokedex = pokedexEntries.values.toList(growable: false)
       ..sort((a, b) => a.pokemonId.compareTo(b.pokemonId));
@@ -84,6 +92,7 @@ class ProfileBackupService {
       settings: settings,
       battleSession: battleSession,
       encounterCollections: encounterCollections,
+      savedEncounters: savedEncounters,
     );
   }
 
@@ -213,6 +222,10 @@ class ProfileBackupService {
       destinationId,
       backup.encounterCollections,
     );
+    await _savedEncounterRepository.replaceEncounters(
+      destinationId,
+      backup.savedEncounters,
+    );
 
     await _pokedexRepository.clearProfilePokedex(destinationId);
     for (final entry in backup.pokedex) {
@@ -246,6 +259,7 @@ class ProfileBackupService {
     await _settingsRepository.deleteSettings(profileId);
     await _battleSessionRepository.deleteSession(profileId);
     await _encounterCollectionRepository.deleteCollections(profileId);
+    await _savedEncounterRepository.deleteEncounters(profileId);
   }
 
   List<TeamSlot> _normalizeTeam(List<TeamSlot> source) {

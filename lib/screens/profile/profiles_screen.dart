@@ -207,7 +207,7 @@ class _ProfilesScreenState extends State<ProfilesScreen> {
         title: const Text('Eliminare profilo?'),
         content: Text(
           'Vuoi eliminare ${profile.name}? Verranno rimossi scheda allenatore, '
-          'Pokédex, squadra, PC, zaino, impostazioni e battaglia salvata.',
+          'Pokédex, squadra, PC, zaino, impostazioni, incontri e battaglia salvata.',
         ),
         actions: [
           TextButton(
@@ -300,7 +300,7 @@ class _ProfilesScreenState extends State<ProfilesScreen> {
               const SizedBox(height: 4),
               Text(
                 'Ogni profilo conserva separatamente scheda, Pokédex, squadra, '
-                'PC, zaino, impostazioni e battaglie.',
+                'PC, zaino, impostazioni, raccolte e incontri salvati.',
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
               const SizedBox(height: 12),
@@ -813,6 +813,10 @@ class _ProfileImportDialogState extends State<_ProfileImportDialog> {
                   _SummaryChip(
                     icon: Icons.backpack_outlined,
                     label: '${backup.bagItemQuantity} oggetti',
+                  ),
+                  _SummaryChip(
+                    icon: Icons.bookmarks_outlined,
+                    label: '${backup.savedEncounters.length} incontri',
                   ),
                   _SummaryChip(
                     icon: Icons.flash_on_outlined,

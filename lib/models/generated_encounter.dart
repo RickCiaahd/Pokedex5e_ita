@@ -104,6 +104,18 @@ class EncounterGeneratorFilters {
   }
 }
 
+class EncounterManualSelection {
+  const EncounterManualSelection({
+    required this.pokemonId,
+    required this.quantity,
+    this.formName,
+  });
+
+  final int pokemonId;
+  final int quantity;
+  final String? formName;
+}
+
 class EncounterMember {
   const EncounterMember({required this.pokemon, this.isLocked = false});
 

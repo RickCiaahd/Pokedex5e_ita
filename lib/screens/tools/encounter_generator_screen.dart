@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../models/encounter_collection.dart';
 import '../../models/generated_encounter.dart';
 import '../../models/pokemon.dart';
+import '../../models/pokemon_form_choice.dart';
 import '../../models/pokemon_type_localization.dart';
 import '../../models/user_profile.dart';
 import '../../repositories/encounter_collection_repository.dart';
@@ -61,7 +62,7 @@ class _EncounterGeneratorScreenState extends State<EncounterGeneratorScreen> {
   int _maxEnemies = 4;
 
   String _manualQuery = '';
-  final Map<int, int> _manualQuantities = <int, int>{};
+  final Map<String, int> _manualQuantities = <String, int>{};
 
   int _collectionCount = 1;
   bool _collectionAllowDuplicates = true;
@@ -130,17 +131,37 @@ class _EncounterGeneratorScreenState extends State<EncounterGeneratorScreen> {
   List<Pokemon> get _filteredCandidates =>
       _encounterService.filterCandidates(_catalog, _filters);
 
-  List<Pokemon> get _manualCandidates {
+  PokemonGeneratorFilters get _manualPokemonFilters => PokemonGeneratorFilters(
+    type: _filters.type,
+    minSr: _filters.minSr,
+    maxSr: _filters.maxSr,
+    minGeneration: _filters.minGeneration,
+    maxGeneration: _filters.maxGeneration,
+    level: _filters.level,
+    includeForms: _filters.includeForms,
+    shinyChance: 0.01,
+  );
+
+  List<_ManualEncounterCandidate> get _manualCandidates {
     final query = _manualQuery.trim().toLowerCase();
-    final filtered = _filteredCandidates;
-    if (query.isEmpty) return filtered;
-    return filtered
-        .where(
-          (pokemon) =>
-              pokemon.name.toLowerCase().contains(query) ||
-              pokemon.id.toString().contains(query),
-        )
-        .toList(growable: false);
+    final candidates = <_ManualEncounterCandidate>[];
+    for (final basePokemon in _filteredCandidates) {
+      final forms = _pokemonGeneratorService.eligibleFormNames(
+        basePokemon,
+        _manualPokemonFilters,
+      );
+      for (final formName in forms) {
+        final resolved = basePokemon.resolveVariant(formName: formName);
+        final candidate = _ManualEncounterCandidate(
+          basePokemon: basePokemon,
+          pokemon: resolved,
+          formName: formName,
+        );
+        if (query.isNotEmpty && !candidate.matches(query)) continue;
+        candidates.add(candidate);
+      }
+    }
+    return candidates;
   }
 
   void _setError(String message) {
@@ -196,9 +217,21 @@ class _EncounterGeneratorScreenState extends State<EncounterGeneratorScreen> {
       _error = null;
     });
     try {
+      final candidatesByKey = {
+        for (final candidate in _manualCandidates) candidate.key: candidate,
+      };
+      final selections = <EncounterManualSelection>[
+        for (final entry in _manualQuantities.entries)
+          if (candidatesByKey[entry.key] case final candidate?)
+            EncounterManualSelection(
+              pokemonId: candidate.basePokemon.id,
+              formName: candidate.formName,
+              quantity: entry.value,
+            ),
+      ];
       final encounter = _encounterService.generateManual(
         catalog: _catalog,
-        quantities: _manualQuantities,
+        selections: selections,
         party: _party,
         filters: _filters,
         targetDifficulty: _difficulty,
@@ -317,13 +350,13 @@ class _EncounterGeneratorScreenState extends State<EncounterGeneratorScreen> {
     await _reloadCollections();
   }
 
-  void _changeManualQuantity(int pokemonId, int delta) {
+  void _changeManualQuantity(String choiceKey, int delta) {
     setState(() {
-      final next = (_manualQuantities[pokemonId] ?? 0) + delta;
+      final next = (_manualQuantities[choiceKey] ?? 0) + delta;
       if (next <= 0) {
-        _manualQuantities.remove(pokemonId);
+        _manualQuantities.remove(choiceKey);
       } else {
-        _manualQuantities[pokemonId] = next.clamp(1, 12).toInt();
+        _manualQuantities[choiceKey] = next.clamp(1, 12).toInt();
       }
       _error = null;
     });
@@ -338,15 +371,27 @@ class _EncounterGeneratorScreenState extends State<EncounterGeneratorScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final tabForeground =
+        Theme.of(context).appBarTheme.foregroundColor ?? colors.onPrimary;
     return DefaultTabController(
       length: 3,
       child: Scaffold(
         appBar: AppBar(
           leading: const HomeLeadingButton(),
           title: const Text('Generatore incontri'),
-          bottom: const TabBar(
+          bottom: TabBar(
             isScrollable: true,
-            tabs: [
+            labelColor: tabForeground,
+            unselectedLabelColor: tabForeground.withValues(alpha: 0.72),
+            indicator: UnderlineTabIndicator(
+              borderSide: BorderSide(color: tabForeground, width: 3),
+            ),
+            indicatorSize: TabBarIndicatorSize.tab,
+            dividerColor: Colors.transparent,
+            overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+            splashFactory: NoSplash.splashFactory,
+            tabs: const [
               Tab(icon: Icon(Icons.auto_awesome), text: 'AUTOMATICO'),
               Tab(icon: Icon(Icons.tune), text: 'MANUALE'),
               Tab(icon: Icon(Icons.library_books_outlined), text: 'RACCOLTE'),
@@ -482,10 +527,10 @@ class _EncounterGeneratorScreenState extends State<EncounterGeneratorScreen> {
   Widget _buildManualTab() {
     final candidates = _manualCandidates;
     final visible = candidates.take(100).toList(growable: false);
-    final selectedTotal = _manualQuantities.values.fold<int>(
-      0,
-      (sum, value) => sum + value,
-    );
+    final visibleKeys = candidates.map((candidate) => candidate.key).toSet();
+    final selectedTotal = _manualQuantities.entries
+        .where((entry) => visibleKeys.contains(entry.key))
+        .fold<int>(0, (sum, entry) => sum + entry.value);
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
       children: [
@@ -537,12 +582,12 @@ class _EncounterGeneratorScreenState extends State<EncounterGeneratorScreen> {
             ),
           )
         else
-          for (final pokemon in visible) ...[
+          for (final candidate in visible) ...[
             _ManualCandidateCard(
-              pokemon: pokemon,
-              quantity: _manualQuantities[pokemon.id] ?? 0,
-              onDecrease: () => _changeManualQuantity(pokemon.id, -1),
-              onIncrease: () => _changeManualQuantity(pokemon.id, 1),
+              candidate: candidate,
+              quantity: _manualQuantities[candidate.key] ?? 0,
+              onDecrease: () => _changeManualQuantity(candidate.key, -1),
+              onIncrease: () => _changeManualQuantity(candidate.key, 1),
             ),
             const SizedBox(height: 6),
           ],
@@ -903,38 +948,76 @@ class _IntDropdown extends StatelessWidget {
   }
 }
 
+class _ManualEncounterCandidate {
+  const _ManualEncounterCandidate({
+    required this.basePokemon,
+    required this.pokemon,
+    required this.formName,
+  });
+
+  final Pokemon basePokemon;
+  final Pokemon pokemon;
+  final String? formName;
+
+  String get key => pokemonFormChoiceKey(
+    pokemonId: basePokemon.id,
+    speciesName: basePokemon.name,
+    formName: formName,
+  );
+
+  String get displayName => pokemonFormDisplayName(basePokemon.name, formName);
+
+  bool matches(String query) {
+    return displayName.toLowerCase().contains(query) ||
+        basePokemon.id.toString().contains(query) ||
+        pokemon.types.any(
+          (type) =>
+              type.toLowerCase().contains(query) ||
+              PokemonTypeLocalization.italianLabel(
+                type,
+              ).toLowerCase().contains(query),
+        );
+  }
+}
+
 class _ManualCandidateCard extends StatelessWidget {
   const _ManualCandidateCard({
-    required this.pokemon,
+    required this.candidate,
     required this.quantity,
     required this.onDecrease,
     required this.onIncrease,
   });
 
-  final Pokemon pokemon;
+  final _ManualEncounterCandidate candidate;
   final int quantity;
   final VoidCallback onDecrease;
   final VoidCallback onIncrease;
 
   @override
   Widget build(BuildContext context) {
+    final pokemon = candidate.pokemon;
     return Card(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
         child: Row(
           children: [
-            PokemonAssetImage(pokemon: pokemon, size: 54),
+            PokemonAssetImage(
+              pokemon: candidate.basePokemon,
+              formName: candidate.formName,
+              size: 54,
+            ),
             const SizedBox(width: 10),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    pokemon.name,
+                    candidate.displayName,
                     style: const TextStyle(fontWeight: FontWeight.w900),
                   ),
                   Text(
-                    '#${pokemon.id.toString().padLeft(3, '0')} · SR ${pokemon.sr} · min. Lv ${pokemon.minLevelFound}',
+                    '${pokemonFormSubtitle(candidate.formName)} · '
+                    'SR ${pokemon.sr} · min. Lv ${pokemon.minLevelFound}',
                   ),
                 ],
               ),
@@ -1026,10 +1109,21 @@ class _CollectionCard extends StatelessWidget {
                   return Row(
                     children: [
                       if (pokemon != null)
-                        PokemonAssetImage(pokemon: pokemon, size: 38),
+                        PokemonAssetImage(
+                          pokemon: pokemon,
+                          formName: entry.formName,
+                          size: 38,
+                        ),
                       if (pokemon != null) const SizedBox(width: 8),
                       Expanded(
-                        child: Text(pokemon?.name ?? '#${entry.pokemonId}'),
+                        child: Text(
+                          pokemon == null
+                              ? '#${entry.pokemonId}'
+                              : pokemonFormDisplayName(
+                                  pokemon.name,
+                                  entry.formName,
+                                ),
+                        ),
                       ),
                       Text(
                         '${entry.weight}%',

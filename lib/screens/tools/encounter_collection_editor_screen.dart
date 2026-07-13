@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../../models/encounter_collection.dart';
 import '../../models/pokemon.dart';
+import '../../models/pokemon_form_choice.dart';
 import '../../repositories/encounter_collection_repository.dart';
+import '../../services/pokemon_generator_service.dart';
 import '../../widgets/navigation/home_leading_button.dart';
 import '../../widgets/pokemon/pokemon_asset_image.dart';
 
@@ -27,10 +29,12 @@ class _EncounterCollectionEditorScreenState
     extends State<EncounterCollectionEditorScreen> {
   final EncounterCollectionRepository _repository =
       EncounterCollectionRepository();
+  final PokemonGeneratorService _generatorService =
+      const PokemonGeneratorService();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _notesController = TextEditingController();
   final TextEditingController _searchController = TextEditingController();
-  final Map<int, int> _weights = <int, int>{};
+  final Map<String, int> _weights = <String, int>{};
 
   bool _isSaving = false;
   String _query = '';
@@ -44,7 +48,13 @@ class _EncounterCollectionEditorScreenState
       _nameController.text = collection.name;
       _notesController.text = collection.notes;
       for (final entry in collection.entries) {
-        _weights[entry.pokemonId] = entry.weight;
+        final pokemon = _pokemonById(entry.pokemonId);
+        final key = pokemonFormChoiceKey(
+          pokemonId: entry.pokemonId,
+          speciesName: pokemon?.name ?? '#${entry.pokemonId}',
+          formName: entry.formName,
+        );
+        _weights[key] = entry.weight;
       }
     }
   }
@@ -59,15 +69,42 @@ class _EncounterCollectionEditorScreenState
 
   int get _total => _weights.values.fold(0, (sum, value) => sum + value);
 
-  List<Pokemon> get _searchResults {
+  PokemonGeneratorFilters get _formFilters => const PokemonGeneratorFilters(
+    minSr: 0,
+    maxSr: 100,
+    minGeneration: 1,
+    maxGeneration: 9,
+    level: 0,
+    includeForms: true,
+  );
+
+  List<_CollectionFormChoice> get _allChoices {
+    final choices = <_CollectionFormChoice>[];
+    for (final basePokemon in widget.catalog) {
+      final forms = _generatorService.eligibleFormNames(
+        basePokemon,
+        _formFilters,
+      );
+      for (final formName in forms) {
+        choices.add(
+          _CollectionFormChoice(
+            basePokemon: basePokemon,
+            pokemon: basePokemon.resolveVariant(formName: formName),
+            formName: formName,
+          ),
+        );
+      }
+    }
+    return choices;
+  }
+
+  List<_CollectionFormChoice> get _searchResults {
     final query = _query.trim().toLowerCase();
     if (query.isEmpty) return const [];
-    return widget.catalog
+    return _allChoices
         .where(
-          (pokemon) =>
-              !_weights.containsKey(pokemon.id) &&
-              (pokemon.name.toLowerCase().contains(query) ||
-                  pokemon.id.toString().contains(query)),
+          (choice) =>
+              !_weights.containsKey(choice.key) && choice.matches(query),
         )
         .take(30)
         .toList(growable: false);
@@ -80,27 +117,27 @@ class _EncounterCollectionEditorScreenState
     return null;
   }
 
-  void _addPokemon(Pokemon pokemon) {
+  void _addChoice(_CollectionFormChoice choice) {
     setState(() {
-      _weights[pokemon.id] = 1;
+      _weights[choice.key] = 1;
       _query = '';
       _searchController.clear();
       _error = null;
     });
   }
 
-  void _removePokemon(int pokemonId) {
+  void _removeChoice(String key) {
     setState(() {
-      _weights.remove(pokemonId);
+      _weights.remove(key);
       _error = null;
     });
   }
 
-  void _setWeight(int pokemonId, String rawValue) {
+  void _setWeight(String key, String rawValue) {
     final parsed = int.tryParse(rawValue);
     if (parsed == null) return;
     setState(() {
-      _weights[pokemonId] = parsed.clamp(1, 100).toInt();
+      _weights[key] = parsed.clamp(1, 100).toInt();
       _error = null;
     });
   }
@@ -124,6 +161,27 @@ class _EncounterCollectionEditorScreenState
       return;
     }
 
+    final choicesByKey = {for (final choice in _allChoices) choice.key: choice};
+    final entries = <EncounterCollectionEntry>[];
+    for (final entry in _weights.entries) {
+      final choice = choicesByKey[entry.key];
+      if (choice == null) continue;
+      entries.add(
+        EncounterCollectionEntry(
+          pokemonId: choice.basePokemon.id,
+          formName: choice.formName,
+          weight: entry.value,
+        ),
+      );
+    }
+    if (entries.length != _weights.length) {
+      setState(() {
+        _error =
+            'Una forma selezionata non è più disponibile nel catalogo. Rimuovila e aggiungila di nuovo.';
+      });
+      return;
+    }
+
     setState(() {
       _isSaving = true;
       _error = null;
@@ -135,10 +193,7 @@ class _EncounterCollectionEditorScreenState
         name: name,
         notes: _notesController.text.trim(),
         updatedAt: DateTime.now(),
-        entries: [
-          for (final entry in _weights.entries)
-            EncounterCollectionEntry(pokemonId: entry.key, weight: entry.value),
-        ]..sort((a, b) => b.weight.compareTo(a.weight)),
+        entries: entries..sort((a, b) => b.weight.compareTo(a.weight)),
       );
       await _repository.saveCollection(
         profileId: widget.profileId,
@@ -156,7 +211,8 @@ class _EncounterCollectionEditorScreenState
 
   @override
   Widget build(BuildContext context) {
-    final selectedIds = _weights.keys.toList()
+    final choicesByKey = {for (final choice in _allChoices) choice.key: choice};
+    final selectedKeys = _weights.keys.toList()
       ..sort((a, b) {
         final weightCompare = (_weights[b] ?? 0).compareTo(_weights[a] ?? 0);
         return weightCompare != 0 ? weightCompare : a.compareTo(b);
@@ -200,14 +256,18 @@ class _EncounterCollectionEditorScreenState
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   const Text(
-                    'AGGIUNGI POKÉMON',
+                    'AGGIUNGI POKÉMON O FORMA',
                     style: TextStyle(fontWeight: FontWeight.w900),
+                  ),
+                  const SizedBox(height: 4),
+                  const Text(
+                    'La forma base e ogni forma permanente sono selezionabili separatamente.',
                   ),
                   const SizedBox(height: 8),
                   TextField(
                     controller: _searchController,
                     decoration: const InputDecoration(
-                      labelText: 'Nome o numero',
+                      labelText: 'Nome, forma o numero',
                       prefixIcon: Icon(Icons.search),
                       border: OutlineInputBorder(),
                     ),
@@ -216,25 +276,27 @@ class _EncounterCollectionEditorScreenState
                   if (_searchResults.isNotEmpty) ...[
                     const SizedBox(height: 8),
                     SizedBox(
-                      height: (_searchResults.length * 64.0)
-                          .clamp(64.0, 260.0)
+                      height: (_searchResults.length * 68.0)
+                          .clamp(68.0, 300.0)
                           .toDouble(),
                       child: ListView.builder(
                         itemCount: _searchResults.length,
                         itemBuilder: (context, index) {
-                          final pokemon = _searchResults[index];
+                          final choice = _searchResults[index];
                           return ListTile(
                             dense: true,
                             leading: PokemonAssetImage(
-                              pokemon: pokemon,
+                              pokemon: choice.basePokemon,
+                              formName: choice.formName,
                               size: 46,
                             ),
-                            title: Text(pokemon.name),
+                            title: Text(choice.displayName),
                             subtitle: Text(
-                              '#${pokemon.id.toString().padLeft(3, '0')}',
+                              '${pokemonFormSubtitle(choice.formName)} · '
+                              '#${choice.basePokemon.id.toString().padLeft(3, '0')}',
                             ),
                             trailing: const Icon(Icons.add_circle_outline),
-                            onTap: () => _addPokemon(pokemon),
+                            onTap: () => _addChoice(choice),
                           );
                         },
                       ),
@@ -265,52 +327,52 @@ class _EncounterCollectionEditorScreenState
             ],
           ),
           const SizedBox(height: 8),
-          if (selectedIds.isEmpty)
+          if (selectedKeys.isEmpty)
             const Card(
               child: Padding(
                 padding: EdgeInsets.all(20),
                 child: Text(
-                  'Cerca e aggiungi i Pokémon che possono apparire in questa raccolta.',
+                  'Cerca e aggiungi i Pokémon o le forme che possono apparire in questa raccolta.',
                   textAlign: TextAlign.center,
                 ),
               ),
             )
           else
-            for (final pokemonId in selectedIds) ...[
+            for (final key in selectedKeys) ...[
               Builder(
                 builder: (context) {
-                  final pokemon = _pokemonById(pokemonId);
-                  if (pokemon == null) return const SizedBox.shrink();
+                  final choice = choicesByKey[key];
+                  if (choice == null) return const SizedBox.shrink();
                   return Card(
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(10, 8, 8, 8),
                       child: Row(
                         children: [
-                          PokemonAssetImage(pokemon: pokemon, size: 52),
+                          PokemonAssetImage(
+                            pokemon: choice.basePokemon,
+                            formName: choice.formName,
+                            size: 52,
+                          ),
                           const SizedBox(width: 10),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  pokemon.name,
+                                  choice.displayName,
                                   style: const TextStyle(
                                     fontWeight: FontWeight.w900,
                                   ),
                                 ),
-                                Text(
-                                  '#${pokemon.id.toString().padLeft(3, '0')}',
-                                ),
+                                Text(pokemonFormSubtitle(choice.formName)),
                               ],
                             ),
                           ),
                           SizedBox(
                             width: 82,
                             child: TextFormField(
-                              key: ValueKey(
-                                '$pokemonId-${_weights[pokemonId]}',
-                              ),
-                              initialValue: '${_weights[pokemonId]}',
+                              key: ValueKey('$key-${_weights[key]}'),
+                              initialValue: '${_weights[key]}',
                               keyboardType: TextInputType.number,
                               textAlign: TextAlign.center,
                               decoration: const InputDecoration(
@@ -318,12 +380,11 @@ class _EncounterCollectionEditorScreenState
                                 border: OutlineInputBorder(),
                                 isDense: true,
                               ),
-                              onChanged: (value) =>
-                                  _setWeight(pokemonId, value),
+                              onChanged: (value) => _setWeight(key, value),
                             ),
                           ),
                           IconButton(
-                            onPressed: () => _removePokemon(pokemonId),
+                            onPressed: () => _removeChoice(key),
                             tooltip: 'Rimuovi',
                             icon: const Icon(Icons.delete_outline),
                           ),
@@ -370,5 +431,31 @@ class _EncounterCollectionEditorScreenState
         ],
       ),
     );
+  }
+}
+
+class _CollectionFormChoice {
+  const _CollectionFormChoice({
+    required this.basePokemon,
+    required this.pokemon,
+    required this.formName,
+  });
+
+  final Pokemon basePokemon;
+  final Pokemon pokemon;
+  final String? formName;
+
+  String get key => pokemonFormChoiceKey(
+    pokemonId: basePokemon.id,
+    speciesName: basePokemon.name,
+    formName: formName,
+  );
+
+  String get displayName => pokemonFormDisplayName(basePokemon.name, formName);
+
+  bool matches(String query) {
+    return displayName.toLowerCase().contains(query) ||
+        basePokemon.id.toString().contains(query) ||
+        pokemon.types.any((type) => type.toLowerCase().contains(query));
   }
 }

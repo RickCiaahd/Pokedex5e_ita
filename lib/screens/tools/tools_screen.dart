@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../widgets/navigation/home_leading_button.dart';
 import 'encounter_generator_screen.dart';
 import 'encounter_library_screen.dart';
+import 'npc_trainer_generator_screen.dart';
 import 'pokemon_generator_screen.dart';
 
 class ToolsScreen extends StatelessWidget {
@@ -39,15 +40,14 @@ class ToolsScreen extends StatelessWidget {
                       children: [
                         Text(
                           'Strumenti per giocatori e Master',
-                          style: Theme.of(context).textTheme.titleLarge
-                              ?.copyWith(
-                                color: colorScheme.onPrimaryContainer,
-                                fontWeight: FontWeight.w900,
-                              ),
+                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            color: colorScheme.onPrimaryContainer,
+                            fontWeight: FontWeight.w900,
+                          ),
                         ),
                         const SizedBox(height: 6),
                         Text(
-                          'Genera Pokémon e incontri coerenti con gruppo, difficoltà, ambiente e raccolte personalizzate.',
+                          'Genera Pokémon, incontri e Allenatori PNG completi per preparare rapidamente le sessioni.',
                           style: TextStyle(
                             color: colorScheme.onPrimaryContainer,
                           ),
@@ -105,12 +105,19 @@ class ToolsScreen extends StatelessWidget {
             },
           ),
           const SizedBox(height: 10),
-          const _ToolCard(
+          _ToolCard(
             icon: Icons.groups_2_outlined,
             title: 'Allenatori PNG',
             subtitle:
-                'Squadre, personalità, tattiche e ricompense per gli allenatori del Master.',
-            actionLabel: 'PROSSIMAMENTE',
+                'Genera identità, specializzazione, squadra, personalità, tattiche e ricompense.',
+            actionLabel: 'APRI',
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => const NpcTrainerGeneratorScreen(),
+                ),
+              );
+            },
           ),
         ],
       ),

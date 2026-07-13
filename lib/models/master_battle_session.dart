@@ -55,12 +55,14 @@ class MasterBattlePokemonState {
     return MasterBattlePokemonState(
       slotIndex: _readInt(json['slotIndex']),
       pokemon: pokemon,
-      currentHp: _readInt(json['currentHp'], fallback: pokemon.maxHp)
-          .clamp(0, pokemon.maxHp)
-          .toInt(),
+      currentHp: _readInt(
+        json['currentHp'],
+        fallback: pokemon.maxHp,
+      ).clamp(0, pokemon.maxHp).toInt(),
       nonVolatileStatus: _readNullableString(json['nonVolatileStatus']),
       volatileStatuses: {
-        for (final value in _readList(json['volatileStatuses'])) value.toString(),
+        for (final value in _readList(json['volatileStatuses']))
+          value.toString(),
       },
       remainingPp: {
         for (final entry in Map<dynamic, dynamic>.from(
@@ -143,12 +145,12 @@ class MasterBattleParticipant {
         if (value is Map)
           MasterBattlePokemonState.fromJson(Map<String, dynamic>.from(value)),
     ];
-    final safeLimit = _readInt(json['activeLimit'], fallback: 1)
-        .clamp(1, team.isEmpty ? 1 : team.length)
-        .toInt();
+    final safeLimit = _readInt(
+      json['activeLimit'],
+      fallback: 1,
+    ).clamp(1, team.isEmpty ? 1 : team.length).toInt();
     final active = {
-      for (final value in _readList(json['activeSlotIndices']))
-        _readInt(value),
+      for (final value in _readList(json['activeSlotIndices'])) _readInt(value),
     }.where((slot) => team.any((pokemon) => pokemon.slotIndex == slot)).toSet();
     if (active.isEmpty && team.isNotEmpty) active.add(team.first.slotIndex);
     while (active.length > safeLimit) active.remove(active.last);
@@ -161,7 +163,9 @@ class MasterBattleParticipant {
       tactics: json['tactics']?.toString() ?? '',
       personality: json['personality']?.toString() ?? '',
       rewardMoney: _readInt(json['rewardMoney']),
-      rewards: [for (final value in _readList(json['rewards'])) value.toString()],
+      rewards: [
+        for (final value in _readList(json['rewards'])) value.toString(),
+      ],
       activeLimit: safeLimit,
       activeSlotIndices: active,
       team: team,
@@ -198,7 +202,8 @@ class MasterBattleSession {
       participants.isNotEmpty &&
       participants.every(
         (participant) =>
-            participant.trainerId.trim().isNotEmpty && participant.team.isNotEmpty,
+            participant.trainerId.trim().isNotEmpty &&
+            participant.team.isNotEmpty,
       );
 
   MasterBattleSession copyWith({
@@ -248,13 +253,12 @@ class MasterBattleSession {
           MasterBattleParticipant.fromJson(Map<String, dynamic>.from(value)),
     ];
     final selected = json['selectedTrainerId']?.toString() ?? '';
-    final selectedTrainerId = participants.any(
-      (participant) => participant.trainerId == selected,
-    )
+    final selectedTrainerId =
+        participants.any((participant) => participant.trainerId == selected)
         ? selected
         : participants.isEmpty
-            ? ''
-            : participants.first.trainerId;
+        ? ''
+        : participants.first.trainerId;
     final initiative = [
       for (final value in _readList(json['initiativeEntries']))
         if (value is Map)
@@ -266,14 +270,13 @@ class MasterBattleSession {
       round: _readInt(json['round'], fallback: 1).clamp(1, 9999).toInt(),
       turnIndex: initiative.isEmpty
           ? 0
-          : _readInt(json['turnIndex'])
-              .clamp(0, initiative.length - 1)
-              .toInt(),
+          : _readInt(json['turnIndex']).clamp(0, initiative.length - 1).toInt(),
       selectedTrainerId: selectedTrainerId,
       focusedSlotIndex: _readNullableInt(json['focusedSlotIndex']),
       participants: participants,
       initiativeEntries: initiative,
-      updatedAt: DateTime.tryParse(json['updatedAt']?.toString() ?? '') ??
+      updatedAt:
+          DateTime.tryParse(json['updatedAt']?.toString() ?? '') ??
           DateTime.now(),
     );
   }

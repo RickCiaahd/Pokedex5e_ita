@@ -51,35 +51,38 @@ void main() {
     expect(restored.team.last.level, 5);
   });
 
-  test('master fight supports multiple trainers with independent active teams', () {
-    final first = mapper.fromGenerated(
-      _generatedTrainer(rattata, pidgey),
-      name: 'Marco',
-      now: DateTime.utc(2026, 7, 13, 10),
-    );
-    final second = mapper.fromGenerated(
-      _generatedTrainer(pidgey, rattata),
-      name: 'Lucia',
-      now: DateTime.utc(2026, 7, 13, 11),
-    );
+  test(
+    'master fight supports multiple trainers with independent active teams',
+    () {
+      final first = mapper.fromGenerated(
+        _generatedTrainer(rattata, pidgey),
+        name: 'Marco',
+        now: DateTime.utc(2026, 7, 13, 10),
+      );
+      final second = mapper.fromGenerated(
+        _generatedTrainer(pidgey, rattata),
+        name: 'Lucia',
+        now: DateTime.utc(2026, 7, 13, 11),
+      );
 
-    final session = battleService.createSession(
-      profileId: 'profile-1',
-      trainers: [first, second],
-      activeCounts: {first.id: 2, second.id: 1},
-      catalog: [rattata, pidgey],
-      random: Random(4),
-    );
+      final session = battleService.createSession(
+        profileId: 'profile-1',
+        trainers: [first, second],
+        activeCounts: {first.id: 2, second.id: 1},
+        catalog: [rattata, pidgey],
+        random: Random(4),
+      );
 
-    expect(session.participants, hasLength(2));
-    expect(session.participants.first.activeSlotIndices, hasLength(2));
-    expect(session.participants.last.activeSlotIndices, hasLength(1));
-    expect(session.initiativeEntries, hasLength(3));
-    expect(
-      session.initiativeEntries.map((entry) => entry.id).toSet(),
-      hasLength(3),
-    );
-  });
+      expect(session.participants, hasLength(2));
+      expect(session.participants.first.activeSlotIndices, hasLength(2));
+      expect(session.participants.last.activeSlotIndices, hasLength(1));
+      expect(session.initiativeEntries, hasLength(3));
+      expect(
+        session.initiativeEntries.map((entry) => entry.id).toSet(),
+        hasLength(3),
+      );
+    },
+  );
 
   test('master battle session JSON preserves HP, PP and statuses', () {
     final saved = mapper.fromGenerated(
@@ -133,10 +136,7 @@ GeneratedNpcTrainer _generatedTrainer(Pokemon first, Pokemon second) {
     tactics: 'Conserva il Pokémon più resistente per la fine.',
     rewardMoney: 1200,
     rewards: const ['Potion'],
-    team: [
-      _generatedPokemon(first),
-      _generatedPokemon(second),
-    ],
+    team: [_generatedPokemon(first), _generatedPokemon(second)],
     options: const NpcTrainerGeneratorOptions(
       trainerLevel: 5,
       pokemonLevel: 5,

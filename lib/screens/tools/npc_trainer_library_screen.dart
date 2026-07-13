@@ -205,7 +205,10 @@ class _NpcTrainerLibraryScreenState extends State<NpcTrainerLibraryScreen> {
     final session = await _battleRepository.getSession(profile.id);
     if (!mounted) return;
     if (session == null) {
-      _setMessage('Non c’è nessun fight del Master da riprendere.', isError: true);
+      _setMessage(
+        'Non c’è nessun fight del Master da riprendere.',
+        isError: true,
+      );
       await _load();
       return;
     }
@@ -556,10 +559,7 @@ class _NpcTrainerCard extends StatelessWidget {
                     if (value == 'delete') onDelete();
                   },
                   itemBuilder: (_) => const [
-                    PopupMenuItem(
-                      value: 'duplicate',
-                      child: Text('Duplica'),
-                    ),
+                    PopupMenuItem(value: 'duplicate', child: Text('Duplica')),
                     PopupMenuItem(value: 'delete', child: Text('Elimina')),
                   ],
                 ),

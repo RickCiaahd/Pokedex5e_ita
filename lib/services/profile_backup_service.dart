@@ -2,16 +2,19 @@ import 'dart:convert';
 
 import '../models/bag_inventory_entry.dart';
 import '../models/battle_session.dart';
+import '../models/master_battle_session.dart';
 import '../models/profile_backup.dart';
 import '../models/team_slot.dart';
 import '../models/user_profile.dart';
 import '../repositories/bag_inventory_repository.dart';
 import '../repositories/battle_session_repository.dart';
 import '../repositories/encounter_collection_repository.dart';
+import '../repositories/master_battle_session_repository.dart';
 import '../repositories/pokedex_repositry.dart';
 import '../repositories/pokemon_pc_repository.dart';
 import '../repositories/profile_repository.dart';
 import '../repositories/saved_encounter_repository.dart';
+import '../repositories/saved_npc_trainer_repository.dart';
 import '../repositories/setting_repository.dart';
 import '../repositories/team_repository.dart';
 
@@ -26,6 +29,8 @@ class ProfileBackupService {
     BattleSessionRepository? battleSessionRepository,
     EncounterCollectionRepository? encounterCollectionRepository,
     SavedEncounterRepository? savedEncounterRepository,
+    SavedNpcTrainerRepository? savedNpcTrainerRepository,
+    MasterBattleSessionRepository? masterBattleSessionRepository,
   }) : _profileRepository = profileRepository ?? ProfileRepository(),
        _pokedexRepository = pokedexRepository ?? PokedexRepository(),
        _teamRepository = teamRepository ?? TeamRepository(),
@@ -37,7 +42,11 @@ class ProfileBackupService {
        _encounterCollectionRepository =
            encounterCollectionRepository ?? EncounterCollectionRepository(),
        _savedEncounterRepository =
-           savedEncounterRepository ?? SavedEncounterRepository();
+           savedEncounterRepository ?? SavedEncounterRepository(),
+       _savedNpcTrainerRepository =
+           savedNpcTrainerRepository ?? SavedNpcTrainerRepository(),
+       _masterBattleSessionRepository =
+           masterBattleSessionRepository ?? MasterBattleSessionRepository();
 
   final ProfileRepository _profileRepository;
   final PokedexRepository _pokedexRepository;
@@ -48,6 +57,8 @@ class ProfileBackupService {
   final BattleSessionRepository _battleSessionRepository;
   final EncounterCollectionRepository _encounterCollectionRepository;
   final SavedEncounterRepository _savedEncounterRepository;
+  final SavedNpcTrainerRepository _savedNpcTrainerRepository;
+  final MasterBattleSessionRepository _masterBattleSessionRepository;
 
   Future<ProfileBackup> createBackup(String profileId) async {
     final profiles = await _profileRepository.getProfiles();
@@ -75,6 +86,12 @@ class ProfileBackupService {
     final savedEncounters = await _savedEncounterRepository.getEncounters(
       profileId,
     );
+    final savedNpcTrainers = await _savedNpcTrainerRepository.getTrainers(
+      profileId,
+    );
+    final masterBattleSession = await _masterBattleSessionRepository.getSession(
+      profileId,
+    );
 
     final pokedex = pokedexEntries.values.toList(growable: false)
       ..sort((a, b) => a.pokemonId.compareTo(b.pokemonId));
@@ -93,6 +110,8 @@ class ProfileBackupService {
       battleSession: battleSession,
       encounterCollections: encounterCollections,
       savedEncounters: savedEncounters,
+      savedNpcTrainers: savedNpcTrainers,
+      masterBattleSession: masterBattleSession,
     );
   }
 
@@ -226,6 +245,26 @@ class ProfileBackupService {
       destinationId,
       backup.savedEncounters,
     );
+    await _savedNpcTrainerRepository.replaceTrainers(
+      destinationId,
+      backup.savedNpcTrainers,
+    );
+    final masterSession = backup.masterBattleSession;
+    if (masterSession != null) {
+      await _masterBattleSessionRepository.saveSession(
+        MasterBattleSession(
+          profileId: destinationId,
+          id: masterSession.id,
+          round: masterSession.round,
+          turnIndex: masterSession.turnIndex,
+          selectedTrainerId: masterSession.selectedTrainerId,
+          focusedSlotIndex: masterSession.focusedSlotIndex,
+          participants: masterSession.participants,
+          initiativeEntries: masterSession.initiativeEntries,
+          updatedAt: masterSession.updatedAt,
+        ),
+      );
+    }
 
     await _pokedexRepository.clearProfilePokedex(destinationId);
     for (final entry in backup.pokedex) {
@@ -260,6 +299,8 @@ class ProfileBackupService {
     await _battleSessionRepository.deleteSession(profileId);
     await _encounterCollectionRepository.deleteCollections(profileId);
     await _savedEncounterRepository.deleteEncounters(profileId);
+    await _savedNpcTrainerRepository.deleteTrainers(profileId);
+    await _masterBattleSessionRepository.deleteSession(profileId);
   }
 
   List<TeamSlot> _normalizeTeam(List<TeamSlot> source) {

@@ -90,9 +90,9 @@ class _NpcBattleScreenState extends State<NpcBattleScreen> {
   }
 
   Future<void> _commit(MasterBattleSession next, {String? message}) async {
-    final normalized = _withCatalogInitiativeNames(next).copyWith(
-      updatedAt: DateTime.now(),
-    );
+    final normalized = _withCatalogInitiativeNames(
+      next,
+    ).copyWith(updatedAt: DateTime.now());
     setState(() {
       _session = normalized;
       _message = message;
@@ -100,9 +100,7 @@ class _NpcBattleScreenState extends State<NpcBattleScreen> {
     await _repository.saveSession(normalized);
   }
 
-  MasterBattleSession _withCatalogInitiativeNames(
-    MasterBattleSession session,
-  ) {
+  MasterBattleSession _withCatalogInitiativeNames(MasterBattleSession session) {
     final participants = {
       for (final participant in session.participants)
         participant.trainerId: participant,
@@ -136,7 +134,9 @@ class _NpcBattleScreenState extends State<NpcBattleScreen> {
         break;
       }
     }
-    final pokemon = state == null ? null : _pokemonById[state.pokemon.pokemonId];
+    final pokemon = state == null
+        ? null
+        : _pokemonById[state.pokemon.pokemonId];
     final pokemonName = pokemon == null
         ? '#${state?.pokemon.pokemonId ?? '?'}'
         : pokemonFormDisplayName(pokemon.name, state!.pokemon.formName);
@@ -151,10 +151,7 @@ class _NpcBattleScreenState extends State<NpcBattleScreen> {
         ? participant.activeSlotIndices.first
         : participant.team.first.slotIndex;
     await _commit(
-      _session.copyWith(
-        selectedTrainerId: trainerId,
-        focusedSlotIndex: focus,
-      ),
+      _session.copyWith(selectedTrainerId: trainerId, focusedSlotIndex: focus),
     );
   }
 
@@ -208,7 +205,10 @@ class _NpcBattleScreenState extends State<NpcBattleScreen> {
             ? candidate.copyWith(team: team)
             : candidate,
     ];
-    await _commit(_session.copyWith(participants: participants), message: message);
+    await _commit(
+      _session.copyWith(participants: participants),
+      message: message,
+    );
   }
 
   Future<void> _changeHp(int delta) async {
@@ -253,9 +253,7 @@ class _NpcBattleScreenState extends State<NpcBattleScreen> {
     final value = int.tryParse(raw.trim());
     if (value == null) return;
     await _updateFocusedState(
-      state.copyWith(
-        currentHp: value.clamp(0, state.pokemon.maxHp).toInt(),
-      ),
+      state.copyWith(currentHp: value.clamp(0, state.pokemon.maxHp).toInt()),
     );
   }
 
@@ -331,18 +329,11 @@ class _NpcBattleScreenState extends State<NpcBattleScreen> {
       nextIndex = 0;
       nextRound++;
     }
-    await _commit(
-      _session.copyWith(round: nextRound, turnIndex: nextIndex),
-    );
+    await _commit(_session.copyWith(round: nextRound, turnIndex: nextIndex));
   }
 
   Future<void> _nextRound() async {
-    await _commit(
-      _session.copyWith(
-        round: _session.round + 1,
-        turnIndex: 0,
-      ),
-    );
+    await _commit(_session.copyWith(round: _session.round + 1, turnIndex: 0));
   }
 
   Future<void> _rerollInitiative() async {
@@ -390,9 +381,9 @@ class _NpcBattleScreenState extends State<NpcBattleScreen> {
               final name = nameController.text.trim();
               final initiative = int.tryParse(initiativeController.text.trim());
               if (name.isEmpty || initiative == null) return;
-              Navigator.of(context).pop(
-                _InitiativeInput(name: name, initiative: initiative),
-              );
+              Navigator.of(
+                context,
+              ).pop(_InitiativeInput(name: name, initiative: initiative));
             },
             child: const Text('Aggiungi'),
           ),
@@ -411,9 +402,7 @@ class _NpcBattleScreenState extends State<NpcBattleScreen> {
         isTrainerGroup: false,
       ),
     ]..sort((a, b) => b.initiative.compareTo(a.initiative));
-    await _commit(
-      _session.copyWith(initiativeEntries: entries, turnIndex: 0),
-    );
+    await _commit(_session.copyWith(initiativeEntries: entries, turnIndex: 0));
   }
 
   Future<void> _removeInitiativeEntry(BattleInitiativeEntry entry) async {
@@ -610,9 +599,9 @@ class _NpcBattleScreenState extends State<NpcBattleScreen> {
           const SizedBox(height: 14),
           Text(
             'SQUADRA DI ${participant.name.toUpperCase()}',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w900,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
           ),
           const SizedBox(height: 8),
           for (final member in participant.team) ...[
@@ -645,9 +634,9 @@ class _NpcBattleScreenState extends State<NpcBattleScreen> {
           const SizedBox(height: 12),
           Text(
             'MOSSE DA COMBATTIMENTO',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w900,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
           ),
           const SizedBox(height: 8),
           for (final reference in state.pokemon.selectedMoves)
@@ -759,9 +748,9 @@ class _TrainerFightCard extends StatelessWidget {
           children: [
             Text(
               participant.displayName,
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.w900,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
             ),
             Text(
               '${participant.rank} · ${participant.activeLimit} Pokémon attivi contemporaneamente',
@@ -838,7 +827,9 @@ class _InitiativeCard extends StatelessWidget {
                 ListTile(
                   dense: true,
                   selected: index == turnIndex,
-                  leading: CircleAvatar(child: Text('${entries[index].initiative}')),
+                  leading: CircleAvatar(
+                    child: Text('${entries[index].initiative}'),
+                  ),
                   title: Text(entries[index].name),
                   subtitle: Text(
                     entries[index].isTrainerGroup
@@ -1040,9 +1031,9 @@ class _FocusedPokemonCard extends StatelessWidget {
             Text(
               'PF ${state.currentHp}/${state.pokemon.maxHp}',
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.w900,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
             ),
             const SizedBox(height: 6),
             LinearProgressIndicator(
@@ -1059,7 +1050,10 @@ class _FocusedPokemonCard extends StatelessWidget {
               children: [
                 OutlinedButton(onPressed: onMinusFive, child: const Text('-5')),
                 OutlinedButton(onPressed: onMinusOne, child: const Text('-1')),
-                OutlinedButton(onPressed: onEditHp, child: const Text('MODIFICA')),
+                OutlinedButton(
+                  onPressed: onEditHp,
+                  child: const Text('MODIFICA'),
+                ),
                 OutlinedButton(onPressed: onPlusOne, child: const Text('+1')),
                 OutlinedButton(onPressed: onPlusFive, child: const Text('+5')),
               ],
@@ -1071,7 +1065,10 @@ class _FocusedPokemonCard extends StatelessWidget {
               children: [
                 for (final status in statuses) Chip(label: Text(status)),
                 ActionChip(
-                  avatar: const Icon(Icons.health_and_safety_outlined, size: 18),
+                  avatar: const Icon(
+                    Icons.health_and_safety_outlined,
+                    size: 18,
+                  ),
                   label: const Text('STATUS'),
                   onPressed: onStatus,
                 ),
@@ -1231,15 +1228,15 @@ class _StatusDialogState extends State<_StatusDialog> {
           child: const Text('Annulla'),
         ),
         TextButton(
-          onPressed: () => Navigator.of(context).pop(
-            const _StatusResult(nonVolatile: null, volatile: {}),
-          ),
+          onPressed: () => Navigator.of(
+            context,
+          ).pop(const _StatusResult(nonVolatile: null, volatile: {})),
           child: const Text('Pulisci'),
         ),
         FilledButton(
-          onPressed: () => Navigator.of(context).pop(
-            _StatusResult(nonVolatile: _nonVolatile, volatile: _volatile),
-          ),
+          onPressed: () => Navigator.of(
+            context,
+          ).pop(_StatusResult(nonVolatile: _nonVolatile, volatile: _volatile)),
           child: const Text('Conferma'),
         ),
       ],

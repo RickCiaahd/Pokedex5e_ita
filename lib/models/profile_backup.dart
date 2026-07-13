@@ -1,15 +1,17 @@
 import 'bag_inventory_entry.dart';
 import 'battle_session.dart';
 import 'encounter_collection.dart';
+import 'master_battle_session.dart';
 import 'pc_pokemon.dart';
 import 'pokedex_entry.dart';
 import 'profile_settings.dart';
 import 'saved_encounter.dart';
+import 'saved_npc_trainer.dart';
 import 'team_slot.dart';
 import 'user_profile.dart';
 
 class ProfileBackup {
-  static const int currentFormatVersion = 3;
+  static const int currentFormatVersion = 4;
 
   ProfileBackup({
     required this.formatVersion,
@@ -23,6 +25,8 @@ class ProfileBackup {
     required this.battleSession,
     this.encounterCollections = const [],
     this.savedEncounters = const [],
+    this.savedNpcTrainers = const [],
+    this.masterBattleSession,
   });
 
   final int formatVersion;
@@ -36,6 +40,8 @@ class ProfileBackup {
   final BattleSession? battleSession;
   final List<EncounterCollection> encounterCollections;
   final List<SavedEncounter> savedEncounters;
+  final List<SavedNpcTrainer> savedNpcTrainers;
+  final MasterBattleSession? masterBattleSession;
 
   int get seenSpecies => pokedex.where((entry) => entry.seen).length;
 
@@ -74,6 +80,10 @@ class ProfileBackup {
       'savedEncounters': savedEncounters
           .map((encounter) => encounter.toJson())
           .toList(growable: false),
+      'savedNpcTrainers': savedNpcTrainers
+          .map((trainer) => trainer.toJson())
+          .toList(growable: false),
+      'masterBattleSession': masterBattleSession?.toJson(),
     };
   }
 
@@ -135,6 +145,18 @@ class ProfileBackup {
         ))
           SavedEncounter.fromJson(value),
       ],
+      savedNpcTrainers: [
+        for (final value in _readMapList(
+          json['savedNpcTrainers'],
+          'savedNpcTrainers',
+        ))
+          SavedNpcTrainer.fromJson(value),
+      ],
+      masterBattleSession: json['masterBattleSession'] is Map
+          ? MasterBattleSession.fromJson(
+              Map<String, dynamic>.from(json['masterBattleSession'] as Map),
+            )
+          : null,
     );
 
     backup.validate();
@@ -225,6 +247,25 @@ class ProfileBackup {
           'La raccolta ${collection.name} non totalizza il 100%.',
         );
       }
+    }
+
+    final trainerIds = <String>{};
+    for (final trainer in savedNpcTrainers) {
+      if (!trainer.isValid) {
+        throw const FormatException(
+          'Il backup contiene un Allenatore PNG non valido.',
+        );
+      }
+      if (!trainerIds.add(trainer.id)) {
+        throw FormatException(
+          'L’Allenatore PNG ${trainer.name} è presente più volte.',
+        );
+      }
+    }
+    if (masterBattleSession != null && !masterBattleSession!.isValid) {
+      throw const FormatException(
+        'Il backup contiene una sessione del Master non valida.',
+      );
     }
 
     final savedEncounterIds = <String>{};

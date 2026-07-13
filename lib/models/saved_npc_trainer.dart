@@ -185,7 +185,8 @@ class SavedNpcTrainer {
       origin: json['origin']?.toString() ?? 'Viaggiatore',
       path: json['path']?.toString() ?? 'Allenatore',
       specializations: [
-        for (final value in _readList(json['specializations'])) value.toString(),
+        for (final value in _readList(json['specializations']))
+          value.toString(),
       ],
       preferredType: json['preferredType']?.toString() ?? 'Normal',
       personality: json['personality']?.toString() ?? '',

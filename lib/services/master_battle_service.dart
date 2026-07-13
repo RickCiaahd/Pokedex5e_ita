@@ -59,8 +59,8 @@ class MasterBattleService {
       );
       for (final slotIndex in activeSlots) {
         final savedPokemon = trainer.team[slotIndex];
-        final pokemonName = byId[savedPokemon.pokemonId]?.name ??
-            '#${savedPokemon.pokemonId}';
+        final pokemonName =
+            byId[savedPokemon.pokemonId]?.name ?? '#${savedPokemon.pokemonId}';
         initiative.add(
           BattleInitiativeEntry(
             id: initiativeId(trainer.id, slotIndex),
@@ -72,7 +72,9 @@ class MasterBattleService {
       }
     }
     if (participants.isEmpty) {
-      throw const FormatException('Gli allenatori selezionati non sono validi.');
+      throw const FormatException(
+        'Gli allenatori selezionati non sono validi.',
+      );
     }
     initiative.sort((a, b) => b.initiative.compareTo(a.initiative));
     final now = DateTime.now();
@@ -137,8 +139,10 @@ class MasterBattleService {
     final desired = <String, String>{};
     for (final participant in session.participants) {
       for (final slot in participant.activeSlotIndices) {
-        desired[initiativeId(participant.trainerId, slot)] =
-            _initiativeName(participant, slot);
+        desired[initiativeId(participant.trainerId, slot)] = _initiativeName(
+          participant,
+          slot,
+        );
       }
     }
 

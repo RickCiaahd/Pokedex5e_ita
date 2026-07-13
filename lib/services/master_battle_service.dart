@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import '../models/battle_session.dart';
+import '../models/generated_encounter.dart';
 import '../models/generated_npc_trainer.dart';
 import '../models/master_battle_session.dart';
 import '../models/pokemon.dart';
@@ -89,6 +90,94 @@ class MasterBattleService {
       participants: participants,
       initiativeEntries: initiative,
       updatedAt: now,
+    );
+  }
+
+  MasterBattleSession createWildSession({
+    required String profileId,
+    required GeneratedEncounter encounter,
+    required int activeCount,
+    required List<Pokemon> catalog,
+    Random? random,
+  }) {
+    if (encounter.members.isEmpty) {
+      throw const FormatException(
+        'L’incontro non contiene Pokémon da aggiungere al fight.',
+      );
+    }
+
+    final catalogIds = {for (final pokemon in catalog) pokemon.id};
+    final missingIds = {
+      for (final member in encounter.members)
+        if (!catalogIds.contains(member.pokemon.basePokemon.id))
+          member.pokemon.basePokemon.id,
+    };
+    if (missingIds.isNotEmpty) {
+      throw FormatException(
+        'Pokémon non disponibili nel catalogo: ${missingIds.join(', ')}.',
+      );
+    }
+
+    final now = DateTime.now();
+    final title = encounter.title.trim().isEmpty
+        ? 'Pokémon selvatici'
+        : encounter.title.trim();
+    final team = [
+      for (final member in encounter.members)
+        SavedNpcPokemon(
+          pokemonId: member.pokemon.basePokemon.id,
+          formName: member.pokemon.formName,
+          level: member.pokemon.level,
+          gender: member.pokemon.gender,
+          nature: member.pokemon.nature,
+          ability: member.pokemon.ability,
+          selectedMoves: member.pokemon.selectedMoves,
+          isShiny: member.pokemon.isShiny,
+          maxHp: member.pokemon.maxHp,
+        ),
+    ];
+    final averageLevel =
+        (team.fold<int>(0, (sum, pokemon) => sum + pokemon.level) / team.length)
+            .round()
+            .clamp(1, 20)
+            .toInt();
+    final wildGroup = SavedNpcTrainer(
+      id: 'wild:${encounter.id}:${now.microsecondsSinceEpoch}',
+      name: title,
+      epithet: 'Incontro selvatico',
+      trainerLevel: averageLevel,
+      rank: NpcTrainerRank.common,
+      origin: 'Selvatico',
+      path: 'Nessuno',
+      specializations: const [],
+      preferredType: 'Vari',
+      personality: '',
+      motivation: '',
+      quirk: '',
+      openingLine: '',
+      tactics: 'Gestisci questo gruppo come Pokémon selvatici.',
+      rewardMoney: 0,
+      rewards: const [],
+      team: team,
+      options: NpcTrainerGeneratorOptions(
+        trainerLevel: averageLevel,
+        pokemonLevel: averageLevel,
+        teamSize: team.length,
+        rank: NpcTrainerRank.common,
+      ),
+      createdAt: now,
+      updatedAt: now,
+      notes: 'Creato temporaneamente dal Generatore incontri.',
+    );
+
+    return createSession(
+      profileId: profileId,
+      trainers: [wildGroup],
+      activeCounts: {
+        wildGroup.id: activeCount.clamp(1, team.length).toInt(),
+      },
+      catalog: catalog,
+      random: random,
     );
   }
 

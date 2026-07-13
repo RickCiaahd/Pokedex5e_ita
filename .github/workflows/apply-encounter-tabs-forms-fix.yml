@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - fix/encounter-tabs-and-forms
+  pull_request:
+    branches:
+      - main
 
 permissions:
   contents: write

@@ -1,0 +1,82 @@
+name: Apply saved encounter library
+
+on:
+  push:
+    branches:
+      - feat/saved-encounter-library
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  apply-and-validate:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          ref: feat/saved-encounter-library
+          fetch-depth: 0
+
+      - name: Apply implementation
+        run: python3 tool/apply_saved_encounter_library.py
+
+      - name: Remove temporary automation
+        run: |
+          rm tool/apply_saved_encounter_library.py
+          rm .github/workflows/apply-saved-encounter-library.yml
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Format changed Dart files
+        run: |
+          dart format \
+            lib/database/hive_boxes.dart \
+            lib/models/saved_encounter.dart \
+            lib/models/profile_backup.dart \
+            lib/repositories/saved_encounter_repository.dart \
+            lib/services/saved_encounter_mapper_service.dart \
+            lib/services/profile_backup_service.dart \
+            lib/screens/tools/tools_screen.dart \
+            lib/screens/tools/encounter_generator_screen.dart \
+            lib/screens/tools/encounter_result_screen.dart \
+            lib/screens/tools/encounter_library_screen.dart \
+            lib/screens/profile/profiles_screen.dart \
+            test/saved_encounter_mapper_service_test.dart \
+            test/profile_backup_test.dart \
+            test/profile_backup_service_test.dart
+
+      - name: Check diff
+        run: git diff --check
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Run saved encounter tests
+        run: |
+          flutter test test/saved_encounter_mapper_service_test.dart
+          flutter test test/profile_backup_test.dart
+          flutter test test/profile_backup_service_test.dart
+
+      - name: Run full test suite
+        run: flutter test
+
+      - name: Commit validated implementation
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Add saved encounter library"
+          git push origin feat/saved-encounter-library

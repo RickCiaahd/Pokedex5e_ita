@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../models/encounter_collection.dart';
 import '../../models/generated_encounter.dart';
+import '../../models/generated_pokemon.dart';
 import '../../models/pokemon.dart';
 import '../../models/pokemon_form_choice.dart';
 import '../../models/pokemon_type_localization.dart';

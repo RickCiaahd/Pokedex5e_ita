@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../models/encounter_collection.dart';
+import '../../models/generated_pokemon.dart';
 import '../../models/pokemon.dart';
 import '../../models/pokemon_form_choice.dart';
 import '../../repositories/encounter_collection_repository.dart';

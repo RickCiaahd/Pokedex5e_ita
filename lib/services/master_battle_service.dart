@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import '../models/battle_session.dart';
+import '../models/generated_npc_trainer.dart';
 import '../models/master_battle_session.dart';
 import '../models/pokemon.dart';
 import '../models/saved_npc_trainer.dart';

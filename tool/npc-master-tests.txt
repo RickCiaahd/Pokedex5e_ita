@@ -1,0 +1,21 @@
+Resolving dependencies...
+Downloading packages...
+  hooks 2.0.2 (2.1.0 available)
+  matcher 0.12.19 (0.12.20 available)
+  meta 1.18.0 (1.19.0 available)
+  package_config 2.2.0 (3.0.0 available)
+  record_use 0.6.0 (1.0.0 available)
+  test_api 0.7.11 (0.7.13 available)
+  vector_math 2.2.0 (2.4.0 available)
+  win32 5.15.0 (6.3.0 available)
+  xml 6.6.1 (7.0.1 available)
+Got dependencies!
+9 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.
+
+✅ saved NPC trainer JSON preserves identity and complete team
+✅ saved NPC trainer mapper restores generated Pokémon
+✅ master fight supports multiple trainers with independent active teams
+✅ master battle session JSON preserves HP, PP and statuses
+
+🎉 4 tests passed.

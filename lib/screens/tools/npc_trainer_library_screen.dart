@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../models/bag_item.dart';
+import '../../models/generated_npc_trainer.dart';
 import '../../models/master_battle_session.dart';
 import '../../models/pokemon.dart';
 import '../../models/pokemon_form_choice.dart';

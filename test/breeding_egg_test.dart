@@ -26,6 +26,7 @@ void main() {
     expect(decoded.speciesId, 403);
     expect(decoded.incubationRemaining, 120);
     expect(decoded.incubator, EggIncubator.plus);
+    expect(decoded.incubator.extraD20, 2);
     expect(decoded.inheritedMoves, ['Quick Attack']);
     expect(decoded.carriedEntireIncubation, isFalse);
     expect(decoded.isReady, isFalse);

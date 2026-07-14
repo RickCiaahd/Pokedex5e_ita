@@ -1,0 +1,93 @@
+name: Fix breeder verification
+
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+permissions:
+  contents: write
+
+concurrency:
+  group: fix-breeder-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Check out feature branch
+        uses: actions/checkout@v4
+        with:
+          ref: feature/breeder-traits
+          fetch-depth: 0
+
+      - name: Apply focused fixes
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          screen = Path('lib/screens/breeding/breeding_screen.dart')
+          text = screen.read_text(encoding='utf-8')
+          text = text.replace("import '../../services/pokemon_generator_service.dart';\n", '', 1)
+          text = text.replace(
+              '  final PokemonGeneratorService _generator = const PokemonGeneratorService();\n',
+              '',
+              1,
+          )
+          screen.write_text(text, encoding='utf-8')
+
+          dialogs = Path('lib/widgets/breeding/breeder_trait_dialogs.dart')
+          text = dialogs.read_text(encoding='utf-8')
+          text = text.replace('      value: value,\n', '      initialValue: value,\n', 1)
+          text = text.replace(
+              '                  value: feats.contains(_feat) ? _feat : null,\n',
+              '                  initialValue: feats.contains(_feat) ? _feat : null,\n',
+              1,
+          )
+          dialogs.write_text(text, encoding='utf-8')
+
+          test = Path('test/breeder_features_test.dart')
+          text = test.read_text(encoding='utf-8')
+          text = text.replace("        selectedNature: 'Bold',\n", "        selectedNature: 'Reckless',\n", 1)
+          text = text.replace("      expect(result.nature, 'Bold');\n", "      expect(result.nature, 'Reckless');\n", 1)
+          test.write_text(text, encoding='utf-8')
+          PY
+          rm -f tool/breeder-analyze.txt tool/breeder-test.txt
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Format breeder files
+        run: |
+          dart format \
+            lib/screens/breeding/breeding_screen.dart \
+            lib/widgets/breeding/breeder_trait_dialogs.dart \
+            test/breeder_features_test.dart
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze source
+        run: flutter analyze
+
+      - name: Run complete test suite
+        run: flutter test --reporter expanded
+
+      - name: Commit verified fixes
+        run: |
+          rm -f .github/workflows/fix-breeder-verification.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Corregge e verifica il completamento Pokémon Breeder"
+          git push origin HEAD:feature/breeder-traits

@@ -59,13 +59,13 @@ jobs:
           set -o pipefail
           python .github/agent/apply_breeding_core.py 2>&1 | tee breeding-patch.log
 
-      - name: Fix generated breeding service
+      - name: Fix generated breeding files
         run: |
           python - <<'PY'
           from pathlib import Path
 
-          path = Path('lib/services/breeding_service.dart')
-          text = path.read_text(encoding='utf-8')
+          service = Path('lib/services/breeding_service.dart')
+          text = service.read_text(encoding='utf-8')
           text = text.replace(
               'final firstMoves = {_moveKeys(first.selectedMoves)};',
               'final firstMoves = _moveKeys(first.selectedMoves);',
@@ -76,7 +76,21 @@ jobs:
               'final secondMoves = _moveKeys(second.selectedMoves);',
               1,
           )
-          path.write_text(text, encoding='utf-8')
+          service.write_text(text, encoding='utf-8')
+
+          for relative_path in (
+              'lib/models/breeding_egg.dart',
+              'test/breeding_service_test.dart',
+          ):
+              path = Path(relative_path)
+              text = path.read_text(encoding='utf-8')
+              text = text.replace('EggIncubator.super', 'EggIncubator.superIncubator')
+              if relative_path.endswith('breeding_egg.dart'):
+                  text = text.replace(
+                      'enum EggIncubator { none, basic, plus, super }',
+                      'enum EggIncubator { none, basic, plus, superIncubator }',
+                  )
+              path.write_text(text, encoding='utf-8')
           PY
 
       - name: Upload patch log

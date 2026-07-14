@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
+import '../../models/battle_environment.dart';
 import '../../models/pokemon.dart';
 import '../../models/pokemon_nature.dart';
+import '../../services/battle_environment_service.dart';
 
 class MasterOfTraitsSelection {
   const MasterOfTraitsSelection({
@@ -243,13 +245,16 @@ class _GoodGenesDialogState extends State<_GoodGenesDialog> {
     for (final ability in _abilities) ability: 0,
   };
   String? _feat;
+  BattleNaturalTerrain? _terrainAdept;
 
   int get _spent => _bonuses.values.fold(0, (sum, value) => sum + value);
 
   @override
   Widget build(BuildContext context) {
     final feats = widget.featDescriptions.keys.toList()..sort();
-    final valid = _useFeat ? _feat != null : _spent == 2;
+    final valid = _useFeat
+        ? _feat != null && (_feat != 'Terrain Adept' || _terrainAdept != null)
+        : _spent == 2;
 
     return AlertDialog(
       title: const Text('Good Genes'),
@@ -332,8 +337,30 @@ class _GoodGenesDialogState extends State<_GoodGenesDialog> {
                     for (final feat in feats)
                       DropdownMenuItem(value: feat, child: Text(feat)),
                   ],
-                  onChanged: (value) => setState(() => _feat = value),
+                  onChanged: (value) => setState(() {
+                    _feat = value;
+                    if (value != 'Terrain Adept') _terrainAdept = null;
+                  }),
                 ),
+                if (_feat == 'Terrain Adept') ...[
+                  const SizedBox(height: 8),
+                  DropdownButtonFormField<BattleNaturalTerrain>(
+                    initialValue: _terrainAdept,
+                    isExpanded: true,
+                    decoration: const InputDecoration(
+                      labelText: 'Terreno di Terrain Adept',
+                    ),
+                    items: [
+                      for (final terrain in BattleNaturalTerrain.values)
+                        if (terrain != BattleNaturalTerrain.none)
+                          DropdownMenuItem(
+                            value: terrain,
+                            child: Text(terrain.label),
+                          ),
+                    ],
+                    onChanged: (value) => setState(() => _terrainAdept = value),
+                  ),
+                ],
                 if (_feat != null) ...[
                   const SizedBox(height: 8),
                   Text(widget.featDescriptions[_feat] ?? ''),
@@ -359,7 +386,13 @@ class _GoodGenesDialogState extends State<_GoodGenesDialog> {
                               for (final entry in _bonuses.entries)
                                 if (entry.value > 0) entry.key: entry.value,
                             },
-                      feat: _useFeat ? _feat : null,
+                      feat: _useFeat
+                          ? _feat == 'Terrain Adept' && _terrainAdept != null
+                                ? BattleEnvironmentService.terrainAdeptFeat(
+                                    _terrainAdept!,
+                                  )
+                                : _feat
+                          : null,
                     ),
                   );
                 }

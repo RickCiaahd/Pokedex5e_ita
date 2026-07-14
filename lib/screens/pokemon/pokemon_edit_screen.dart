@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../models/battle_environment.dart';
 import '../../models/move_data.dart';
 import '../../models/pokemon.dart';
 import '../../models/pokemon_ability.dart';
@@ -10,6 +11,7 @@ import '../../repositories/ability_repository.dart';
 import '../../repositories/feat_repository.dart';
 import '../../repositories/move_repository.dart';
 import '../../repositories/tm_repository.dart';
+import '../../services/battle_environment_service.dart';
 import '../../widgets/pokemon/pokemon_asset_image.dart';
 
 class PokemonEditResult {
@@ -377,7 +379,7 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
         .asMap()
         .entries
         .where((entry) => entry.key != index)
-        .map((entry) => entry.value)
+        .map((entry) => BattleEnvironmentService.featBaseName(entry.value))
         .toSet();
 
     final result = await Navigator.of(context).push<String>(
@@ -393,11 +395,24 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
 
     if (!mounted || result == null) return;
 
+    var configuredResult = result;
+    if (result == 'Terrain Adept') {
+      final current = index == null
+          ? null
+          : BattleEnvironmentService.terrainFromFeat(_feats[index]);
+      final terrain = await showDialog<BattleNaturalTerrain>(
+        context: context,
+        builder: (_) => _TerrainAdeptDialog(initial: current),
+      );
+      if (!mounted || terrain == null) return;
+      configuredResult = BattleEnvironmentService.terrainAdeptFeat(terrain);
+    }
+
     setState(() {
       if (index == null) {
-        _feats = [..._feats, result];
+        _feats = [..._feats, configuredResult];
       } else {
-        _feats[index] = result;
+        _feats[index] = configuredResult;
       }
     });
   }
@@ -660,6 +675,60 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
           child: FilledButton(onPressed: _save, child: const Text('SALVA')),
         ),
       ),
+    );
+  }
+}
+
+class _TerrainAdeptDialog extends StatefulWidget {
+  const _TerrainAdeptDialog({this.initial});
+
+  final BattleNaturalTerrain? initial;
+
+  @override
+  State<_TerrainAdeptDialog> createState() => _TerrainAdeptDialogState();
+}
+
+class _TerrainAdeptDialogState extends State<_TerrainAdeptDialog> {
+  late BattleNaturalTerrain _terrain;
+
+  @override
+  void initState() {
+    super.initState();
+    _terrain =
+        widget.initial == null || widget.initial == BattleNaturalTerrain.none
+        ? BattleNaturalTerrain.forest
+        : widget.initial!;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final terrains = BattleNaturalTerrain.values
+        .where((terrain) => terrain != BattleNaturalTerrain.none)
+        .toList(growable: false);
+    return AlertDialog(
+      title: const Text('Terrain Adept'),
+      content: DropdownButtonFormField<BattleNaturalTerrain>(
+        initialValue: _terrain,
+        isExpanded: true,
+        decoration: const InputDecoration(labelText: 'Terreno scelto'),
+        items: [
+          for (final terrain in terrains)
+            DropdownMenuItem(value: terrain, child: Text(terrain.label)),
+        ],
+        onChanged: (value) {
+          if (value != null) setState(() => _terrain = value);
+        },
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('ANNULLA'),
+        ),
+        FilledButton(
+          onPressed: () => Navigator.of(context).pop(_terrain),
+          child: const Text('CONFERMA'),
+        ),
+      ],
     );
   }
 }

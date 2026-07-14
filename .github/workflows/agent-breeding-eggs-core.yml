@@ -28,38 +28,46 @@ jobs:
           channel: stable
           cache: true
 
-      - name: Normalize breeding patch
+      - name: Normalize source for breeding patch
         run: |
           python - <<'PY'
           from pathlib import Path
 
-          path = Path('.github/agent/apply_breeding_core.py')
+          path = Path('lib/services/profile_backup_service.dart')
           text = path.read_text(encoding='utf-8')
-
-          old_initializer = '''        _masterBattleSessionRepository =\n            masterBattleSessionRepository ?? MasterBattleSessionRepository();'''
-          actual_initializer = '''       _masterBattleSessionRepository =\n           masterBattleSessionRepository ?? MasterBattleSessionRepository();'''
-          if old_initializer not in text:
-              raise RuntimeError('Blocco initializer atteso non trovato nello script')
-          text = text.replace(old_initializer, actual_initializer, 1)
-
-          text = text.replace(
-              "final firstMoves = {_moveKeys(first.selectedMoves)};",
-              "final firstMoves = _moveKeys(first.selectedMoves);",
-              1,
-          )
-          text = text.replace(
-              "final secondMoves = {_moveKeys(second.selectedMoves)};",
-              "final secondMoves = _moveKeys(second.selectedMoves);",
-              1,
-          )
-
-          path.write_text(text, encoding='utf-8')
+          actual = '''       _masterBattleSessionRepository =
+           masterBattleSessionRepository ?? MasterBattleSessionRepository();'''
+          expected = '''        _masterBattleSessionRepository =
+            masterBattleSessionRepository ?? MasterBattleSessionRepository();'''
+          if actual not in text:
+              raise RuntimeError('Initializer del backup non trovato')
+          path.write_text(text.replace(actual, expected, 1), encoding='utf-8')
           PY
 
       - name: Apply breeding changes
         run: |
           set -o pipefail
           python .github/agent/apply_breeding_core.py 2>&1 | tee breeding-patch.log
+
+      - name: Fix generated breeding service
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('lib/services/breeding_service.dart')
+          text = path.read_text(encoding='utf-8')
+          text = text.replace(
+              'final firstMoves = {_moveKeys(first.selectedMoves)};',
+              'final firstMoves = _moveKeys(first.selectedMoves);',
+              1,
+          )
+          text = text.replace(
+              'final secondMoves = {_moveKeys(second.selectedMoves)};',
+              'final secondMoves = _moveKeys(second.selectedMoves);',
+              1,
+          )
+          path.write_text(text, encoding='utf-8')
+          PY
 
       - name: Upload patch log
         if: always()

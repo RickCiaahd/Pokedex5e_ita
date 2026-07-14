@@ -19,5 +19,6 @@ void main() {
     expect(image.width, 48);
     expect(image.height, 48);
     expect(image.filterQuality, FilterQuality.none);
+    expect(image.semanticLabel, EggAssetImage.semanticLabel);
   });
 }

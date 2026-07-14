@@ -13,7 +13,7 @@ L'app raccoglie in un unico progetto gli strumenti principali per giocatori e Ma
 - generatori di Pokémon, incontri e Allenatori PNG;
 - librerie persistenti di incontri e Allenatori;
 - Fight del Master con più Allenatori, iniziativa, PF, PP e status;
-- backup e ripristino dei dati del profilo.
+- backup completi del profilo e trasferimenti mirati di Pokémon e squadre.
 
 ## Stato del progetto
 
@@ -62,7 +62,9 @@ Quando vengono aggiunti Pokémon, forme, mosse, abilità o asset, il test di int
 
 ## Dati e salvataggi
 
-I dati applicativi sono salvati localmente tramite Hive. La schermata Profili permette di esportare e importare backup JSON, compresi squadra, Pokémon Center, inventario, impostazioni e sessioni di combattimento supportate. Dalla schermata Squadra è inoltre possibile esportare e importare singoli Pokémon o una formazione completa senza sostituire l'intero profilo; i Pokémon rimpiazzati e gli eventuali esuberi vengono conservati nel PC.
+I dati applicativi sono salvati localmente tramite Hive. La schermata Profili permette di esportare e importare backup JSON, compresi squadra, Pokémon Center, inventario, impostazioni e sessioni di combattimento supportate.
+
+Dalla schermata Squadra è inoltre possibile esportare e importare singoli Pokémon o una formazione completa senza sostituire l'intero profilo; i Pokémon rimpiazzati e gli eventuali esuberi vengono conservati nel PC.
 
 ## Avvertenza
 

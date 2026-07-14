@@ -1,0 +1,36 @@
+name: Fix trainer path analyzer
+
+on:
+  push:
+    branches:
+      - agent/trainer-path-automation
+    paths:
+      - tooling/fix_trainer_path_analyzer.py
+      - .github/workflows/fix-trainer-path-analyzer.yml
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v4
+        with:
+          ref: agent/trainer-path-automation
+          fetch-depth: 0
+
+      - name: Apply fixes
+        run: python tooling/fix_trainer_path_analyzer.py
+
+      - name: Remove temporary patch tooling
+        run: rm tooling/fix_trainer_path_analyzer.py .github/workflows/fix-trainer-path-analyzer.yml
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add lib/screens/trainer/trainer_sheet_screen.dart tooling/fix_trainer_path_analyzer.py .github/workflows/fix-trainer-path-analyzer.yml
+          git commit -m "Corregge analyzer della gestione Trainer Path"
+          git push origin HEAD:agent/trainer-path-automation

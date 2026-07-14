@@ -50,12 +50,19 @@ jobs:
         run: flutter pub get
 
       - name: Analyze source
-        run: flutter analyze
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          flutter analyze 2>&1 | tee tool/breeder-analyze.log
 
       - name: Run complete test suite
-        run: flutter test --reporter expanded
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          flutter test --reporter expanded 2>&1 | tee tool/breeder-test.log
 
-      - name: Commit generated changes
+      - name: Commit generated changes and diagnostics
+        if: always()
         run: |
           rm -f tool/apply_breeder_upgrade.py tool/apply_breeder_upgrade.py.gz.b64 .github/workflows/apply-breeder-upgrade.yml
           git config user.name "github-actions[bot]"

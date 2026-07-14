@@ -1,0 +1,46 @@
+name: Apply complete Pokemon Breeder
+
+on:
+  push:
+    branches:
+      - agent/complete-pokemon-breeder
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: github.head_ref == 'agent/complete-pokemon-breeder' || github.ref_name == 'agent/complete-pokemon-breeder'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out feature branch
+        uses: actions/checkout@v4
+        with:
+          ref: agent/complete-pokemon-breeder
+
+      - name: Apply changes
+        run: |
+          set -o pipefail
+          python .github/agent/apply_complete_breeder.py 2>&1 | tee patch.log
+
+      - name: Upload patch log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: complete-breeder-patch-log
+          path: patch.log
+          if-no-files-found: ignore
+          retention-days: 1
+
+      - name: Commit generated changes
+        run: |
+          rm .github/agent/apply_complete_breeder.py
+          rm .github/workflows/agent-complete-breeder.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Completa il Trainer Path Pokémon Breeder"
+          git push origin HEAD:agent/complete-pokemon-breeder

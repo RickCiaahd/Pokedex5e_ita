@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../bag/bag_screen.dart';
 import '../battle/battle_screen.dart';
+import '../battle/npc_battle_screen.dart';
 import '../capture/capture_pokemon_screen.dart';
 import '../pc/pokemon_pc_screen.dart';
 import '../pokedex/pokedex_screen.dart';
@@ -14,6 +15,7 @@ import '../../models/pokemon.dart';
 import '../../models/trainer_progression.dart';
 import '../../models/user_profile.dart';
 import '../../repositories/battle_session_repository.dart';
+import '../../repositories/master_battle_session_repository.dart';
 import '../../repositories/pokemon_repository.dart';
 import '../../repositories/profile_repository.dart';
 import '../../services/profile_storage_service.dart';
@@ -29,6 +31,8 @@ class _HomeScreenState extends State<HomeScreen> {
   final ProfileRepository _profileRepository = ProfileRepository();
   final BattleSessionRepository _battleSessionRepository =
       BattleSessionRepository();
+  final MasterBattleSessionRepository _masterBattleSessionRepository =
+      MasterBattleSessionRepository();
   final PokemonRepository _pokemonRepository = PokemonRepository();
   final ProfileStorageService _profileStorageService = ProfileStorageService();
 
@@ -38,6 +42,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   bool _isLoading = true;
   bool _hasActiveBattle = false;
+  bool _hasActiveMasterFight = false;
   String? _errorMessage;
 
   @override
@@ -59,6 +64,8 @@ class _HomeScreenState extends State<HomeScreen> {
       final hasActiveBattle = await _battleSessionRepository.hasSession(
         profile.id,
       );
+      final hasActiveMasterFight = await _masterBattleSessionRepository
+          .hasSession(profile.id);
 
       if (!mounted) return;
 
@@ -67,6 +74,7 @@ class _HomeScreenState extends State<HomeScreen> {
         _pokemon = pokemon;
         _entries = entries;
         _hasActiveBattle = hasActiveBattle;
+        _hasActiveMasterFight = hasActiveMasterFight;
         _isLoading = false;
       });
     } catch (e) {
@@ -79,6 +87,29 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  Future<void> _resumeMasterFight() async {
+    final profile = _profile;
+    if (profile == null) return;
+
+    final session = await _masterBattleSessionRepository.getSession(profile.id);
+    if (!mounted) return;
+    if (session == null) {
+      await _loadDashboard();
+      return;
+    }
+
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => NpcBattleScreen(
+          profileId: profile.id,
+          catalog: _pokemon,
+          initialSession: session,
+        ),
+      ),
+    );
+    await _loadDashboard();
+  }
+
   @override
   Widget build(BuildContext context) {
     final profile = _profile;
@@ -89,6 +120,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final caught = _pokemon.where((pokemon) {
       return _entries[pokemon.id]?.caught ?? false;
     }).length;
+    final hasActiveSession = _hasActiveBattle || _hasActiveMasterFight;
 
     return Scaffold(
       appBar: AppBar(title: const Text('Pokédex 5e ITA')),
@@ -108,22 +140,55 @@ class _HomeScreenState extends State<HomeScreen> {
               _TrainerHeader(profile: profile),
               const SizedBox(height: 20),
               _ProgressOverview(total: total, seen: seen, caught: caught),
+              if (hasActiveSession) ...[
+                const SizedBox(height: 24),
+                const _HomeSectionTitle(
+                  icon: Icons.play_circle_outline,
+                  title: 'SESSIONI IN CORSO',
+                  subtitle: 'Riprendi subito da dove avevi lasciato.',
+                ),
+                if (_hasActiveBattle)
+                  _HomeActionButton(
+                    icon: Icons.flash_on,
+                    title: 'Riprendi battaglia',
+                    subtitle: 'Continua dal round, turno, PP e status salvati.',
+                    emphasized: true,
+                    onTap: () async {
+                      await Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const BattleScreen()),
+                      );
+                      await _loadDashboard();
+                    },
+                  ),
+                if (_hasActiveMasterFight)
+                  _HomeActionButton(
+                    icon: Icons.sports_mma_outlined,
+                    title: 'Riprendi Fight del Master',
+                    subtitle:
+                        'Riapri la sessione del Master con PF, PP, status e iniziativa salvati.',
+                    emphasized: true,
+                    onTap: _resumeMasterFight,
+                  ),
+              ],
               const SizedBox(height: 24),
-              _HomeActionButton(
-                icon: Icons.flash_on,
-                title: _hasActiveBattle
-                    ? 'Riprendi battaglia'
-                    : 'Battle Companion',
-                subtitle: _hasActiveBattle
-                    ? 'Continua dal round, turno, PP e status salvati.'
-                    : 'Traccia round, HP, status e PP durante il combattimento.',
-                onTap: () async {
-                  await Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const BattleScreen()),
-                  );
-                  await _loadDashboard();
-                },
+              const _HomeSectionTitle(
+                icon: Icons.person_outline,
+                title: 'ALLENATORE E SQUADRA',
+                subtitle: 'Gestisci il personaggio e i Pokémon catturati.',
               ),
+              if (!_hasActiveBattle)
+                _HomeActionButton(
+                  icon: Icons.flash_on,
+                  title: 'Battle Companion',
+                  subtitle:
+                      'Traccia round, PF, status e PP durante il combattimento.',
+                  onTap: () async {
+                    await Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const BattleScreen()),
+                    );
+                    await _loadDashboard();
+                  },
+                ),
               _HomeActionButton(
                 icon: Icons.badge_outlined,
                 title: 'Scheda Allenatore',
@@ -133,17 +198,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     MaterialPageRoute(
                       builder: (_) => const TrainerSheetScreen(),
                     ),
-                  );
-                  await _loadDashboard();
-                },
-              ),
-              _HomeActionButton(
-                icon: Icons.catching_pokemon,
-                title: 'Apri Pokédex',
-                subtitle: 'Consulta, filtra e marca i Pokémon.',
-                onTap: () async {
-                  await Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const PokedexScreen()),
                   );
                   await _loadDashboard();
                 },
@@ -192,23 +246,53 @@ class _HomeScreenState extends State<HomeScreen> {
                 icon: Icons.backpack_outlined,
                 title: 'Zaino',
                 subtitle: 'Equipaggiamento, cure e oggetti da cattura.',
-                onTap: () {
-                  Navigator.of(
-                    context,
-                  ).push(MaterialPageRoute(builder: (_) => const BagScreen()));
+                onTap: () async {
+                  await Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const BagScreen()),
+                  );
+                  await _loadDashboard();
                 },
+              ),
+              const SizedBox(height: 24),
+              const _HomeSectionTitle(
+                icon: Icons.menu_book_outlined,
+                title: 'CONSULTAZIONE',
+                subtitle: 'Cerca informazioni e aggiorna i progressi.',
+              ),
+              _HomeActionButton(
+                icon: Icons.catching_pokemon,
+                title: 'Apri Pokédex',
+                subtitle: 'Consulta, filtra e marca i Pokémon.',
+                onTap: () async {
+                  await Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const PokedexScreen()),
+                  );
+                  await _loadDashboard();
+                },
+              ),
+              const SizedBox(height: 24),
+              const _HomeSectionTitle(
+                icon: Icons.construction,
+                title: 'STRUMENTI DEL MASTER',
+                subtitle: 'Genera contenuti, usa le librerie e prepara i fight.',
               ),
               _HomeActionButton(
                 icon: Icons.construction,
-                title: 'Strumenti',
+                title: 'Apri Strumenti del Master',
                 subtitle:
-                    'Genera Pokémon e prepara i futuri strumenti per giocatori e Master.',
+                    'Generatori Pokémon, incontri, raccolte e Allenatori PNG.',
                 onTap: () async {
                   await Navigator.of(context).push(
                     MaterialPageRoute(builder: (_) => const ToolsScreen()),
                   );
                   await _loadDashboard();
                 },
+              ),
+              const SizedBox(height: 24),
+              const _HomeSectionTitle(
+                icon: Icons.settings_outlined,
+                title: 'GESTIONE APPLICAZIONE',
+                subtitle: 'Gestisci i profili e i dati dell’app.',
               ),
               _HomeActionButton(
                 icon: Icons.person,
@@ -351,25 +435,77 @@ class _ProgressStat extends StatelessWidget {
   }
 }
 
+class _HomeSectionTitle extends StatelessWidget {
+  const _HomeSectionTitle({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+  });
+
+  final IconData icon;
+  final String title;
+  final String subtitle;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(4, 0, 4, 6),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, color: colors.primary),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(subtitle, style: Theme.of(context).textTheme.bodySmall),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _HomeActionButton extends StatelessWidget {
   const _HomeActionButton({
     required this.icon,
     required this.title,
     required this.subtitle,
     required this.onTap,
+    this.emphasized = false,
   });
 
   final IconData icon;
   final String title;
   final String subtitle;
   final VoidCallback onTap;
+  final bool emphasized;
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
     return Card(
+      color: emphasized ? colors.primaryContainer : null,
       child: ListTile(
-        leading: Icon(icon),
-        title: Text(title),
+        leading: Icon(
+          icon,
+          color: emphasized ? colors.onPrimaryContainer : colors.primary,
+        ),
+        title: Text(
+          title,
+          style: const TextStyle(fontWeight: FontWeight.w800),
+        ),
         subtitle: Text(subtitle),
         trailing: const Icon(Icons.chevron_right),
         onTap: onTap,

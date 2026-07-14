@@ -25,6 +25,12 @@ void main() {
     );
 
     expect(find.text('CARATTERISTICHE'), findsOneWidget);
+    expect(
+      find.text(
+        'Valori effettivi e modificatori da usare per prove, tiri salvezza e iniziativa del Pokémon.',
+      ),
+      findsOneWidget,
+    );
     expect(find.text('Forza'), findsOneWidget);
     expect(find.text('Destrezza'), findsOneWidget);
     expect(find.text('Costituzione'), findsOneWidget);

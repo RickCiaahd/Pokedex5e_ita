@@ -37,6 +37,7 @@ void main() {
       sr: 0.5,
       minLevelFound: 1,
     );
+    final slot = TeamSlot(slotIndex: 0, pokemonId: 1);
 
     expect(
       TrainerPathPassiveService.attackRollBonus(
@@ -54,9 +55,18 @@ void main() {
       TrainerPathPassiveService.effectiveSpeed(
         profile: null,
         pokemon: pokemon,
-        slot: TeamSlot(slotIndex: 0, pokemonId: 1),
+        slot: slot,
       ),
       30,
+    );
+    expect(
+      TrainerPathPassiveService.maxHp(
+        profile: null,
+        pokemon: pokemon,
+        slot: slot,
+        level: 1,
+      ),
+      8,
     );
   });
 }

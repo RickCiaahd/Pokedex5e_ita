@@ -14,10 +14,19 @@ extension EggIncubatorDetails on EggIncubator {
     EggIncubator.plus => 2,
     EggIncubator.superIncubator => 3,
   };
+
+  String? get inventoryItemId => switch (this) {
+    EggIncubator.none => null,
+    EggIncubator.basic => 'egg-incubator-basic',
+    EggIncubator.plus => 'egg-incubator-plus',
+    EggIncubator.superIncubator => 'egg-incubator-super',
+  };
 }
 
 class BreedingEgg {
   static const Object _unset = Object();
+  static const int armorClass = 8;
+  static const int maxHitPoints = 10;
 
   const BreedingEgg({
     required this.id,
@@ -37,6 +46,8 @@ class BreedingEgg {
     this.carriedEntireIncubation = true,
     this.isInDayCare = false,
     this.isInPc = false,
+    this.currentHp = maxHitPoints,
+    this.masterTraitsCustomized = false,
   });
 
   final String id;
@@ -56,9 +67,12 @@ class BreedingEgg {
   final bool carriedEntireIncubation;
   final bool isInDayCare;
   final bool isInPc;
+  final int currentHp;
+  final bool masterTraitsCustomized;
 
   bool get isReady => incubationRemaining <= 0;
   bool get isInTeam => !isInDayCare && !isInPc;
+  bool get isDestroyed => currentHp <= 0;
 
   double get progress {
     if (hatchTime <= 0) return 1;
@@ -71,7 +85,14 @@ class BreedingEgg {
     bool? carriedEntireIncubation,
     bool? isInDayCare,
     bool? isInPc,
+    int? currentHp,
+    bool? masterTraitsCustomized,
+    String? nature,
+    List<String>? selectedMoves,
+    List<String>? inheritedMoves,
     Object? formName = _unset,
+    Object? gender = _unset,
+    Object? ability = _unset,
   }) {
     return BreedingEgg(
       id: id,
@@ -83,17 +104,22 @@ class BreedingEgg {
       createdAt: createdAt,
       hatchTime: hatchTime,
       incubationRemaining: incubationRemaining ?? this.incubationRemaining,
-      nature: nature,
-      gender: gender,
-      ability: ability,
-      selectedMoves: selectedMoves,
-      inheritedMoves: inheritedMoves,
+      nature: nature ?? this.nature,
+      gender: identical(gender, _unset) ? this.gender : gender as String?,
+      ability: identical(ability, _unset) ? this.ability : ability as String?,
+      selectedMoves: selectedMoves ?? this.selectedMoves,
+      inheritedMoves: inheritedMoves ?? this.inheritedMoves,
       isShiny: isShiny,
       incubator: incubator ?? this.incubator,
       carriedEntireIncubation:
           carriedEntireIncubation ?? this.carriedEntireIncubation,
       isInDayCare: isInDayCare ?? this.isInDayCare,
       isInPc: isInPc ?? this.isInPc,
+      currentHp: (currentHp ?? this.currentHp)
+          .clamp(0, maxHitPoints)
+          .toInt(),
+      masterTraitsCustomized:
+          masterTraitsCustomized ?? this.masterTraitsCustomized,
     );
   }
 
@@ -116,6 +142,8 @@ class BreedingEgg {
       'carriedEntireIncubation': carriedEntireIncubation,
       'isInDayCare': isInDayCare,
       'isInPc': isInPc,
+      'currentHp': currentHp,
+      'masterTraitsCustomized': masterTraitsCustomized,
     };
   }
 
@@ -144,6 +172,9 @@ class BreedingEgg {
       carriedEntireIncubation: json['carriedEntireIncubation'] as bool? ?? true,
       isInDayCare: json['isInDayCare'] as bool? ?? false,
       isInPc: json['isInPc'] as bool? ?? false,
+      currentHp: _readIntOrDefault(json['currentHp'], maxHitPoints),
+      masterTraitsCustomized:
+          json['masterTraitsCustomized'] as bool? ?? false,
     );
   }
 
@@ -151,5 +182,10 @@ class BreedingEgg {
     if (value is int) return value;
     if (value is num) return value.toInt();
     return int.tryParse(value?.toString() ?? '') ?? 0;
+  }
+
+  static int _readIntOrDefault(dynamic value, int fallback) {
+    if (value == null) return fallback;
+    return _readInt(value).clamp(0, maxHitPoints).toInt();
   }
 }

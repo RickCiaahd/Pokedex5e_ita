@@ -22,6 +22,7 @@ import '../../services/battle_quick_item_service.dart';
 import '../../services/battle_status_rules.dart';
 import '../../services/trainer_path_passive_service.dart';
 import '../../widgets/battle/battle_status_assistance_card.dart';
+import '../../widgets/battle/pokemon_battle_attributes_card.dart';
 import '../../widgets/navigation/home_leading_button.dart';
 import '../../widgets/pokemon/pokemon_asset_image.dart';
 import '../../widgets/trainer/trainer_path_passive_card.dart';
@@ -990,6 +991,7 @@ class _BattleScreenState extends State<BattleScreen> {
             pokemon: pokemon,
             slot: activeSlot,
           );
+          final attributes = _attributeScores(pokemon, activeSlot);
 
           return RefreshIndicator(
             onRefresh: () => _reload(),
@@ -1069,6 +1071,8 @@ class _BattleScreenState extends State<BattleScreen> {
                     setState(() => _statusMoment = moment);
                   },
                 ),
+                const SizedBox(height: 12),
+                PokemonBattleAttributesCard(attributes: attributes),
                 const SizedBox(height: 12),
                 Text(
                   'MOSSE DA COMBATTIMENTO',

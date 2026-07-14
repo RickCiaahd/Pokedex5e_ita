@@ -5,6 +5,7 @@ import '../models/breeding_egg.dart';
 import '../models/breeding_species_data.dart';
 import '../models/generated_pokemon.dart';
 import '../models/pokemon.dart';
+import '../models/pokemon_nature.dart';
 import '../models/team_slot.dart';
 import '../models/user_profile.dart';
 import 'pokemon_generator_service.dart';
@@ -155,6 +156,65 @@ class BreedingService {
     );
   }
 
+  bool hasGoodGenes(UserProfile profile) {
+    return TrainerPathPassiveService.hasFeature(
+      profile,
+      trainerPath: 'Pokémon Breeder',
+      level: 9,
+    );
+  }
+
+  bool hasMasterOfTraits(UserProfile profile) {
+    return TrainerPathPassiveService.hasFeature(
+      profile,
+      trainerPath: 'Pokémon Breeder',
+      level: 15,
+    );
+  }
+
+  List<String> availableGenders(Pokemon pokemon) {
+    final formGenders = pokemon.formDefinitions
+        .map((definition) => definition.gender?.trim())
+        .whereType<String>()
+        .where((gender) => gender.isNotEmpty)
+        .toSet()
+        .toList(growable: false);
+    if (formGenders.isNotEmpty) return formGenders..sort();
+
+    final ratio = pokemon.genderRatio?.trim().toLowerCase() ?? '';
+    if (ratio.contains('genderless') ||
+        ratio.contains('senza sesso') ||
+        ratio == 'none') {
+      return const ['Genderless'];
+    }
+    if (ratio.contains('female only') || ratio.contains('100% female')) {
+      return const ['Female'];
+    }
+    if (ratio.contains('male only') || ratio.contains('100% male')) {
+      return const ['Male'];
+    }
+    return const ['Male', 'Female'];
+  }
+
+  List<String> availableAbilities(Pokemon pokemon) {
+    final seen = <String>{};
+    final result = <String>[];
+    for (final ability in pokemon.abilities) {
+      final trimmed = ability.trim();
+      if (trimmed.isEmpty) continue;
+      if (seen.add(trimmed.toLowerCase())) result.add(trimmed);
+    }
+    return result;
+  }
+
+  List<String> inheritedEggMoves({
+    required Pokemon child,
+    required BreedingCandidate first,
+    required BreedingCandidate second,
+  }) {
+    return _inheritedEggMoves(child: child, first: first, second: second);
+  }
+
   int hatchTimeForSr(double sr) {
     if (sr <= 0.125) return 125;
     if (sr <= 0.25) return 250;
@@ -168,6 +228,11 @@ class BreedingService {
     required BreedingCandidate second,
     required BreedingCompatibility compatibility,
     required Map<int, Pokemon> catalog,
+    String? selectedGender,
+    String? selectedNature,
+    String? selectedAbility,
+    List<String> replacementEggMoves = const [],
+    bool masterOfTraitsApplied = false,
     Random? random,
   }) {
     if (!compatibility.isCompatible) {
@@ -179,10 +244,10 @@ class BreedingService {
     if (basePokemon == null) {
       throw StateError('La specie risultante non è presente nel catalogo.');
     }
-    final resolved = basePokemon.resolveVariant(
+    final formPokemon = basePokemon.resolveVariant(
       formName: compatibility.childFormName,
     );
-    final level = max(1, resolved.minLevelFound);
+    final level = max(1, formPokemon.minLevelFound);
     final generated = _generator.generateForPokemonForm(
       pokemon: basePokemon,
       formName: compatibility.childFormName,
@@ -201,11 +266,56 @@ class BreedingService {
       throw StateError('Impossibile generare il contenuto dell’uovo.');
     }
 
-    final inheritedMoves = _inheritedMoves(
+    final genderOptions = availableGenders(formPokemon);
+    final gender =
+        selectedGender != null && genderOptions.contains(selectedGender)
+        ? selectedGender
+        : generated.gender;
+    final resolved = basePokemon.resolveVariant(
+      formName: compatibility.childFormName,
+      gender: gender,
+    );
+    final nature =
+        selectedNature != null &&
+            selectedNature != 'No Nature' &&
+            PokemonNature.names.contains(selectedNature)
+        ? selectedNature
+        : generated.nature;
+
+    final inheritedEggMoves = _inheritedEggMoves(
       child: resolved,
       first: first,
       second: second,
     );
+    final inheritedNaturalMoves = _inheritedNaturalMoves(
+      child: resolved,
+      first: first,
+      second: second,
+    );
+    final replacementMoves = <String>[];
+    for (final requested in replacementEggMoves) {
+      final matching = _matchingMove(resolved.moves.eggMoves, requested);
+      if (matching == null ||
+          replacementMoves.any(
+            (move) => _moveKey(move) == _moveKey(matching),
+          )) {
+        continue;
+      }
+      if (replacementMoves.length >= inheritedEggMoves.length) break;
+      replacementMoves.add(matching);
+    }
+    final finalEggMoves = [...replacementMoves];
+    for (final inherited in inheritedEggMoves) {
+      if (finalEggMoves.length >= inheritedEggMoves.length) break;
+      if (finalEggMoves.any((move) => _moveKey(move) == _moveKey(inherited))) {
+        continue;
+      }
+      finalEggMoves.add(inherited);
+    }
+    final inheritedMoves = _uniqueMoves([
+      ...finalEggMoves,
+      ...inheritedNaturalMoves,
+    ]);
     final startingPool = <String>[];
     final seen = <String>{};
     void addMove(String value) {
@@ -222,7 +332,7 @@ class BreedingService {
       addMove(move);
     }
 
-    var ability = generated.ability;
+    var ability = _randomNormalAbility(resolved, rng);
     final female = first.isFemale
         ? first
         : second.isFemale
@@ -230,11 +340,23 @@ class BreedingService {
         : null;
     if (female != null && female.abilities.isNotEmpty && rng.nextBool()) {
       final inherited = female.abilities.first.trim();
-      if (inherited.isNotEmpty && resolved.abilities.contains(inherited)) {
+      if (inherited.isNotEmpty &&
+          availableAbilities(resolved).contains(inherited)) {
         ability = inherited;
       }
     }
+    final abilities = availableAbilities(resolved);
+    if (selectedAbility != null && abilities.contains(selectedAbility)) {
+      ability = selectedAbility;
+    }
 
+    final knownMoves = masterOfTraitsApplied
+        ? _uniqueMoves([
+            ...finalEggMoves,
+            ...inheritedNaturalMoves,
+            ...resolved.moves.startingMoves,
+          ])
+        : startingPool;
     final hatchTime = hatchTimeForSr(resolved.sr);
     return BreedingEgg(
       id: DateTime.now().microsecondsSinceEpoch.toString(),
@@ -244,12 +366,13 @@ class BreedingService {
       createdAt: DateTime.now(),
       hatchTime: hatchTime,
       incubationRemaining: hatchTime,
-      nature: generated.nature,
-      gender: generated.gender,
+      nature: nature,
+      gender: gender,
       ability: ability,
-      selectedMoves: startingPool.take(4).toList(growable: false),
+      selectedMoves: knownMoves.take(4).toList(growable: false),
       inheritedMoves: inheritedMoves,
       isShiny: false,
+      masterOfTraitsApplied: masterOfTraitsApplied,
     );
   }
 
@@ -318,33 +441,60 @@ class BreedingService {
     ]..sort((first, second) => first.slotIndex.compareTo(second.slotIndex));
   }
 
-  List<String> _inheritedMoves({
+  List<String> _inheritedEggMoves({
     required Pokemon child,
     required BreedingCandidate first,
     required BreedingCandidate second,
   }) {
-    final firstMoves = _moveKeys(first.selectedMoves);
-    final secondMoves = _moveKeys(second.selectedMoves);
-    final eitherParent = <String>{...firstMoves, ...secondMoves};
-    final bothParents = firstMoves.intersection(secondMoves);
-    final result = <String>[];
-    final seen = <String>{};
+    final eitherParent = <String>{
+      ..._moveKeys(first.selectedMoves),
+      ..._moveKeys(second.selectedMoves),
+    };
+    return [
+      for (final move in child.moves.eggMoves)
+        if (eitherParent.contains(_moveKey(move))) move,
+    ];
+  }
 
-    void add(String move) {
-      if (seen.add(_moveKey(move))) result.add(move);
-    }
-
-    for (final move in child.moves.eggMoves) {
-      if (eitherParent.contains(_moveKey(move))) add(move);
-    }
+  List<String> _inheritedNaturalMoves({
+    required Pokemon child,
+    required BreedingCandidate first,
+    required BreedingCandidate second,
+  }) {
+    final bothParents = _moveKeys(
+      first.selectedMoves,
+    ).intersection(_moveKeys(second.selectedMoves));
     final naturalMoves = <String>[
       ...child.moves.startingMoves,
       for (final entry in child.moves.levelMoves.entries) ...entry.value,
     ];
-    for (final move in naturalMoves) {
-      if (bothParents.contains(_moveKey(move))) add(move);
+    return _uniqueMoves([
+      for (final move in naturalMoves)
+        if (bothParents.contains(_moveKey(move))) move,
+    ]);
+  }
+
+  List<String> _uniqueMoves(Iterable<String> moves) {
+    final result = <String>[];
+    final seen = <String>{};
+    for (final move in moves) {
+      if (seen.add(_moveKey(move))) result.add(move);
     }
     return result;
+  }
+
+  String? _matchingMove(Iterable<String> moves, String requested) {
+    final key = _moveKey(requested);
+    for (final move in moves) {
+      if (_moveKey(move) == key) return move;
+    }
+    return null;
+  }
+
+  String? _randomNormalAbility(Pokemon pokemon, Random random) {
+    final abilities = availableAbilities(pokemon);
+    if (abilities.isEmpty) return null;
+    return abilities[random.nextInt(abilities.length)];
   }
 
   Set<String> _moveKeys(Iterable<String> moves) {

@@ -435,7 +435,7 @@ class _SlotAvatar extends StatelessWidget {
       ),
       child: Center(
         child: slot.isEgg
-            ? const EggAssetImage(size: 46)
+            ? const EggAssetImage(size: 38)
             : pokemon == null
             ? Text(
                 '${slot.slotIndex + 1}',

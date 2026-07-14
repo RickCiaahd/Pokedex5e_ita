@@ -135,8 +135,7 @@ class BreedingEgg {
         (value) => value.name == incubatorName,
         orElse: () => EggIncubator.none,
       ),
-      carriedEntireIncubation:
-          json['carriedEntireIncubation'] as bool? ?? true,
+      carriedEntireIncubation: json['carriedEntireIncubation'] as bool? ?? true,
       isInDayCare: json['isInDayCare'] as bool? ?? false,
     );
   }

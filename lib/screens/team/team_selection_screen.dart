@@ -116,9 +116,9 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
 
   Future<void> _openPokemonDetail(TeamSlot slot) async {
     if (slot.isEgg) {
-      await Navigator.of(context).push(
-        MaterialPageRoute(builder: (_) => const BreedingScreen()),
-      );
+      await Navigator.of(
+        context,
+      ).push(MaterialPageRoute(builder: (_) => const BreedingScreen()));
       await _loadTeam();
       return;
     }
@@ -305,8 +305,8 @@ class _TeamSlotCard extends StatelessWidget {
     final title = slot.isEgg
         ? 'Uovo in incubazione'
         : nickname.isEmpty
-            ? pokemon?.name ?? 'Slot vuoto'
-            : nickname;
+        ? pokemon?.name ?? 'Slot vuoto'
+        : nickname;
 
     return Card(
       child: InkWell(

@@ -71,8 +71,9 @@ class _BreedingScreenState extends State<BreedingScreen> {
     var team = results[1] as List<TeamSlot>;
     var pc = results[2] as List<PcPokemon>;
     var eggs = results[3] as List<BreedingEgg>;
-    final unlockedPokeslots =
-        TrainerProgression.pokeslotsForLevel(profile.trainerLevel);
+    final unlockedPokeslots = TrainerProgression.pokeslotsForLevel(
+      profile.trainerLevel,
+    );
 
     final occupiedLockedSlots = _breedingService.occupiedLockedTeamSlots(
       team: team,
@@ -112,10 +113,7 @@ class _BreedingScreenState extends State<BreedingScreen> {
         if (!egg.isInDayCare) {
           await _eggRepository.saveEgg(
             profile.id,
-            egg.copyWith(
-              isInDayCare: true,
-              carriedEntireIncubation: false,
-            ),
+            egg.copyWith(isInDayCare: true, carriedEntireIncubation: false),
           );
         }
         eggStorageChanged = true;
@@ -141,10 +139,7 @@ class _BreedingScreenState extends State<BreedingScreen> {
       if (freeSlot == null) {
         await _eggRepository.saveEgg(
           profile.id,
-          egg.copyWith(
-            isInDayCare: true,
-            carriedEntireIncubation: false,
-          ),
+          egg.copyWith(isInDayCare: true, carriedEntireIncubation: false),
         );
       } else {
         await _teamRepository.setEggInSlot(
@@ -372,10 +367,7 @@ class _BreedingScreenState extends State<BreedingScreen> {
     await _reload(message: 'Uovo affidato alla Pensione Pokémon.');
   }
 
-  Future<void> _moveEggToTeam(
-    _BreedingScreenData data,
-    BreedingEgg egg,
-  ) async {
+  Future<void> _moveEggToTeam(_BreedingScreenData data, BreedingEgg egg) async {
     final unlockedPokeslots = TrainerProgression.pokeslotsForLevel(
       data.profile.trainerLevel,
     );
@@ -384,7 +376,9 @@ class _BreedingScreenState extends State<BreedingScreen> {
       unlockedPokeslots: unlockedPokeslots,
     );
     if (freeSlot == null) {
-      setState(() => _message = 'Non hai un Pokéslot libero per ritirare l’uovo.');
+      setState(
+        () => _message = 'Non hai un Pokéslot libero per ritirare l’uovo.',
+      );
       return;
     }
     await _teamRepository.setEggInSlot(
@@ -615,8 +609,8 @@ class _BreedingScreenState extends State<BreedingScreen> {
                             _useDayCare
                                 ? 'L’uovo non occupa un Pokéslot e alla schiusa il Pokémon andrà nel PC.'
                                 : freeSlot == null
-                                    ? 'Nessun Pokéslot libero: attiva la Pensione per poter ottenere l’uovo.'
-                                    : 'L’uovo occuperà lo slot squadra ${freeSlot.slotIndex + 1}.'
+                                ? 'Nessun Pokéslot libero: attiva la Pensione per poter ottenere l’uovo.'
+                                : 'L’uovo occuperà lo slot squadra ${freeSlot.slotIndex + 1}.',
                           ),
                           value: _useDayCare,
                           onChanged: (value) => setState(() {
@@ -643,7 +637,9 @@ class _BreedingScreenState extends State<BreedingScreen> {
                           crossAxisAlignment: WrapCrossAlignment.center,
                           children: [
                             FilledButton.icon(
-                              onPressed: compatibility?.isCompatible == true && canStoreEgg
+                              onPressed:
+                                  compatibility?.isCompatible == true &&
+                                      canStoreEgg
                                   ? () => _attemptBreeding(data)
                                   : null,
                               icon: const Icon(Icons.casino_outlined),
@@ -662,7 +658,9 @@ class _BreedingScreenState extends State<BreedingScreen> {
                               ),
                             ),
                             OutlinedButton(
-                              onPressed: compatibility?.isCompatible == true && canStoreEgg
+                              onPressed:
+                                  compatibility?.isCompatible == true &&
+                                      canStoreEgg
                                   ? () {
                                       final roll = int.tryParse(
                                         _manualRollController.text.trim(),
@@ -1035,7 +1033,9 @@ class _EggCard extends StatelessWidget {
               color: colors.surfaceContainerHighest,
               child: ListTile(
                 leading: Icon(
-                  teamSlotIndex == null ? Icons.home_work_outlined : Icons.group_outlined,
+                  teamSlotIndex == null
+                      ? Icons.home_work_outlined
+                      : Icons.group_outlined,
                 ),
                 title: Text(
                   teamSlotIndex == null

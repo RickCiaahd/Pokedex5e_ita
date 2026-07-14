@@ -97,6 +97,31 @@ jobs:
               ],
           )
 
+          grid_marker = next(
+              index
+              for index, line in enumerate(lines)
+              if "'pc combined grid'" in line
+          )
+          lines[grid_marker:grid_marker + 1] = [
+              "grid_pattern = (",
+              "    r'                   Expanded\\(\\n'",
+              "    r'\\s+child: _pcPokemon\\.isEmpty.*?'",
+              "    r'\\n                   \\),'",
+              ")",
+              "grid_matches = re.findall(grid_pattern, text, flags=re.DOTALL)",
+              "if len(grid_matches) != 1:",
+              "    raise RuntimeError(",
+              "        f'pc combined grid: atteso 1 match, trovati {len(grid_matches)}'",
+              "    )",
+              "text = re.sub(",
+              "    grid_pattern,",
+              "    new_grid,",
+              "    text,",
+              "    count=1,",
+              "    flags=re.DOTALL,",
+              ")",
+          ]
+
           path.write_text('\n'.join(lines) + '\n', encoding='utf-8')
           PY
 

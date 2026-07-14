@@ -27,6 +27,21 @@ jobs:
           ref: feature/campaign-content-transfer
           fetch-depth: 0
 
+      - name: Correct patch indentation
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('tool/apply_campaign_content_transfer.py')
+          text = path.read_text(encoding='utf-8')
+          old = "                   onFight: () => _startFight([trainer]),\n                   onDuplicate: () => _duplicateTrainer(trainer),\n"
+          new = "                  onFight: () => _startFight([trainer]),\n                  onDuplicate: () => _duplicateTrainer(trainer),\n"
+          old_new = "                   onFight: () => _startFight([trainer]),\n                   onExport: () => _exportTrainer(trainer),\n                   onDuplicate: () => _duplicateTrainer(trainer),\n"
+          new_new = "                  onFight: () => _startFight([trainer]),\n                  onExport: () => _exportTrainer(trainer),\n                  onDuplicate: () => _duplicateTrainer(trainer),\n"
+          if text.count(old) != 1 or text.count(old_new) != 1:
+              raise SystemExit('Trainer card patch strings not found exactly once')
+          path.write_text(text.replace(old, new).replace(old_new, new_new), encoding='utf-8')
+          PY
+
       - name: Apply UI integration
         run: |
           set +e

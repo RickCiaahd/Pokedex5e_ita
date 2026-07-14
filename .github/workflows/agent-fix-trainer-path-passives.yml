@@ -1,6 +1,9 @@
 name: Fix trainer path passives
 
 on:
+  push:
+    branches:
+      - agent/trainer-path-passives
   pull_request:
     branches:
       - main
@@ -10,7 +13,7 @@ permissions:
 
 jobs:
   fix:
-    if: github.head_ref == 'agent/trainer-path-passives'
+    if: github.head_ref == 'agent/trainer-path-passives' || github.ref_name == 'agent/trainer-path-passives'
     runs-on: ubuntu-latest
     steps:
       - name: Check out branch

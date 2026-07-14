@@ -76,6 +76,25 @@ jobs:
               ],
           )
 
+          replace_block(
+              "'pc toolbar egg counts',",
+              [
+                  "old_toolbar_counts = (",
+                  "    'storedCount: filteredPcPokemon.length,\\n'",
+                  "    '                       totalCount: _pcPokemon.length,'",
+                  ")",
+                  "new_toolbar_counts = (",
+                  "    'storedCount: filteredCount,\\n'",
+                  "    '                       totalCount: storedCount,'",
+                  ")",
+                  "if text.count(old_toolbar_counts) != 1:",
+                  "    raise RuntimeError(",
+                  "        f'pc toolbar egg counts: atteso 1 match, trovati {text.count(old_toolbar_counts)}'",
+                  "    )",
+                  "text = text.replace(old_toolbar_counts, new_toolbar_counts, 1)",
+              ],
+          )
+
           path.write_text('\n'.join(lines) + '\n', encoding='utf-8')
           PY
 

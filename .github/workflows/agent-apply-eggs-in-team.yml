@@ -22,7 +22,18 @@ jobs:
           ref: agent/eggs-in-team-and-daycare
 
       - name: Apply changes
-        run: python .github/agent/apply_eggs_in_team.py
+        run: |
+          set -o pipefail
+          python .github/agent/apply_eggs_in_team.py 2>&1 | tee apply-eggs.log
+
+      - name: Upload patch log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: apply-eggs-log
+          path: apply-eggs.log
+          if-no-files-found: ignore
+          retention-days: 1
 
       - name: Commit generated changes
         run: |

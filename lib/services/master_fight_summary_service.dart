@@ -61,7 +61,7 @@ class MasterFightSummaryService {
         final fainted = state.isFainted ? ' · ESAUSTO' : '';
         final statuses = <String>[
           if (state.nonVolatileStatus != null) state.nonVolatileStatus!,
-          ...state.volatileStatuses.toList()..sort(),
+          ...(state.volatileStatuses.toList()..sort()),
         ];
         final statusText = statuses.isEmpty
             ? 'nessuno'

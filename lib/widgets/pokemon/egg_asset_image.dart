@@ -9,6 +9,7 @@ class EggAssetImage extends StatelessWidget {
   });
 
   static const String assetPath = 'assets/textures/sprites/egg.png';
+  static const String semanticLabel = 'Uovo Pokémon';
 
   final double size;
   final BoxFit fit;
@@ -22,7 +23,7 @@ class EggAssetImage extends StatelessWidget {
       height: size,
       fit: fit,
       filterQuality: FilterQuality.none,
-      semanticLabel: 'Uovo Pokémon',
+      semanticLabel: semanticLabel,
       errorBuilder: (context, error, stackTrace) => SizedBox.square(
         dimension: size,
         child: Center(child: fallback ?? const Icon(Icons.egg_alt_outlined)),

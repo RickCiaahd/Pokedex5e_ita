@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: flutter-ci-${{ github.workflow }}-${{ github.ref }}
@@ -21,35 +21,8 @@ jobs:
     timeout-minutes: 30
 
     steps:
-      - name: Check out feature branch
+      - name: Check out repository
         uses: actions/checkout@v4
-        with:
-          ref: agent/eggs-in-team-and-daycare
-
-      - name: Apply final fixes
-        run: |
-          python .github/agent/fix_egg_team_syntax.py
-          python - <<'PY'
-          from pathlib import Path
-
-          pc = Path('lib/screens/pc/pokemon_pc_screen.dart')
-          text = pc.read_text(encoding='utf-8')
-          text = text.replace(
-              '        team: _visibleTeam,\n',
-              '        team: _visibleTeam.where((slot) => slot.isPokemon).toList(),\n',
-              1,
-          )
-          text = text.replace(
-              "'$storedCount nel PC • $filledTeamSlots/$totalTeamSlots in squadra'",
-              "'$storedCount nel PC • $filledTeamSlots/$totalTeamSlots Pokéslot occupati'",
-              1,
-          )
-          pc.write_text(text, encoding='utf-8')
-
-          Path('.github/workflows/agent-verify-egg-team.yml').unlink(missing_ok=True)
-          Path('.github/agent/fix_egg_team_syntax.py').unlink(missing_ok=True)
-          Path('.github/agent/fix_egg_team_generated.py').unlink(missing_ok=True)
-          PY
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
@@ -62,20 +35,6 @@ jobs:
 
       - name: Install dependencies
         run: flutter pub get
-
-      - name: Format changed Dart files
-        run: |
-          dart format \
-            lib/models/breeding_egg.dart \
-            lib/models/team_slot.dart \
-            lib/repositories/team_repository.dart \
-            lib/screens/breeding/breeding_screen.dart \
-            lib/screens/capture/capture_pokemon_screen.dart \
-            lib/screens/pc/pokemon_pc_screen.dart \
-            lib/screens/team/team_selection_screen.dart \
-            lib/services/breeding_service.dart \
-            test/breeding_service_test.dart \
-            test/team_slot_egg_test.dart
 
       - name: Analyze source
         run: flutter analyze
@@ -96,70 +55,3 @@ jobs:
 
       - name: Run complete test suite
         run: flutter test --reporter expanded
-
-      - name: Restore permanent CI and commit verified changes
-        run: |
-          cat > .github/workflows/flutter-ci.yml <<'YAML'
-          name: Flutter CI
-
-          on:
-            push:
-              branches:
-                - main
-            pull_request:
-            workflow_dispatch:
-
-          permissions:
-            contents: read
-
-          concurrency:
-            group: flutter-ci-${{ github.workflow }}-${{ github.ref }}
-            cancel-in-progress: true
-
-          jobs:
-            quality:
-              name: Analyze and test
-              runs-on: ubuntu-latest
-              timeout-minutes: 30
-
-              steps:
-                - name: Check out repository
-                  uses: actions/checkout@v4
-
-                - name: Set up Flutter
-                  uses: subosito/flutter-action@v2
-                  with:
-                    channel: stable
-                    cache: true
-
-                - name: Show Flutter version
-                  run: flutter --version
-
-                - name: Install dependencies
-                  run: flutter pub get
-
-                - name: Analyze source
-                  run: flutter analyze
-
-                - name: Validate application data
-                  run: |
-                    set -o pipefail
-                    flutter test test/data_integrity_test.dart --reporter expanded 2>&1 | tee data-validation.log
-
-                - name: Upload validation log
-                  if: always()
-                  uses: actions/upload-artifact@v4
-                  with:
-                    name: data-validation-log
-                    path: data-validation.log
-                    if-no-files-found: ignore
-                    retention-days: 7
-
-                - name: Run complete test suite
-                  run: flutter test --reporter expanded
-          YAML
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          git commit -m "Verifica e formatta le uova in squadra"
-          git push origin HEAD:agent/eggs-in-team-and-daycare

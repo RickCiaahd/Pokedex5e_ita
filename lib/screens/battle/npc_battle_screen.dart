@@ -10,7 +10,9 @@ import '../../models/pokemon.dart';
 import '../../models/pokemon_form_choice.dart';
 import '../../repositories/master_battle_session_repository.dart';
 import '../../repositories/move_repository.dart';
+import '../../services/battle_status_rules.dart';
 import '../../services/master_battle_service.dart';
+import '../../widgets/battle/battle_status_assistance_card.dart';
 import '../../widgets/navigation/home_leading_button.dart';
 import '../../widgets/pokemon/pokemon_asset_image.dart';
 import '../pokemon/pokemon_detail_screen.dart';
@@ -42,6 +44,7 @@ class _NpcBattleScreenState extends State<NpcBattleScreen> {
   Map<String, MoveData?> _moves = const {};
   bool _isWorking = false;
   String? _message;
+  BattleStatusMoment _statusMoment = BattleStatusMoment.turnStart;
 
   @override
   void initState() {
@@ -144,6 +147,7 @@ class _NpcBattleScreenState extends State<NpcBattleScreen> {
   }
 
   Future<void> _selectTrainer(String trainerId) async {
+    setState(() => _statusMoment = BattleStatusMoment.turnStart);
     final participant = _session.participants.firstWhere(
       (candidate) => candidate.trainerId == trainerId,
     );
@@ -156,6 +160,7 @@ class _NpcBattleScreenState extends State<NpcBattleScreen> {
   }
 
   Future<void> _focusPokemon(int slotIndex) async {
+    setState(() => _statusMoment = BattleStatusMoment.turnStart);
     await _commit(_session.copyWith(focusedSlotIndex: slotIndex));
   }
 
@@ -261,6 +266,7 @@ class _NpcBattleScreenState extends State<NpcBattleScreen> {
       ),
     );
     if (result == null) return;
+    setState(() => _statusMoment = BattleStatusMoment.turnStart);
     await _updateFocusedState(
       state.copyWith(
         nonVolatileStatus: result.nonVolatile,
@@ -299,10 +305,14 @@ class _NpcBattleScreenState extends State<NpcBattleScreen> {
     final current = _remainingPp(state, reference, move);
     final remaining = {...state.remainingPp};
     remaining[key] = (current + delta).clamp(0, maxPp).toInt();
+    if (delta < 0) {
+      setState(() => _statusMoment = BattleStatusMoment.actionAttempt);
+    }
     await _updateFocusedState(state.copyWith(remainingPp: remaining));
   }
 
   Future<void> _nextTurn() async {
+    setState(() => _statusMoment = BattleStatusMoment.turnStart);
     final entries = _session.initiativeEntries;
     if (entries.isEmpty) return;
     var nextIndex = _session.turnIndex + 1;
@@ -315,6 +325,7 @@ class _NpcBattleScreenState extends State<NpcBattleScreen> {
   }
 
   Future<void> _nextRound() async {
+    setState(() => _statusMoment = BattleStatusMoment.turnStart);
     await _commit(_session.copyWith(round: _session.round + 1, turnIndex: 0));
   }
 
@@ -611,6 +622,22 @@ class _NpcBattleScreenState extends State<NpcBattleScreen> {
             onStatus: _editStatuses,
             onDetails: _openDetails,
             onToggleActive: () => _toggleActive(state.slotIndex),
+          ),
+          const SizedBox(height: 12),
+          BattleStatusAssistanceCard(
+            key: ValueKey(
+              'master-status-${participant.trainerId}-${state.slotIndex}',
+            ),
+            pokemonName: pokemonFormDisplayName(
+              generated.basePokemon.name,
+              generated.formName,
+            ),
+            nonVolatileStatus: state.nonVolatileStatus,
+            volatileStatuses: state.volatileStatuses,
+            selectedMoment: _statusMoment,
+            onMomentChanged: (moment) {
+              setState(() => _statusMoment = moment);
+            },
           ),
           const SizedBox(height: 12),
           Text(

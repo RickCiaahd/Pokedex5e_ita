@@ -20,6 +20,8 @@ import '../../repositories/pokemon_repository.dart';
 import '../../repositories/profile_repository.dart';
 import '../../repositories/team_repository.dart';
 import '../../services/battle_quick_item_service.dart';
+import '../../services/battle_status_rules.dart';
+import '../../widgets/battle/battle_status_assistance_card.dart';
 import '../../widgets/navigation/home_leading_button.dart';
 import '../../widgets/pokemon/pokemon_asset_image.dart';
 import '../capture/capture_pokemon_screen.dart';
@@ -47,6 +49,7 @@ class _BattleScreenState extends State<BattleScreen> {
   final Map<int, Set<String>> _volatileStatusesBySlot = {};
   final List<BattleInitiativeEntry> _initiativeEntries = [];
 
+  BattleStatusMoment _statusMoment = BattleStatusMoment.turnStart;
   int? _activeSlotIndex;
   int _round = 1;
   int _turnIndex = 0;
@@ -267,6 +270,9 @@ class _BattleScreenState extends State<BattleScreen> {
 
     setState(() {
       slotPp[key] = (current + delta).clamp(0, maxPp).toInt();
+      if (delta < 0) {
+        _statusMoment = BattleStatusMoment.actionAttempt;
+      }
     });
     _scheduleSessionSave(data);
   }
@@ -696,6 +702,7 @@ class _BattleScreenState extends State<BattleScreen> {
     );
     if (!mounted || result == null) return;
 
+    _statusMoment = BattleStatusMoment.turnStart;
     _volatileStatusesBySlot[slot.slotIndex] = result.volatileStatuses;
     await _teamRepository.updateSlot(
       profileId: data.profile.id,
@@ -804,6 +811,7 @@ class _BattleScreenState extends State<BattleScreen> {
 
   void _nextTurn(_BattleData data) {
     setState(() {
+      _statusMoment = BattleStatusMoment.turnStart;
       if (_initiativeEntries.isEmpty) return;
       if (_turnIndex + 1 >= _initiativeEntries.length) {
         _turnIndex = 0;
@@ -819,6 +827,7 @@ class _BattleScreenState extends State<BattleScreen> {
 
   void _nextRound(_BattleData data) {
     setState(() {
+      _statusMoment = BattleStatusMoment.turnStart;
       _round += 1;
       _turnIndex = 0;
       _message = 'Round $_round iniziato.';
@@ -1022,6 +1031,7 @@ class _BattleScreenState extends State<BattleScreen> {
                   onSelected: (slotIndex) {
                     setState(() {
                       _activeSlotIndex = slotIndex;
+                      _statusMoment = BattleStatusMoment.turnStart;
                       _message = null;
                     });
                     _scheduleSessionSave(data);
@@ -1061,6 +1071,17 @@ class _BattleScreenState extends State<BattleScreen> {
                       ? () => _useHeldBerry(data, activeSlot)
                       : null,
                   onOpenBag: () => _openQuickBag(data, activeSlot),
+                ),
+                const SizedBox(height: 12),
+                BattleStatusAssistanceCard(
+                  key: ValueKey('player-status-${activeSlot.slotIndex}'),
+                  pokemonName: _displayName(activeSlot, pokemon),
+                  nonVolatileStatus: _nonVolatileStatusFor(activeSlot),
+                  volatileStatuses: _volatileStatusesFor(activeSlot),
+                  selectedMoment: _statusMoment,
+                  onMomentChanged: (moment) {
+                    setState(() => _statusMoment = moment);
+                  },
                 ),
                 const SizedBox(height: 12),
                 Text(

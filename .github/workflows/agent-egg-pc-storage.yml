@@ -4,12 +4,16 @@ on:
   push:
     branches:
       - agent/egg-pc-storage-and-layout
+  pull_request:
+    branches:
+      - main
 
 permissions:
   contents: write
 
 jobs:
   apply:
+    if: github.head_ref == 'agent/egg-pc-storage-and-layout' || github.ref_name == 'agent/egg-pc-storage-and-layout'
     runs-on: ubuntu-latest
     steps:
       - name: Check out feature branch

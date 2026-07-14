@@ -37,18 +37,7 @@ jobs:
         run: flutter pub get
 
       - name: Analyze source
-        run: |
-          set -o pipefail
-          flutter analyze 2>&1 | tee analyzer.log
-
-      - name: Upload analyzer log
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: trainer-path-analyzer-log
-          path: analyzer.log
-          if-no-files-found: ignore
-          retention-days: 1
+        run: flutter analyze
 
       - name: Validate application data
         run: |

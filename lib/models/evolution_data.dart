@@ -32,13 +32,14 @@ class EvolutionData {
     int currentStage = 1,
     int totalStages = 1,
   }) {
-    final sortedOptions = [...options]..sort((a, b) {
-      final levelCompare = (a.levelCondition ?? 0).compareTo(
-        b.levelCondition ?? 0,
-      );
-      if (levelCompare != 0) return levelCompare;
-      return a.toName.compareTo(b.toName);
-    });
+    final sortedOptions = [...options]
+      ..sort((a, b) {
+        final levelCompare = (a.levelCondition ?? 0).compareTo(
+          b.levelCondition ?? 0,
+        );
+        if (levelCompare != 0) return levelCompare;
+        return a.toName.compareTo(b.toName);
+      });
 
     return EvolutionData(
       evolutions: sortedOptions.map((option) => option.toName).toList(),
@@ -123,7 +124,9 @@ class EvolutionOption {
 
     return value
         .whereType<Map>()
-        .map((entry) => EvolutionRule.fromJson(Map<String, dynamic>.from(entry)))
+        .map(
+          (entry) => EvolutionRule.fromJson(Map<String, dynamic>.from(entry)),
+        )
         .toList(growable: false);
   }
 

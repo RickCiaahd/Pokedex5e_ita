@@ -48,9 +48,9 @@ class TrainerPathPassiveCard extends StatelessWidget {
             for (var index = 0; index < notes.length; index++) ...[
               Text(
                 notes[index].title,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w900,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w900),
               ),
               const SizedBox(height: 2),
               Text(notes[index].detail),

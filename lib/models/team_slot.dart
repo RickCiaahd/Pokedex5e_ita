@@ -39,21 +39,18 @@ class TeamSlot {
     this.statusEffects = const [],
     this.customAbilityScores = const {},
     this.loyalty = 0,
-  })  : gender = PokemonFormPreferences.normalizeGender(gender),
-        formName = PokemonFormPreferences.normalizeFormName(
-          formName: formName,
-          gender: gender,
-        ) {
+  }) : gender = PokemonFormPreferences.normalizeGender(gender),
+       formName = PokemonFormPreferences.normalizeFormName(
+         formName: formName,
+         gender: gender,
+       ) {
     final pokemonId = this.pokemonId;
     if (pokemonId != null) {
       PokemonFormPreferences.setForm(
         pokemonId: pokemonId,
         formName: this.formName,
       );
-      PokemonFormPreferences.setShiny(
-        pokemonId: pokemonId,
-        isShiny: isShiny,
-      );
+      PokemonFormPreferences.setShiny(pokemonId: pokemonId, isShiny: isShiny);
       PokemonFormPreferences.setGender(
         pokemonId: pokemonId,
         gender: this.gender,
@@ -129,13 +126,15 @@ class TeamSlot {
   }) {
     final nextPokemonId = clearPokemon ? null : pokemonId ?? this.pokemonId;
     final pokemonChanged = pokemonId != null && pokemonId != this.pokemonId;
-    final nextGender = identical(gender, _unset) ? this.gender : gender as String?;
-    final nextFormName = clearPokemon ||
-            (pokemonChanged && identical(formName, _unset))
+    final nextGender = identical(gender, _unset)
+        ? this.gender
+        : gender as String?;
+    final nextFormName =
+        clearPokemon || (pokemonChanged && identical(formName, _unset))
         ? null
         : identical(formName, _unset)
-            ? this.formName
-            : formName as String?;
+        ? this.formName
+        : formName as String?;
 
     return TeamSlot(
       slotIndex: slotIndex ?? this.slotIndex,

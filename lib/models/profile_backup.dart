@@ -1,5 +1,6 @@
 import 'bag_inventory_entry.dart';
 import 'battle_session.dart';
+import 'breeding_egg.dart';
 import 'encounter_collection.dart';
 import 'master_battle_session.dart';
 import 'pc_pokemon.dart';
@@ -11,7 +12,7 @@ import 'team_slot.dart';
 import 'user_profile.dart';
 
 class ProfileBackup {
-  static const int currentFormatVersion = 4;
+  static const int currentFormatVersion = 5;
 
   ProfileBackup({
     required this.formatVersion,
@@ -27,6 +28,7 @@ class ProfileBackup {
     this.savedEncounters = const [],
     this.savedNpcTrainers = const [],
     this.masterBattleSession,
+    this.breedingEggs = const [],
   });
 
   final int formatVersion;
@@ -42,6 +44,7 @@ class ProfileBackup {
   final List<SavedEncounter> savedEncounters;
   final List<SavedNpcTrainer> savedNpcTrainers;
   final MasterBattleSession? masterBattleSession;
+  final List<BreedingEgg> breedingEggs;
 
   int get seenSpecies => pokedex.where((entry) => entry.seen).length;
 
@@ -84,6 +87,9 @@ class ProfileBackup {
           .map((trainer) => trainer.toJson())
           .toList(growable: false),
       'masterBattleSession': masterBattleSession?.toJson(),
+      'breedingEggs': breedingEggs
+          .map((egg) => egg.toJson())
+          .toList(growable: false),
     };
   }
 
@@ -157,6 +163,10 @@ class ProfileBackup {
               Map<String, dynamic>.from(json['masterBattleSession'] as Map),
             )
           : null,
+      breedingEggs: [
+        for (final value in _readMapList(json['breedingEggs'], 'breedingEggs'))
+          BreedingEgg.fromJson(value),
+      ],
     );
 
     backup.validate();
@@ -266,6 +276,22 @@ class ProfileBackup {
       throw const FormatException(
         'Il backup contiene una sessione del Master non valida.',
       );
+    }
+
+    final eggIds = <String>{};
+    for (final egg in breedingEggs) {
+      if (egg.id.trim().isEmpty ||
+          egg.speciesId <= 0 ||
+          egg.hatchTime <= 0 ||
+          egg.incubationRemaining < 0 ||
+          egg.incubationRemaining > egg.hatchTime) {
+        throw const FormatException(
+          'Il backup contiene un uovo Pokémon non valido.',
+        );
+      }
+      if (!eggIds.add(egg.id)) {
+        throw FormatException('L’uovo ${egg.id} è presente più volte.');
+      }
     }
 
     final savedEncounterIds = <String>{};

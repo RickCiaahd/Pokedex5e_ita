@@ -61,20 +61,11 @@ class PokemonFormPreferences {
   // Kept as compatibility hooks for older call sites. Form, gender and shiny
   // now belong exclusively to TeamSlot/PcPokemon instances and must not be
   // shared globally by Pokédex number.
-  static void setForm({
-    required int pokemonId,
-    required String? formName,
-  }) {}
+  static void setForm({required int pokemonId, required String? formName}) {}
 
-  static void setShiny({
-    required int pokemonId,
-    required bool isShiny,
-  }) {}
+  static void setShiny({required int pokemonId, required bool isShiny}) {}
 
-  static void setGender({
-    required int pokemonId,
-    required String? gender,
-  }) {}
+  static void setGender({required int pokemonId, required String? gender}) {}
 
   static String? formFor(int pokemonId) => null;
 

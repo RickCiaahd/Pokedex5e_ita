@@ -11,17 +11,21 @@ Tutte le modifiche rilevanti al progetto vengono documentate in questo file.
 - documentazione iniziale del progetto, delle piattaforme supportate e dei controlli locali;
 - avvio diretto degli incontri generati o salvati nel Fight del Master, senza creare Allenatori PNG nella libreria;
 - accesso diretto dalla Home e dagli Strumenti al Fight del Master ancora in corso;
-- pannello condiviso di assistenza agli status per Battle Companion e Fight del Master, con promemoria distinti per inizio turno, azione, mossa subita e fine turno.
+- pannello condiviso di assistenza agli status per Battle Companion e Fight del Master, con promemoria distinti per inizio turno, azione, mossa subita e fine turno;
+- gestione automatica delle risorse numeriche del Trainer Path, con contatori persistenti e recupero da riposo breve o lungo;
+- selettori persistenti per le scelte specifiche di Researcher, Ace Trainer, Hobbyist, Type Master e Ranger.
 
 ### Modificato
 
 - Home e Strumenti del Master divisi in sezioni più riconoscibili;
 - navigazione interna corretta: la freccia torna alla schermata precedente e il comando Home resta separato;
-- editor delle probabilità delle raccolte corretto per consentire la digitazione di percentuali a più cifre senza perdere il focus.
-- controllo del combattimento semplificato: resta un solo pulsante `PROSSIMO TURNO`, che avanza automaticamente il round al termine dell’iniziativa.
+- editor delle probabilità delle raccolte corretto per consentire la digitazione di percentuali a più cifre senza perdere il focus;
+- controllo del combattimento semplificato: resta un solo pulsante `PROSSIMO TURNO`, che avanza automaticamente il round al termine dell’iniziativa;
+- i privilegi ottenuti ai livelli 5, 9 e 15 sono indicati come `Privilegio del Path`, distinguendoli dalla scelta iniziale del Trainer Path;
+- il cambio di un Trainer Path già salvato richiede ora una conferma esplicita.
 
 ### In programma
 
-- automazione delle capacità e delle risorse del Trainer Path;
+- applicazione automatica dei bonus passivi del Trainer Path alle statistiche interessate;
 - sistema di allevamento, uova e incubazione;
 - condivisione nativa ed esportazioni mirate.

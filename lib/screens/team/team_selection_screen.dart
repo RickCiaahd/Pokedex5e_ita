@@ -9,6 +9,7 @@ import '../../repositories/profile_repository.dart';
 import '../../repositories/team_repository.dart';
 import '../../widgets/pokemon/pokemon_asset_image.dart';
 import '../pokemon/pokemon_detail_screen.dart';
+import '../breeding/breeding_screen.dart';
 
 class TeamSelectionScreen extends StatefulWidget {
   const TeamSelectionScreen({super.key, required this.nickname});
@@ -114,6 +115,13 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
   }
 
   Future<void> _openPokemonDetail(TeamSlot slot) async {
+    if (slot.isEgg) {
+      await Navigator.of(
+        context,
+      ).push(MaterialPageRoute(builder: (_) => const BreedingScreen()));
+      await _loadTeam();
+      return;
+    }
     final pokemon = _pokemonById(slot.pokemonId);
     if (pokemon == null) {
       await _openPokemonPicker(slot);
@@ -138,6 +146,7 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
   }
 
   Future<void> _openPokemonPicker(TeamSlot slot) async {
+    if (slot.isEgg) return;
     final selectedPokemonId = await showModalBottomSheet<int>(
       context: context,
       showDragHandle: true,
@@ -154,9 +163,7 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
   Widget build(BuildContext context) {
     final profileName = _profile?.name ?? widget.nickname;
     final visibleTeam = _visibleTeam;
-    final filledSlots = visibleTeam
-        .where((slot) => slot.pokemonId != null)
-        .length;
+    final filledSlots = visibleTeam.where((slot) => !slot.isEmpty).length;
 
     return Scaffold(
       appBar: AppBar(title: const Text('Squadra')),
@@ -185,9 +192,9 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
                   pokemon: _pokemonById(slot.pokemonId),
                   onOpen: () => _openPokemonDetail(slot),
                   onChange: () => _openPokemonPicker(slot),
-                  onRemove: slot.pokemonId == null
-                      ? null
-                      : () => _setPokemonInSlot(slot.slotIndex, null),
+                  onRemove: slot.isPokemon
+                      ? () => _setPokemonInSlot(slot.slotIndex, null)
+                      : null,
                 ),
             ],
           ],
@@ -259,7 +266,7 @@ class _TeamHeader extends StatelessWidget {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  '$filledSlots/$totalSlots Pokémon in squadra',
+                  '$filledSlots/$totalSlots Pokéslot occupati',
                   style: Theme.of(
                     context,
                   ).textTheme.bodyMedium?.copyWith(color: Colors.white),
@@ -295,7 +302,11 @@ class _TeamSlotCard extends StatelessWidget {
         ? null
         : '#${pokemon!.id.toString().padLeft(3, '0')}';
     final nickname = slot.nickname?.trim() ?? '';
-    final title = nickname.isEmpty ? pokemon?.name ?? 'Slot vuoto' : nickname;
+    final title = slot.isEgg
+        ? 'Uovo in incubazione'
+        : nickname.isEmpty
+        ? pokemon?.name ?? 'Slot vuoto'
+        : nickname;
 
     return Card(
       child: InkWell(
@@ -334,7 +345,12 @@ class _TeamSlotCard extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 6),
-                    if (pokemon == null)
+                    if (slot.isEgg)
+                      Text(
+                        'Occupa un Pokéslot · Tocca per gestirlo',
+                        style: TextStyle(color: colorScheme.onSurfaceVariant),
+                      )
+                    else if (pokemon == null)
                       Text(
                         'Tocca per scegliere un Pokémon',
                         style: TextStyle(color: colorScheme.onSurfaceVariant),
@@ -355,7 +371,9 @@ class _TeamSlotCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 8),
-              pokemon == null
+              slot.isEgg
+                  ? const Icon(Icons.chevron_right)
+                  : pokemon == null
                   ? IconButton.filled(
                       tooltip: 'Scegli',
                       icon: const Icon(Icons.add),
@@ -415,7 +433,9 @@ class _SlotAvatar extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
       ),
       child: Center(
-        child: pokemon == null
+        child: slot.isEgg
+            ? const Icon(Icons.egg_alt_outlined, size: 34)
+            : pokemon == null
             ? Text(
                 '${slot.slotIndex + 1}',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(

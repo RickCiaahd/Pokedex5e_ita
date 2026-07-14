@@ -51,6 +51,10 @@ class TeamRepository {
     final migratedTeam = <TeamSlot>[];
 
     for (final slot in team) {
+      if (!slot.isPokemon) {
+        migratedTeam.add(slot);
+        continue;
+      }
       final migratedMoves = <String>[];
 
       for (final reference in slot.selectedMoves) {
@@ -111,11 +115,12 @@ class TeamRepository {
 
     final updatedTeam = team.map((slot) {
       if (slot.slotIndex == slotIndex) {
-        final changedPokemon = slot.pokemonId != pokemonId;
+        final changedPokemon = slot.pokemonId != pokemonId || slot.isEgg;
 
         return slot.copyWith(
           pokemonId: pokemonId,
           clearPokemon: pokemonId == null,
+          clearEgg: true,
           experience: changedPokemon ? 0 : slot.experience,
           currentHp: changedPokemon ? (initialCurrentHp ?? 0) : slot.currentHp,
           nickname: changedPokemon ? null : slot.nickname,
@@ -137,6 +142,37 @@ class TeamRepository {
       return slot;
     }).toList();
 
+    await saveTeam(profileId, updatedTeam);
+  }
+
+  Future<void> setEggInSlot({
+    required String profileId,
+    required int slotIndex,
+    required String? eggId,
+  }) async {
+    final team = await getTeam(profileId);
+    final updatedTeam = [
+      for (final slot in team)
+        if (slot.slotIndex == slotIndex)
+          TeamSlot(slotIndex: slot.slotIndex, pokemonId: null, eggId: eggId)
+        else
+          slot,
+    ];
+    await saveTeam(profileId, updatedTeam);
+  }
+
+  Future<void> clearSlot({
+    required String profileId,
+    required int slotIndex,
+  }) async {
+    final team = await getTeam(profileId);
+    final updatedTeam = [
+      for (final slot in team)
+        if (slot.slotIndex == slotIndex)
+          TeamSlot(slotIndex: slot.slotIndex, pokemonId: null)
+        else
+          slot,
+    ];
     await saveTeam(profileId, updatedTeam);
   }
 

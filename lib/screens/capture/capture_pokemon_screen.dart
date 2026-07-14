@@ -108,7 +108,7 @@ class _CapturePokemonScreenState extends State<CapturePokemonScreen> {
           ..sort((a, b) => a.slotIndex.compareTo(b.slotIndex));
 
     for (final slot in unlockedSlots) {
-      if (slot.pokemonId == null) return slot;
+      if (slot.isEmpty) return slot;
     }
     return null;
   }
@@ -274,8 +274,9 @@ class _CapturePokemonScreenState extends State<CapturePokemonScreen> {
     final naturalAbilities = selectedPokemon.abilities
         .take(2)
         .toList(growable: false);
-    final initialLoyalty =
-        TrainerPathPassiveService.initialCapturedLoyalty(profile);
+    final initialLoyalty = TrainerPathPassiveService.initialCapturedLoyalty(
+      profile,
+    );
 
     if (teamSlot != null) {
       await _teamRepository.updateSlot(

@@ -16,7 +16,8 @@ Tutte le modifiche rilevanti al progetto vengono documentate in questo file.
 - selettori persistenti per le scelte specifiche di Researcher, Ace Trainer, Hobbyist, Type Master e Ranger;
 - applicazione automatica dei bonus passivi principali dei Trainer Path a caratteristiche, PF, tiri per colpire, danni, STAB, tiri salvezza e Lealtà;
 - scheda compatta delle sei caratteristiche del Pokémon nel Battle Companion, con valori effettivi e modificatori pronti per prove e tiri salvezza;
-- sistema persistente di allevamento e uova integrato nei profili e nei backup, con compatibilità dei genitori, Gruppi Uova, Ditto, tiri di successo, incubazione, incubatori e schiusa in squadra o nel PC.
+- sistema persistente di allevamento e uova integrato nei profili e nei backup, con compatibilità dei genitori, Gruppi Uova, Ditto, tiri di successo, incubazione, incubatori e schiusa in squadra o nel PC;
+- uova come entità reali della squadra: occupano un Pokéslot, possono essere affidate alla Pensione Pokémon e alla schiusa vengono sostituite dal Pokémon nato nello stesso slot.
 
 ### Modificato
 

@@ -1,9 +1,9 @@
 name: Apply Battle AC badge
 
 on:
-  pull_request:
+  push:
     branches:
-      - main
+      - fix/battle-ac-badge
 
 permissions:
   contents: write
@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   apply:
-    if: ${{ !contains(github.event.pull_request.title, '[ac-badge-applied]') }}
+    if: ${{ !contains(github.event.head_commit.message, '[ac-badge-applied]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
 

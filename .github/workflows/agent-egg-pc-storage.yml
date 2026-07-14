@@ -21,6 +21,39 @@ jobs:
         with:
           ref: agent/egg-pc-storage-and-layout
 
+      - name: Normalize repeated daycare replacements
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('.github/agent/apply_egg_pc_storage.py')
+          text = path.read_text(encoding='utf-8')
+          old = '''text = replace_once(
+              text,
+              \'''      egg.copyWith(isInDayCare: true, carriedEntireIncubation: false),\''',
+              \'''      egg.copyWith(
+                isInDayCare: true,
+                isInPc: false,
+                carriedEntireIncubation: false,
+              ),\''',
+              'move egg to daycare flags',
+          )'''
+          new = '''old_daycare_copy = \'''      egg.copyWith(isInDayCare: true, carriedEntireIncubation: false),\'''
+          new_daycare_copy = \'''      egg.copyWith(
+                isInDayCare: true,
+                isInPc: false,
+                carriedEntireIncubation: false,
+              ),\'''
+          if text.count(old_daycare_copy) != 2:
+              raise RuntimeError(
+                  f'move egg to daycare flags: attesi 2 match, trovati {text.count(old_daycare_copy)}'
+              )
+          text = text.replace(old_daycare_copy, new_daycare_copy)'''
+          if old not in text:
+              raise RuntimeError('Blocco ripetuto della Pensione non trovato')
+          path.write_text(text.replace(old, new, 1), encoding='utf-8')
+          PY
+
       - name: Apply changes
         run: python .github/agent/apply_egg_pc_storage.py
 

@@ -28,6 +28,7 @@ void main() {
     expect(decoded.incubator, EggIncubator.plus);
     expect(decoded.inheritedMoves, ['Quick Attack']);
     expect(decoded.carriedEntireIncubation, isFalse);
+    expect(decoded.isReady, isFalse);
     expect(decoded.progress, closeTo(0.52, 0.001));
   });
 }

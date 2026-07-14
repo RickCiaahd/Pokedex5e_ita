@@ -324,11 +324,6 @@ class _NpcBattleScreenState extends State<NpcBattleScreen> {
     await _commit(_session.copyWith(round: nextRound, turnIndex: nextIndex));
   }
 
-  Future<void> _nextRound() async {
-    setState(() => _statusMoment = BattleStatusMoment.turnStart);
-    await _commit(_session.copyWith(round: _session.round + 1, turnIndex: 0));
-  }
-
   Future<void> _rerollInitiative() async {
     final entries = [
       for (final entry in _session.initiativeEntries)
@@ -546,7 +541,6 @@ class _NpcBattleScreenState extends State<NpcBattleScreen> {
             round: _session.round,
             trainerCount: _session.participants.length,
             activePokemonCount: activeCount,
-            onNextRound: _nextRound,
             onEnd: _endFight,
           ),
           if (_message != null) ...[
@@ -664,12 +658,6 @@ class _NpcBattleScreenState extends State<NpcBattleScreen> {
                 child: Text('Nessuna mossa selezionata.'),
               ),
             ),
-          const SizedBox(height: 12),
-          FilledButton.icon(
-            onPressed: _isWorking ? null : _nextTurn,
-            icon: const Icon(Icons.skip_next),
-            label: const Text('PROSSIMO TURNO'),
-          ),
         ],
       ),
     );
@@ -681,14 +669,12 @@ class _FightHeader extends StatelessWidget {
     required this.round,
     required this.trainerCount,
     required this.activePokemonCount,
-    required this.onNextRound,
     required this.onEnd,
   });
 
   final int round;
   final int trainerCount;
   final int activePokemonCount;
-  final VoidCallback onNextRound;
   final VoidCallback onEnd;
 
   @override
@@ -710,14 +696,6 @@ class _FightHeader extends StatelessWidget {
                       color: colors.onPrimaryContainer,
                       fontWeight: FontWeight.w900,
                     ),
-                  ),
-                ),
-                IconButton(
-                  onPressed: onNextRound,
-                  tooltip: 'Round successivo',
-                  icon: Icon(
-                    Icons.add_circle_outline,
-                    color: colors.onPrimaryContainer,
                   ),
                 ),
                 IconButton(

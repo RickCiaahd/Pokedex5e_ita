@@ -22,7 +22,7 @@ Tutte le modifiche rilevanti al progetto vengono documentate in questo file.
 - completamento del Trainer Path Pokémon Breeder: Good Genes assegna alla schiusa 2 punti caratteristica o un talento, mentre Master of Traits permette di scegliere sesso, natura, abilità e sostituzioni delle Egg Moves;
 - incubatori Basic, Plus e Super già presenti nel catalogo consumati quando vengono assegnati a un uovo, secondo costi e dadi aggiuntivi del manuale;
 - gestione della fragilità delle uova con CA 8, 10 PF e distruzione a 0 PF, mantenuta nei salvataggi e nei backup;
-- pannello persistente di meteo e terreno nel Battle Companion, con tabella d100 stagionale, durate, regola opzionale sui danni, terreni creati dalle mosse e promemoria delle abilità ambientali;
+- pannello persistente di meteo e terreno nel Battle Companion, con tabella d100 stagionale, durate e contatori aggiornati a ogni nuovo round, regola opzionale sui danni, terreni creati dalle mosse e promemoria delle abilità ambientali;
 - applicazione automatica di Terrain Adept, Weather Ball, bonus a CA/velocità/danni e danni di Grandine o Tempesta di sabbia secondo il manuale.
 
 ### Modificato

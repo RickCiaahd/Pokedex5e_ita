@@ -32,16 +32,26 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
+          import re
 
           path = Path('lib/services/profile_backup_service.dart')
           text = path.read_text(encoding='utf-8')
-          actual = '''       _masterBattleSessionRepository =
-           masterBattleSessionRepository ?? MasterBattleSessionRepository();'''
-          expected = '''        _masterBattleSessionRepository =
-            masterBattleSessionRepository ?? MasterBattleSessionRepository();'''
-          if actual not in text:
-              raise RuntimeError('Initializer del backup non trovato')
-          path.write_text(text.replace(actual, expected, 1), encoding='utf-8')
+          pattern = (
+              r'(?m)^[ \t]*_masterBattleSessionRepository =\n'
+              r'[ \t]*masterBattleSessionRepository \?\? '
+              r'MasterBattleSessionRepository\(\);'
+          )
+          replacement = (
+              '        _masterBattleSessionRepository =\n'
+              '            masterBattleSessionRepository ?? '
+              'MasterBattleSessionRepository();'
+          )
+          text, count = re.subn(pattern, replacement, text, count=1)
+          if count != 1:
+              raise RuntimeError(
+                  f'Initializer del backup non trovato o ambiguo: {count}'
+              )
+          path.write_text(text, encoding='utf-8')
           PY
 
       - name: Apply breeding changes

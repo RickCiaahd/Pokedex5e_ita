@@ -27,17 +27,36 @@ jobs:
           ref: feature/campaign-content-transfer
           fetch-depth: 0
 
-      - name: Align trainer library patch source
+      - name: Align patch sources
         run: |
           python - <<'PY'
           from pathlib import Path
-          path = Path('lib/screens/tools/npc_trainer_library_screen.dart')
-          text = path.read_text(encoding='utf-8')
-          old = "                  onFight: () => _startFight([trainer]),\n                  onDuplicate: () => _duplicateTrainer(trainer),\n"
-          new = "                   onFight: () => _startFight([trainer]),\n                   onDuplicate: () => _duplicateTrainer(trainer),\n"
-          if text.count(old) != 1:
-              raise SystemExit(f'Trainer source occurrence count: {text.count(old)}')
-          path.write_text(text.replace(old, new), encoding='utf-8')
+
+          trainer_path = Path('lib/screens/tools/npc_trainer_library_screen.dart')
+          trainer_text = trainer_path.read_text(encoding='utf-8')
+          trainer_old = "                  onFight: () => _startFight([trainer]),\n                  onDuplicate: () => _duplicateTrainer(trainer),\n"
+          trainer_new = "                   onFight: () => _startFight([trainer]),\n                   onDuplicate: () => _duplicateTrainer(trainer),\n"
+          if trainer_text.count(trainer_old) != 1:
+              raise SystemExit(
+                  f'Trainer source occurrence count: {trainer_text.count(trainer_old)}'
+              )
+          trainer_path.write_text(
+              trainer_text.replace(trainer_old, trainer_new),
+              encoding='utf-8',
+          )
+
+          readme_path = Path('README.md')
+          readme_text = readme_path.read_text(encoding='utf-8')
+          readme_old = '- backup completi del profilo e trasferimenti mirati di Pokémon e squadre.\n'
+          readme_new = '- backup e ripristino dei dati del profilo.\n'
+          if readme_text.count(readme_old) != 1:
+              raise SystemExit(
+                  f'README source occurrence count: {readme_text.count(readme_old)}'
+              )
+          readme_path.write_text(
+              readme_text.replace(readme_old, readme_new),
+              encoding='utf-8',
+          )
           PY
 
       - name: Apply UI integration

@@ -926,7 +926,9 @@ class _BattleScreenState extends State<BattleScreen> {
 
     final damage = move.damageForLevel(level);
     if (damage != null) {
-      final bonus = damagePathBonus == 0 ? '' : ' ${damagePathBonus > 0 ? '+' : ''}$damagePathBonus';
+      final bonus = damagePathBonus == 0
+          ? ''
+          : ' ${damagePathBonus > 0 ? '+' : ''}$damagePathBonus';
       parts.add('${damage.label}$bonus');
     }
     if (stab.applies) {

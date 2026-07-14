@@ -38,9 +38,9 @@ class EvolutionSelectorSheet extends StatelessWidget {
           children: [
             Text(
               title,
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w900,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
             ),
             const SizedBox(height: 4),
             Text(description),
@@ -168,9 +168,9 @@ class _ConditionChip extends StatelessWidget {
         child: Text(
           label,
           style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                color: foreground,
-                fontWeight: FontWeight.w900,
-              ),
+            color: foreground,
+            fontWeight: FontWeight.w900,
+          ),
         ),
       ),
     );

@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 
 class PokemonBattleAttributesCard extends StatelessWidget {
-  const PokemonBattleAttributesCard({
-    super.key,
-    required this.attributes,
-  });
+  const PokemonBattleAttributesCard({super.key, required this.attributes});
 
   final Map<String, int> attributes;
 
@@ -52,12 +49,12 @@ class PokemonBattleAttributesCard extends StatelessWidget {
                 final columns = constraints.maxWidth >= 620
                     ? 6
                     : constraints.maxWidth >= 360
-                        ? 3
-                        : 2;
+                    ? 3
+                    : 2;
                 const spacing = 8.0;
                 final itemWidth =
                     (constraints.maxWidth - (spacing * (columns - 1))) /
-                        columns;
+                    columns;
 
                 return Wrap(
                   spacing: spacing,
@@ -114,18 +111,18 @@ class _AttributeTile extends StatelessWidget {
           children: [
             Text(
               abbreviation,
-              style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                fontWeight: FontWeight.w900,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w900),
             ),
             const SizedBox(height: 2),
             Text(label, style: Theme.of(context).textTheme.labelSmall),
             const SizedBox(height: 6),
             Text(
               '$score',
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.w900,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w900),
             ),
             const SizedBox(height: 4),
             Container(

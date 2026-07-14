@@ -167,7 +167,8 @@ class _ToolsScreenState extends State<ToolsScreen> {
               const _ToolSectionTitle(
                 icon: Icons.play_circle_outline,
                 title: 'SESSIONE IN CORSO',
-                subtitle: 'La sessione rimane salvata finché non viene sostituita.',
+                subtitle:
+                    'La sessione rimane salvata finché non viene sostituita.',
               ),
               Card(
                 color: colorScheme.secondaryContainer,

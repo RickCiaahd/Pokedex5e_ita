@@ -100,27 +100,33 @@ class TrainerPathPassiveService {
     }
 
     return {
-      'STR': pokemon.attributes.strength +
+      'STR':
+          pokemon.attributes.strength +
           (custom['STR'] ?? 0) +
           (nature['STR'] ?? 0) +
           (bonuses['STR'] ?? 0),
-      'DEX': pokemon.attributes.dexterity +
+      'DEX':
+          pokemon.attributes.dexterity +
           (custom['DEX'] ?? 0) +
           (nature['DEX'] ?? 0) +
           (bonuses['DEX'] ?? 0),
-      'CON': pokemon.attributes.constitution +
+      'CON':
+          pokemon.attributes.constitution +
           (custom['CON'] ?? 0) +
           (nature['CON'] ?? 0) +
           (bonuses['CON'] ?? 0),
-      'INT': pokemon.attributes.intelligence +
+      'INT':
+          pokemon.attributes.intelligence +
           (custom['INT'] ?? 0) +
           (nature['INT'] ?? 0) +
           (bonuses['INT'] ?? 0),
-      'WIS': pokemon.attributes.wisdom +
+      'WIS':
+          pokemon.attributes.wisdom +
           (custom['WIS'] ?? 0) +
           (nature['WIS'] ?? 0) +
           (bonuses['WIS'] ?? 0),
-      'CHA': pokemon.attributes.charisma +
+      'CHA':
+          pokemon.attributes.charisma +
           (custom['CHA'] ?? 0) +
           (nature['CHA'] ?? 0) +
           (bonuses['CHA'] ?? 0),
@@ -134,7 +140,8 @@ class TrainerPathPassiveService {
   }) {
     if (slot == null || pokemon.speed <= 0) return pokemon.speed;
     final choice = profile?.trainerPathChoices['aceMaxPotential'];
-    final bonus = hasFeature(profile, trainerPath: 'Ace Trainer', level: 9) &&
+    final bonus =
+        hasFeature(profile, trainerPath: 'Ace Trainer', level: 9) &&
             choice == '+10 ft velocità'
         ? 10
         : 0;
@@ -173,7 +180,8 @@ class TrainerPathPassiveService {
     required MoveData move,
     required int pokemonLevel,
   }) {
-    final damaging = move.damageForLevel(pokemonLevel) != null ||
+    final damaging =
+        move.damageForLevel(pokemonLevel) != null ||
         move.damageByLevel.isNotEmpty ||
         move.damageModifier != null ||
         move.damageTypes.isNotEmpty;
@@ -198,10 +206,10 @@ class TrainerPathPassiveService {
     final matchingTypes = matchingSpecializationCount(profile, pokemon);
     final hasTypeMaster =
         hasFeature(profile, trainerPath: 'Type Master', level: 2) &&
-            matchingTypes > 0;
+        matchingTypes > 0;
     final canExtend =
         hasFeature(profile, trainerPath: 'Type Master', level: 15) &&
-            matchingTypes > 0;
+        matchingTypes > 0;
     final applies = sameType || canExtend;
 
     return TrainerPathStabEffect(
@@ -235,7 +243,8 @@ class TrainerPathPassiveService {
     required TeamSlot? slot,
     int? level,
   }) {
-    final resolvedLevel = level ??
+    final resolvedLevel =
+        level ??
         (slot == null
             ? pokemon.minLevelFound
             : LevelProgression.levelFromExperience(slot.experience));
@@ -259,7 +268,8 @@ class TrainerPathPassiveService {
       loyalty: slot?.loyalty ?? 0,
       level: safeLevel,
     );
-    final hp = pokemon.hitPoints +
+    final hp =
+        pokemon.hitPoints +
         (hitDieAverage * levelsGained) +
         (constitutionModifier * safeLevel) +
         toughBonus +
@@ -385,7 +395,8 @@ class TrainerPathPassiveService {
       notes.add(
         const TrainerPathPassiveNote(
           title: 'Commander',
-          detail: 'I bonus positivi di Lealtà a PF e tiri salvezza sono raddoppiati.',
+          detail:
+              'I bonus positivi di Lealtà a PF e tiri salvezza sono raddoppiati.',
         ),
       );
     }

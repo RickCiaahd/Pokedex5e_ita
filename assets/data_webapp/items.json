@@ -4340,6 +4340,43 @@
 			"media": {
 				"sprite": "/assets/items/egg-incubator-super/sprite.png"
 			}
+		},
+
+		{
+			"id": "basic-incubator",
+			"name": "Incubatore Basic",
+			"type": "trainer-gear",
+			"cost": 1000,
+			"description": [
+				"Protegge un uovo durante l'incubazione e aggiunge 1d20 alla riduzione del contatore. Dopo essere stato assegnato a un uovo perde efficacia per le uova successive."
+			],
+			"media": {
+				"sprite": "/assets/items/backpack/sprite.png"
+			}
+		},
+		{
+			"id": "plus-incubator",
+			"name": "Incubatore Plus",
+			"type": "trainer-gear",
+			"cost": 3000,
+			"description": [
+				"Protegge un uovo durante l'incubazione e aggiunge 2d20 alla riduzione del contatore. Dopo essere stato assegnato a un uovo perde efficacia per le uova successive."
+			],
+			"media": {
+				"sprite": "/assets/items/backpack/sprite.png"
+			}
+		},
+		{
+			"id": "super-incubator",
+			"name": "Incubatore Super",
+			"type": "trainer-gear",
+			"cost": 10000,
+			"description": [
+				"Protegge un uovo durante l'incubazione e aggiunge 3d20 alla riduzione del contatore. Dopo essere stato assegnato a un uovo perde efficacia per le uova successive."
+			],
+			"media": {
+				"sprite": "/assets/items/backpack/sprite.png"
+			}
 		}
 	]
 }

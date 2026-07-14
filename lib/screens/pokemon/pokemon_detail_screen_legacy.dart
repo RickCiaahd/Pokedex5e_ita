@@ -1123,7 +1123,9 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
 
     final damage = move.damageForLevel(_level);
     if (damage != null) {
-      final bonus = damagePathBonus == 0 ? '' : ' ${damagePathBonus > 0 ? '+' : ''}$damagePathBonus';
+      final bonus = damagePathBonus == 0
+          ? ''
+          : ' ${damagePathBonus > 0 ? '+' : ''}$damagePathBonus';
       parts.add('${damage.label}$bonus');
     }
     if (stab.applies) {

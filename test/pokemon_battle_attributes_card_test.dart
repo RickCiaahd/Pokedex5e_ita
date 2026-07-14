@@ -4,7 +4,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:pokedex_5e_ita/widgets/battle/pokemon_battle_attributes_card.dart';
 
 void main() {
-  testWidgets('mostra tutte le caratteristiche e i modificatori', (tester) async {
+  testWidgets('mostra tutte le caratteristiche e i modificatori', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       const MaterialApp(
         home: Scaffold(

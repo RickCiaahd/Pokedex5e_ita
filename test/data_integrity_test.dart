@@ -80,48 +80,55 @@ void main() {
       expect(errors, isEmpty, reason: _errorReport(errors));
     });
 
-    test('i cataloghi web hanno identificatori univoci e campi minimi', () async {
-      final errors = <String>[];
+    test(
+      'i cataloghi web hanno identificatori univoci e campi minimi',
+      () async {
+        final errors = <String>[];
 
-      final rawPokemonCatalog = jsonDecode(
-        await rootBundle.loadString('assets/data_webapp/pokemon.json'),
-      );
-      if (rawPokemonCatalog is! Map) {
-        errors.add('assets/data_webapp/pokemon.json non contiene un oggetto.');
-      } else {
-        final items = Map<String, dynamic>.from(rawPokemonCatalog)['items'];
-        _validateWebItems(
-          label: 'Pokemon',
-          items: items,
-          errors: errors,
-          validateNumber: true,
+        final rawPokemonCatalog = jsonDecode(
+          await rootBundle.loadString('assets/data_webapp/pokemon.json'),
         );
-      }
+        if (rawPokemonCatalog is! Map) {
+          errors.add(
+            'assets/data_webapp/pokemon.json non contiene un oggetto.',
+          );
+        } else {
+          final items = Map<String, dynamic>.from(rawPokemonCatalog)['items'];
+          _validateWebItems(
+            label: 'Pokemon',
+            items: items,
+            errors: errors,
+            validateNumber: true,
+          );
+        }
 
-      final rawMoveCatalog = jsonDecode(
-        await rootBundle.loadString('assets/data_webapp/moves.json'),
-      );
-      if (rawMoveCatalog is! Map) {
-        errors.add('assets/data_webapp/moves.json non contiene un oggetto.');
-      } else {
-        final moves = Map<String, dynamic>.from(rawMoveCatalog)['moves'];
-        _validateWebItems(label: 'Mossa', items: moves, errors: errors);
-      }
+        final rawMoveCatalog = jsonDecode(
+          await rootBundle.loadString('assets/data_webapp/moves.json'),
+        );
+        if (rawMoveCatalog is! Map) {
+          errors.add('assets/data_webapp/moves.json non contiene un oggetto.');
+        } else {
+          final moves = Map<String, dynamic>.from(rawMoveCatalog)['moves'];
+          _validateWebItems(label: 'Mossa', items: moves, errors: errors);
+        }
 
-      final rawAbilityCatalog = jsonDecode(
-        await rootBundle.loadString('assets/data_webapp/abilities.json'),
-      );
-      if (rawAbilityCatalog is! Map) {
-        errors.add('assets/data_webapp/abilities.json non contiene un oggetto.');
-      } else {
-        final abilities = Map<String, dynamic>.from(
-          rawAbilityCatalog,
-        )['items'];
-        _validateWebItems(label: 'Abilita', items: abilities, errors: errors);
-      }
+        final rawAbilityCatalog = jsonDecode(
+          await rootBundle.loadString('assets/data_webapp/abilities.json'),
+        );
+        if (rawAbilityCatalog is! Map) {
+          errors.add(
+            'assets/data_webapp/abilities.json non contiene un oggetto.',
+          );
+        } else {
+          final abilities = Map<String, dynamic>.from(
+            rawAbilityCatalog,
+          )['items'];
+          _validateWebItems(label: 'Abilita', items: abilities, errors: errors);
+        }
 
-      expect(errors, isEmpty, reason: _errorReport(errors));
-    });
+        expect(errors, isEmpty, reason: _errorReport(errors));
+      },
+    );
   });
 
   group('Catalogo unificato', () {
@@ -129,7 +136,8 @@ void main() {
       expect(
         catalog.length,
         greaterThanOrEqualTo(1000),
-        reason: 'Il catalogo unificato deve includere anche le generazioni recenti.',
+        reason:
+            'Il catalogo unificato deve includere anche le generazioni recenti.',
       );
 
       final errors = <String>[];
@@ -289,7 +297,8 @@ void _validateWebItems({
 
 void _validatePokemon(Pokemon pokemon, String label, List<String> errors) {
   if (pokemon.name.trim().isEmpty) errors.add('$label: nome vuoto.');
-  if (pokemon.types.isEmpty || pokemon.types.any((type) => type.trim().isEmpty)) {
+  if (pokemon.types.isEmpty ||
+      pokemon.types.any((type) => type.trim().isEmpty)) {
     errors.add('$label: tipo mancante o vuoto.');
   }
   if (pokemon.armorClass <= 0) errors.add('$label: CA ${pokemon.armorClass}.');

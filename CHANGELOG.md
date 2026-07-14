@@ -26,7 +26,8 @@ Tutte le modifiche rilevanti al progetto vengono documentate in questo file.
 - controllo del combattimento semplificato: resta un solo pulsante `PROSSIMO TURNO`, che avanza automaticamente il round al termine dell’iniziativa;
 - i privilegi ottenuti ai livelli 5, 9 e 15 sono indicati come `Privilegio del Path`, distinguendoli dalla scelta iniziale del Trainer Path;
 - il cambio di un Trainer Path già salvato richiede ora una conferma esplicita;
-- corretto il salvataggio del primo uovo di un profilo, che prima poteva mostrare `Unsupported operation: insert`.
+- corretto il salvataggio del primo uovo di un profilo, che prima poteva mostrare `Unsupported operation: insert`;
+- la schiusa considera soltanto i Pokéslot sbloccati: con tutti gli slot disponibili occupati il Pokémon viene depositato nel PC, e gli esemplari finiti in slot bloccati vengono recuperati automaticamente.
 
 ### In programma
 

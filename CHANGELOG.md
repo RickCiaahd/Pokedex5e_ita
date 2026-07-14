@@ -18,6 +18,7 @@ Tutte le modifiche rilevanti al progetto vengono documentate in questo file.
 - Home e Strumenti del Master divisi in sezioni più riconoscibili;
 - navigazione interna corretta: la freccia torna alla schermata precedente e il comando Home resta separato;
 - editor delle probabilità delle raccolte corretto per consentire la digitazione di percentuali a più cifre senza perdere il focus.
+- controllo del combattimento semplificato: resta un solo pulsante `PROSSIMO TURNO`, che avanza automaticamente il round al termine dell’iniziativa.
 
 ### In programma
 

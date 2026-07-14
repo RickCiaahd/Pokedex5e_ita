@@ -825,16 +825,6 @@ class _BattleScreenState extends State<BattleScreen> {
     _scheduleSessionSave(data);
   }
 
-  void _nextRound(_BattleData data) {
-    setState(() {
-      _statusMoment = BattleStatusMoment.turnStart;
-      _round += 1;
-      _turnIndex = 0;
-      _message = 'Round $_round iniziato.';
-    });
-    _scheduleSessionSave(data);
-  }
-
   Future<void> _endBattle(_BattleData data) async {
     final confirmed = await showDialog<bool>(
       context: context,
@@ -1020,7 +1010,6 @@ class _BattleScreenState extends State<BattleScreen> {
                   round: _round,
                   profile: data.profile,
                   trainerInitiativeBonus: _trainerInitiativeBonus(data.profile),
-                  onNextRound: () => _nextRound(data),
                   onEnd: () => _endBattle(data),
                 ),
                 const SizedBox(height: 12),
@@ -1378,14 +1367,12 @@ class _BattleHeader extends StatelessWidget {
     required this.round,
     required this.profile,
     required this.trainerInitiativeBonus,
-    required this.onNextRound,
     required this.onEnd,
   });
 
   final int round;
   final UserProfile profile;
   final int trainerInitiativeBonus;
-  final VoidCallback onNextRound;
   final VoidCallback onEnd;
 
   @override
@@ -1416,24 +1403,10 @@ class _BattleHeader extends StatelessWidget {
               '${profile.name} e il Pokémon usano un unico tiro iniziativa.',
             ),
             const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  child: FilledButton.icon(
-                    onPressed: onNextRound,
-                    icon: const Icon(Icons.skip_next),
-                    label: const Text('NUOVO ROUND'),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: onEnd,
-                    icon: const Icon(Icons.stop_circle_outlined),
-                    label: const Text('TERMINA'),
-                  ),
-                ),
-              ],
+            OutlinedButton.icon(
+              onPressed: onEnd,
+              icon: const Icon(Icons.stop_circle_outlined),
+              label: const Text('TERMINA'),
             ),
           ],
         ),

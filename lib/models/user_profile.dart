@@ -29,6 +29,8 @@ class UserProfile {
   final List<String> savingThrowProficiencies;
   final List<String> specializations;
   final String trainerPath;
+  final Map<String, String> trainerPathChoices;
+  final Map<String, int> trainerPathResources;
 
   UserProfile({
     required this.id,
@@ -51,9 +53,17 @@ class UserProfile {
     this.savingThrowProficiencies = const [],
     this.specializations = const [],
     this.trainerPath = '',
-  }) : abilityScores = Map.unmodifiable(
-         abilityScores ?? defaultAbilityScores,
-       );
+    Map<String, String>? trainerPathChoices,
+    Map<String, int>? trainerPathResources,
+  })  : abilityScores = Map.unmodifiable(
+          abilityScores ?? defaultAbilityScores,
+        ),
+        trainerPathChoices = Map.unmodifiable(
+          trainerPathChoices ?? const <String, String>{},
+        ),
+        trainerPathResources = Map.unmodifiable(
+          trainerPathResources ?? const <String, int>{},
+        );
 
   factory UserProfile.create(String name) {
     final now = DateTime.now();
@@ -79,6 +89,8 @@ class UserProfile {
       savingThrowProficiencies: const [],
       specializations: const [],
       trainerPath: '',
+      trainerPathChoices: const {},
+      trainerPathResources: const {},
     );
   }
 
@@ -106,6 +118,8 @@ class UserProfile {
       savingThrowProficiencies: const [],
       specializations: const [],
       trainerPath: '',
+      trainerPathChoices: const {},
+      trainerPathResources: const {},
     );
   }
 
@@ -130,6 +144,8 @@ class UserProfile {
     List<String>? savingThrowProficiencies,
     List<String>? specializations,
     String? trainerPath,
+    Map<String, String>? trainerPathChoices,
+    Map<String, int>? trainerPathResources,
   }) {
     return UserProfile(
       id: id ?? this.id,
@@ -154,6 +170,8 @@ class UserProfile {
           savingThrowProficiencies ?? this.savingThrowProficiencies,
       specializations: specializations ?? this.specializations,
       trainerPath: trainerPath ?? this.trainerPath,
+      trainerPathChoices: trainerPathChoices ?? this.trainerPathChoices,
+      trainerPathResources: trainerPathResources ?? this.trainerPathResources,
     );
   }
 
@@ -179,6 +197,8 @@ class UserProfile {
       'savingThrowProficiencies': savingThrowProficiencies,
       'specializations': specializations,
       'trainerPath': trainerPath,
+      'trainerPathChoices': trainerPathChoices,
+      'trainerPathResources': trainerPathResources,
     };
   }
 
@@ -206,6 +226,8 @@ class UserProfile {
       ),
       specializations: List<String>.from(json['specializations'] ?? []),
       trainerPath: json['trainerPath'] ?? '',
+      trainerPathChoices: _readStringMap(json['trainerPathChoices']),
+      trainerPathResources: _readIntMap(json['trainerPathResources']),
     );
   }
 
@@ -217,6 +239,24 @@ class UserProfile {
     return {
       for (final entry in defaultAbilityScores.entries)
         entry.key: rawScores[entry.key] is int ? rawScores[entry.key] : entry.value,
+    };
+  }
+
+  static Map<String, String> _readStringMap(dynamic rawValues) {
+    if (rawValues is! Map) return const {};
+    return {
+      for (final entry in rawValues.entries)
+        if (entry.key is String && entry.value is String)
+          entry.key as String: entry.value as String,
+    };
+  }
+
+  static Map<String, int> _readIntMap(dynamic rawValues) {
+    if (rawValues is! Map) return const {};
+    return {
+      for (final entry in rawValues.entries)
+        if (entry.key is String && entry.value is int)
+          entry.key as String: entry.value as int,
     };
   }
 }

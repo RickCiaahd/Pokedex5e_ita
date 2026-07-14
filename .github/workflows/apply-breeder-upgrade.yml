@@ -40,8 +40,8 @@ jobs:
 
       - name: Decode and apply breeder upgrade
         run: |
-          base64 -d tool/apply_breeder_upgrade.py.gz.b64 | gzip -d > /tmp/apply_breeder_upgrade.py
-          python /tmp/apply_breeder_upgrade.py
+          base64 -d tool/apply_breeder_upgrade.py.gz.b64 | gzip -d > tool/apply_breeder_upgrade.py
+          python tool/apply_breeder_upgrade.py
 
       - name: Format Dart sources
         run: dart format lib test
@@ -57,7 +57,7 @@ jobs:
 
       - name: Commit generated changes
         run: |
-          rm -f tool/apply_breeder_upgrade.py.gz.b64 .github/workflows/apply-breeder-upgrade.yml
+          rm -f tool/apply_breeder_upgrade.py tool/apply_breeder_upgrade.py.gz.b64 .github/workflows/apply-breeder-upgrade.yml
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A

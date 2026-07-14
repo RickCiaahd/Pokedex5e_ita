@@ -643,7 +643,7 @@ class _BreedingScreenState extends State<BreedingScreen> {
                           crossAxisAlignment: WrapCrossAlignment.center,
                           children: [
                             FilledButton.icon(
-                              onPressed: compatibility?.isCompatible == true
+                              onPressed: compatibility?.isCompatible == true && canStoreEgg
                                   ? () => _attemptBreeding(data)
                                   : null,
                               icon: const Icon(Icons.casino_outlined),
@@ -662,7 +662,7 @@ class _BreedingScreenState extends State<BreedingScreen> {
                               ),
                             ),
                             OutlinedButton(
-                              onPressed: compatibility?.isCompatible == true
+                              onPressed: compatibility?.isCompatible == true && canStoreEgg
                                   ? () {
                                       final roll = int.tryParse(
                                         _manualRollController.text.trim(),

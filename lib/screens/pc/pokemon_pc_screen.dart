@@ -221,7 +221,7 @@ class _PokemonPcScreenState extends State<PokemonPcScreen> {
       builder: (_) => _ReplacementSlotSheet(
         pcPokemon: pcPokemon,
         pokemon: _pokemonById(pcPokemon.pokemonId),
-        team: _visibleTeam,
+        team: _visibleTeam.where((slot) => slot.isPokemon).toList(),
         pokemonForSlot: _pokemonById,
         displayNameForSlot: _slotDisplayName,
       ),
@@ -452,7 +452,7 @@ class _PcHeader extends StatelessWidget {
                   ),
                   const SizedBox(height: 3),
                   Text(
-                    '$storedCount nel PC • $filledTeamSlots/$totalTeamSlots in squadra',
+                    '$storedCount nel PC • $filledTeamSlots/$totalTeamSlots Pokéslot occupati',
                     style: TextStyle(color: colorScheme.onSecondaryContainer),
                   ),
                 ],

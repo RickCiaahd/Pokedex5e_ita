@@ -158,7 +158,7 @@ class BreedingService {
     if (sr <= 0.125) return 125;
     if (sr <= 0.25) return 250;
     if (sr <= 0.5) return 500;
-    final rank = sr.ceil().clamp(1, 15);
+    final rank = sr.ceil().clamp(1, 15).toInt();
     return 500 + rank * 100;
   }
 
@@ -266,12 +266,16 @@ class BreedingService {
       for (var index = 0; index < egg.incubator.extraD20; index++)
         rng.nextInt(20) + 1,
     ];
-    final base = d100Rolls.reduce(max);
+    final base = d100Rolls.reduce(
+      (first, second) => first >= second ? first : second,
+    );
     final reduction =
-        base + incubatorRolls.fold(0, (sum, value) => sum + value);
+        base + incubatorRolls.fold<int>(0, (sum, value) => sum + value);
     return IncubationProgressResult(
       egg: egg.copyWith(
-        incubationRemaining: max(0, egg.incubationRemaining - reduction),
+        incubationRemaining: (egg.incubationRemaining - reduction)
+            .clamp(0, egg.hatchTime)
+            .toInt(),
       ),
       d100Rolls: d100Rolls,
       incubatorRolls: incubatorRolls,

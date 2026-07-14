@@ -4,12 +4,16 @@ on:
   push:
     branches:
       - agent/eggs-in-team-and-daycare
+  pull_request:
+    branches:
+      - main
 
 permissions:
   contents: write
 
 jobs:
   apply:
+    if: github.head_ref == 'agent/eggs-in-team-and-daycare' || github.ref_name == 'agent/eggs-in-team-and-daycare'
     runs-on: ubuntu-latest
     steps:
       - name: Check out branch

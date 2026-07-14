@@ -1,5 +1,8 @@
+import 'dart:convert';
 import 'dart:math';
+import 'dart:typed_data';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 import '../../models/battle_session.dart';
@@ -12,6 +15,7 @@ import '../../repositories/master_battle_session_repository.dart';
 import '../../repositories/move_repository.dart';
 import '../../services/battle_status_rules.dart';
 import '../../services/master_battle_service.dart';
+import '../../services/master_fight_summary_service.dart';
 import '../../widgets/battle/battle_status_assistance_card.dart';
 import '../../widgets/navigation/home_leading_button.dart';
 import '../../widgets/pokemon/pokemon_asset_image.dart';
@@ -37,6 +41,8 @@ class _NpcBattleScreenState extends State<NpcBattleScreen> {
   final MasterBattleSessionRepository _repository =
       MasterBattleSessionRepository();
   final MasterBattleService _battleService = const MasterBattleService();
+  final MasterFightSummaryService _summaryService =
+      const MasterFightSummaryService();
   final MoveRepository _moveRepository = MoveRepository();
   final Random _random = Random();
 
@@ -436,6 +442,43 @@ class _NpcBattleScreenState extends State<NpcBattleScreen> {
     );
   }
 
+  Future<void> _exportSummary() async {
+    if (_isWorking) return;
+    setState(() => _isWorking = true);
+    try {
+      final exportedAt = DateTime.now();
+      final summary = _summaryService.build(
+        session: _session,
+        pokemonById: _pokemonById,
+        exportedAt: exportedAt,
+      );
+      final path = await FilePicker.saveFile(
+        dialogTitle: 'Esporta riepilogo del Fight del Master',
+        fileName: _summaryService.fileName(_session, exportedAt: exportedAt),
+        type: FileType.custom,
+        allowedExtensions: const ['txt'],
+        bytes: Uint8List.fromList(utf8.encode(summary)),
+      );
+      if (!mounted) return;
+      setState(() {
+        _message = path == null
+            ? 'Esportazione annullata.'
+            : 'Riepilogo del fight esportato correttamente.';
+      });
+    } catch (error) {
+      if (!mounted) return;
+      setState(() {
+        _message = error
+            .toString()
+            .replaceFirst('FormatException: ', '')
+            .replaceFirst('Bad state: ', '')
+            .trim();
+      });
+    } finally {
+      if (mounted) setState(() => _isWorking = false);
+    }
+  }
+
   Future<void> _endFight() async {
     final confirmed = await showDialog<bool>(
       context: context,
@@ -522,6 +565,11 @@ class _NpcBattleScreenState extends State<NpcBattleScreen> {
         leading: const HomeLeadingButton(),
         title: const Text('Fight del Master'),
         actions: [
+          IconButton(
+            onPressed: _isWorking ? null : _exportSummary,
+            tooltip: 'Esporta riepilogo',
+            icon: const Icon(Icons.file_download_outlined),
+          ),
           IconButton(
             onPressed: _isWorking ? null : _resetFight,
             tooltip: 'Azzera fight',

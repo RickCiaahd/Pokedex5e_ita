@@ -7,6 +7,7 @@ import '../../models/move_data.dart';
 import '../../models/pokemon.dart';
 import '../../models/pokemon_nature.dart';
 import '../../models/team_slot.dart';
+import '../../models/user_profile.dart';
 import '../../repositories/ability_repository.dart';
 import '../../repositories/bag_inventory_repository.dart';
 import '../../repositories/evolution_repository.dart';
@@ -15,7 +16,9 @@ import '../../repositories/item_repository.dart';
 import '../../repositories/move_repository.dart';
 import '../../repositories/profile_repository.dart';
 import '../../services/evolution_service.dart';
+import '../../services/trainer_path_passive_service.dart';
 import '../../widgets/pokemon/pokemon_asset_image.dart';
+import '../../widgets/trainer/trainer_path_passive_card.dart';
 import 'evolution_selector_sheet.dart';
 import 'pokemon_edit_screen.dart';
 
@@ -142,6 +145,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
   late Pokemon _pokemon;
   late List<TeamSlot> _team;
   TeamSlot? _teamSlot;
+  UserProfile? _profile;
   Map<String, MoveData?> _moves = {};
   Map<String, String> _abilities = {};
   Map<String, String> _featDescriptions = {};
@@ -157,7 +161,11 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
       ? _pokemon.minLevelFound
       : LevelProgression.levelFromExperience(_experience);
   int get _loyalty => (_teamSlot?.loyalty ?? 0).clamp(-3, 3).toInt();
-  int get _savingThrowLoyaltyBonus => _loyalty.clamp(-1, 1).toInt();
+  int get _savingThrowLoyaltyBonus =>
+      TrainerPathPassiveService.loyaltySavingThrowBonus(
+        profile: _profile,
+        loyalty: _loyalty,
+      );
   List<String> get _currentStatusEffects =>
       _teamSlot?.statusEffects ?? const [];
 
@@ -189,38 +197,15 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
     _loadData();
   }
 
-  int _loyaltyHpBonus(int loyalty, int level) {
-    if (loyalty == 2) return (level / 2).ceil();
-    if (loyalty == 3) return level;
-    return 0;
-  }
-
   int _maxHpFor(Pokemon pokemon, TeamSlot? slot) {
-    final level = slot == null
-        ? pokemon.minLevelFound
-        : LevelProgression.levelFromExperience(slot.experience);
-    final safeLevel = level.clamp(1, LevelProgression.maxLevel).toInt();
-    final minimumLevel = pokemon.minLevelFound <= 0 ? 1 : pokemon.minLevelFound;
-    final levelsGained = (safeLevel - minimumLevel)
-        .clamp(0, LevelProgression.maxLevel)
-        .toInt();
-    final hitDieAverage = ((pokemon.hitDice + 1) / 2).ceil();
-    final attributes = _attributeScores(pokemon, slot);
-    final constitutionModifier = _modifier(
-      attributes['CON'] ?? pokemon.attributes.constitution,
+    return TrainerPathPassiveService.maxHp(
+      profile: _profile,
+      pokemon: pokemon,
+      slot: slot,
+      level: slot == null
+          ? pokemon.minLevelFound
+          : LevelProgression.levelFromExperience(slot.experience),
     );
-    final toughBonus = slot?.feats.contains('Tough') == true
-        ? safeLevel * 2
-        : 0;
-    final loyaltyBonus = _loyaltyHpBonus(slot?.loyalty ?? 0, safeLevel);
-    final scaledHp =
-        pokemon.hitPoints +
-        (hitDieAverage * levelsGained) +
-        (constitutionModifier * safeLevel) +
-        toughBonus +
-        loyaltyBonus;
-
-    return scaledHp < 1 ? 1 : scaledHp;
   }
 
   void _replaceTeamSlot(TeamSlot updatedSlot) {
@@ -268,6 +253,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
       _evolutionRepository.getEvolutionData(),
       _featRepository.getFeatDescriptions(),
       _itemRepository.getWebItems(),
+      _profileRepository.getActiveProfile(),
     ]);
 
     final evolutions = results[2] as Map<String, EvolutionData>;
@@ -285,6 +271,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
       _evolutions = evolutions;
       _featDescriptions = results[3] as Map<String, String>;
       _itemCatalog = {for (final item in items) item.id: item};
+      _profile = results[5] as UserProfile;
       _evolutionChoices = evolutionChoices;
       _isLoading = false;
     });
@@ -1086,35 +1073,11 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
   }
 
   Map<String, int> _attributeScores(Pokemon pokemon, TeamSlot? slot) {
-    final customScores = slot?.customAbilityScores ?? const <String, int>{};
-    final natureScores = PokemonNature.forName(slot?.nature ?? 'No Nature');
-
-    return {
-      'STR':
-          pokemon.attributes.strength +
-          (customScores['STR'] ?? 0) +
-          (natureScores['STR'] ?? 0),
-      'DEX':
-          pokemon.attributes.dexterity +
-          (customScores['DEX'] ?? 0) +
-          (natureScores['DEX'] ?? 0),
-      'CON':
-          pokemon.attributes.constitution +
-          (customScores['CON'] ?? 0) +
-          (natureScores['CON'] ?? 0),
-      'INT':
-          pokemon.attributes.intelligence +
-          (customScores['INT'] ?? 0) +
-          (natureScores['INT'] ?? 0),
-      'WIS':
-          pokemon.attributes.wisdom +
-          (customScores['WIS'] ?? 0) +
-          (natureScores['WIS'] ?? 0),
-      'CHA':
-          pokemon.attributes.charisma +
-          (customScores['CHA'] ?? 0) +
-          (natureScores['CHA'] ?? 0),
-    };
+    return TrainerPathPassiveService.effectiveAttributeScores(
+      profile: _profile,
+      pokemon: pokemon,
+      slot: slot,
+    );
   }
 
   int _bestMoveModifier(MoveData move) {
@@ -1133,9 +1096,25 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
     final parts = <String>[];
     final moveModifier = _bestMoveModifier(move);
     final proficiency = _proficiency(_level);
+    final attackPathBonus = TrainerPathPassiveService.attackRollBonus(
+      profile: _profile,
+      pokemon: _pokemon,
+      slot: _teamSlot,
+    );
+    final damagePathBonus = TrainerPathPassiveService.damageRollBonus(
+      profile: _profile,
+      slot: _teamSlot,
+    );
+    final stab = TrainerPathPassiveService.stabEffect(
+      profile: _profile,
+      pokemon: _pokemon,
+      slot: _teamSlot,
+      move: move,
+      pokemonLevel: _level,
+    );
 
     if (move.isAttack) {
-      final attackBonus = moveModifier + proficiency;
+      final attackBonus = moveModifier + proficiency + attackPathBonus;
       parts.add('AB: ${attackBonus >= 0 ? '+' : ''}$attackBonus');
     }
     if (move.save != null) {
@@ -1143,7 +1122,15 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
     }
 
     final damage = move.damageForLevel(_level);
-    if (damage != null) parts.add(damage.label);
+    if (damage != null) {
+      final bonus = damagePathBonus == 0 ? '' : ' ${damagePathBonus > 0 ? '+' : ''}$damagePathBonus';
+      parts.add('${damage.label}$bonus');
+    }
+    if (stab.applies) {
+      final source = stab.extendedByPath ? 'STAB esteso' : 'STAB';
+      final bonus = stab.pathBonus == 0 ? '' : ' Path +${stab.pathBonus}';
+      parts.add('$source$bonus');
+    }
     if (move.range != '-') parts.add(move.range);
     if (move.duration != '-') parts.add(move.duration);
 
@@ -1159,6 +1146,16 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
     final pokemon = _pokemon;
     final attributes = _attributeScores(pokemon, _teamSlot);
     final evolutionLabel = _evolutionLabel();
+    final savingThrows = TrainerPathPassiveService.savingThrowProficiencies(
+      profile: _profile,
+      pokemon: pokemon,
+      slot: _teamSlot,
+    );
+    final passiveNotes = TrainerPathPassiveService.passiveNotes(
+      profile: _profile,
+      pokemon: pokemon,
+      slot: _teamSlot,
+    );
 
     return DefaultTabController(
       length: 3,
@@ -1195,6 +1192,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
                           modifierBuilder: _modifier,
                           proficiency: _proficiency(_level),
                           savingThrowLoyaltyBonus: _savingThrowLoyaltyBonus,
+                          savingThrows: savingThrows,
                           statusEffects: _currentStatusEffects,
                           message: _message,
                           heldItemLabel: _heldItemDisplayLabel(),
@@ -1210,6 +1208,14 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
                           evolutionLabel: evolutionLabel,
                           onEvolve: _evolveCurrentPokemon,
                         ),
+                        if (passiveNotes.isNotEmpty)
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(8, 0, 8, 6),
+                            child: TrainerPathPassiveCard(
+                              trainerPath: _profile?.trainerPath ?? '',
+                              notes: passiveNotes,
+                            ),
+                          ),
                         const TabBar(
                           tabs: [
                             Tab(text: 'MOSSE'),
@@ -1277,6 +1283,7 @@ class _Header extends StatelessWidget {
     required this.modifierBuilder,
     required this.proficiency,
     required this.savingThrowLoyaltyBonus,
+    required this.savingThrows,
     required this.statusEffects,
     required this.message,
     required this.heldItemLabel,
@@ -1306,6 +1313,7 @@ class _Header extends StatelessWidget {
   final int Function(int score) modifierBuilder;
   final int proficiency;
   final int savingThrowLoyaltyBonus;
+  final List<String> savingThrows;
   final List<String> statusEffects;
   final String? message;
   final String heldItemLabel;
@@ -1436,7 +1444,7 @@ class _Header extends StatelessWidget {
           const SizedBox(height: 4),
           _SavingThrowsRow(
             attributes: attributes,
-            savingThrows: pokemon.savingThrows,
+            savingThrows: savingThrows,
             modifierBuilder: modifierBuilder,
             proficiency: proficiency,
             loyaltyBonus: savingThrowLoyaltyBonus,

@@ -14,6 +14,7 @@ import '../../repositories/pokemon_pc_repository.dart';
 import '../../repositories/pokemon_repository.dart';
 import '../../repositories/profile_repository.dart';
 import '../../repositories/team_repository.dart';
+import '../../services/trainer_path_passive_service.dart';
 import '../../widgets/navigation/home_leading_button.dart';
 import '../../widgets/pokemon/pokemon_asset_image.dart';
 
@@ -273,6 +274,8 @@ class _CapturePokemonScreenState extends State<CapturePokemonScreen> {
     final naturalAbilities = selectedPokemon.abilities
         .take(2)
         .toList(growable: false);
+    final initialLoyalty =
+        TrainerPathPassiveService.initialCapturedLoyalty(profile);
 
     if (teamSlot != null) {
       await _teamRepository.updateSlot(
@@ -288,6 +291,7 @@ class _CapturePokemonScreenState extends State<CapturePokemonScreen> {
           nature: result.nature,
           selectedMoves: startingMoves,
           abilities: naturalAbilities,
+          loyalty: initialLoyalty,
         ),
       );
     } else {
@@ -302,6 +306,7 @@ class _CapturePokemonScreenState extends State<CapturePokemonScreen> {
         nature: result.nature,
         selectedMoves: startingMoves,
         abilities: naturalAbilities,
+        loyalty: initialLoyalty,
       );
     }
 

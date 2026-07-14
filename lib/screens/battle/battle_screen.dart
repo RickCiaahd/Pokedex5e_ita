@@ -21,9 +21,11 @@ import '../../repositories/profile_repository.dart';
 import '../../repositories/team_repository.dart';
 import '../../services/battle_quick_item_service.dart';
 import '../../services/battle_status_rules.dart';
+import '../../services/trainer_path_passive_service.dart';
 import '../../widgets/battle/battle_status_assistance_card.dart';
 import '../../widgets/navigation/home_leading_button.dart';
 import '../../widgets/pokemon/pokemon_asset_image.dart';
+import '../../widgets/trainer/trainer_path_passive_card.dart';
 import '../capture/capture_pokemon_screen.dart';
 
 class BattleScreen extends StatefulWidget {
@@ -55,6 +57,7 @@ class _BattleScreenState extends State<BattleScreen> {
   int _turnIndex = 0;
   String? _message;
   String? _restoredProfileId;
+  UserProfile? _activeProfile;
 
   @override
   void initState() {
@@ -64,6 +67,7 @@ class _BattleScreenState extends State<BattleScreen> {
 
   Future<_BattleData> _loadBattleData() async {
     final profile = await _profileRepository.getActiveProfile();
+    _activeProfile = profile;
     final team = await _teamRepository.getTeam(profile.id);
     team.sort((a, b) => a.slotIndex.compareTo(b.slotIndex));
 
@@ -856,62 +860,20 @@ class _BattleScreenState extends State<BattleScreen> {
   }
 
   int _maxHpFor(Pokemon pokemon, TeamSlot slot) {
-    final level = _levelForSlot(
-      slot,
-    ).clamp(1, LevelProgression.maxLevel).toInt();
-    final minimumLevel = pokemon.minLevelFound <= 0 ? 1 : pokemon.minLevelFound;
-    final levelsGained = (level - minimumLevel)
-        .clamp(0, LevelProgression.maxLevel)
-        .toInt();
-    final hitDieAverage = ((pokemon.hitDice + 1) / 2).ceil();
-    final attributes = _attributeScores(pokemon, slot);
-    final constitutionModifier = _modifier(attributes['CON'] ?? 10);
-    final toughBonus = slot.feats.contains('Tough') ? level * 2 : 0;
-    final loyaltyBonus = slot.loyalty == 2
-        ? (level / 2).ceil()
-        : slot.loyalty == 3
-        ? level
-        : 0;
-    final hp =
-        pokemon.hitPoints +
-        (hitDieAverage * levelsGained) +
-        (constitutionModifier * level) +
-        toughBonus +
-        loyaltyBonus;
-
-    return hp < 1 ? 1 : hp;
+    return TrainerPathPassiveService.maxHp(
+      profile: _activeProfile,
+      pokemon: pokemon,
+      slot: slot,
+      level: _levelForSlot(slot),
+    );
   }
 
   Map<String, int> _attributeScores(Pokemon pokemon, TeamSlot slot) {
-    final custom = slot.customAbilityScores;
-    final nature = PokemonNature.forName(slot.nature);
-
-    return {
-      'STR':
-          pokemon.attributes.strength +
-          (custom['STR'] ?? 0) +
-          (nature['STR'] ?? 0),
-      'DEX':
-          pokemon.attributes.dexterity +
-          (custom['DEX'] ?? 0) +
-          (nature['DEX'] ?? 0),
-      'CON':
-          pokemon.attributes.constitution +
-          (custom['CON'] ?? 0) +
-          (nature['CON'] ?? 0),
-      'INT':
-          pokemon.attributes.intelligence +
-          (custom['INT'] ?? 0) +
-          (nature['INT'] ?? 0),
-      'WIS':
-          pokemon.attributes.wisdom +
-          (custom['WIS'] ?? 0) +
-          (nature['WIS'] ?? 0),
-      'CHA':
-          pokemon.attributes.charisma +
-          (custom['CHA'] ?? 0) +
-          (nature['CHA'] ?? 0),
-    };
+    return TrainerPathPassiveService.effectiveAttributeScores(
+      profile: _activeProfile,
+      pokemon: pokemon,
+      slot: slot,
+    );
   }
 
   int _proficiency(int level) {
@@ -938,16 +900,40 @@ class _BattleScreenState extends State<BattleScreen> {
     final level = _levelForSlot(slot);
     final moveModifier = _bestMoveModifier(move, pokemon, slot);
     final proficiency = _proficiency(level);
+    final attackPathBonus = TrainerPathPassiveService.attackRollBonus(
+      profile: _activeProfile,
+      pokemon: pokemon,
+      slot: slot,
+    );
+    final damagePathBonus = TrainerPathPassiveService.damageRollBonus(
+      profile: _activeProfile,
+      slot: slot,
+    );
+    final stab = TrainerPathPassiveService.stabEffect(
+      profile: _activeProfile,
+      pokemon: pokemon,
+      slot: slot,
+      move: move,
+      pokemonLevel: level,
+    );
     final parts = <String>[];
 
     if (move.isAttack) {
-      final attackBonus = moveModifier + proficiency;
+      final attackBonus = moveModifier + proficiency + attackPathBonus;
       parts.add('AB ${attackBonus >= 0 ? '+' : ''}$attackBonus');
     }
     if (move.save != null) parts.add('DC ${8 + proficiency + moveModifier}');
 
     final damage = move.damageForLevel(level);
-    if (damage != null) parts.add(damage.label);
+    if (damage != null) {
+      final bonus = damagePathBonus == 0 ? '' : ' ${damagePathBonus > 0 ? '+' : ''}$damagePathBonus';
+      parts.add('${damage.label}$bonus');
+    }
+    if (stab.applies) {
+      final source = stab.extendedByPath ? 'STAB esteso' : 'STAB';
+      final bonus = stab.pathBonus == 0 ? '' : ' Path +${stab.pathBonus}';
+      parts.add('$source$bonus');
+    }
     if (move.range != '-') parts.add(move.range);
     if (move.duration != '-') parts.add(move.duration);
 
@@ -1000,6 +986,11 @@ class _BattleScreenState extends State<BattleScreen> {
           final moveReferences = _movesForSlot(activeSlot, pokemon);
           final noPpLeft = _hasNoPpLeft(activeSlot, moveReferences, data.moves);
           final heldItem = data.heldItemFor(activeSlot);
+          final passiveNotes = TrainerPathPassiveService.passiveNotes(
+            profile: data.profile,
+            pokemon: pokemon,
+            slot: activeSlot,
+          );
 
           return RefreshIndicator(
             onRefresh: () => _reload(),
@@ -1061,6 +1052,13 @@ class _BattleScreenState extends State<BattleScreen> {
                       : null,
                   onOpenBag: () => _openQuickBag(data, activeSlot),
                 ),
+                if (passiveNotes.isNotEmpty) ...[
+                  const SizedBox(height: 12),
+                  TrainerPathPassiveCard(
+                    trainerPath: data.profile.trainerPath,
+                    notes: passiveNotes,
+                  ),
+                ],
                 const SizedBox(height: 12),
                 BattleStatusAssistanceCard(
                   key: ValueKey('player-status-${activeSlot.slotIndex}'),

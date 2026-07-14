@@ -14,6 +14,7 @@ Tutte le modifiche rilevanti al progetto vengono documentate in questo file.
 - pannello condiviso di assistenza agli status per Battle Companion e Fight del Master, con promemoria distinti per inizio turno, azione, mossa subita e fine turno;
 - gestione automatica delle risorse numeriche del Trainer Path, con contatori persistenti e recupero da riposo breve o lungo;
 - selettori persistenti per le scelte specifiche di Researcher, Ace Trainer, Hobbyist, Type Master e Ranger.
+- applicazione automatica dei bonus passivi principali dei Trainer Path a caratteristiche, PF, tiri per colpire, danni, STAB, tiri salvezza e Lealtà.
 
 ### Modificato
 
@@ -26,6 +27,5 @@ Tutte le modifiche rilevanti al progetto vengono documentate in questo file.
 
 ### In programma
 
-- applicazione automatica dei bonus passivi del Trainer Path alle statistiche interessate;
 - sistema di allevamento, uova e incubazione;
 - condivisione nativa ed esportazioni mirate.

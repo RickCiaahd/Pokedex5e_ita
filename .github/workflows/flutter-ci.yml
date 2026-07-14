@@ -1,34 +1,28 @@
-name: Apply and verify Battle AC badge
+name: Flutter CI
 
 on:
+  push:
+    branches:
+      - main
   pull_request:
+  workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
-  group: battle-ac-badge-main
-  cancel-in-progress: false
+  group: flutter-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  apply:
+  quality:
+    name: Analyze and test
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 30
 
     steps:
-      - name: Check out main
+      - name: Check out repository
         uses: actions/checkout@v4
-        with:
-          ref: main
-          fetch-depth: 0
-
-      - name: Apply AC badge
-        run: python tool/apply_ac_badge.py
-
-      - name: Restore permanent workflow and remove helper
-        run: |
-          git show 44956cb105135baa996ad27ada085408fdae50a2:.github/workflows/flutter-ci.yml > .github/workflows/flutter-ci.yml
-          rm -f tool/apply_ac_badge.py
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
@@ -36,8 +30,8 @@ jobs:
           channel: stable
           cache: true
 
-      - name: Format changed Dart file
-        run: dart format lib/screens/battle/battle_screen.dart
+      - name: Show Flutter version
+        run: flutter --version
 
       - name: Install dependencies
         run: flutter pub get
@@ -46,15 +40,18 @@ jobs:
         run: flutter analyze
 
       - name: Validate application data
-        run: flutter test test/data_integrity_test.dart --reporter expanded
+        run: |
+          set -o pipefail
+          flutter test test/data_integrity_test.dart --reporter expanded 2>&1 | tee data-validation.log
+
+      - name: Upload validation log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: data-validation-log
+          path: data-validation.log
+          if-no-files-found: ignore
+          retention-days: 7
 
       - name: Run complete test suite
         run: flutter test --reporter expanded
-
-      - name: Commit verified AC badge
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          git commit -m "Mostra la Classe Armatura accanto al nome"
-          git push origin HEAD:main

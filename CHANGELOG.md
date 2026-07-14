@@ -36,7 +36,8 @@ Tutte le modifiche rilevanti al progetto vengono documentate in questo file.
 - corretto il salvataggio del primo uovo di un profilo, che prima poteva mostrare `Unsupported operation: insert`;
 - la schiusa considera soltanto i Pokéslot sbloccati: con tutti gli slot disponibili occupati il Pokémon viene depositato nel PC, e gli esemplari finiti in slot bloccati vengono recuperati automaticamente.
 - sprite delle uova ridimensionati e schede della squadra nel PC rese più alte per evitare overflow alle larghezze intermedie.
-- lo sprite personalizzato dell’uovo viene ora usato nella Squadra, nel riepilogo del PC e nelle schede di incubazione.
+- lo sprite personalizzato dell’uovo viene ora usato nella Squadra, nel riepilogo del PC e nelle schede di incubazione;
+- la Classe Armatura effettiva del Pokémon è ora visibile accanto al nome nel Battle Companion, con l’eventuale bonus ambientale evidenziato.
 
 ### In programma
 

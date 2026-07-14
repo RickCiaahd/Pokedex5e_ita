@@ -1096,6 +1096,17 @@ class _BattleScreenState extends State<BattleScreen> {
             slot: activeSlot,
           );
           final attributes = _attributeScores(pokemon, activeSlot);
+          final baseArmorClass = BattleEnvironmentService.baseArmorClass(
+            pokemon,
+            activeSlot,
+          );
+          final effectiveArmorClass =
+              baseArmorClass +
+              BattleEnvironmentService.armorClassBonus(
+                pokemon: pokemon,
+                slot: activeSlot,
+                environment: _environment,
+              );
 
           return RefreshIndicator(
             onRefresh: () => _reload(),
@@ -1164,6 +1175,8 @@ class _BattleScreenState extends State<BattleScreen> {
                   heldItem: heldItem,
                   displayName: _displayName(activeSlot, pokemon),
                   level: _levelForSlot(activeSlot),
+                  baseArmorClass: baseArmorClass,
+                  effectiveArmorClass: effectiveArmorClass,
                   currentHp: _currentHpFor(activeSlot, pokemon),
                   maxHp: _maxHpFor(pokemon, activeSlot),
                   nonVolatileStatus: _nonVolatileStatusFor(activeSlot),
@@ -1878,6 +1891,8 @@ class _ActivePokemonCard extends StatelessWidget {
     required this.heldItem,
     required this.displayName,
     required this.level,
+    required this.baseArmorClass,
+    required this.effectiveArmorClass,
     required this.currentHp,
     required this.maxHp,
     required this.nonVolatileStatus,
@@ -1899,6 +1914,8 @@ class _ActivePokemonCard extends StatelessWidget {
   final BagItem? heldItem;
   final String displayName;
   final int level;
+  final int baseArmorClass;
+  final int effectiveArmorClass;
   final int currentHp;
   final int maxHp;
   final String? nonVolatileStatus;
@@ -1941,13 +1958,23 @@ class _ActivePokemonCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        displayName.toUpperCase(),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.w900,
-                        ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              displayName.toUpperCase(),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: Theme.of(context).textTheme.titleLarge
+                                  ?.copyWith(fontWeight: FontWeight.w900),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          _ArmorClassBadge(
+                            baseArmorClass: baseArmorClass,
+                            effectiveArmorClass: effectiveArmorClass,
+                          ),
+                        ],
                       ),
                       const SizedBox(height: 4),
                       Text(
@@ -2034,6 +2061,52 @@ class _ActivePokemonCard extends StatelessWidget {
               _InlineBattleMessage(message: message!),
             ],
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ArmorClassBadge extends StatelessWidget {
+  const _ArmorClassBadge({
+    required this.baseArmorClass,
+    required this.effectiveArmorClass,
+  });
+
+  final int baseArmorClass;
+  final int effectiveArmorClass;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final bonus = effectiveArmorClass - baseArmorClass;
+    final hasBonus = bonus != 0;
+    final signedBonus = bonus > 0 ? '+$bonus' : bonus.toString();
+
+    return Tooltip(
+      message: hasBonus
+          ? 'Classe Armatura: $baseArmorClass $signedBonus'
+          : 'Classe Armatura',
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: hasBonus
+              ? colorScheme.primaryContainer
+              : colorScheme.surfaceContainerHighest,
+          border: Border.all(
+            color: hasBonus ? colorScheme.primary : colorScheme.outlineVariant,
+          ),
+          borderRadius: BorderRadius.circular(999),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+          child: Text(
+            hasBonus
+                ? 'CA $effectiveArmorClass ($signedBonus)'
+                : 'CA $effectiveArmorClass',
+            style: Theme.of(
+              context,
+            ).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w900),
+          ),
         ),
       ),
     );

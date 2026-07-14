@@ -36,11 +36,11 @@ jobs:
           text = path.read_text(encoding='utf-8')
           passive_line = '- applicazione automatica dei bonus passivi principali dei Trainer Path a caratteristiche, PF, tiri per colpire, danni, STAB, tiri salvezza e Lealtà.'
           if passive_line not in text:
-              anchor = '- gestione persistente di risorse, riposi e scelte specifiche dei Trainer Path nella Scheda Allenatore.'
+              anchor = '- selettori persistenti per le scelte specifiche di Researcher, Ace Trainer, Hobbyist, Type Master e Ranger.'
               if anchor not in text:
                   raise RuntimeError('Riga Trainer Path non trovata nel changelog')
               text = text.replace(anchor, anchor + '\n' + passive_line, 1)
-          text = text.replace('- automazione dei bonus passivi dei Trainer Path sulle statistiche dei Pokémon;\n', '')
+          text = text.replace('- applicazione automatica dei bonus passivi del Trainer Path alle statistiche interessate;\n', '')
           path.write_text(text, encoding='utf-8')
           '''
           path.write_text(text, encoding='utf-8')

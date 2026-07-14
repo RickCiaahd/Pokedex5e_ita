@@ -54,7 +54,7 @@ void main() {
       TrainerPathPassiveService.effectiveSpeed(
         profile: null,
         pokemon: pokemon,
-        slot: const TeamSlot(slotIndex: 0, pokemonId: 1),
+        slot: TeamSlot(slotIndex: 0, pokemonId: 1),
       ),
       30,
     );

@@ -9,7 +9,6 @@ import '../../models/battle_session.dart';
 import '../../models/level_progression.dart';
 import '../../models/move_data.dart';
 import '../../models/pokemon.dart';
-import '../../models/pokemon_nature.dart';
 import '../../models/team_slot.dart';
 import '../../models/user_profile.dart';
 import '../../repositories/bag_inventory_repository.dart';

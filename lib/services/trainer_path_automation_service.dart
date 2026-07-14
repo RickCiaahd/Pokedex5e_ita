@@ -247,7 +247,7 @@ class TrainerPathAutomationService {
       required String feature,
       required List<String> options,
       required String description,
-    bool isRequired = true,
+      bool isRequired = true,
     }) {
       if (trainerLevel < level) return;
       choices.add(
@@ -352,9 +352,9 @@ class TrainerPathAutomationService {
           id: 'rangerStrongBond2',
           label: 'Secondo legame',
           feature: 'Strong Bond',
-          options: names,
+          options: ['Nessun secondo legame', ...names],
           description:
-              'Puoi lasciare vuota la scelta se vuoi mantenere un solo legame.',
+              'Scegli Nessun secondo legame per mantenere un solo Pokémon legato.',
           isRequired: false,
         );
     }

@@ -248,7 +248,7 @@ class _PathResourceRow extends StatelessWidget {
             SizedBox(
               width: 74,
               child: Text(
-                '$current/${definition.maxUses}',
+                '$current/${definition.maxUses} ${definition.unitLabel}',
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w900,

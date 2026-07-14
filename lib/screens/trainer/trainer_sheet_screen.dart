@@ -230,6 +230,7 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
         nextRace: nextBonusSource,
       );
       _originAbilityBonusSource = nextBonusSource;
+      _reconcileTrainerPathAutomation();
     });
   }
 
@@ -326,9 +327,13 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
   }
 
   void _changeTrainerPathResource(String resourceId, int value) {
-    final definition = _trainerPathResourceDefinitions
-        .where((item) => item.id == resourceId)
-        .firstOrNull;
+    TrainerPathResourceDefinition? definition;
+    for (final item in _trainerPathResourceDefinitions) {
+      if (item.id == resourceId) {
+        definition = item;
+        break;
+      }
+    }
     if (definition == null) return;
     setState(() {
       _trainerPathResources = {

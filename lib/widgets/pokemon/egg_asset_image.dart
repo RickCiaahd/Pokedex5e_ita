@@ -25,9 +25,7 @@ class EggAssetImage extends StatelessWidget {
       semanticLabel: 'Uovo Pokémon',
       errorBuilder: (context, error, stackTrace) => SizedBox.square(
         dimension: size,
-        child: Center(
-          child: fallback ?? const Icon(Icons.egg_alt_outlined),
-        ),
+        child: Center(child: fallback ?? const Icon(Icons.egg_alt_outlined)),
       ),
     );
   }

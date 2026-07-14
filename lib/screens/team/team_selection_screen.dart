@@ -7,6 +7,7 @@ import '../../models/user_profile.dart';
 import '../../repositories/pokemon_repository.dart';
 import '../../repositories/profile_repository.dart';
 import '../../repositories/team_repository.dart';
+import '../../widgets/pokemon/egg_asset_image.dart';
 import '../../widgets/pokemon/pokemon_asset_image.dart';
 import '../pokemon/pokemon_detail_screen.dart';
 import '../breeding/breeding_screen.dart';
@@ -434,7 +435,7 @@ class _SlotAvatar extends StatelessWidget {
       ),
       child: Center(
         child: slot.isEgg
-            ? const Icon(Icons.egg_alt_outlined, size: 34)
+            ? const EggAssetImage(size: 46)
             : pokemon == null
             ? Text(
                 '${slot.slotIndex + 1}',

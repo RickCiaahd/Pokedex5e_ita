@@ -29,6 +29,7 @@ Tutte le modifiche rilevanti al progetto vengono documentate in questo file.
 - il cambio di un Trainer Path già salvato richiede ora una conferma esplicita;
 - corretto il salvataggio del primo uovo di un profilo, che prima poteva mostrare `Unsupported operation: insert`;
 - la schiusa considera soltanto i Pokéslot sbloccati: con tutti gli slot disponibili occupati il Pokémon viene depositato nel PC, e gli esemplari finiti in slot bloccati vengono recuperati automaticamente.
+- lo sprite personalizzato dell’uovo viene ora usato nella Squadra, nel riepilogo del PC e nelle schede di incubazione.
 
 ### In programma
 

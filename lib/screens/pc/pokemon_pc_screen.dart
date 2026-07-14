@@ -10,6 +10,7 @@ import '../../repositories/pokemon_repository.dart';
 import '../../repositories/profile_repository.dart';
 import '../../repositories/team_repository.dart';
 import '../../widgets/navigation/home_leading_button.dart';
+import '../../widgets/pokemon/egg_asset_image.dart';
 import '../../widgets/pokemon/pokemon_asset_image.dart';
 
 class PokemonPcScreen extends StatefulWidget {
@@ -615,11 +616,7 @@ class _TeamMiniCard extends StatelessWidget {
             child: Row(
               children: [
                 slot.isEgg
-                    ? CircleAvatar(
-                        radius: spriteSize / 2,
-                        backgroundColor: colorScheme.tertiaryContainer,
-                        child: const Icon(Icons.egg_alt_outlined),
-                      )
+                    ? EggAssetImage(size: spriteSize)
                     : pokemon == null
                     ? CircleAvatar(
                         radius: spriteSize / 2,

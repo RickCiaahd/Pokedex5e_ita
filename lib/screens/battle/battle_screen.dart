@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import '../../models/bag_inventory_entry.dart';
 import '../../models/bag_item.dart';
+import '../../models/battle_environment.dart';
 import '../../models/battle_session.dart';
 import '../../models/level_progression.dart';
 import '../../models/move_data.dart';
@@ -18,9 +19,11 @@ import '../../repositories/move_repository.dart';
 import '../../repositories/pokemon_repository.dart';
 import '../../repositories/profile_repository.dart';
 import '../../repositories/team_repository.dart';
+import '../../services/battle_environment_service.dart';
 import '../../services/battle_quick_item_service.dart';
 import '../../services/battle_status_rules.dart';
 import '../../services/trainer_path_passive_service.dart';
+import '../../widgets/battle/battle_environment_card.dart';
 import '../../widgets/battle/battle_status_assistance_card.dart';
 import '../../widgets/battle/pokemon_battle_attributes_card.dart';
 import '../../widgets/navigation/home_leading_button.dart';
@@ -55,6 +58,7 @@ class _BattleScreenState extends State<BattleScreen> {
   int? _activeSlotIndex;
   int _round = 1;
   int _turnIndex = 0;
+  BattleEnvironment _environment = const BattleEnvironment();
   String? _message;
   String? _restoredProfileId;
   UserProfile? _activeProfile;
@@ -119,10 +123,12 @@ class _BattleScreenState extends State<BattleScreen> {
     _round = 1;
     _turnIndex = 0;
     _activeSlotIndex = null;
+    _environment = const BattleEnvironment();
 
     final session = await _battleSessionRepository.getSession(data.profile.id);
     if (session != null) {
       _round = session.round;
+      _environment = session.environment;
       _initiativeEntries.addAll(session.initiativeEntries);
 
       for (final state in session.pokemonStates.values) {
@@ -181,6 +187,7 @@ class _BattleScreenState extends State<BattleScreen> {
         activeSlotIndex: _activeSlotIndex,
         pokemonStates: states,
         initiativeEntries: List<BattleInitiativeEntry>.from(_initiativeEntries),
+        environment: _environment,
         updatedAt: DateTime.now(),
       ),
     );
@@ -276,6 +283,15 @@ class _BattleScreenState extends State<BattleScreen> {
       slotPp[key] = (current + delta).clamp(0, maxPp).toInt();
       if (delta < 0) {
         _statusMoment = BattleStatusMoment.actionAttempt;
+        if (BattleEnvironmentService.isEnvironmentMove(move)) {
+          _environment = BattleEnvironmentService.applyMove(
+            environment: _environment,
+            move: move!,
+            sourceLevel: _levelForSlot(slot),
+            heldItemId: data.heldItemFor(slot)?.id,
+          );
+          _message = BattleEnvironmentService.environmentMoveMessage(move);
+        }
       }
     });
     _scheduleSessionSave(data);
@@ -757,6 +773,61 @@ class _BattleScreenState extends State<BattleScreen> {
         : _turnIndex.clamp(0, _initiativeEntries.length - 1).toInt();
   }
 
+  Future<void> _editEnvironment(_BattleData data) async {
+    final result = await showBattleEnvironmentDialog(
+      context: context,
+      initial: _environment,
+    );
+    if (!mounted || result == null) return;
+    setState(() {
+      _environment = result;
+      _message = 'Meteo e terreno aggiornati.';
+    });
+    _scheduleSessionSave(data);
+  }
+
+  void _rollEnvironmentWeather(_BattleData data) {
+    final roll = _random.nextInt(100) + 1;
+    final weather = BattleEnvironmentService.rollWeather(
+      _environment.season,
+      roll,
+    );
+    setState(() {
+      _environment = _environment.copyWith(
+        weather: weather,
+        weatherRoundsRemaining: 0,
+        weatherSourceLevel: 0,
+      );
+      _message = 'Meteo d100: $roll - ${weather.label}.';
+    });
+    _scheduleSessionSave(data);
+  }
+
+  Future<void> _applyEnvironmentWeatherDamage(
+    _BattleData data,
+    TeamSlot slot,
+  ) async {
+    final pokemon = _pokemonForSlot(data, slot);
+    if (pokemon == null) return;
+    final damage = BattleEnvironmentService.startTurnWeatherDamage(
+      pokemon: pokemon,
+      slot: slot,
+      environment: _environment,
+    );
+    if (damage == null || damage <= 0) return;
+    final maxHp = _maxHpFor(pokemon, slot);
+    final currentHp = _currentHpFor(slot, pokemon);
+    final updatedHp = (currentHp - damage).clamp(0, maxHp).toInt();
+    await _teamRepository.updateSlot(
+      profileId: data.profile.id,
+      updatedSlot: slot.copyWith(currentHp: updatedHp),
+    );
+    await _reload(
+      message:
+          '${_displayName(slot, pokemon)} subisce $damage danni da ${_environment.weather.label}.',
+    );
+  }
+
   void _rerollTrainerInitiative(_BattleData data) {
     setState(() {
       final index = _initiativeEntries.indexWhere(
@@ -820,6 +891,7 @@ class _BattleScreenState extends State<BattleScreen> {
       if (_turnIndex + 1 >= _initiativeEntries.length) {
         _turnIndex = 0;
         _round += 1;
+        _environment = _environment.advanceRound();
         _message = 'Round $_round iniziato.';
       } else {
         _turnIndex += 1;
@@ -905,9 +977,28 @@ class _BattleScreenState extends State<BattleScreen> {
       pokemon: pokemon,
       slot: slot,
     );
+    final terrainAttackBonus = BattleEnvironmentService.terrainAttackRollBonus(
+      slot: slot,
+      environment: _environment,
+    );
     final damagePathBonus = TrainerPathPassiveService.damageRollBonus(
       profile: _activeProfile,
       slot: slot,
+    );
+    final abilityDamageBonus = BattleEnvironmentService.damageRollBonus(
+      pokemon: pokemon,
+      slot: slot,
+      environment: _environment,
+    );
+    final terrainDamageBonus =
+        BattleEnvironmentService.terrainMoveModifierBonus(
+          environment: _environment,
+          move: move,
+          moveModifier: moveModifier,
+        );
+    final effectiveMoveType = BattleEnvironmentService.effectiveMoveType(
+      move,
+      _environment,
     );
     final stab = TrainerPathPassiveService.stabEffect(
       profile: _activeProfile,
@@ -915,18 +1006,24 @@ class _BattleScreenState extends State<BattleScreen> {
       slot: slot,
       move: move,
       pokemonLevel: level,
+      moveTypeOverride: effectiveMoveType,
     );
     final parts = <String>[];
 
     if (move.isAttack) {
-      final attackBonus = moveModifier + proficiency + attackPathBonus;
+      final attackBonus =
+          moveModifier + proficiency + attackPathBonus + terrainAttackBonus;
       parts.add('AB ${attackBonus >= 0 ? '+' : ''}$attackBonus');
     }
     if (move.save != null) parts.add('DC ${8 + proficiency + moveModifier}');
 
     final damage = move.damageForLevel(level);
     if (damage != null) {
-      final bonus = damagePathBonus == 0 ? '' : ' ${damagePathBonus > 0 ? '+' : ''}$damagePathBonus';
+      final totalBonus =
+          damagePathBonus + abilityDamageBonus + terrainDamageBonus;
+      final bonus = totalBonus == 0
+          ? ''
+          : ' ${totalBonus > 0 ? '+' : ''}$totalBonus';
       parts.add('${damage.label}$bonus');
     }
     if (stab.applies) {
@@ -934,6 +1031,13 @@ class _BattleScreenState extends State<BattleScreen> {
       final bonus = stab.pathBonus == 0 ? '' : ' Path +${stab.pathBonus}';
       parts.add('$source$bonus');
     }
+    parts.addAll(
+      BattleEnvironmentService.moveNotes(
+        environment: _environment,
+        move: move,
+        moveModifier: moveModifier,
+      ),
+    );
     if (move.range != '-') parts.add(move.range);
     if (move.duration != '-') parts.add(move.duration);
 
@@ -1028,6 +1132,30 @@ class _BattleScreenState extends State<BattleScreen> {
                   onAddEntry: () => _addInitiativeEntry(data),
                   onRemoveEntry: (entry) => _removeInitiativeEntry(data, entry),
                   onNextTurn: () => _nextTurn(data),
+                ),
+                const SizedBox(height: 12),
+                BattleEnvironmentCard(
+                  environment: _environment,
+                  pokemon: pokemon,
+                  slot: activeSlot,
+                  level: _levelForSlot(activeSlot),
+                  proficiency: _proficiency(_levelForSlot(activeSlot)),
+                  baseSpeed: TrainerPathPassiveService.effectiveSpeed(
+                    profile: data.profile,
+                    pokemon: pokemon,
+                    slot: activeSlot,
+                  ),
+                  onEdit: () => _editEnvironment(data),
+                  onRollWeather: () => _rollEnvironmentWeather(data),
+                  onApplyWeatherDamage:
+                      BattleEnvironmentService.startTurnWeatherDamage(
+                            pokemon: pokemon,
+                            slot: activeSlot,
+                            environment: _environment,
+                          ) ==
+                          null
+                      ? null
+                      : () => _applyEnvironmentWeatherDamage(data, activeSlot),
                 ),
                 const SizedBox(height: 12),
                 _ActivePokemonCard(

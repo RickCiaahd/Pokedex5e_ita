@@ -1,3 +1,4 @@
+import 'battle_environment.dart';
 import 'team_slot.dart';
 
 class BattleSession {
@@ -8,6 +9,7 @@ class BattleSession {
     required this.activeSlotIndex,
     required this.pokemonStates,
     required this.initiativeEntries,
+    this.environment = const BattleEnvironment(),
     required this.updatedAt,
   });
 
@@ -17,6 +19,7 @@ class BattleSession {
   final int? activeSlotIndex;
   final Map<int, BattlePokemonState> pokemonStates;
   final List<BattleInitiativeEntry> initiativeEntries;
+  final BattleEnvironment environment;
   final DateTime updatedAt;
 
   Map<String, dynamic> toJson() {
@@ -31,6 +34,7 @@ class BattleSession {
       'initiativeEntries': initiativeEntries
           .map((entry) => entry.toJson())
           .toList(growable: false),
+      'environment': environment.toJson(),
       'updatedAt': updatedAt.toIso8601String(),
     };
   }
@@ -58,6 +62,11 @@ class BattleSession {
           if (value is Map)
             BattleInitiativeEntry.fromJson(Map<String, dynamic>.from(value)),
       ],
+      environment: json['environment'] is Map
+          ? BattleEnvironment.fromJson(
+              Map<String, dynamic>.from(json['environment'] as Map),
+            )
+          : const BattleEnvironment(),
       updatedAt:
           DateTime.tryParse(json['updatedAt']?.toString() ?? '') ??
           DateTime.now(),

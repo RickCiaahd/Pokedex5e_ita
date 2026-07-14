@@ -1,20 +1,20 @@
 name: Apply Battle AC badge
 
 on:
-  push:
+  pull_request:
     branches:
-      - fix/battle-ac-badge
+      - main
 
 permissions:
   contents: write
 
 concurrency:
   group: battle-ac-badge-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   apply:
-    if: ${{ !contains(github.event.head_commit.message, '[ac-badge-applied]') }}
+    if: ${{ !contains(github.event.pull_request.title, '[ac-badge-applied]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
 
@@ -145,7 +145,7 @@ class _ArmorClassBadge extends StatelessWidget {
 
       - name: Commit verified AC badge
         run: |
-          rm -f .github/workflows/apply-battle-ac-badge.yml
+          rm -f .github/workflows/apply-battle-ac-badge.yml tool/ac_badge_trigger.txt
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A

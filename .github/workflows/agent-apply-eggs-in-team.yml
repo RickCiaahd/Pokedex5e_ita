@@ -1,0 +1,31 @@
+name: Apply eggs in team
+
+on:
+  push:
+    branches:
+      - agent/eggs-in-team-and-daycare
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v4
+        with:
+          ref: agent/eggs-in-team-and-daycare
+
+      - name: Apply changes
+        run: python .github/agent/apply_eggs_in_team.py
+
+      - name: Commit generated changes
+        run: |
+          rm .github/agent/apply_eggs_in_team.py
+          rm .github/workflows/agent-apply-eggs-in-team.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Aggiunge le uova come entità della squadra"
+          git push origin HEAD:agent/eggs-in-team-and-daycare

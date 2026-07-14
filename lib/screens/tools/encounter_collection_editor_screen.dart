@@ -6,6 +6,7 @@ import '../../models/pokemon.dart';
 import '../../models/pokemon_form_choice.dart';
 import '../../repositories/encounter_collection_repository.dart';
 import '../../services/pokemon_generator_service.dart';
+import '../../widgets/forms/percentage_text_field.dart';
 import '../../widgets/navigation/home_leading_button.dart';
 import '../../widgets/pokemon/pokemon_asset_image.dart';
 
@@ -134,11 +135,9 @@ class _EncounterCollectionEditorScreenState
     });
   }
 
-  void _setWeight(String key, String rawValue) {
-    final parsed = int.tryParse(rawValue);
-    if (parsed == null) return;
+  void _setWeight(String key, int value) {
     setState(() {
-      _weights[key] = parsed.clamp(1, 100).toInt();
+      _weights[key] = value.clamp(1, 100).toInt();
       _error = null;
     });
   }
@@ -228,6 +227,7 @@ class _EncounterCollectionEditorScreenState
         title: Text(
           widget.collection == null ? 'Nuova raccolta' : 'Modifica raccolta',
         ),
+        actions: const [HomeAppBarAction()],
       ),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
@@ -369,20 +369,10 @@ class _EncounterCollectionEditorScreenState
                               ],
                             ),
                           ),
-                          SizedBox(
-                            width: 82,
-                            child: TextFormField(
-                              key: ValueKey('$key-${_weights[key]}'),
-                              initialValue: '${_weights[key]}',
-                              keyboardType: TextInputType.number,
-                              textAlign: TextAlign.center,
-                              decoration: const InputDecoration(
-                                suffixText: '%',
-                                border: OutlineInputBorder(),
-                                isDense: true,
-                              ),
-                              onChanged: (value) => _setWeight(key, value),
-                            ),
+                          PercentageTextField(
+                            key: ValueKey(key),
+                            value: _weights[key] ?? 1,
+                            onChanged: (value) => _setWeight(key, value),
                           ),
                           IconButton(
                             onPressed: () => _removeChoice(key),

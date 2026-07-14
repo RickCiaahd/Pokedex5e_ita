@@ -4,12 +4,16 @@ on:
   push:
     branches:
       - agent/breeding-eggs-core
+  pull_request:
+    branches:
+      - main
 
 permissions:
   contents: write
 
 jobs:
   apply:
+    if: github.head_ref == 'agent/breeding-eggs-core' || github.ref_name == 'agent/breeding-eggs-core'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:

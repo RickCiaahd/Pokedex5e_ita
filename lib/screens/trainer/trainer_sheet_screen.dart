@@ -335,10 +335,11 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
       }
     }
     if (definition == null) return;
+    final maxUses = definition.maxUses;
     setState(() {
       _trainerPathResources = {
         ..._trainerPathResources,
-        resourceId: value.clamp(0, definition.maxUses).toInt(),
+        resourceId: value.clamp(0, maxUses).toInt(),
       };
     });
   }
@@ -562,7 +563,7 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
       ),
     );
 
-    if (selected == null || selected == _trainerPath) return;
+    if (!mounted || selected == null || selected == _trainerPath) return;
 
     final savedPath = _profile?.trainerPath.trim() ?? '';
     if (savedPath.isNotEmpty && selected != savedPath) {

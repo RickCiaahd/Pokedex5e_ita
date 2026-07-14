@@ -37,8 +37,10 @@ Tutte le modifiche rilevanti al progetto vengono documentate in questo file.
 - la schiusa considera soltanto i Pokéslot sbloccati: con tutti gli slot disponibili occupati il Pokémon viene depositato nel PC, e gli esemplari finiti in slot bloccati vengono recuperati automaticamente.
 - sprite delle uova ridimensionati e schede della squadra nel PC rese più alte per evitare overflow alle larghezze intermedie.
 - lo sprite personalizzato dell’uovo viene ora usato nella Squadra, nel riepilogo del PC e nelle schede di incubazione;
-- la Classe Armatura effettiva del Pokémon è ora visibile accanto al nome nel Battle Companion, con l’eventuale bonus ambientale evidenziato.
+- la Classe Armatura effettiva del Pokémon è ora visibile accanto al nome nel Battle Companion, con l’eventuale bonus ambientale evidenziato;
+- aggiunti file JSON portabili per esportare e importare un singolo Pokémon o l'intera squadra, preservando mosse, esperienza, natura, abilità, talenti, forma, sesso, Lealtà e personalizzazioni;
+- durante l'importazione i Pokémon sostituiti e gli esuberi vengono trasferiti automaticamente nel PC, mentre le uova restano nei propri Pokéslot.
 
 ### In programma
 
-- condivisione nativa ed esportazioni mirate.
+- condivisione tramite menu nativo ed esportazioni mirate di Allenatori, incontri e riepiloghi del Fight del Master.

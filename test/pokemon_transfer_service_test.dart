@@ -47,34 +47,29 @@ void main() {
     expect(slot.loyalty, 3);
   });
 
-  test('importare un Pokémon sostituisce lo slot e salva il precedente nel PC', () {
-    final current = _emptyTeam();
-    current[2] = TeamSlot(
-      slotIndex: 2,
-      pokemonId: 1,
-      nickname: 'Vecchio',
-    );
-    final bundle = PokemonTransferBundle.single(
-      slot: TeamSlot(
-        slotIndex: 0,
-        pokemonId: 4,
-        nickname: 'Nuovo',
-      ),
-      sourceTrainerName: 'Rosso',
-    );
+  test(
+    'importare un Pokémon sostituisce lo slot e salva il precedente nel PC',
+    () {
+      final current = _emptyTeam();
+      current[2] = TeamSlot(slotIndex: 2, pokemonId: 1, nickname: 'Vecchio');
+      final bundle = PokemonTransferBundle.single(
+        slot: TeamSlot(slotIndex: 0, pokemonId: 4, nickname: 'Nuovo'),
+        sourceTrainerName: 'Rosso',
+      );
 
-    final plan = PokemonTransferService.planPokemonImport(
-      currentTeam: current,
-      bundle: bundle,
-      targetSlotIndex: 2,
-    );
+      final plan = PokemonTransferService.planPokemonImport(
+        currentTeam: current,
+        bundle: bundle,
+        targetSlotIndex: 2,
+      );
 
-    expect(plan.updatedTeam[2].pokemonId, 4);
-    expect(plan.updatedTeam[2].nickname, 'Nuovo');
-    expect(plan.toPc.single.pokemonId, 1);
-    expect(plan.replacedPokemon, 1);
-    expect(plan.importedToTeam, 1);
-  });
+      expect(plan.updatedTeam[2].pokemonId, 4);
+      expect(plan.updatedTeam[2].nickname, 'Nuovo');
+      expect(plan.toPc.single.pokemonId, 1);
+      expect(plan.replacedPokemon, 1);
+      expect(plan.importedToTeam, 1);
+    },
+  );
 
   test('importare una squadra preserva le uova e manda gli esuberi nel PC', () {
     final current = _emptyTeam();

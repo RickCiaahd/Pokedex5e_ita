@@ -52,16 +52,16 @@ class PokemonTransferService {
   }
 
   PokemonTransferBundle decode(String source) {
-    final normalized = source.startsWith('\uFEFF') ? source.substring(1) : source;
+    final normalized = source.startsWith('\uFEFF')
+        ? source.substring(1)
+        : source;
     final decoded = jsonDecode(normalized);
     if (decoded is! Map) {
       throw const FormatException(
         'Il file selezionato non è un trasferimento valido.',
       );
     }
-    return PokemonTransferBundle.fromJson(
-      Map<String, dynamic>.from(decoded),
-    );
+    return PokemonTransferBundle.fromJson(Map<String, dynamic>.from(decoded));
   }
 
   String fileNameForPokemon(
@@ -130,9 +130,7 @@ class PokemonTransferService {
     final team = _normalizeTeam(currentTeam);
     final target = team[targetSlotIndex];
     if (target.isEgg) {
-      throw StateError(
-        'Non puoi sostituire un uovo con un Pokémon importato.',
-      );
+      throw StateError('Non puoi sostituire un uovo con un Pokémon importato.');
     }
 
     final imported = _slotForIndex(bundle.pokemon.single, targetSlotIndex);
@@ -158,9 +156,7 @@ class PokemonTransferService {
   }) {
     bundle.validate();
     if (bundle.kind != PokemonTransferKind.team) {
-      throw const FormatException(
-        'Seleziona un file esportato come squadra.',
-      );
+      throw const FormatException('Seleziona un file esportato come squadra.');
     }
 
     final team = _normalizeTeam(currentTeam);
@@ -176,7 +172,9 @@ class PokemonTransferService {
     }
 
     final imported = bundle.pokemon;
-    final importedToTeam = imported.length.clamp(0, targetIndices.length).toInt();
+    final importedToTeam = imported.length
+        .clamp(0, targetIndices.length)
+        .toInt();
     final targetIndexSet = targetIndices.toSet();
     final replaced = [
       for (final slot in team)
@@ -225,10 +223,10 @@ class PokemonTransferService {
         for (final entry in plan.toPc.indexed)
           _pcFromSlot(entry.$2, id: 'transfer-${seed + entry.$1}'),
       ];
-      await _pokemonPcRepository.savePokemon(
-        profileId,
-        [...additions, ...stored],
-      );
+      await _pokemonPcRepository.savePokemon(profileId, [
+        ...additions,
+        ...stored,
+      ]);
     }
     await _teamRepository.saveTeam(profileId, plan.updatedTeam);
   }

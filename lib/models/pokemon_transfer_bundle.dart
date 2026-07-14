@@ -61,9 +61,7 @@ class PokemonTransferBundle {
 
   factory PokemonTransferBundle.fromJson(Map<String, dynamic> json) {
     if (json['application']?.toString() != applicationId) {
-      throw const FormatException(
-        'Il file non appartiene a Pokédex 5e ITA.',
-      );
+      throw const FormatException('Il file non appartiene a Pokédex 5e ITA.');
     }
 
     final kindName = json['kind']?.toString() ?? '';
@@ -94,9 +92,7 @@ class PokemonTransferBundle {
         for (final entry in rawPokemon.indexed)
           if (entry.$2 is Map)
             _normalizeSlot(
-              TeamSlot.fromJson(
-                Map<String, dynamic>.from(entry.$2 as Map),
-              ),
+              TeamSlot.fromJson(Map<String, dynamic>.from(entry.$2 as Map)),
               entry.$1,
             )
           else

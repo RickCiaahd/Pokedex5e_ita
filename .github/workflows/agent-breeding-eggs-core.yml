@@ -89,13 +89,24 @@ jobs:
           retention-days: 1
 
       - name: Format Dart files
-        run: dart format lib test
+        run: |
+          set -o pipefail
+          dart format lib test 2>&1 | tee breeding-format.log
+
+      - name: Upload format log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: breeding-format-log
+          path: breeding-format.log
+          if-no-files-found: ignore
+          retention-days: 1
 
       - name: Commit generated changes
         run: |
           rm .github/agent/apply_breeding_core.py
           rm .github/workflows/agent-breeding-eggs-core.yml
-          rm -f breeding-patch.log
+          rm -f breeding-patch.log breeding-format.log
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A

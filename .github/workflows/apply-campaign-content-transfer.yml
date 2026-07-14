@@ -28,7 +28,32 @@ jobs:
           fetch-depth: 0
 
       - name: Apply UI integration
-        run: python tool/apply_campaign_content_transfer.py
+        run: |
+          set +e
+          python tool/apply_campaign_content_transfer.py > patch-output.log 2>&1
+          code=$?
+          echo "$code" > patch-exit-code.txt
+          cat patch-output.log
+          exit 0
+
+      - name: Upload patch diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: campaign-transfer-patch-diagnostics
+          path: |
+            patch-output.log
+            patch-exit-code.txt
+          if-no-files-found: error
+          retention-days: 2
+
+      - name: Stop on patch failure
+        run: |
+          code=$(cat patch-exit-code.txt)
+          if [ "$code" != "0" ]; then
+            echo "Patch script failed with code $code"
+            exit "$code"
+          fi
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
@@ -64,7 +89,7 @@ jobs:
 
       - name: Commit verified campaign transfers
         run: |
-          rm -f tool/apply_campaign_content_transfer.py .github/workflows/apply-campaign-content-transfer.yml tool/campaign_transfer_trigger.txt
+          rm -f tool/apply_campaign_content_transfer.py .github/workflows/apply-campaign-content-transfer.yml tool/campaign_transfer_trigger.txt patch-output.log patch-exit-code.txt
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A

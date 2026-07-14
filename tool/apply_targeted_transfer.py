@@ -1,3 +1,4 @@
+# Applied and removed automatically by GitHub Actions.
 from pathlib import Path
 
 

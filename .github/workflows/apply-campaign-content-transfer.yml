@@ -1,0 +1,70 @@
+name: Apply campaign content transfers
+
+on:
+  push:
+    branches:
+      - feature/campaign-content-transfer
+
+permissions:
+  contents: write
+
+concurrency:
+  group: campaign-content-transfer-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    if: ${{ !contains(github.event.head_commit.message, '[campaign-transfer-applied]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Check out feature branch
+        uses: actions/checkout@v4
+        with:
+          ref: feature/campaign-content-transfer
+          fetch-depth: 0
+
+      - name: Apply UI integration
+        run: python tool/apply_campaign_content_transfer.py
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Format changed Dart files
+        run: |
+          dart format \
+            lib/models/campaign_transfer_bundle.dart \
+            lib/services/campaign_transfer_service.dart \
+            lib/services/master_fight_summary_service.dart \
+            lib/screens/tools/encounter_library_screen.dart \
+            lib/screens/tools/npc_trainer_library_screen.dart \
+            lib/screens/battle/npc_battle_screen.dart \
+            test/campaign_transfer_service_test.dart
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze source
+        run: flutter analyze
+
+      - name: Validate application data
+        run: flutter test test/data_integrity_test.dart --reporter expanded
+
+      - name: Run transfer tests
+        run: flutter test test/campaign_transfer_service_test.dart --reporter expanded
+
+      - name: Run complete test suite
+        run: flutter test --reporter expanded
+
+      - name: Commit verified campaign transfers
+        run: |
+          rm -f tool/apply_campaign_content_transfer.py .github/workflows/apply-campaign-content-transfer.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Aggiunge trasferimenti di incontri e Allenatori PNG [campaign-transfer-applied]"
+          git push origin HEAD:feature/campaign-content-transfer

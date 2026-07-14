@@ -11,8 +11,7 @@ class CampaignTransferService {
     SavedEncounterRepository? encounterRepository,
     SavedNpcTrainerRepository? trainerRepository,
     DateTime Function()? clock,
-  }) : _encounterRepository =
-           encounterRepository ?? SavedEncounterRepository(),
+  }) : _encounterRepository = encounterRepository ?? SavedEncounterRepository(),
        _trainerRepository = trainerRepository ?? SavedNpcTrainerRepository(),
        _clock = clock ?? DateTime.now;
 
@@ -35,9 +34,7 @@ class CampaignTransferService {
         'Il file selezionato non è un trasferimento valido.',
       );
     }
-    return CampaignTransferBundle.fromJson(
-      Map<String, dynamic>.from(decoded),
-    );
+    return CampaignTransferBundle.fromJson(Map<String, dynamic>.from(decoded));
   }
 
   String fileNameForEncounter(CampaignTransferBundle bundle) {
@@ -67,9 +64,7 @@ class CampaignTransferService {
   }) async {
     bundle.validate();
     if (bundle.kind != CampaignTransferKind.encounter) {
-      throw const FormatException(
-        'Seleziona un file esportato come incontro.',
-      );
+      throw const FormatException('Seleziona un file esportato come incontro.');
     }
     final source = bundle.encounter!;
     final missingIds = {
@@ -155,7 +150,9 @@ class CampaignTransferService {
   }
 
   String _uniqueName(String source, Iterable<String> existingNames) {
-    final trimmed = source.trim().isEmpty ? 'Contenuto importato' : source.trim();
+    final trimmed = source.trim().isEmpty
+        ? 'Contenuto importato'
+        : source.trim();
     final existing = existingNames
         .map((name) => name.trim().toLowerCase())
         .toSet();

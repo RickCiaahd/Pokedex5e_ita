@@ -63,9 +63,7 @@ class MasterFightSummaryService {
           if (state.nonVolatileStatus != null) state.nonVolatileStatus!,
           ...(state.volatileStatuses.toList()..sort()),
         ];
-        final statusText = statuses.isEmpty
-            ? 'nessuno'
-            : statuses.join(', ');
+        final statusText = statuses.isEmpty ? 'nessuno' : statuses.join(', ');
         buffer.writeln(
           '- [$active] $name Lv. ${state.pokemon.level} · '
           'PF ${state.currentHp}/${state.pokemon.maxHp}$fainted · '
@@ -89,7 +87,10 @@ class MasterFightSummaryService {
   }
 
   String fileName(MasterBattleSession session, {DateTime? exportedAt}) {
-    final date = (exportedAt ?? DateTime.now()).toIso8601String().split('T').first;
+    final date = (exportedAt ?? DateTime.now())
+        .toIso8601String()
+        .split('T')
+        .first;
     return 'pokedex-5e-fight-master-round-${session.round}-$date.txt';
   }
 }

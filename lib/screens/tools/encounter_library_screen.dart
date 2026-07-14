@@ -1,5 +1,10 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
+import '../../models/campaign_transfer_bundle.dart';
 import '../../models/generated_encounter.dart';
 import '../../models/pokemon.dart';
 import '../../models/pokemon_form_choice.dart';
@@ -8,6 +13,7 @@ import '../../models/user_profile.dart';
 import '../../repositories/pokemon_repository.dart';
 import '../../repositories/profile_repository.dart';
 import '../../repositories/saved_encounter_repository.dart';
+import '../../services/campaign_transfer_service.dart';
 import '../../services/saved_encounter_mapper_service.dart';
 import '../../widgets/battle/wild_master_fight_launcher.dart';
 import '../../widgets/navigation/home_leading_button.dart';
@@ -26,6 +32,7 @@ class _EncounterLibraryScreenState extends State<EncounterLibraryScreen> {
   final SavedEncounterRepository _repository = SavedEncounterRepository();
   final SavedEncounterMapperService _mapper =
       const SavedEncounterMapperService();
+  final CampaignTransferService _transferService = CampaignTransferService();
 
   UserProfile? _profile;
   List<Pokemon> _catalog = const [];
@@ -182,6 +189,108 @@ class _EncounterLibraryScreenState extends State<EncounterLibraryScreen> {
     }
   }
 
+  Future<CampaignTransferBundle?> _pickTransferFile() async {
+    final result = await FilePicker.pickFiles(
+      dialogTitle: 'Importa incontro Pokédex 5e',
+      type: FileType.custom,
+      allowedExtensions: const ['json'],
+      allowMultiple: false,
+      withData: true,
+    );
+    if (result == null || result.files.isEmpty) return null;
+    final picked = result.files.single;
+    final bytes = picked.bytes ?? await picked.xFile.readAsBytes();
+    return _transferService.decode(utf8.decode(bytes, allowMalformed: false));
+  }
+
+  Future<void> _exportEncounter(SavedEncounter saved) async {
+    final profile = _profile;
+    if (profile == null || _isBusy) return;
+    setState(() => _isBusy = true);
+    try {
+      final bundle = CampaignTransferBundle.forEncounter(
+        encounter: saved,
+        sourceProfileName: profile.name,
+      );
+      final json = _transferService.encode(bundle);
+      final path = await FilePicker.saveFile(
+        dialogTitle: 'Esporta ${saved.name}',
+        fileName: _transferService.fileNameForEncounter(bundle),
+        type: FileType.custom,
+        allowedExtensions: const ['json'],
+        bytes: Uint8List.fromList(utf8.encode(json)),
+      );
+      _setMessage(
+        path == null
+            ? 'Esportazione annullata.'
+            : '${saved.name} esportato correttamente.',
+      );
+    } catch (error) {
+      _setMessage(_friendlyError(error), isError: true);
+    } finally {
+      if (mounted) setState(() => _isBusy = false);
+    }
+  }
+
+  Future<void> _importEncounter() async {
+    final profile = _profile;
+    if (profile == null || _isBusy) return;
+    setState(() => _isBusy = true);
+    try {
+      final bundle = await _pickTransferFile();
+      if (bundle == null) {
+        _setMessage('Importazione annullata.');
+        return;
+      }
+      if (bundle.kind != CampaignTransferKind.encounter) {
+        throw const FormatException(
+          'Seleziona un file esportato come incontro.',
+        );
+      }
+      final source = bundle.encounter!;
+      if (!mounted) return;
+      final origin = bundle.sourceProfileName.isEmpty
+          ? ''
+          : ' dal profilo ${bundle.sourceProfileName}';
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: const Text('Importare incontro?'),
+          content: Text(
+            'Vuoi importare “${source.name}”$origin con '
+            '${source.enemyCount} avversari? Verrà creata una nuova copia '
+            'nella libreria del profilo attivo.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('ANNULLA'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: const Text('IMPORTA'),
+            ),
+          ],
+        ),
+      );
+      if (confirmed != true) {
+        _setMessage('Importazione annullata.');
+        return;
+      }
+      final imported = await _transferService.importEncounter(
+        profileId: profile.id,
+        bundle: bundle,
+        catalogPokemonIds: _catalog.map((pokemon) => pokemon.id).toSet(),
+      );
+      await _load();
+      _setMessage('${imported.name} importato nella libreria incontri.');
+    } catch (error) {
+      _setMessage(_friendlyError(error), isError: true);
+    } finally {
+      if (mounted) setState(() => _isBusy = false);
+    }
+  }
+
   String _copyName(String original) {
     final names = _encounters.map((encounter) => encounter.name).toSet();
     var candidate = '$original (copia)';
@@ -214,6 +323,13 @@ class _EncounterLibraryScreenState extends State<EncounterLibraryScreen> {
       appBar: AppBar(
         leading: const HomeLeadingButton(),
         title: const Text('Libreria incontri'),
+        actions: [
+          IconButton(
+            onPressed: _isBusy || _isLoading ? null : _importEncounter,
+            tooltip: 'Importa incontro',
+            icon: const Icon(Icons.download_outlined),
+          ),
+        ],
       ),
       body: RefreshIndicator(
         onRefresh: _load,
@@ -264,6 +380,7 @@ class _EncounterLibraryScreenState extends State<EncounterLibraryScreen> {
                   isBusy: _isBusy,
                   onOpen: () => _openEncounter(saved),
                   onFight: () => _startFight(saved),
+                  onExport: () => _exportEncounter(saved),
                   onDuplicate: () => _duplicateEncounter(saved),
                   onDelete: () => _deleteEncounter(saved),
                 ),
@@ -329,6 +446,7 @@ class _SavedEncounterCard extends StatelessWidget {
     required this.isBusy,
     required this.onOpen,
     required this.onFight,
+    required this.onExport,
     required this.onDuplicate,
     required this.onDelete,
   });
@@ -338,6 +456,7 @@ class _SavedEncounterCard extends StatelessWidget {
   final bool isBusy;
   final VoidCallback onOpen;
   final VoidCallback onFight;
+  final VoidCallback onExport;
   final VoidCallback onDuplicate;
   final VoidCallback onDelete;
 
@@ -383,6 +502,9 @@ class _SavedEncounterCard extends StatelessWidget {
                     enabled: !isBusy,
                     onSelected: (value) {
                       switch (value) {
+                        case 'export':
+                          onExport();
+                          break;
                         case 'duplicate':
                           onDuplicate();
                           break;
@@ -392,6 +514,10 @@ class _SavedEncounterCard extends StatelessWidget {
                       }
                     },
                     itemBuilder: (_) => const [
+                      PopupMenuItem(
+                        value: 'export',
+                        child: Text('Esporta incontro'),
+                      ),
                       PopupMenuItem(value: 'duplicate', child: Text('Duplica')),
                       PopupMenuItem(value: 'delete', child: Text('Elimina')),
                     ],

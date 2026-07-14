@@ -1,6 +1,11 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 import '../../models/bag_item.dart';
+import '../../models/campaign_transfer_bundle.dart';
 import '../../models/generated_npc_trainer.dart';
 import '../../models/pokemon.dart';
 import '../../models/pokemon_form_choice.dart';
@@ -14,6 +19,7 @@ import '../../repositories/pokemon_repository.dart';
 import '../../repositories/profile_repository.dart';
 import '../../repositories/saved_npc_trainer_repository.dart';
 import '../../repositories/trainer_manual_repository.dart';
+import '../../services/campaign_transfer_service.dart';
 import '../../services/master_battle_service.dart';
 import '../../services/saved_npc_trainer_mapper_service.dart';
 import '../../widgets/navigation/home_leading_button.dart';
@@ -40,6 +46,7 @@ class _NpcTrainerLibraryScreenState extends State<NpcTrainerLibraryScreen> {
   final MasterBattleService _battleService = const MasterBattleService();
   final SavedNpcTrainerMapperService _mapper =
       const SavedNpcTrainerMapperService();
+  final CampaignTransferService _transferService = CampaignTransferService();
 
   UserProfile? _profile;
   List<Pokemon> _catalog = const [];
@@ -130,6 +137,108 @@ class _NpcTrainerLibraryScreenState extends State<NpcTrainerLibraryScreen> {
         ),
       );
       await _load();
+    } catch (error) {
+      _setMessage(_friendlyError(error), isError: true);
+    } finally {
+      if (mounted) setState(() => _isBusy = false);
+    }
+  }
+
+  Future<CampaignTransferBundle?> _pickTransferFile() async {
+    final result = await FilePicker.pickFiles(
+      dialogTitle: 'Importa Allenatore PNG Pokédex 5e',
+      type: FileType.custom,
+      allowedExtensions: const ['json'],
+      allowMultiple: false,
+      withData: true,
+    );
+    if (result == null || result.files.isEmpty) return null;
+    final picked = result.files.single;
+    final bytes = picked.bytes ?? await picked.xFile.readAsBytes();
+    return _transferService.decode(utf8.decode(bytes, allowMalformed: false));
+  }
+
+  Future<void> _exportTrainer(SavedNpcTrainer saved) async {
+    final profile = _profile;
+    if (profile == null || _isBusy) return;
+    setState(() => _isBusy = true);
+    try {
+      final bundle = CampaignTransferBundle.forNpcTrainer(
+        npcTrainer: saved,
+        sourceProfileName: profile.name,
+      );
+      final json = _transferService.encode(bundle);
+      final path = await FilePicker.saveFile(
+        dialogTitle: 'Esporta ${saved.displayName}',
+        fileName: _transferService.fileNameForNpcTrainer(bundle),
+        type: FileType.custom,
+        allowedExtensions: const ['json'],
+        bytes: Uint8List.fromList(utf8.encode(json)),
+      );
+      _setMessage(
+        path == null
+            ? 'Esportazione annullata.'
+            : '${saved.displayName} esportato correttamente.',
+      );
+    } catch (error) {
+      _setMessage(_friendlyError(error), isError: true);
+    } finally {
+      if (mounted) setState(() => _isBusy = false);
+    }
+  }
+
+  Future<void> _importTrainer() async {
+    final profile = _profile;
+    if (profile == null || _isBusy) return;
+    setState(() => _isBusy = true);
+    try {
+      final bundle = await _pickTransferFile();
+      if (bundle == null) {
+        _setMessage('Importazione annullata.');
+        return;
+      }
+      if (bundle.kind != CampaignTransferKind.npcTrainer) {
+        throw const FormatException(
+          'Seleziona un file esportato come Allenatore PNG.',
+        );
+      }
+      final source = bundle.npcTrainer!;
+      if (!mounted) return;
+      final origin = bundle.sourceProfileName.isEmpty
+          ? ''
+          : ' dal profilo ${bundle.sourceProfileName}';
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: const Text('Importare Allenatore PNG?'),
+          content: Text(
+            'Vuoi importare “${source.displayName}”$origin con una squadra '
+            'di ${source.team.length} Pokémon? Verrà creata una nuova copia '
+            'nella libreria del profilo attivo.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('ANNULLA'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: const Text('IMPORTA'),
+            ),
+          ],
+        ),
+      );
+      if (confirmed != true) {
+        _setMessage('Importazione annullata.');
+        return;
+      }
+      final imported = await _transferService.importNpcTrainer(
+        profileId: profile.id,
+        bundle: bundle,
+        catalogPokemonIds: _catalog.map((pokemon) => pokemon.id).toSet(),
+      );
+      await _load();
+      _setMessage('${imported.displayName} importato nella libreria PNG.');
     } catch (error) {
       _setMessage(_friendlyError(error), isError: true);
     } finally {
@@ -324,6 +433,13 @@ class _NpcTrainerLibraryScreenState extends State<NpcTrainerLibraryScreen> {
       appBar: AppBar(
         leading: const HomeLeadingButton(),
         title: const Text('Libreria Allenatori PNG'),
+        actions: [
+          IconButton(
+            onPressed: _isBusy || _isLoading ? null : _importTrainer,
+            tooltip: 'Importa Allenatore PNG',
+            icon: const Icon(Icons.download_outlined),
+          ),
+        ],
       ),
       body: RefreshIndicator(
         onRefresh: _load,
@@ -401,6 +517,7 @@ class _NpcTrainerLibraryScreenState extends State<NpcTrainerLibraryScreen> {
                   },
                   onOpen: () => _openTrainer(trainer),
                   onFight: () => _startFight([trainer]),
+                  onExport: () => _exportTrainer(trainer),
                   onDuplicate: () => _duplicateTrainer(trainer),
                   onDelete: () => _deleteTrainer(trainer),
                 ),
@@ -501,6 +618,7 @@ class _NpcTrainerCard extends StatelessWidget {
     required this.onSelected,
     required this.onOpen,
     required this.onFight,
+    required this.onExport,
     required this.onDuplicate,
     required this.onDelete,
   });
@@ -512,6 +630,7 @@ class _NpcTrainerCard extends StatelessWidget {
   final ValueChanged<bool> onSelected;
   final VoidCallback onOpen;
   final VoidCallback onFight;
+  final VoidCallback onExport;
   final VoidCallback onDuplicate;
   final VoidCallback onDelete;
 
@@ -556,10 +675,15 @@ class _NpcTrainerCard extends StatelessWidget {
                 PopupMenuButton<String>(
                   enabled: !disabled,
                   onSelected: (value) {
+                    if (value == 'export') onExport();
                     if (value == 'duplicate') onDuplicate();
                     if (value == 'delete') onDelete();
                   },
                   itemBuilder: (_) => const [
+                    PopupMenuItem(
+                      value: 'export',
+                      child: Text('Esporta Allenatore'),
+                    ),
                     PopupMenuItem(value: 'duplicate', child: Text('Duplica')),
                     PopupMenuItem(value: 'delete', child: Text('Elimina')),
                   ],

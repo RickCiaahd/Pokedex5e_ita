@@ -17,9 +17,9 @@ extension EggIncubatorDetails on EggIncubator {
 
   String? get itemId => switch (this) {
     EggIncubator.none => null,
-    EggIncubator.basic => 'basic-incubator',
-    EggIncubator.plus => 'plus-incubator',
-    EggIncubator.superIncubator => 'super-incubator',
+    EggIncubator.basic => 'egg-incubator',
+    EggIncubator.plus => 'egg-incubator-plus',
+    EggIncubator.superIncubator => 'egg-incubator-super',
   };
 
   int get cost => switch (this) {

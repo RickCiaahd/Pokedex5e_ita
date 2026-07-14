@@ -81,7 +81,9 @@ void main() {
     expect(EggIncubator.plus.cost, 3000);
     expect(EggIncubator.superIncubator.extraD20, 3);
     expect(EggIncubator.superIncubator.cost, 10000);
-    expect(EggIncubator.superIncubator.itemId, 'super-incubator');
+    expect(EggIncubator.basic.itemId, 'egg-incubator');
+    expect(EggIncubator.plus.itemId, 'egg-incubator-plus');
+    expect(EggIncubator.superIncubator.itemId, 'egg-incubator-super');
   });
 }
 

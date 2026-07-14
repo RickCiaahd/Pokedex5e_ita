@@ -1,4 +1,4 @@
-name: Apply complete Pokemon Breeder
+name: Fix complete Pokemon Breeder
 
 on:
   push:
@@ -12,7 +12,7 @@ permissions:
   contents: write
 
 jobs:
-  apply:
+  fix:
     if: github.head_ref == 'agent/complete-pokemon-breeder' || github.ref_name == 'agent/complete-pokemon-breeder'
     runs-on: ubuntu-latest
     steps:
@@ -21,81 +21,90 @@ jobs:
         with:
           ref: agent/complete-pokemon-breeder
 
-      - name: Normalize callback replacement
+      - name: Remove unused helper and restore permanent CI
         run: |
           python - <<'PY'
           from pathlib import Path
 
-          path = Path('.github/agent/apply_complete_breeder.py')
-          lines = path.read_text(encoding='utf-8').splitlines()
-          marker = next(
-              index
-              for index, line in enumerate(lines)
-              if "'egg card advanced callbacks'," in line
-          )
-          start = marker
-          while start >= 0 and lines[start] != 'text = replace_once(':
-              start -= 1
-          end = marker + 1
-          if start < 0 or end >= len(lines) or lines[end] != ')':
-              raise RuntimeError('Blocco callback uovo non riconosciuto')
-          replacement = [
-              "callback_start = 'onDelete: () => _deleteEgg(data, egg),'",
-              "callback_end = 'onMoveToTeam: () => _moveEggToTeam(data, egg),'",
-              "callback_start_index = text.index(callback_start)",
-              "callback_end_index = text.index(callback_end, callback_start_index) + len(callback_end)",
-              "callback_replacement = '''onDelete: () => _deleteEgg(data, egg),",
-              "                       incubatorQuantities: data.incubatorQuantities,",
-              "                       onIncubatorChanged: (incubator) =>",
-              "                           _assignIncubator(data, egg, incubator),",
-              "                       canCustomizeTraits: _breederFeatures.hasMasterOfTraits(",
-              "                         data.profile,",
-              "                       ),",
-              "                       onCustomizeTraits: () =>",
-              "                           _customizeMasterTraits(data, egg),",
-              "                       onEditHp: () => _editEggHp(data, egg),",
-              "                       onMoveToDayCare: () => _moveEggToDayCare(data, egg),",
-              "                       onMoveToPc: () => _moveEggToPc(data, egg),",
-              "                       onMoveToTeam: () => _moveEggToTeam(data, egg),'''",
-              "text = text[:callback_start_index] + callback_replacement + text[callback_end_index:]",
-          ]
-          lines[start:end + 1] = replacement
-          path.write_text('\n'.join(lines) + '\n', encoding='utf-8')
+          screen = Path('lib/screens/breeding/breeding_screen.dart')
+          text = screen.read_text(encoding='utf-8')
+          unused = '''  Future<void> _updateEgg(_BreedingScreenData data, BreedingEgg egg) async {
+            await _eggRepository.saveEgg(data.profile.id, egg);
+            await _reload();
+          }
+
+          '''
+          if text.count(unused) != 1:
+              raise RuntimeError(
+                  f'Helper _updateEgg: atteso 1 match, trovati {text.count(unused)}'
+              )
+          screen.write_text(text.replace(unused, '', 1), encoding='utf-8')
+
+          Path('.github/workflows/flutter-ci.yml').write_text('''name: Flutter CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: flutter-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Analyze and test
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Show Flutter version
+        run: flutter --version
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze source
+        run: flutter analyze
+
+      - name: Validate application data
+        run: |
+          set -o pipefail
+          flutter test test/data_integrity_test.dart --reporter expanded 2>&1 | tee data-validation.log
+
+      - name: Upload validation log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: data-validation-log
+          path: data-validation.log
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Run complete test suite
+        run: flutter test --reporter expanded
+''', encoding='utf-8')
           PY
 
-      - name: Apply changes
+      - name: Commit final fixes
         run: |
-          set -o pipefail
-          python .github/agent/apply_complete_breeder.py 2>&1 | tee patch.log
-
-      - name: Upload patch log
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: complete-breeder-patch-log
-          path: patch.log
-          if-no-files-found: ignore
-          retention-days: 1
-
-      - name: Commit generated changes
-        run: |
-          set -o pipefail
-          {
-            rm .github/agent/apply_complete_breeder.py
-            rm .github/workflows/agent-complete-breeder.yml
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git status --short
-            git add -A
-            git commit -m "Completa il Trainer Path Pokémon Breeder"
-            git push origin HEAD:agent/complete-pokemon-breeder
-          } 2>&1 | tee commit.log
-
-      - name: Upload commit log
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: complete-breeder-commit-log
-          path: commit.log
-          if-no-files-found: ignore
-          retention-days: 1
+          rm .github/workflows/agent-complete-breeder.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Corregge l'analisi del Pokémon Breeder"
+          git push origin HEAD:agent/complete-pokemon-breeder

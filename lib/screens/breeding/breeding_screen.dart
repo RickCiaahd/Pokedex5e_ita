@@ -19,7 +19,7 @@ import '../../repositories/team_repository.dart';
 import '../../services/breeding_service.dart';
 import '../../services/pokemon_generator_service.dart';
 import '../../widgets/navigation/home_leading_button.dart';
-import '../../widgets/pokemon/pokemon_asset_image.dart';
+import '../../widgets/pokemon/egg_asset_image.dart';
 
 class BreedingScreen extends StatefulWidget {
   const BreedingScreen({super.key});
@@ -946,18 +946,7 @@ class _EggCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                if (pokemon != null)
-                  PokemonAssetImage(
-                    pokemon: pokemon!,
-                    formName: egg.formName,
-                    size: 64,
-                  )
-                else
-                  const SizedBox(
-                    width: 64,
-                    height: 64,
-                    child: Icon(Icons.egg_outlined, size: 48),
-                  ),
+                const EggAssetImage(size: 64),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(

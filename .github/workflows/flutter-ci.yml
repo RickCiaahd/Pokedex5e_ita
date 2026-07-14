@@ -37,7 +37,18 @@ jobs:
         run: flutter pub get
 
       - name: Analyze source
-        run: flutter analyze
+        run: |
+          set -o pipefail
+          flutter analyze 2>&1 | tee breeding-analyzer.log
+
+      - name: Upload analyzer log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: breeding-analyzer-log
+          path: breeding-analyzer.log
+          if-no-files-found: ignore
+          retention-days: 1
 
       - name: Validate application data
         run: |

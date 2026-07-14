@@ -4340,6 +4340,42 @@
 			"media": {
 				"sprite": "/assets/items/egg-incubator-super/sprite.png"
 			}
-		}
+		},
+        {
+            "id": "egg-incubator-basic",
+            "name": "Incubatore Basic",
+            "type": "trainer gear",
+            "cost": 1000,
+            "description": [
+                "Si consuma quando viene assegnato a un uovo. Aggiunge 1d20 alla riduzione del contatore di incubazione."
+            ],
+            "media": {
+                "sprite": "assets/textures/sprites/egg.png"
+            }
+        },
+        {
+            "id": "egg-incubator-plus",
+            "name": "Incubatore Plus",
+            "type": "trainer gear",
+            "cost": 3000,
+            "description": [
+                "Si consuma quando viene assegnato a un uovo. Aggiunge 2d20 alla riduzione del contatore di incubazione."
+            ],
+            "media": {
+                "sprite": "assets/textures/sprites/egg.png"
+            }
+        },
+        {
+            "id": "egg-incubator-super",
+            "name": "Incubatore Super",
+            "type": "trainer gear",
+            "cost": 10000,
+            "description": [
+                "Si consuma quando viene assegnato a un uovo. Aggiunge 3d20 alla riduzione del contatore di incubazione."
+            ],
+            "media": {
+                "sprite": "assets/textures/sprites/egg.png"
+            }
+        }
 	]
 }

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../models/breeding_egg.dart';
 import '../../models/pokemon.dart';
 import '../../models/pokemon_nature.dart';
-import '../../services/breeding_service.dart';
+import '../../services/breeder_feature_service.dart';
 
 class GoodGenesChoice {
   const GoodGenesChoice._({
@@ -36,7 +36,7 @@ Future<GoodGenesChoice?> showGoodGenesDialog(
   BuildContext context, {
   required Pokemon pokemon,
   required Map<String, String> featDescriptions,
-  BreedingService service = const BreedingService(),
+  BreederFeatureService service = const BreederFeatureService(),
 }) async {
   const abilities = ['STR', 'DEX', 'CON', 'INT', 'WIS', 'CHA'];
   var mode = 'abilities';
@@ -177,7 +177,7 @@ Future<BreedingEgg?> showMasterTraitsDialog(
   BuildContext context, {
   required BreedingEgg egg,
   required Pokemon pokemon,
-  BreedingService service = const BreedingService(),
+  BreederFeatureService service = const BreederFeatureService(),
 }) async {
   var selectedGender = egg.gender;
   var selectedNature = egg.nature;

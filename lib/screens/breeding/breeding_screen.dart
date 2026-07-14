@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
+import '../../models/bag_inventory_entry.dart';
 import '../../models/breeding_candidate.dart';
 import '../../models/breeding_egg.dart';
 import '../../models/breeding_species_data.dart';
@@ -11,13 +12,17 @@ import '../../models/trainer_progression.dart';
 import '../../models/pokemon.dart';
 import '../../models/team_slot.dart';
 import '../../models/user_profile.dart';
+import '../../repositories/bag_inventory_repository.dart';
 import '../../repositories/breeding_egg_repository.dart';
+import '../../repositories/feat_repository.dart';
 import '../../repositories/pokemon_pc_repository.dart';
 import '../../repositories/pokemon_repository.dart';
 import '../../repositories/profile_repository.dart';
 import '../../repositories/team_repository.dart';
+import '../../services/breeder_feature_service.dart';
 import '../../services/breeding_service.dart';
-import '../../services/pokemon_generator_service.dart';
+import '../../services/trainer_path_passive_service.dart';
+import '../../widgets/breeding/breeder_feature_dialogs.dart';
 import '../../widgets/navigation/home_leading_button.dart';
 import '../../widgets/pokemon/egg_asset_image.dart';
 
@@ -34,9 +39,11 @@ class _BreedingScreenState extends State<BreedingScreen> {
   final TeamRepository _teamRepository = TeamRepository();
   final PokemonPcRepository _pcRepository = PokemonPcRepository();
   final BreedingEggRepository _eggRepository = BreedingEggRepository();
+  final BagInventoryRepository _inventoryRepository = BagInventoryRepository();
+  final FeatRepository _featRepository = FeatRepository();
   final BreedingDataService _dataService = BreedingDataService();
   final BreedingService _breedingService = const BreedingService();
-  final PokemonGeneratorService _generator = const PokemonGeneratorService();
+  final BreederFeatureService _breederFeatures = const BreederFeatureService();
   final Random _random = Random();
   final TextEditingController _manualRollController = TextEditingController();
 
@@ -65,12 +72,16 @@ class _BreedingScreenState extends State<BreedingScreen> {
       _teamRepository.getTeam(profile.id),
       _pcRepository.getPokemon(profile.id),
       _eggRepository.getEggs(profile.id),
+      _inventoryRepository.getInventory(profile.id),
+      _featRepository.getFeatDescriptions(),
       _dataService.load(),
     ]);
     final catalog = results[0] as List<Pokemon>;
     var team = results[1] as List<TeamSlot>;
     var pc = results[2] as List<PcPokemon>;
     var eggs = results[3] as List<BreedingEgg>;
+    final inventory = results[4] as List<BagInventoryEntry>;
+    final featDescriptions = results[5] as Map<String, String>;
     final unlockedPokeslots = TrainerProgression.pokeslotsForLevel(
       profile.trainerLevel,
     );
@@ -167,7 +178,7 @@ class _BreedingScreenState extends State<BreedingScreen> {
       eggs = await _eggRepository.getEggs(profile.id);
     }
 
-    final speciesData = results[4] as Map<int, BreedingSpeciesData>;
+    final speciesData = results[6] as Map<int, BreedingSpeciesData>;
     final byId = {for (final pokemon in catalog) pokemon.id: pokemon};
     final candidates = <BreedingCandidate>[];
 
@@ -246,6 +257,8 @@ class _BreedingScreenState extends State<BreedingScreen> {
       candidates: candidates,
       eggs: eggs,
       speciesData: speciesData,
+      inventory: inventory,
+      featDescriptions: featDescriptions,
     );
   }
 
@@ -436,6 +449,172 @@ class _BreedingScreenState extends State<BreedingScreen> {
     );
   }
 
+
+  Future<void> _assignIncubator(
+    _BreedingScreenData data,
+    BreedingEgg egg,
+    EggIncubator incubator,
+  ) async {
+    if (incubator == EggIncubator.none) return;
+    if (egg.incubator != EggIncubator.none) {
+      setState(() {
+        _message =
+            'Questo uovo ha già utilizzato un incubatore. Un incubatore perde efficacia dopo un solo uovo.';
+      });
+      return;
+    }
+    final itemId = incubator.inventoryItemId;
+    if (itemId == null || data.inventoryQuantity(itemId) <= 0) {
+      setState(() {
+        _message =
+            'Non hai un Incubatore ${incubator.label} nello Zaino.';
+      });
+      return;
+    }
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Usare Incubatore ${incubator.label}?'),
+        content: const Text(
+          'L’incubatore verrà consumato dallo Zaino e resterà assegnato a questo uovo. Non potrà essere recuperato o sostituito.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('ANNULLA'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('USA INCUBATORE'),
+          ),
+        ],
+      ),
+    );
+    if (!mounted || confirmed != true) return;
+
+    final consumed = await _inventoryRepository.consumeItem(
+      profileId: data.profile.id,
+      itemId: itemId,
+    );
+    if (!consumed) {
+      await _reload(
+        message: 'L’incubatore non è più disponibile nello Zaino.',
+      );
+      return;
+    }
+    await _eggRepository.saveEgg(
+      data.profile.id,
+      egg.copyWith(incubator: incubator),
+    );
+    await _reload(
+      message:
+          'Incubatore ${incubator.label} assegnato e consumato dallo Zaino.',
+    );
+  }
+
+  Future<void> _customizeMasterTraits(
+    _BreedingScreenData data,
+    BreedingEgg egg,
+  ) async {
+    final base = data.catalogById[egg.speciesId];
+    if (base == null) return;
+    final customized = await showMasterTraitsDialog(
+      context,
+      egg: egg,
+      pokemon: base,
+      service: _breederFeatures,
+    );
+    if (!mounted || customized == null) return;
+    await _eggRepository.saveEgg(data.profile.id, customized);
+    await _reload(message: 'Scelte di Master of Traits salvate.');
+  }
+
+  Future<void> _editEggHp(
+    _BreedingScreenData data,
+    BreedingEgg egg,
+  ) async {
+    if (_teamSlotForEgg(data, egg) == null) {
+      setState(() {
+        _message =
+            'I PF dell’uovo si gestiscono soltanto mentre viene trasportato in squadra.';
+      });
+      return;
+    }
+    final controller = TextEditingController(text: egg.currentHp.toString());
+    final value = await showDialog<int>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Modifica PF dell’uovo'),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          keyboardType: TextInputType.number,
+          decoration: const InputDecoration(
+            labelText: 'PF attuali (0-10)',
+            helperText: 'Da manuale: CA 8 e 10 PF.',
+            border: OutlineInputBorder(),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('ANNULLA'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(
+              int.tryParse(controller.text.trim()),
+            ),
+            child: const Text('SALVA'),
+          ),
+        ],
+      ),
+    );
+    controller.dispose();
+    if (!mounted || value == null) return;
+    if (value < 0 || value > BreedingEgg.maxHitPoints) {
+      setState(() => _message = 'I PF dell’uovo devono essere tra 0 e 10.');
+      return;
+    }
+    if (value == 0) {
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('L’uovo viene distrutto'),
+          content: const Text(
+            'Il manuale stabilisce che un uovo viene distrutto quando raggiunge 0 PF. Questa operazione eliminerà definitivamente l’uovo.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('ANNULLA'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: const Text('DISTRUGGI UOVO'),
+            ),
+          ],
+        ),
+      );
+      if (!mounted || confirmed != true) return;
+      final slot = _teamSlotForEgg(data, egg);
+      if (slot != null) {
+        await _teamRepository.clearSlot(
+          profileId: data.profile.id,
+          slotIndex: slot.slotIndex,
+        );
+      }
+      await _eggRepository.deleteEgg(data.profile.id, egg.id);
+      await _reload(message: 'L’uovo è stato distrutto a 0 PF.');
+      return;
+    }
+    await _eggRepository.saveEgg(
+      data.profile.id,
+      egg.copyWith(currentHp: value),
+    );
+    await _reload(message: 'PF dell’uovo aggiornati a $value/10.');
+  }
+
   Future<void> _advanceEgg(_BreedingScreenData data, BreedingEgg egg) async {
     if (egg.isInPc) {
       setState(() {
@@ -515,15 +694,47 @@ class _BreedingScreenState extends State<BreedingScreen> {
       formName: egg.formName,
       gender: egg.gender,
     );
+    GoodGenesChoice? goodGenes;
+    if (_breederFeatures.hasGoodGenes(data.profile)) {
+      goodGenes = await showGoodGenesDialog(
+        context,
+        pokemon: pokemon,
+        featDescriptions: data.featDescriptions,
+        service: _breederFeatures,
+      );
+      if (!mounted || goodGenes == null) return;
+    }
+
     final level = max(1, pokemon.minLevelFound);
     final experience = LevelProgression.thresholdForLevel(level);
-    final maxHp = _generator.maxHpFor(
-      pokemon: pokemon,
-      level: level,
-      nature: egg.nature,
-    );
     final loyalty = egg.carriedEntireIncubation ? 2 : 1;
     final eggSlot = _teamSlotForEgg(data, egg);
+    final goodGenesBonuses = goodGenes?.abilityBonuses ?? const <String, int>{};
+    final goodGenesFeats = goodGenes?.feat == null
+        ? const <String>[]
+        : <String>[goodGenes!.feat!];
+    final previewSlot = TeamSlot(
+      slotIndex: eggSlot?.slotIndex ?? 0,
+      pokemonId: egg.speciesId,
+      experience: experience,
+      selectedMoves: egg.selectedMoves,
+      gender: egg.gender,
+      formName: egg.formName,
+      nature: egg.nature,
+      abilities: egg.ability == null ? const [] : [egg.ability!],
+      feats: goodGenesFeats,
+      customAbilityScores: goodGenesBonuses,
+      loyalty: loyalty,
+    );
+    final maxHp = TrainerPathPassiveService.maxHp(
+      profile: data.profile,
+      pokemon: pokemon,
+      slot: previewSlot,
+      level: level,
+    );
+    final goodGenesNote = goodGenes == null
+        ? ''
+        : ' Good Genes: ${goodGenes.summary}.';
 
     if (eggSlot != null) {
       await _teamRepository.updateSlot(
@@ -539,6 +750,8 @@ class _BreedingScreenState extends State<BreedingScreen> {
           formName: egg.formName,
           nature: egg.nature,
           abilities: egg.ability == null ? const [] : [egg.ability!],
+          feats: goodGenesFeats,
+          customAbilityScores: goodGenesBonuses,
           loyalty: loyalty,
         ),
       );
@@ -554,10 +767,12 @@ class _BreedingScreenState extends State<BreedingScreen> {
         formName: egg.formName,
         nature: egg.nature,
         abilities: egg.ability == null ? const [] : [egg.ability!],
+        feats: goodGenesFeats,
+        customAbilityScores: goodGenesBonuses,
         loyalty: loyalty,
         notes: egg.inheritedMoves.isEmpty
-            ? 'Nato da un uovo nella Pensione Pokémon.'
-            : 'Nato da un uovo nella Pensione Pokémon. Mosse ereditate: ${egg.inheritedMoves.join(', ')}.',
+            ? 'Nato da un uovo nella Pensione Pokémon.$goodGenesNote'
+            : 'Nato da un uovo nella Pensione Pokémon. Mosse ereditate: ${egg.inheritedMoves.join(', ')}.$goodGenesNote',
       );
     }
     await _eggRepository.deleteEgg(data.profile.id, egg.id);
@@ -566,7 +781,7 @@ class _BreedingScreenState extends State<BreedingScreen> {
         : 'ha sostituito l’uovo nello slot squadra ${eggSlot.slotIndex + 1}';
     await _reload(
       message:
-          '${_displayName(pokemon: pokemon, formName: egg.formName)} si è schiuso, $destination, con Lealtà +$loyalty.',
+          '${_displayName(pokemon: pokemon, formName: egg.formName)} si è schiuso, $destination, con Lealtà +$loyalty.${goodGenes == null ? '' : ' ${goodGenes.summary}.'}',
     );
   }
 
@@ -618,6 +833,10 @@ class _BreedingScreenState extends State<BreedingScreen> {
                   profile: data.profile,
                   rollModifier: modifier,
                   incubationAdvantage: _breedingService.hasIncubationAdvantage(
+                    data.profile,
+                  ),
+                  goodGenes: _breederFeatures.hasGoodGenes(data.profile),
+                  masterOfTraits: _breederFeatures.hasMasterOfTraits(
                     data.profile,
                   ),
                 ),
@@ -782,11 +1001,18 @@ class _BreedingScreenState extends State<BreedingScreen> {
                       teamSlotIndex: _teamSlotForEgg(data, egg)?.slotIndex,
                       canMoveToTeam: freeSlot != null,
                       onDelete: () => _deleteEgg(data, egg),
-                      onIncubatorChanged: (incubator) =>
-                          _updateEgg(data, egg.copyWith(incubator: incubator)),
-                      onMoveToDayCare: () => _moveEggToDayCare(data, egg),
+                       incubatorQuantities: data.incubatorQuantities,
+                       onIncubatorChanged: (incubator) =>
+                           _assignIncubator(data, egg, incubator),
+                       canCustomizeTraits: _breederFeatures.hasMasterOfTraits(
+                         data.profile,
+                       ),
+                       onCustomizeTraits: () =>
+                           _customizeMasterTraits(data, egg),
+                       onEditHp: () => _editEggHp(data, egg),
+                       onMoveToDayCare: () => _moveEggToDayCare(data, egg),
                        onMoveToPc: () => _moveEggToPc(data, egg),
-                      onMoveToTeam: () => _moveEggToTeam(data, egg),
+                       onMoveToTeam: () => _moveEggToTeam(data, egg),
                     ),
                     const SizedBox(height: 8),
                   ],
@@ -836,11 +1062,15 @@ class _RulesCard extends StatelessWidget {
     required this.profile,
     required this.rollModifier,
     required this.incubationAdvantage,
+    required this.goodGenes,
+    required this.masterOfTraits,
   });
 
   final UserProfile profile;
   final int rollModifier;
   final bool incubationAdvantage;
+  final bool goodGenes;
+  final bool masterOfTraits;
 
   @override
   Widget build(BuildContext context) {
@@ -867,6 +1097,20 @@ class _RulesCard extends StatelessWidget {
               Text(
                 'Pokémon Breeder: tiro di accoppiamento ${rollModifier >= 0 ? '+' : ''}$rollModifier${incubationAdvantage ? ' · vantaggio ai d100 di incubazione' : ''}.',
                 style: const TextStyle(fontWeight: FontWeight.w800),
+              ),
+            ],
+            if (goodGenes) ...[
+              const SizedBox(height: 6),
+              const Text(
+                'Good Genes: alla schiusa scegli 2 punti caratteristiche oppure un talento.',
+                style: TextStyle(fontWeight: FontWeight.w800),
+              ),
+            ],
+            if (masterOfTraits) ...[
+              const SizedBox(height: 6),
+              const Text(
+                'Master of Traits: personalizza sesso, Natura, abilità e le Egg Moves ereditate prima della schiusa.',
+                style: TextStyle(fontWeight: FontWeight.w800),
               ),
             ],
           ],
@@ -974,7 +1218,11 @@ class _EggCard extends StatelessWidget {
     required this.teamSlotIndex,
     required this.canMoveToTeam,
     required this.onDelete,
+    required this.incubatorQuantities,
     required this.onIncubatorChanged,
+    required this.canCustomizeTraits,
+    required this.onCustomizeTraits,
+    required this.onEditHp,
     required this.onMoveToDayCare,
     required this.onMoveToPc,
     required this.onMoveToTeam,
@@ -988,7 +1236,11 @@ class _EggCard extends StatelessWidget {
   final int? teamSlotIndex;
   final bool canMoveToTeam;
   final VoidCallback onDelete;
+  final Map<EggIncubator, int> incubatorQuantities;
   final ValueChanged<EggIncubator> onIncubatorChanged;
+  final bool canCustomizeTraits;
+  final VoidCallback onCustomizeTraits;
+  final VoidCallback onEditHp;
   final VoidCallback onMoveToDayCare;
   final VoidCallback onMoveToPc;
   final VoidCallback onMoveToTeam;
@@ -996,6 +1248,7 @@ class _EggCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
+    final incubatorLocked = egg.incubator != EggIncubator.none;
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(12),
@@ -1043,6 +1296,11 @@ class _EggCard extends StatelessWidget {
                 Chip(label: Text(egg.nature)),
                 if (egg.gender != null) Chip(label: Text(egg.gender!)),
                 if (egg.ability != null) Chip(label: Text(egg.ability!)),
+                if (egg.masterTraitsCustomized)
+                  const Chip(
+                    avatar: Icon(Icons.auto_awesome, size: 18),
+                    label: Text('Master of Traits'),
+                  ),
               ],
             ),
             if (egg.inheritedMoves.isNotEmpty) ...[
@@ -1052,29 +1310,74 @@ class _EggCard extends StatelessWidget {
                 style: const TextStyle(fontWeight: FontWeight.w700),
               ),
             ],
+            if (canCustomizeTraits) ...[
+              const SizedBox(height: 8),
+              OutlinedButton.icon(
+                onPressed: onCustomizeTraits,
+                icon: const Icon(Icons.tune),
+                label: Text(
+                  egg.masterTraitsCustomized
+                      ? 'MODIFICA MASTER OF TRAITS'
+                      : 'PERSONALIZZA CON MASTER OF TRAITS',
+                ),
+              ),
+            ],
             const SizedBox(height: 10),
             DropdownButtonFormField<EggIncubator>(
-              value: egg.incubator,
-              decoration: const InputDecoration(
+              initialValue: egg.incubator,
+              decoration: InputDecoration(
                 labelText: 'Incubatore',
-                border: OutlineInputBorder(),
+                border: const OutlineInputBorder(),
                 isDense: true,
+                helperText: incubatorLocked
+                    ? 'Già utilizzato: non può essere recuperato o sostituito.'
+                    : 'Selezionandolo, viene consumato dallo Zaino.',
               ),
               items: [
                 for (final incubator in EggIncubator.values)
                   DropdownMenuItem(
                     value: incubator,
+                    enabled: incubator == EggIncubator.none ||
+                        incubator == egg.incubator ||
+                        (incubatorQuantities[incubator] ?? 0) > 0,
                     child: Text(
                       incubator.extraD20 == 0
                           ? incubator.label
-                          : '${incubator.label} (+${incubator.extraD20}d20)',
+                          : '${incubator.label} (+${incubator.extraD20}d20) · Zaino ${(incubatorQuantities[incubator] ?? 0)}',
                     ),
                   ),
               ],
-              onChanged: (value) {
-                if (value != null) onIncubatorChanged(value);
-              },
+              onChanged: incubatorLocked
+                  ? null
+                  : (value) {
+                      if (value != null) onIncubatorChanged(value);
+                    },
             ),
+            const SizedBox(height: 10),
+            Card(
+              margin: EdgeInsets.zero,
+              color: colors.errorContainer.withValues(alpha: 0.45),
+              child: ListTile(
+                leading: const Icon(Icons.shield_outlined),
+                title: Text(
+                  'Integrità: ${egg.currentHp}/${BreedingEgg.maxHitPoints} PF · CA ${BreedingEgg.armorClass}',
+                  style: const TextStyle(fontWeight: FontWeight.w900),
+                ),
+                subtitle: Text(
+                  teamSlotIndex == null
+                      ? 'Fuori dalla squadra l’uovo è custodito e i PF non vengono gestiti.'
+                      : 'Il manuale prevede che l’uovo venga distrutto a 0 PF. I danni sono inseriti manualmente.',
+                ),
+                trailing: teamSlotIndex == null
+                    ? null
+                    : IconButton(
+                        tooltip: 'Modifica PF uovo',
+                        onPressed: onEditHp,
+                        icon: const Icon(Icons.edit_outlined),
+                      ),
+              ),
+            ),
+            const SizedBox(height: 10),
             Card(
               margin: EdgeInsets.zero,
               color: colors.surfaceContainerHighest,
@@ -1187,6 +1490,8 @@ class _BreedingScreenData {
     required this.candidates,
     required this.eggs,
     required this.speciesData,
+    required this.inventory,
+    required this.featDescriptions,
   });
 
   final UserProfile profile;
@@ -1196,4 +1501,20 @@ class _BreedingScreenData {
   final List<BreedingCandidate> candidates;
   final List<BreedingEgg> eggs;
   final Map<int, BreedingSpeciesData> speciesData;
+  final List<BagInventoryEntry> inventory;
+  final Map<String, String> featDescriptions;
+
+  int inventoryQuantity(String itemId) {
+    for (final entry in inventory) {
+      if (entry.itemId == itemId) return entry.quantity;
+    }
+    return 0;
+  }
+
+  Map<EggIncubator, int> get incubatorQuantities => {
+    for (final incubator in EggIncubator.values)
+      incubator: incubator.inventoryItemId == null
+          ? 0
+          : inventoryQuantity(incubator.inventoryItemId!),
+  };
 }

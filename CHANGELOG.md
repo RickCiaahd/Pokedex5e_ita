@@ -19,6 +19,7 @@ Tutte le modifiche rilevanti al progetto vengono documentate in questo file.
 - sistema persistente di allevamento e uova integrato nei profili e nei backup, con compatibilità dei genitori, Gruppi Uova, Ditto, tiri di successo, incubazione, incubatori e schiusa in squadra o nel PC;
 - uova come entità reali della squadra: occupano un Pokéslot, possono essere affidate alla Pensione Pokémon e alla schiusa vengono sostituite dal Pokémon nato nello stesso slot.
 - deposito delle uova nel PC Pokémon, con incubazione in pausa, ritiro in squadra e visualizzazione nel PC Box.
+- completamento del Trainer Path Pokémon Breeder: Good Genes alla schiusa, Master of Traits, incubatori consumabili dallo Zaino e integrità manuale delle uova secondo il manuale.
 
 ### Modificato
 

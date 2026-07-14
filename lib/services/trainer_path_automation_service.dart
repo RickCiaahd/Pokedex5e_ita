@@ -36,6 +36,7 @@ class TrainerPathChoiceDefinition {
     required this.featureLevel,
     required this.options,
     required this.description,
+    this.isRequired = true,
   });
 
   final String id;
@@ -44,6 +45,7 @@ class TrainerPathChoiceDefinition {
   final int featureLevel;
   final List<String> options;
   final String description;
+  final bool isRequired;
 }
 
 class TrainerPathAutomationService {
@@ -245,6 +247,7 @@ class TrainerPathAutomationService {
       required String feature,
       required List<String> options,
       required String description,
+    bool isRequired = true,
     }) {
       if (trainerLevel < level) return;
       choices.add(
@@ -255,6 +258,7 @@ class TrainerPathAutomationService {
           featureLevel: level,
           options: List.unmodifiable(options),
           description: description,
+          isRequired: isRequired,
         ),
       );
     }
@@ -351,6 +355,7 @@ class TrainerPathAutomationService {
           options: names,
           description:
               'Puoi lasciare vuota la scelta se vuoi mantenere un solo legame.',
+          isRequired: false,
         );
     }
 
@@ -362,16 +367,17 @@ class TrainerPathAutomationService {
     required List<TrainerPathResourceDefinition> definitions,
     bool refillNewResources = true,
   }) {
-    return {
-      for (final definition in definitions)
-        definition.id: current.containsKey(definition.id)
-            ? (current[definition.id] ?? 0)
-                .clamp(0, definition.maxUses)
-                .toInt()
-            : refillNewResources
-                ? definition.maxUses
-                : 0,
-    };
+    final next = {...current};
+    for (final definition in definitions) {
+      next[definition.id] = current.containsKey(definition.id)
+          ? (current[definition.id] ?? 0)
+              .clamp(0, definition.maxUses)
+              .toInt()
+          : refillNewResources
+              ? definition.maxUses
+              : 0;
+    }
+    return next;
   }
 
   static Map<String, int> restoreForRest({
@@ -379,27 +385,30 @@ class TrainerPathAutomationService {
     required List<TrainerPathResourceDefinition> definitions,
     required TrainerPathResourceReset rest,
   }) {
-    return {
-      for (final definition in definitions)
-        definition.id: rest == TrainerPathResourceReset.longRest ||
-                definition.reset == TrainerPathResourceReset.shortRest
-            ? definition.maxUses
-            : (current[definition.id] ?? definition.maxUses)
-                .clamp(0, definition.maxUses)
-                .toInt(),
-    };
+    final next = {...current};
+    for (final definition in definitions) {
+      next[definition.id] = rest == TrainerPathResourceReset.longRest ||
+              definition.reset == TrainerPathResourceReset.shortRest
+          ? definition.maxUses
+          : (current[definition.id] ?? definition.maxUses)
+              .clamp(0, definition.maxUses)
+              .toInt();
+    }
+    return next;
   }
 
   static Map<String, String> reconcileChoices({
     required Map<String, String> current,
     required List<TrainerPathChoiceDefinition> definitions,
   }) {
-    return {
-      for (final definition in definitions)
-        if (current[definition.id] != null &&
-            definition.options.contains(current[definition.id]))
-          definition.id: current[definition.id]!,
-    };
+    final next = {...current};
+    for (final definition in definitions) {
+      final selected = current[definition.id];
+      if (selected == null || !definition.options.contains(selected)) {
+        next.remove(definition.id);
+      }
+    }
+    return next;
   }
 
   static List<TrainerPathChoiceDefinition> missingChoices({
@@ -407,7 +416,7 @@ class TrainerPathAutomationService {
     required List<TrainerPathChoiceDefinition> definitions,
   }) {
     return definitions.where((definition) {
-      if (definition.options.isEmpty) return false;
+      if (!definition.isRequired || definition.options.isEmpty) return false;
       final selected = current[definition.id];
       return selected == null || !definition.options.contains(selected);
     }).toList(growable: false);

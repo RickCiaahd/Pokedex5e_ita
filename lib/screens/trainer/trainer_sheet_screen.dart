@@ -13,7 +13,9 @@ import '../../repositories/pokemon_repository.dart';
 import '../../repositories/profile_repository.dart';
 import '../../repositories/team_repository.dart';
 import '../../repositories/trainer_manual_repository.dart';
+import '../../services/trainer_path_automation_service.dart';
 import '../../widgets/navigation/home_leading_button.dart';
+import '../../widgets/trainer/trainer_path_automation_panel.dart';
 
 class TrainerSheetScreen extends StatefulWidget {
   const TrainerSheetScreen({super.key});
@@ -35,6 +37,7 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
 
   UserProfile? _profile;
   List<Pokemon> _starterCandidates = [];
+  Map<int, Pokemon> _pokemonById = {};
   List<TrainerOrigin> _trainerOrigins = [];
   List<TrainerPath> _trainerPaths = [];
   List<TeamSlot> _team = [];
@@ -51,6 +54,8 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
   List<String> _skillProficiencies = [];
   List<String> _savingThrowProficiencies = [];
   List<String> _specializations = [];
+  Map<String, String> _trainerPathChoices = {};
+  Map<String, int> _trainerPathResources = {};
   bool _isLoading = true;
   bool _isSaving = false;
   String? _errorMessage;
@@ -108,6 +113,7 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
       setState(() {
         _profile = profile;
         _starterCandidates = starterCandidates;
+        _pokemonById = {for (final item in pokemon) item.id: item};
         _trainerOrigins = trainerOrigins;
         _trainerPaths = trainerPaths;
         _team = team..sort((a, b) => a.slotIndex.compareTo(b.slotIndex));
@@ -124,6 +130,9 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
         _skillProficiencies = [...profile.skillProficiencies];
         _savingThrowProficiencies = [...profile.savingThrowProficiencies];
         _specializations = [...profile.specializations];
+        _trainerPathChoices = {...profile.trainerPathChoices};
+        _trainerPathResources = {...profile.trainerPathResources};
+        _reconcileTrainerPathAutomation();
         _isLoading = false;
       });
     } catch (e) {
@@ -139,6 +148,7 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
   void _changeLevel(int delta) {
     setState(() {
       _trainerLevel = TrainerProgression.clampLevel(_trainerLevel + delta);
+      _reconcileTrainerPathAutomation();
     });
   }
 
@@ -164,6 +174,7 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
         ..._abilityScores,
         ability: (current + delta).clamp(1, 30).toInt(),
       };
+      _reconcileTrainerPathAutomation();
     });
   }
 
@@ -191,7 +202,14 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
   }
 
   void _changeTrainerPath(String? path) {
-    setState(() => _trainerPath = path ?? '');
+    final nextPath = path ?? '';
+    if (nextPath == _trainerPath) return;
+    setState(() {
+      _trainerPath = nextPath;
+      _trainerPathChoices = {};
+      _trainerPathResources = {};
+      _reconcileTrainerPathAutomation(resetResources: true);
+    });
   }
 
   void _changeRace(String? race) {
@@ -259,6 +277,93 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
     };
   }
 
+  List<String> get _teamPokemonNames {
+    final names = <String>[];
+    for (final slot in _team) {
+      final pokemonId = slot.pokemonId;
+      if (pokemonId == null) continue;
+      final pokemon = _pokemonById[pokemonId];
+      if (pokemon == null) continue;
+      final nickname = slot.nickname?.trim() ?? '';
+      final displayName = nickname.isEmpty
+          ? pokemon.name
+          : '$nickname (${pokemon.name})';
+      names.add('Slot ${slot.slotIndex + 1} · $displayName');
+    }
+    return names;
+  }
+
+  List<TrainerPathChoiceDefinition> get _trainerPathChoiceDefinitions {
+    return TrainerPathAutomationService.choicesFor(
+      trainerPath: _trainerPath,
+      trainerLevel: _trainerLevel,
+      trainerPaths: _trainerPaths,
+      specializations: _specializations,
+      teamPokemonNames: _teamPokemonNames,
+    );
+  }
+
+  List<TrainerPathResourceDefinition> get _trainerPathResourceDefinitions {
+    return TrainerPathAutomationService.resourcesFor(
+      trainerPath: _trainerPath,
+      trainerLevel: _trainerLevel,
+      abilityScores: _abilityScores,
+      choices: _trainerPathChoices,
+    );
+  }
+
+  void _reconcileTrainerPathAutomation({bool resetResources = false}) {
+    final choiceDefinitions = _trainerPathChoiceDefinitions;
+    _trainerPathChoices = TrainerPathAutomationService.reconcileChoices(
+      current: _trainerPathChoices,
+      definitions: choiceDefinitions,
+    );
+    final resourceDefinitions = _trainerPathResourceDefinitions;
+    _trainerPathResources = TrainerPathAutomationService.reconcileResources(
+      current: resetResources ? const {} : _trainerPathResources,
+      definitions: resourceDefinitions,
+    );
+  }
+
+  void _changeTrainerPathResource(String resourceId, int value) {
+    final definition = _trainerPathResourceDefinitions
+        .where((item) => item.id == resourceId)
+        .firstOrNull;
+    if (definition == null) return;
+    setState(() {
+      _trainerPathResources = {
+        ..._trainerPathResources,
+        resourceId: value.clamp(0, definition.maxUses).toInt(),
+      };
+    });
+  }
+
+  void _changeTrainerPathChoice(String choiceId, String value) {
+    setState(() {
+      final next = {..._trainerPathChoices, choiceId: value};
+      if (choiceId == 'rangerStrongBond1' &&
+          next['rangerStrongBond2'] == value) {
+        next.remove('rangerStrongBond2');
+      }
+      if (choiceId == 'rangerStrongBond2' &&
+          next['rangerStrongBond1'] == value) {
+        next.remove('rangerStrongBond1');
+      }
+      _trainerPathChoices = next;
+      _reconcileTrainerPathAutomation();
+    });
+  }
+
+  void _restoreTrainerPathResources(TrainerPathResourceReset rest) {
+    setState(() {
+      _trainerPathResources = TrainerPathAutomationService.restoreForRest(
+        current: _trainerPathResources,
+        definitions: _trainerPathResourceDefinitions,
+        rest: rest,
+      );
+    });
+  }
+
   void _changeStarter(Pokemon pokemon) {
     setState(() => _starterPokemon = pokemon.name);
   }
@@ -298,7 +403,10 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
       next.removeLast();
     }
 
-    setState(() => _specializations = next);
+    setState(() {
+      _specializations = next;
+      _reconcileTrainerPathAutomation();
+    });
   }
 
   Future<void> _saveProfile() async {
@@ -341,6 +449,8 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
         savingThrowProficiencies: [..._savingThrowProficiencies],
         specializations: [..._specializations],
         trainerPath: _trainerPath,
+        trainerPathChoices: {..._trainerPathChoices},
+        trainerPathResources: {..._trainerPathResources},
       );
 
       await _profileRepository.saveProfile(updated);
@@ -446,6 +556,32 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
         descriptions: _trainerPathDescriptions,
       ),
     );
+
+    if (selected == null || selected == _trainerPath) return;
+
+    final savedPath = _profile?.trainerPath.trim() ?? '';
+    if (savedPath.isNotEmpty && selected != savedPath) {
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: const Text('Cambiare Trainer Path?'),
+          content: Text(
+            'Passerai da $savedPath a $selected. Le risorse consumate e le scelte specifiche del vecchio path verranno azzerate.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('ANNULLA'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: const Text('CAMBIA TRAINER PATH'),
+            ),
+          ],
+        ),
+      );
+      if (!mounted || confirmed != true) return;
+    }
 
     _changeTrainerPath(selected);
   }
@@ -571,6 +707,22 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
                 onCurrentHpChanged: _changeCurrentHp,
                 onSpeedChanged: _changeSpeed,
                 onSave: _saveProfile,
+              ),
+              const SizedBox(height: 16),
+              TrainerPathAutomationPanel(
+                trainerPath: _trainerPath,
+                resources: _trainerPathResourceDefinitions,
+                resourceValues: _trainerPathResources,
+                choices: _trainerPathChoiceDefinitions,
+                choiceValues: _trainerPathChoices,
+                onResourceChanged: _changeTrainerPathResource,
+                onChoiceChanged: _changeTrainerPathChoice,
+                onShortRest: () => _restoreTrainerPathResources(
+                  TrainerPathResourceReset.shortRest,
+                ),
+                onLongRest: () => _restoreTrainerPathResources(
+                  TrainerPathResourceReset.longRest,
+                ),
               ),
             ],
           ],
@@ -1467,7 +1619,7 @@ class _TrainerProgressionColumn extends StatelessWidget {
         final feature = _trainerPathFeatureFor(level);
         slots.add(
           _ProgressionChoiceBox(
-            title: 'Trainer Path',
+            title: 'Privilegio del Path',
             level: level,
             value: feature?.title ??
                 (trainerPath.isEmpty

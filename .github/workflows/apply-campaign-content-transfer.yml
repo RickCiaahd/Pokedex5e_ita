@@ -62,7 +62,7 @@ jobs:
 
       - name: Commit verified campaign transfers
         run: |
-          rm -f tool/apply_campaign_content_transfer.py .github/workflows/apply-campaign-content-transfer.yml
+          rm -f tool/apply_campaign_content_transfer.py .github/workflows/apply-campaign-content-transfer.yml tool/campaign_transfer_trigger.txt
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A

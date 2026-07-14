@@ -1,0 +1,32 @@
+name: Apply Battle Companion characteristics
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: github.head_ref == 'agent/battle-companion-characteristics'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v4
+        with:
+          ref: agent/battle-companion-characteristics
+
+      - name: Apply changes
+        run: python .github/agent/apply_battle_companion_characteristics.py
+
+      - name: Commit generated changes
+        run: |
+          rm .github/agent/apply_battle_companion_characteristics.py
+          rm .github/workflows/agent-battle-companion-characteristics.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Mostra le caratteristiche nel Battle Companion"
+          git push origin HEAD:agent/battle-companion-characteristics

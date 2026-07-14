@@ -44,6 +44,7 @@ class _BreedingScreenState extends State<BreedingScreen> {
   String? _firstKey;
   String? _secondKey;
   String? _message;
+  bool _useDayCare = false;
 
   @override
   void initState() {
@@ -69,28 +70,96 @@ class _BreedingScreenState extends State<BreedingScreen> {
     final catalog = results[0] as List<Pokemon>;
     var team = results[1] as List<TeamSlot>;
     var pc = results[2] as List<PcPokemon>;
-    final eggs = results[3] as List<BreedingEgg>;
+    var eggs = results[3] as List<BreedingEgg>;
     final unlockedPokeslots =
         TrainerProgression.pokeslotsForLevel(profile.trainerLevel);
+
     final occupiedLockedSlots = _breedingService.occupiedLockedTeamSlots(
       team: team,
       unlockedPokeslots: unlockedPokeslots,
     );
+    for (final slot in occupiedLockedSlots) {
+      await _pcRepository.depositTeamSlot(profileId: profile.id, slot: slot);
+      await _teamRepository.clearSlot(
+        profileId: profile.id,
+        slotIndex: slot.slotIndex,
+      );
+    }
     if (occupiedLockedSlots.isNotEmpty) {
-      for (final slot in occupiedLockedSlots) {
-        await _pcRepository.depositTeamSlot(
-          profileId: profile.id,
-          slot: slot,
-        );
-        await _teamRepository.setPokemonInSlot(
-          profileId: profile.id,
-          slotIndex: slot.slotIndex,
-          pokemonId: null,
-        );
-      }
       team = await _teamRepository.getTeam(profile.id);
       pc = await _pcRepository.getPokemon(profile.id);
     }
+
+    var eggStorageChanged = false;
+    var eggsById = {for (final egg in eggs) egg.id: egg};
+    for (final slot in [...team]) {
+      final eggId = slot.eggId;
+      if (eggId == null) continue;
+      final egg = eggsById[eggId];
+      if (egg == null) {
+        await _teamRepository.clearSlot(
+          profileId: profile.id,
+          slotIndex: slot.slotIndex,
+        );
+        eggStorageChanged = true;
+        continue;
+      }
+      if (slot.slotIndex >= unlockedPokeslots || egg.isInDayCare) {
+        await _teamRepository.clearSlot(
+          profileId: profile.id,
+          slotIndex: slot.slotIndex,
+        );
+        if (!egg.isInDayCare) {
+          await _eggRepository.saveEgg(
+            profile.id,
+            egg.copyWith(
+              isInDayCare: true,
+              carriedEntireIncubation: false,
+            ),
+          );
+        }
+        eggStorageChanged = true;
+      }
+    }
+    if (eggStorageChanged) {
+      team = await _teamRepository.getTeam(profile.id);
+      eggs = await _eggRepository.getEggs(profile.id);
+      eggsById = {for (final egg in eggs) egg.id: egg};
+    }
+
+    for (final egg in [...eggs]) {
+      if (egg.isInDayCare) continue;
+      final assigned = _breedingService.teamSlotForEgg(
+        team: team,
+        eggId: egg.id,
+      );
+      if (assigned != null) continue;
+      final freeSlot = _breedingService.firstFreeUnlockedTeamSlot(
+        team: team,
+        unlockedPokeslots: unlockedPokeslots,
+      );
+      if (freeSlot == null) {
+        await _eggRepository.saveEgg(
+          profile.id,
+          egg.copyWith(
+            isInDayCare: true,
+            carriedEntireIncubation: false,
+          ),
+        );
+      } else {
+        await _teamRepository.setEggInSlot(
+          profileId: profile.id,
+          slotIndex: freeSlot.slotIndex,
+          eggId: egg.id,
+        );
+      }
+      eggStorageChanged = true;
+      team = await _teamRepository.getTeam(profile.id);
+    }
+    if (eggStorageChanged) {
+      eggs = await _eggRepository.getEggs(profile.id);
+    }
+
     final speciesData = results[4] as Map<int, BreedingSpeciesData>;
     final byId = {for (final pokemon in catalog) pokemon.id: pokemon};
     final candidates = <BreedingCandidate>[];
@@ -214,6 +283,21 @@ class _BreedingScreenState extends State<BreedingScreen> {
       return;
     }
 
+    final unlockedPokeslots = TrainerProgression.pokeslotsForLevel(
+      data.profile.trainerLevel,
+    );
+    final freeSlot = _breedingService.firstFreeUnlockedTeamSlot(
+      team: data.team,
+      unlockedPokeslots: unlockedPokeslots,
+    );
+    if (!_useDayCare && freeSlot == null) {
+      setState(() {
+        _message =
+            'Non hai un Pokéslot libero. Libera uno slot oppure usa la Pensione Pokémon.';
+      });
+      return;
+    }
+
     final roll = manualRoll ?? _random.nextInt(20) + 1;
     if (roll < 1 || roll > 20) {
       setState(() => _message = 'Il risultato del d20 deve essere tra 1 e 20.');
@@ -231,24 +315,90 @@ class _BreedingScreenState extends State<BreedingScreen> {
     }
 
     try {
-      final egg = _breedingService.createEgg(
+      final created = _breedingService.createEgg(
         first: first,
         second: second,
         compatibility: compatibility,
         catalog: data.catalogById,
         random: _random,
       );
+      final egg = created.copyWith(
+        isInDayCare: _useDayCare,
+        carriedEntireIncubation: !_useDayCare,
+      );
       await _eggRepository.saveEgg(data.profile.id, egg);
+      if (!_useDayCare && freeSlot != null) {
+        await _teamRepository.setEggInSlot(
+          profileId: data.profile.id,
+          slotIndex: freeSlot.slotIndex,
+          eggId: egg.id,
+        );
+      }
+      final destination = _useDayCare
+          ? 'affidato alla Pensione Pokémon'
+          : 'inserito nello slot squadra ${freeSlot!.slotIndex + 1}';
       _manualRollController.clear();
       _firstKey = null;
       _secondKey = null;
+      _useDayCare = false;
       await _reload(
         message:
-            'Successo: d20 $roll ${_signed(modifier)} = $total contro CD $dc. Uovo creato.',
+            'Successo: d20 $roll ${_signed(modifier)} = $total contro CD $dc. Uovo creato e $destination.',
       );
     } catch (error) {
       setState(() => _message = error.toString());
     }
+  }
+
+  TeamSlot? _teamSlotForEgg(_BreedingScreenData data, BreedingEgg egg) {
+    return _breedingService.teamSlotForEgg(team: data.team, eggId: egg.id);
+  }
+
+  Future<void> _moveEggToDayCare(
+    _BreedingScreenData data,
+    BreedingEgg egg,
+  ) async {
+    final slot = _teamSlotForEgg(data, egg);
+    if (slot != null) {
+      await _teamRepository.clearSlot(
+        profileId: data.profile.id,
+        slotIndex: slot.slotIndex,
+      );
+    }
+    await _eggRepository.saveEgg(
+      data.profile.id,
+      egg.copyWith(isInDayCare: true, carriedEntireIncubation: false),
+    );
+    await _reload(message: 'Uovo affidato alla Pensione Pokémon.');
+  }
+
+  Future<void> _moveEggToTeam(
+    _BreedingScreenData data,
+    BreedingEgg egg,
+  ) async {
+    final unlockedPokeslots = TrainerProgression.pokeslotsForLevel(
+      data.profile.trainerLevel,
+    );
+    final freeSlot = _breedingService.firstFreeUnlockedTeamSlot(
+      team: data.team,
+      unlockedPokeslots: unlockedPokeslots,
+    );
+    if (freeSlot == null) {
+      setState(() => _message = 'Non hai un Pokéslot libero per ritirare l’uovo.');
+      return;
+    }
+    await _teamRepository.setEggInSlot(
+      profileId: data.profile.id,
+      slotIndex: freeSlot.slotIndex,
+      eggId: egg.id,
+    );
+    await _eggRepository.saveEgg(
+      data.profile.id,
+      egg.copyWith(isInDayCare: false),
+    );
+    await _reload(
+      message: 'Uovo ritirato nello slot squadra ${freeSlot.slotIndex + 1}.',
+    );
   }
 
   Future<void> _advanceEgg(_BreedingScreenData data, BreedingEgg egg) async {
@@ -294,6 +444,13 @@ class _BreedingScreenState extends State<BreedingScreen> {
       ),
     );
     if (!mounted || confirmed != true) return;
+    final slot = _teamSlotForEgg(data, egg);
+    if (slot != null) {
+      await _teamRepository.clearSlot(
+        profileId: data.profile.id,
+        slotIndex: slot.slotIndex,
+      );
+    }
     await _eggRepository.deleteEgg(data.profile.id, egg.id);
     await _reload(message: 'Uovo eliminato.');
   }
@@ -317,19 +474,13 @@ class _BreedingScreenState extends State<BreedingScreen> {
       nature: egg.nature,
     );
     final loyalty = egg.carriedEntireIncubation ? 2 : 1;
-    final unlockedPokeslots = TrainerProgression.pokeslotsForLevel(
-      data.profile.trainerLevel,
-    );
-    final emptySlot = _breedingService.firstFreeUnlockedTeamSlot(
-      team: data.team,
-      unlockedPokeslots: unlockedPokeslots,
-    );
+    final eggSlot = _teamSlotForEgg(data, egg);
 
-    if (emptySlot != null) {
+    if (eggSlot != null) {
       await _teamRepository.updateSlot(
         profileId: data.profile.id,
         updatedSlot: TeamSlot(
-          slotIndex: emptySlot.slotIndex,
+          slotIndex: eggSlot.slotIndex,
           pokemonId: egg.speciesId,
           experience: experience,
           currentHp: maxHp,
@@ -356,14 +507,17 @@ class _BreedingScreenState extends State<BreedingScreen> {
         abilities: egg.ability == null ? const [] : [egg.ability!],
         loyalty: loyalty,
         notes: egg.inheritedMoves.isEmpty
-            ? 'Nato da un uovo.'
-            : 'Nato da un uovo. Mosse ereditate: ${egg.inheritedMoves.join(', ')}.',
+            ? 'Nato da un uovo nella Pensione Pokémon.'
+            : 'Nato da un uovo nella Pensione Pokémon. Mosse ereditate: ${egg.inheritedMoves.join(', ')}.',
       );
     }
     await _eggRepository.deleteEgg(data.profile.id, egg.id);
+    final destination = eggSlot == null
+        ? 'è stato inviato al PC dalla Pensione Pokémon'
+        : 'ha sostituito l’uovo nello slot squadra ${eggSlot.slotIndex + 1}';
     await _reload(
       message:
-          '${_displayName(pokemon: pokemon, formName: egg.formName)} si è schiuso ed è stato aggiunto ${emptySlot == null ? 'al PC perché tutti i Pokéslot sbloccati sono occupati' : 'alla squadra'} con Lealtà +$loyalty.',
+          '${_displayName(pokemon: pokemon, formName: egg.formName)} si è schiuso, $destination, con Lealtà +$loyalty.',
     );
   }
 
@@ -397,6 +551,14 @@ class _BreedingScreenState extends State<BreedingScreen> {
           final dc = first == null || second == null
               ? null
               : _breedingService.successDc(first.loyalty + second.loyalty);
+          final unlockedPokeslots = TrainerProgression.pokeslotsForLevel(
+            data.profile.trainerLevel,
+          );
+          final freeSlot = _breedingService.firstFreeUnlockedTeamSlot(
+            team: data.team,
+            unlockedPokeslots: unlockedPokeslots,
+          );
+          final canStoreEgg = _useDayCare || freeSlot != null;
 
           return RefreshIndicator(
             onRefresh: () => _reload(),
@@ -443,6 +605,22 @@ class _BreedingScreenState extends State<BreedingScreen> {
                           candidates: data.candidates,
                           onChanged: (value) => setState(() {
                             _secondKey = value;
+                            _message = null;
+                          }),
+                        ),
+                        SwitchListTile(
+                          contentPadding: EdgeInsets.zero,
+                          title: const Text('Usa Pensione Pokémon'),
+                          subtitle: Text(
+                            _useDayCare
+                                ? 'L’uovo non occupa un Pokéslot e alla schiusa il Pokémon andrà nel PC.'
+                                : freeSlot == null
+                                    ? 'Nessun Pokéslot libero: attiva la Pensione per poter ottenere l’uovo.'
+                                    : 'L’uovo occuperà lo slot squadra ${freeSlot.slotIndex + 1}.'
+                          ),
+                          value: _useDayCare,
+                          onChanged: (value) => setState(() {
+                            _useDayCare = value;
                             _message = null;
                           }),
                         ),
@@ -526,7 +704,7 @@ class _BreedingScreenState extends State<BreedingScreen> {
                 ),
                 const SizedBox(height: 4),
                 const Text(
-                  'Ogni uovo occupa un Pokéslot secondo il manuale. Il limite resta sotto il controllo del tavolo.',
+                  'Un uovo trasportato occupa davvero un Pokéslot. Un uovo affidato alla Pensione resta fuori dalla squadra e alla schiusa il Pokémon viene inviato al PC.',
                 ),
                 const SizedBox(height: 8),
                 if (data.eggs.isEmpty)
@@ -548,13 +726,13 @@ class _BreedingScreenState extends State<BreedingScreen> {
                           .hasIncubationAdvantage(data.profile),
                       onAdvance: () => _advanceEgg(data, egg),
                       onHatch: () => _hatchEgg(data, egg),
+                      teamSlotIndex: _teamSlotForEgg(data, egg)?.slotIndex,
+                      canMoveToTeam: freeSlot != null,
                       onDelete: () => _deleteEgg(data, egg),
                       onIncubatorChanged: (incubator) =>
                           _updateEgg(data, egg.copyWith(incubator: incubator)),
-                      onCarriedChanged: (value) => _updateEgg(
-                        data,
-                        egg.copyWith(carriedEntireIncubation: value),
-                      ),
+                      onMoveToDayCare: () => _moveEggToDayCare(data, egg),
+                      onMoveToTeam: () => _moveEggToTeam(data, egg),
                     ),
                     const SizedBox(height: 8),
                   ],
@@ -739,9 +917,12 @@ class _EggCard extends StatelessWidget {
     required this.incubationAdvantage,
     required this.onAdvance,
     required this.onHatch,
+    required this.teamSlotIndex,
+    required this.canMoveToTeam,
     required this.onDelete,
     required this.onIncubatorChanged,
-    required this.onCarriedChanged,
+    required this.onMoveToDayCare,
+    required this.onMoveToTeam,
   });
 
   final BreedingEgg egg;
@@ -749,9 +930,12 @@ class _EggCard extends StatelessWidget {
   final bool incubationAdvantage;
   final VoidCallback onAdvance;
   final VoidCallback onHatch;
+  final int? teamSlotIndex;
+  final bool canMoveToTeam;
   final VoidCallback onDelete;
   final ValueChanged<EggIncubator> onIncubatorChanged;
-  final ValueChanged<bool> onCarriedChanged;
+  final VoidCallback onMoveToDayCare;
+  final VoidCallback onMoveToTeam;
 
   @override
   Widget build(BuildContext context) {
@@ -846,15 +1030,43 @@ class _EggCard extends StatelessWidget {
                 if (value != null) onIncubatorChanged(value);
               },
             ),
-            SwitchListTile(
-              contentPadding: EdgeInsets.zero,
-              title: const Text('Trasportato per tutta l’incubazione'),
-              subtitle: const Text(
-                'Attivo: nascerà con Lealtà +2. Disattivo: Lealtà +1.',
+            Card(
+              margin: EdgeInsets.zero,
+              color: colors.surfaceContainerHighest,
+              child: ListTile(
+                leading: Icon(
+                  teamSlotIndex == null ? Icons.home_work_outlined : Icons.group_outlined,
+                ),
+                title: Text(
+                  teamSlotIndex == null
+                      ? 'Pensione Pokémon'
+                      : 'Squadra · Slot ${teamSlotIndex! + 1}',
+                  style: const TextStyle(fontWeight: FontWeight.w900),
+                ),
+                subtitle: Text(
+                  egg.carriedEntireIncubation
+                      ? 'Occupa un Pokéslot e nascerà con Lealtà +2.'
+                      : 'Non ha trascorso tutta l’incubazione in squadra: Lealtà +1.',
+                ),
               ),
-              value: egg.carriedEntireIncubation,
-              onChanged: onCarriedChanged,
             ),
+            const SizedBox(height: 8),
+            if (teamSlotIndex == null)
+              OutlinedButton.icon(
+                onPressed: canMoveToTeam ? onMoveToTeam : null,
+                icon: const Icon(Icons.login),
+                label: Text(
+                  canMoveToTeam
+                      ? 'RITIRA IN SQUADRA'
+                      : 'NESSUN POKÉSLOT LIBERO',
+                ),
+              )
+            else
+              OutlinedButton.icon(
+                onPressed: onMoveToDayCare,
+                icon: const Icon(Icons.home_work_outlined),
+                label: const Text('SPOSTA IN PENSIONE'),
+              ),
             const SizedBox(height: 4),
             if (egg.isReady)
               FilledButton.icon(
@@ -875,7 +1087,9 @@ class _EggCard extends StatelessWidget {
             if (egg.isReady) ...[
               const SizedBox(height: 6),
               Text(
-                'Lo spazio libero in squadra viene usato per primo; altrimenti il Pokémon va nel PC.',
+                teamSlotIndex == null
+                    ? 'Alla schiusa il Pokémon verrà inviato al PC dalla Pensione.'
+                    : 'Alla schiusa il Pokémon sostituirà l’uovo nello stesso Pokéslot.',
                 textAlign: TextAlign.center,
                 style: TextStyle(color: colors.onSurfaceVariant),
               ),

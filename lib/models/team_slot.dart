@@ -5,6 +5,7 @@ class TeamSlot {
 
   final int slotIndex;
   final int? pokemonId;
+  final String? eggId;
   final int experience;
   final int currentHp;
   final String? nickname;
@@ -24,6 +25,7 @@ class TeamSlot {
   TeamSlot({
     required this.slotIndex,
     required this.pokemonId,
+    this.eggId,
     this.experience = 0,
     this.currentHp = 0,
     this.nickname,
@@ -39,7 +41,11 @@ class TeamSlot {
     this.statusEffects = const [],
     this.customAbilityScores = const {},
     this.loyalty = 0,
-  })  : gender = PokemonFormPreferences.normalizeGender(gender),
+  })  : assert(
+          pokemonId == null || eggId == null,
+          'Uno slot non può contenere contemporaneamente un Pokémon e un uovo.',
+        ),
+        gender = PokemonFormPreferences.normalizeGender(gender),
         formName = PokemonFormPreferences.normalizeFormName(
           formName: formName,
           gender: gender,
@@ -61,10 +67,15 @@ class TeamSlot {
     }
   }
 
+  bool get isPokemon => pokemonId != null;
+  bool get isEgg => eggId != null;
+  bool get isEmpty => pokemonId == null && eggId == null;
+
   Map<String, dynamic> toJson() {
     return {
       'slotIndex': slotIndex,
       'pokemonId': pokemonId,
+      'eggId': eggId,
       'experience': experience,
       'currentHp': currentHp,
       'nickname': nickname,
@@ -87,6 +98,7 @@ class TeamSlot {
     return TeamSlot(
       slotIndex: json['slotIndex'],
       pokemonId: json['pokemonId'],
+      eggId: json['eggId']?.toString(),
       experience: json['experience'] ?? 0,
       currentHp: json['currentHp'] ?? 0,
       nickname: json['nickname'],
@@ -110,6 +122,7 @@ class TeamSlot {
   TeamSlot copyWith({
     int? slotIndex,
     int? pokemonId,
+    Object? eggId = _unset,
     int? experience,
     int? currentHp,
     Object? nickname = _unset,
@@ -126,11 +139,27 @@ class TeamSlot {
     Map<String, int>? customAbilityScores,
     int? loyalty,
     bool clearPokemon = false,
+    bool clearEgg = false,
   }) {
-    final nextPokemonId = clearPokemon ? null : pokemonId ?? this.pokemonId;
+    final choosingPokemon = pokemonId != null;
+    final choosingEgg = !identical(eggId, _unset) && eggId != null;
+    final nextPokemonId = choosingEgg
+        ? null
+        : clearPokemon
+            ? null
+            : pokemonId ?? this.pokemonId;
+    final nextEggId = choosingPokemon || clearEgg
+        ? null
+        : identical(eggId, _unset)
+            ? this.eggId
+            : eggId as String?;
     final pokemonChanged = pokemonId != null && pokemonId != this.pokemonId;
-    final nextGender = identical(gender, _unset) ? this.gender : gender as String?;
-    final nextFormName = clearPokemon ||
+    final nextGender = choosingEgg || clearPokemon
+        ? null
+        : identical(gender, _unset)
+            ? this.gender
+            : gender as String?;
+    final nextFormName = choosingEgg || clearPokemon ||
             (pokemonChanged && identical(formName, _unset))
         ? null
         : identical(formName, _unset)
@@ -140,25 +169,31 @@ class TeamSlot {
     return TeamSlot(
       slotIndex: slotIndex ?? this.slotIndex,
       pokemonId: nextPokemonId,
-      experience: experience ?? this.experience,
-      currentHp: currentHp ?? this.currentHp,
-      nickname: identical(nickname, _unset)
-          ? this.nickname
-          : nickname as String?,
-      selectedMoves: selectedMoves ?? this.selectedMoves,
-      isShiny: isShiny ?? this.isShiny,
+      eggId: nextEggId,
+      experience: choosingEgg ? 0 : experience ?? this.experience,
+      currentHp: choosingEgg ? 0 : currentHp ?? this.currentHp,
+      nickname: choosingEgg
+          ? null
+          : identical(nickname, _unset)
+              ? this.nickname
+              : nickname as String?,
+      selectedMoves: choosingEgg ? const [] : selectedMoves ?? this.selectedMoves,
+      isShiny: choosingEgg ? false : isShiny ?? this.isShiny,
       gender: nextGender,
       formName: nextFormName,
-      nature: nature ?? this.nature,
-      heldItem: identical(heldItem, _unset)
-          ? this.heldItem
-          : heldItem as String?,
-      abilities: abilities ?? this.abilities,
-      feats: feats ?? this.feats,
-      extraSkills: extraSkills ?? this.extraSkills,
-      statusEffects: statusEffects ?? this.statusEffects,
-      customAbilityScores: customAbilityScores ?? this.customAbilityScores,
-      loyalty: loyalty ?? this.loyalty,
+      nature: choosingEgg ? 'No Nature' : nature ?? this.nature,
+      heldItem: choosingEgg
+          ? null
+          : identical(heldItem, _unset)
+              ? this.heldItem
+              : heldItem as String?,
+      abilities: choosingEgg ? const [] : abilities ?? this.abilities,
+      feats: choosingEgg ? const [] : feats ?? this.feats,
+      extraSkills: choosingEgg ? const [] : extraSkills ?? this.extraSkills,
+      statusEffects: choosingEgg ? const [] : statusEffects ?? this.statusEffects,
+      customAbilityScores:
+          choosingEgg ? const {} : customAbilityScores ?? this.customAbilityScores,
+      loyalty: choosingEgg ? 0 : loyalty ?? this.loyalty,
     );
   }
 }

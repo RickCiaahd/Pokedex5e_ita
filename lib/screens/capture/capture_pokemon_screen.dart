@@ -108,7 +108,7 @@ class _CapturePokemonScreenState extends State<CapturePokemonScreen> {
           ..sort((a, b) => a.slotIndex.compareTo(b.slotIndex));
 
     for (final slot in unlockedSlots) {
-      if (slot.pokemonId == null) return slot;
+      if (slot.isEmpty) return slot;
     }
     return null;
   }

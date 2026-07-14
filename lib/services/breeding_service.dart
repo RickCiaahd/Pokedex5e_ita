@@ -293,7 +293,17 @@ class BreedingService {
       ..sort((first, second) => first.slotIndex.compareTo(second.slotIndex));
     for (final slot in ordered) {
       if (slot.slotIndex >= unlockedPokeslots) continue;
-      if (slot.pokemonId == null) return slot;
+      if (slot.isEmpty) return slot;
+    }
+    return null;
+  }
+
+  TeamSlot? teamSlotForEgg({
+    required List<TeamSlot> team,
+    required String eggId,
+  }) {
+    for (final slot in team) {
+      if (slot.eggId == eggId) return slot;
     }
     return null;
   }

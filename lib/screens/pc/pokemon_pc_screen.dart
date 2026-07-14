@@ -124,13 +124,13 @@ class _PokemonPcScreenState extends State<PokemonPcScreen> {
 
   TeamSlot? get _firstFreeTeamSlot {
     for (final slot in _visibleTeam) {
-      if (slot.pokemonId == null) return slot;
+      if (slot.isEmpty) return slot;
     }
     return null;
   }
 
   int get _filledTeamSlots {
-    return _visibleTeam.where((slot) => slot.pokemonId != null).length;
+    return _visibleTeam.where((slot) => !slot.isEmpty).length;
   }
 
   Future<void> _depositTeamSlot(TeamSlot slot) async {
@@ -543,7 +543,7 @@ class _FixedTeamPanel extends StatelessWidget {
               return _TeamMiniCard(
                 slot: slot,
                 pokemon: pokemonForSlot(slot.pokemonId),
-                onDeposit: slot.pokemonId == null ? null : () => onDeposit(slot),
+                onDeposit: slot.isPokemon ? () => onDeposit(slot) : null,
               );
             },
           ),
@@ -569,11 +569,13 @@ class _TeamMiniCard extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final pokemon = this.pokemon;
     final nickname = slot.nickname?.trim() ?? '';
-    final name = pokemon == null
-        ? 'Slot ${slot.slotIndex + 1}'
-        : nickname.isEmpty
-            ? pokemon.name
-            : nickname;
+    final name = slot.isEgg
+        ? 'Uovo'
+        : pokemon == null
+            ? 'Slot ${slot.slotIndex + 1}'
+            : nickname.isEmpty
+                ? pokemon.name
+                : nickname;
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -587,7 +589,13 @@ class _TeamMiniCard extends StatelessWidget {
             padding: EdgeInsets.all(dense ? 5 : 7),
             child: Row(
               children: [
-                pokemon == null
+                slot.isEgg
+                    ? CircleAvatar(
+                        radius: spriteSize / 2,
+                        backgroundColor: colorScheme.tertiaryContainer,
+                        child: const Icon(Icons.egg_alt_outlined),
+                      )
+                    : pokemon == null
                     ? CircleAvatar(
                         radius: spriteSize / 2,
                         backgroundColor: colorScheme.surfaceContainerHighest,
@@ -617,7 +625,11 @@ class _TeamMiniCard extends StatelessWidget {
                       ),
                       const SizedBox(height: 1),
                       Text(
-                        pokemon == null ? 'Vuoto' : '#${pokemon.id.toString().padLeft(3, '0')}',
+                        slot.isEgg
+                            ? 'In incubazione'
+                            : pokemon == null
+                                ? 'Vuoto'
+                                : '#${pokemon.id.toString().padLeft(3, '0')}',
                         style: Theme.of(context).textTheme.labelSmall,
                       ),
                       if (pokemon != null)

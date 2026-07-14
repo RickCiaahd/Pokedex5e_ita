@@ -35,6 +35,7 @@ class BreedingEgg {
     this.isShiny = false,
     this.incubator = EggIncubator.none,
     this.carriedEntireIncubation = true,
+    this.isInDayCare = false,
   });
 
   final String id;
@@ -52,6 +53,7 @@ class BreedingEgg {
   final bool isShiny;
   final EggIncubator incubator;
   final bool carriedEntireIncubation;
+  final bool isInDayCare;
 
   bool get isReady => incubationRemaining <= 0;
 
@@ -64,6 +66,7 @@ class BreedingEgg {
     int? incubationRemaining,
     EggIncubator? incubator,
     bool? carriedEntireIncubation,
+    bool? isInDayCare,
     Object? formName = _unset,
   }) {
     return BreedingEgg(
@@ -85,6 +88,7 @@ class BreedingEgg {
       incubator: incubator ?? this.incubator,
       carriedEntireIncubation:
           carriedEntireIncubation ?? this.carriedEntireIncubation,
+      isInDayCare: isInDayCare ?? this.isInDayCare,
     );
   }
 
@@ -105,6 +109,7 @@ class BreedingEgg {
       'isShiny': isShiny,
       'incubator': incubator.name,
       'carriedEntireIncubation': carriedEntireIncubation,
+      'isInDayCare': isInDayCare,
     };
   }
 
@@ -130,7 +135,9 @@ class BreedingEgg {
         (value) => value.name == incubatorName,
         orElse: () => EggIncubator.none,
       ),
-      carriedEntireIncubation: json['carriedEntireIncubation'] as bool? ?? true,
+      carriedEntireIncubation:
+          json['carriedEntireIncubation'] as bool? ?? true,
+      isInDayCare: json['isInDayCare'] as bool? ?? false,
     );
   }
 

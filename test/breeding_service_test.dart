@@ -83,6 +83,25 @@ void main() {
     expect(service.hatchTimeForSr(15), 2000);
   });
 
+
+
+  test('un uovo occupa un Pokéslot e viene ritrovato nello stesso slot', () {
+    final team = [
+      TeamSlot(slotIndex: 0, pokemonId: 1),
+      TeamSlot(slotIndex: 1, pokemonId: null, eggId: 'egg-1'),
+      TeamSlot(slotIndex: 2, pokemonId: null),
+    ];
+
+    expect(
+      service.firstFreeUnlockedTeamSlot(team: team, unlockedPokeslots: 3)?.slotIndex,
+      2,
+    );
+    expect(
+      service.teamSlotForEgg(team: team, eggId: 'egg-1')?.slotIndex,
+      1,
+    );
+  });
+
   test('Pokémon Breeder applica WIS al tentativo e vantaggio al d100', () {
     final profile = _profile(path: 'Pokémon Breeder', level: 5, wisdom: 16);
     expect(service.breedingRollModifier(profile), 3);

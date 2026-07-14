@@ -104,9 +104,9 @@ jobs:
           )
           lines[grid_marker:grid_marker + 1] = [
               "grid_pattern = (",
-              "    r'                   Expanded\\(\\n'",
+              "    r'Expanded\\(\\n'",
               "    r'\\s+child: _pcPokemon\\.isEmpty.*?'",
-              "    r'\\n                   \\),'",
+              "    r'\\n\\s+\\),(?=\\n\\s+\\],)'",
               ")",
               "grid_matches = re.findall(grid_pattern, text, flags=re.DOTALL)",
               "if len(grid_matches) != 1:",

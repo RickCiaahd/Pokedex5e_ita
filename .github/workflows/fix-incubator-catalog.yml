@@ -1,0 +1,80 @@
+name: Fix incubator catalog integration
+
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+permissions:
+  contents: write
+
+concurrency:
+  group: fix-incubators-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Check out feature branch
+        uses: actions/checkout@v4
+        with:
+          ref: feature/breeder-traits
+          fetch-depth: 0
+
+      - name: Reuse the existing incubator catalog entries
+        run: |
+          git fetch origin main
+          git checkout origin/main -- assets/data_webapp/items.json
+          python - <<'PY'
+          from pathlib import Path
+
+          model = Path('lib/models/breeding_egg.dart')
+          text = model.read_text(encoding='utf-8')
+          text = text.replace("EggIncubator.basic => 'basic-incubator'", "EggIncubator.basic => 'egg-incubator'", 1)
+          text = text.replace("EggIncubator.plus => 'plus-incubator'", "EggIncubator.plus => 'egg-incubator-plus'", 1)
+          text = text.replace("EggIncubator.superIncubator => 'super-incubator'", "EggIncubator.superIncubator => 'egg-incubator-super'", 1)
+          model.write_text(text, encoding='utf-8')
+
+          test = Path('test/breeder_features_test.dart')
+          text = test.read_text(encoding='utf-8')
+          text = text.replace(
+              "expect(EggIncubator.superIncubator.itemId, 'super-incubator');",
+              "expect(EggIncubator.basic.itemId, 'egg-incubator');\n    expect(EggIncubator.plus.itemId, 'egg-incubator-plus');\n    expect(EggIncubator.superIncubator.itemId, 'egg-incubator-super');",
+              1,
+          )
+          test.write_text(text, encoding='utf-8')
+          PY
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Format changed Dart files
+        run: dart format lib/models/breeding_egg.dart test/breeder_features_test.dart
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze source
+        run: flutter analyze
+
+      - name: Run complete test suite
+        run: flutter test --reporter expanded
+
+      - name: Commit catalog integration fix
+        run: |
+          rm -f .github/workflows/fix-incubator-catalog.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Riutilizza gli incubatori già presenti nel catalogo"
+          git push origin HEAD:feature/breeder-traits

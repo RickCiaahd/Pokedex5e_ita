@@ -88,7 +88,7 @@ class _PercentageTextFieldState extends State<PercentageTextField> {
         focusNode: _focusNode,
         keyboardType: TextInputType.number,
         textAlign: TextAlign.center,
-        inputFormatters: const [
+        inputFormatters: [
           FilteringTextInputFormatter.digitsOnly,
           LengthLimitingTextInputFormatter(3),
         ],

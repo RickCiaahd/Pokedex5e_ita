@@ -4,6 +4,7 @@ import '../bag/bag_screen.dart';
 import '../battle/battle_screen.dart';
 import '../battle/npc_battle_screen.dart';
 import '../capture/capture_pokemon_screen.dart';
+import '../breeding/breeding_screen.dart';
 import '../pc/pokemon_pc_screen.dart';
 import '../pokedex/pokedex_screen.dart';
 import '../profile/profiles_screen.dart';
@@ -243,13 +244,25 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
               ),
               _HomeActionButton(
+                icon: Icons.egg_alt_outlined,
+                title: 'Allevamento e uova',
+                subtitle:
+                    'Verifica i genitori, crea uova, avanza l’incubazione e fai schiudere i Pokémon.',
+                onTap: () async {
+                  await Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const BreedingScreen()),
+                  );
+                  await _loadDashboard();
+                },
+              ),
+              _HomeActionButton(
                 icon: Icons.backpack_outlined,
                 title: 'Zaino',
                 subtitle: 'Equipaggiamento, cure e oggetti da cattura.',
                 onTap: () async {
-                  await Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const BagScreen()),
-                  );
+                  await Navigator.of(
+                    context,
+                  ).push(MaterialPageRoute(builder: (_) => const BagScreen()));
                   await _loadDashboard();
                 },
               ),
@@ -274,7 +287,8 @@ class _HomeScreenState extends State<HomeScreen> {
               const _HomeSectionTitle(
                 icon: Icons.construction,
                 title: 'STRUMENTI DEL MASTER',
-                subtitle: 'Genera contenuti, usa le librerie e prepara i fight.',
+                subtitle:
+                    'Genera contenuti, usa le librerie e prepara i fight.',
               ),
               _HomeActionButton(
                 icon: Icons.construction,
@@ -502,10 +516,7 @@ class _HomeActionButton extends StatelessWidget {
           icon,
           color: emphasized ? colors.onPrimaryContainer : colors.primary,
         ),
-        title: Text(
-          title,
-          style: const TextStyle(fontWeight: FontWeight.w800),
-        ),
+        title: Text(title, style: const TextStyle(fontWeight: FontWeight.w800)),
         subtitle: Text(subtitle),
         trailing: const Icon(Icons.chevron_right),
         onTap: onTap,

@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pokedex_5e_ita/models/bag_inventory_entry.dart';
 import 'package:pokedex_5e_ita/models/battle_session.dart';
+import 'package:pokedex_5e_ita/models/breeding_egg.dart';
 import 'package:pokedex_5e_ita/models/pc_pokemon.dart';
 import 'package:pokedex_5e_ita/models/generated_encounter.dart';
 import 'package:pokedex_5e_ita/models/pokedex_entry.dart';
@@ -92,6 +93,21 @@ void main() {
         showOnlySeen: false,
       ),
       battleSession: battleSession,
+      breedingEggs: [
+        BreedingEgg(
+          id: 'egg-1',
+          speciesId: 403,
+          parentNames: const ['Raticate', 'Luxio'],
+          createdAt: now,
+          hatchTime: 250,
+          incubationRemaining: 120,
+          nature: 'Jolly',
+          gender: 'Female',
+          ability: 'Rivalry',
+          selectedMoves: const ['Tackle', 'Quick Attack'],
+          inheritedMoves: const ['Quick Attack'],
+        ),
+      ],
       savedEncounters: [
         SavedEncounter(
           id: 'route-24',
@@ -130,6 +146,8 @@ void main() {
     expect(decoded.settings.selectedRegion, 'Alola');
     expect(decoded.battleSession?.round, 4);
     expect(decoded.savedEncounters.single.name, 'Percorso 24');
+    expect(decoded.breedingEggs.single.speciesId, 403);
+    expect(decoded.breedingEggs.single.incubationRemaining, 120);
     expect(decoded.savedEncounters.single.members.single.formName, 'Alolan');
     expect(decoded.battleSession?.pokemonStates[0]?.remainingPp, {
       'quick-attack': 7,

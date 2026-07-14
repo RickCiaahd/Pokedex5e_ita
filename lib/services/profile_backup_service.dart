@@ -8,6 +8,7 @@ import '../models/team_slot.dart';
 import '../models/user_profile.dart';
 import '../repositories/bag_inventory_repository.dart';
 import '../repositories/battle_session_repository.dart';
+import '../repositories/breeding_egg_repository.dart';
 import '../repositories/encounter_collection_repository.dart';
 import '../repositories/master_battle_session_repository.dart';
 import '../repositories/pokedex_repositry.dart';
@@ -31,6 +32,7 @@ class ProfileBackupService {
     SavedEncounterRepository? savedEncounterRepository,
     SavedNpcTrainerRepository? savedNpcTrainerRepository,
     MasterBattleSessionRepository? masterBattleSessionRepository,
+    BreedingEggRepository? breedingEggRepository,
   }) : _profileRepository = profileRepository ?? ProfileRepository(),
        _pokedexRepository = pokedexRepository ?? PokedexRepository(),
        _teamRepository = teamRepository ?? TeamRepository(),
@@ -46,7 +48,9 @@ class ProfileBackupService {
        _savedNpcTrainerRepository =
            savedNpcTrainerRepository ?? SavedNpcTrainerRepository(),
        _masterBattleSessionRepository =
-           masterBattleSessionRepository ?? MasterBattleSessionRepository();
+           masterBattleSessionRepository ?? MasterBattleSessionRepository(),
+       _breedingEggRepository =
+           breedingEggRepository ?? BreedingEggRepository();
 
   final ProfileRepository _profileRepository;
   final PokedexRepository _pokedexRepository;
@@ -59,6 +63,7 @@ class ProfileBackupService {
   final SavedEncounterRepository _savedEncounterRepository;
   final SavedNpcTrainerRepository _savedNpcTrainerRepository;
   final MasterBattleSessionRepository _masterBattleSessionRepository;
+  final BreedingEggRepository _breedingEggRepository;
 
   Future<ProfileBackup> createBackup(String profileId) async {
     final profiles = await _profileRepository.getProfiles();
@@ -92,6 +97,7 @@ class ProfileBackupService {
     final masterBattleSession = await _masterBattleSessionRepository.getSession(
       profileId,
     );
+    final breedingEggs = await _breedingEggRepository.getEggs(profileId);
 
     final pokedex = pokedexEntries.values.toList(growable: false)
       ..sort((a, b) => a.pokemonId.compareTo(b.pokemonId));
@@ -112,6 +118,7 @@ class ProfileBackupService {
       savedEncounters: savedEncounters,
       savedNpcTrainers: savedNpcTrainers,
       masterBattleSession: masterBattleSession,
+      breedingEggs: breedingEggs,
     );
   }
 
@@ -249,6 +256,10 @@ class ProfileBackupService {
       destinationId,
       backup.savedNpcTrainers,
     );
+    await _breedingEggRepository.replaceEggs(
+      destinationId,
+      backup.breedingEggs,
+    );
     final masterSession = backup.masterBattleSession;
     if (masterSession != null) {
       await _masterBattleSessionRepository.saveSession(
@@ -301,6 +312,7 @@ class ProfileBackupService {
     await _savedEncounterRepository.deleteEncounters(profileId);
     await _savedNpcTrainerRepository.deleteTrainers(profileId);
     await _masterBattleSessionRepository.deleteSession(profileId);
+    await _breedingEggRepository.deleteEggs(profileId);
   }
 
   List<TeamSlot> _normalizeTeam(List<TeamSlot> source) {

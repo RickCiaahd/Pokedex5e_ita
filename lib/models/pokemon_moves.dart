@@ -3,11 +3,13 @@ class PokemonMoves {
     required this.startingMoves,
     required this.levelMoves,
     required this.tmMoves,
+    this.eggMoves = const [],
   });
 
   final List<String> startingMoves;
   final Map<int, List<String>> levelMoves;
   final List<int> tmMoves;
+  final List<String> eggMoves;
 
   factory PokemonMoves.fromJson(Map<String, dynamic>? json) {
     if (json == null) {
@@ -22,6 +24,7 @@ class PokemonMoves {
         (key, value) => MapEntry(int.parse(key), List<String>.from(value)),
       ),
       tmMoves: _readIntList(json['TM']),
+      eggMoves: _readStringList(json['egg'] ?? json['Egg Moves']),
     );
   }
 
@@ -45,6 +48,7 @@ class PokemonMoves {
       startingMoves: _readStringList(json['start']),
       levelMoves: levelMoves,
       tmMoves: _readIntList(json['tm']),
+      eggMoves: _readStringList(json['egg'] ?? json['eggMoves']),
     );
   }
 

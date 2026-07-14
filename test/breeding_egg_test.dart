@@ -19,6 +19,7 @@ void main() {
       inheritedMoves: const ['Quick Attack'],
       incubator: EggIncubator.plus,
       carriedEntireIncubation: false,
+      isInPc: true,
     );
 
     final decoded = BreedingEgg.fromJson(source.toJson());
@@ -30,6 +31,8 @@ void main() {
     expect(decoded.incubator.extraD20, 2);
     expect(decoded.inheritedMoves, ['Quick Attack']);
     expect(decoded.carriedEntireIncubation, isFalse);
+    expect(decoded.isInPc, isTrue);
+    expect(decoded.isInTeam, isFalse);
     expect(decoded.isReady, isFalse);
     expect(decoded.progress, closeTo(0.52, 0.001));
   });

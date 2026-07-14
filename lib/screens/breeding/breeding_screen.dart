@@ -105,15 +105,23 @@ class _BreedingScreenState extends State<BreedingScreen> {
         eggStorageChanged = true;
         continue;
       }
-      if (slot.slotIndex >= unlockedPokeslots || egg.isInDayCare) {
+      if (
+          slot.slotIndex >= unlockedPokeslots ||
+          egg.isInDayCare ||
+          egg.isInPc
+      ) {
         await _teamRepository.clearSlot(
           profileId: profile.id,
           slotIndex: slot.slotIndex,
         );
-        if (!egg.isInDayCare) {
+        if (!egg.isInDayCare && !egg.isInPc) {
           await _eggRepository.saveEgg(
             profile.id,
-            egg.copyWith(isInDayCare: true, carriedEntireIncubation: false),
+            egg.copyWith(
+              isInDayCare: true,
+              isInPc: false,
+              carriedEntireIncubation: false,
+            ),
           );
         }
         eggStorageChanged = true;
@@ -126,7 +134,7 @@ class _BreedingScreenState extends State<BreedingScreen> {
     }
 
     for (final egg in [...eggs]) {
-      if (egg.isInDayCare) continue;
+      if (egg.isInDayCare || egg.isInPc) continue;
       final assigned = _breedingService.teamSlotForEgg(
         team: team,
         eggId: egg.id,
@@ -139,7 +147,11 @@ class _BreedingScreenState extends State<BreedingScreen> {
       if (freeSlot == null) {
         await _eggRepository.saveEgg(
           profile.id,
-          egg.copyWith(isInDayCare: true, carriedEntireIncubation: false),
+          egg.copyWith(
+        isInDayCare: true,
+        isInPc: false,
+        carriedEntireIncubation: false,
+      ),
         );
       } else {
         await _teamRepository.setEggInSlot(
@@ -319,6 +331,7 @@ class _BreedingScreenState extends State<BreedingScreen> {
       );
       final egg = created.copyWith(
         isInDayCare: _useDayCare,
+        isInPc: false,
         carriedEntireIncubation: !_useDayCare,
       );
       await _eggRepository.saveEgg(data.profile.id, egg);
@@ -362,9 +375,37 @@ class _BreedingScreenState extends State<BreedingScreen> {
     }
     await _eggRepository.saveEgg(
       data.profile.id,
-      egg.copyWith(isInDayCare: true, carriedEntireIncubation: false),
+      egg.copyWith(
+        isInDayCare: true,
+        isInPc: false,
+        carriedEntireIncubation: false,
+      ),
     );
     await _reload(message: 'Uovo affidato alla Pensione Pokémon.');
+  }
+
+  Future<void> _moveEggToPc(
+    _BreedingScreenData data,
+    BreedingEgg egg,
+  ) async {
+    final slot = _teamSlotForEgg(data, egg);
+    if (slot != null) {
+      await _teamRepository.clearSlot(
+        profileId: data.profile.id,
+        slotIndex: slot.slotIndex,
+      );
+    }
+    await _eggRepository.saveEgg(
+      data.profile.id,
+      egg.copyWith(
+        isInDayCare: false,
+        isInPc: true,
+        carriedEntireIncubation: false,
+      ),
+    );
+    await _reload(
+      message: 'Uovo depositato nel PC. L’incubazione resta in pausa.',
+    );
   }
 
   Future<void> _moveEggToTeam(_BreedingScreenData data, BreedingEgg egg) async {
@@ -388,7 +429,7 @@ class _BreedingScreenState extends State<BreedingScreen> {
     );
     await _eggRepository.saveEgg(
       data.profile.id,
-      egg.copyWith(isInDayCare: false),
+      egg.copyWith(isInDayCare: false, isInPc: false),
     );
     await _reload(
       message: 'Uovo ritirato nello slot squadra ${freeSlot.slotIndex + 1}.',
@@ -396,6 +437,13 @@ class _BreedingScreenState extends State<BreedingScreen> {
   }
 
   Future<void> _advanceEgg(_BreedingScreenData data, BreedingEgg egg) async {
+    if (egg.isInPc) {
+      setState(() {
+        _message =
+            'Nel PC l’incubazione è in pausa. Ritira l’uovo in squadra oppure affidalo alla Pensione.';
+      });
+      return;
+    }
     final result = _breedingService.advanceIncubation(
       egg: egg,
       profile: data.profile,
@@ -451,6 +499,13 @@ class _BreedingScreenState extends State<BreedingScreen> {
 
   Future<void> _hatchEgg(_BreedingScreenData data, BreedingEgg egg) async {
     if (!egg.isReady) return;
+    if (egg.isInPc) {
+      setState(() {
+        _message =
+            'Un uovo depositato nel PC non può schiudersi. Ritiralo in squadra oppure spostalo in Pensione.';
+      });
+      return;
+    }
     final base = data.catalogById[egg.speciesId];
     if (base == null) {
       setState(() => _message = 'La specie dell’uovo non è nel catalogo.');
@@ -730,6 +785,7 @@ class _BreedingScreenState extends State<BreedingScreen> {
                       onIncubatorChanged: (incubator) =>
                           _updateEgg(data, egg.copyWith(incubator: incubator)),
                       onMoveToDayCare: () => _moveEggToDayCare(data, egg),
+                       onMoveToPc: () => _moveEggToPc(data, egg),
                       onMoveToTeam: () => _moveEggToTeam(data, egg),
                     ),
                     const SizedBox(height: 8),
@@ -920,6 +976,7 @@ class _EggCard extends StatelessWidget {
     required this.onDelete,
     required this.onIncubatorChanged,
     required this.onMoveToDayCare,
+    required this.onMoveToPc,
     required this.onMoveToTeam,
   });
 
@@ -933,6 +990,7 @@ class _EggCard extends StatelessWidget {
   final VoidCallback onDelete;
   final ValueChanged<EggIncubator> onIncubatorChanged;
   final VoidCallback onMoveToDayCare;
+  final VoidCallback onMoveToPc;
   final VoidCallback onMoveToTeam;
 
   @override
@@ -946,7 +1004,7 @@ class _EggCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                const EggAssetImage(size: 64),
+                const EggAssetImage(size: 54),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
@@ -1022,42 +1080,70 @@ class _EggCard extends StatelessWidget {
               color: colors.surfaceContainerHighest,
               child: ListTile(
                 leading: Icon(
-                  teamSlotIndex == null
+                  egg.isInPc
+                      ? Icons.computer_outlined
+                      : teamSlotIndex == null
                       ? Icons.home_work_outlined
                       : Icons.group_outlined,
                 ),
                 title: Text(
-                  teamSlotIndex == null
+                  egg.isInPc
+                      ? 'PC Pokémon'
+                      : teamSlotIndex == null
                       ? 'Pensione Pokémon'
                       : 'Squadra · Slot ${teamSlotIndex! + 1}',
                   style: const TextStyle(fontWeight: FontWeight.w900),
                 ),
                 subtitle: Text(
-                  egg.carriedEntireIncubation
+                  egg.isInPc
+                      ? 'L’incubazione è in pausa e l’uovo non occupa un Pokéslot.'
+                      : egg.carriedEntireIncubation
                       ? 'Occupa un Pokéslot e nascerà con Lealtà +2.'
                       : 'Non ha trascorso tutta l’incubazione in squadra: Lealtà +1.',
                 ),
               ),
             ),
             const SizedBox(height: 8),
-            if (teamSlotIndex == null)
-              OutlinedButton.icon(
-                onPressed: canMoveToTeam ? onMoveToTeam : null,
-                icon: const Icon(Icons.login),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                if (teamSlotIndex == null)
+                  OutlinedButton.icon(
+                    onPressed: canMoveToTeam ? onMoveToTeam : null,
+                    icon: const Icon(Icons.login),
+                    label: Text(
+                      canMoveToTeam
+                          ? 'RITIRA IN SQUADRA'
+                          : 'NESSUN POKÉSLOT LIBERO',
+                    ),
+                  ),
+                if (teamSlotIndex != null || egg.isInDayCare)
+                  OutlinedButton.icon(
+                    onPressed: onMoveToPc,
+                    icon: const Icon(Icons.computer_outlined),
+                    label: const Text('DEPOSITA NEL PC'),
+                  ),
+                if (teamSlotIndex != null || egg.isInPc)
+                  OutlinedButton.icon(
+                    onPressed: onMoveToDayCare,
+                    icon: const Icon(Icons.home_work_outlined),
+                    label: const Text('SPOSTA IN PENSIONE'),
+                  ),
+              ],
+            ),
+            const SizedBox(height: 4),
+            if (egg.isInPc)
+              FilledButton.icon(
+                onPressed: null,
+                icon: const Icon(Icons.pause_circle_outline),
                 label: Text(
-                  canMoveToTeam
-                      ? 'RITIRA IN SQUADRA'
-                      : 'NESSUN POKÉSLOT LIBERO',
+                  egg.isReady
+                      ? 'RITIRA L’UOVO PER SCHIUDERLO'
+                      : 'INCUBAZIONE IN PAUSA NEL PC',
                 ),
               )
-            else
-              OutlinedButton.icon(
-                onPressed: onMoveToDayCare,
-                icon: const Icon(Icons.home_work_outlined),
-                label: const Text('SPOSTA IN PENSIONE'),
-              ),
-            const SizedBox(height: 4),
-            if (egg.isReady)
+            else if (egg.isReady)
               FilledButton.icon(
                 onPressed: onHatch,
                 icon: const Icon(Icons.egg_alt_outlined),
@@ -1076,7 +1162,9 @@ class _EggCard extends StatelessWidget {
             if (egg.isReady) ...[
               const SizedBox(height: 6),
               Text(
-                teamSlotIndex == null
+                egg.isInPc
+                    ? 'Nel PC l’uovo resta conservato ma non può schiudersi.'
+                    : teamSlotIndex == null
                     ? 'Alla schiusa il Pokémon verrà inviato al PC dalla Pensione.'
                     : 'Alla schiusa il Pokémon sostituirà l’uovo nello stesso Pokéslot.',
                 textAlign: TextAlign.center,

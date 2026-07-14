@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 
+import '../../models/breeding_egg.dart';
 import '../../models/pc_pokemon.dart';
 import '../../models/pokemon.dart';
 import '../../models/team_slot.dart';
 import '../../models/trainer_progression.dart';
 import '../../models/user_profile.dart';
+import '../../repositories/breeding_egg_repository.dart';
 import '../../repositories/pokemon_pc_repository.dart';
 import '../../repositories/pokemon_repository.dart';
 import '../../repositories/profile_repository.dart';
@@ -12,6 +14,8 @@ import '../../repositories/team_repository.dart';
 import '../../widgets/navigation/home_leading_button.dart';
 import '../../widgets/pokemon/egg_asset_image.dart';
 import '../../widgets/pokemon/pokemon_asset_image.dart';
+import '../../widgets/pc/pc_egg_widgets.dart';
+import '../breeding/breeding_screen.dart';
 
 class PokemonPcScreen extends StatefulWidget {
   const PokemonPcScreen({super.key});
@@ -24,12 +28,14 @@ class _PokemonPcScreenState extends State<PokemonPcScreen> {
   final ProfileRepository _profileRepository = ProfileRepository();
   final PokemonRepository _pokemonRepository = PokemonRepository();
   final PokemonPcRepository _pokemonPcRepository = PokemonPcRepository();
+  final BreedingEggRepository _eggRepository = BreedingEggRepository();
   final TeamRepository _teamRepository = TeamRepository();
   final TextEditingController _pcSearchController = TextEditingController();
 
   UserProfile? _profile;
   List<Pokemon> _allPokemon = [];
   List<PcPokemon> _pcPokemon = [];
+  List<BreedingEgg> _eggs = [];
   List<TeamSlot> _team = [];
   bool _isLoading = true;
   bool _showPcSearch = false;
@@ -62,6 +68,7 @@ class _PokemonPcScreenState extends State<PokemonPcScreen> {
       final profile = await _profileRepository.getActiveProfile();
       final pokemon = await _pokemonRepository.getAllPokemon();
       final pcPokemon = await _pokemonPcRepository.getPokemon(profile.id);
+      final eggs = await _eggRepository.getEggs(profile.id);
       final team = await _teamRepository.getTeam(profile.id);
 
       team.sort((a, b) => a.slotIndex.compareTo(b.slotIndex));
@@ -71,6 +78,7 @@ class _PokemonPcScreenState extends State<PokemonPcScreen> {
         _profile = profile;
         _allPokemon = pokemon;
         _pcPokemon = pcPokemon;
+        _eggs = eggs;
         _team = team;
         _isLoading = false;
       });
@@ -129,6 +137,28 @@ class _PokemonPcScreenState extends State<PokemonPcScreen> {
         .toList(growable: false);
   }
 
+  List<BreedingEgg> get _pcEggs =>
+      _eggs.where((egg) => egg.isInPc).toList(growable: false);
+
+  List<BreedingEgg> get _filteredPcEggs {
+    final query = _pcQuery.trim().toLowerCase();
+    if (query.isEmpty) return _pcEggs;
+    return _pcEggs.where((egg) {
+      final pokemon = _pokemonById(egg.speciesId);
+      return 'uovo'.contains(query) ||
+          (pokemon?.name.toLowerCase().contains(query) ?? false) ||
+          egg.parentNames.any((name) => name.toLowerCase().contains(query));
+    }).toList(growable: false);
+  }
+
+  BreedingEgg? _eggById(String? eggId) {
+    if (eggId == null) return null;
+    for (final egg in _eggs) {
+      if (egg.id == eggId) return egg;
+    }
+    return null;
+  }
+
   TeamSlot? get _firstFreeTeamSlot {
     for (final slot in _visibleTeam) {
       if (slot.isEmpty) return slot;
@@ -142,9 +172,51 @@ class _PokemonPcScreenState extends State<PokemonPcScreen> {
 
   Future<void> _depositTeamSlot(TeamSlot slot) async {
     final profile = _profile;
-    final pokemon = _pokemonById(slot.pokemonId);
-    if (profile == null || slot.pokemonId == null) return;
+    if (profile == null) return;
 
+    if (slot.isEgg) {
+      final egg = _eggById(slot.eggId);
+      if (egg == null) return;
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: const Text('Deposita l’uovo nel PC?'),
+          content: const Text(
+            'L’uovo libererà il Pokéslot. Nel PC l’incubazione resterà in pausa e il bonus di Lealtà +2 non sarà più disponibile.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('Annulla'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: const Text('Deposita'),
+            ),
+          ],
+        ),
+      );
+      if (confirmed != true) return;
+      await _teamRepository.clearSlot(
+        profileId: profile.id,
+        slotIndex: slot.slotIndex,
+      );
+      await _eggRepository.saveEgg(
+        profile.id,
+        egg.copyWith(
+          isInDayCare: false,
+          isInPc: true,
+          carriedEntireIncubation: false,
+        ),
+      );
+      await _loadPc(clearMessages: false);
+      if (!mounted) return;
+      setState(() => _successMessage = 'Uovo depositato nel PC.');
+      return;
+    }
+
+    final pokemon = _pokemonById(slot.pokemonId);
+    if (slot.pokemonId == null) return;
     final displayName = _slotDisplayName(slot, pokemon);
     final confirmed = await showDialog<bool>(
       context: context,
@@ -244,6 +316,27 @@ class _PokemonPcScreenState extends State<PokemonPcScreen> {
     );
   }
 
+  Future<void> _moveEggToTeam(BreedingEgg egg) async {
+    final profile = _profile;
+    final freeSlot = _firstFreeTeamSlot;
+    if (profile == null || freeSlot == null) return;
+    await _teamRepository.setEggInSlot(
+      profileId: profile.id,
+      slotIndex: freeSlot.slotIndex,
+      eggId: egg.id,
+    );
+    await _eggRepository.saveEgg(
+      profile.id,
+      egg.copyWith(isInDayCare: false, isInPc: false),
+    );
+    await _loadPc(clearMessages: false);
+    if (!mounted) return;
+    setState(() {
+      _successMessage =
+          'Uovo spostato nello slot squadra ${freeSlot.slotIndex + 1}.';
+    });
+  }
+
   Future<void> _releaseFromPc(PcPokemon pcPokemon) async {
     final profile = _profile;
     if (profile == null) return;
@@ -305,6 +398,9 @@ class _PokemonPcScreenState extends State<PokemonPcScreen> {
     final profileName = _profile?.name ?? 'Allenatore';
     final visibleTeam = _visibleTeam;
     final filteredPcPokemon = _filteredPcPokemon;
+    final filteredPcEggs = _filteredPcEggs;
+    final storedCount = _pcPokemon.length + _pcEggs.length;
+    final filteredCount = filteredPcPokemon.length + filteredPcEggs.length;
 
     return Scaffold(
       appBar: AppBar(
@@ -331,7 +427,7 @@ class _PokemonPcScreenState extends State<PokemonPcScreen> {
                       children: [
                         _PcHeader(
                           profileName: profileName,
-                          storedCount: _pcPokemon.length,
+                          storedCount: storedCount,
                           filledTeamSlots: _filledTeamSlots,
                           totalTeamSlots: visibleTeam.length,
                         ),
@@ -367,8 +463,8 @@ class _PokemonPcScreenState extends State<PokemonPcScreen> {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: _PcToolbar(
-                      storedCount: filteredPcPokemon.length,
-                      totalCount: _pcPokemon.length,
+                      storedCount: filteredCount,
+                       totalCount: storedCount,
                       showSearch: _showPcSearch,
                       controller: _pcSearchController,
                       onSearchTap: _togglePcSearch,
@@ -377,38 +473,71 @@ class _PokemonPcScreenState extends State<PokemonPcScreen> {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  Expanded(
-                    child: _pcPokemon.isEmpty
-                        ? const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 16),
-                            child: _PcEmptyState(),
-                          )
-                        : filteredPcPokemon.isEmpty
-                        ? const _PcNoSearchResults()
-                        : GridView.builder(
-                            padding: const EdgeInsets.fromLTRB(16, 0, 16, 18),
-                            gridDelegate:
-                                const SliverGridDelegateWithMaxCrossAxisExtent(
-                                  maxCrossAxisExtent: 88,
-                                  mainAxisSpacing: 8,
-                                  crossAxisSpacing: 8,
-                                  childAspectRatio: 1,
-                                ),
-                            itemCount: filteredPcPokemon.length,
-                            itemBuilder: (context, index) {
-                              final item = filteredPcPokemon[index];
-                              return _PcGridCell(
-                                pcPokemon: item,
-                                pokemon: _pokemonById(item.pokemonId),
-                                onTap: () => _openPcPokemonActions(item),
-                              );
-                            },
-                          ),
-                  ),
+                                     Expanded(
+                     child: storedCount == 0
+                         ? const Padding(
+                             padding: EdgeInsets.symmetric(horizontal: 16),
+                             child: _PcEmptyState(),
+                           )
+                         : filteredCount == 0
+                         ? const _PcNoSearchResults()
+                         : GridView.builder(
+                             padding: const EdgeInsets.fromLTRB(16, 0, 16, 18),
+                             gridDelegate:
+                                 const SliverGridDelegateWithMaxCrossAxisExtent(
+                                   maxCrossAxisExtent: 88,
+                                   mainAxisSpacing: 8,
+                                   crossAxisSpacing: 8,
+                                   childAspectRatio: 1,
+                                 ),
+                             itemCount: filteredCount,
+                             itemBuilder: (context, index) {
+                               if (index < filteredPcPokemon.length) {
+                                 final item = filteredPcPokemon[index];
+                                 return _PcGridCell(
+                                   pcPokemon: item,
+                                   pokemon: _pokemonById(item.pokemonId),
+                                   onTap: () => _openPcPokemonActions(item),
+                                 );
+                               }
+                               final egg = filteredPcEggs[
+                                   index - filteredPcPokemon.length];
+                               return PcEggGridCell(
+                                 egg: egg,
+                                 pokemon: _pokemonById(egg.speciesId),
+                                 onTap: () => _openPcEggActions(egg),
+                               );
+                             },
+                           ),
+                   ),
                 ],
               ),
             ),
     );
+  }
+
+  Future<void> _openPcEggActions(BreedingEgg egg) async {
+    final action = await showModalBottomSheet<PcEggAction>(
+      context: context,
+      showDragHandle: true,
+      builder: (_) => PcEggActionSheet(
+        egg: egg,
+        pokemon: _pokemonById(egg.speciesId),
+        teamIsFull: _firstFreeTeamSlot == null,
+      ),
+    );
+    if (!mounted || action == null) return;
+    switch (action) {
+      case PcEggAction.moveToTeam:
+        await _moveEggToTeam(egg);
+        break;
+      case PcEggAction.openBreeding:
+        await Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) => const BreedingScreen()),
+        );
+        await _loadPc(clearMessages: false);
+        break;
+    }
   }
 
   Future<void> _openPcPokemonActions(PcPokemon item) async {
@@ -545,10 +674,10 @@ class _FixedTeamPanel extends StatelessWidget {
             constraints.maxWidth - (spacing * (crossAxisCount - 1));
         final cellWidth = availableWidth / crossAxisCount;
         final childAspectRatio = veryCompact
-            ? 1.20
+            ? 0.95
             : compact
-            ? 1.45
-            : 1.55;
+            ? 1.05
+            : 1.25;
         final cellHeight = cellWidth / childAspectRatio;
         final height = (cellHeight * safeRows) + (spacing * (safeRows - 1));
 
@@ -569,7 +698,7 @@ class _FixedTeamPanel extends StatelessWidget {
               return _TeamMiniCard(
                 slot: slot,
                 pokemon: pokemonForSlot(slot.pokemonId),
-                onDeposit: slot.isPokemon ? () => onDeposit(slot) : null,
+                onDeposit: slot.isEmpty ? null : () => onDeposit(slot),
               );
             },
           ),
@@ -607,6 +736,7 @@ class _TeamMiniCard extends StatelessWidget {
       builder: (context, constraints) {
         final dense = constraints.maxWidth < 128;
         final spriteSize = dense ? 34.0 : 42.0;
+        final eggSpriteSize = dense ? 26.0 : 30.0;
         final gap = dense ? 5.0 : 8.0;
 
         return Card(
@@ -616,7 +746,7 @@ class _TeamMiniCard extends StatelessWidget {
             child: Row(
               children: [
                 slot.isEgg
-                    ? EggAssetImage(size: spriteSize)
+                    ? EggAssetImage(size: eggSpriteSize)
                     : pokemon == null
                     ? CircleAvatar(
                         radius: spriteSize / 2,
@@ -654,7 +784,7 @@ class _TeamMiniCard extends StatelessWidget {
                             : '#${pokemon.id.toString().padLeft(3, '0')}',
                         style: Theme.of(context).textTheme.labelSmall,
                       ),
-                      if (pokemon != null)
+                      if (onDeposit != null)
                         TextButton(
                           onPressed: onDeposit,
                           style: TextButton.styleFrom(
@@ -1032,7 +1162,7 @@ class _PcEmptyState extends StatelessWidget {
       child: Padding(
         padding: EdgeInsets.all(20),
         child: Text(
-          'Nessun Pokémon nel PC. Quando catturi con la squadra piena o depositi dalla squadra, finirà qui.',
+          'Nessun Pokémon o uovo nel PC. Quando catturi con la squadra piena o depositi dalla squadra, finirà qui.',
         ),
       ),
     );

@@ -25,20 +25,19 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
+          import re
 
           screen = Path('lib/screens/breeding/breeding_screen.dart')
           text = screen.read_text(encoding='utf-8')
-          unused = '''  Future<void> _updateEgg(_BreedingScreenData data, BreedingEgg egg) async {
-            await _eggRepository.saveEgg(data.profile.id, egg);
-            await _reload();
-          }
-
-          '''
-          if text.count(unused) != 1:
-              raise RuntimeError(
-                  f'Helper _updateEgg: atteso 1 match, trovati {text.count(unused)}'
-              )
-          screen.write_text(text.replace(unused, '', 1), encoding='utf-8')
+          pattern = (
+              r'\n  Future<void> _updateEgg\('
+              r'_BreedingScreenData data, BreedingEgg egg\) async \{'
+              r'.*?\n  \}\n'
+          )
+          updated, count = re.subn(pattern, '\n', text, count=1, flags=re.S)
+          if count != 1:
+              raise RuntimeError(f'Helper _updateEgg: atteso 1 match, trovati {count}')
+          screen.write_text(updated, encoding='utf-8')
 
           Path('.github/workflows/flutter-ci.yml').write_text('''name: Flutter CI
 

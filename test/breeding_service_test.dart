@@ -8,6 +8,7 @@ import 'package:pokedex_5e_ita/models/breeding_species_data.dart';
 import 'package:pokedex_5e_ita/models/pokemon.dart';
 import 'package:pokedex_5e_ita/models/pokemon_attributes.dart';
 import 'package:pokedex_5e_ita/models/pokemon_moves.dart';
+import 'package:pokedex_5e_ita/models/team_slot.dart';
 import 'package:pokedex_5e_ita/models/user_profile.dart';
 import 'package:pokedex_5e_ita/services/breeding_service.dart';
 
@@ -109,6 +110,46 @@ void main() {
     expect(result.d100Rolls, hasLength(2));
     expect(result.incubatorRolls, hasLength(3));
     expect(result.egg.incubationRemaining, lessThan(500));
+  });
+
+  test('ignora gli slot vuoti non ancora sbloccati alla schiusa', () {
+    final team = [
+      TeamSlot(slotIndex: 0, pokemonId: 1),
+      TeamSlot(slotIndex: 1, pokemonId: 2),
+      TeamSlot(slotIndex: 2, pokemonId: 3),
+      TeamSlot(slotIndex: 3, pokemonId: null),
+      TeamSlot(slotIndex: 4, pokemonId: null),
+      TeamSlot(slotIndex: 5, pokemonId: null),
+    ];
+
+    expect(
+      service.firstFreeUnlockedTeamSlot(team: team, unlockedPokeslots: 3),
+      isNull,
+    );
+    expect(
+      service.firstFreeUnlockedTeamSlot(team: team, unlockedPokeslots: 4)?.slotIndex,
+      3,
+    );
+  });
+
+  test('individua Pokémon rimasti per errore in slot bloccati', () {
+    final team = [
+      TeamSlot(slotIndex: 0, pokemonId: 1),
+      TeamSlot(slotIndex: 1, pokemonId: 2),
+      TeamSlot(slotIndex: 2, pokemonId: 3),
+      TeamSlot(slotIndex: 3, pokemonId: 403),
+      TeamSlot(slotIndex: 4, pokemonId: null),
+      TeamSlot(slotIndex: 5, pokemonId: null),
+    ];
+
+    final locked = service.occupiedLockedTeamSlots(
+      team: team,
+      unlockedPokeslots: 3,
+    );
+
+    expect(locked, hasLength(1));
+    expect(locked.single.slotIndex, 3);
+    expect(locked.single.pokemonId, 403);
   });
 }
 

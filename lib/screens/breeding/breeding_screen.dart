@@ -7,6 +7,7 @@ import '../../models/breeding_egg.dart';
 import '../../models/breeding_species_data.dart';
 import '../../models/level_progression.dart';
 import '../../models/pc_pokemon.dart';
+import '../../models/trainer_progression.dart';
 import '../../models/pokemon.dart';
 import '../../models/team_slot.dart';
 import '../../models/user_profile.dart';
@@ -66,9 +67,30 @@ class _BreedingScreenState extends State<BreedingScreen> {
       _dataService.load(),
     ]);
     final catalog = results[0] as List<Pokemon>;
-    final team = results[1] as List<TeamSlot>;
-    final pc = results[2] as List<PcPokemon>;
+    var team = results[1] as List<TeamSlot>;
+    var pc = results[2] as List<PcPokemon>;
     final eggs = results[3] as List<BreedingEgg>;
+    final unlockedPokeslots =
+        TrainerProgression.pokeslotsForLevel(profile.trainerLevel);
+    final occupiedLockedSlots = _breedingService.occupiedLockedTeamSlots(
+      team: team,
+      unlockedPokeslots: unlockedPokeslots,
+    );
+    if (occupiedLockedSlots.isNotEmpty) {
+      for (final slot in occupiedLockedSlots) {
+        await _pcRepository.depositTeamSlot(
+          profileId: profile.id,
+          slot: slot,
+        );
+        await _teamRepository.setPokemonInSlot(
+          profileId: profile.id,
+          slotIndex: slot.slotIndex,
+          pokemonId: null,
+        );
+      }
+      team = await _teamRepository.getTeam(profile.id);
+      pc = await _pcRepository.getPokemon(profile.id);
+    }
     final speciesData = results[4] as Map<int, BreedingSpeciesData>;
     final byId = {for (final pokemon in catalog) pokemon.id: pokemon};
     final candidates = <BreedingCandidate>[];
@@ -295,13 +317,13 @@ class _BreedingScreenState extends State<BreedingScreen> {
       nature: egg.nature,
     );
     final loyalty = egg.carriedEntireIncubation ? 2 : 1;
-    TeamSlot? emptySlot;
-    for (final slot in data.team) {
-      if (slot.pokemonId == null) {
-        emptySlot = slot;
-        break;
-      }
-    }
+    final unlockedPokeslots = TrainerProgression.pokeslotsForLevel(
+      data.profile.trainerLevel,
+    );
+    final emptySlot = _breedingService.firstFreeUnlockedTeamSlot(
+      team: data.team,
+      unlockedPokeslots: unlockedPokeslots,
+    );
 
     if (emptySlot != null) {
       await _teamRepository.updateSlot(
@@ -341,7 +363,7 @@ class _BreedingScreenState extends State<BreedingScreen> {
     await _eggRepository.deleteEgg(data.profile.id, egg.id);
     await _reload(
       message:
-          '${_displayName(pokemon: pokemon, formName: egg.formName)} si è schiuso ed è stato aggiunto ${emptySlot == null ? 'al PC' : 'alla squadra'} con Lealtà +$loyalty.',
+          '${_displayName(pokemon: pokemon, formName: egg.formName)} si è schiuso ed è stato aggiunto ${emptySlot == null ? 'al PC perché tutti i Pokéslot sbloccati sono occupati' : 'alla squadra'} con Lealtà +$loyalty.',
     );
   }
 

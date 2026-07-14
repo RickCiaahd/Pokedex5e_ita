@@ -5,6 +5,7 @@ import '../models/breeding_egg.dart';
 import '../models/breeding_species_data.dart';
 import '../models/generated_pokemon.dart';
 import '../models/pokemon.dart';
+import '../models/team_slot.dart';
 import '../models/user_profile.dart';
 import 'pokemon_generator_service.dart';
 import 'trainer_path_passive_service.dart';
@@ -281,6 +282,30 @@ class BreedingService {
       incubatorRolls: incubatorRolls,
       reduction: reduction,
     );
+  }
+
+  TeamSlot? firstFreeUnlockedTeamSlot({
+    required List<TeamSlot> team,
+    required int unlockedPokeslots,
+  }) {
+    if (unlockedPokeslots <= 0) return null;
+    final ordered = [...team]
+      ..sort((first, second) => first.slotIndex.compareTo(second.slotIndex));
+    for (final slot in ordered) {
+      if (slot.slotIndex >= unlockedPokeslots) continue;
+      if (slot.pokemonId == null) return slot;
+    }
+    return null;
+  }
+
+  List<TeamSlot> occupiedLockedTeamSlots({
+    required List<TeamSlot> team,
+    required int unlockedPokeslots,
+  }) {
+    return [
+      for (final slot in team)
+        if (slot.slotIndex >= unlockedPokeslots && slot.pokemonId != null) slot,
+    ]..sort((first, second) => first.slotIndex.compareTo(second.slotIndex));
   }
 
   List<String> _inheritedMoves({

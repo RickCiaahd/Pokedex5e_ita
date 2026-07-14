@@ -28,6 +28,34 @@ jobs:
           channel: stable
           cache: true
 
+      - name: Normalize breeding patch
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('.github/agent/apply_breeding_core.py')
+          text = path.read_text(encoding='utf-8')
+
+          old_initializer = '''        _masterBattleSessionRepository =\n            masterBattleSessionRepository ?? MasterBattleSessionRepository();'''
+          actual_initializer = '''       _masterBattleSessionRepository =\n           masterBattleSessionRepository ?? MasterBattleSessionRepository();'''
+          if old_initializer not in text:
+              raise RuntimeError('Blocco initializer atteso non trovato nello script')
+          text = text.replace(old_initializer, actual_initializer, 1)
+
+          text = text.replace(
+              "final firstMoves = {_moveKeys(first.selectedMoves)};",
+              "final firstMoves = _moveKeys(first.selectedMoves);",
+              1,
+          )
+          text = text.replace(
+              "final secondMoves = {_moveKeys(second.selectedMoves)};",
+              "final secondMoves = _moveKeys(second.selectedMoves);",
+              1,
+          )
+
+          path.write_text(text, encoding='utf-8')
+          PY
+
       - name: Apply breeding changes
         run: |
           set -o pipefail

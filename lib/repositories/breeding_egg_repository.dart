@@ -9,11 +9,11 @@ class BreedingEggRepository {
   Future<List<BreedingEgg>> getEggs(String profileId) async {
     final box = await _box();
     final raw = box.get(profileId);
-    if (raw == null) return const [];
+    if (raw == null) return <BreedingEgg>[];
     final eggs = List<Map>.from(raw)
         .map((item) => BreedingEgg.fromJson(Map<String, dynamic>.from(item)))
         .where((egg) => egg.id.isNotEmpty && egg.speciesId > 0)
-        .toList();
+        .toList(growable: true);
     eggs.sort((a, b) => b.createdAt.compareTo(a.createdAt));
     return eggs;
   }
@@ -25,7 +25,7 @@ class BreedingEggRepository {
   }
 
   Future<void> saveEgg(String profileId, BreedingEgg egg) async {
-    final eggs = await getEggs(profileId);
+    final eggs = List<BreedingEgg>.of(await getEggs(profileId));
     final index = eggs.indexWhere((candidate) => candidate.id == egg.id);
     if (index == -1) {
       eggs.insert(0, egg);

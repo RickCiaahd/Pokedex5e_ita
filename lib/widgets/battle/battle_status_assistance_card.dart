@@ -63,11 +63,10 @@ class BattleStatusAssistanceCard extends StatelessWidget {
                     children: [
                       Text(
                         'ASSISTENZA STATUS',
-                        style: Theme.of(context).textTheme.titleMedium
-                            ?.copyWith(
-                              color: colors.onTertiaryContainer,
-                              fontWeight: FontWeight.w900,
-                            ),
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          color: colors.onTertiaryContainer,
+                          fontWeight: FontWeight.w900,
+                        ),
                       ),
                       const SizedBox(height: 2),
                       Text(

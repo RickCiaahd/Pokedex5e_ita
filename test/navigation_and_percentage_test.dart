@@ -12,9 +12,9 @@ void main() {
           builder: (context) => Scaffold(
             body: Center(
               child: FilledButton(
-                onPressed: () => Navigator.of(
-                  context,
-                ).push(MaterialPageRoute(builder: (_) => const _FirstScreen())),
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const _FirstScreen()),
+                ),
                 child: const Text('APRI PRIMO LIVELLO'),
               ),
             ),
@@ -35,18 +35,16 @@ void main() {
     expect(find.text('SECONDO LIVELLO'), findsNothing);
   });
 
-  testWidgets('il pulsante Home torna direttamente alla radice', (
-    tester,
-  ) async {
+  testWidgets('il pulsante Home torna direttamente alla radice', (tester) async {
     await tester.pumpWidget(
       MaterialApp(
         home: Builder(
           builder: (context) => Scaffold(
             body: Center(
               child: FilledButton(
-                onPressed: () => Navigator.of(
-                  context,
-                ).push(MaterialPageRoute(builder: (_) => const _FirstScreen())),
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const _FirstScreen()),
+                ),
                 child: const Text('APRI PRIMO LIVELLO'),
               ),
             ),
@@ -119,9 +117,9 @@ class _FirstScreen extends StatelessWidget {
       ),
       body: Center(
         child: FilledButton(
-          onPressed: () => Navigator.of(
-            context,
-          ).push(MaterialPageRoute(builder: (_) => const _SecondScreen())),
+          onPressed: () => Navigator.of(context).push(
+            MaterialPageRoute(builder: (_) => const _SecondScreen()),
+          ),
           child: const Text('APRI SECONDO LIVELLO'),
         ),
       ),

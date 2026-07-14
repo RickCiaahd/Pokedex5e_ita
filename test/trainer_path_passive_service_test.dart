@@ -216,7 +216,11 @@ Pokemon _pokemon({
     hiddenAbility: null,
     skills: const [],
     savingThrows: savingThrows,
-    moves: const PokemonMoves(startingMoves: [], levelMoves: {}, tmMoves: []),
+    moves: const PokemonMoves(
+      startingMoves: [],
+      levelMoves: {},
+      tmMoves: [],
+    ),
     hitDice: 6,
     sr: 0.5,
     minLevelFound: 1,

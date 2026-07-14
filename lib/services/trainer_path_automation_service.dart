@@ -23,9 +23,9 @@ class TrainerPathResourceDefinition {
   final String unitLabel;
 
   String get resetLabel => switch (reset) {
-    TrainerPathResourceReset.shortRest => 'Riposo breve',
-    TrainerPathResourceReset.longRest => 'Riposo lungo',
-  };
+        TrainerPathResourceReset.shortRest => 'Riposo breve',
+        TrainerPathResourceReset.longRest => 'Riposo lungo',
+      };
 }
 
 class TrainerPathChoiceDefinition {
@@ -270,7 +270,12 @@ class TrainerPathAutomationService {
           id: 'aceMaxPotential',
           label: 'Potenziamento permanente',
           feature: 'Max Potential',
-          options: const ['+10 ft velocità', '+1 STR', '+1 DEX', '+1 CON'],
+          options: const [
+            '+10 ft velocità',
+            '+1 STR',
+            '+1 DEX',
+            '+1 CON',
+          ],
           description:
               'La scelta si applica a tutti i Pokémon dell’Allenatore.',
         );
@@ -307,16 +312,12 @@ class TrainerPathAutomationService {
               'Il modificatore scelto viene aggiunto alle prove di abilità dei tuoi Pokémon, minimo +1.',
         );
       case 'Type Master':
-        final typeOptions =
-            specializations
-                .map(
-                  (value) =>
-                      TrainerManualOptions.specializationTypeByName[value],
-                )
-                .whereType<String>()
-                .toSet()
-                .toList()
-              ..sort();
+        final typeOptions = specializations
+            .map((value) => TrainerManualOptions.specializationTypeByName[value])
+            .whereType<String>()
+            .toSet()
+            .toList()
+          ..sort();
         add(
           level: 9,
           id: 'typeMasterResistance',
@@ -343,7 +344,8 @@ class TrainerPathAutomationService {
           label: 'Primo legame',
           feature: 'Strong Bond',
           options: names,
-          description: 'Il legame può essere ridefinito dopo un riposo lungo.',
+          description:
+              'Il legame può essere ridefinito dopo un riposo lungo.',
         );
         add(
           level: 9,
@@ -368,10 +370,12 @@ class TrainerPathAutomationService {
     final next = {...current};
     for (final definition in definitions) {
       next[definition.id] = current.containsKey(definition.id)
-          ? (current[definition.id] ?? 0).clamp(0, definition.maxUses).toInt()
+          ? (current[definition.id] ?? 0)
+              .clamp(0, definition.maxUses)
+              .toInt()
           : refillNewResources
-          ? definition.maxUses
-          : 0;
+              ? definition.maxUses
+              : 0;
     }
     return next;
   }
@@ -383,13 +387,12 @@ class TrainerPathAutomationService {
   }) {
     final next = {...current};
     for (final definition in definitions) {
-      next[definition.id] =
-          rest == TrainerPathResourceReset.longRest ||
+      next[definition.id] = rest == TrainerPathResourceReset.longRest ||
               definition.reset == TrainerPathResourceReset.shortRest
           ? definition.maxUses
           : (current[definition.id] ?? definition.maxUses)
-                .clamp(0, definition.maxUses)
-                .toInt();
+              .clamp(0, definition.maxUses)
+              .toInt();
     }
     return next;
   }
@@ -412,14 +415,11 @@ class TrainerPathAutomationService {
     required Map<String, String> current,
     required List<TrainerPathChoiceDefinition> definitions,
   }) {
-    return definitions
-        .where((definition) {
-          if (!definition.isRequired || definition.options.isEmpty)
-            return false;
-          final selected = current[definition.id];
-          return selected == null || !definition.options.contains(selected);
-        })
-        .toList(growable: false);
+    return definitions.where((definition) {
+      if (!definition.isRequired || definition.options.isEmpty) return false;
+      final selected = current[definition.id];
+      return selected == null || !definition.options.contains(selected);
+    }).toList(growable: false);
   }
 
   static int _usesFromAbility(Map<String, int> abilityScores, String ability) {

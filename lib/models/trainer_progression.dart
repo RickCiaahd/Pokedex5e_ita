@@ -4,7 +4,12 @@ class TrainerProgression {
   static const int minLevel = 1;
   static const int maxLevel = 20;
 
-  static const Map<int, int> pokeslotsByLevel = {1: 3, 5: 4, 10: 5, 15: 6};
+  static const Map<int, int> pokeslotsByLevel = {
+    1: 3,
+    5: 4,
+    10: 5,
+    15: 6,
+  };
 
   static const Map<int, int> maxControlledSrByLevel = {
     1: 2,

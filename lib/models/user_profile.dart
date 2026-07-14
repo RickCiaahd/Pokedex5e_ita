@@ -55,13 +55,15 @@ class UserProfile {
     this.trainerPath = '',
     Map<String, String>? trainerPathChoices,
     Map<String, int>? trainerPathResources,
-  }) : abilityScores = Map.unmodifiable(abilityScores ?? defaultAbilityScores),
-       trainerPathChoices = Map.unmodifiable(
-         trainerPathChoices ?? const <String, String>{},
-       ),
-       trainerPathResources = Map.unmodifiable(
-         trainerPathResources ?? const <String, int>{},
-       );
+  })  : abilityScores = Map.unmodifiable(
+          abilityScores ?? defaultAbilityScores,
+        ),
+        trainerPathChoices = Map.unmodifiable(
+          trainerPathChoices ?? const <String, String>{},
+        ),
+        trainerPathResources = Map.unmodifiable(
+          trainerPathResources ?? const <String, int>{},
+        );
 
   factory UserProfile.create(String name) {
     final now = DateTime.now();
@@ -236,9 +238,7 @@ class UserProfile {
 
     return {
       for (final entry in defaultAbilityScores.entries)
-        entry.key: rawScores[entry.key] is int
-            ? rawScores[entry.key]
-            : entry.value,
+        entry.key: rawScores[entry.key] is int ? rawScores[entry.key] : entry.value,
     };
   }
 

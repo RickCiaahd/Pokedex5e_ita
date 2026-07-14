@@ -162,7 +162,8 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
       final isFirstStage = evolution == null || evolution.currentStage <= 1;
 
       return pokemon.sr <= 0.5 && isFirstStage;
-    }).toList()..sort((a, b) => a.id.compareTo(b.id));
+    }).toList()
+      ..sort((a, b) => a.id.compareTo(b.id));
 
     return candidates;
   }
@@ -218,7 +219,8 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
     final previousRace = _raceController.text.trim();
     final nextBonusSource = _originAbilityBonuses(race).isNotEmpty ? race : '';
 
-    if (previousRace == race && _originAbilityBonusSource == nextBonusSource) {
+    if (previousRace == race &&
+        _originAbilityBonusSource == nextBonusSource) {
       return;
     }
 
@@ -242,12 +244,11 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
 
     return {
       for (final entry in UserProfile.defaultAbilityScores.entries)
-        entry.key:
-            ((_abilityScores[entry.key] ?? entry.value) -
-                    (previousBonuses[entry.key] ?? 0) +
-                    (nextBonuses[entry.key] ?? 0))
-                .clamp(1, 30)
-                .toInt(),
+        entry.key: ((_abilityScores[entry.key] ?? entry.value) -
+                (previousBonuses[entry.key] ?? 0) +
+                (nextBonuses[entry.key] ?? 0))
+            .clamp(1, 30)
+            .toInt(),
     };
   }
 
@@ -416,7 +417,8 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
   }
 
   Future<void> _applyTrainerPathTeamPassives(UserProfile profile) async {
-    final loyaltyFloor = TrainerPathPassiveService.starterLoyaltyFloor(profile);
+    final loyaltyFloor =
+        TrainerPathPassiveService.starterLoyaltyFloor(profile);
     final starterName = profile.starterPokemon.trim();
     if (loyaltyFloor == null || starterName.isEmpty) return;
 
@@ -645,14 +647,13 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
     final starter = _selectedStarter;
     if (profile == null || starter == null) return;
 
-    final emptySlots =
-        _team
-            .where(
-              (slot) =>
-                  slot.slotIndex < _unlockedPokeslots && slot.pokemonId == null,
-            )
-            .toList()
-          ..sort((a, b) => a.slotIndex.compareTo(b.slotIndex));
+    final emptySlots = _team
+        .where(
+          (slot) =>
+              slot.slotIndex < _unlockedPokeslots && slot.pokemonId == null,
+        )
+        .toList()
+      ..sort((a, b) => a.slotIndex.compareTo(b.slotIndex));
     if (emptySlots.isEmpty) return;
 
     await _profileRepository.saveProfile(
@@ -702,7 +703,7 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
                 race: _raceController.text.trim(),
                 raceDescription:
                     _originByName(_raceController.text.trim())?.description ??
-                    '',
+                        '',
                 selectedStarter: _selectedStarter,
                 startingPack: _startingPack,
                 trainerLevel: _trainerLevel,
@@ -716,8 +717,7 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
                 skillProficiencies: _skillProficiencies,
                 savingThrowProficiencies: _savingThrowProficiencies,
                 specializations: _specializations,
-                canAddStarterToTeam:
-                    _selectedStarter != null &&
+                canAddStarterToTeam: _selectedStarter != null &&
                     !_starterAlreadyInTeam &&
                     _hasEmptyTeamSlot,
                 starterAlreadyInTeam: _starterAlreadyInTeam,
@@ -1077,7 +1077,10 @@ class _TrainerSheetMainColumn extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _SheetSectionTitle(title: 'TRAINER', trailing: 'LEVEL $trainerLevel'),
+        _SheetSectionTitle(
+          title: 'TRAINER',
+          trailing: 'LEVEL $trainerLevel',
+        ),
         const SizedBox(height: 8),
         Wrap(
           spacing: 8,
@@ -1429,9 +1432,9 @@ class _SelectedProficienciesBox extends StatelessWidget {
         children: [
           Text(
             'Competenze selezionate',
-            style: Theme.of(
-              context,
-            ).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w900),
+            style: Theme.of(context).textTheme.labelLarge?.copyWith(
+              fontWeight: FontWeight.w900,
+            ),
           ),
           const SizedBox(height: 8),
           if (selected.isEmpty)
@@ -1471,16 +1474,16 @@ class _SelectedSkillDescription extends StatelessWidget {
             Expanded(
               child: Text(
                 '${skill.name} (${skill.ability})',
-                style: Theme.of(
-                  context,
-                ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w900),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w900,
+                ),
               ),
             ),
             Text(
               _signed(total),
-              style: Theme.of(
-                context,
-              ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w900),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w900,
+              ),
             ),
           ],
         ),
@@ -1517,7 +1520,10 @@ class _SheetPanel extends StatelessWidget {
             ),
           ),
           const Divider(height: 1),
-          Padding(padding: const EdgeInsets.all(8), child: child),
+          Padding(
+            padding: const EdgeInsets.all(8),
+            child: child,
+          ),
         ],
       ),
     );
@@ -1561,9 +1567,8 @@ class _CheckValueRow extends StatelessWidget {
                 width: 34,
                 child: DecoratedBox(
                   decoration: BoxDecoration(
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.primaryContainer.withValues(alpha: 0.45),
+                    color: Theme.of(context).colorScheme.primaryContainer
+                        .withValues(alpha: 0.45),
                     borderRadius: BorderRadius.circular(3),
                   ),
                   child: Padding(
@@ -1583,9 +1588,9 @@ class _CheckValueRow extends StatelessWidget {
                 child: Text(
                   title,
                   overflow: TextOverflow.ellipsis,
-                  style: Theme.of(
-                    context,
-                  ).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w700),
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
             ],
@@ -1648,13 +1653,11 @@ class _TrainerProgressionColumn extends StatelessWidget {
           _ProgressionChoiceBox(
             title: 'Privilegio del Path',
             level: level,
-            value:
-                feature?.title ??
+            value: feature?.title ??
                 (trainerPath.isEmpty
                     ? 'Path non scelto'
                     : 'Feature non trovata'),
-            detail:
-                feature?.description ??
+            detail: feature?.description ??
                 'Scegli il path al livello 2 per vedere la feature automatica.',
           ),
         );
@@ -1703,7 +1706,10 @@ class _TrainerProgressionColumn extends StatelessWidget {
           trailing: 'LEVEL $trainerLevel',
         ),
         const SizedBox(height: 8),
-        for (final slot in slots) ...[slot, const SizedBox(height: 8)],
+        for (final slot in slots) ...[
+          slot,
+          const SizedBox(height: 8),
+        ],
       ],
     );
   }
@@ -1762,9 +1768,9 @@ class _SheetSectionTitle extends StatelessWidget {
             if (trailing != null)
               Text(
                 trailing!,
-                style: Theme.of(
-                  context,
-                ).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w900),
+                style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                  fontWeight: FontWeight.w900,
+                ),
               ),
           ],
         ),
@@ -1804,9 +1810,9 @@ class _SheetTextBox extends StatelessWidget {
           isDense: true,
           border: InputBorder.none,
         ),
-        style: Theme.of(
-          context,
-        ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
+        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+          fontWeight: FontWeight.w800,
+        ),
       ),
     );
   }
@@ -1945,7 +1951,10 @@ class _SheetCounterBox extends StatelessWidget {
 }
 
 class _SheetBoxFrame extends StatelessWidget {
-  const _SheetBoxFrame({required this.child, this.width});
+  const _SheetBoxFrame({
+    required this.child,
+    this.width,
+  });
 
   final Widget child;
   final double? width;
@@ -1991,9 +2000,9 @@ class _SheetBoxText extends StatelessWidget {
         const SizedBox(height: 3),
         Text(
           value,
-          style: Theme.of(
-            context,
-          ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900),
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(
+            fontWeight: FontWeight.w900,
+          ),
         ),
         if (detail != null && detail!.isNotEmpty) ...[
           const SizedBox(height: 3),
@@ -2101,7 +2110,10 @@ class _ProgressionChoiceBox extends StatelessWidget {
       decoration: BoxDecoration(
         border: Border.all(color: Theme.of(context).colorScheme.outline),
         boxShadow: const [
-          BoxShadow(color: Color(0x18000000), offset: Offset(3, 3)),
+          BoxShadow(
+            color: Color(0x18000000),
+            offset: Offset(3, 3),
+          ),
         ],
         color: Theme.of(context).colorScheme.surface,
       ),
@@ -2133,9 +2145,8 @@ class _ProgressionChoiceBox extends StatelessWidget {
               const SizedBox(height: 8),
               DecoratedBox(
                 decoration: BoxDecoration(
-                  color: Theme.of(
-                    context,
-                  ).colorScheme.primaryContainer.withValues(alpha: 0.45),
+                  color: Theme.of(context).colorScheme.primaryContainer
+                      .withValues(alpha: 0.45),
                   borderRadius: BorderRadius.circular(3),
                 ),
                 child: SizedBox(
@@ -2313,9 +2324,7 @@ class _StarterPickerSheetState extends State<_StarterPickerSheet> {
                     ),
                   ),
                   const SizedBox(height: 4),
-                  const Text(
-                    'Mostro solo Pokémon primo stadio con SR 1/2 o meno.',
-                  ),
+                  const Text('Mostro solo Pokémon primo stadio con SR 1/2 o meno.'),
                   const SizedBox(height: 12),
                   TextField(
                     controller: _searchController,
@@ -2396,9 +2405,9 @@ class _StringPickerSheet extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
               child: Text(
                 title,
-                style: Theme.of(
-                  context,
-                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w900,
+                ),
               ),
             ),
             Flexible(
@@ -2447,7 +2456,10 @@ class _PickerOptionTile extends StatelessWidget {
     return Card(
       child: ListTile(
         enabled: isEnabled,
-        title: Text(title, style: const TextStyle(fontWeight: FontWeight.w800)),
+        title: Text(
+          title,
+          style: const TextStyle(fontWeight: FontWeight.w800),
+        ),
         subtitle: subtitle.isEmpty ? null : Text(subtitle),
         trailing: Icon(
           isSelected ? Icons.check_circle : Icons.radio_button_unchecked,

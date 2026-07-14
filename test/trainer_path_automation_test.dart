@@ -67,7 +67,10 @@ void main() {
           'CHA': 16,
         },
       );
-      final spent = {'commanderShowMe': 0, 'commanderTeamCommand': 1};
+      final spent = {
+        'commanderShowMe': 0,
+        'commanderTeamCommand': 1,
+      };
 
       final shortRest = TrainerPathAutomationService.restoreForRest(
         current: spent,
@@ -85,30 +88,27 @@ void main() {
       expect(longRest['commanderTeamCommand'], 4);
     });
 
-    test(
-      'il cambio di caratteristica riduce senza superare il nuovo massimo',
-      () {
-        final definitions = TrainerPathAutomationService.resourcesFor(
-          trainerPath: 'Ace Trainer',
-          trainerLevel: 5,
-          abilityScores: const {
-            'STR': 10,
-            'DEX': 10,
-            'CON': 10,
-            'INT': 10,
-            'WIS': 12,
-            'CHA': 10,
-          },
-        );
+    test('il cambio di caratteristica riduce senza superare il nuovo massimo', () {
+      final definitions = TrainerPathAutomationService.resourcesFor(
+        trainerPath: 'Ace Trainer',
+        trainerLevel: 5,
+        abilityScores: const {
+          'STR': 10,
+          'DEX': 10,
+          'CON': 10,
+          'INT': 10,
+          'WIS': 12,
+          'CHA': 10,
+        },
+      );
 
-        final reconciled = TrainerPathAutomationService.reconcileResources(
-          current: const {'aceBattleDice': 5},
-          definitions: definitions,
-        );
+      final reconciled = TrainerPathAutomationService.reconcileResources(
+        current: const {'aceBattleDice': 5},
+        definitions: definitions,
+      );
 
-        expect(reconciled['aceBattleDice'], 2);
-      },
-    );
+      expect(reconciled['aceBattleDice'], 2);
+    });
   });
 
   group('TrainerPathAutomationService choices', () {
@@ -116,14 +116,26 @@ void main() {
       TrainerPath(
         name: 'Ace Trainer',
         features: [
-          TrainerPathFeature(level: 2, title: 'Ace Trainer', description: ''),
-          TrainerPathFeature(level: 5, title: 'Battle Master', description: ''),
+          TrainerPathFeature(
+            level: 2,
+            title: 'Ace Trainer',
+            description: '',
+          ),
+          TrainerPathFeature(
+            level: 5,
+            title: 'Battle Master',
+            description: '',
+          ),
         ],
       ),
       TrainerPath(
         name: 'Hobbyist',
         features: [
-          TrainerPathFeature(level: 9, title: 'Many Faces', description: ''),
+          TrainerPathFeature(
+            level: 9,
+            title: 'Many Faces',
+            description: '',
+          ),
         ],
       ),
     ];

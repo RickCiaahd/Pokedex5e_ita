@@ -19,22 +19,26 @@ def replace_block(label: str, replacement: str) -> None:
 
 replace_block(
     'egg list explanation',
-    '''text = text.replace(
+    """text = text.replace(
     'Ogni uovo occupa un Pokéslot secondo il manuale. Il limite resta sotto il controllo del tavolo.',
     'Un uovo trasportato occupa davvero un Pokéslot. Un uovo affidato alla Pensione resta fuori dalla squadra e alla schiusa il Pokémon viene inviato al PC.',
     1,
 )
-''',
+""",
 )
 
 replace_block(
     'team remove only pokemon',
-    '''text = text.replace(
-    "                  onRemove: slot.pokemonId == null\n                      ? null\n                      : () => _setPokemonInSlot(slot.slotIndex, null),",
-    "                  onRemove: slot.isPokemon\n                      ? () => _setPokemonInSlot(slot.slotIndex, null)\n                      : null,",
+    """text = text.replace(
+    '''                  onRemove: slot.pokemonId == null
+                      ? null
+                      : () => _setPokemonInSlot(slot.slotIndex, null),''',
+    '''                  onRemove: slot.isPokemon
+                      ? () => _setPokemonInSlot(slot.slotIndex, null)
+                      : null,''',
     1,
 )
-''',
+""",
 )
 
 path.write_text(text, encoding='utf-8')

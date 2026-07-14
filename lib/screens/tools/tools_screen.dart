@@ -81,11 +81,13 @@ class _ToolsScreenState extends State<ToolsScreen> {
         ),
       ),
     );
+    if (!mounted) return;
     await _load();
   }
 
   Future<void> _open(Widget screen) async {
     await Navigator.of(context).push(MaterialPageRoute(builder: (_) => screen));
+    if (!mounted) return;
     await _load();
   }
 

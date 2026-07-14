@@ -143,14 +143,12 @@ class _PokemonPcScreenState extends State<PokemonPcScreen> {
   List<BreedingEgg> get _filteredPcEggs {
     final query = _pcQuery.trim().toLowerCase();
     if (query.isEmpty) return _pcEggs;
-    return _pcEggs
-        .where((egg) {
-          final pokemon = _pokemonById(egg.speciesId);
-          return 'uovo'.contains(query) ||
-              (pokemon?.name.toLowerCase().contains(query) ?? false) ||
-              egg.parentNames.any((name) => name.toLowerCase().contains(query));
-        })
-        .toList(growable: false);
+    return _pcEggs.where((egg) {
+      final pokemon = _pokemonById(egg.speciesId);
+      return 'uovo'.contains(query) ||
+          (pokemon?.name.toLowerCase().contains(query) ?? false) ||
+          egg.parentNames.any((name) => name.toLowerCase().contains(query));
+    }).toList(growable: false);
   }
 
   BreedingEgg? _eggById(String? eggId) {
@@ -466,7 +464,7 @@ class _PokemonPcScreenState extends State<PokemonPcScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: _PcToolbar(
                       storedCount: filteredCount,
-                      totalCount: storedCount,
+                       totalCount: storedCount,
                       showSearch: _showPcSearch,
                       controller: _pcSearchController,
                       onSearchTap: _togglePcSearch,
@@ -475,44 +473,43 @@ class _PokemonPcScreenState extends State<PokemonPcScreen> {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  Expanded(
-                    child: storedCount == 0
-                        ? const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 16),
-                            child: _PcEmptyState(),
-                          )
-                        : filteredCount == 0
-                        ? const _PcNoSearchResults()
-                        : GridView.builder(
-                            padding: const EdgeInsets.fromLTRB(16, 0, 16, 18),
-                            gridDelegate:
-                                const SliverGridDelegateWithMaxCrossAxisExtent(
-                                  maxCrossAxisExtent: 88,
-                                  mainAxisSpacing: 8,
-                                  crossAxisSpacing: 8,
-                                  childAspectRatio: 1,
-                                ),
-                            itemCount: filteredCount,
-                            itemBuilder: (context, index) {
-                              if (index < filteredPcPokemon.length) {
-                                final item = filteredPcPokemon[index];
-                                return _PcGridCell(
-                                  pcPokemon: item,
-                                  pokemon: _pokemonById(item.pokemonId),
-                                  onTap: () => _openPcPokemonActions(item),
-                                );
-                              }
-                              final egg =
-                                  filteredPcEggs[index -
-                                      filteredPcPokemon.length];
-                              return PcEggGridCell(
-                                egg: egg,
-                                pokemon: _pokemonById(egg.speciesId),
-                                onTap: () => _openPcEggActions(egg),
-                              );
-                            },
-                          ),
-                  ),
+                                     Expanded(
+                     child: storedCount == 0
+                         ? const Padding(
+                             padding: EdgeInsets.symmetric(horizontal: 16),
+                             child: _PcEmptyState(),
+                           )
+                         : filteredCount == 0
+                         ? const _PcNoSearchResults()
+                         : GridView.builder(
+                             padding: const EdgeInsets.fromLTRB(16, 0, 16, 18),
+                             gridDelegate:
+                                 const SliverGridDelegateWithMaxCrossAxisExtent(
+                                   maxCrossAxisExtent: 88,
+                                   mainAxisSpacing: 8,
+                                   crossAxisSpacing: 8,
+                                   childAspectRatio: 1,
+                                 ),
+                             itemCount: filteredCount,
+                             itemBuilder: (context, index) {
+                               if (index < filteredPcPokemon.length) {
+                                 final item = filteredPcPokemon[index];
+                                 return _PcGridCell(
+                                   pcPokemon: item,
+                                   pokemon: _pokemonById(item.pokemonId),
+                                   onTap: () => _openPcPokemonActions(item),
+                                 );
+                               }
+                               final egg = filteredPcEggs[
+                                   index - filteredPcPokemon.length];
+                               return PcEggGridCell(
+                                 egg: egg,
+                                 pokemon: _pokemonById(egg.speciesId),
+                                 onTap: () => _openPcEggActions(egg),
+                               );
+                             },
+                           ),
+                   ),
                 ],
               ),
             ),
@@ -535,9 +532,9 @@ class _PokemonPcScreenState extends State<PokemonPcScreen> {
         await _moveEggToTeam(egg);
         break;
       case PcEggAction.openBreeding:
-        await Navigator.of(
-          context,
-        ).push(MaterialPageRoute(builder: (_) => const BreedingScreen()));
+        await Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) => const BreedingScreen()),
+        );
         await _loadPc(clearMessages: false);
         break;
     }

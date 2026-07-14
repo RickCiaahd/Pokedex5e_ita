@@ -1,4 +1,9 @@
-enum BattleStatusMoment { turnStart, actionAttempt, subjectedToMove, turnEnd }
+enum BattleStatusMoment {
+  turnStart,
+  actionAttempt,
+  subjectedToMove,
+  turnEnd,
+}
 
 extension BattleStatusMomentLabel on BattleStatusMoment {
   String get label => switch (this) {

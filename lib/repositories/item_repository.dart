@@ -93,10 +93,10 @@ class ItemRepository {
   }
 
   String _moveTypeFileName(String type) {
-    final normalized = type.trim().toLowerCase().replaceAll(
-      RegExp(r'[^a-z0-9]+'),
-      '-',
-    );
+    final normalized = type
+        .trim()
+        .toLowerCase()
+        .replaceAll(RegExp(r'[^a-z0-9]+'), '-');
 
     return normalized
         .split('-')

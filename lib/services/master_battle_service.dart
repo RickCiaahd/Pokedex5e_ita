@@ -173,7 +173,9 @@ class MasterBattleService {
     return createSession(
       profileId: profileId,
       trainers: [wildGroup],
-      activeCounts: {wildGroup.id: activeCount.clamp(1, team.length).toInt()},
+      activeCounts: {
+        wildGroup.id: activeCount.clamp(1, team.length).toInt(),
+      },
       catalog: catalog,
       random: random,
     );

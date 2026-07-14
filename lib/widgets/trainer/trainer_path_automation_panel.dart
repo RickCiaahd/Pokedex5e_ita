@@ -54,15 +54,16 @@ class TrainerPathAutomationPanel extends StatelessWidget {
                     children: [
                       Text(
                         'GESTIONE TRAINER PATH',
-                        style: Theme.of(context).textTheme.titleMedium
-                            ?.copyWith(fontWeight: FontWeight.w900),
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w900,
+                            ),
                       ),
                       const SizedBox(height: 2),
                       Text(
                         trainerPath,
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          fontWeight: FontWeight.w800,
-                        ),
+                              fontWeight: FontWeight.w800,
+                            ),
                       ),
                     ],
                   ),
@@ -77,9 +78,9 @@ class TrainerPathAutomationPanel extends StatelessWidget {
               const SizedBox(height: 16),
               Text(
                 'SCELTE DEI PRIVILEGI',
-                style: Theme.of(
-                  context,
-                ).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w900),
+                style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                      fontWeight: FontWeight.w900,
+                    ),
               ),
               const SizedBox(height: 8),
               for (final choice in choices) ...[
@@ -103,9 +104,9 @@ class TrainerPathAutomationPanel extends StatelessWidget {
               const SizedBox(height: 16),
               Text(
                 'RISORSE DISPONIBILI',
-                style: Theme.of(
-                  context,
-                ).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w900),
+                style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                      fontWeight: FontWeight.w900,
+                    ),
               ),
               const SizedBox(height: 8),
               for (final resource in resources) ...[
@@ -181,7 +182,9 @@ class _PathChoiceField extends StatelessWidget {
             border: const OutlineInputBorder(),
           ),
           hint: Text(
-            options.isEmpty ? 'Nessuna opzione disponibile' : definition.label,
+            options.isEmpty
+                ? 'Nessuna opzione disponibile'
+                : definition.label,
           ),
           items: [
             for (final option in options)
@@ -247,9 +250,9 @@ class _PathResourceRow extends StatelessWidget {
               child: Text(
                 '$current/${definition.maxUses} ${definition.unitLabel}',
                 textAlign: TextAlign.center,
-                style: Theme.of(
-                  context,
-                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w900,
+                    ),
               ),
             ),
             IconButton(

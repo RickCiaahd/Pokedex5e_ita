@@ -20,7 +20,11 @@ class BagInventoryEntry {
   }
 
   Map<String, dynamic> toJson() {
-    return {'profileId': profileId, 'itemId': itemId, 'quantity': quantity};
+    return {
+      'profileId': profileId,
+      'itemId': itemId,
+      'quantity': quantity,
+    };
   }
 
   factory BagInventoryEntry.fromJson(Map<String, dynamic> json) {
@@ -31,6 +35,5 @@ class BagInventoryEntry {
     );
   }
 
-  static String keyFor(String profileId, String itemId) =>
-      '$profileId::$itemId';
+  static String keyFor(String profileId, String itemId) => '$profileId::$itemId';
 }

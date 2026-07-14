@@ -22,18 +22,24 @@ class PcPokemon {
     this.customAbilityScores = const {},
     this.loyalty = 0,
     this.notes = '',
-  }) : capturedAt = capturedAt ?? DateTime.now(),
-       gender = PokemonFormPreferences.normalizeGender(gender),
-       formName = PokemonFormPreferences.normalizeFormName(
-         formName: formName,
-         gender: gender,
-       ) {
+  })  : capturedAt = capturedAt ?? DateTime.now(),
+        gender = PokemonFormPreferences.normalizeGender(gender),
+        formName = PokemonFormPreferences.normalizeFormName(
+          formName: formName,
+          gender: gender,
+        ) {
     PokemonFormPreferences.setForm(
       pokemonId: pokemonId,
       formName: this.formName,
     );
-    PokemonFormPreferences.setShiny(pokemonId: pokemonId, isShiny: isShiny);
-    PokemonFormPreferences.setGender(pokemonId: pokemonId, gender: this.gender);
+    PokemonFormPreferences.setShiny(
+      pokemonId: pokemonId,
+      isShiny: isShiny,
+    );
+    PokemonFormPreferences.setGender(
+      pokemonId: pokemonId,
+      gender: this.gender,
+    );
   }
 
   final String id;
@@ -136,13 +142,9 @@ class PcPokemon {
 
   factory PcPokemon.fromJson(Map<String, dynamic> json) {
     return PcPokemon(
-      id:
-          json['id']?.toString() ??
-          DateTime.now().microsecondsSinceEpoch.toString(),
+      id: json['id']?.toString() ?? DateTime.now().microsecondsSinceEpoch.toString(),
       pokemonId: _readInt(json['pokemonId']),
-      capturedAt:
-          DateTime.tryParse(json['capturedAt']?.toString() ?? '') ??
-          DateTime.now(),
+      capturedAt: DateTime.tryParse(json['capturedAt']?.toString() ?? '') ?? DateTime.now(),
       experience: _readInt(json['experience']),
       currentHp: _readInt(json['currentHp']),
       nickname: json['nickname'] as String?,
@@ -156,9 +158,7 @@ class PcPokemon {
       feats: List<String>.from(json['feats'] ?? const []),
       extraSkills: List<String>.from(json['extraSkills'] ?? const []),
       statusEffects: List<String>.from(json['statusEffects'] ?? const []),
-      customAbilityScores: Map<String, int>.from(
-        json['customAbilityScores'] ?? const {},
-      ),
+      customAbilityScores: Map<String, int>.from(json['customAbilityScores'] ?? const {}),
       loyalty: _readInt(json['loyalty']),
       notes: json['notes'] as String? ?? '',
     );

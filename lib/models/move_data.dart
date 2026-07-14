@@ -106,9 +106,9 @@ class MoveData {
       attackScope: attackMap?['scope']?.toString(),
       save: _readSave(saveMap),
       damageModifier: damageMap?['modifier']?.toString(),
-      damageTypes: _readStringList(
-        damageMap?['type'],
-      ).map(_titleCase).toList(growable: false),
+      damageTypes: _readStringList(damageMap?['type'])
+          .map(_titleCase)
+          .toList(growable: false),
       tmNumber: _readInt(tmMap?['id']),
       tmCost: _readInt(tmMap?['cost']),
     );
@@ -212,9 +212,9 @@ class MoveData {
   static String? _readSave(Map<String, dynamic>? saveMap) {
     if (saveMap == null) return null;
 
-    final attributes = _readStringList(
-      saveMap['attribute'],
-    ).map((attribute) => attribute.toUpperCase()).toList(growable: false);
+    final attributes = _readStringList(saveMap['attribute'])
+        .map((attribute) => attribute.toUpperCase())
+        .toList(growable: false);
     if (attributes.isEmpty) return 'SAVE';
 
     return attributes.join('/');
@@ -231,10 +231,7 @@ class MoveData {
         .trim()
         .split(RegExp(r'[\s_-]+'))
         .where((part) => part.isNotEmpty)
-        .map(
-          (part) =>
-              '${part[0].toUpperCase()}${part.substring(1).toLowerCase()}',
-        )
+        .map((part) => '${part[0].toUpperCase()}${part.substring(1).toLowerCase()}')
         .join(' ');
   }
 }

@@ -94,8 +94,9 @@ class PcEggActionSheet extends StatelessWidget {
                     children: [
                       Text(
                         'UOVO${pokemon == null ? '' : ' DI ${pokemon!.name.toUpperCase()}'}',
-                        style: Theme.of(context).textTheme.titleMedium
-                            ?.copyWith(fontWeight: FontWeight.w900),
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w900,
+                        ),
                       ),
                       Text(
                         egg.isReady
@@ -120,8 +121,7 @@ class PcEggActionSheet extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             OutlinedButton.icon(
-              onPressed: () =>
-                  Navigator.of(context).pop(PcEggAction.openBreeding),
+              onPressed: () => Navigator.of(context).pop(PcEggAction.openBreeding),
               icon: const Icon(Icons.egg_alt_outlined),
               label: const Text('GESTISCI IN ALLEVAMENTO'),
             ),

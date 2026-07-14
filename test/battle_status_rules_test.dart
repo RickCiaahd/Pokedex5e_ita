@@ -28,7 +28,10 @@ void main() {
         moment: BattleStatusMoment.actionAttempt,
       );
 
-      expect(reminders.map((item) => item.status), ['Paralyzed', 'Confused']);
+      expect(reminders.map((item) => item.status), [
+        'Paralyzed',
+        'Confused',
+      ]);
       expect(reminders.first.instruction, contains('non può agire'));
     });
 
@@ -104,10 +107,7 @@ void main() {
       );
 
       expect(passive.single.instruction, contains('prossimo turno'));
-      expect(
-        end.single.instruction,
-        contains('Se questo è il turno successivo'),
-      );
+      expect(end.single.instruction, contains('Se questo è il turno successivo'));
     });
   });
 }

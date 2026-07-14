@@ -21,7 +21,12 @@ class EvolutionFormAliasCatalog {
 class EvolutionFormAliasService {
   const EvolutionFormAliasService();
 
-  static const _regionalForms = {'alolan', 'galarian', 'hisuian', 'paldean'};
+  static const _regionalForms = {
+    'alolan',
+    'galarian',
+    'hisuian',
+    'paldean',
+  };
 
   EvolutionFormAliasCatalog build({
     required Pokemon currentBasePokemon,
@@ -37,11 +42,9 @@ class EvolutionFormAliasService {
     );
 
     for (final basePokemon in catalog) {
-      for (
-        var index = 0;
-        index < basePokemon.formDefinitions.length;
-        index += 1
-      ) {
+      for (var index = 0;
+          index < basePokemon.formDefinitions.length;
+          index += 1) {
         final definition = basePokemon.formDefinitions[index];
         if (definition.gender != null ||
             _isTemporaryTransformation(basePokemon, definition)) {
@@ -51,7 +54,10 @@ class EvolutionFormAliasService {
         final formName = definition.displayName.trim().isEmpty
             ? definition.key
             : definition.displayName;
-        final formKey = Pokemon.formReferenceKey(formName, basePokemon.name);
+        final formKey = Pokemon.formReferenceKey(
+          formName,
+          basePokemon.name,
+        );
         if (formKey.isEmpty || formKey == 'base') continue;
 
         final syntheticId = _syntheticId(basePokemon.id, index);
@@ -76,7 +82,11 @@ class EvolutionFormAliasService {
     }
 
     return EvolutionFormAliasCatalog(
-      pokemon: [...preferredRegionalAliases, ...explicitAliases, ...catalog],
+      pokemon: [
+        ...preferredRegionalAliases,
+        ...explicitAliases,
+        ...catalog,
+      ],
       bySyntheticId: Map<int, PokemonEvolutionAlias>.unmodifiable(
         bySyntheticId,
       ),

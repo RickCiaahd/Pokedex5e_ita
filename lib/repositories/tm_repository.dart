@@ -16,14 +16,11 @@ class TmRepository {
     final json = Map<String, dynamic>.from(jsonDecode(jsonString));
     final tmsJson = List<dynamic>.from(json['tms'] ?? const []);
 
-    _cache =
-        tmsJson
-            .map(
-              (value) => TmData.fromWebJson(Map<String, dynamic>.from(value)),
-            )
-            .where((tm) => tm.number > 0 && tm.moveId.trim().isNotEmpty)
-            .toList(growable: false)
-          ..sort((a, b) => a.number.compareTo(b.number));
+    _cache = tmsJson
+        .map((value) => TmData.fromWebJson(Map<String, dynamic>.from(value)))
+        .where((tm) => tm.number > 0 && tm.moveId.trim().isNotEmpty)
+        .toList(growable: false)
+      ..sort((a, b) => a.number.compareTo(b.number));
 
     return _cache!;
   }

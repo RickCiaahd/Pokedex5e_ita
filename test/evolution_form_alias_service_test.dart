@@ -9,58 +9,57 @@ void main() {
 
   const service = EvolutionFormAliasService();
 
-  test(
-    'Alolan Rattata prefers Alolan Raticate for the base target name',
-    () async {
-      final catalog = await PokemonRepository().getAllPokemon();
-      final rattata = catalog.firstWhere((pokemon) => pokemon.id == 19);
-      final result = service.build(
-        currentBasePokemon: rattata,
-        slot: TeamSlot(slotIndex: 0, pokemonId: 19, formName: 'Alolan'),
-        catalog: catalog,
-      );
+  test('Alolan Rattata prefers Alolan Raticate for the base target name', () async {
+    final catalog = await PokemonRepository().getAllPokemon();
+    final rattata = catalog.firstWhere((pokemon) => pokemon.id == 19);
+    final result = service.build(
+      currentBasePokemon: rattata,
+      slot: TeamSlot(
+        slotIndex: 0,
+        pokemonId: 19,
+        formName: 'Alolan',
+      ),
+      catalog: catalog,
+    );
 
-      final aliasPokemon = result.pokemon.firstWhere(
-        (pokemon) => pokemon.id < 0 && pokemon.name == 'Raticate',
-      );
-      final alias = result.bySyntheticId[aliasPokemon.id];
+    final aliasPokemon = result.pokemon.firstWhere(
+      (pokemon) => pokemon.id < 0 && pokemon.name == 'Raticate',
+    );
+    final alias = result.bySyntheticId[aliasPokemon.id];
 
-      expect(alias, isNotNull);
-      expect(alias!.basePokemon.id, 20);
-      expect(
-        Pokemon.formReferenceKey(alias.formName, alias.basePokemon.name),
-        'alolan',
-      );
-      expect(aliasPokemon.types, containsAll(<String>['Dark', 'Normal']));
-    },
-  );
+    expect(alias, isNotNull);
+    expect(alias!.basePokemon.id, 20);
+    expect(
+      Pokemon.formReferenceKey(alias.formName, alias.basePokemon.name),
+      'alolan',
+    );
+    expect(aliasPokemon.types, containsAll(<String>['Dark', 'Normal']));
+  });
 
-  test(
-    'explicit Alolan Raichu evolution target is available by name',
-    () async {
-      final catalog = await PokemonRepository().getAllPokemon();
-      final pikachu = catalog.firstWhere((pokemon) => pokemon.id == 25);
-      final result = service.build(
-        currentBasePokemon: pikachu,
-        slot: TeamSlot(slotIndex: 0, pokemonId: 25),
-        catalog: catalog,
-      );
+  test('explicit Alolan Raichu evolution target is available by name', () async {
+    final catalog = await PokemonRepository().getAllPokemon();
+    final pikachu = catalog.firstWhere((pokemon) => pokemon.id == 25);
+    final result = service.build(
+      currentBasePokemon: pikachu,
+      slot: TeamSlot(slotIndex: 0, pokemonId: 25),
+      catalog: catalog,
+    );
 
-      final aliasPokemon = result.pokemon.firstWhere(
-        (pokemon) =>
-            pokemon.id < 0 && pokemon.name.toLowerCase() == 'alolan raichu',
-      );
-      final alias = result.bySyntheticId[aliasPokemon.id];
+    final aliasPokemon = result.pokemon.firstWhere(
+      (pokemon) =>
+          pokemon.id < 0 &&
+          pokemon.name.toLowerCase() == 'alolan raichu',
+    );
+    final alias = result.bySyntheticId[aliasPokemon.id];
 
-      expect(alias, isNotNull);
-      expect(alias!.basePokemon.id, 26);
-      expect(
-        Pokemon.formReferenceKey(alias.formName, alias.basePokemon.name),
-        'alolan',
-      );
-      expect(aliasPokemon.types, containsAll(<String>['Electric', 'Psychic']));
-    },
-  );
+    expect(alias, isNotNull);
+    expect(alias!.basePokemon.id, 26);
+    expect(
+      Pokemon.formReferenceKey(alias.formName, alias.basePokemon.name),
+      'alolan',
+    );
+    expect(aliasPokemon.types, containsAll(<String>['Electric', 'Psychic']));
+  });
 
   test('temporary battle transformations are not evolution aliases', () async {
     final catalog = await PokemonRepository().getAllPokemon();

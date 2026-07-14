@@ -21,6 +21,9 @@ jobs:
         with:
           ref: agent/eggs-in-team-and-daycare
 
+      - name: Normalize patch script
+        run: python .github/agent/fix_apply_eggs_script.py
+
       - name: Apply changes
         run: |
           set -o pipefail
@@ -38,6 +41,7 @@ jobs:
       - name: Commit generated changes
         run: |
           rm .github/agent/apply_eggs_in_team.py
+          rm .github/agent/fix_apply_eggs_script.py
           rm .github/workflows/agent-apply-eggs-in-team.yml
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"

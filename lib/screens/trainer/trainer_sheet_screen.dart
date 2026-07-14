@@ -14,6 +14,7 @@ import '../../repositories/profile_repository.dart';
 import '../../repositories/team_repository.dart';
 import '../../repositories/trainer_manual_repository.dart';
 import '../../services/trainer_path_automation_service.dart';
+import '../../services/trainer_path_passive_service.dart';
 import '../../widgets/navigation/home_leading_button.dart';
 import '../../widgets/trainer/trainer_path_automation_panel.dart';
 
@@ -415,6 +416,30 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
     });
   }
 
+  Future<void> _applyTrainerPathTeamPassives(UserProfile profile) async {
+    final loyaltyFloor =
+        TrainerPathPassiveService.starterLoyaltyFloor(profile);
+    final starterName = profile.starterPokemon.trim();
+    if (loyaltyFloor == null || starterName.isEmpty) return;
+
+    final updatedTeam = <TeamSlot>[];
+    for (final slot in _team) {
+      final pokemonId = slot.pokemonId;
+      final pokemon = pokemonId == null ? null : _pokemonById[pokemonId];
+      if (pokemon?.name != starterName || slot.loyalty >= loyaltyFloor) {
+        updatedTeam.add(slot);
+        continue;
+      }
+      final updatedSlot = slot.copyWith(loyalty: loyaltyFloor);
+      await _teamRepository.updateSlot(
+        profileId: profile.id,
+        updatedSlot: updatedSlot,
+      );
+      updatedTeam.add(updatedSlot);
+    }
+    _team = updatedTeam;
+  }
+
   Future<void> _saveProfile() async {
     final profile = _profile;
     if (profile == null) return;
@@ -460,6 +485,7 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
       );
 
       await _profileRepository.saveProfile(updated);
+      await _applyTrainerPathTeamPassives(updated);
 
       if (!mounted) return;
 

@@ -16,6 +16,7 @@ import '../../repositories/pokemon_repository.dart';
 import '../../repositories/profile_repository.dart';
 import '../../repositories/team_repository.dart';
 import '../../repositories/tm_repository.dart';
+import '../../services/trainer_path_passive_service.dart';
 import '../../widgets/navigation/home_leading_button.dart';
 import '../../widgets/pokemon/pokemon_asset_image.dart';
 
@@ -39,6 +40,7 @@ class _BagScreenState extends State<BagScreen> {
   late Future<_BagData> _dataFuture;
   String? _selectedType;
   String? _message;
+  UserProfile? _activeProfile;
 
   @override
   void initState() {
@@ -48,6 +50,7 @@ class _BagScreenState extends State<BagScreen> {
 
   Future<_BagData> _loadBagData() async {
     final profile = await _profileRepository.getActiveProfile();
+    _activeProfile = profile;
     final catalog = await _itemRepository.getWebItems();
     final inventory = await _bagRepository.getInventory(profile.id);
     final team = await _teamRepository.getTeam(profile.id);
@@ -586,32 +589,12 @@ class _BagScreenState extends State<BagScreen> {
   }
 
   int _maxHpFor(Pokemon pokemon, TeamSlot slot) {
-    final level = LevelProgression.levelFromExperience(slot.experience);
-    final safeLevel = level.clamp(1, LevelProgression.maxLevel).toInt();
-    final minimumLevel = pokemon.minLevelFound <= 0 ? 1 : pokemon.minLevelFound;
-    final levelsGained = (safeLevel - minimumLevel)
-        .clamp(0, LevelProgression.maxLevel)
-        .toInt();
-    final hitDieAverage = ((pokemon.hitDice + 1) / 2).ceil();
-    final customCon = slot.customAbilityScores['CON'] ?? 0;
-    final constitution = pokemon.attributes.constitution + customCon;
-    final constitutionModifier = ((constitution - 10) / 2).floor();
-    final toughBonus = slot.feats.contains('Tough') ? safeLevel * 2 : 0;
-    final loyaltyBonus = _loyaltyHpBonus(slot.loyalty, safeLevel);
-    final scaledHp =
-        pokemon.hitPoints +
-        (hitDieAverage * levelsGained) +
-        (constitutionModifier * safeLevel) +
-        toughBonus +
-        loyaltyBonus;
-
-    return scaledHp < 1 ? 1 : scaledHp;
-  }
-
-  int _loyaltyHpBonus(int loyalty, int level) {
-    if (loyalty == 2) return (level / 2).ceil();
-    if (loyalty == 3) return level;
-    return 0;
+    return TrainerPathPassiveService.maxHp(
+      profile: _activeProfile,
+      pokemon: pokemon,
+      slot: slot,
+      level: LevelProgression.levelFromExperience(slot.experience),
+    );
   }
 
   bool _isSupportedMedicine(String itemId) {

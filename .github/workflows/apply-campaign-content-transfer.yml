@@ -27,21 +27,17 @@ jobs:
           ref: feature/campaign-content-transfer
           fetch-depth: 0
 
-      - name: Correct patch indentation
+      - name: Align trainer library patch source
         run: |
           python - <<'PY'
           from pathlib import Path
-          path = Path('tool/apply_campaign_content_transfer.py')
+          path = Path('lib/screens/tools/npc_trainer_library_screen.dart')
           text = path.read_text(encoding='utf-8')
-          text = text.replace(
-              'onFight: () => _startFight([trainer]),\\n                   onDuplicate: () => _duplicateTrainer(trainer),\\n',
-              'onFight: () => _startFight([trainer]),\\n                  onDuplicate: () => _duplicateTrainer(trainer),\\n',
-          )
-          text = text.replace(
-              'onFight: () => _startFight([trainer]),\\n                   onExport: () => _exportTrainer(trainer),\\n                   onDuplicate: () => _duplicateTrainer(trainer),\\n',
-              'onFight: () => _startFight([trainer]),\\n                  onExport: () => _exportTrainer(trainer),\\n                  onDuplicate: () => _duplicateTrainer(trainer),\\n',
-          )
-          path.write_text(text, encoding='utf-8')
+          old = "                  onFight: () => _startFight([trainer]),\n                  onDuplicate: () => _duplicateTrainer(trainer),\n"
+          new = "                   onFight: () => _startFight([trainer]),\n                   onDuplicate: () => _duplicateTrainer(trainer),\n"
+          if text.count(old) != 1:
+              raise SystemExit(f'Trainer source occurrence count: {text.count(old)}')
+          path.write_text(text.replace(old, new), encoding='utf-8')
           PY
 
       - name: Apply UI integration

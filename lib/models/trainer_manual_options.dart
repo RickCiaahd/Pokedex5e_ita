@@ -90,6 +90,27 @@ class TrainerManualOptions {
     'Gardener',
   ];
 
+  static const Map<String, String> specializationTypeByName = {
+    'Bird Keeper': 'Volante',
+    'Bug Maniac': 'Coleottero',
+    'Camper': 'Terra',
+    'Dragon Tamer': 'Drago',
+    'Engineer': 'Elettro',
+    'Martial Artist': 'Lotta',
+    'Mountaineer': 'Roccia',
+    'Mystic': 'Spettro',
+    'Steel Worker': 'Acciaio',
+    'Psychic': 'Psico',
+    'Swimmer': 'Acqua',
+    'Charmer': 'Folletto',
+    'Shadow': 'Buio',
+    'Alchemist': 'Veleno',
+    'Team Player': 'Normale',
+    'Ice Skater': 'Ghiaccio',
+    'Pyromaniac': 'Fuoco',
+    'Gardener': 'Erba',
+  };
+
   static const Map<String, String> specializationNotes = {
     'Bird Keeper':
         'Ottieni competenza in Perception. I tuoi Pokémon Volante aggiungono +1 alle prove di abilita.',

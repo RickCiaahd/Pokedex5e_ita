@@ -1,0 +1,36 @@
+name: Fix trainer path automation
+
+on:
+  push:
+    branches:
+      - agent/trainer-path-automation
+    paths:
+      - tooling/fix_trainer_path_automation.py
+      - .github/workflows/fix-trainer-path-automation.yml
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v4
+        with:
+          ref: agent/trainer-path-automation
+          fetch-depth: 0
+
+      - name: Apply fixes
+        run: python tooling/fix_trainer_path_automation.py
+
+      - name: Remove temporary patch tooling
+        run: rm tooling/fix_trainer_path_automation.py .github/workflows/fix-trainer-path-automation.yml
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add lib/screens/trainer/trainer_sheet_screen.dart lib/services/trainer_path_automation_service.dart lib/widgets/trainer/trainer_path_automation_panel.dart tooling/fix_trainer_path_automation.py .github/workflows/fix-trainer-path-automation.yml
+          git commit -m "Rifinisce la gestione delle risorse Trainer Path"
+          git push origin HEAD:agent/trainer-path-automation

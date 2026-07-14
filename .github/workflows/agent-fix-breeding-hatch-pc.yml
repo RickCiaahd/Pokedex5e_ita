@@ -1,0 +1,31 @@
+name: Fix breeding hatch PC
+
+on:
+  push:
+    branches:
+      - fix/breeding-hatch-pc
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v4
+        with:
+          ref: fix/breeding-hatch-pc
+
+      - name: Apply patch
+        run: python .github/agent/fix_breeding_hatch_pc.py
+
+      - name: Commit patch
+        run: |
+          rm .github/agent/fix_breeding_hatch_pc.py
+          rm .github/workflows/agent-fix-breeding-hatch-pc.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Corregge la schiusa con Pokéslot pieni"
+          git push origin HEAD:fix/breeding-hatch-pc

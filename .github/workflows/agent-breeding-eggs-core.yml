@@ -1,0 +1,41 @@
+name: Apply breeding eggs core
+
+on:
+  push:
+    branches:
+      - agent/breeding-eggs-core
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v4
+        with:
+          ref: agent/breeding-eggs-core
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Apply breeding changes
+        run: python .github/agent/apply_breeding_core.py
+
+      - name: Format Dart files
+        run: dart format lib test
+
+      - name: Commit generated changes
+        run: |
+          rm .github/agent/apply_breeding_core.py
+          rm .github/workflows/agent-breeding-eggs-core.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Aggiunge allevamento, uova e incubazione"
+          git push origin HEAD:agent/breeding-eggs-core

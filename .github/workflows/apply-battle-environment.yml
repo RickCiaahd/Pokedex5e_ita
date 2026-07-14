@@ -60,7 +60,7 @@ jobs:
         run: flutter analyze
 
       - name: Validate application data
-        run: dart run tool/validate_data.dart
+        run: flutter test test/data_integrity_test.dart --reporter expanded
 
       - name: Run complete test suite
         run: flutter test --reporter expanded

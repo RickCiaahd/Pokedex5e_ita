@@ -122,6 +122,59 @@ jobs:
               ")",
           ]
 
+          replace_block(
+              "'enable egg deposit from pc team panel',",
+              [
+                  "old_deposit_binding = 'onDeposit: slot.isPokemon ? () => onDeposit(slot) : null,'",
+                  "new_deposit_binding = 'onDeposit: slot.isEmpty ? null : () => onDeposit(slot),'",
+                  "if text.count(old_deposit_binding) != 1:",
+                  "    raise RuntimeError(",
+                  "        f'enable egg deposit from pc team panel: atteso 1 match, trovati {text.count(old_deposit_binding)}'",
+                  "    )",
+                  "text = text.replace(old_deposit_binding, new_deposit_binding, 1)",
+              ],
+          )
+
+          replace_block(
+              "'use smaller pc egg sprite',",
+              [
+                  "egg_sprite_pattern = (",
+                  "    r'slot\\.isEgg\\n'",
+                  "    r'\\s+\\? EggAssetImage\\(size: spriteSize\\)'",
+                  ")",
+                  "if len(re.findall(egg_sprite_pattern, text)) != 1:",
+                  "    raise RuntimeError(",
+                  "        f'use smaller pc egg sprite: atteso 1 match, trovati {len(re.findall(egg_sprite_pattern, text))}'",
+                  "    )",
+                  "text = re.sub(",
+                  "    egg_sprite_pattern,",
+                  "    'slot.isEgg\\n                    ? EggAssetImage(size: eggSpriteSize)',",
+                  "    text,",
+                  "    count=1,",
+                  ")",
+              ],
+          )
+
+          replace_block(
+              "'show deposit button for egg',",
+              [
+                  "deposit_button_pattern = (",
+                  "    r'if \\(pokemon != null\\)\\n'",
+                  "    r'(\\s+)TextButton\\('",
+                  ")",
+                  "if len(re.findall(deposit_button_pattern, text)) != 1:",
+                  "    raise RuntimeError(",
+                  "        f'show deposit button for egg: atteso 1 match, trovati {len(re.findall(deposit_button_pattern, text))}'",
+                  "    )",
+                  "text = re.sub(",
+                  "    deposit_button_pattern,",
+                  "    r'if (onDeposit != null)\\n\\1TextButton(',",
+                  "    text,",
+                  "    count=1,",
+                  ")",
+              ],
+          )
+
           path.write_text('\n'.join(lines) + '\n', encoding='utf-8')
           PY
 

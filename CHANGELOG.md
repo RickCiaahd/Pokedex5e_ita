@@ -25,7 +25,8 @@ Tutte le modifiche rilevanti al progetto vengono documentate in questo file.
 - editor delle probabilità delle raccolte corretto per consentire la digitazione di percentuali a più cifre senza perdere il focus;
 - controllo del combattimento semplificato: resta un solo pulsante `PROSSIMO TURNO`, che avanza automaticamente il round al termine dell’iniziativa;
 - i privilegi ottenuti ai livelli 5, 9 e 15 sono indicati come `Privilegio del Path`, distinguendoli dalla scelta iniziale del Trainer Path;
-- il cambio di un Trainer Path già salvato richiede ora una conferma esplicita.
+- il cambio di un Trainer Path già salvato richiede ora una conferma esplicita;
+- corretto il salvataggio del primo uovo di un profilo, che prima poteva mostrare `Unsupported operation: insert`.
 
 ### In programma
 

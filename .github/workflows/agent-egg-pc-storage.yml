@@ -21,38 +21,61 @@ jobs:
         with:
           ref: agent/egg-pc-storage-and-layout
 
-      - name: Normalize repeated daycare replacements
+      - name: Normalize patch replacements
         run: |
           python - <<'PY'
           from pathlib import Path
 
           path = Path('.github/agent/apply_egg_pc_storage.py')
           lines = path.read_text(encoding='utf-8').splitlines()
-          marker = next(
-              index
-              for index, line in enumerate(lines)
-              if "'move egg to daycare flags'," in line
+
+          def replace_block(marker_text, replacement):
+              marker = next(
+                  index
+                  for index, line in enumerate(lines)
+                  if marker_text in line
+              )
+              start = marker
+              while start >= 0 and lines[start] != 'text = replace_once(':
+                  start -= 1
+              end = marker + 1
+              if start < 0 or end >= len(lines) or lines[end] != ')':
+                  raise RuntimeError(f'Blocco non riconosciuto: {marker_text}')
+              lines[start:end + 1] = replacement
+
+          replace_block(
+              "'move egg to daycare flags',",
+              [
+                  "old_daycare_copy = '''      egg.copyWith(isInDayCare: true, carriedEntireIncubation: false),'''",
+                  "new_daycare_copy = '''      egg.copyWith(",
+                  "        isInDayCare: true,",
+                  "        isInPc: false,",
+                  "        carriedEntireIncubation: false,",
+                  "      ),'''",
+                  "if text.count(old_daycare_copy) != 2:",
+                  "    raise RuntimeError(",
+                  "        f'move egg to daycare flags: attesi 2 match, trovati {text.count(old_daycare_copy)}'",
+                  "    )",
+                  "text = text.replace(old_daycare_copy, new_daycare_copy)",
+              ],
           )
-          start = marker
-          while start >= 0 and lines[start] != 'text = replace_once(':
-              start -= 1
-          end = marker + 1
-          if start < 0 or end >= len(lines) or lines[end] != ')':
-              raise RuntimeError('Blocco ripetuto della Pensione non riconosciuto')
-          replacement = [
-              "old_daycare_copy = '''      egg.copyWith(isInDayCare: true, carriedEntireIncubation: false),'''",
-              "new_daycare_copy = '''      egg.copyWith(",
-              "        isInDayCare: true,",
-              "        isInPc: false,",
-              "        carriedEntireIncubation: false,",
-              "      ),'''",
-              "if text.count(old_daycare_copy) != 2:",
-              "    raise RuntimeError(",
-              "        f'move egg to daycare flags: attesi 2 match, trovati {text.count(old_daycare_copy)}'",
-              "    )",
-              "text = text.replace(old_daycare_copy, new_daycare_copy)",
-          ]
-          lines[start:end + 1] = replacement
+
+          replace_block(
+              "'pass move to pc callback',",
+              [
+                  "old_callback = 'onMoveToDayCare: () => _moveEggToDayCare(data, egg),\\n'",
+                  "new_callback = (",
+                  "    old_callback",
+                  "    + '                       onMoveToPc: () => _moveEggToPc(data, egg),\\n'",
+                  ")",
+                  "if text.count(old_callback) != 1:",
+                  "    raise RuntimeError(",
+                  "        f'pass move to pc callback: atteso 1 match, trovati {text.count(old_callback)}'",
+                  "    )",
+                  "text = text.replace(old_callback, new_callback, 1)",
+              ],
+          )
+
           path.write_text('\n'.join(lines) + '\n', encoding='utf-8')
           PY
 

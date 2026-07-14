@@ -21,6 +21,48 @@ jobs:
         with:
           ref: agent/complete-pokemon-breeder
 
+      - name: Normalize callback replacement
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('.github/agent/apply_complete_breeder.py')
+          lines = path.read_text(encoding='utf-8').splitlines()
+          marker = next(
+              index
+              for index, line in enumerate(lines)
+              if "'egg card advanced callbacks'," in line
+          )
+          start = marker
+          while start >= 0 and lines[start] != 'text = replace_once(':
+              start -= 1
+          end = marker + 1
+          if start < 0 or end >= len(lines) or lines[end] != ')':
+              raise RuntimeError('Blocco callback uovo non riconosciuto')
+          replacement = [
+              "callback_start = 'onDelete: () => _deleteEgg(data, egg),'",
+              "callback_end = 'onMoveToTeam: () => _moveEggToTeam(data, egg),'",
+              "callback_start_index = text.index(callback_start)",
+              "callback_end_index = text.index(callback_end, callback_start_index) + len(callback_end)",
+              "callback_replacement = '''onDelete: () => _deleteEgg(data, egg),",
+              "                       incubatorQuantities: data.incubatorQuantities,",
+              "                       onIncubatorChanged: (incubator) =>",
+              "                           _assignIncubator(data, egg, incubator),",
+              "                       canCustomizeTraits: _breederFeatures.hasMasterOfTraits(",
+              "                         data.profile,",
+              "                       ),",
+              "                       onCustomizeTraits: () =>",
+              "                           _customizeMasterTraits(data, egg),",
+              "                       onEditHp: () => _editEggHp(data, egg),",
+              "                       onMoveToDayCare: () => _moveEggToDayCare(data, egg),",
+              "                       onMoveToPc: () => _moveEggToPc(data, egg),",
+              "                       onMoveToTeam: () => _moveEggToTeam(data, egg),'''",
+              "text = text[:callback_start_index] + callback_replacement + text[callback_end_index:]",
+          ]
+          lines[start:end + 1] = replacement
+          path.write_text('\n'.join(lines) + '\n', encoding='utf-8')
+          PY
+
       - name: Apply changes
         run: |
           set -o pipefail

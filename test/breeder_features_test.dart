@@ -32,14 +32,14 @@ void main() {
         ),
         catalog: {1: child},
         selectedGender: 'Female',
-        selectedNature: 'Bold',
+        selectedNature: 'Reckless',
         selectedAbility: 'Second Ability',
         replacementEggMoves: const ['Wish', 'Fake Tears'],
         masterOfTraitsApplied: true,
       );
 
       expect(result.gender, 'Female');
-      expect(result.nature, 'Bold');
+      expect(result.nature, 'Reckless');
       expect(result.ability, 'Second Ability');
       expect(result.masterOfTraitsApplied, isTrue);
       expect(result.inheritedMoves, contains('Wish'));

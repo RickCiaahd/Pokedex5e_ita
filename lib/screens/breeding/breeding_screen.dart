@@ -20,7 +20,6 @@ import '../../repositories/pokemon_repository.dart';
 import '../../repositories/profile_repository.dart';
 import '../../repositories/team_repository.dart';
 import '../../services/breeding_service.dart';
-import '../../services/pokemon_generator_service.dart';
 import '../../services/trainer_path_passive_service.dart';
 import '../../widgets/breeding/breeder_trait_dialogs.dart';
 import '../../widgets/navigation/home_leading_button.dart';
@@ -43,7 +42,6 @@ class _BreedingScreenState extends State<BreedingScreen> {
   final BreedingEggRepository _eggRepository = BreedingEggRepository();
   final BreedingDataService _dataService = BreedingDataService();
   final BreedingService _breedingService = const BreedingService();
-  final PokemonGeneratorService _generator = const PokemonGeneratorService();
   final Random _random = Random();
   final TextEditingController _manualRollController = TextEditingController();
 

@@ -182,7 +182,7 @@ class _TraitDropdown extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DropdownButtonFormField<String>(
-      value: value,
+      initialValue: value,
       isExpanded: true,
       decoration: InputDecoration(labelText: label),
       items: [
@@ -325,7 +325,7 @@ class _GoodGenesDialogState extends State<_GoodGenesDialog> {
                   ),
               ] else ...[
                 DropdownButtonFormField<String>(
-                  value: feats.contains(_feat) ? _feat : null,
+                  initialValue: feats.contains(_feat) ? _feat : null,
                   isExpanded: true,
                   decoration: const InputDecoration(labelText: 'Talento'),
                   items: [

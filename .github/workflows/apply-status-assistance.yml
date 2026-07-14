@@ -1,0 +1,41 @@
+name: Apply status assistance
+
+on:
+  push:
+    branches:
+      - agent/status-assistance
+    paths:
+      - tooling/apply_status_assistance.py
+      - .github/workflows/apply-status-assistance.yml
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v4
+        with:
+          ref: agent/status-assistance
+          fetch-depth: 0
+
+      - name: Patch battle screens
+        run: python3 tooling/apply_status_assistance.py
+
+      - name: Remove temporary patch files
+        run: |
+          rm tooling/apply_status_assistance.py
+          rm .github/workflows/apply-status-assistance.yml
+
+      - name: Commit integrated screens
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add lib/screens/battle/battle_screen.dart \
+                  lib/screens/battle/npc_battle_screen.dart \
+                  tooling/apply_status_assistance.py \
+                  .github/workflows/apply-status-assistance.yml
+          git commit -m "Integra i promemoria status nei fight"
+          git push origin HEAD:agent/status-assistance

@@ -1,0 +1,123 @@
+name: Clean and verify breeder PR
+
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cleanup-breeder-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Check out feature branch
+        uses: actions/checkout@v4
+        with:
+          ref: feature/breeder-traits
+          fetch-depth: 0
+
+      - name: Restore unrelated formatting changes
+        run: |
+          git fetch origin main
+          git checkout origin/main -- \
+            lib/app.dart \
+            lib/models/bag_inventory_entry.dart \
+            lib/models/evolution_data.dart \
+            lib/models/move_data.dart \
+            lib/models/pc_pokemon.dart \
+            lib/models/pokemon_form_preferences.dart \
+            lib/models/trainer_progression.dart \
+            lib/models/user_profile.dart \
+            lib/repositories/ability_repository.dart \
+            lib/repositories/item_repository.dart \
+            lib/repositories/tm_repository.dart \
+            lib/screens/battle/battle_screen.dart \
+            lib/screens/pc/pokemon_pc_screen.dart \
+            lib/screens/pokemon/evolution_selector_sheet.dart \
+            lib/screens/pokemon/pokemon_detail_screen_legacy.dart \
+            lib/screens/tools/tools_screen.dart \
+            lib/screens/trainer/trainer_sheet_screen.dart \
+            lib/services/battle_status_rules.dart \
+            lib/services/evolution_form_alias_service.dart \
+            lib/services/evolution_service.dart \
+            lib/services/master_battle_service.dart \
+            lib/services/trainer_path_automation_service.dart \
+            lib/services/trainer_path_passive_service.dart \
+            lib/widgets/battle/battle_status_assistance_card.dart \
+            lib/widgets/battle/pokemon_battle_attributes_card.dart \
+            lib/widgets/pc/pc_egg_widgets.dart \
+            lib/widgets/trainer/trainer_path_automation_panel.dart \
+            lib/widgets/trainer/trainer_path_passive_card.dart \
+            test/battle_status_rules_test.dart \
+            test/breeding_egg_repository_test.dart \
+            test/data_integrity_test.dart \
+            test/evolution_form_alias_service_test.dart \
+            test/navigation_and_percentage_test.dart \
+            test/pokemon_battle_attributes_card_test.dart \
+            test/trainer_path_automation_test.dart \
+            test/trainer_path_passive_service_test.dart \
+            test/trainer_path_passive_smoke_test.dart
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Format only breeder files
+        run: |
+          dart format \
+            lib/models/breeding_egg.dart \
+            lib/screens/breeding/breeding_screen.dart \
+            lib/services/breeding_service.dart \
+            lib/widgets/breeding/breeder_trait_dialogs.dart \
+            test/breeder_features_test.dart
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze source
+        id: analyze
+        continue-on-error: true
+        run: |
+          set +e
+          flutter analyze > tool/breeder-analyze.txt 2>&1
+          status=$?
+          cat tool/breeder-analyze.txt
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          exit $status
+
+      - name: Run complete test suite
+        id: tests
+        continue-on-error: true
+        run: |
+          set +e
+          flutter test --reporter expanded > tool/breeder-test.txt 2>&1
+          status=$?
+          cat tool/breeder-test.txt
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          exit $status
+
+      - name: Commit cleaned feature branch
+        if: always()
+        run: |
+          rm -f .github/workflows/cleanup-breeder-pr.yml
+          if [ "${{ steps.analyze.outputs.status }}" = "0" ]; then rm -f tool/breeder-analyze.txt; fi
+          if [ "${{ steps.tests.outputs.status }}" = "0" ]; then rm -f tool/breeder-test.txt; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Ripulisce e verifica la modifica Pokémon Breeder"
+          git push origin HEAD:feature/breeder-traits

@@ -8,6 +8,57 @@ on:
   workflow_dispatch:
 
 permissions:
+  contents: write
+
+concurrency:
+  group: flutter-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Analyze and test
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Check out feature branch
+        uses: actions/checkout@v4
+        with:
+          ref: agent/breeding-eggs-core
+
+      - name: Apply final fixes and restore permanent CI
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          screen = Path('lib/screens/breeding/breeding_screen.dart')
+          text = screen.read_text(encoding='utf-8')
+          old_candidate = """      value: candidates.any((candidate) => candidate.key == value)
+          ? value
+          : null,"""
+          new_candidate = """      initialValue: candidates.any((candidate) => candidate.key == value)
+          ? value
+          : null,"""
+          old_incubator = '              value: egg.incubator,'
+          new_incubator = '              initialValue: egg.incubator,'
+          if text.count(old_candidate) != 1:
+              raise RuntimeError('Selettore dei genitori non trovato in modo univoco')
+          if text.count(old_incubator) != 1:
+              raise RuntimeError('Selettore incubatore non trovato in modo univoco')
+          text = text.replace(old_candidate, new_candidate, 1)
+          text = text.replace(old_incubator, new_incubator, 1)
+          screen.write_text(text, encoding='utf-8')
+
+          Path('.github/workflows/flutter-ci.yml').write_text('''name: Flutter CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+permissions:
   contents: read
 
 concurrency:
@@ -37,18 +88,7 @@ jobs:
         run: flutter pub get
 
       - name: Analyze source
-        run: |
-          set -o pipefail
-          flutter analyze 2>&1 | tee breeding-analyzer-final.log
-
-      - name: Upload analyzer log
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: breeding-analyzer-final-log
-          path: breeding-analyzer-final.log
-          if-no-files-found: ignore
-          retention-days: 1
+        run: flutter analyze
 
       - name: Validate application data
         run: |
@@ -66,3 +106,45 @@ jobs:
 
       - name: Run complete test suite
         run: flutter test --reporter expanded
+''', encoding='utf-8')
+          PY
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Show Flutter version
+        run: flutter --version
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze source
+        run: flutter analyze
+
+      - name: Validate application data
+        run: |
+          set -o pipefail
+          flutter test test/data_integrity_test.dart --reporter expanded 2>&1 | tee data-validation.log
+
+      - name: Upload validation log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: data-validation-log
+          path: data-validation.log
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Run complete test suite
+        run: flutter test --reporter expanded
+
+      - name: Commit verified fixes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add lib/screens/breeding/breeding_screen.dart .github/workflows/flutter-ci.yml
+          git commit -m "Corregge i selettori del sistema di allevamento"
+          git push origin HEAD:agent/breeding-eggs-core

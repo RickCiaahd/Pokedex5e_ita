@@ -28,6 +28,19 @@ jobs:
           ref: feature/native-content-sharing
           fetch-depth: 0
 
+      - name: Align README patch source
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('README.md')
+          text = path.read_text(encoding='utf-8')
+          old = "Dalla schermata Squadra è inoltre possibile esportare e importare singoli Pokémon o una formazione completa senza sostituire l'intero profilo; i Pokémon rimpiazzati e gli eventuali esuberi vengono conservati nel PC. Le librerie del Master supportano file portabili per incontri e Allenatori PNG, mentre il Fight del Master può produrre un riepilogo testuale con round, iniziativa, PF, status e PP. L'importazione crea sempre una nuova copia, evitando di sovrascrivere contenuti già presenti.\n"
+          new = "Dalla schermata Squadra è inoltre possibile esportare e importare singoli Pokémon o una formazione completa senza sostituire l’intero profilo; i Pokémon rimpiazzati e gli eventuali esuberi vengono conservati nel PC. Le librerie del Master supportano file portabili per incontri e Allenatori PNG, mentre il Fight del Master può produrre un riepilogo testuale con round, iniziativa, PF, status e PP.\n"
+          if text.count(old) != 1:
+              raise SystemExit(f'README source occurrence count: {text.count(old)}')
+          path.write_text(text.replace(old, new), encoding='utf-8')
+          PY
+
       - name: Apply native sharing integration
         run: |
           set +e

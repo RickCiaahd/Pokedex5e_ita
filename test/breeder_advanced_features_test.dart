@@ -96,6 +96,8 @@ void main() {
         'inheritedMoves': <String>[],
       });
 
+      expect(BreedingEgg.armorClass, 8);
+      expect(BreedingEgg.maxHitPoints, 10);
       expect(egg.currentHp, BreedingEgg.maxHitPoints);
       expect(egg.masterTraitsCustomized, isFalse);
       expect(egg.isDestroyed, isFalse);

@@ -38,7 +38,7 @@ class BattleStatusAssistanceCard extends StatelessWidget {
       moment: selectedMoment,
     );
     final statuses = <String>[
-      if (nonVolatileStatus != null) nonVolatileStatus!,
+      ?nonVolatileStatus,
       ...(volatileStatuses.toList()..sort()),
     ];
 

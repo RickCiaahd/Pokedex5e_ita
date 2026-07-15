@@ -12,6 +12,7 @@ import '../../models/user_profile.dart';
 import '../../repositories/pokemon_repository.dart';
 import '../../repositories/profile_repository.dart';
 import '../../repositories/team_repository.dart';
+import '../../services/native_share_service.dart';
 import '../../services/pokemon_transfer_service.dart';
 import '../../widgets/pokemon/egg_asset_image.dart';
 import '../../widgets/pokemon/pokemon_asset_image.dart';
@@ -32,6 +33,7 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
   final PokemonRepository _pokemonRepository = PokemonRepository();
   final TeamRepository _teamRepository = TeamRepository();
   final PokemonTransferService _transferService = PokemonTransferService();
+  final NativeShareService _shareService = const NativeShareService();
 
   UserProfile? _profile;
   List<Pokemon> _allPokemon = [];
@@ -193,7 +195,7 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
   }
 
   Future<PokemonTransferBundle?> _pickTransferFile() async {
-    final result = await FilePicker.pickFiles(
+    final result = await FilePicker.platform.pickFiles(
       dialogTitle: 'Seleziona un trasferimento Pokédex 5e',
       type: FileType.custom,
       allowedExtensions: const ['json'],
@@ -217,7 +219,7 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
       );
       final json = _transferService.encode(bundle);
       final displayName = _displayNameForSlot(slot);
-      final path = await FilePicker.saveFile(
+      final path = await FilePicker.platform.saveFile(
         dialogTitle: 'Esporta $displayName',
         fileName: _transferService.fileNameForPokemon(
           bundle,
@@ -258,7 +260,7 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
         sourceTrainerName: profile.name,
       );
       final json = _transferService.encode(bundle);
-      final path = await FilePicker.saveFile(
+      final path = await FilePicker.platform.saveFile(
         dialogTitle: 'Esporta la squadra di ${profile.name}',
         fileName: _transferService.fileNameForTeam(bundle),
         type: FileType.custom,
@@ -269,6 +271,84 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
         path == null
             ? 'Esportazione annullata.'
             : 'Squadra esportata correttamente (${pokemonSlots.length} Pokémon).',
+      );
+    } catch (error) {
+      _setStatus(_friendlyError(error), isError: true);
+    } finally {
+      if (mounted) setState(() => _isBusy = false);
+    }
+  }
+
+  Future<void> _sharePokemon(TeamSlot slot) async {
+    final profile = _profile;
+    if (_isBusy || profile == null || !slot.isPokemon) return;
+    setState(() => _isBusy = true);
+    try {
+      final bundle = PokemonTransferBundle.single(
+        slot: slot,
+        sourceTrainerName: profile.name,
+      );
+      final json = _transferService.encode(bundle);
+      final displayName = _displayNameForSlot(slot);
+      final outcome = await _shareService.shareTextFile(
+        context: context,
+        content: json,
+        fileName: _transferService.fileNameForPokemon(
+          bundle,
+          displayName: displayName,
+        ),
+        mimeType: 'application/json',
+        title: 'Condividi $displayName',
+        subject: '$displayName · Pokédex 5e ITA',
+        text: 'Pokémon esportato da Pokédex 5e ITA.',
+      );
+      _setStatus(
+        _shareService.feedback(
+          outcome,
+          successMessage: '$displayName condiviso correttamente.',
+        ),
+      );
+    } catch (error) {
+      _setStatus(_friendlyError(error), isError: true);
+    } finally {
+      if (mounted) setState(() => _isBusy = false);
+    }
+  }
+
+  Future<void> _shareTeam() async {
+    final profile = _profile;
+    if (_isBusy || profile == null) return;
+    final pokemonSlots = _visibleTeam.where((slot) => slot.isPokemon).toList();
+    if (pokemonSlots.isEmpty) {
+      _setStatus(
+        'La squadra non contiene Pokémon da condividere.',
+        isError: true,
+      );
+      return;
+    }
+
+    setState(() => _isBusy = true);
+    try {
+      final bundle = PokemonTransferBundle.team(
+        slots: pokemonSlots,
+        sourceTrainerName: profile.name,
+      );
+      final json = _transferService.encode(bundle);
+      final outcome = await _shareService.shareTextFile(
+        context: context,
+        content: json,
+        fileName: _transferService.fileNameForTeam(bundle),
+        mimeType: 'application/json',
+        title: 'Condividi la squadra di ${profile.name}',
+        subject: 'Squadra di ${profile.name} · Pokédex 5e ITA',
+        text: 'Squadra esportata da Pokédex 5e ITA.',
+      );
+      _setStatus(
+        _shareService.feedback(
+          outcome,
+          successMessage:
+              'Squadra condivisa correttamente (${pokemonSlots.length} Pokémon).',
+        ),
       );
     } catch (error) {
       _setStatus(_friendlyError(error), isError: true);
@@ -454,6 +534,9 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
                 case _TeamTransferAction.exportTeam:
                   _exportTeam();
                   break;
+                case _TeamTransferAction.shareTeam:
+                  _shareTeam();
+                  break;
                 case _TeamTransferAction.importTeam:
                   _importTeam();
                   break;
@@ -465,6 +548,14 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
                 child: ListTile(
                   leading: Icon(Icons.upload_file_outlined),
                   title: Text('Esporta squadra'),
+                  contentPadding: EdgeInsets.zero,
+                ),
+              ),
+              PopupMenuItem(
+                value: _TeamTransferAction.shareTeam,
+                child: ListTile(
+                  leading: Icon(Icons.ios_share_outlined),
+                  title: Text('Condividi squadra'),
                   contentPadding: EdgeInsets.zero,
                 ),
               ),
@@ -515,6 +606,7 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
                   onOpen: () => _openPokemonDetail(slot),
                   onChange: () => _openPokemonPicker(slot),
                   onExport: slot.isPokemon ? () => _exportPokemon(slot) : null,
+                  onShare: slot.isPokemon ? () => _sharePokemon(slot) : null,
                   onImport: slot.isEgg ? null : () => _importPokemonInto(slot),
                   onRemove: slot.isPokemon
                       ? () => _setPokemonInSlot(slot.slotIndex, null)
@@ -611,6 +703,7 @@ class _TeamSlotCard extends StatelessWidget {
     required this.onOpen,
     required this.onChange,
     required this.onExport,
+    required this.onShare,
     required this.onImport,
     required this.onRemove,
   });
@@ -620,6 +713,7 @@ class _TeamSlotCard extends StatelessWidget {
   final VoidCallback onOpen;
   final VoidCallback onChange;
   final VoidCallback? onExport;
+  final VoidCallback? onShare;
   final VoidCallback? onImport;
   final VoidCallback? onRemove;
 
@@ -711,6 +805,9 @@ class _TeamSlotCard extends StatelessWidget {
                           case _SlotAction.export:
                             onExport?.call();
                             break;
+                          case _SlotAction.share:
+                            onShare?.call();
+                            break;
                           case _SlotAction.import:
                             onImport?.call();
                             break;
@@ -733,6 +830,11 @@ class _TeamSlotCard extends StatelessWidget {
                             value: _SlotAction.export,
                             child: Text('Esporta Pokémon'),
                           ),
+                        if (pokemon != null)
+                          const PopupMenuItem(
+                            value: _SlotAction.share,
+                            child: Text('Condividi Pokémon'),
+                          ),
                         const PopupMenuItem(
                           value: _SlotAction.import,
                           child: Text('Importa Pokémon qui'),
@@ -752,9 +854,9 @@ class _TeamSlotCard extends StatelessWidget {
   }
 }
 
-enum _TeamTransferAction { exportTeam, importTeam }
+enum _TeamTransferAction { exportTeam, shareTeam, importTeam }
 
-enum _SlotAction { change, export, import, remove }
+enum _SlotAction { change, export, share, import, remove }
 
 class _SlotAvatar extends StatelessWidget {
   const _SlotAvatar({required this.slot, required this.pokemon});

@@ -16,6 +16,7 @@ import '../../repositories/move_repository.dart';
 import '../../services/battle_status_rules.dart';
 import '../../services/master_battle_service.dart';
 import '../../services/master_fight_summary_service.dart';
+import '../../services/native_share_service.dart';
 import '../../widgets/battle/battle_status_assistance_card.dart';
 import '../../widgets/navigation/home_leading_button.dart';
 import '../../widgets/pokemon/pokemon_asset_image.dart';
@@ -43,6 +44,7 @@ class _NpcBattleScreenState extends State<NpcBattleScreen> {
   final MasterBattleService _battleService = const MasterBattleService();
   final MasterFightSummaryService _summaryService =
       const MasterFightSummaryService();
+  final NativeShareService _shareService = const NativeShareService();
   final MoveRepository _moveRepository = MoveRepository();
   final Random _random = Random();
 
@@ -452,7 +454,7 @@ class _NpcBattleScreenState extends State<NpcBattleScreen> {
         pokemonById: _pokemonById,
         exportedAt: exportedAt,
       );
-      final path = await FilePicker.saveFile(
+      final path = await FilePicker.platform.saveFile(
         dialogTitle: 'Esporta riepilogo del Fight del Master',
         fileName: _summaryService.fileName(_session, exportedAt: exportedAt),
         type: FileType.custom,
@@ -464,6 +466,46 @@ class _NpcBattleScreenState extends State<NpcBattleScreen> {
         _message = path == null
             ? 'Esportazione annullata.'
             : 'Riepilogo del fight esportato correttamente.';
+      });
+    } catch (error) {
+      if (!mounted) return;
+      setState(() {
+        _message = error
+            .toString()
+            .replaceFirst('FormatException: ', '')
+            .replaceFirst('Bad state: ', '')
+            .trim();
+      });
+    } finally {
+      if (mounted) setState(() => _isWorking = false);
+    }
+  }
+
+  Future<void> _shareSummary() async {
+    if (_isWorking) return;
+    setState(() => _isWorking = true);
+    try {
+      final exportedAt = DateTime.now();
+      final summary = _summaryService.build(
+        session: _session,
+        pokemonById: _pokemonById,
+        exportedAt: exportedAt,
+      );
+      final outcome = await _shareService.shareTextFile(
+        context: context,
+        content: summary,
+        fileName: _summaryService.fileName(_session, exportedAt: exportedAt),
+        mimeType: 'text/plain',
+        title: 'Condividi il riepilogo del Fight del Master',
+        subject: 'Riepilogo Fight del Master · Pokédex 5e ITA',
+        text: 'Riepilogo esportato da Pokédex 5e ITA.',
+      );
+      if (!mounted) return;
+      setState(() {
+        _message = _shareService.feedback(
+          outcome,
+          successMessage: 'Riepilogo del fight condiviso correttamente.',
+        );
       });
     } catch (error) {
       if (!mounted) return;
@@ -565,10 +607,30 @@ class _NpcBattleScreenState extends State<NpcBattleScreen> {
         leading: const HomeLeadingButton(),
         title: const Text('Fight del Master'),
         actions: [
-          IconButton(
-            onPressed: _isWorking ? null : _exportSummary,
-            tooltip: 'Esporta riepilogo',
-            icon: const Icon(Icons.file_download_outlined),
+          PopupMenuButton<_FightSummaryAction>(
+            enabled: !_isWorking,
+            tooltip: 'Esporta o condividi riepilogo',
+            icon: const Icon(Icons.ios_share_outlined),
+            onSelected: (action) {
+              switch (action) {
+                case _FightSummaryAction.export:
+                  _exportSummary();
+                  break;
+                case _FightSummaryAction.share:
+                  _shareSummary();
+                  break;
+              }
+            },
+            itemBuilder: (_) => const [
+              PopupMenuItem(
+                value: _FightSummaryAction.export,
+                child: Text('Salva riepilogo'),
+              ),
+              PopupMenuItem(
+                value: _FightSummaryAction.share,
+                child: Text('Condividi riepilogo'),
+              ),
+            ],
           ),
           IconButton(
             onPressed: _isWorking ? null : _resetFight,
@@ -1370,3 +1432,5 @@ const List<String> _nonVolatileStatuses = [
 ];
 
 const List<String> _volatileStatuses = ['Confused', 'Flinched'];
+
+enum _FightSummaryAction { export, share }

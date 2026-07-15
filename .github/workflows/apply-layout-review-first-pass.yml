@@ -29,7 +29,32 @@ jobs:
           fetch-depth: 0
 
       - name: Apply layout review
-        run: python tool/apply_layout_review_first_pass.py
+        run: |
+          set +e
+          python tool/apply_layout_review_first_pass.py > layout-patch.log 2>&1
+          code=$?
+          echo "$code" > layout-patch-exit-code.txt
+          cat layout-patch.log
+          exit 0
+
+      - name: Upload layout patch diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: layout-first-pass-diagnostics
+          path: |
+            layout-patch.log
+            layout-patch-exit-code.txt
+          if-no-files-found: error
+          retention-days: 2
+
+      - name: Stop on layout patch failure
+        run: |
+          code=$(cat layout-patch-exit-code.txt)
+          if [ "$code" != "0" ]; then
+            echo "Layout patch failed with code $code"
+            exit "$code"
+          fi
 
       - name: Set up Java
         uses: actions/setup-java@v4
@@ -73,7 +98,7 @@ jobs:
 
       - name: Commit verified layout review
         run: |
-          rm -f tool/apply_layout_review_first_pass.py .github/workflows/apply-layout-review-first-pass.yml
+          rm -f tool/apply_layout_review_first_pass.py .github/workflows/apply-layout-review-first-pass.yml layout-patch.log layout-patch-exit-code.txt
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A

@@ -29,8 +29,12 @@ class PokemonTile extends StatelessWidget {
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        final artworkSize = (constraints.maxWidth * 0.96).clamp(88.0, 142.0);
-        final shadowWidth = (constraints.maxWidth * 0.46).clamp(42.0, 66.0);
+        final artworkSize = (constraints.maxWidth * 0.96)
+            .clamp(88.0, 142.0)
+            .toDouble();
+        final shadowWidth = (constraints.maxWidth * 0.46)
+            .clamp(42.0, 66.0)
+            .toDouble();
         final labelSize = constraints.maxWidth >= 130 ? 14.0 : 12.0;
 
         return Semantics(

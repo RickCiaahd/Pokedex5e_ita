@@ -55,7 +55,24 @@ jobs:
         run: flutter pub get
 
       - name: Analyze source
-        run: flutter analyze
+        id: analyze
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          flutter analyze 2>&1 | tee layout-final-analyze.log
+
+      - name: Upload analyze diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: layout-final-analyze
+          path: layout-final-analyze.log
+          if-no-files-found: ignore
+          retention-days: 2
+
+      - name: Stop on analyze failure
+        if: steps.analyze.outcome == 'failure'
+        run: exit 1
 
       - name: Validate application data
         run: flutter test test/data_integrity_test.dart --reporter expanded
@@ -71,7 +88,7 @@ jobs:
 
       - name: Commit verified final layout review
         run: |
-          rm -f tool/apply_layout_final_block.py .github/workflows/apply-layout-final-block.yml
+          rm -f tool/apply_layout_final_block.py .github/workflows/apply-layout-final-block.yml layout-final-analyze.log
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A

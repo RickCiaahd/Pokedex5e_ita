@@ -1,0 +1,4 @@
+storePassword=INSERISCI_PASSWORD_KEYSTORE
+keyPassword=INSERISCI_PASSWORD_CHIAVE
+keyAlias=upload
+storeFile=../upload-keystore.jks

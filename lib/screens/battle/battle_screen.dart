@@ -26,6 +26,7 @@ import '../../services/trainer_path_passive_service.dart';
 import '../../widgets/battle/battle_environment_card.dart';
 import '../../widgets/battle/battle_status_assistance_card.dart';
 import '../../widgets/battle/pokemon_battle_attributes_card.dart';
+import '../../widgets/layout/responsive_content.dart';
 import '../../widgets/navigation/home_leading_button.dart';
 import '../../widgets/pokemon/pokemon_asset_image.dart';
 import '../../widgets/trainer/trainer_path_passive_card.dart';
@@ -514,6 +515,7 @@ class _BattleScreenState extends State<BattleScreen> {
     final caught = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
+        scrollable: true,
         title: Text('Lancia ${ball.name}?'),
         content: const Text(
           'Dopo il tiro, inserisci l’esito comunicato dal Master. La Poké Ball verrà consumata in ogni caso.',
@@ -714,6 +716,7 @@ class _BattleScreenState extends State<BattleScreen> {
   Future<void> _openStatusPicker(_BattleData data, TeamSlot slot) async {
     final result = await showModalBottomSheet<_StatusPickerResult>(
       context: context,
+      useSafeArea: true,
       showDragHandle: true,
       builder: (_) => _StatusPickerSheet(
         initialNonVolatileStatus: _nonVolatileStatusFor(slot),
@@ -905,6 +908,7 @@ class _BattleScreenState extends State<BattleScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
+        scrollable: true,
         title: const Text('Terminare la battaglia?'),
         content: const Text(
           'Round, iniziativa, PP temporanei e status volatili verranno rimossi. HP, status persistenti e oggetti consumati resteranno salvati.',
@@ -1055,213 +1059,227 @@ class _BattleScreenState extends State<BattleScreen> {
       appBar: AppBar(
         leading: const HomeLeadingButton(),
         title: const Text('Battle Companion'),
+        actions: const [HomeAppBarAction()],
       ),
-      body: FutureBuilder<_BattleData>(
-        future: _future,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState != ConnectionState.done) {
-            return const Center(child: CircularProgressIndicator());
-          }
+      body: ResponsiveContent(
+        maxWidth: 1280,
+        child: FutureBuilder<_BattleData>(
+          future: _future,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState != ConnectionState.done) {
+              return const Center(child: CircularProgressIndicator());
+            }
 
-          if (snapshot.hasError) {
-            return _BattleEmptyState(
-              icon: Icons.error_outline,
-              title: 'Errore caricando il combattimento',
-              message: snapshot.error.toString(),
-              actionLabel: 'Riprova',
-              onAction: () => _reload(),
-            );
-          }
-
-          final data = snapshot.data;
-          if (data == null || data.occupiedSlots.isEmpty) {
-            return _BattleEmptyState(
-              icon: Icons.groups_outlined,
-              title: 'Nessun Pokémon in squadra',
-              message:
-                  'Aggiungi almeno un Pokémon alla squadra prima di aprire il tracker.',
-              actionLabel: 'Ricarica',
-              onAction: () => _reload(),
-            );
-          }
-
-          final activeSlot = _activeSlotFor(data)!;
-          final pokemon = _pokemonForSlot(data, activeSlot)!;
-          final moveReferences = _movesForSlot(activeSlot, pokemon);
-          final noPpLeft = _hasNoPpLeft(activeSlot, moveReferences, data.moves);
-          final heldItem = data.heldItemFor(activeSlot);
-          final passiveNotes = TrainerPathPassiveService.passiveNotes(
-            profile: data.profile,
-            pokemon: pokemon,
-            slot: activeSlot,
-          );
-          final attributes = _attributeScores(pokemon, activeSlot);
-          final baseArmorClass = BattleEnvironmentService.baseArmorClass(
-            pokemon,
-            activeSlot,
-          );
-          final effectiveArmorClass =
-              baseArmorClass +
-              BattleEnvironmentService.armorClassBonus(
-                pokemon: pokemon,
-                slot: activeSlot,
-                environment: _environment,
+            if (snapshot.hasError) {
+              return _BattleEmptyState(
+                icon: Icons.error_outline,
+                title: 'Errore caricando il combattimento',
+                message: snapshot.error.toString(),
+                actionLabel: 'Riprova',
+                onAction: () => _reload(),
               );
+            }
 
-          return RefreshIndicator(
-            onRefresh: () => _reload(),
-            child: ListView(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-              children: [
-                _BattleHeader(
-                  round: _round,
-                  profile: data.profile,
-                  trainerInitiativeBonus: _trainerInitiativeBonus(data.profile),
-                  onEnd: () => _endBattle(data),
-                ),
-                const SizedBox(height: 12),
-                _PartyBar(
-                  slots: data.occupiedSlots,
-                  activeSlot: activeSlot,
-                  pokemonForSlot: (slot) => _pokemonForSlot(data, slot),
-                  onSelected: (slotIndex) {
-                    setState(() {
-                      _activeSlotIndex = slotIndex;
-                      _statusMoment = BattleStatusMoment.turnStart;
-                      _message = null;
-                    });
-                    _scheduleSessionSave(data);
-                  },
-                ),
-                const SizedBox(height: 12),
-                _InitiativeTracker(
-                  round: _round,
-                  entries: _initiativeEntries,
-                  currentTurnIndex: _turnIndex,
-                  trainerInitiativeBonus: _trainerInitiativeBonus(data.profile),
-                  onRollTrainer: () => _rerollTrainerInitiative(data),
-                  onAddEntry: () => _addInitiativeEntry(data),
-                  onRemoveEntry: (entry) => _removeInitiativeEntry(data, entry),
-                  onNextTurn: () => _nextTurn(data),
-                ),
-                const SizedBox(height: 12),
-                BattleEnvironmentCard(
-                  environment: _environment,
+            final data = snapshot.data;
+            if (data == null || data.occupiedSlots.isEmpty) {
+              return _BattleEmptyState(
+                icon: Icons.groups_outlined,
+                title: 'Nessun Pokémon in squadra',
+                message:
+                    'Aggiungi almeno un Pokémon alla squadra prima di aprire il tracker.',
+                actionLabel: 'Ricarica',
+                onAction: () => _reload(),
+              );
+            }
+
+            final activeSlot = _activeSlotFor(data)!;
+            final pokemon = _pokemonForSlot(data, activeSlot)!;
+            final moveReferences = _movesForSlot(activeSlot, pokemon);
+            final noPpLeft = _hasNoPpLeft(
+              activeSlot,
+              moveReferences,
+              data.moves,
+            );
+            final heldItem = data.heldItemFor(activeSlot);
+            final passiveNotes = TrainerPathPassiveService.passiveNotes(
+              profile: data.profile,
+              pokemon: pokemon,
+              slot: activeSlot,
+            );
+            final attributes = _attributeScores(pokemon, activeSlot);
+            final baseArmorClass = BattleEnvironmentService.baseArmorClass(
+              pokemon,
+              activeSlot,
+            );
+            final effectiveArmorClass =
+                baseArmorClass +
+                BattleEnvironmentService.armorClassBonus(
                   pokemon: pokemon,
                   slot: activeSlot,
-                  level: _levelForSlot(activeSlot),
-                  proficiency: _proficiency(_levelForSlot(activeSlot)),
-                  baseSpeed: TrainerPathPassiveService.effectiveSpeed(
+                  environment: _environment,
+                );
+
+            return RefreshIndicator(
+              onRefresh: () => _reload(),
+              child: ListView(
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+                children: [
+                  _BattleHeader(
+                    round: _round,
                     profile: data.profile,
+                    trainerInitiativeBonus: _trainerInitiativeBonus(
+                      data.profile,
+                    ),
+                    onEnd: () => _endBattle(data),
+                  ),
+                  const SizedBox(height: 12),
+                  _PartyBar(
+                    slots: data.occupiedSlots,
+                    activeSlot: activeSlot,
+                    pokemonForSlot: (slot) => _pokemonForSlot(data, slot),
+                    onSelected: (slotIndex) {
+                      setState(() {
+                        _activeSlotIndex = slotIndex;
+                        _statusMoment = BattleStatusMoment.turnStart;
+                        _message = null;
+                      });
+                      _scheduleSessionSave(data);
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  _InitiativeTracker(
+                    round: _round,
+                    entries: _initiativeEntries,
+                    currentTurnIndex: _turnIndex,
+                    trainerInitiativeBonus: _trainerInitiativeBonus(
+                      data.profile,
+                    ),
+                    onRollTrainer: () => _rerollTrainerInitiative(data),
+                    onAddEntry: () => _addInitiativeEntry(data),
+                    onRemoveEntry: (entry) =>
+                        _removeInitiativeEntry(data, entry),
+                    onNextTurn: () => _nextTurn(data),
+                  ),
+                  const SizedBox(height: 12),
+                  BattleEnvironmentCard(
+                    environment: _environment,
                     pokemon: pokemon,
                     slot: activeSlot,
-                  ),
-                  onEdit: () => _editEnvironment(data),
-                  onRollWeather: () => _rollEnvironmentWeather(data),
-                  onApplyWeatherDamage:
-                      BattleEnvironmentService.startTurnWeatherDamage(
-                            pokemon: pokemon,
-                            slot: activeSlot,
-                            environment: _environment,
-                          ) ==
-                          null
-                      ? null
-                      : () => _applyEnvironmentWeatherDamage(data, activeSlot),
-                ),
-                const SizedBox(height: 12),
-                _ActivePokemonCard(
-                  pokemon: pokemon,
-                  slot: activeSlot,
-                  heldItem: heldItem,
-                  displayName: _displayName(activeSlot, pokemon),
-                  level: _levelForSlot(activeSlot),
-                  baseArmorClass: baseArmorClass,
-                  effectiveArmorClass: effectiveArmorClass,
-                  currentHp: _currentHpFor(activeSlot, pokemon),
-                  maxHp: _maxHpFor(pokemon, activeSlot),
-                  nonVolatileStatus: _nonVolatileStatusFor(activeSlot),
-                  volatileStatuses: _volatileStatusesFor(activeSlot),
-                  message: _message,
-                  onMinusFive: () => _changeHp(data, activeSlot, -5),
-                  onMinusOne: () => _changeHp(data, activeSlot, -1),
-                  onPlusOne: () => _changeHp(data, activeSlot, 1),
-                  onPlusFive: () => _changeHp(data, activeSlot, 5),
-                  onEditHp: () => _editHp(data, activeSlot),
-                  onHeal: () => _healFull(data, activeSlot),
-                  onStatus: () => _openStatusPicker(data, activeSlot),
-                  onUseHeldBerry: heldItem?.type == 'berry'
-                      ? () => _useHeldBerry(data, activeSlot)
-                      : null,
-                  onOpenBag: () => _openQuickBag(data, activeSlot),
-                ),
-                if (passiveNotes.isNotEmpty) ...[
-                  const SizedBox(height: 12),
-                  TrainerPathPassiveCard(
-                    trainerPath: data.profile.trainerPath,
-                    notes: passiveNotes,
-                  ),
-                ],
-                const SizedBox(height: 12),
-                BattleStatusAssistanceCard(
-                  key: ValueKey('player-status-${activeSlot.slotIndex}'),
-                  pokemonName: _displayName(activeSlot, pokemon),
-                  nonVolatileStatus: _nonVolatileStatusFor(activeSlot),
-                  volatileStatuses: _volatileStatusesFor(activeSlot),
-                  selectedMoment: _statusMoment,
-                  onMomentChanged: (moment) {
-                    setState(() => _statusMoment = moment);
-                  },
-                ),
-                const SizedBox(height: 12),
-                PokemonBattleAttributesCard(attributes: attributes),
-                const SizedBox(height: 12),
-                Text(
-                  'MOSSE DA COMBATTIMENTO',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                if (noPpLeft) ...[
-                  _StruggleWarning(move: data.moves['Struggle']),
-                  const SizedBox(height: 8),
-                ],
-                for (final reference in moveReferences)
-                  _MoveCard(
-                    reference: reference,
-                    move: data.moves[reference],
-                    remainingPp: _remainingPp(
-                      activeSlot,
-                      reference,
-                      data.moves[reference],
+                    level: _levelForSlot(activeSlot),
+                    proficiency: _proficiency(_levelForSlot(activeSlot)),
+                    baseSpeed: TrainerPathPassiveService.effectiveSpeed(
+                      profile: data.profile,
+                      pokemon: pokemon,
+                      slot: activeSlot,
                     ),
-                    maxPp: _maxPpFor(data.moves[reference]),
-                    stats: data.moves[reference] == null
+                    onEdit: () => _editEnvironment(data),
+                    onRollWeather: () => _rollEnvironmentWeather(data),
+                    onApplyWeatherDamage:
+                        BattleEnvironmentService.startTurnWeatherDamage(
+                              pokemon: pokemon,
+                              slot: activeSlot,
+                              environment: _environment,
+                            ) ==
+                            null
                         ? null
-                        : _moveStats(
-                            data.moves[reference]!,
-                            pokemon,
-                            activeSlot,
-                          ),
-                    onUse: () => _changePp(
-                      data,
-                      activeSlot,
-                      reference,
-                      data.moves[reference],
-                      -1,
+                        : () =>
+                              _applyEnvironmentWeatherDamage(data, activeSlot),
+                  ),
+                  const SizedBox(height: 12),
+                  _ActivePokemonCard(
+                    pokemon: pokemon,
+                    slot: activeSlot,
+                    heldItem: heldItem,
+                    displayName: _displayName(activeSlot, pokemon),
+                    level: _levelForSlot(activeSlot),
+                    baseArmorClass: baseArmorClass,
+                    effectiveArmorClass: effectiveArmorClass,
+                    currentHp: _currentHpFor(activeSlot, pokemon),
+                    maxHp: _maxHpFor(pokemon, activeSlot),
+                    nonVolatileStatus: _nonVolatileStatusFor(activeSlot),
+                    volatileStatuses: _volatileStatusesFor(activeSlot),
+                    message: _message,
+                    onMinusFive: () => _changeHp(data, activeSlot, -5),
+                    onMinusOne: () => _changeHp(data, activeSlot, -1),
+                    onPlusOne: () => _changeHp(data, activeSlot, 1),
+                    onPlusFive: () => _changeHp(data, activeSlot, 5),
+                    onEditHp: () => _editHp(data, activeSlot),
+                    onHeal: () => _healFull(data, activeSlot),
+                    onStatus: () => _openStatusPicker(data, activeSlot),
+                    onUseHeldBerry: heldItem?.type == 'berry'
+                        ? () => _useHeldBerry(data, activeSlot)
+                        : null,
+                    onOpenBag: () => _openQuickBag(data, activeSlot),
+                  ),
+                  if (passiveNotes.isNotEmpty) ...[
+                    const SizedBox(height: 12),
+                    TrainerPathPassiveCard(
+                      trainerPath: data.profile.trainerPath,
+                      notes: passiveNotes,
                     ),
-                    onRestore: () => _changePp(
-                      data,
-                      activeSlot,
-                      reference,
-                      data.moves[reference],
-                      1,
+                  ],
+                  const SizedBox(height: 12),
+                  BattleStatusAssistanceCard(
+                    key: ValueKey('player-status-${activeSlot.slotIndex}'),
+                    pokemonName: _displayName(activeSlot, pokemon),
+                    nonVolatileStatus: _nonVolatileStatusFor(activeSlot),
+                    volatileStatuses: _volatileStatusesFor(activeSlot),
+                    selectedMoment: _statusMoment,
+                    onMomentChanged: (moment) {
+                      setState(() => _statusMoment = moment);
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  PokemonBattleAttributesCard(attributes: attributes),
+                  const SizedBox(height: 12),
+                  Text(
+                    'MOSSE DA COMBATTIMENTO',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w900,
                     ),
                   ),
-              ],
-            ),
-          );
-        },
+                  const SizedBox(height: 8),
+                  if (noPpLeft) ...[
+                    _StruggleWarning(move: data.moves['Struggle']),
+                    const SizedBox(height: 8),
+                  ],
+                  for (final reference in moveReferences)
+                    _MoveCard(
+                      reference: reference,
+                      move: data.moves[reference],
+                      remainingPp: _remainingPp(
+                        activeSlot,
+                        reference,
+                        data.moves[reference],
+                      ),
+                      maxPp: _maxPpFor(data.moves[reference]),
+                      stats: data.moves[reference] == null
+                          ? null
+                          : _moveStats(
+                              data.moves[reference]!,
+                              pokemon,
+                              activeSlot,
+                            ),
+                      onUse: () => _changePp(
+                        data,
+                        activeSlot,
+                        reference,
+                        data.moves[reference],
+                        -1,
+                      ),
+                      onRestore: () => _changePp(
+                        data,
+                        activeSlot,
+                        reference,
+                        data.moves[reference],
+                        1,
+                      ),
+                    ),
+                ],
+              ),
+            );
+          },
+        ),
       ),
     );
   }
@@ -1854,6 +1872,7 @@ class _InitiativeEntryDialogState extends State<_InitiativeEntryDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      scrollable: true,
       title: const Text('Aggiungi iniziativa'),
       content: Column(
         mainAxisSize: MainAxisSize.min,
@@ -2670,6 +2689,7 @@ class _HpInputDialogState extends State<_HpInputDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      scrollable: true,
       title: const Text('Modifica HP'),
       content: TextField(
         controller: _controller,

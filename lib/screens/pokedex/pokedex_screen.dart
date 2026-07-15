@@ -181,6 +181,11 @@ class _PokedexScreenState extends State<PokedexScreen> {
     setState(_applyFilters);
   }
 
+  void _clearSearch() {
+    _searchController.clear();
+    setState(_applyFilters);
+  }
+
   void _setRegionFilter(String? region) {
     setState(() {
       _selectedRegion = region;
@@ -188,11 +193,100 @@ class _PokedexScreenState extends State<PokedexScreen> {
     });
   }
 
+  void _setTypeFilters(Set<String> types) {
+    setState(() {
+      _selectedTypes
+        ..clear()
+        ..addAll(types);
+      _applyFilters();
+    });
+  }
+
+  void _clearTypeFilters() {
+    setState(() {
+      _selectedTypes.clear();
+      _applyFilters();
+    });
+  }
+
+  bool get _hasCustomOptions {
+    return _sortMode != SortMode.numberAsc ||
+        _selectedRegion != null ||
+        _selectedTypes.isNotEmpty ||
+        _viewFilter != ViewFilter.all ||
+        _markMode != MarkMode.none;
+  }
+
+  String get _filterSummary {
+    final details = <String>[];
+
+    switch (_sortMode) {
+      case SortMode.numberAsc:
+        break;
+      case SortMode.numberDesc:
+        details.add('Numero decrescente');
+        break;
+      case SortMode.nameAsc:
+        details.add('Nome A-Z');
+        break;
+      case SortMode.nameDesc:
+        details.add('Nome Z-A');
+        break;
+    }
+
+    if (_selectedRegion != null) details.add(_selectedRegion!);
+    if (_selectedTypes.isNotEmpty) {
+      details.add('${_selectedTypes.length} tipi');
+    }
+
+    switch (_viewFilter) {
+      case ViewFilter.all:
+        break;
+      case ViewFilter.seen:
+        details.add('Visti');
+        break;
+      case ViewFilter.unseen:
+        details.add('Non visti');
+        break;
+      case ViewFilter.caught:
+        details.add('Catturati');
+        break;
+    }
+
+    switch (_markMode) {
+      case MarkMode.none:
+        break;
+      case MarkMode.seen:
+        details.add('Segna visto');
+        break;
+      case MarkMode.unseen:
+        details.add('Segna non visto');
+        break;
+      case MarkMode.caught:
+        details.add('Segna catturato');
+        break;
+    }
+
+    final resultLabel = '${_filteredPokemon.length} risultati';
+    return details.isEmpty
+        ? resultLabel
+        : '$resultLabel · ${details.join(' · ')}';
+  }
+
+  void _resetOptions() {
+    setState(() {
+      _sortMode = SortMode.numberAsc;
+      _selectedRegion = null;
+      _selectedTypes.clear();
+      _viewFilter = ViewFilter.all;
+      _markMode = MarkMode.none;
+      _applyFilters();
+    });
+  }
+
   List<String> get _visibleRegions {
     return _regions.keys
-        .where((region) {
-          return _pokemonForRegion(region).isNotEmpty;
-        })
+        .where((region) => _pokemonForRegion(region).isNotEmpty)
         .toList(growable: false);
   }
 
@@ -212,7 +306,6 @@ class _PokedexScreenState extends State<PokedexScreen> {
     if (!_usesRegionSections) {
       return _filteredPokemon.isEmpty ? const [] : const ['Risultati'];
     }
-
     return _visibleRegions;
   }
 
@@ -226,9 +319,9 @@ class _PokedexScreenState extends State<PokedexScreen> {
     if (range == null) return const [];
 
     return _filteredPokemon
-        .where((pokemon) {
-          return pokemon.id >= range.first && pokemon.id <= range.last;
-        })
+        .where(
+          (pokemon) => pokemon.id >= range.first && pokemon.id <= range.last,
+        )
         .toList(growable: false);
   }
 
@@ -269,22 +362,6 @@ class _PokedexScreenState extends State<PokedexScreen> {
     );
   }
 
-  void _setTypeFilters(Set<String> types) {
-    setState(() {
-      _selectedTypes
-        ..clear()
-        ..addAll(types);
-      _applyFilters();
-    });
-  }
-
-  void _clearTypeFilters() {
-    setState(() {
-      _selectedTypes.clear();
-      _applyFilters();
-    });
-  }
-
   Future<void> _loadEntries() async {
     final entries = await _profileStorageService.loadPokedexEntries();
     _entries
@@ -308,9 +385,9 @@ class _PokedexScreenState extends State<PokedexScreen> {
   Map<String, int> _regionProgress(String region, bool caught) {
     final range = _regions[region]!;
     final regionPokemon = _allPokemon
-        .where((pokemon) {
-          return pokemon.id >= range.first && pokemon.id <= range.last;
-        })
+        .where(
+          (pokemon) => pokemon.id >= range.first && pokemon.id <= range.last,
+        )
         .toList(growable: false);
 
     final count = regionPokemon.where((pokemon) {
@@ -371,7 +448,6 @@ class _PokedexScreenState extends State<PokedexScreen> {
             });
           },
         );
-        final resultCounter = _ResultCounter(count: _filteredPokemon.length);
         final regionSelector = _RegionFilterSelector(
           regions: _visibleRegions,
           selectedRegion: _selectedRegion,
@@ -390,36 +466,96 @@ class _PokedexScreenState extends State<PokedexScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               sortSelector,
-              const SizedBox(height: 10),
-              Align(alignment: Alignment.centerLeft, child: resultCounter),
-              const SizedBox(height: 10),
-              regionSelector,
-              const SizedBox(height: 10),
-              typeSelector,
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Expanded(child: regionSelector),
+                  const SizedBox(width: 8),
+                  Expanded(child: typeSelector),
+                ],
+              ),
             ],
           );
         }
 
-        return Column(
+        return Row(
           children: [
-            Row(
-              children: [
-                Expanded(child: sortSelector),
-                const SizedBox(width: 10),
-                resultCounter,
-              ],
-            ),
-            const SizedBox(height: 10),
-            Row(
-              children: [
-                Expanded(child: regionSelector),
-                const SizedBox(width: 10),
-                Expanded(child: typeSelector),
-              ],
-            ),
+            Expanded(flex: 2, child: sortSelector),
+            const SizedBox(width: 8),
+            Expanded(child: regionSelector),
+            const SizedBox(width: 8),
+            Expanded(child: typeSelector),
           ],
         );
       },
+    );
+  }
+
+  Widget _buildFilterPanel() {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: colorScheme.surface,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: colorScheme.outlineVariant),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: Theme(
+        data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+        child: ExpansionTile(
+          key: const PageStorageKey<String>('pokedex-filter-panel'),
+          tilePadding: const EdgeInsets.symmetric(horizontal: 12),
+          childrenPadding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+          leading: const Icon(Icons.tune),
+          title: const Text(
+            'Filtri e modalità',
+            style: TextStyle(fontWeight: FontWeight.w800),
+          ),
+          subtitle: Text(
+            _filterSummary,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+          children: [
+            if (_hasCustomOptions)
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton.icon(
+                  onPressed: _resetOptions,
+                  icon: const Icon(Icons.restart_alt),
+                  label: const Text('Ripristina'),
+                ),
+              ),
+            _buildFilterControls(),
+            const SizedBox(height: 12),
+            const _FilterGroupTitle(
+              icon: Icons.visibility_outlined,
+              label: 'Mostra',
+            ),
+            const SizedBox(height: 6),
+            _ViewFilterSelector(
+              selectedFilter: _viewFilter,
+              onChanged: (filter) {
+                setState(() {
+                  _viewFilter = filter;
+                  _applyFilters();
+                });
+              },
+            ),
+            const SizedBox(height: 12),
+            const _FilterGroupTitle(
+              icon: Icons.touch_app_outlined,
+              label: 'Quando tocchi un Pokémon',
+            ),
+            const SizedBox(height: 6),
+            _MarkModeSelector(
+              selectedMode: _markMode,
+              onChanged: (mode) => setState(() => _markMode = mode),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -435,40 +571,37 @@ class _PokedexScreenState extends State<PokedexScreen> {
       content = Column(
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 10),
+            padding: const EdgeInsets.fromLTRB(12, 8, 12, 6),
             child: Column(
               children: [
                 TextField(
                   controller: _searchController,
                   onChanged: _onSearchChanged,
-                  decoration: const InputDecoration(
+                  textInputAction: TextInputAction.search,
+                  decoration: InputDecoration(
                     hintText: 'Cerca Pokémon...',
-                    prefixIcon: Icon(Icons.search),
-                    border: OutlineInputBorder(),
+                    prefixIcon: const Icon(Icons.search),
+                    suffixIcon: _searchController.text.isEmpty
+                        ? null
+                        : IconButton(
+                            tooltip: 'Cancella ricerca',
+                            onPressed: _clearSearch,
+                            icon: const Icon(Icons.close),
+                          ),
+                    border: const OutlineInputBorder(),
                   ),
                 ),
-                const SizedBox(height: 10),
-                _buildFilterControls(),
+                const SizedBox(height: 6),
+                _buildFilterPanel(),
               ],
             ),
-          ),
-          _ViewFilterSelector(
-            selectedFilter: _viewFilter,
-            onChanged: (filter) {
-              setState(() {
-                _viewFilter = filter;
-                _applyFilters();
-              });
-            },
-          ),
-          _MarkModeSelector(
-            selectedMode: _markMode,
-            onChanged: (mode) => setState(() => _markMode = mode),
           ),
           Expanded(
             child: _visibleSections.isEmpty
                 ? const Center(child: Text('Nessun Pokémon trovato.'))
                 : ListView.builder(
+                    keyboardDismissBehavior:
+                        ScrollViewKeyboardDismissBehavior.onDrag,
                     itemCount: _visibleSections.length,
                     itemBuilder: (context, index) {
                       final section = _visibleSections[index];
@@ -497,6 +630,29 @@ class _PokedexScreenState extends State<PokedexScreen> {
   }
 }
 
+class _FilterGroupTitle extends StatelessWidget {
+  const _FilterGroupTitle({required this.icon, required this.label});
+
+  final IconData icon;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Icon(icon, size: 18),
+        const SizedBox(width: 6),
+        Text(
+          label,
+          style: Theme.of(
+            context,
+          ).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w800),
+        ),
+      ],
+    );
+  }
+}
+
 class _RegionSection extends StatelessWidget {
   const _RegionSection({
     required this.region,
@@ -517,29 +673,29 @@ class _RegionSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+      padding: const EdgeInsets.fromLTRB(12, 6, 12, 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             '${region.toUpperCase()} · ${pokemon.length}',
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.w900,
               color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 4),
           Divider(color: Theme.of(context).colorScheme.outlineVariant),
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
           GridView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             itemCount: pokemon.length,
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: columns,
-              mainAxisSpacing: 16,
-              crossAxisSpacing: 16,
-              childAspectRatio: 0.72,
+              mainAxisSpacing: 10,
+              crossAxisSpacing: 10,
+              childAspectRatio: 0.78,
             ),
             itemBuilder: (context, index) {
               final currentPokemon = pokemon[index];
@@ -576,7 +732,7 @@ class _RegionFilterSelector extends StatelessWidget {
     final seen = region == null ? null : progressBuilder(region, false);
     final caught = region == null ? null : progressBuilder(region, true);
     final subtitle = region == null
-        ? 'Tutte le regioni'
+        ? 'Tutte'
         : 'Visti ${seen!['count']}/${seen['total']} · Presi ${caught!['count']}/${caught['total']}';
 
     return OutlinedButton.icon(
@@ -758,32 +914,6 @@ class _SortModeSelector extends StatelessWidget {
   }
 }
 
-class _ResultCounter extends StatelessWidget {
-  const _ResultCounter({required this.count});
-
-  final int count;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 48,
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
-      ),
-      child: Text(
-        '$count',
-        style: Theme.of(
-          context,
-        ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
-      ),
-    );
-  }
-}
-
 class _TypeFilterSelector extends StatelessWidget {
   const _TypeFilterSelector({
     required this.types,
@@ -805,34 +935,19 @@ class _TypeFilterSelector extends StatelessWidget {
         ? 'Tipi'
         : 'Tipi (${selectedTypes.length})';
 
-    return Row(
-      children: [
-        Expanded(
-          child: OutlinedButton.icon(
-            icon: const Icon(Icons.category),
-            label: Text(label),
-            onPressed: () async {
-              final result = await showDialog<Set<String>>(
-                context: context,
-                builder: (_) => _TypeFilterDialog(
-                  types: types,
-                  selectedTypes: selectedTypes,
-                ),
-              );
+    return OutlinedButton.icon(
+      icon: Icon(selectedTypes.isEmpty ? Icons.category : Icons.close),
+      label: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis),
+      onLongPress: selectedTypes.isEmpty ? null : onClear,
+      onPressed: () async {
+        final result = await showDialog<Set<String>>(
+          context: context,
+          builder: (_) =>
+              _TypeFilterDialog(types: types, selectedTypes: selectedTypes),
+        );
 
-              if (result != null) onChanged(result);
-            },
-          ),
-        ),
-        if (selectedTypes.isNotEmpty) ...[
-          const SizedBox(width: 8),
-          IconButton.outlined(
-            tooltip: 'Cancella tipi',
-            onPressed: onClear,
-            icon: const Icon(Icons.close),
-          ),
-        ],
-      ],
+        if (result != null) onChanged(result);
+      },
     );
   }
 }
@@ -866,17 +981,19 @@ class _TypeFilterDialogState extends State<_TypeFilterDialog> {
       title: const Text('Filtra per tipo'),
       content: SizedBox(
         width: double.maxFinite,
-        child: Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: [
-            for (final type in widget.types)
-              _TypeFilterBadgeButton(
-                type: type,
-                selected: _selectedTypes.contains(type),
-                onTap: () => _toggle(type),
-              ),
-          ],
+        child: SingleChildScrollView(
+          child: Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              for (final type in widget.types)
+                _TypeFilterBadgeButton(
+                  type: type,
+                  selected: _selectedTypes.contains(type),
+                  onTap: () => _toggle(type),
+                ),
+            ],
+          ),
         ),
       ),
       actions: [
@@ -958,34 +1075,31 @@ class _ViewFilterSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-      child: Wrap(
-        spacing: 8,
-        runSpacing: 8,
-        children: [
-          ChoiceChip(
-            label: const Text('Tutti'),
-            selected: selectedFilter == ViewFilter.all,
-            onSelected: (_) => onChanged(ViewFilter.all),
-          ),
-          ChoiceChip(
-            label: const Text('Visti'),
-            selected: selectedFilter == ViewFilter.seen,
-            onSelected: (_) => onChanged(ViewFilter.seen),
-          ),
-          ChoiceChip(
-            label: const Text('Non visti'),
-            selected: selectedFilter == ViewFilter.unseen,
-            onSelected: (_) => onChanged(ViewFilter.unseen),
-          ),
-          ChoiceChip(
-            label: const Text('Catturati'),
-            selected: selectedFilter == ViewFilter.caught,
-            onSelected: (_) => onChanged(ViewFilter.caught),
-          ),
-        ],
-      ),
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: [
+        ChoiceChip(
+          label: const Text('Tutti'),
+          selected: selectedFilter == ViewFilter.all,
+          onSelected: (_) => onChanged(ViewFilter.all),
+        ),
+        ChoiceChip(
+          label: const Text('Visti'),
+          selected: selectedFilter == ViewFilter.seen,
+          onSelected: (_) => onChanged(ViewFilter.seen),
+        ),
+        ChoiceChip(
+          label: const Text('Non visti'),
+          selected: selectedFilter == ViewFilter.unseen,
+          onSelected: (_) => onChanged(ViewFilter.unseen),
+        ),
+        ChoiceChip(
+          label: const Text('Catturati'),
+          selected: selectedFilter == ViewFilter.caught,
+          onSelected: (_) => onChanged(ViewFilter.caught),
+        ),
+      ],
     );
   }
 }
@@ -1001,34 +1115,31 @@ class _MarkModeSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-      child: Wrap(
-        spacing: 8,
-        runSpacing: 8,
-        children: [
-          ChoiceChip(
-            label: const Text('MARK OFF'),
-            selected: selectedMode == MarkMode.none,
-            onSelected: (_) => onChanged(MarkMode.none),
-          ),
-          ChoiceChip(
-            label: const Text('Visto'),
-            selected: selectedMode == MarkMode.seen,
-            onSelected: (_) => onChanged(MarkMode.seen),
-          ),
-          ChoiceChip(
-            label: const Text('Non visto'),
-            selected: selectedMode == MarkMode.unseen,
-            onSelected: (_) => onChanged(MarkMode.unseen),
-          ),
-          ChoiceChip(
-            label: const Text('Catturato'),
-            selected: selectedMode == MarkMode.caught,
-            onSelected: (_) => onChanged(MarkMode.caught),
-          ),
-        ],
-      ),
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: [
+        ChoiceChip(
+          label: const Text('Apri scheda'),
+          selected: selectedMode == MarkMode.none,
+          onSelected: (_) => onChanged(MarkMode.none),
+        ),
+        ChoiceChip(
+          label: const Text('Segna visto'),
+          selected: selectedMode == MarkMode.seen,
+          onSelected: (_) => onChanged(MarkMode.seen),
+        ),
+        ChoiceChip(
+          label: const Text('Segna non visto'),
+          selected: selectedMode == MarkMode.unseen,
+          onSelected: (_) => onChanged(MarkMode.unseen),
+        ),
+        ChoiceChip(
+          label: const Text('Segna catturato'),
+          selected: selectedMode == MarkMode.caught,
+          onSelected: (_) => onChanged(MarkMode.caught),
+        ),
+      ],
     );
   }
 }

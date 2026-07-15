@@ -29,7 +29,9 @@ jobs:
           fetch-depth: 0
 
       - name: Apply final layout review
-        run: python tool/apply_layout_final_block.py
+        run: |
+          python tool/fix_layout_final_script.py
+          python tool/apply_layout_final_block.py
 
       - name: Set up Java
         uses: actions/setup-java@v4
@@ -88,7 +90,7 @@ jobs:
 
       - name: Commit verified final layout review
         run: |
-          rm -f tool/apply_layout_final_block.py .github/workflows/apply-layout-final-block.yml layout-final-analyze.log
+          rm -f tool/apply_layout_final_block.py tool/fix_layout_final_script.py .github/workflows/apply-layout-final-block.yml layout-final-analyze.log
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A

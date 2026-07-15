@@ -44,10 +44,10 @@ jobs:
           script = Path('tool/apply_native_content_sharing.py')
           script_text = script.read_text(encoding='utf-8')
           dependency = "  file_picker: ^11.0.2\\n  share_plus: ^13.2.0\\n"
-          compatible = "  file_picker: ^11.0.2\\n  share_plus: ^12.0.2\\n"
+          compatible = "  file_picker: ^10.3.10\\n  share_plus: ^12.0.2\\n"
           if script_text.count(dependency) != 1:
               raise SystemExit(
-                  f'share_plus dependency occurrence count: {script_text.count(dependency)}'
+                  f'dependency occurrence count: {script_text.count(dependency)}'
               )
           script.write_text(
               script_text.replace(dependency, compatible),

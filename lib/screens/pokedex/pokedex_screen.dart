@@ -8,6 +8,7 @@ import '../../repositories/pokemon_pc_repository.dart';
 import '../../repositories/pokemon_repository.dart';
 import '../../repositories/team_repository.dart';
 import '../../services/profile_storage_service.dart';
+import '../../widgets/layout/responsive_content.dart';
 import '../../widgets/pokedex/pokemon_summary_dialog.dart';
 import '../../widgets/pokedex/pokemon_tile.dart';
 import '../../widgets/pokemon/pokemon_asset_image.dart';
@@ -357,6 +358,71 @@ class _PokedexScreenState extends State<PokedexScreen> {
     await _saveEntries();
   }
 
+  Widget _buildFilterControls() {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final compact = constraints.maxWidth < 620;
+        final sortSelector = _SortModeSelector(
+          sortMode: _sortMode,
+          onChanged: (sortMode) {
+            setState(() {
+              _sortMode = sortMode;
+              _applyFilters();
+            });
+          },
+        );
+        final resultCounter = _ResultCounter(count: _filteredPokemon.length);
+        final regionSelector = _RegionFilterSelector(
+          regions: _visibleRegions,
+          selectedRegion: _selectedRegion,
+          progressBuilder: _regionProgress,
+          onChanged: _setRegionFilter,
+        );
+        final typeSelector = _TypeFilterSelector(
+          types: _availableTypes,
+          selectedTypes: _selectedTypes,
+          onChanged: _setTypeFilters,
+          onClear: _clearTypeFilters,
+        );
+
+        if (compact) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              sortSelector,
+              const SizedBox(height: 10),
+              Align(alignment: Alignment.centerLeft, child: resultCounter),
+              const SizedBox(height: 10),
+              regionSelector,
+              const SizedBox(height: 10),
+              typeSelector,
+            ],
+          );
+        }
+
+        return Column(
+          children: [
+            Row(
+              children: [
+                Expanded(child: sortSelector),
+                const SizedBox(width: 10),
+                resultCounter,
+              ],
+            ),
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                Expanded(child: regionSelector),
+                const SizedBox(width: 10),
+                Expanded(child: typeSelector),
+              ],
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     Widget content;
@@ -382,45 +448,7 @@ class _PokedexScreenState extends State<PokedexScreen> {
                   ),
                 ),
                 const SizedBox(height: 10),
-                Row(
-                  children: [
-                    Expanded(
-                      child: _SortModeSelector(
-                        sortMode: _sortMode,
-                        onChanged: (sortMode) {
-                          setState(() {
-                            _sortMode = sortMode;
-                            _applyFilters();
-                          });
-                        },
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    _ResultCounter(count: _filteredPokemon.length),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                Row(
-                  children: [
-                    Expanded(
-                      child: _RegionFilterSelector(
-                        regions: _visibleRegions,
-                        selectedRegion: _selectedRegion,
-                        progressBuilder: _regionProgress,
-                        onChanged: _setRegionFilter,
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: _TypeFilterSelector(
-                        types: _availableTypes,
-                        selectedTypes: _selectedTypes,
-                        onChanged: _setTypeFilters,
-                        onClear: _clearTypeFilters,
-                      ),
-                    ),
-                  ],
-                ),
+                _buildFilterControls(),
               ],
             ),
           ),
@@ -464,7 +492,7 @@ class _PokedexScreenState extends State<PokedexScreen> {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Pokédex')),
-      body: content,
+      body: ResponsiveContent(maxWidth: 1440, child: content),
     );
   }
 }

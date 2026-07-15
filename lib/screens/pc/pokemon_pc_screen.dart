@@ -11,6 +11,7 @@ import '../../repositories/pokemon_pc_repository.dart';
 import '../../repositories/pokemon_repository.dart';
 import '../../repositories/profile_repository.dart';
 import '../../repositories/team_repository.dart';
+import '../../widgets/layout/responsive_content.dart';
 import '../../widgets/navigation/home_leading_button.dart';
 import '../../widgets/pokemon/egg_asset_image.dart';
 import '../../widgets/pokemon/pokemon_asset_image.dart';
@@ -143,12 +144,14 @@ class _PokemonPcScreenState extends State<PokemonPcScreen> {
   List<BreedingEgg> get _filteredPcEggs {
     final query = _pcQuery.trim().toLowerCase();
     if (query.isEmpty) return _pcEggs;
-    return _pcEggs.where((egg) {
-      final pokemon = _pokemonById(egg.speciesId);
-      return 'uovo'.contains(query) ||
-          (pokemon?.name.toLowerCase().contains(query) ?? false) ||
-          egg.parentNames.any((name) => name.toLowerCase().contains(query));
-    }).toList(growable: false);
+    return _pcEggs
+        .where((egg) {
+          final pokemon = _pokemonById(egg.speciesId);
+          return 'uovo'.contains(query) ||
+              (pokemon?.name.toLowerCase().contains(query) ?? false) ||
+              egg.parentNames.any((name) => name.toLowerCase().contains(query));
+        })
+        .toList(growable: false);
   }
 
   BreedingEgg? _eggById(String? eggId) {
@@ -418,99 +421,106 @@ class _PokemonPcScreenState extends State<PokemonPcScreen> {
           ? const Center(child: CircularProgressIndicator())
           : _errorMessage != null && _allPokemon.isEmpty
           ? _PcErrorState(message: _errorMessage!, onRetry: _loadPc)
-          : SafeArea(
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-                    child: Column(
-                      children: [
-                        _PcHeader(
-                          profileName: profileName,
-                          storedCount: storedCount,
-                          filledTeamSlots: _filledTeamSlots,
-                          totalTeamSlots: visibleTeam.length,
-                        ),
-                        if (_successMessage != null) ...[
-                          const SizedBox(height: 8),
-                          _PcStatusMessage(message: _successMessage!),
-                        ],
-                        if (_errorMessage != null) ...[
-                          const SizedBox(height: 8),
-                          Text(
-                            _errorMessage!,
-                            style: TextStyle(
-                              color: Theme.of(context).colorScheme.error,
+          : ResponsiveContent(
+              maxWidth: 1280,
+              child: SafeArea(
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                      child: Column(
+                        children: [
+                          _PcHeader(
+                            profileName: profileName,
+                            storedCount: storedCount,
+                            filledTeamSlots: _filledTeamSlots,
+                            totalTeamSlots: visibleTeam.length,
+                          ),
+                          if (_successMessage != null) ...[
+                            const SizedBox(height: 8),
+                            _PcStatusMessage(message: _successMessage!),
+                          ],
+                          if (_errorMessage != null) ...[
+                            const SizedBox(height: 8),
+                            Text(
+                              _errorMessage!,
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.error,
+                              ),
                             ),
+                          ],
+                          const SizedBox(height: 10),
+                          _SectionTitle(
+                            title: 'Squadra',
+                            subtitle:
+                                'Fissa: deposita o scegli chi sostituire quando ritiri dal PC.',
+                          ),
+                          const SizedBox(height: 8),
+                          _FixedTeamPanel(
+                            team: visibleTeam,
+                            pokemonForSlot: _pokemonById,
+                            onDeposit: _depositTeamSlot,
                           ),
                         ],
-                        const SizedBox(height: 10),
-                        _SectionTitle(
-                          title: 'Squadra',
-                          subtitle:
-                              'Fissa: deposita o scegli chi sostituire quando ritiri dal PC.',
-                        ),
-                        const SizedBox(height: 8),
-                        _FixedTeamPanel(
-                          team: visibleTeam,
-                          pokemonForSlot: _pokemonById,
-                          onDeposit: _depositTeamSlot,
-                        ),
-                      ],
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 12),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: _PcToolbar(
-                      storedCount: filteredCount,
-                       totalCount: storedCount,
-                      showSearch: _showPcSearch,
-                      controller: _pcSearchController,
-                      onSearchTap: _togglePcSearch,
-                      onQueryChanged: (value) =>
-                          setState(() => _pcQuery = value),
+                    const SizedBox(height: 12),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: _PcToolbar(
+                        storedCount: filteredCount,
+                        totalCount: storedCount,
+                        showSearch: _showPcSearch,
+                        controller: _pcSearchController,
+                        onSearchTap: _togglePcSearch,
+                        onQueryChanged: (value) =>
+                            setState(() => _pcQuery = value),
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                                     Expanded(
-                     child: storedCount == 0
-                         ? const Padding(
-                             padding: EdgeInsets.symmetric(horizontal: 16),
-                             child: _PcEmptyState(),
-                           )
-                         : filteredCount == 0
-                         ? const _PcNoSearchResults()
-                         : GridView.builder(
-                             padding: const EdgeInsets.fromLTRB(16, 0, 16, 18),
-                             gridDelegate:
-                                 const SliverGridDelegateWithMaxCrossAxisExtent(
-                                   maxCrossAxisExtent: 88,
-                                   mainAxisSpacing: 8,
-                                   crossAxisSpacing: 8,
-                                   childAspectRatio: 1,
-                                 ),
-                             itemCount: filteredCount,
-                             itemBuilder: (context, index) {
-                               if (index < filteredPcPokemon.length) {
-                                 final item = filteredPcPokemon[index];
-                                 return _PcGridCell(
-                                   pcPokemon: item,
-                                   pokemon: _pokemonById(item.pokemonId),
-                                   onTap: () => _openPcPokemonActions(item),
-                                 );
-                               }
-                               final egg = filteredPcEggs[
-                                   index - filteredPcPokemon.length];
-                               return PcEggGridCell(
-                                 egg: egg,
-                                 pokemon: _pokemonById(egg.speciesId),
-                                 onTap: () => _openPcEggActions(egg),
-                               );
-                             },
-                           ),
-                   ),
-                ],
+                    const SizedBox(height: 8),
+                    Expanded(
+                      child: storedCount == 0
+                          ? const Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 16),
+                              child: _PcEmptyState(),
+                            )
+                          : filteredCount == 0
+                          ? const _PcNoSearchResults()
+                          : GridView.builder(
+                              padding: const EdgeInsets.fromLTRB(16, 0, 16, 18),
+                              gridDelegate:
+                                  SliverGridDelegateWithMaxCrossAxisExtent(
+                                    maxCrossAxisExtent:
+                                        MediaQuery.sizeOf(context).width >= 900
+                                        ? 112
+                                        : 92,
+                                    mainAxisSpacing: 8,
+                                    crossAxisSpacing: 8,
+                                    childAspectRatio: 1,
+                                  ),
+                              itemCount: filteredCount,
+                              itemBuilder: (context, index) {
+                                if (index < filteredPcPokemon.length) {
+                                  final item = filteredPcPokemon[index];
+                                  return _PcGridCell(
+                                    pcPokemon: item,
+                                    pokemon: _pokemonById(item.pokemonId),
+                                    onTap: () => _openPcPokemonActions(item),
+                                  );
+                                }
+                                final egg =
+                                    filteredPcEggs[index -
+                                        filteredPcPokemon.length];
+                                return PcEggGridCell(
+                                  egg: egg,
+                                  pokemon: _pokemonById(egg.speciesId),
+                                  onTap: () => _openPcEggActions(egg),
+                                );
+                              },
+                            ),
+                    ),
+                  ],
+                ),
               ),
             ),
     );
@@ -532,9 +542,9 @@ class _PokemonPcScreenState extends State<PokemonPcScreen> {
         await _moveEggToTeam(egg);
         break;
       case PcEggAction.openBreeding:
-        await Navigator.of(context).push(
-          MaterialPageRoute(builder: (_) => const BreedingScreen()),
-        );
+        await Navigator.of(
+          context,
+        ).push(MaterialPageRoute(builder: (_) => const BreedingScreen()));
         await _loadPc(clearMessages: false);
         break;
     }

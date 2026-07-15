@@ -7,12 +7,28 @@ class Pokedex5EApp extends StatelessWidget {
 
   static const Color _brandOrange = Color(0xFFF26A21);
   static const Color _appBackground = Color(0xFFF4F1EC);
+  static const VisualDensity _compactDensity = VisualDensity(
+    horizontal: -1,
+    vertical: -1.5,
+  );
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = ColorScheme.fromSeed(
       seedColor: _brandOrange,
       brightness: Brightness.light,
+    );
+
+    final compactButtonStyle = ButtonStyle(
+      minimumSize: const WidgetStatePropertyAll(Size(0, 42)),
+      padding: const WidgetStatePropertyAll(
+        EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      ),
+      visualDensity: const WidgetStatePropertyAll(_compactDensity),
+      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      shape: WidgetStatePropertyAll(
+        RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
     );
 
     return MaterialApp(
@@ -22,11 +38,14 @@ class Pokedex5EApp extends StatelessWidget {
         colorScheme: colorScheme,
         scaffoldBackgroundColor: _appBackground,
         useMaterial3: true,
+        visualDensity: _compactDensity,
+        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
         appBarTheme: const AppBarTheme(
           backgroundColor: _brandOrange,
           foregroundColor: Colors.white,
           elevation: 0,
           centerTitle: false,
+          toolbarHeight: 56,
           titleTextStyle: TextStyle(
             color: Colors.white,
             fontSize: 20,
@@ -38,24 +57,48 @@ class Pokedex5EApp extends StatelessWidget {
         cardTheme: CardThemeData(
           color: Colors.white,
           elevation: 1.5,
-          margin: const EdgeInsets.symmetric(vertical: 6),
+          margin: const EdgeInsets.symmetric(vertical: 4),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),
           ),
         ),
         filledButtonTheme: FilledButtonThemeData(
-          style: FilledButton.styleFrom(
-            backgroundColor: _brandOrange,
-            foregroundColor: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
+          style: compactButtonStyle.copyWith(
+            backgroundColor: const WidgetStatePropertyAll(_brandOrange),
+            foregroundColor: const WidgetStatePropertyAll(Colors.white),
+            textStyle: const WidgetStatePropertyAll(
+              TextStyle(fontWeight: FontWeight.w800),
             ),
-            textStyle: const TextStyle(fontWeight: FontWeight.w800),
           ),
+        ),
+        outlinedButtonTheme: OutlinedButtonThemeData(style: compactButtonStyle),
+        textButtonTheme: TextButtonThemeData(
+          style: compactButtonStyle.copyWith(
+            minimumSize: const WidgetStatePropertyAll(Size(0, 38)),
+          ),
+        ),
+        iconButtonTheme: IconButtonThemeData(
+          style: IconButton.styleFrom(
+            minimumSize: const Size(40, 40),
+            padding: const EdgeInsets.all(8),
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            visualDensity: _compactDensity,
+          ),
+        ),
+        chipTheme: const ChipThemeData(
+          padding: EdgeInsets.symmetric(horizontal: 4, vertical: 0),
+          labelPadding: EdgeInsets.symmetric(horizontal: 5),
+          visualDensity: VisualDensity(horizontal: -1, vertical: -2),
+          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
         ),
         inputDecorationTheme: InputDecorationTheme(
           filled: true,
           fillColor: Colors.white,
+          isDense: true,
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 12,
+            vertical: 11,
+          ),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
           ),
@@ -63,6 +106,11 @@ class Pokedex5EApp extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide(color: colorScheme.outlineVariant),
           ),
+        ),
+        listTileTheme: const ListTileThemeData(
+          dense: true,
+          minVerticalPadding: 4,
+          contentPadding: EdgeInsets.symmetric(horizontal: 12),
         ),
         tabBarTheme: const TabBarThemeData(
           labelColor: _brandOrange,

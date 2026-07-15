@@ -1,0 +1,76 @@
+name: Apply layout review final block
+
+on:
+  push:
+    branches:
+      - polish/layout-final-battle-master
+
+permissions:
+  contents: write
+
+concurrency:
+  group: layout-review-final-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    if: ${{ !contains(github.event.head_commit.message, '[layout-final-applied]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Check out feature branch
+        uses: actions/checkout@v4
+        with:
+          ref: polish/layout-final-battle-master
+          fetch-depth: 0
+
+      - name: Apply final layout review
+        run: python tool/apply_layout_final_block.py
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Format changed Dart files
+        run: |
+          dart format \
+            lib/screens/battle/battle_screen.dart \
+            lib/screens/battle/npc_battle_screen.dart \
+            lib/screens/tools/tools_screen.dart \
+            test/layout_final_block_integration_test.dart
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze source
+        run: flutter analyze
+
+      - name: Validate application data
+        run: flutter test test/data_integrity_test.dart --reporter expanded
+
+      - name: Run final layout integration test
+        run: flutter test test/layout_final_block_integration_test.dart --reporter expanded
+
+      - name: Run complete test suite
+        run: flutter test --reporter expanded
+
+      - name: Build Android debug APK
+        run: flutter build apk --debug
+
+      - name: Commit verified final layout review
+        run: |
+          rm -f tool/apply_layout_final_block.py .github/workflows/apply-layout-final-block.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Completa la review responsiva pre-release [layout-final-applied]"
+          git push origin HEAD:polish/layout-final-battle-master

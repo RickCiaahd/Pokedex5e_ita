@@ -65,7 +65,7 @@ Quando vengono aggiunti Pokémon, forme, mosse, abilità o asset, il test di int
 
 I dati applicativi sono salvati localmente tramite Hive. La schermata Profili permette di esportare e importare backup JSON, compresi squadra, Pokémon Center, inventario, impostazioni e sessioni di combattimento supportate.
 
-Dalla schermata Squadra è inoltre possibile esportare, importare e condividere singoli Pokémon o una formazione completa senza sostituire l’intero profilo; i Pokémon rimpiazzati e gli eventuali esuberi vengono conservati nel PC. Le librerie del Master supportano file portabili e condivisione diretta per incontri e Allenatori PNG, mentre il Fight del Master può salvare o condividere un riepilogo testuale con round, iniziativa, PF, status e PP.
+Dalla schermata Squadra è inoltre possibile esportare, importare e condividere singoli Pokémon o una formazione completa senza sostituire l’intero profilo; i Pokémon rimpiazzati e gli eventuali esuberi vengono conservati nel PC. Le librerie del Master supportano file portabili e condivisione diretta per incontri e Allenatori PNG, mentre il Fight del Master può salvare o condividere un riepilogo testuale con round, iniziativa, PF, status e PP. Sul Web, quando il menu nativo non è disponibile, il file viene scaricato dal browser.
 
 ## Avvertenza
 

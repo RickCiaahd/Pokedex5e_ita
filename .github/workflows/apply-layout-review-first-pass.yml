@@ -1,5 +1,6 @@
 name: Apply layout review first pass
 
+# Workflow temporaneo del primo passaggio di revisione responsiva.
 on:
   push:
     branches:

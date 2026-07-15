@@ -124,11 +124,36 @@ jobs:
         run: flutter test --reporter expanded
 
       - name: Build Android debug APK
-        run: flutter build apk --debug
+        run: |
+          set +e
+          flutter build apk --debug --verbose > android-build.log 2>&1
+          code=$?
+          echo "$code" > android-build-exit-code.txt
+          tail -n 250 android-build.log
+          exit 0
+
+      - name: Upload Android build diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: native-sharing-android-build-diagnostics
+          path: |
+            android-build.log
+            android-build-exit-code.txt
+          if-no-files-found: error
+          retention-days: 2
+
+      - name: Stop on Android build failure
+        run: |
+          code=$(cat android-build-exit-code.txt)
+          if [ "$code" != "0" ]; then
+            echo "Android build failed with code $code"
+            exit "$code"
+          fi
 
       - name: Commit verified native sharing
         run: |
-          rm -f tool/apply_native_content_sharing.py .github/workflows/apply-native-content-sharing.yml patch-output.log patch-exit-code.txt
+          rm -f tool/apply_native_content_sharing.py .github/workflows/apply-native-content-sharing.yml patch-output.log patch-exit-code.txt android-build.log android-build-exit-code.txt
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A

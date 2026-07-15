@@ -147,7 +147,10 @@ add_import(
 )
 
 team_text = team.read_text(encoding="utf-8")
-build_anchor = "  @override\n  Widget build(BuildContext context) {\n"
+build_anchor = """  @override
+  Widget build(BuildContext context) {
+    final profileName = _profile?.name ?? widget.nickname;
+"""
 adaptive_method = """  Widget _buildTeamSlots(List<TeamSlot> visibleTeam) {
     return LayoutBuilder(
       builder: (context, constraints) {

@@ -24,7 +24,7 @@ class Pokedex5EApp extends StatelessWidget {
       padding: const WidgetStatePropertyAll(
         EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       ),
-      visualDensity: const WidgetStatePropertyAll(_compactDensity),
+      visualDensity: _compactDensity,
       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
       shape: WidgetStatePropertyAll(
         RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -84,12 +84,6 @@ class Pokedex5EApp extends StatelessWidget {
             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
             visualDensity: _compactDensity,
           ),
-        ),
-        chipTheme: const ChipThemeData(
-          padding: EdgeInsets.symmetric(horizontal: 4, vertical: 0),
-          labelPadding: EdgeInsets.symmetric(horizontal: 5),
-          visualDensity: VisualDensity(horizontal: -1, vertical: -2),
-          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
         ),
         inputDecorationTheme: InputDecorationTheme(
           filled: true,

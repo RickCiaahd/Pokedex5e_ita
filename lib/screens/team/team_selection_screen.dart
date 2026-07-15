@@ -14,6 +14,7 @@ import '../../repositories/profile_repository.dart';
 import '../../repositories/team_repository.dart';
 import '../../services/native_share_service.dart';
 import '../../services/pokemon_transfer_service.dart';
+import '../../widgets/layout/responsive_content.dart';
 import '../../widgets/pokemon/egg_asset_image.dart';
 import '../../widgets/pokemon/pokemon_asset_image.dart';
 import '../pokemon/pokemon_detail_screen.dart';
@@ -516,6 +517,41 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
     }
   }
 
+  Widget _buildTeamSlots(List<TeamSlot> visibleTeam) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        const spacing = 12.0;
+        final usesTwoColumns = constraints.maxWidth >= 840;
+        final cardWidth = usesTwoColumns
+            ? (constraints.maxWidth - spacing) / 2
+            : constraints.maxWidth;
+
+        return Wrap(
+          spacing: spacing,
+          runSpacing: 0,
+          children: [
+            for (final slot in visibleTeam)
+              SizedBox(
+                width: cardWidth,
+                child: _TeamSlotCard(
+                  slot: slot,
+                  pokemon: _pokemonById(slot.pokemonId),
+                  onOpen: () => _openPokemonDetail(slot),
+                  onChange: () => _openPokemonPicker(slot),
+                  onExport: slot.isPokemon ? () => _exportPokemon(slot) : null,
+                  onShare: slot.isPokemon ? () => _sharePokemon(slot) : null,
+                  onImport: slot.isEgg ? null : () => _importPokemonInto(slot),
+                  onRemove: slot.isPokemon
+                      ? () => _setPokemonInSlot(slot.slotIndex, null)
+                      : null,
+                ),
+              ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final profileName = _profile?.name ?? widget.nickname;
@@ -576,49 +612,40 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
           ),
         ],
       ),
-      body: RefreshIndicator(
-        onRefresh: _loadTeam,
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-          children: [
-            if (_isBusy) const LinearProgressIndicator(),
-            if (_isLoading)
-              const Padding(
-                padding: EdgeInsets.only(top: 120),
-                child: Center(child: CircularProgressIndicator()),
-              )
-            else if (_errorMessage != null)
-              _TeamErrorState(message: _errorMessage!, onRetry: _loadTeam)
-            else ...[
-              _TeamHeader(
-                profileName: profileName,
-                filledSlots: filledSlots,
-                totalSlots: visibleTeam.length,
-              ),
-              if (_statusMessage != null) ...[
-                const SizedBox(height: 12),
-                _TeamStatusBanner(
-                  message: _statusMessage!,
-                  isError: _statusIsError,
-                  onDismiss: () => setState(() => _statusMessage = null),
+      body: ResponsiveContent(
+        maxWidth: 1180,
+        child: RefreshIndicator(
+          onRefresh: _loadTeam,
+          child: ListView(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+            children: [
+              if (_isBusy) const LinearProgressIndicator(),
+              if (_isLoading)
+                const Padding(
+                  padding: EdgeInsets.only(top: 120),
+                  child: Center(child: CircularProgressIndicator()),
+                )
+              else if (_errorMessage != null)
+                _TeamErrorState(message: _errorMessage!, onRetry: _loadTeam)
+              else ...[
+                _TeamHeader(
+                  profileName: profileName,
+                  filledSlots: filledSlots,
+                  totalSlots: visibleTeam.length,
                 ),
+                if (_statusMessage != null) ...[
+                  const SizedBox(height: 12),
+                  _TeamStatusBanner(
+                    message: _statusMessage!,
+                    isError: _statusIsError,
+                    onDismiss: () => setState(() => _statusMessage = null),
+                  ),
+                ],
+                const SizedBox(height: 16),
+                _buildTeamSlots(visibleTeam),
               ],
-              const SizedBox(height: 16),
-              for (final slot in visibleTeam)
-                _TeamSlotCard(
-                  slot: slot,
-                  pokemon: _pokemonById(slot.pokemonId),
-                  onOpen: () => _openPokemonDetail(slot),
-                  onChange: () => _openPokemonPicker(slot),
-                  onExport: slot.isPokemon ? () => _exportPokemon(slot) : null,
-                  onShare: slot.isPokemon ? () => _sharePokemon(slot) : null,
-                  onImport: slot.isEgg ? null : () => _importPokemonInto(slot),
-                  onRemove: slot.isPokemon
-                      ? () => _setPokemonInSlot(slot.slotIndex, null)
-                      : null,
-                ),
             ],
-          ],
+          ),
         ),
       ),
     );

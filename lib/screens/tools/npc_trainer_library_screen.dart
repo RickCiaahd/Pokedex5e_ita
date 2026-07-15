@@ -23,6 +23,7 @@ import '../../services/campaign_transfer_service.dart';
 import '../../services/master_battle_service.dart';
 import '../../services/native_share_service.dart';
 import '../../services/saved_npc_trainer_mapper_service.dart';
+import '../../widgets/layout/responsive_content.dart';
 import '../../widgets/navigation/home_leading_button.dart';
 import '../../widgets/pokemon/pokemon_asset_image.dart';
 import '../battle/npc_battle_screen.dart';
@@ -475,91 +476,94 @@ class _NpcTrainerLibraryScreenState extends State<NpcTrainerLibraryScreen> {
           ),
         ],
       ),
-      body: RefreshIndicator(
-        onRefresh: _load,
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 110),
-          children: [
-            _LibraryHeader(
-              count: _trainers.length,
-              hasActiveFight: _hasActiveFight,
-              onResumeFight: _isBusy ? null : _resumeFight,
-            ),
-            if (_isBusy) ...[
-              const SizedBox(height: 8),
-              const LinearProgressIndicator(),
-            ],
-            if (_message != null) ...[
-              const SizedBox(height: 10),
-              Card(
-                color: _messageIsError
-                    ? Theme.of(context).colorScheme.errorContainer
-                    : null,
-                child: Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: Text(_message!),
-                ),
+      body: ResponsiveContent(
+        maxWidth: 1180,
+        child: RefreshIndicator(
+          onRefresh: _load,
+          child: ListView(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 110),
+            children: [
+              _LibraryHeader(
+                count: _trainers.length,
+                hasActiveFight: _hasActiveFight,
+                onResumeFight: _isBusy ? null : _resumeFight,
               ),
-            ],
-            const SizedBox(height: 14),
-            if (_isLoading)
-              const Padding(
-                padding: EdgeInsets.only(top: 100),
-                child: Center(child: CircularProgressIndicator()),
-              )
-            else if (_trainers.isEmpty)
-              const Card(
-                child: Padding(
-                  padding: EdgeInsets.all(24),
-                  child: Column(
-                    children: [
-                      Icon(Icons.groups_2_outlined, size: 48),
-                      SizedBox(height: 12),
-                      Text(
-                        'Nessun Allenatore PNG salvato',
-                        style: TextStyle(fontWeight: FontWeight.w900),
-                      ),
-                      SizedBox(height: 6),
-                      Text(
-                        'Genera un Allenatore PNG e salvalo dalla schermata del risultato.',
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
+              if (_isBusy) ...[
+                const SizedBox(height: 8),
+                const LinearProgressIndicator(),
+              ],
+              if (_message != null) ...[
+                const SizedBox(height: 10),
+                Card(
+                  color: _messageIsError
+                      ? Theme.of(context).colorScheme.errorContainer
+                      : null,
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Text(_message!),
                   ),
                 ),
-              )
-            else ...[
-              Text(
-                'Seleziona più allenatori per controllarli nello stesso fight.',
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-              const SizedBox(height: 8),
-              for (final trainer in _trainers) ...[
-                _NpcTrainerCard(
-                  trainer: trainer,
-                  pokemonById: _pokemonById,
-                  selected: _selectedIds.contains(trainer.id),
-                  disabled: _isBusy,
-                  onSelected: (selected) {
-                    setState(() {
-                      if (selected) {
-                        _selectedIds.add(trainer.id);
-                      } else {
-                        _selectedIds.remove(trainer.id);
-                      }
-                    });
-                  },
-                  onOpen: () => _openTrainer(trainer),
-                  onFight: () => _startFight([trainer]),
-                  onExport: () => _exportTrainer(trainer),
-                  onShare: () => _shareTrainer(trainer),
-                  onDuplicate: () => _duplicateTrainer(trainer),
-                  onDelete: () => _deleteTrainer(trainer),
+              ],
+              const SizedBox(height: 14),
+              if (_isLoading)
+                const Padding(
+                  padding: EdgeInsets.only(top: 100),
+                  child: Center(child: CircularProgressIndicator()),
+                )
+              else if (_trainers.isEmpty)
+                const Card(
+                  child: Padding(
+                    padding: EdgeInsets.all(24),
+                    child: Column(
+                      children: [
+                        Icon(Icons.groups_2_outlined, size: 48),
+                        SizedBox(height: 12),
+                        Text(
+                          'Nessun Allenatore PNG salvato',
+                          style: TextStyle(fontWeight: FontWeight.w900),
+                        ),
+                        SizedBox(height: 6),
+                        Text(
+                          'Genera un Allenatore PNG e salvalo dalla schermata del risultato.',
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              else ...[
+                Text(
+                  'Seleziona più allenatori per controllarli nello stesso fight.',
+                  style: Theme.of(context).textTheme.bodyMedium,
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 8),
+                for (final trainer in _trainers) ...[
+                  _NpcTrainerCard(
+                    trainer: trainer,
+                    pokemonById: _pokemonById,
+                    selected: _selectedIds.contains(trainer.id),
+                    disabled: _isBusy,
+                    onSelected: (selected) {
+                      setState(() {
+                        if (selected) {
+                          _selectedIds.add(trainer.id);
+                        } else {
+                          _selectedIds.remove(trainer.id);
+                        }
+                      });
+                    },
+                    onOpen: () => _openTrainer(trainer),
+                    onFight: () => _startFight([trainer]),
+                    onExport: () => _exportTrainer(trainer),
+                    onShare: () => _shareTrainer(trainer),
+                    onDuplicate: () => _duplicateTrainer(trainer),
+                    onDelete: () => _deleteTrainer(trainer),
+                  ),
+                  const SizedBox(height: 10),
+                ],
               ],
             ],
-          ],
+          ),
         ),
       ),
       bottomNavigationBar: _selectedIds.isEmpty

@@ -13,10 +13,7 @@ void main() {
         home: Scaffold(
           body: ResponsiveContent(
             maxWidth: 1000,
-            child: ColoredBox(
-              key: Key('content'),
-              color: Colors.white,
-            ),
+            child: ColoredBox(key: Key('content'), color: Colors.white),
           ),
         ),
       ),
@@ -36,10 +33,7 @@ void main() {
         home: Scaffold(
           body: ResponsiveContent(
             maxWidth: 1000,
-            child: ColoredBox(
-              key: Key('content'),
-              color: Colors.white,
-            ),
+            child: ColoredBox(key: Key('content'), color: Colors.white),
           ),
         ),
       ),

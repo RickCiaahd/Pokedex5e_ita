@@ -16,6 +16,7 @@ import '../../repositories/saved_encounter_repository.dart';
 import '../../services/campaign_transfer_service.dart';
 import '../../services/native_share_service.dart';
 import '../../services/saved_encounter_mapper_service.dart';
+import '../../widgets/layout/responsive_content.dart';
 import '../../widgets/battle/wild_master_fight_launcher.dart';
 import '../../widgets/navigation/home_leading_button.dart';
 import 'encounter_result_screen.dart';
@@ -365,63 +366,66 @@ class _EncounterLibraryScreenState extends State<EncounterLibraryScreen> {
           ),
         ],
       ),
-      body: RefreshIndicator(
-        onRefresh: _load,
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
-          children: [
-            _LibraryIntroCard(count: _encounters.length),
-            if (_isBusy) ...[
-              const SizedBox(height: 8),
-              const LinearProgressIndicator(),
-            ],
-            if (_message != null) ...[
-              const SizedBox(height: 10),
-              _LibraryMessage(message: _message!, isError: _messageIsError),
-            ],
-            const SizedBox(height: 14),
-            if (_isLoading)
-              const Padding(
-                padding: EdgeInsets.only(top: 100),
-                child: Center(child: CircularProgressIndicator()),
-              )
-            else if (_encounters.isEmpty)
-              const Card(
-                child: Padding(
-                  padding: EdgeInsets.all(24),
-                  child: Column(
-                    children: [
-                      Icon(Icons.bookmarks_outlined, size: 48),
-                      SizedBox(height: 12),
-                      Text(
-                        'Nessun incontro salvato',
-                        style: TextStyle(fontWeight: FontWeight.w900),
-                      ),
-                      SizedBox(height: 6),
-                      Text(
-                        'Genera un incontro e premi Salva nella schermata del risultato.',
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
-                ),
-              )
-            else
-              for (final saved in _encounters) ...[
-                _SavedEncounterCard(
-                  saved: saved,
-                  pokemonById: _pokemonById,
-                  isBusy: _isBusy,
-                  onOpen: () => _openEncounter(saved),
-                  onFight: () => _startFight(saved),
-                  onExport: () => _exportEncounter(saved),
-                  onShare: () => _shareEncounter(saved),
-                  onDuplicate: () => _duplicateEncounter(saved),
-                  onDelete: () => _deleteEncounter(saved),
-                ),
-                const SizedBox(height: 10),
+      body: ResponsiveContent(
+        maxWidth: 1100,
+        child: RefreshIndicator(
+          onRefresh: _load,
+          child: ListView(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
+            children: [
+              _LibraryIntroCard(count: _encounters.length),
+              if (_isBusy) ...[
+                const SizedBox(height: 8),
+                const LinearProgressIndicator(),
               ],
-          ],
+              if (_message != null) ...[
+                const SizedBox(height: 10),
+                _LibraryMessage(message: _message!, isError: _messageIsError),
+              ],
+              const SizedBox(height: 14),
+              if (_isLoading)
+                const Padding(
+                  padding: EdgeInsets.only(top: 100),
+                  child: Center(child: CircularProgressIndicator()),
+                )
+              else if (_encounters.isEmpty)
+                const Card(
+                  child: Padding(
+                    padding: EdgeInsets.all(24),
+                    child: Column(
+                      children: [
+                        Icon(Icons.bookmarks_outlined, size: 48),
+                        SizedBox(height: 12),
+                        Text(
+                          'Nessun incontro salvato',
+                          style: TextStyle(fontWeight: FontWeight.w900),
+                        ),
+                        SizedBox(height: 6),
+                        Text(
+                          'Genera un incontro e premi Salva nella schermata del risultato.',
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              else
+                for (final saved in _encounters) ...[
+                  _SavedEncounterCard(
+                    saved: saved,
+                    pokemonById: _pokemonById,
+                    isBusy: _isBusy,
+                    onOpen: () => _openEncounter(saved),
+                    onFight: () => _startFight(saved),
+                    onExport: () => _exportEncounter(saved),
+                    onShare: () => _shareEncounter(saved),
+                    onDuplicate: () => _duplicateEncounter(saved),
+                    onDelete: () => _deleteEncounter(saved),
+                  ),
+                  const SizedBox(height: 10),
+                ],
+            ],
+          ),
         ),
       ),
     );

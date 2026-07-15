@@ -28,17 +28,31 @@ jobs:
           ref: feature/native-content-sharing
           fetch-depth: 0
 
-      - name: Align README patch source
+      - name: Align patch sources
         run: |
           python - <<'PY'
           from pathlib import Path
-          path = Path('README.md')
-          text = path.read_text(encoding='utf-8')
+
+          readme = Path('README.md')
+          readme_text = readme.read_text(encoding='utf-8')
           old = "Dalla schermata Squadra è inoltre possibile esportare e importare singoli Pokémon o una formazione completa senza sostituire l'intero profilo; i Pokémon rimpiazzati e gli eventuali esuberi vengono conservati nel PC. Le librerie del Master supportano file portabili per incontri e Allenatori PNG, mentre il Fight del Master può produrre un riepilogo testuale con round, iniziativa, PF, status e PP. L'importazione crea sempre una nuova copia, evitando di sovrascrivere contenuti già presenti.\n"
           new = "Dalla schermata Squadra è inoltre possibile esportare e importare singoli Pokémon o una formazione completa senza sostituire l’intero profilo; i Pokémon rimpiazzati e gli eventuali esuberi vengono conservati nel PC. Le librerie del Master supportano file portabili per incontri e Allenatori PNG, mentre il Fight del Master può produrre un riepilogo testuale con round, iniziativa, PF, status e PP.\n"
-          if text.count(old) != 1:
-              raise SystemExit(f'README source occurrence count: {text.count(old)}')
-          path.write_text(text.replace(old, new), encoding='utf-8')
+          if readme_text.count(old) != 1:
+              raise SystemExit(f'README source occurrence count: {readme_text.count(old)}')
+          readme.write_text(readme_text.replace(old, new), encoding='utf-8')
+
+          script = Path('tool/apply_native_content_sharing.py')
+          script_text = script.read_text(encoding='utf-8')
+          dependency = "  file_picker: ^11.0.2\\n  share_plus: ^13.2.0\\n"
+          compatible = "  file_picker: ^11.0.2\\n  share_plus: ^12.0.2\\n"
+          if script_text.count(dependency) != 1:
+              raise SystemExit(
+                  f'share_plus dependency occurrence count: {script_text.count(dependency)}'
+              )
+          script.write_text(
+              script_text.replace(dependency, compatible),
+              encoding='utf-8',
+          )
           PY
 
       - name: Apply native sharing integration
@@ -95,32 +109,7 @@ jobs:
             test/native_share_service_test.dart
 
       - name: Install dependencies
-        run: |
-          set +e
-          flutter pub get > pub-get.log 2>&1
-          code=$?
-          echo "$code" > pub-get-exit-code.txt
-          cat pub-get.log
-          exit 0
-
-      - name: Upload dependency diagnostics
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: native-sharing-pub-get-diagnostics
-          path: |
-            pub-get.log
-            pub-get-exit-code.txt
-          if-no-files-found: error
-          retention-days: 2
-
-      - name: Stop on dependency failure
-        run: |
-          code=$(cat pub-get-exit-code.txt)
-          if [ "$code" != "0" ]; then
-            echo "flutter pub get failed with code $code"
-            exit "$code"
-          fi
+        run: flutter pub get
 
       - name: Analyze source
         run: flutter analyze
@@ -139,7 +128,7 @@ jobs:
 
       - name: Commit verified native sharing
         run: |
-          rm -f tool/apply_native_content_sharing.py .github/workflows/apply-native-content-sharing.yml patch-output.log patch-exit-code.txt pub-get.log pub-get-exit-code.txt
+          rm -f tool/apply_native_content_sharing.py .github/workflows/apply-native-content-sharing.yml patch-output.log patch-exit-code.txt
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A

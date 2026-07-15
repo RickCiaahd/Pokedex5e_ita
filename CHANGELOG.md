@@ -41,8 +41,9 @@ Tutte le modifiche rilevanti al progetto vengono documentate in questo file.
 - aggiunti file JSON portabili per esportare e importare un singolo Pokémon o l'intera squadra, preservando mosse, esperienza, natura, abilità, talenti, forma, sesso, Lealtà e personalizzazioni;
 - durante l'importazione i Pokémon sostituiti e gli esuberi vengono trasferiti automaticamente nel PC, mentre le uova restano nei propri Pokéslot;
 - incontri salvati e Allenatori PNG possono essere esportati e importati singolarmente senza sostituire il profilo, con nuovi identificativi e nomi non distruttivi in caso di duplicati;
-- il Fight del Master può esportare un riepilogo testuale con round, ordine d'iniziativa, PF, status, PP, ricompense e Pokémon attivi.
+- il Fight del Master può esportare un riepilogo testuale con round, ordine d'iniziativa, PF, status, PP, ricompense e Pokémon attivi;
+- Pokémon, squadre, incontri, Allenatori PNG e riepiloghi del Fight del Master possono essere condivisi tramite il menu nativo del dispositivo, con fallback al download sul Web.
 
 ### In programma
 
-- condivisione diretta tramite menu nativo di Android, Windows e Web.
+- review generale del layout e preparazione della prima release Android.

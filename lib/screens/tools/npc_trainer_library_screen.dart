@@ -21,6 +21,7 @@ import '../../repositories/saved_npc_trainer_repository.dart';
 import '../../repositories/trainer_manual_repository.dart';
 import '../../services/campaign_transfer_service.dart';
 import '../../services/master_battle_service.dart';
+import '../../services/native_share_service.dart';
 import '../../services/saved_npc_trainer_mapper_service.dart';
 import '../../widgets/navigation/home_leading_button.dart';
 import '../../widgets/pokemon/pokemon_asset_image.dart';
@@ -47,6 +48,7 @@ class _NpcTrainerLibraryScreenState extends State<NpcTrainerLibraryScreen> {
   final SavedNpcTrainerMapperService _mapper =
       const SavedNpcTrainerMapperService();
   final CampaignTransferService _transferService = CampaignTransferService();
+  final NativeShareService _shareService = const NativeShareService();
 
   UserProfile? _profile;
   List<Pokemon> _catalog = const [];
@@ -145,7 +147,7 @@ class _NpcTrainerLibraryScreenState extends State<NpcTrainerLibraryScreen> {
   }
 
   Future<CampaignTransferBundle?> _pickTransferFile() async {
-    final result = await FilePicker.pickFiles(
+    final result = await FilePicker.platform.pickFiles(
       dialogTitle: 'Importa Allenatore PNG Pokédex 5e',
       type: FileType.custom,
       allowedExtensions: const ['json'],
@@ -168,7 +170,7 @@ class _NpcTrainerLibraryScreenState extends State<NpcTrainerLibraryScreen> {
         sourceProfileName: profile.name,
       );
       final json = _transferService.encode(bundle);
-      final path = await FilePicker.saveFile(
+      final path = await FilePicker.platform.saveFile(
         dialogTitle: 'Esporta ${saved.displayName}',
         fileName: _transferService.fileNameForNpcTrainer(bundle),
         type: FileType.custom,
@@ -179,6 +181,38 @@ class _NpcTrainerLibraryScreenState extends State<NpcTrainerLibraryScreen> {
         path == null
             ? 'Esportazione annullata.'
             : '${saved.displayName} esportato correttamente.',
+      );
+    } catch (error) {
+      _setMessage(_friendlyError(error), isError: true);
+    } finally {
+      if (mounted) setState(() => _isBusy = false);
+    }
+  }
+
+  Future<void> _shareTrainer(SavedNpcTrainer saved) async {
+    final profile = _profile;
+    if (profile == null || _isBusy) return;
+    setState(() => _isBusy = true);
+    try {
+      final bundle = CampaignTransferBundle.forNpcTrainer(
+        npcTrainer: saved,
+        sourceProfileName: profile.name,
+      );
+      final json = _transferService.encode(bundle);
+      final outcome = await _shareService.shareTextFile(
+        context: context,
+        content: json,
+        fileName: _transferService.fileNameForNpcTrainer(bundle),
+        mimeType: 'application/json',
+        title: 'Condividi ${saved.displayName}',
+        subject: '${saved.displayName} · Pokédex 5e ITA',
+        text: 'Allenatore PNG esportato da Pokédex 5e ITA.',
+      );
+      _setMessage(
+        _shareService.feedback(
+          outcome,
+          successMessage: '${saved.displayName} condiviso correttamente.',
+        ),
       );
     } catch (error) {
       _setMessage(_friendlyError(error), isError: true);
@@ -518,6 +552,7 @@ class _NpcTrainerLibraryScreenState extends State<NpcTrainerLibraryScreen> {
                   onOpen: () => _openTrainer(trainer),
                   onFight: () => _startFight([trainer]),
                   onExport: () => _exportTrainer(trainer),
+                  onShare: () => _shareTrainer(trainer),
                   onDuplicate: () => _duplicateTrainer(trainer),
                   onDelete: () => _deleteTrainer(trainer),
                 ),
@@ -619,6 +654,7 @@ class _NpcTrainerCard extends StatelessWidget {
     required this.onOpen,
     required this.onFight,
     required this.onExport,
+    required this.onShare,
     required this.onDuplicate,
     required this.onDelete,
   });
@@ -631,6 +667,7 @@ class _NpcTrainerCard extends StatelessWidget {
   final VoidCallback onOpen;
   final VoidCallback onFight;
   final VoidCallback onExport;
+  final VoidCallback onShare;
   final VoidCallback onDuplicate;
   final VoidCallback onDelete;
 
@@ -676,6 +713,7 @@ class _NpcTrainerCard extends StatelessWidget {
                   enabled: !disabled,
                   onSelected: (value) {
                     if (value == 'export') onExport();
+                    if (value == 'share') onShare();
                     if (value == 'duplicate') onDuplicate();
                     if (value == 'delete') onDelete();
                   },
@@ -683,6 +721,10 @@ class _NpcTrainerCard extends StatelessWidget {
                     PopupMenuItem(
                       value: 'export',
                       child: Text('Esporta Allenatore'),
+                    ),
+                    PopupMenuItem(
+                      value: 'share',
+                      child: Text('Condividi Allenatore'),
                     ),
                     PopupMenuItem(value: 'duplicate', child: Text('Duplica')),
                     PopupMenuItem(value: 'delete', child: Text('Elimina')),

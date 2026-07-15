@@ -112,7 +112,7 @@ class _ProfilesScreenState extends State<ProfilesScreen> {
     try {
       final backup = await _backupService.createBackup(profile.id);
       final json = _backupService.encodeBackup(backup);
-      final path = await FilePicker.saveFile(
+      final path = await FilePicker.platform.saveFile(
         dialogTitle: 'Esporta il profilo ${profile.name}',
         fileName: _backupService.fileNameFor(backup),
         type: FileType.custom,
@@ -135,7 +135,7 @@ class _ProfilesScreenState extends State<ProfilesScreen> {
     if (_isBusy) return;
     setState(() => _isBusy = true);
     try {
-      final result = await FilePicker.pickFiles(
+      final result = await FilePicker.platform.pickFiles(
         dialogTitle: 'Importa un backup Pokédex 5e',
         type: FileType.custom,
         allowedExtensions: const ['json'],

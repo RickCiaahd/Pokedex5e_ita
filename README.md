@@ -14,7 +14,7 @@ L'app raccoglie in un unico progetto gli strumenti principali per giocatori e Ma
 - librerie persistenti di incontri e Allenatori;
 - Fight del Master con più Allenatori, iniziativa, PF, PP e status;
 - backup e ripristino dei dati del profilo;
-- esportazione e importazione mirata di Pokémon, squadre, incontri e Allenatori PNG, oltre al riepilogo testuale del Fight del Master.
+- esportazione, importazione e condivisione nativa di Pokémon, squadre, incontri e Allenatori PNG, oltre al riepilogo testuale del Fight del Master.
 
 ## Stato del progetto
 
@@ -65,7 +65,7 @@ Quando vengono aggiunti Pokémon, forme, mosse, abilità o asset, il test di int
 
 I dati applicativi sono salvati localmente tramite Hive. La schermata Profili permette di esportare e importare backup JSON, compresi squadra, Pokémon Center, inventario, impostazioni e sessioni di combattimento supportate.
 
-Dalla schermata Squadra è inoltre possibile esportare e importare singoli Pokémon o una formazione completa senza sostituire l'intero profilo; i Pokémon rimpiazzati e gli eventuali esuberi vengono conservati nel PC. Le librerie del Master supportano file portabili per incontri e Allenatori PNG, mentre il Fight del Master può produrre un riepilogo testuale con round, iniziativa, PF, status e PP. L'importazione crea sempre una nuova copia, evitando di sovrascrivere contenuti già presenti.
+Dalla schermata Squadra è inoltre possibile esportare, importare e condividere singoli Pokémon o una formazione completa senza sostituire l’intero profilo; i Pokémon rimpiazzati e gli eventuali esuberi vengono conservati nel PC. Le librerie del Master supportano file portabili e condivisione diretta per incontri e Allenatori PNG, mentre il Fight del Master può salvare o condividere un riepilogo testuale con round, iniziativa, PF, status e PP.
 
 ## Avvertenza
 

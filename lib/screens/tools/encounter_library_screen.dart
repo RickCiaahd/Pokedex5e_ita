@@ -14,6 +14,7 @@ import '../../repositories/pokemon_repository.dart';
 import '../../repositories/profile_repository.dart';
 import '../../repositories/saved_encounter_repository.dart';
 import '../../services/campaign_transfer_service.dart';
+import '../../services/native_share_service.dart';
 import '../../services/saved_encounter_mapper_service.dart';
 import '../../widgets/battle/wild_master_fight_launcher.dart';
 import '../../widgets/navigation/home_leading_button.dart';
@@ -33,6 +34,7 @@ class _EncounterLibraryScreenState extends State<EncounterLibraryScreen> {
   final SavedEncounterMapperService _mapper =
       const SavedEncounterMapperService();
   final CampaignTransferService _transferService = CampaignTransferService();
+  final NativeShareService _shareService = const NativeShareService();
 
   UserProfile? _profile;
   List<Pokemon> _catalog = const [];
@@ -190,7 +192,7 @@ class _EncounterLibraryScreenState extends State<EncounterLibraryScreen> {
   }
 
   Future<CampaignTransferBundle?> _pickTransferFile() async {
-    final result = await FilePicker.pickFiles(
+    final result = await FilePicker.platform.pickFiles(
       dialogTitle: 'Importa incontro Pokédex 5e',
       type: FileType.custom,
       allowedExtensions: const ['json'],
@@ -213,7 +215,7 @@ class _EncounterLibraryScreenState extends State<EncounterLibraryScreen> {
         sourceProfileName: profile.name,
       );
       final json = _transferService.encode(bundle);
-      final path = await FilePicker.saveFile(
+      final path = await FilePicker.platform.saveFile(
         dialogTitle: 'Esporta ${saved.name}',
         fileName: _transferService.fileNameForEncounter(bundle),
         type: FileType.custom,
@@ -224,6 +226,38 @@ class _EncounterLibraryScreenState extends State<EncounterLibraryScreen> {
         path == null
             ? 'Esportazione annullata.'
             : '${saved.name} esportato correttamente.',
+      );
+    } catch (error) {
+      _setMessage(_friendlyError(error), isError: true);
+    } finally {
+      if (mounted) setState(() => _isBusy = false);
+    }
+  }
+
+  Future<void> _shareEncounter(SavedEncounter saved) async {
+    final profile = _profile;
+    if (profile == null || _isBusy) return;
+    setState(() => _isBusy = true);
+    try {
+      final bundle = CampaignTransferBundle.forEncounter(
+        encounter: saved,
+        sourceProfileName: profile.name,
+      );
+      final json = _transferService.encode(bundle);
+      final outcome = await _shareService.shareTextFile(
+        context: context,
+        content: json,
+        fileName: _transferService.fileNameForEncounter(bundle),
+        mimeType: 'application/json',
+        title: 'Condividi ${saved.name}',
+        subject: '${saved.name} · Pokédex 5e ITA',
+        text: 'Incontro esportato da Pokédex 5e ITA.',
+      );
+      _setMessage(
+        _shareService.feedback(
+          outcome,
+          successMessage: '${saved.name} condiviso correttamente.',
+        ),
       );
     } catch (error) {
       _setMessage(_friendlyError(error), isError: true);
@@ -381,6 +415,7 @@ class _EncounterLibraryScreenState extends State<EncounterLibraryScreen> {
                   onOpen: () => _openEncounter(saved),
                   onFight: () => _startFight(saved),
                   onExport: () => _exportEncounter(saved),
+                  onShare: () => _shareEncounter(saved),
                   onDuplicate: () => _duplicateEncounter(saved),
                   onDelete: () => _deleteEncounter(saved),
                 ),
@@ -447,6 +482,7 @@ class _SavedEncounterCard extends StatelessWidget {
     required this.onOpen,
     required this.onFight,
     required this.onExport,
+    required this.onShare,
     required this.onDuplicate,
     required this.onDelete,
   });
@@ -457,6 +493,7 @@ class _SavedEncounterCard extends StatelessWidget {
   final VoidCallback onOpen;
   final VoidCallback onFight;
   final VoidCallback onExport;
+  final VoidCallback onShare;
   final VoidCallback onDuplicate;
   final VoidCallback onDelete;
 
@@ -505,6 +542,9 @@ class _SavedEncounterCard extends StatelessWidget {
                         case 'export':
                           onExport();
                           break;
+                        case 'share':
+                          onShare();
+                          break;
                         case 'duplicate':
                           onDuplicate();
                           break;
@@ -517,6 +557,10 @@ class _SavedEncounterCard extends StatelessWidget {
                       PopupMenuItem(
                         value: 'export',
                         child: Text('Esporta incontro'),
+                      ),
+                      PopupMenuItem(
+                        value: 'share',
+                        child: Text('Condividi incontro'),
                       ),
                       PopupMenuItem(value: 'duplicate', child: Text('Duplica')),
                       PopupMenuItem(value: 'delete', child: Text('Elimina')),

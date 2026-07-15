@@ -83,6 +83,28 @@ jobs:
             exit "$code"
           fi
 
+      - name: Adapt file picker calls
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          changed = 0
+          for path in Path('lib').rglob('*.dart'):
+              text = path.read_text(encoding='utf-8')
+              updated = text.replace(
+                  'FilePicker.pickFiles(',
+                  'FilePicker.platform.pickFiles(',
+              ).replace(
+                  'FilePicker.saveFile(',
+                  'FilePicker.platform.saveFile(',
+              )
+              if updated != text:
+                  path.write_text(updated, encoding='utf-8')
+                  changed += 1
+          if changed == 0:
+              raise SystemExit('Nessuna chiamata FilePicker adattata')
+          print(f'Adattati {changed} file Dart a file_picker 10.3.10')
+          PY
+
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
@@ -102,6 +124,7 @@ jobs:
         run: |
           dart format \
             lib/services/native_share_service.dart \
+            lib/screens/profile/profiles_screen.dart \
             lib/screens/team/team_selection_screen.dart \
             lib/screens/tools/encounter_library_screen.dart \
             lib/screens/tools/npc_trainer_library_screen.dart \
@@ -112,32 +135,7 @@ jobs:
         run: flutter pub get
 
       - name: Analyze source
-        run: |
-          set +e
-          flutter analyze > analyze.log 2>&1
-          code=$?
-          echo "$code" > analyze-exit-code.txt
-          cat analyze.log
-          exit 0
-
-      - name: Upload analyze diagnostics
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: native-sharing-analyze-diagnostics
-          path: |
-            analyze.log
-            analyze-exit-code.txt
-          if-no-files-found: error
-          retention-days: 2
-
-      - name: Stop on analyze failure
-        run: |
-          code=$(cat analyze-exit-code.txt)
-          if [ "$code" != "0" ]; then
-            echo "flutter analyze failed with code $code"
-            exit "$code"
-          fi
+        run: flutter analyze
 
       - name: Validate application data
         run: flutter test test/data_integrity_test.dart --reporter expanded
@@ -178,7 +176,7 @@ jobs:
 
       - name: Commit verified native sharing
         run: |
-          rm -f tool/apply_native_content_sharing.py .github/workflows/apply-native-content-sharing.yml patch-output.log patch-exit-code.txt analyze.log analyze-exit-code.txt android-build.log android-build-exit-code.txt
+          rm -f tool/apply_native_content_sharing.py .github/workflows/apply-native-content-sharing.yml patch-output.log patch-exit-code.txt android-build.log android-build-exit-code.txt
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A

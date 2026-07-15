@@ -27,6 +27,7 @@ Tutte le modifiche rilevanti al progetto vengono documentate in questo file.
 
 ### Modificato
 
+- primo passaggio della review pre-release: Squadra, Profili e librerie del Master ora mantengono una larghezza leggibile su Web e Windows; la Squadra usa due colonne sulle finestre ampie e una colonna su smartphone;
 - Home e Strumenti del Master divisi in sezioni più riconoscibili;
 - navigazione interna corretta: la freccia torna alla schermata precedente e il comando Home resta separato;
 - editor delle probabilità delle raccolte corretto per consentire la digitazione di percentuali a più cifre senza perdere il focus;

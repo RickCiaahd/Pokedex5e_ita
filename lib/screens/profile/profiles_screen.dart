@@ -8,6 +8,7 @@ import '../../models/profile_backup.dart';
 import '../../models/user_profile.dart';
 import '../../repositories/profile_repository.dart';
 import '../../services/profile_backup_service.dart';
+import '../../widgets/layout/responsive_content.dart';
 import '../../widgets/navigation/home_leading_button.dart';
 
 class ProfilesScreen extends StatefulWidget {
@@ -262,61 +263,64 @@ class _ProfilesScreenState extends State<ProfilesScreen> {
         icon: const Icon(Icons.check),
         label: const Text('OK'),
       ),
-      body: RefreshIndicator(
-        onRefresh: _loadProfiles,
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 96),
-          children: [
-            if (_isBusy) const LinearProgressIndicator(),
-            if (_isLoading)
-              const Padding(
-                padding: EdgeInsets.only(top: 120),
-                child: Center(child: CircularProgressIndicator()),
-              )
-            else if (_errorMessage != null)
-              _ProfilesErrorState(
-                message: _errorMessage!,
-                onRetry: _loadProfiles,
-              )
-            else ...[
-              _ProfilesHeader(
-                activeProfileName: activeProfileName,
-                profileCount: _profiles.length,
-              ),
-              if (_statusMessage != null) ...[
-                const SizedBox(height: 12),
-                _ProfileStatusBanner(
-                  message: _statusMessage!,
-                  isError: _statusIsError,
-                  onDismiss: () => setState(() => _statusMessage = null),
+      body: ResponsiveContent(
+        maxWidth: 1040,
+        child: RefreshIndicator(
+          onRefresh: _loadProfiles,
+          child: ListView(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 96),
+            children: [
+              if (_isBusy) const LinearProgressIndicator(),
+              if (_isLoading)
+                const Padding(
+                  padding: EdgeInsets.only(top: 120),
+                  child: Center(child: CircularProgressIndicator()),
+                )
+              else if (_errorMessage != null)
+                _ProfilesErrorState(
+                  message: _errorMessage!,
+                  onRetry: _loadProfiles,
+                )
+              else ...[
+                _ProfilesHeader(
+                  activeProfileName: activeProfileName,
+                  profileCount: _profiles.length,
                 ),
-              ],
-              const SizedBox(height: 24),
-              _ProfilesSectionHeader(
-                isBusy: _isBusy,
-                onImportProfile: _importProfile,
-                onCreateProfile: _createProfile,
-              ),
-              const SizedBox(height: 4),
-              Text(
-                'Ogni profilo conserva separatamente scheda, Pokédex, squadra, '
-                'PC, zaino, impostazioni, raccolte e incontri salvati.',
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-              const SizedBox(height: 12),
-              for (final profile in _profiles)
-                _ProfileTile(
-                  profile: profile,
-                  isActive: profile.id == activeProfileId,
+                if (_statusMessage != null) ...[
+                  const SizedBox(height: 12),
+                  _ProfileStatusBanner(
+                    message: _statusMessage!,
+                    isError: _statusIsError,
+                    onDismiss: () => setState(() => _statusMessage = null),
+                  ),
+                ],
+                const SizedBox(height: 24),
+                _ProfilesSectionHeader(
                   isBusy: _isBusy,
-                  canDelete: profile.id != activeProfileId,
-                  onSelect: () => _setActiveProfile(profile),
-                  onExport: () => _exportProfile(profile),
-                  onDuplicate: () => _duplicateProfile(profile),
-                  onDelete: () => _deleteProfile(profile),
+                  onImportProfile: _importProfile,
+                  onCreateProfile: _createProfile,
                 ),
+                const SizedBox(height: 4),
+                Text(
+                  'Ogni profilo conserva separatamente scheda, Pokédex, squadra, '
+                  'PC, zaino, impostazioni, raccolte e incontri salvati.',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+                const SizedBox(height: 12),
+                for (final profile in _profiles)
+                  _ProfileTile(
+                    profile: profile,
+                    isActive: profile.id == activeProfileId,
+                    isBusy: _isBusy,
+                    canDelete: profile.id != activeProfileId,
+                    onSelect: () => _setActiveProfile(profile),
+                    onExport: () => _exportProfile(profile),
+                    onDuplicate: () => _duplicateProfile(profile),
+                    onDelete: () => _deleteProfile(profile),
+                  ),
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );

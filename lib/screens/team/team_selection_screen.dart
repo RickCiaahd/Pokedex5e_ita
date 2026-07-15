@@ -526,6 +526,11 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
       appBar: AppBar(
         title: const Text('Squadra'),
         actions: [
+          IconButton(
+            onPressed: _isBusy || _isLoading ? null : _shareTeam,
+            tooltip: 'Condividi squadra',
+            icon: const Icon(Icons.ios_share_outlined),
+          ),
           PopupMenuButton<_TeamTransferAction>(
             enabled: !_isBusy && !_isLoading,
             tooltip: 'Esporta o importa squadra',
@@ -795,55 +800,67 @@ class _TeamSlotCard extends StatelessWidget {
               const SizedBox(width: 8),
               slot.isEgg
                   ? const Icon(Icons.chevron_right)
-                  : PopupMenuButton<_SlotAction>(
-                      tooltip: 'Azioni slot',
-                      onSelected: (action) {
-                        switch (action) {
-                          case _SlotAction.change:
-                            onChange();
-                            break;
-                          case _SlotAction.export:
-                            onExport?.call();
-                            break;
-                          case _SlotAction.share:
-                            onShare?.call();
-                            break;
-                          case _SlotAction.import:
-                            onImport?.call();
-                            break;
-                          case _SlotAction.remove:
-                            onRemove?.call();
-                            break;
-                        }
-                      },
-                      itemBuilder: (context) => [
-                        PopupMenuItem(
-                          value: _SlotAction.change,
-                          child: Text(
-                            pokemon == null
-                                ? 'Scegli Pokémon'
-                                : 'Cambia Pokémon',
+                  : Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (pokemon != null)
+                          IconButton(
+                            onPressed: onShare,
+                            tooltip: 'Condividi Pokémon',
+                            visualDensity: VisualDensity.compact,
+                            icon: const Icon(Icons.ios_share_outlined),
                           ),
+                        PopupMenuButton<_SlotAction>(
+                          tooltip: 'Altre azioni',
+                          onSelected: (action) {
+                            switch (action) {
+                              case _SlotAction.change:
+                                onChange();
+                                break;
+                              case _SlotAction.export:
+                                onExport?.call();
+                                break;
+                              case _SlotAction.share:
+                                onShare?.call();
+                                break;
+                              case _SlotAction.import:
+                                onImport?.call();
+                                break;
+                              case _SlotAction.remove:
+                                onRemove?.call();
+                                break;
+                            }
+                          },
+                          itemBuilder: (context) => [
+                            PopupMenuItem(
+                              value: _SlotAction.change,
+                              child: Text(
+                                pokemon == null
+                                    ? 'Scegli Pokémon'
+                                    : 'Cambia Pokémon',
+                              ),
+                            ),
+                            if (pokemon != null)
+                              const PopupMenuItem(
+                                value: _SlotAction.export,
+                                child: Text('Esporta Pokémon'),
+                              ),
+                            if (pokemon != null)
+                              const PopupMenuItem(
+                                value: _SlotAction.share,
+                                child: Text('Condividi Pokémon'),
+                              ),
+                            const PopupMenuItem(
+                              value: _SlotAction.import,
+                              child: Text('Importa Pokémon qui'),
+                            ),
+                            if (pokemon != null)
+                              const PopupMenuItem(
+                                value: _SlotAction.remove,
+                                child: Text('Rimuovi dallo slot'),
+                              ),
+                          ],
                         ),
-                        if (pokemon != null)
-                          const PopupMenuItem(
-                            value: _SlotAction.export,
-                            child: Text('Esporta Pokémon'),
-                          ),
-                        if (pokemon != null)
-                          const PopupMenuItem(
-                            value: _SlotAction.share,
-                            child: Text('Condividi Pokémon'),
-                          ),
-                        const PopupMenuItem(
-                          value: _SlotAction.import,
-                          child: Text('Importa Pokémon qui'),
-                        ),
-                        if (pokemon != null)
-                          const PopupMenuItem(
-                            value: _SlotAction.remove,
-                            child: Text('Rimuovi dallo slot'),
-                          ),
                       ],
                     ),
             ],

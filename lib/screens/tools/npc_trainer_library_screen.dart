@@ -709,6 +709,11 @@ class _NpcTrainerCard extends StatelessWidget {
                     ),
                   ),
                 ),
+                IconButton(
+                  onPressed: disabled ? null : onShare,
+                  tooltip: 'Condividi Allenatore',
+                  icon: const Icon(Icons.ios_share_outlined),
+                ),
                 PopupMenuButton<String>(
                   enabled: !disabled,
                   onSelected: (value) {

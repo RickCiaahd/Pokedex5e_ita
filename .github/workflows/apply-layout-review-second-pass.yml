@@ -29,7 +29,24 @@ jobs:
           fetch-depth: 0
 
       - name: Apply layout review
-        run: python tool/apply_layout_review_second_pass.py
+        id: layout_patch
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          python tool/apply_layout_review_second_pass.py 2>&1 | tee layout-second-pass.log
+
+      - name: Upload layout diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: layout-second-pass-diagnostics
+          path: layout-second-pass.log
+          if-no-files-found: ignore
+          retention-days: 2
+
+      - name: Stop on layout patch failure
+        if: steps.layout_patch.outcome == 'failure'
+        run: exit 1
 
       - name: Set up Java
         uses: actions/setup-java@v4
@@ -72,7 +89,7 @@ jobs:
 
       - name: Commit verified layout review
         run: |
-          rm -f tool/apply_layout_review_second_pass.py .github/workflows/apply-layout-review-second-pass.yml
+          rm -f tool/apply_layout_review_second_pass.py .github/workflows/apply-layout-review-second-pass.yml layout-second-pass.log
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A

@@ -4,6 +4,7 @@ import '../../models/pokemon.dart';
 import '../../repositories/master_battle_session_repository.dart';
 import '../../repositories/pokemon_repository.dart';
 import '../../repositories/profile_repository.dart';
+import '../../widgets/layout/responsive_content.dart';
 import '../../widgets/navigation/home_leading_button.dart';
 import '../battle/npc_battle_screen.dart';
 import 'encounter_generator_screen.dart';
@@ -101,149 +102,158 @@ class _ToolsScreenState extends State<ToolsScreen> {
         title: const Text('Strumenti del Master'),
         actions: const [HomeAppBarAction()],
       ),
-      body: RefreshIndicator(
-        onRefresh: _load,
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
-          children: [
-            Card(
-              color: colorScheme.primaryContainer,
-              child: Padding(
-                padding: const EdgeInsets.all(18),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Icon(
-                      Icons.construction,
-                      size: 38,
-                      color: colorScheme.onPrimaryContainer,
-                    ),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Preparazione e gestione della sessione',
-                            style: Theme.of(context).textTheme.titleLarge
-                                ?.copyWith(
-                                  color: colorScheme.onPrimaryContainer,
-                                  fontWeight: FontWeight.w900,
-                                ),
-                          ),
-                          const SizedBox(height: 6),
-                          Text(
-                            'Generatori, raccolte, contenuti salvati e Fight del Master sono divisi per funzione.',
-                            style: TextStyle(
-                              color: colorScheme.onPrimaryContainer,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            if (_isLoading) ...[
-              const SizedBox(height: 12),
-              const LinearProgressIndicator(),
-            ],
-            if (_error != null) ...[
-              const SizedBox(height: 12),
+      body: ResponsiveContent(
+        maxWidth: 1180,
+        child: RefreshIndicator(
+          onRefresh: _load,
+          child: ListView(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
+            children: [
               Card(
-                color: colorScheme.errorContainer,
+                color: colorScheme.primaryContainer,
                 child: Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: Text(
-                    _error!,
-                    style: TextStyle(color: colorScheme.onErrorContainer),
+                  padding: const EdgeInsets.all(18),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(
+                        Icons.construction,
+                        size: 38,
+                        color: colorScheme.onPrimaryContainer,
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Preparazione e gestione della sessione',
+                              style: Theme.of(context).textTheme.titleLarge
+                                  ?.copyWith(
+                                    color: colorScheme.onPrimaryContainer,
+                                    fontWeight: FontWeight.w900,
+                                  ),
+                            ),
+                            const SizedBox(height: 6),
+                            Text(
+                              'Generatori, raccolte, contenuti salvati e Fight del Master sono divisi per funzione.',
+                              style: TextStyle(
+                                color: colorScheme.onPrimaryContainer,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
-            ],
-            if (_hasActiveMasterFight) ...[
+              if (_isLoading) ...[
+                const SizedBox(height: 12),
+                const LinearProgressIndicator(),
+              ],
+              if (_error != null) ...[
+                const SizedBox(height: 12),
+                Card(
+                  color: colorScheme.errorContainer,
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Text(
+                      _error!,
+                      style: TextStyle(color: colorScheme.onErrorContainer),
+                    ),
+                  ),
+                ),
+              ],
+              if (_hasActiveMasterFight) ...[
+                const SizedBox(height: 18),
+                const _ToolSectionTitle(
+                  icon: Icons.play_circle_outline,
+                  title: 'SESSIONE IN CORSO',
+                  subtitle:
+                      'La sessione rimane salvata finché non viene sostituita.',
+                ),
+                Card(
+                  color: colorScheme.secondaryContainer,
+                  child: ListTile(
+                    leading: Icon(
+                      Icons.sports_mma_outlined,
+                      color: colorScheme.onSecondaryContainer,
+                    ),
+                    title: const Text(
+                      'Fight del Master in corso',
+                      style: TextStyle(fontWeight: FontWeight.w900),
+                    ),
+                    subtitle: const Text(
+                      'Riprendi PF, PP, status, round e iniziativa salvati.',
+                    ),
+                    trailing: const Icon(Icons.play_arrow),
+                    onTap: _isLoading ? null : _resumeMasterFight,
+                  ),
+                ),
+              ],
               const SizedBox(height: 18),
               const _ToolSectionTitle(
-                icon: Icons.play_circle_outline,
-                title: 'SESSIONE IN CORSO',
-                subtitle: 'La sessione rimane salvata finché non viene sostituita.',
+                icon: Icons.auto_awesome_outlined,
+                title: 'GENERATORI',
+                subtitle: 'Crea nuovi contenuti da usare o salvare.',
               ),
-              Card(
-                color: colorScheme.secondaryContainer,
-                child: ListTile(
-                  leading: Icon(
-                    Icons.sports_mma_outlined,
-                    color: colorScheme.onSecondaryContainer,
+              _ToolCardGrid(
+                children: [
+                  _ToolCard(
+                    icon: Icons.catching_pokemon,
+                    title: 'Generatore Pokémon',
+                    subtitle:
+                        'Estrai un Pokémon con forma, livello, natura, abilità, mosse, sesso e probabilità shiny.',
+                    actionLabel: 'GENERA',
+                    onTap: () => _open(const PokemonGeneratorScreen()),
                   ),
-                  title: const Text(
-                    'Fight del Master in corso',
-                    style: TextStyle(fontWeight: FontWeight.w900),
+                  _ToolCard(
+                    icon: Icons.travel_explore,
+                    title: 'Generatore incontri',
+                    subtitle:
+                        'Composizione automatica, manuale e raccolte ponderate con stima della difficoltà.',
+                    actionLabel: 'GENERA',
+                    onTap: () => _open(const EncounterGeneratorScreen()),
                   ),
-                  subtitle: const Text(
-                    'Riprendi PF, PP, status, round e iniziativa salvati.',
+                  _ToolCard(
+                    icon: Icons.groups_2_outlined,
+                    title: 'Generatore Allenatori PNG',
+                    subtitle:
+                        'Crea identità, specializzazione, squadra, personalità, tattiche e ricompense.',
+                    actionLabel: 'GENERA',
+                    onTap: () => _open(const NpcTrainerGeneratorScreen()),
                   ),
-                  trailing: const Icon(Icons.play_arrow),
-                  onTap: _isLoading ? null : _resumeMasterFight,
-                ),
+                ],
+              ),
+              const SizedBox(height: 22),
+              const _ToolSectionTitle(
+                icon: Icons.inventory_2_outlined,
+                title: 'LIBRERIE',
+                subtitle: 'Riapri, modifica e usa i contenuti già preparati.',
+              ),
+              _ToolCardGrid(
+                children: [
+                  _ToolCard(
+                    icon: Icons.bookmarks_outlined,
+                    title: 'Libreria incontri',
+                    subtitle:
+                        'Incontri salvati, raccolte ponderate e avvio diretto nel Fight del Master.',
+                    actionLabel: 'APRI',
+                    onTap: () => _open(const EncounterLibraryScreen()),
+                  ),
+                  _ToolCard(
+                    icon: Icons.people_alt_outlined,
+                    title: 'Libreria Allenatori PNG',
+                    subtitle:
+                        'Allenatori salvati, selezione multipla e gestione delle loro squadre nel fight.',
+                    actionLabel: 'APRI',
+                    onTap: () => _open(const NpcTrainerLibraryScreen()),
+                  ),
+                ],
               ),
             ],
-            const SizedBox(height: 18),
-            const _ToolSectionTitle(
-              icon: Icons.auto_awesome_outlined,
-              title: 'GENERATORI',
-              subtitle: 'Crea nuovi contenuti da usare o salvare.',
-            ),
-            _ToolCard(
-              icon: Icons.catching_pokemon,
-              title: 'Generatore Pokémon',
-              subtitle:
-                  'Estrai un Pokémon con forma, livello, natura, abilità, mosse, sesso e probabilità shiny.',
-              actionLabel: 'GENERA',
-              onTap: () => _open(const PokemonGeneratorScreen()),
-            ),
-            const SizedBox(height: 10),
-            _ToolCard(
-              icon: Icons.travel_explore,
-              title: 'Generatore incontri',
-              subtitle:
-                  'Composizione automatica, manuale e raccolte ponderate con stima della difficoltà.',
-              actionLabel: 'GENERA',
-              onTap: () => _open(const EncounterGeneratorScreen()),
-            ),
-            const SizedBox(height: 10),
-            _ToolCard(
-              icon: Icons.groups_2_outlined,
-              title: 'Generatore Allenatori PNG',
-              subtitle:
-                  'Crea identità, specializzazione, squadra, personalità, tattiche e ricompense.',
-              actionLabel: 'GENERA',
-              onTap: () => _open(const NpcTrainerGeneratorScreen()),
-            ),
-            const SizedBox(height: 22),
-            const _ToolSectionTitle(
-              icon: Icons.inventory_2_outlined,
-              title: 'LIBRERIE',
-              subtitle: 'Riapri, modifica e usa i contenuti già preparati.',
-            ),
-            _ToolCard(
-              icon: Icons.bookmarks_outlined,
-              title: 'Libreria incontri',
-              subtitle:
-                  'Incontri salvati, raccolte ponderate e avvio diretto nel Fight del Master.',
-              actionLabel: 'APRI',
-              onTap: () => _open(const EncounterLibraryScreen()),
-            ),
-            const SizedBox(height: 10),
-            _ToolCard(
-              icon: Icons.people_alt_outlined,
-              title: 'Libreria Allenatori PNG',
-              subtitle:
-                  'Allenatori salvati, selezione multipla e gestione delle loro squadre nel fight.',
-              actionLabel: 'APRI',
-              onTap: () => _open(const NpcTrainerLibraryScreen()),
-            ),
-          ],
+          ),
         ),
       ),
     );
@@ -291,6 +301,34 @@ class _ToolSectionTitle extends StatelessWidget {
   }
 }
 
+class _ToolCardGrid extends StatelessWidget {
+  const _ToolCardGrid({required this.children});
+
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        const spacing = 12.0;
+        final twoColumns = constraints.maxWidth >= 760;
+        final cardWidth = twoColumns
+            ? (constraints.maxWidth - spacing) / 2
+            : constraints.maxWidth;
+
+        return Wrap(
+          spacing: spacing,
+          runSpacing: 4,
+          children: [
+            for (final child in children)
+              SizedBox(width: cardWidth, child: child),
+          ],
+        );
+      },
+    );
+  }
+}
+
 class _ToolCard extends StatelessWidget {
   const _ToolCard({
     required this.icon,
@@ -311,57 +349,63 @@ class _ToolCard extends StatelessWidget {
     final enabled = onTap != null;
     final colorScheme = Theme.of(context).colorScheme;
 
-    return Card(
-      child: InkWell(
-        borderRadius: BorderRadius.circular(12),
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              CircleAvatar(
-                radius: 27,
-                backgroundColor: enabled
-                    ? colorScheme.secondaryContainer
-                    : colorScheme.surfaceContainerHighest,
-                child: Icon(
-                  icon,
-                  color: enabled
-                      ? colorScheme.onSecondaryContainer
-                      : colorScheme.onSurfaceVariant,
-                ),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final compact = constraints.maxWidth < 430;
+        return Card(
+          child: InkWell(
+            borderRadius: BorderRadius.circular(12),
+            onTap: onTap,
+            child: Padding(
+              padding: EdgeInsets.all(compact ? 13 : 16),
+              child: Row(
+                children: [
+                  CircleAvatar(
+                    radius: compact ? 23 : 27,
+                    backgroundColor: enabled
+                        ? colorScheme.secondaryContainer
+                        : colorScheme.surfaceContainerHighest,
+                    child: Icon(
+                      icon,
+                      color: enabled
+                          ? colorScheme.onSecondaryContainer
+                          : colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  SizedBox(width: compact ? 10 : 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          title,
+                          style: Theme.of(context).textTheme.titleMedium
+                              ?.copyWith(fontWeight: FontWeight.w900),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(subtitle),
+                      ],
+                    ),
+                  ),
+                  if (!compact) ...[
+                    const SizedBox(width: 12),
                     Text(
-                      title,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      actionLabel,
+                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                        color: enabled
+                            ? colorScheme.primary
+                            : colorScheme.onSurfaceVariant,
                         fontWeight: FontWeight.w900,
                       ),
                     ),
-                    const SizedBox(height: 4),
-                    Text(subtitle),
                   ],
-                ),
+                  if (enabled) const Icon(Icons.chevron_right),
+                ],
               ),
-              const SizedBox(width: 12),
-              Text(
-                actionLabel,
-                style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                  color: enabled
-                      ? colorScheme.primary
-                      : colorScheme.onSurfaceVariant,
-                  fontWeight: FontWeight.w900,
-                ),
-              ),
-              if (enabled) const Icon(Icons.chevron_right),
-            ],
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

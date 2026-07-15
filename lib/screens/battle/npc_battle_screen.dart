@@ -18,6 +18,7 @@ import '../../services/master_battle_service.dart';
 import '../../services/master_fight_summary_service.dart';
 import '../../services/native_share_service.dart';
 import '../../widgets/battle/battle_status_assistance_card.dart';
+import '../../widgets/layout/responsive_content.dart';
 import '../../widgets/navigation/home_leading_button.dart';
 import '../../widgets/pokemon/pokemon_asset_image.dart';
 import '../pokemon/pokemon_detail_screen.dart';
@@ -351,6 +352,7 @@ class _NpcBattleScreenState extends State<NpcBattleScreen> {
     final result = await showDialog<_InitiativeInput>(
       context: context,
       builder: (_) => AlertDialog(
+        scrollable: true,
         title: const Text('Aggiungi partecipante esterno'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -421,6 +423,7 @@ class _NpcBattleScreenState extends State<NpcBattleScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
+        scrollable: true,
         title: const Text('Azzera il fight?'),
         content: const Text(
           'PF, PP, status, Pokémon attivi, iniziativa e round verranno riportati allo stato iniziale.',
@@ -525,6 +528,7 @@ class _NpcBattleScreenState extends State<NpcBattleScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
+        scrollable: true,
         title: const Text('Terminare il fight?'),
         content: const Text(
           'La sessione del Master verrà eliminata. Gli Allenatori PNG salvati rimarranno intatti nella libreria.',
@@ -607,6 +611,7 @@ class _NpcBattleScreenState extends State<NpcBattleScreen> {
         leading: const HomeLeadingButton(),
         title: const Text('Fight del Master'),
         actions: [
+          const HomeAppBarAction(),
           PopupMenuButton<_FightSummaryAction>(
             enabled: !_isWorking,
             tooltip: 'Esporta o condividi riepilogo',
@@ -632,143 +637,170 @@ class _NpcBattleScreenState extends State<NpcBattleScreen> {
               ),
             ],
           ),
-          IconButton(
-            onPressed: _isWorking ? null : _resetFight,
-            tooltip: 'Azzera fight',
-            icon: const Icon(Icons.restart_alt),
-          ),
-          IconButton(
-            onPressed: _isWorking ? null : _endFight,
-            tooltip: 'Termina fight',
-            icon: const Icon(Icons.stop_circle_outlined),
+          PopupMenuButton<_FightSessionAction>(
+            enabled: !_isWorking,
+            tooltip: 'Azioni del fight',
+            onSelected: (action) {
+              switch (action) {
+                case _FightSessionAction.reset:
+                  _resetFight();
+                  break;
+                case _FightSessionAction.end:
+                  _endFight();
+                  break;
+              }
+            },
+            itemBuilder: (_) => const [
+              PopupMenuItem(
+                value: _FightSessionAction.reset,
+                child: ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: Icon(Icons.restart_alt),
+                  title: Text('Azzera fight'),
+                ),
+              ),
+              PopupMenuItem(
+                value: _FightSessionAction.end,
+                child: ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: Icon(Icons.stop_circle_outlined),
+                  title: Text('Termina fight'),
+                ),
+              ),
+            ],
           ),
         ],
       ),
-      body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
-        children: [
-          _FightHeader(
-            round: _session.round,
-            trainerCount: _session.participants.length,
-            activePokemonCount: activeCount,
-            onEnd: _endFight,
-          ),
-          if (_message != null) ...[
-            const SizedBox(height: 10),
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(12),
-                child: Text(_message!),
+      body: ResponsiveContent(
+        maxWidth: 1320,
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
+          children: [
+            _FightHeader(
+              round: _session.round,
+              trainerCount: _session.participants.length,
+              activePokemonCount: activeCount,
+              onEnd: _endFight,
+            ),
+            if (_message != null) ...[
+              const SizedBox(height: 10),
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Text(_message!),
+                ),
+              ),
+            ],
+            const SizedBox(height: 12),
+            SizedBox(
+              height: 52,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemCount: _session.participants.length,
+                separatorBuilder: (_, __) => const SizedBox(width: 8),
+                itemBuilder: (context, index) {
+                  final trainer = _session.participants[index];
+                  return ChoiceChip(
+                    selected: trainer.trainerId == participant.trainerId,
+                    avatar: const Icon(Icons.person, size: 18),
+                    label: Text(trainer.name),
+                    onSelected: (_) => _selectTrainer(trainer.trainerId),
+                  );
+                },
               ),
             ),
-          ],
-          const SizedBox(height: 12),
-          SizedBox(
-            height: 52,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              itemCount: _session.participants.length,
-              separatorBuilder: (_, __) => const SizedBox(width: 8),
-              itemBuilder: (context, index) {
-                final trainer = _session.participants[index];
-                return ChoiceChip(
-                  selected: trainer.trainerId == participant.trainerId,
-                  avatar: const Icon(Icons.person, size: 18),
-                  label: Text(trainer.name),
-                  onSelected: (_) => _selectTrainer(trainer.trainerId),
-                );
-              },
+            const SizedBox(height: 10),
+            _TrainerFightCard(participant: participant),
+            const SizedBox(height: 12),
+            _InitiativeCard(
+              round: _session.round,
+              entries: _session.initiativeEntries,
+              turnIndex: _session.turnIndex,
+              onNextTurn: _nextTurn,
+              onReroll: _rerollInitiative,
+              onAdd: _addInitiativeEntry,
+              onRemove: _removeInitiativeEntry,
             ),
-          ),
-          const SizedBox(height: 10),
-          _TrainerFightCard(participant: participant),
-          const SizedBox(height: 12),
-          _InitiativeCard(
-            round: _session.round,
-            entries: _session.initiativeEntries,
-            turnIndex: _session.turnIndex,
-            onNextTurn: _nextTurn,
-            onReroll: _rerollInitiative,
-            onAdd: _addInitiativeEntry,
-            onRemove: _removeInitiativeEntry,
-          ),
-          const SizedBox(height: 14),
-          Text(
-            'SQUADRA DI ${participant.name.toUpperCase()}',
-            style: Theme.of(
-              context,
-            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
-          ),
-          const SizedBox(height: 8),
-          for (final member in participant.team) ...[
-            _TeamMemberCard(
-              state: member,
-              pokemon: _pokemonById[member.pokemon.pokemonId],
-              selected: member.slotIndex == state.slotIndex,
-              active: participant.activeSlotIndices.contains(member.slotIndex),
-              activeLimit: participant.activeLimit,
-              onFocus: () => _focusPokemon(member.slotIndex),
-              onToggleActive: () => _toggleActive(member.slotIndex),
+            const SizedBox(height: 14),
+            Text(
+              'SQUADRA DI ${participant.name.toUpperCase()}',
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
             ),
             const SizedBox(height: 8),
-          ],
-          const SizedBox(height: 6),
-          _FocusedPokemonCard(
-            generated: generated,
-            state: state,
-            active: participant.activeSlotIndices.contains(state.slotIndex),
-            onMinusFive: () => _changeHp(-5),
-            onMinusOne: () => _changeHp(-1),
-            onPlusOne: () => _changeHp(1),
-            onPlusFive: () => _changeHp(5),
-            onEditHp: _editHp,
-            onHeal: _healFocused,
-            onStatus: _editStatuses,
-            onDetails: _openDetails,
-            onToggleActive: () => _toggleActive(state.slotIndex),
-          ),
-          const SizedBox(height: 12),
-          BattleStatusAssistanceCard(
-            key: ValueKey(
-              'master-status-${participant.trainerId}-${state.slotIndex}',
-            ),
-            pokemonName: pokemonFormDisplayName(
-              generated.basePokemon.name,
-              generated.formName,
-            ),
-            nonVolatileStatus: state.nonVolatileStatus,
-            volatileStatuses: state.volatileStatuses,
-            selectedMoment: _statusMoment,
-            onMomentChanged: (moment) {
-              setState(() => _statusMoment = moment);
-            },
-          ),
-          const SizedBox(height: 12),
-          Text(
-            'MOSSE DA COMBATTIMENTO',
-            style: Theme.of(
-              context,
-            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
-          ),
-          const SizedBox(height: 8),
-          for (final reference in state.pokemon.selectedMoves)
-            _NpcMoveCard(
-              reference: reference,
-              move: _moves[reference],
-              level: state.pokemon.level,
-              remainingPp: _remainingPp(state, reference, _moves[reference]),
-              maxPp: _maxPp(_moves[reference]),
-              onUse: () => _changePp(reference, _moves[reference], -1),
-              onRestore: () => _changePp(reference, _moves[reference], 1),
-            ),
-          if (state.pokemon.selectedMoves.isEmpty)
-            const Card(
-              child: Padding(
-                padding: EdgeInsets.all(14),
-                child: Text('Nessuna mossa selezionata.'),
+            for (final member in participant.team) ...[
+              _TeamMemberCard(
+                state: member,
+                pokemon: _pokemonById[member.pokemon.pokemonId],
+                selected: member.slotIndex == state.slotIndex,
+                active: participant.activeSlotIndices.contains(
+                  member.slotIndex,
+                ),
+                activeLimit: participant.activeLimit,
+                onFocus: () => _focusPokemon(member.slotIndex),
+                onToggleActive: () => _toggleActive(member.slotIndex),
               ),
+              const SizedBox(height: 8),
+            ],
+            const SizedBox(height: 6),
+            _FocusedPokemonCard(
+              generated: generated,
+              state: state,
+              active: participant.activeSlotIndices.contains(state.slotIndex),
+              onMinusFive: () => _changeHp(-5),
+              onMinusOne: () => _changeHp(-1),
+              onPlusOne: () => _changeHp(1),
+              onPlusFive: () => _changeHp(5),
+              onEditHp: _editHp,
+              onHeal: _healFocused,
+              onStatus: _editStatuses,
+              onDetails: _openDetails,
+              onToggleActive: () => _toggleActive(state.slotIndex),
             ),
-        ],
+            const SizedBox(height: 12),
+            BattleStatusAssistanceCard(
+              key: ValueKey(
+                'master-status-${participant.trainerId}-${state.slotIndex}',
+              ),
+              pokemonName: pokemonFormDisplayName(
+                generated.basePokemon.name,
+                generated.formName,
+              ),
+              nonVolatileStatus: state.nonVolatileStatus,
+              volatileStatuses: state.volatileStatuses,
+              selectedMoment: _statusMoment,
+              onMomentChanged: (moment) {
+                setState(() => _statusMoment = moment);
+              },
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'MOSSE DA COMBATTIMENTO',
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
+            ),
+            const SizedBox(height: 8),
+            for (final reference in state.pokemon.selectedMoves)
+              _NpcMoveCard(
+                reference: reference,
+                move: _moves[reference],
+                level: state.pokemon.level,
+                remainingPp: _remainingPp(state, reference, _moves[reference]),
+                maxPp: _maxPp(_moves[reference]),
+                onUse: () => _changePp(reference, _moves[reference], -1),
+                onRestore: () => _changePp(reference, _moves[reference], 1),
+              ),
+            if (state.pokemon.selectedMoves.isEmpty)
+              const Card(
+                child: Padding(
+                  padding: EdgeInsets.all(14),
+                  child: Text('Nessuna mossa selezionata.'),
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }
@@ -1295,6 +1327,7 @@ class _NpcHpInputDialogState extends State<_NpcHpInputDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      scrollable: true,
       title: const Text('Modifica PF'),
       content: TextField(
         controller: _controller,
@@ -1338,6 +1371,7 @@ class _StatusDialogState extends State<_StatusDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      scrollable: true,
       title: const Text('Status del Pokémon'),
       content: Column(
         mainAxisSize: MainAxisSize.min,
@@ -1434,3 +1468,5 @@ const List<String> _nonVolatileStatuses = [
 const List<String> _volatileStatuses = ['Confused', 'Flinched'];
 
 enum _FightSummaryAction { export, share }
+
+enum _FightSessionAction { reset, end }

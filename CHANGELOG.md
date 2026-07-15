@@ -27,6 +27,8 @@ Tutte le modifiche rilevanti al progetto vengono documentate in questo file.
 
 ### Modificato
 
+- ultimo passaggio della review pre-release: Battle Companion, Fight del Master e Strumenti del Master usano larghezze leggibili su desktop; le AppBar espongono Home in modo uniforme, le azioni del fight sono raccolte in menu meno affollati e dialog/bottom sheet critici gestiscono meglio smartphone e testo ingrandito;
+
 - secondo passaggio della review pre-release: Home, Pokédex, PC Pokémon e Zaino usano larghezze leggibili su desktop; i filtri del Pokédex si impilano su smartphone, il riepilogo Allenatore evita overflow e lo Zaino dispone gli oggetti su due colonne quando lo spazio lo consente;
 - primo passaggio della review pre-release: Squadra, Profili e librerie del Master ora mantengono una larghezza leggibile su Web e Windows; la Squadra usa due colonne sulle finestre ampie e una colonna su smartphone;
 - Home e Strumenti del Master divisi in sezioni più riconoscibili;

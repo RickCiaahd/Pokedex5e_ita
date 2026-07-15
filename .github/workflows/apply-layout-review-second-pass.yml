@@ -1,0 +1,77 @@
+name: Apply layout review second pass
+
+on:
+  push:
+    branches:
+      - polish/layout-home-pokedex-pc-bag
+
+permissions:
+  contents: write
+
+concurrency:
+  group: layout-review-second-pass-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    if: ${{ !contains(github.event.head_commit.message, '[layout-second-pass-applied]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Check out feature branch
+        uses: actions/checkout@v4
+        with:
+          ref: polish/layout-home-pokedex-pc-bag
+          fetch-depth: 0
+
+      - name: Apply layout review
+        run: python tool/apply_layout_review_second_pass.py
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Format changed Dart files
+        run: |
+          dart format \
+            lib/screens/home/home_screen.dart \
+            lib/screens/pokedex/pokedex_screen.dart \
+            lib/screens/pc/pokemon_pc_screen.dart \
+            lib/screens/bag/bag_screen.dart \
+            test/layout_second_pass_integration_test.dart
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze source
+        run: flutter analyze
+
+      - name: Validate application data
+        run: flutter test test/data_integrity_test.dart --reporter expanded
+
+      - name: Run layout integration test
+        run: flutter test test/layout_second_pass_integration_test.dart --reporter expanded
+
+      - name: Run complete test suite
+        run: flutter test --reporter expanded
+
+      - name: Build Android debug APK
+        run: flutter build apk --debug
+
+      - name: Commit verified layout review
+        run: |
+          rm -f tool/apply_layout_review_second_pass.py .github/workflows/apply-layout-review-second-pass.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Estende la review responsiva alle schermate principali [layout-second-pass-applied]"
+          git push origin HEAD:polish/layout-home-pokedex-pc-bag

@@ -17,6 +17,7 @@ import '../../repositories/profile_repository.dart';
 import '../../repositories/team_repository.dart';
 import '../../repositories/tm_repository.dart';
 import '../../services/trainer_path_passive_service.dart';
+import '../../widgets/layout/responsive_content.dart';
 import '../../widgets/navigation/home_leading_button.dart';
 import '../../widgets/pokemon/pokemon_asset_image.dart';
 
@@ -694,32 +695,35 @@ class _BagScreenState extends State<BagScreen> {
         leading: const HomeLeadingButton(),
         title: const Text('Zaino'),
       ),
-      body: FutureBuilder<_BagData>(
-        future: _dataFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState != ConnectionState.done) {
-            return const Center(child: CircularProgressIndicator());
-          }
+      body: ResponsiveContent(
+        maxWidth: 1180,
+        child: FutureBuilder<_BagData>(
+          future: _dataFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState != ConnectionState.done) {
+              return const Center(child: CircularProgressIndicator());
+            }
 
-          if (snapshot.hasError) {
-            return _BagError(message: snapshot.error.toString());
-          }
+            if (snapshot.hasError) {
+              return _BagError(message: snapshot.error.toString());
+            }
 
-          final data = snapshot.data;
-          if (data == null) return const _BagEmpty();
+            final data = snapshot.data;
+            if (data == null) return const _BagEmpty();
 
-          return _BagContent(
-            data: data,
-            selectedType: _selectedType,
-            message: _message,
-            onTypeSelected: (type) => setState(() => _selectedType = type),
-            onFindItem: () => _openFinder(data, _BagAction.find),
-            onBuyItem: () => _openFinder(data, _BagAction.buy),
-            onUseItem: (entry) => _useBagItem(data, entry),
-            onEquipItem: (entry) => _useHeldItem(data, entry),
-            onRemoveHeldItem: (entry) => _removeHeldItem(data, entry),
-          );
-        },
+            return _BagContent(
+              data: data,
+              selectedType: _selectedType,
+              message: _message,
+              onTypeSelected: (type) => setState(() => _selectedType = type),
+              onFindItem: () => _openFinder(data, _BagAction.find),
+              onBuyItem: () => _openFinder(data, _BagAction.buy),
+              onUseItem: (entry) => _useBagItem(data, entry),
+              onEquipItem: (entry) => _useHeldItem(data, entry),
+              onRemoveHeldItem: (entry) => _removeHeldItem(data, entry),
+            );
+          },
+        ),
       ),
     );
   }
@@ -985,12 +989,11 @@ class _BagContent extends StatelessWidget {
         if (filteredItems.isEmpty)
           const _BagEmpty()
         else
-          for (final entry in filteredItems)
-            _BagItemCard(
-              entry: entry,
-              onUse: () => onUseItem(entry),
-              onEquip: () => onEquipItem(entry),
-            ),
+          _BagItemsLayout(
+            items: filteredItems,
+            onUseItem: onUseItem,
+            onEquipItem: onEquipItem,
+          ),
       ],
     );
   }
@@ -1171,6 +1174,47 @@ class _BagTypeFilters extends StatelessWidget {
             ),
         ],
       ),
+    );
+  }
+}
+
+class _BagItemsLayout extends StatelessWidget {
+  const _BagItemsLayout({
+    required this.items,
+    required this.onUseItem,
+    required this.onEquipItem,
+  });
+
+  final List<_OwnedBagItem> items;
+  final ValueChanged<_OwnedBagItem> onUseItem;
+  final ValueChanged<_OwnedBagItem> onEquipItem;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        const spacing = 12.0;
+        final twoColumns = constraints.maxWidth >= 760;
+        final itemWidth = twoColumns
+            ? (constraints.maxWidth - spacing) / 2
+            : constraints.maxWidth;
+
+        return Wrap(
+          spacing: spacing,
+          runSpacing: 0,
+          children: [
+            for (final entry in items)
+              SizedBox(
+                width: itemWidth,
+                child: _BagItemCard(
+                  entry: entry,
+                  onUse: () => onUseItem(entry),
+                  onEquip: () => onEquipItem(entry),
+                ),
+              ),
+          ],
+        );
+      },
     );
   }
 }

@@ -20,6 +20,7 @@ import '../../repositories/master_battle_session_repository.dart';
 import '../../repositories/pokemon_repository.dart';
 import '../../repositories/profile_repository.dart';
 import '../../services/profile_storage_service.dart';
+import '../../widgets/layout/responsive_content.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -125,35 +126,69 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Pokédex 5e ITA')),
-      body: RefreshIndicator(
-        onRefresh: _loadDashboard,
-        child: ListView(
-          padding: const EdgeInsets.all(24),
-          children: [
-            if (_isLoading)
-              const Padding(
-                padding: EdgeInsets.only(top: 120),
-                child: Center(child: CircularProgressIndicator()),
-              )
-            else if (_errorMessage != null)
-              _ErrorState(message: _errorMessage!, onRetry: _loadDashboard)
-            else ...[
-              _TrainerHeader(profile: profile),
-              const SizedBox(height: 20),
-              _ProgressOverview(total: total, seen: seen, caught: caught),
-              if (hasActiveSession) ...[
+      body: ResponsiveContent(
+        maxWidth: 1040,
+        child: RefreshIndicator(
+          onRefresh: _loadDashboard,
+          child: ListView(
+            padding: const EdgeInsets.fromLTRB(16, 18, 16, 32),
+            children: [
+              if (_isLoading)
+                const Padding(
+                  padding: EdgeInsets.only(top: 120),
+                  child: Center(child: CircularProgressIndicator()),
+                )
+              else if (_errorMessage != null)
+                _ErrorState(message: _errorMessage!, onRetry: _loadDashboard)
+              else ...[
+                _TrainerHeader(profile: profile),
+                const SizedBox(height: 20),
+                _ProgressOverview(total: total, seen: seen, caught: caught),
+                if (hasActiveSession) ...[
+                  const SizedBox(height: 24),
+                  const _HomeSectionTitle(
+                    icon: Icons.play_circle_outline,
+                    title: 'SESSIONI IN CORSO',
+                    subtitle: 'Riprendi subito da dove avevi lasciato.',
+                  ),
+                  if (_hasActiveBattle)
+                    _HomeActionButton(
+                      icon: Icons.flash_on,
+                      title: 'Riprendi battaglia',
+                      subtitle:
+                          'Continua dal round, turno, PP e status salvati.',
+                      emphasized: true,
+                      onTap: () async {
+                        await Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const BattleScreen(),
+                          ),
+                        );
+                        await _loadDashboard();
+                      },
+                    ),
+                  if (_hasActiveMasterFight)
+                    _HomeActionButton(
+                      icon: Icons.sports_mma_outlined,
+                      title: 'Riprendi Fight del Master',
+                      subtitle:
+                          'Riapri la sessione del Master con PF, PP, status e iniziativa salvati.',
+                      emphasized: true,
+                      onTap: _resumeMasterFight,
+                    ),
+                ],
                 const SizedBox(height: 24),
                 const _HomeSectionTitle(
-                  icon: Icons.play_circle_outline,
-                  title: 'SESSIONI IN CORSO',
-                  subtitle: 'Riprendi subito da dove avevi lasciato.',
+                  icon: Icons.person_outline,
+                  title: 'ALLENATORE E SQUADRA',
+                  subtitle: 'Gestisci il personaggio e i Pokémon catturati.',
                 ),
-                if (_hasActiveBattle)
+                if (!_hasActiveBattle)
                   _HomeActionButton(
                     icon: Icons.flash_on,
-                    title: 'Riprendi battaglia',
-                    subtitle: 'Continua dal round, turno, PP e status salvati.',
-                    emphasized: true,
+                    title: 'Battle Companion',
+                    subtitle:
+                        'Traccia round, PF, status e PP durante il combattimento.',
                     onTap: () async {
                       await Navigator.of(context).push(
                         MaterialPageRoute(builder: (_) => const BattleScreen()),
@@ -161,166 +196,140 @@ class _HomeScreenState extends State<HomeScreen> {
                       await _loadDashboard();
                     },
                   ),
-                if (_hasActiveMasterFight)
-                  _HomeActionButton(
-                    icon: Icons.sports_mma_outlined,
-                    title: 'Riprendi Fight del Master',
-                    subtitle:
-                        'Riapri la sessione del Master con PF, PP, status e iniziativa salvati.',
-                    emphasized: true,
-                    onTap: _resumeMasterFight,
-                  ),
-              ],
-              const SizedBox(height: 24),
-              const _HomeSectionTitle(
-                icon: Icons.person_outline,
-                title: 'ALLENATORE E SQUADRA',
-                subtitle: 'Gestisci il personaggio e i Pokémon catturati.',
-              ),
-              if (!_hasActiveBattle)
                 _HomeActionButton(
-                  icon: Icons.flash_on,
-                  title: 'Battle Companion',
-                  subtitle:
-                      'Traccia round, PF, status e PP durante il combattimento.',
+                  icon: Icons.badge_outlined,
+                  title: 'Scheda Allenatore',
+                  subtitle: 'Aggiorna livello, soldi e progressione campagna.',
                   onTap: () async {
                     await Navigator.of(context).push(
-                      MaterialPageRoute(builder: (_) => const BattleScreen()),
+                      MaterialPageRoute(
+                        builder: (_) => const TrainerSheetScreen(),
+                      ),
                     );
                     await _loadDashboard();
                   },
                 ),
-              _HomeActionButton(
-                icon: Icons.badge_outlined,
-                title: 'Scheda Allenatore',
-                subtitle: 'Aggiorna livello, soldi e progressione campagna.',
-                onTap: () async {
-                  await Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => const TrainerSheetScreen(),
-                    ),
-                  );
-                  await _loadDashboard();
-                },
-              ),
-              _HomeActionButton(
-                icon: Icons.add_circle_outline,
-                title: 'Cattura Pokémon',
-                subtitle:
-                    'Scegli il Pokémon: va in squadra se c’è posto, altrimenti nel PC.',
-                onTap: () async {
-                  await Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => const CapturePokemonScreen(),
-                    ),
-                  );
-                  await _loadDashboard();
-                },
-              ),
-              _HomeActionButton(
-                icon: Icons.groups,
-                title: 'Squadra',
-                subtitle: 'Scegli fino a 6 Pokémon per il profilo attivo.',
-                onTap: () async {
-                  await Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => TeamSelectionScreen(
-                        nickname: profile?.name ?? 'Allenatore',
+                _HomeActionButton(
+                  icon: Icons.add_circle_outline,
+                  title: 'Cattura Pokémon',
+                  subtitle:
+                      'Scegli il Pokémon: va in squadra se c’è posto, altrimenti nel PC.',
+                  onTap: () async {
+                    await Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const CapturePokemonScreen(),
                       ),
-                    ),
-                  );
-                  await _loadDashboard();
-                },
-              ),
-              _HomeActionButton(
-                icon: Icons.computer,
-                title: 'PC Pokémon',
-                subtitle: 'Gestisci i Pokémon catturati fuori squadra.',
-                onTap: () async {
-                  await Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const PokemonPcScreen()),
-                  );
-                  await _loadDashboard();
-                },
-              ),
-              _HomeActionButton(
-                icon: Icons.egg_alt_outlined,
-                title: 'Allevamento e uova',
-                subtitle:
-                    'Verifica i genitori, crea uova, avanza l’incubazione e fai schiudere i Pokémon.',
-                onTap: () async {
-                  await Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const BreedingScreen()),
-                  );
-                  await _loadDashboard();
-                },
-              ),
-              _HomeActionButton(
-                icon: Icons.backpack_outlined,
-                title: 'Zaino',
-                subtitle: 'Equipaggiamento, cure e oggetti da cattura.',
-                onTap: () async {
-                  await Navigator.of(
-                    context,
-                  ).push(MaterialPageRoute(builder: (_) => const BagScreen()));
-                  await _loadDashboard();
-                },
-              ),
-              const SizedBox(height: 24),
-              const _HomeSectionTitle(
-                icon: Icons.menu_book_outlined,
-                title: 'CONSULTAZIONE',
-                subtitle: 'Cerca informazioni e aggiorna i progressi.',
-              ),
-              _HomeActionButton(
-                icon: Icons.catching_pokemon,
-                title: 'Apri Pokédex',
-                subtitle: 'Consulta, filtra e marca i Pokémon.',
-                onTap: () async {
-                  await Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const PokedexScreen()),
-                  );
-                  await _loadDashboard();
-                },
-              ),
-              const SizedBox(height: 24),
-              const _HomeSectionTitle(
-                icon: Icons.construction,
-                title: 'STRUMENTI DEL MASTER',
-                subtitle:
-                    'Genera contenuti, usa le librerie e prepara i fight.',
-              ),
-              _HomeActionButton(
-                icon: Icons.construction,
-                title: 'Apri Strumenti del Master',
-                subtitle:
-                    'Generatori Pokémon, incontri, raccolte e Allenatori PNG.',
-                onTap: () async {
-                  await Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const ToolsScreen()),
-                  );
-                  await _loadDashboard();
-                },
-              ),
-              const SizedBox(height: 24),
-              const _HomeSectionTitle(
-                icon: Icons.settings_outlined,
-                title: 'GESTIONE APPLICAZIONE',
-                subtitle: 'Gestisci i profili e i dati dell’app.',
-              ),
-              _HomeActionButton(
-                icon: Icons.person,
-                title: 'Profili',
-                subtitle: 'Crea, cambia o elimina profili allenatore.',
-                onTap: () async {
-                  await Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const ProfilesScreen()),
-                  );
-                  await _loadDashboard();
-                },
-              ),
+                    );
+                    await _loadDashboard();
+                  },
+                ),
+                _HomeActionButton(
+                  icon: Icons.groups,
+                  title: 'Squadra',
+                  subtitle: 'Scegli fino a 6 Pokémon per il profilo attivo.',
+                  onTap: () async {
+                    await Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => TeamSelectionScreen(
+                          nickname: profile?.name ?? 'Allenatore',
+                        ),
+                      ),
+                    );
+                    await _loadDashboard();
+                  },
+                ),
+                _HomeActionButton(
+                  icon: Icons.computer,
+                  title: 'PC Pokémon',
+                  subtitle: 'Gestisci i Pokémon catturati fuori squadra.',
+                  onTap: () async {
+                    await Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const PokemonPcScreen(),
+                      ),
+                    );
+                    await _loadDashboard();
+                  },
+                ),
+                _HomeActionButton(
+                  icon: Icons.egg_alt_outlined,
+                  title: 'Allevamento e uova',
+                  subtitle:
+                      'Verifica i genitori, crea uova, avanza l’incubazione e fai schiudere i Pokémon.',
+                  onTap: () async {
+                    await Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const BreedingScreen()),
+                    );
+                    await _loadDashboard();
+                  },
+                ),
+                _HomeActionButton(
+                  icon: Icons.backpack_outlined,
+                  title: 'Zaino',
+                  subtitle: 'Equipaggiamento, cure e oggetti da cattura.',
+                  onTap: () async {
+                    await Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const BagScreen()),
+                    );
+                    await _loadDashboard();
+                  },
+                ),
+                const SizedBox(height: 24),
+                const _HomeSectionTitle(
+                  icon: Icons.menu_book_outlined,
+                  title: 'CONSULTAZIONE',
+                  subtitle: 'Cerca informazioni e aggiorna i progressi.',
+                ),
+                _HomeActionButton(
+                  icon: Icons.catching_pokemon,
+                  title: 'Apri Pokédex',
+                  subtitle: 'Consulta, filtra e marca i Pokémon.',
+                  onTap: () async {
+                    await Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const PokedexScreen()),
+                    );
+                    await _loadDashboard();
+                  },
+                ),
+                const SizedBox(height: 24),
+                const _HomeSectionTitle(
+                  icon: Icons.construction,
+                  title: 'STRUMENTI DEL MASTER',
+                  subtitle:
+                      'Genera contenuti, usa le librerie e prepara i fight.',
+                ),
+                _HomeActionButton(
+                  icon: Icons.construction,
+                  title: 'Apri Strumenti del Master',
+                  subtitle:
+                      'Generatori Pokémon, incontri, raccolte e Allenatori PNG.',
+                  onTap: () async {
+                    await Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const ToolsScreen()),
+                    );
+                    await _loadDashboard();
+                  },
+                ),
+                const SizedBox(height: 24),
+                const _HomeSectionTitle(
+                  icon: Icons.settings_outlined,
+                  title: 'GESTIONE APPLICAZIONE',
+                  subtitle: 'Gestisci i profili e i dati dell’app.',
+                ),
+                _HomeActionButton(
+                  icon: Icons.person,
+                  title: 'Profili',
+                  subtitle: 'Crea, cambia o elimina profili allenatore.',
+                  onTap: () async {
+                    await Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const ProfilesScreen()),
+                    );
+                    await _loadDashboard();
+                  },
+                ),
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );
@@ -363,13 +372,47 @@ class _TrainerHeader extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 4),
-              Text(
-                'Lv. $trainerLevel | ₽ $money | Pokéslot $pokeslots | SR max $maxSr',
+              Wrap(
+                spacing: 8,
+                runSpacing: 6,
+                children: [
+                  _TrainerInfoChip(label: 'Lv. $trainerLevel'),
+                  _TrainerInfoChip(label: '₽ $money'),
+                  _TrainerInfoChip(label: 'Pokéslot $pokeslots'),
+                  _TrainerInfoChip(label: 'SR max $maxSr'),
+                ],
               ),
             ],
           ),
         ),
       ],
+    );
+  }
+}
+
+class _TrainerInfoChip extends StatelessWidget {
+  const _TrainerInfoChip({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: colors.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+        child: Text(
+          label,
+          style: Theme.of(context).textTheme.labelMedium?.copyWith(
+            color: colors.onSurfaceVariant,
+            fontWeight: FontWeight.w800,
+          ),
+        ),
+      ),
     );
   }
 }

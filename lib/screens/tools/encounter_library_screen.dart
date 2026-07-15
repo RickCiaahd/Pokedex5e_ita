@@ -535,6 +535,11 @@ class _SavedEncounterCard extends StatelessWidget {
                       ),
                     ),
                   ),
+                  IconButton(
+                    onPressed: isBusy ? null : onShare,
+                    tooltip: 'Condividi incontro',
+                    icon: const Icon(Icons.ios_share_outlined),
+                  ),
                   PopupMenuButton<String>(
                     enabled: !isBusy,
                     onSelected: (value) {

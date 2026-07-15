@@ -17,18 +17,20 @@ Tutte le modifiche rilevanti al progetto vengono documentate in questo file.
 - applicazione automatica dei bonus passivi principali dei Trainer Path a caratteristiche, PF, tiri per colpire, danni, STAB, tiri salvezza e Lealtà;
 - scheda compatta delle sei caratteristiche del Pokémon nel Battle Companion, con valori effettivi e modificatori pronti per prove e tiri salvezza;
 - sistema persistente di allevamento e uova integrato nei profili e nei backup, con compatibilità dei genitori, Gruppi Uova, Ditto, tiri di successo, incubazione, incubatori e schiusa in squadra o nel PC;
-- uova come entità reali della squadra: occupano un Pokéslot, possono essere affidate alla Pensione Pokémon e alla schiusa vengono sostituite dal Pokémon nato nello stesso slot.
-- deposito delle uova nel PC Pokémon, con incubazione in pausa, ritiro in squadra e visualizzazione nel PC Box.
+- uova come entità reali della squadra: occupano un Pokéslot, possono essere affidate alla Pensione Pokémon e alla schiusa vengono sostituite dal Pokémon nato nello stesso slot;
+- deposito delle uova nel PC Pokémon, con incubazione in pausa, ritiro in squadra e visualizzazione nel PC Box;
 - completamento del Trainer Path Pokémon Breeder: Good Genes assegna alla schiusa 2 punti caratteristica o un talento, mentre Master of Traits permette di scegliere sesso, natura, abilità e sostituzioni delle Egg Moves;
 - incubatori Basic, Plus e Super già presenti nel catalogo consumati quando vengono assegnati a un uovo, secondo costi e dadi aggiuntivi del manuale;
 - gestione della fragilità delle uova con CA 8, 10 PF e distruzione a 0 PF, mantenuta nei salvataggi e nei backup;
 - pannello persistente di meteo e terreno nel Battle Companion, con tabella d100 stagionale, durate e contatori aggiornati a ogni nuovo round, regola opzionale sui danni, terreni creati dalle mosse e promemoria delle abilità ambientali;
-- applicazione automatica di Terrain Adept, Weather Ball, bonus a CA/velocità/danni e danni di Grandine o Tempesta di sabbia secondo il manuale.
+- applicazione automatica di Terrain Adept, Weather Ball, bonus a CA/velocità/danni e danni di Grandine o Tempesta di sabbia secondo il manuale;
+- guida alla firma Android, modello sicuro di `key.properties` e checklist per installazione, aggiornamento, backup e ripristino;
+- workflow permanente `Android release` per generare APK e AAB firmati, checksum SHA-256 e GitHub Release dai tag `v*`;
+- test automatico della configurazione Android release.
 
 ### Modificato
 
 - ultimo passaggio della review pre-release: Battle Companion, Fight del Master e Strumenti del Master usano larghezze leggibili su desktop; le AppBar espongono Home in modo uniforme, le azioni del fight sono raccolte in menu meno affollati e dialog/bottom sheet critici gestiscono meglio smartphone e testo ingrandito;
-
 - secondo passaggio della review pre-release: Home, Pokédex, PC Pokémon e Zaino usano larghezze leggibili su desktop; i filtri del Pokédex si impilano su smartphone, il riepilogo Allenatore evita overflow e lo Zaino dispone gli oggetti su due colonne quando lo spazio lo consente;
 - primo passaggio della review pre-release: Squadra, Profili e librerie del Master ora mantengono una larghezza leggibile su Web e Windows; la Squadra usa due colonne sulle finestre ampie e una colonna su smartphone;
 - Home e Strumenti del Master divisi in sezioni più riconoscibili;
@@ -38,8 +40,8 @@ Tutte le modifiche rilevanti al progetto vengono documentate in questo file.
 - i privilegi ottenuti ai livelli 5, 9 e 15 sono indicati come `Privilegio del Path`, distinguendoli dalla scelta iniziale del Trainer Path;
 - il cambio di un Trainer Path già salvato richiede ora una conferma esplicita;
 - corretto il salvataggio del primo uovo di un profilo, che prima poteva mostrare `Unsupported operation: insert`;
-- la schiusa considera soltanto i Pokéslot sbloccati: con tutti gli slot disponibili occupati il Pokémon viene depositato nel PC, e gli esemplari finiti in slot bloccati vengono recuperati automaticamente.
-- sprite delle uova ridimensionati e schede della squadra nel PC rese più alte per evitare overflow alle larghezze intermedie.
+- la schiusa considera soltanto i Pokéslot sbloccati: con tutti gli slot disponibili occupati il Pokémon viene depositato nel PC, e gli esemplari finiti in slot bloccati vengono recuperati automaticamente;
+- sprite delle uova ridimensionati e schede della squadra nel PC rese più alte per evitare overflow alle larghezze intermedie;
 - lo sprite personalizzato dell’uovo viene ora usato nella Squadra, nel riepilogo del PC e nelle schede di incubazione;
 - la Classe Armatura effettiva del Pokémon è ora visibile accanto al nome nel Battle Companion, con l’eventuale bonus ambientale evidenziato;
 - aggiunti file JSON portabili per esportare e importare un singolo Pokémon o l'intera squadra, preservando mosse, esperienza, natura, abilità, talenti, forma, sesso, Lealtà e personalizzazioni;
@@ -47,8 +49,11 @@ Tutte le modifiche rilevanti al progetto vengono documentate in questo file.
 - incontri salvati e Allenatori PNG possono essere esportati e importati singolarmente senza sostituire il profilo, con nuovi identificativi e nomi non distruttivi in caso di duplicati;
 - il Fight del Master può esportare un riepilogo testuale con round, ordine d'iniziativa, PF, status, PP, ricompense e Pokémon attivi;
 - Pokémon, squadre, incontri, Allenatori PNG e riepiloghi del Fight del Master possono essere condivisi tramite il menu nativo del dispositivo, con fallback al download sul Web;
-- le azioni di condivisione principali sono ora visibili direttamente nelle barre e nelle schede, senza dover aprire il menu con i tre puntini.
+- le azioni di condivisione principali sono ora visibili direttamente nelle barre e nelle schede, senza dover aprire il menu con i tre puntini;
+- identità Android impostata su `Pokédex 5e ITA` con Application ID definitivo `io.github.rickciaahd.pokedex5eita`;
+- la build release non usa più la chiave di debug e richiede un keystore configurato esplicitamente;
+- la CI compila anche un APK Android di debug per intercettare regressioni native.
 
 ### In programma
 
-- review generale del layout e preparazione della prima release Android.
+- prova finale su dispositivo Android reale, configurazione dei secret di firma e pubblicazione della release `v1.0.0`.

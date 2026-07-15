@@ -24,9 +24,10 @@ Il progetto è in sviluppo attivo. Le modifiche vengono controllate automaticame
 flutter analyze
 flutter test test/data_integrity_test.dart
 flutter test
+flutter build apk --debug
 ```
 
-Il test di integrità verifica i file sorgente del catalogo, gli identificatori, le statistiche minime, le forme e la presenza di almeno un'immagine utilizzabile per ogni specie.
+Il test di integrità verifica i file sorgente del catalogo, gli identificatori, le statistiche minime, le forme e la presenza di almeno un'immagine utilizzabile per ogni specie. La CI verifica inoltre che il progetto continui a compilare come applicazione Android.
 
 ## Requisiti
 
@@ -57,9 +58,18 @@ flutter run -d <id-dispositivo-android>
 flutter analyze
 flutter test test/data_integrity_test.dart
 flutter test
+flutter build apk --debug
 ```
 
 Quando vengono aggiunti Pokémon, forme, mosse, abilità o asset, il test di integrità deve continuare a essere superato.
+
+## Release Android
+
+L'app Android usa il nome `Pokédex 5e ITA` e l'Application ID definitivo `io.github.rickciaahd.pokedex5eita`.
+
+La guida completa per creare il keystore, configurare i secret GitHub e generare APK/AAB firmati è disponibile in [`docs/android-release.md`](docs/android-release.md).
+
+Il workflow `Android release` può essere avviato manualmente dopo la configurazione dei secret. Un tag `v*`, per esempio `v1.0.0`, genera anche una GitHub Release con APK, AAB e checksum SHA-256.
 
 ## Dati e salvataggi
 

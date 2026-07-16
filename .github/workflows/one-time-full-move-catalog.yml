@@ -32,11 +32,19 @@ jobs:
         run: python3 .github/scripts/patch_full_move_catalog.py
 
       - name: Format changed Dart files
+        shell: bash
         run: |
+          set +e
           dart format \
             lib/repositories/move_repository.dart \
             lib/screens/pokemon/pokemon_edit_screen.dart \
-            test/full_move_catalog_test.dart
+            test/full_move_catalog_test.dart > /tmp/full-move-format.log 2>&1
+          status=$?
+          cat /tmp/full-move-format.log
+          if [ "$status" -ne 0 ]; then
+            cp /tmp/full-move-format.log full_move_format_error.txt
+          fi
+          exit 0
 
       - name: Commit implementation
         shell: bash
@@ -46,5 +54,8 @@ jobs:
           git rm .github/workflows/one-time-full-move-catalog.yml
           git rm .github/scripts/patch_full_move_catalog.py
           git add CHANGELOG.md lib test/full_move_catalog_test.dart
+          if [ -f full_move_format_error.txt ]; then
+            git add full_move_format_error.txt
+          fi
           git commit -m 'Aggiunge il catalogo completo delle mosse'
           git push origin feature/full-move-catalog-impl

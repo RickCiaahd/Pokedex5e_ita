@@ -107,9 +107,8 @@ class PokemonTransferBundle {
             throw const FormatException('Scheda Pokémon non valida.'),
       ],
       customPokemon: [
-        for (final value in rawCustomPokemon is List
-            ? rawCustomPokemon
-            : const <dynamic>[])
+        for (final value
+            in rawCustomPokemon is List ? rawCustomPokemon : const <dynamic>[])
           if (value is Map)
             CustomPokemonDefinition.fromJson(Map<String, dynamic>.from(value))
           else

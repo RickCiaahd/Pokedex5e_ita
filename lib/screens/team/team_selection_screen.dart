@@ -91,6 +91,19 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
     return null;
   }
 
+  Pokemon? _pokemonFromTransfer(PokemonTransferBundle bundle, int? pokemonId) {
+    final catalogPokemon = _pokemonById(pokemonId);
+    if (catalogPokemon != null || pokemonId == null) {
+      return catalogPokemon;
+    }
+    for (final definition in bundle.customPokemon) {
+      if (definition.pokemonId == pokemonId) {
+        return definition.toPokemon();
+      }
+    }
+    return null;
+  }
+
   int get _unlockedPokeslots {
     final level = _profile?.trainerLevel ?? TrainerProgression.minLevel;
 
@@ -218,7 +231,7 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
         slot: slot,
         sourceTrainerName: profile.name,
       );
-      final json = _transferService.encode(bundle);
+      final json = await _transferService.encodePortable(bundle);
       final displayName = _displayNameForSlot(slot);
       final path = await FilePicker.platform.saveFile(
         dialogTitle: 'Esporta $displayName',
@@ -260,7 +273,7 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
         slots: pokemonSlots,
         sourceTrainerName: profile.name,
       );
-      final json = _transferService.encode(bundle);
+      final json = await _transferService.encodePortable(bundle);
       final path = await FilePicker.platform.saveFile(
         dialogTitle: 'Esporta la squadra di ${profile.name}',
         fileName: _transferService.fileNameForTeam(bundle),
@@ -289,7 +302,7 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
         slot: slot,
         sourceTrainerName: profile.name,
       );
-      final json = _transferService.encode(bundle);
+      final json = await _transferService.encodePortable(bundle);
       final displayName = _displayNameForSlot(slot);
       final outcome = await _shareService.shareTextFile(
         context: context,
@@ -334,7 +347,7 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
         slots: pokemonSlots,
         sourceTrainerName: profile.name,
       );
-      final json = _transferService.encode(bundle);
+      final json = await _transferService.encodePortable(bundle);
       final outcome = await _shareService.shareTextFile(
         context: context,
         content: json,
@@ -374,7 +387,10 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
         );
       }
       final importedSlot = bundle.pokemon.single;
-      final importedPokemon = _pokemonById(importedSlot.pokemonId);
+      final importedPokemon = _pokemonFromTransfer(
+        bundle,
+        importedSlot.pokemonId,
+      );
       if (importedPokemon == null) {
         throw FormatException(
           'Il Pokémon #${importedSlot.pokemonId} non è presente nel catalogo.',
@@ -449,7 +465,8 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
       }
       final unknownIds = <int>{
         for (final slot in bundle.pokemon)
-          if (_pokemonById(slot.pokemonId) == null) slot.pokemonId!,
+          if (_pokemonFromTransfer(bundle, slot.pokemonId) == null)
+            slot.pokemonId!,
       };
       if (unknownIds.isNotEmpty) {
         throw FormatException(

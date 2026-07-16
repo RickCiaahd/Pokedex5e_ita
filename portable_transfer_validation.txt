@@ -1,0 +1,103 @@
+=== flutter analyze ===
+Resolving dependencies...
+Downloading packages...
+  file_picker 10.3.10 (11.0.2 available)
+  hooks 2.0.2 (2.1.0 available)
+  matcher 0.12.19 (0.12.20 available)
+  meta 1.18.0 (1.19.0 available)
+  package_config 2.2.0 (3.0.0 available)
+  record_use 0.6.0 (1.0.0 available)
+  share_plus 12.0.2 (13.2.0 available)
+  share_plus_platform_interface 6.1.0 (7.1.0 available)
+  test_api 0.7.11 (0.7.13 available)
+  vector_math 2.2.0 (2.4.0 available)
+  win32 5.15.0 (6.3.0 available)
+  xml 6.6.1 (7.0.1 available)
+Got dependencies!
+12 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.
+Analyzing Pokedex5e_ita...                                      
+
+   info • Don't use 'BuildContext's across async gaps. Try rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check • lib/screens/team/team_selection_screen.dart:308:9 • use_build_context_synchronously
+   info • Don't use 'BuildContext's across async gaps. Try rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check • lib/screens/team/team_selection_screen.dart:352:9 • use_build_context_synchronously
+   info • Don't use 'BuildContext's across async gaps. Try rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check • lib/screens/tools/encounter_library_screen.dart:249:9 • use_build_context_synchronously
+   info • Don't use 'BuildContext's across async gaps. Try rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check • lib/screens/tools/npc_trainer_library_screen.dart:204:9 • use_build_context_synchronously
+
+4 issues found. (ran in 13.4s)
+
+=== portable transfer tests ===
+Resolving dependencies...
+Downloading packages...
+  file_picker 10.3.10 (11.0.2 available)
+  hooks 2.0.2 (2.1.0 available)
+  matcher 0.12.19 (0.12.20 available)
+  meta 1.18.0 (1.19.0 available)
+  package_config 2.2.0 (3.0.0 available)
+  record_use 0.6.0 (1.0.0 available)
+  share_plus 12.0.2 (13.2.0 available)
+  share_plus_platform_interface 6.1.0 (7.1.0 available)
+  test_api 0.7.11 (0.7.13 available)
+  vector_math 2.2.0 (2.4.0 available)
+  win32 5.15.0 (6.3.0 available)
+  xml 6.6.1 (7.0.1 available)
+Got dependencies!
+12 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.
+00:00 +0: loading /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/portable_fakemon_transfer_test.dart
+00:00 +0: il trasferimento di un Pokémon incorpora la specie Fakemon
+00:00 +1: un incontro incorpora una sola volta ogni Fakemon usato
+00:00 +2: un conflitto numerico rimappa la specie importata
+00:00 +3: i trasferimenti versione 1 restano importabili
+00:00 +4: All tests passed!
+
+=== pokemon transfer tests ===
+Resolving dependencies...
+Downloading packages...
+  file_picker 10.3.10 (11.0.2 available)
+  hooks 2.0.2 (2.1.0 available)
+  matcher 0.12.19 (0.12.20 available)
+  meta 1.18.0 (1.19.0 available)
+  package_config 2.2.0 (3.0.0 available)
+  record_use 0.6.0 (1.0.0 available)
+  share_plus 12.0.2 (13.2.0 available)
+  share_plus_platform_interface 6.1.0 (7.1.0 available)
+  test_api 0.7.11 (0.7.13 available)
+  vector_math 2.2.0 (2.4.0 available)
+  win32 5.15.0 (6.3.0 available)
+  xml 6.6.1 (7.0.1 available)
+Got dependencies!
+12 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.
+00:00 +0: loading /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_transfer_service_test.dart
+00:00 +0: il file di un singolo Pokémon conserva tutti i dati utili
+00:00 +1: importare un Pokémon sostituisce lo slot e salva il precedente nel PC
+00:00 +2: importare una squadra preserva le uova e manda gli esuberi nel PC
+00:00 +3: un uovo non può essere esportato come Pokémon
+00:00 +4: All tests passed!
+
+=== campaign transfer tests ===
+Resolving dependencies...
+Downloading packages...
+  file_picker 10.3.10 (11.0.2 available)
+  hooks 2.0.2 (2.1.0 available)
+  matcher 0.12.19 (0.12.20 available)
+  meta 1.18.0 (1.19.0 available)
+  package_config 2.2.0 (3.0.0 available)
+  record_use 0.6.0 (1.0.0 available)
+  share_plus 12.0.2 (13.2.0 available)
+  share_plus_platform_interface 6.1.0 (7.1.0 available)
+  test_api 0.7.11 (0.7.13 available)
+  vector_math 2.2.0 (2.4.0 available)
+  win32 5.15.0 (6.3.0 available)
+  xml 6.6.1 (7.0.1 available)
+Got dependencies!
+12 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.
+00:00 +0: loading /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/campaign_transfer_service_test.dart
+00:00 +0: CampaignTransferBundle serializza e rilegge un incontro
+00:00 +1: CampaignTransferBundle serializza e rilegge un Allenatore PNG
+00:00 +2: CampaignTransferService imports importa un incontro con nuovo id e nome non distruttivo
+00:00 +3: CampaignTransferService imports importa un Allenatore PNG e conserva la scheda
+00:00 +4: CampaignTransferService imports rifiuta specie non presenti nel catalogo
+00:00 +5: il riepilogo del Fight include turno, PF, status e PP
+00:00 +6: All tests passed!

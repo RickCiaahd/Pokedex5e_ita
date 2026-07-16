@@ -30,7 +30,8 @@ class EmbeddedCustomPokemonTransferService {
     CustomPokemonTransferService? transferService,
   }) : _repository = repository ?? CustomPokemonRepository(),
        _transferService =
-           transferService ?? CustomPokemonTransferService(repository: repository);
+           transferService ??
+           CustomPokemonTransferService(repository: repository);
 
   final CustomPokemonRepository _repository;
   final CustomPokemonTransferService _transferService;
@@ -48,8 +49,7 @@ class EmbeddedCustomPokemonTransferService {
 
     final definitions = await _repository.getAll();
     final byPokemonId = {
-      for (final definition in definitions)
-        definition.pokemonId: definition,
+      for (final definition in definitions) definition.pokemonId: definition,
     };
     final missingIds = requestedIds.difference(byPokemonId.keys.toSet());
     if (missingIds.isNotEmpty) {
@@ -100,7 +100,8 @@ class EmbeddedCustomPokemonTransferService {
     var remapped = 0;
 
     for (final definition in incoming) {
-      final existed = await _repository.getByStableId(definition.stableId) != null;
+      final existed =
+          await _repository.getByStableId(definition.stableId) != null;
       final result = await _transferService.importBundle(
         CustomPokemonTransferBundle.create(definition),
       );

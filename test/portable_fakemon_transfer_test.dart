@@ -137,9 +137,7 @@ void main() {
       'kind': 'pokemon',
       'exportedAt': DateTime.utc(2026, 7, 1).toIso8601String(),
       'sourceTrainerName': 'Legacy',
-      'pokemon': [
-        TeamSlot(slotIndex: 0, pokemonId: 25).toJson(),
-      ],
+      'pokemon': [TeamSlot(slotIndex: 0, pokemonId: 25).toJson()],
     });
 
     expect(legacy.formatVersion, 1);

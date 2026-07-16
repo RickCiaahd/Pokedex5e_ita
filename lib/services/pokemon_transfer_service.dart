@@ -148,9 +148,8 @@ class PokemonTransferService {
       requireEmbeddedDefinitions:
           bundle.formatVersion >= PokemonTransferBundle.currentFormatVersion,
     );
-    final installResult = await _embeddedCustomPokemonService.installDefinitions(
-      bundle.customPokemon,
-    );
+    final installResult = await _embeddedCustomPokemonService
+        .installDefinitions(bundle.customPokemon);
     if (installResult.pokemonIdMap.isEmpty) {
       return _ResolvedPokemonTransfer(
         bundle: bundle,

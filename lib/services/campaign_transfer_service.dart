@@ -176,9 +176,8 @@ class CampaignTransferService {
       requireEmbeddedDefinitions:
           bundle.formatVersion >= CampaignTransferBundle.currentFormatVersion,
     );
-    final installResult = await _embeddedCustomPokemonService.installDefinitions(
-      bundle.customPokemon,
-    );
+    final installResult = await _embeddedCustomPokemonService
+        .installDefinitions(bundle.customPokemon);
     if (installResult.pokemonIdMap.isEmpty) {
       return _ResolvedCampaignTransfer(
         bundle: bundle,

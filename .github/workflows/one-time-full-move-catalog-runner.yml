@@ -71,3 +71,5 @@ jobs:
           git rm .github/workflows/one-time-full-move-catalog-runner.yml
           git commit -m 'Rimuove workflow temporaneo catalogo mosse'
           git push origin main
+
+# retry after workflow registration

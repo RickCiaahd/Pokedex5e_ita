@@ -48,4 +48,4 @@ jobs:
           git commit -m 'Corregge il selettore del catalogo mosse'
           git push origin feature/full-move-catalog-impl
 
-# trigger correction
+# trigger correction retry

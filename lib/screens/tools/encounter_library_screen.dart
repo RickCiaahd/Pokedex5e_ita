@@ -215,7 +215,7 @@ class _EncounterLibraryScreenState extends State<EncounterLibraryScreen> {
         encounter: saved,
         sourceProfileName: profile.name,
       );
-      final json = _transferService.encode(bundle);
+      final json = await _transferService.encodePortable(bundle);
       final path = await FilePicker.platform.saveFile(
         dialogTitle: 'Esporta ${saved.name}',
         fileName: _transferService.fileNameForEncounter(bundle),
@@ -244,7 +244,8 @@ class _EncounterLibraryScreenState extends State<EncounterLibraryScreen> {
         encounter: saved,
         sourceProfileName: profile.name,
       );
-      final json = _transferService.encode(bundle);
+      final json = await _transferService.encodePortable(bundle);
+      if (!mounted) return;
       final outcome = await _shareService.shareTextFile(
         context: context,
         content: json,

@@ -1,3 +1,4 @@
+import 'custom_pokemon_definition.dart';
 import 'team_slot.dart';
 
 enum PokemonTransferKind { pokemon, team }
@@ -9,21 +10,24 @@ class PokemonTransferBundle {
     required this.exportedAt,
     required this.sourceTrainerName,
     required this.pokemon,
+    this.customPokemon = const [],
   });
 
   static const String applicationId = 'pokedex-5e-ita';
-  static const int currentFormatVersion = 1;
+  static const int currentFormatVersion = 2;
 
   final int formatVersion;
   final PokemonTransferKind kind;
   final DateTime exportedAt;
   final String sourceTrainerName;
   final List<TeamSlot> pokemon;
+  final List<CustomPokemonDefinition> customPokemon;
 
   factory PokemonTransferBundle.single({
     required TeamSlot slot,
     required String sourceTrainerName,
     DateTime? exportedAt,
+    List<CustomPokemonDefinition> customPokemon = const [],
   }) {
     final bundle = PokemonTransferBundle(
       formatVersion: currentFormatVersion,
@@ -31,6 +35,7 @@ class PokemonTransferBundle {
       exportedAt: exportedAt ?? DateTime.now(),
       sourceTrainerName: sourceTrainerName.trim(),
       pokemon: [_normalizeSlot(slot, 0)],
+      customPokemon: List<CustomPokemonDefinition>.unmodifiable(customPokemon),
     );
     bundle.validate();
     return bundle;
@@ -40,6 +45,7 @@ class PokemonTransferBundle {
     required Iterable<TeamSlot> slots,
     required String sourceTrainerName,
     DateTime? exportedAt,
+    List<CustomPokemonDefinition> customPokemon = const [],
   }) {
     final transferable = [
       for (final slot in slots)
@@ -54,6 +60,7 @@ class PokemonTransferBundle {
         for (final entry in transferable.indexed)
           _normalizeSlot(entry.$2, entry.$1),
       ],
+      customPokemon: List<CustomPokemonDefinition>.unmodifiable(customPokemon),
     );
     bundle.validate();
     return bundle;
@@ -80,6 +87,7 @@ class PokemonTransferBundle {
     if (rawPokemon is! List) {
       throw const FormatException('Elenco Pokémon mancante o non valido.');
     }
+    final rawCustomPokemon = json['customPokemon'];
 
     final bundle = PokemonTransferBundle(
       formatVersion: _readInt(json['formatVersion']),
@@ -98,12 +106,35 @@ class PokemonTransferBundle {
           else
             throw const FormatException('Scheda Pokémon non valida.'),
       ],
+      customPokemon: [
+        for (final value
+            in rawCustomPokemon is List ? rawCustomPokemon : const <dynamic>[])
+          if (value is Map)
+            CustomPokemonDefinition.fromJson(Map<String, dynamic>.from(value))
+          else
+            throw const FormatException('Definizione Fakemon non valida.'),
+      ],
     );
-    bundle.validate();
+    bundle.validate(requireEmbeddedDefinitions: bundle.formatVersion >= 2);
     return bundle;
   }
 
-  void validate() {
+  PokemonTransferBundle copyWith({
+    int? formatVersion,
+    List<TeamSlot>? pokemon,
+    List<CustomPokemonDefinition>? customPokemon,
+  }) {
+    return PokemonTransferBundle(
+      formatVersion: formatVersion ?? this.formatVersion,
+      kind: kind,
+      exportedAt: exportedAt,
+      sourceTrainerName: sourceTrainerName,
+      pokemon: pokemon ?? this.pokemon,
+      customPokemon: customPokemon ?? this.customPokemon,
+    );
+  }
+
+  void validate({bool requireEmbeddedDefinitions = false}) {
     if (formatVersion < 1 || formatVersion > currentFormatVersion) {
       throw FormatException(
         'Versione del file non supportata: $formatVersion.',
@@ -129,6 +160,46 @@ class PokemonTransferBundle {
         );
       }
     }
+
+    final customByPokemonId = <int, CustomPokemonDefinition>{};
+    final stableIds = <String>{};
+    for (final definition in customPokemon) {
+      definition.validate();
+      if (!stableIds.add(definition.stableId) ||
+          customByPokemonId.containsKey(definition.pokemonId)) {
+        throw const FormatException(
+          'Il trasferimento contiene definizioni Fakemon duplicate.',
+        );
+      }
+      customByPokemonId[definition.pokemonId] = definition;
+    }
+
+    if (requireEmbeddedDefinitions) {
+      final referencedCustomIds = {
+        for (final slot in pokemon)
+          if ((slot.pokemonId ?? 0) >=
+              CustomPokemonDefinition.firstCustomPokemonId)
+            slot.pokemonId!,
+      };
+      final missing = referencedCustomIds.difference(
+        customByPokemonId.keys.toSet(),
+      );
+      if (missing.isNotEmpty) {
+        final ordered = missing.toList()..sort();
+        throw FormatException(
+          'Il trasferimento non include le definizioni Fakemon per '
+          '${ordered.map((id) => '#$id').join(', ')}.',
+        );
+      }
+      final unused = customByPokemonId.keys.toSet().difference(
+        referencedCustomIds,
+      );
+      if (unused.isNotEmpty) {
+        throw const FormatException(
+          'Il trasferimento contiene definizioni Fakemon non utilizzate.',
+        );
+      }
+    }
   }
 
   TeamSlot slotForIndex(int slotIndex, {int? fallbackCurrentHp}) {
@@ -147,7 +218,7 @@ class PokemonTransferBundle {
   }
 
   Map<String, dynamic> toJson() {
-    validate();
+    validate(requireEmbeddedDefinitions: formatVersion >= 2);
     return {
       'application': applicationId,
       'formatVersion': formatVersion,
@@ -158,6 +229,10 @@ class PokemonTransferBundle {
         for (final entry in pokemon.indexed)
           _normalizeSlot(entry.$2, entry.$1).toJson(),
       ],
+      if (formatVersion >= 2)
+        'customPokemon': customPokemon
+            .map((definition) => definition.toJson())
+            .toList(growable: false),
     };
   }
 

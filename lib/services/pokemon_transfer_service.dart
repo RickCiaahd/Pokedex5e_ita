@@ -5,6 +5,7 @@ import '../models/pokemon_transfer_bundle.dart';
 import '../models/team_slot.dart';
 import '../repositories/pokemon_pc_repository.dart';
 import '../repositories/team_repository.dart';
+import 'embedded_custom_pokemon_transfer_service.dart';
 
 class PokemonTransferPlan {
   const PokemonTransferPlan({
@@ -28,27 +29,53 @@ class PokemonTransferImportResult {
     required this.movedToPc,
     required this.replacedPokemon,
     required this.overflowToPc,
+    this.customPokemonInstalled = 0,
+    this.customPokemonUpdated = 0,
+    this.customPokemonRemapped = 0,
   });
 
   final int importedToTeam;
   final int movedToPc;
   final int replacedPokemon;
   final int overflowToPc;
+  final int customPokemonInstalled;
+  final int customPokemonUpdated;
+  final int customPokemonRemapped;
 }
 
 class PokemonTransferService {
   PokemonTransferService({
     TeamRepository? teamRepository,
     PokemonPcRepository? pokemonPcRepository,
+    EmbeddedCustomPokemonTransferService? embeddedCustomPokemonService,
   }) : _teamRepository = teamRepository ?? TeamRepository(),
-       _pokemonPcRepository = pokemonPcRepository ?? PokemonPcRepository();
+       _pokemonPcRepository = pokemonPcRepository ?? PokemonPcRepository(),
+       _embeddedCustomPokemonService =
+           embeddedCustomPokemonService ??
+           EmbeddedCustomPokemonTransferService();
 
   final TeamRepository _teamRepository;
   final PokemonPcRepository _pokemonPcRepository;
+  final EmbeddedCustomPokemonTransferService _embeddedCustomPokemonService;
 
   String encode(PokemonTransferBundle bundle) {
-    bundle.validate();
+    bundle.validate(
+      requireEmbeddedDefinitions:
+          bundle.formatVersion >= PokemonTransferBundle.currentFormatVersion,
+    );
     return const JsonEncoder.withIndent('  ').convert(bundle.toJson());
+  }
+
+  Future<String> encodePortable(PokemonTransferBundle bundle) async {
+    final definitions = await _embeddedCustomPokemonService
+        .definitionsForPokemonIds(
+          bundle.pokemon.map((slot) => slot.pokemonId).whereType<int>(),
+        );
+    final portableBundle = bundle.copyWith(
+      formatVersion: PokemonTransferBundle.currentFormatVersion,
+      customPokemon: definitions,
+    );
+    return encode(portableBundle);
   }
 
   PokemonTransferBundle decode(String source) {
@@ -87,14 +114,15 @@ class PokemonTransferService {
     required PokemonTransferBundle bundle,
     required int targetSlotIndex,
   }) async {
+    final resolved = await _installEmbeddedCustomPokemon(bundle);
     final currentTeam = await _teamRepository.getTeam(profileId);
     final plan = planPokemonImport(
       currentTeam: currentTeam,
-      bundle: bundle,
+      bundle: resolved.bundle,
       targetSlotIndex: targetSlotIndex,
     );
     await _applyPlan(profileId: profileId, plan: plan);
-    return _resultFor(plan);
+    return _resultFor(plan, customPokemon: resolved.installResult);
   }
 
   Future<PokemonTransferImportResult> importTeam({
@@ -102,14 +130,47 @@ class PokemonTransferService {
     required PokemonTransferBundle bundle,
     required int unlockedPokeslots,
   }) async {
+    final resolved = await _installEmbeddedCustomPokemon(bundle);
     final currentTeam = await _teamRepository.getTeam(profileId);
     final plan = planTeamImport(
       currentTeam: currentTeam,
-      bundle: bundle,
+      bundle: resolved.bundle,
       unlockedPokeslots: unlockedPokeslots,
     );
     await _applyPlan(profileId: profileId, plan: plan);
-    return _resultFor(plan);
+    return _resultFor(plan, customPokemon: resolved.installResult);
+  }
+
+  Future<_ResolvedPokemonTransfer> _installEmbeddedCustomPokemon(
+    PokemonTransferBundle bundle,
+  ) async {
+    bundle.validate(
+      requireEmbeddedDefinitions:
+          bundle.formatVersion >= PokemonTransferBundle.currentFormatVersion,
+    );
+    final installResult = await _embeddedCustomPokemonService
+        .installDefinitions(bundle.customPokemon);
+    if (installResult.pokemonIdMap.isEmpty) {
+      return _ResolvedPokemonTransfer(
+        bundle: bundle,
+        installResult: installResult,
+      );
+    }
+
+    final remappedSlots = [
+      for (final slot in bundle.pokemon)
+        slot.copyWith(
+          pokemonId: installResult.resolvePokemonId(slot.pokemonId!),
+        ),
+    ];
+    return _ResolvedPokemonTransfer(
+      bundle: bundle.copyWith(
+        formatVersion: 1,
+        pokemon: remappedSlots,
+        customPokemon: const [],
+      ),
+      installResult: installResult,
+    );
   }
 
   static PokemonTransferPlan planPokemonImport({
@@ -231,12 +292,18 @@ class PokemonTransferService {
     await _teamRepository.saveTeam(profileId, plan.updatedTeam);
   }
 
-  static PokemonTransferImportResult _resultFor(PokemonTransferPlan plan) {
+  static PokemonTransferImportResult _resultFor(
+    PokemonTransferPlan plan, {
+    EmbeddedCustomPokemonInstallResult? customPokemon,
+  }) {
     return PokemonTransferImportResult(
       importedToTeam: plan.importedToTeam,
       movedToPc: plan.toPc.length,
       replacedPokemon: plan.replacedPokemon,
       overflowToPc: plan.overflowToPc,
+      customPokemonInstalled: customPokemon?.installed ?? 0,
+      customPokemonUpdated: customPokemon?.updated ?? 0,
+      customPokemonRemapped: customPokemon?.remapped ?? 0,
     );
   }
 
@@ -313,4 +380,14 @@ class PokemonTransferService {
         .replaceAll(RegExp(r'^-+|-+$'), '');
     return normalized.isEmpty ? fallback : normalized;
   }
+}
+
+class _ResolvedPokemonTransfer {
+  const _ResolvedPokemonTransfer({
+    required this.bundle,
+    required this.installResult,
+  });
+
+  final PokemonTransferBundle bundle;
+  final EmbeddedCustomPokemonInstallResult installResult;
 }

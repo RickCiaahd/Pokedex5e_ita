@@ -1760,7 +1760,7 @@ class _InitiativeTracker extends StatelessWidget {
                 FilledButton.icon(
                   onPressed: onNextTurn,
                   icon: const Icon(Icons.navigate_next),
-                  label: const Text('PROSSIMO'),
+                  label: const Text('PROSSIMO TURNO'),
                 ),
               ],
             ),

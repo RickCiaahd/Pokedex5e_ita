@@ -1,0 +1,198 @@
+name: One-time project cleanup audit retry
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/one-time-project-audit-retry.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Generate cleanup audit
+        shell: bash
+        run: |
+          python3 <<'PY'
+          from collections import defaultdict, deque
+          from hashlib import sha256
+          from pathlib import Path
+          import re
+
+          root = Path('.')
+          lib = root / 'lib'
+          assets_root = root / 'assets'
+
+          def rel(path):
+              return path.as_posix().lstrip('./')
+
+          def size_label(size):
+              value = float(size)
+              for unit in ('B', 'KiB', 'MiB', 'GiB'):
+                  if value < 1024 or unit == 'GiB':
+                      return f'{value:.1f} {unit}'
+                  value /= 1024
+
+          dart_files = sorted(lib.rglob('*.dart'))
+          dart_map = {rel(path): path for path in dart_files}
+          refs = defaultdict(set)
+          directive = re.compile(r"(?:import|export|part)\s+['\"]([^'\"]+)['\"]")
+          project_prefix = 'package:pokedex_5e_ita/'
+
+          for path in dart_files:
+              current = rel(path)
+              text = path.read_text(encoding='utf-8', errors='ignore')
+              for target in directive.findall(text):
+                  if target.startswith(project_prefix):
+                      candidate = 'lib/' + target[len(project_prefix):]
+                  elif target.startswith('package:') or target.startswith('dart:'):
+                      continue
+                  else:
+                      try:
+                          candidate = rel((path.parent / target).resolve().relative_to(root.resolve()))
+                      except ValueError:
+                          continue
+                  if candidate in dart_map:
+                      refs[current].add(candidate)
+
+          reachable = set()
+          queue = deque(['lib/main.dart'] if 'lib/main.dart' in dart_map else [])
+          while queue:
+              current = queue.popleft()
+              if current in reachable:
+                  continue
+              reachable.add(current)
+              queue.extend(refs.get(current, ()))
+
+          unreachable = []
+          for name in sorted(set(dart_map) - reachable):
+              text = dart_map[name].read_text(encoding='utf-8', errors='ignore')
+              if not re.search(r'^\s*part of\s+', text, re.M):
+                  unreachable.append(name)
+
+          text_chunks = []
+          scan_roots = ['lib', 'test', 'integration_test', 'assets/data', 'assets/data_webapp', 'web', 'android', 'windows', 'linux', 'macos', 'ios']
+          for name in scan_roots:
+              base = root / name
+              if not base.exists():
+                  continue
+              for path in base.rglob('*'):
+                  if not path.is_file() or path.stat().st_size > 2_000_000:
+                      continue
+                  try:
+                      text_chunks.append(path.read_text(encoding='utf-8'))
+                  except (UnicodeDecodeError, OSError):
+                      pass
+          corpus = '\n'.join(text_chunks)
+
+          assets = sorted(path for path in assets_root.rglob('*') if path.is_file()) if assets_root.exists() else []
+          groups = defaultdict(list)
+          for path in assets:
+              data = path.read_bytes()
+              groups[(len(data), sha256(data).hexdigest())].append(path)
+          duplicates = [group for group in groups.values() if len(group) > 1]
+          duplicates.sort(key=lambda group: group[0].stat().st_size * (len(group) - 1), reverse=True)
+
+          unreferenced = []
+          for path in assets:
+              path_text = rel(path)
+              if path_text in corpus or path.name in corpus:
+                  continue
+              unreferenced.append(path)
+
+          suspicious_re = re.compile(r'(^|[._-])(old|backup|bak|copy|temp|tmp|unused|deprecated)([._-]|$)', re.I)
+          suspicious = sorted(path for path in root.rglob('*') if path.is_file() and '.git' not in path.parts and suspicious_re.search(path.name))
+
+          junk_parts = {'.dart_tool', 'build', '.gradle', '__pycache__'}
+          junk_names = {'key.properties', 'upload-keystore.jks', '.DS_Store', 'Thumbs.db'}
+          junk = sorted(path for path in root.rglob('*') if path.is_file() and '.git' not in path.parts and (any(part in junk_parts for part in path.parts) or path.name in junk_names))
+
+          test_files = sorted((root / 'test').rglob('*.dart')) if (root / 'test').exists() else []
+          todo_hits = []
+          todo_re = re.compile(r'\b(TODO|FIXME|HACK|XXX)\b', re.I)
+          for path in dart_files + test_files:
+              for number, line in enumerate(path.read_text(encoding='utf-8', errors='ignore').splitlines(), 1):
+                  if todo_re.search(line):
+                      todo_hits.append((path, number, line.strip()))
+
+          total_assets = sum(path.stat().st_size for path in assets)
+          duplicate_bytes = sum(group[0].stat().st_size * (len(group) - 1) for group in duplicates)
+          largest = sorted(assets, key=lambda path: path.stat().st_size, reverse=True)[:25]
+
+          lines = [
+              '# Audit di pulizia del progetto',
+              '',
+              '> Audit conservativo: nessun asset viene eliminato soltanto perché non compare testualmente. Nel progetto molti percorsi sono costruiti dinamicamente a partire dai JSON.',
+              '',
+              '## Riepilogo',
+              '',
+              f'- File Dart in `lib/`: **{len(dart_files)}**',
+              f'- File Dart raggiungibili da `lib/main.dart`: **{len(reachable)}**',
+              f'- File Dart non raggiungibili staticamente: **{len(unreachable)}**',
+              f'- Asset: **{len(assets)}** per **{size_label(total_assets)}**',
+              f'- Gruppi byte-identici: **{len(duplicates)}**; duplicazione teorica **{size_label(duplicate_bytes)}**',
+              f'- Asset senza riferimento testuale evidente: **{len(unreferenced)}**',
+              f'- File sospetti per nome: **{len(suspicious)}**',
+              f'- Build/cache/segreti nel checkout: **{len(junk)}**',
+              f'- TODO/FIXME/HACK/XXX: **{len(todo_hits)}**',
+              '',
+              '## File Dart non raggiungibili staticamente',
+              '',
+          ]
+          lines += [f'- `{name}`' for name in unreachable] or ['- Nessuno.']
+          lines += ['', '## Asset byte-identici', '']
+          if duplicates:
+              for group in duplicates[:80]:
+                  lines.append(f'- **{size_label(group[0].stat().st_size)} × {len(group)}**')
+                  lines += [f'  - `{rel(path)}`' for path in group]
+          else:
+              lines.append('- Nessuno.')
+          lines += ['', '## Asset senza riferimento testuale evidente', '']
+          lines += [f'- `{rel(path)}` — {size_label(path.stat().st_size)}' for path in unreferenced[:250]] or ['- Nessuno.']
+          if len(unreferenced) > 250:
+              lines.append(f'- …altri {len(unreferenced) - 250} candidati omessi.')
+          lines += ['', '## Asset più grandi', '']
+          lines += [f'- `{rel(path)}` — {size_label(path.stat().st_size)}' for path in largest]
+          lines += ['', '## File sospetti per nome', '']
+          lines += [f'- `{rel(path)}`' for path in suspicious] or ['- Nessuno.']
+          lines += ['', '## Build, cache o segreti presenti nel checkout', '']
+          lines += [f'- `{rel(path)}`' for path in junk[:150]] or ['- Nessuno.']
+          lines += ['', '## TODO e note tecniche', '']
+          lines += [f'- `{rel(path)}:{number}` — {line}' for path, number, line in todo_hits[:150]] or ['- Nessuno.']
+          lines += [
+              '',
+              '## Criterio di intervento',
+              '',
+              '- Rimuovere automaticamente solo file temporanei o codice chiaramente non raggiungibile.',
+              '- Verificare duplicati e asset dinamici contro cataloghi, forme, fallback e test di integrità.',
+              '- Dopo ogni lotto: `flutter analyze`, validazione dati, suite completa e build Android.',
+              '',
+          ]
+
+          output = root / 'docs' / 'project-cleanup-audit.md'
+          output.parent.mkdir(parents=True, exist_ok=True)
+          output.write_text('\n'.join(lines), encoding='utf-8')
+          PY
+
+      - name: Commit audit and remove temporary workflows
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm .github/workflows/one-time-project-audit.yml
+          git rm .github/workflows/one-time-project-audit-retry.yml
+          git add docs/project-cleanup-audit.md
+          git commit -m 'Aggiunge audit di pulizia del progetto'
+          git pull --rebase origin main
+          git push origin main

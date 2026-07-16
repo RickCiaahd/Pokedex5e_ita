@@ -31,6 +31,7 @@ Tutte le modifiche rilevanti al progetto vengono documentate in questo file.
 
 ### Modificato
 
+- le mosse esclusive dei Fakemon vengono aggiunte al moveset iniziale quando create e le vecchie mosse esclusive non assegnate diventano comunque selezionabili nei dettagli della specie;
 - nell'editor Pokémon il selettore mosse distingue disponibilità attuale, learnset completo e catalogo globale, con ricerca e filtri;
 - su smartphone il dettaglio Pokémon scorre fino alle schede Mosse, Features e Traits, mantenendo le tab accessibili;
 - Battle Companion usa intestazione, squadra e iniziativa più compatte, con i comandi secondari richiudibili;

@@ -34,6 +34,17 @@ void main() {
       );
     });
 
+    test('una mossa esclusiva non assegnata diventa una mossa iniziale', () {
+      final json = _definition().toJson();
+      json['startingMoves'] = <String>[];
+      final definition = CustomPokemonDefinition.fromJson(json);
+
+      expect(
+        definition.toPokemon().moves.startingMoves,
+        contains('Scarica Astrale'),
+      );
+    });
+
     test('il file portabile rileva una modifica al contenuto', () {
       final service = CustomPokemonTransferService();
       final encoded = service.encode(_definition());

@@ -1,0 +1,41 @@
+name: One-time Fakemon test diagnostic
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out Fakemon branch
+        uses: actions/checkout@v4
+        with:
+          ref: feature/fakemon-core
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Run Fakemon tests
+        shell: bash
+        run: |
+          flutter pub get
+          set +e
+          flutter test test/custom_pokemon_definition_test.dart --reporter expanded > fakemon-test.log 2>&1
+          cat fakemon-test.log
+          exit 0
+
+      - name: Upload diagnostic log
+        uses: actions/upload-artifact@v4
+        with:
+          name: fakemon-test-log
+          path: fakemon-test.log

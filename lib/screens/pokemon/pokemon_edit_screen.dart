@@ -157,9 +157,8 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
       moveData[move.id] = move;
       moveData[move.name] = move;
     }
-    final catalogMoveNames = _unique(
-      catalogMoves.map((move) => move.name),
-    )..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+    final catalogMoveNames = _unique(catalogMoves.map((move) => move.name))
+      ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
 
     if (!mounted) return;
 
@@ -1102,7 +1101,7 @@ class _MovePickerScreenState extends State<_MovePickerScreen> {
       final type = widget.moveData[move]?.type.trim();
       if (type != null && type.isNotEmpty) types.add(type);
     }
-    return types.toList(growable: false)
+    return types.toList()
       ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
   }
 
@@ -1154,14 +1153,13 @@ class _MovePickerScreenState extends State<_MovePickerScreen> {
           (data?.description.toLowerCase().contains(search) ?? false) ||
           (data?.type.toLowerCase().contains(search) ?? false) ||
           (data?.moveTime.toLowerCase().contains(search) ?? false);
-    }).toList(growable: false);
+    }).toList();
 
-    return moves
-      ..sort((a, b) {
-        final aLabel = widget.moveData[a]?.name ?? a;
-        final bLabel = widget.moveData[b]?.name ?? b;
-        return aLabel.toLowerCase().compareTo(bLabel.toLowerCase());
-      });
+    return moves..sort((a, b) {
+      final aLabel = widget.moveData[a]?.name ?? a;
+      final bLabel = widget.moveData[b]?.name ?? b;
+      return aLabel.toLowerCase().compareTo(bLabel.toLowerCase());
+    });
   }
 
   void _setSource(String value) {
@@ -1323,7 +1321,9 @@ class _MovePickerScreenState extends State<_MovePickerScreen> {
                   ),
                   Expanded(
                     child: moves.isEmpty
-                        ? const Center(child: Text('Nessuna mossa disponibile.'))
+                        ? const Center(
+                            child: Text('Nessuna mossa disponibile.'),
+                          )
                         : ListView.builder(
                             keyboardDismissBehavior:
                                 ScrollViewKeyboardDismissBehavior.onDrag,
@@ -1345,8 +1345,7 @@ class _MovePickerScreenState extends State<_MovePickerScreen> {
                               return _PickerTile(
                                 label: data?.name ?? move,
                                 type: data?.type,
-                                subtitle: details.join('
-'),
+                                subtitle: details.join('\n'),
                                 onTap: () => Navigator.of(context).pop(move),
                               );
                             },

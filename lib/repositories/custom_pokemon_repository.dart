@@ -14,7 +14,20 @@ class CustomPokemonRepository {
   Future<Box> _box() => Hive.openBox(HiveBoxes.customPokemon);
 
   Future<List<CustomPokemonDefinition>> getAll() async {
-    final box = await _box();
+    Box box;
+    try {
+      box = await _box();
+    } on HiveError catch (error) {
+      // Il catalogo statico viene caricato anche in test puri che non inizializzano
+      // Hive. In quel contesto l'assenza del deposito utente equivale a non avere
+      // Fakemon installati, mentre ogni altro errore deve continuare a emergere.
+      if (error.toString().contains('initialize Hive')) {
+        CustomPokemonRuntimeRegistry.replaceAll(const []);
+        return const [];
+      }
+      rethrow;
+    }
+
     final definitions = <CustomPokemonDefinition>[];
 
     for (final value in box.values) {

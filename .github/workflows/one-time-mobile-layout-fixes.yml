@@ -1,0 +1,779 @@
+name: One-time mobile layout fixes
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/one-time-mobile-layout-fixes.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Apply mobile and tablet fixes
+        shell: bash
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+          import re
+
+          def replace_regex(path, pattern, replacement, expected=1):
+              file = Path(path)
+              text = file.read_text(encoding='utf-8')
+              updated, count = re.subn(pattern, replacement, text, count=expected, flags=re.S)
+              if count != expected:
+                  raise SystemExit(f'{path}: expected {expected} regex replacement(s), got {count}')
+              file.write_text(updated, encoding='utf-8')
+
+          detail_path = 'lib/screens/pokemon/pokemon_detail_screen_legacy.dart'
+          detail_build = r'''  @override
+          Widget build(BuildContext context) {
+            final pokemon = _pokemon;
+            final attributes = _attributeScores(pokemon, _teamSlot);
+            final evolutionLabel = _evolutionLabel();
+            final savingThrows = TrainerPathPassiveService.savingThrowProficiencies(
+              profile: _profile,
+              pokemon: pokemon,
+              slot: _teamSlot,
+            );
+            final passiveNotes = TrainerPathPassiveService.passiveNotes(
+              profile: _profile,
+              pokemon: pokemon,
+              slot: _teamSlot,
+            );
+            const tabBar = TabBar(
+              tabs: [
+                Tab(text: 'MOSSE'),
+                Tab(text: 'FEATURES'),
+                Tab(text: 'TRAITS'),
+              ],
+            );
+
+            return DefaultTabController(
+              length: 3,
+              child: Scaffold(
+                appBar: AppBar(
+                  title: Text(_teamSlot?.nickname ?? pokemon.name),
+                  actions: [
+                    if (_isPartyMode)
+                      IconButton(
+                        tooltip: 'Modifica',
+                        onPressed: _openEditScreen,
+                        icon: const Icon(Icons.edit),
+                      ),
+                  ],
+                ),
+                body: _isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : Column(
+                        children: [
+                          Expanded(
+                            child: NestedScrollView(
+                              headerSliverBuilder:
+                                  (context, innerBoxIsScrolled) => [
+                                    SliverToBoxAdapter(
+                                      child: _Header(
+                                        pokemon: pokemon,
+                                        slot: _teamSlot,
+                                        level: _level,
+                                        armorClass: _armorClass,
+                                        experience: _experience,
+                                        currentHp: _currentHp,
+                                        maxHp: _maxHp,
+                                        loyalty: _loyalty,
+                                        isPartyMode: _isPartyMode,
+                                        attributes: attributes,
+                                        modifierBuilder: _modifier,
+                                        proficiency: _proficiency(_level),
+                                        savingThrowLoyaltyBonus:
+                                            _savingThrowLoyaltyBonus,
+                                        savingThrows: savingThrows,
+                                        statusEffects: _currentStatusEffects,
+                                        message: _message,
+                                        heldItemLabel: _heldItemDisplayLabel(),
+                                        onEditExperience: _editExperience,
+                                        onEditHp: _editHp,
+                                        onDecreaseHp: () => _changeHp(-1),
+                                        onIncreaseHp: () => _changeHp(1),
+                                        onDecreaseLoyalty: () =>
+                                            _changeLoyalty(-1),
+                                        onIncreaseLoyalty: () =>
+                                            _changeLoyalty(1),
+                                        onPokemonCenter: _usePokemonCenter,
+                                        onAddStatusEffect: _pickStatusEffect,
+                                        onEditHeldItem:
+                                            _changeHeldItemFromDetail,
+                                        evolutionLabel: evolutionLabel,
+                                        onEvolve: _evolveCurrentPokemon,
+                                      ),
+                                    ),
+                                    if (passiveNotes.isNotEmpty)
+                                      SliverToBoxAdapter(
+                                        child: Padding(
+                                          padding: const EdgeInsets.fromLTRB(
+                                            8,
+                                            0,
+                                            8,
+                                            6,
+                                          ),
+                                          child: TrainerPathPassiveCard(
+                                            trainerPath:
+                                                _profile?.trainerPath ?? '',
+                                            notes: passiveNotes,
+                                          ),
+                                        ),
+                                      ),
+                                    SliverPersistentHeader(
+                                      pinned: true,
+                                      delegate: const _PokemonDetailTabBarDelegate(
+                                        tabBar: tabBar,
+                                      ),
+                                    ),
+                                  ],
+                              body: TabBarView(
+                                children: [
+                                  _MovesView(
+                                    selectedMoves: _selectedMoves(),
+                                    moves: _moves,
+                                    moveStatsBuilder: _moveStats,
+                                  ),
+                                  _FeaturesView(
+                                    pokemon: pokemon,
+                                    slot: _teamSlot,
+                                    abilityDescriptions: _abilities,
+                                    featDescriptions: _featDescriptions,
+                                  ),
+                                  _TraitsView(
+                                    pokemon: pokemon,
+                                    slot: _teamSlot,
+                                    attributes: attributes,
+                                    modifierBuilder: _modifier,
+                                    proficiency: _proficiency(_level),
+                                    availableAsiPoints: _teamSlot == null
+                                        ? 0
+                                        : _availableAsiPointsForSlot(_teamSlot!),
+                                    onDistributeAsi: _distributePendingAsi,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          if (_isPartyMode)
+                            SafeArea(
+                              top: false,
+                              child: _PartySwitcher(
+                                team: _team,
+                                currentSlotIndex: _teamSlot!.slotIndex,
+                                pokemonById: _pokemonById,
+                                onSelect: _switchPartySlot,
+                              ),
+                            ),
+                        ],
+                      ),
+              ),
+            );
+          }
+          }
+
+          class _PokemonDetailTabBarDelegate extends SliverPersistentHeaderDelegate {
+            const _PokemonDetailTabBarDelegate({required this.tabBar});
+
+            final TabBar tabBar;
+
+            @override
+            double get minExtent => tabBar.preferredSize.height;
+
+            @override
+            double get maxExtent => tabBar.preferredSize.height;
+
+            @override
+            Widget build(
+              BuildContext context,
+              double shrinkOffset,
+              bool overlapsContent,
+            ) {
+              return Material(
+                elevation: overlapsContent ? 2 : 0,
+                color: Theme.of(context).scaffoldBackgroundColor,
+                child: tabBar,
+              );
+            }
+
+            @override
+            bool shouldRebuild(covariant _PokemonDetailTabBarDelegate oldDelegate) {
+              return oldDelegate.tabBar != tabBar;
+            }
+          }
+
+          class _Header'''
+
+          replace_regex(
+              detail_path,
+              r"  @override\n  Widget build\(BuildContext context\) \{\n    final pokemon = _pokemon;.*?\n  \}\n\}\n\nclass _Header",
+              detail_build,
+          )
+
+          battle_path = 'lib/screens/battle/battle_screen.dart'
+
+          battle_header = r'''class _BattleHeader extends StatelessWidget {
+            const _BattleHeader({
+              required this.round,
+              required this.profile,
+              required this.trainerInitiativeBonus,
+              required this.onEnd,
+            });
+
+            final int round;
+            final UserProfile profile;
+            final int trainerInitiativeBonus;
+            final VoidCallback onEnd;
+
+            @override
+            Widget build(BuildContext context) {
+              return Card(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Round $round',
+                              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                fontWeight: FontWeight.w900,
+                              ),
+                            ),
+                            Text(
+                              '${profile.name} · INIZ. ${trainerInitiativeBonus >= 0 ? '+' : ''}$trainerInitiativeBonus',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
+                      ),
+                      IconButton(
+                        tooltip: 'Termina battaglia',
+                        onPressed: onEnd,
+                        icon: const Icon(Icons.stop_circle_outlined),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }
+          }
+
+          class _PartyBar'''
+          replace_regex(
+              battle_path,
+              r'class _BattleHeader extends StatelessWidget \{.*?\n\}\n\nclass _PartyBar',
+              battle_header,
+          )
+
+          party_bar = r'''class _PartyBar extends StatelessWidget {
+            const _PartyBar({
+              required this.slots,
+              required this.activeSlot,
+              required this.pokemonForSlot,
+              required this.onSelected,
+            });
+
+            final List<TeamSlot> slots;
+            final TeamSlot activeSlot;
+            final Pokemon? Function(TeamSlot slot) pokemonForSlot;
+            final ValueChanged<int> onSelected;
+
+            @override
+            Widget build(BuildContext context) {
+              return Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: Row(
+                    children: [
+                      Text(
+                        'SQUADRA',
+                        style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children: [
+                              for (final slot in slots)
+                                _PartyPokemonButton(
+                                  slot: slot,
+                                  pokemon: pokemonForSlot(slot),
+                                  selected: slot.slotIndex == activeSlot.slotIndex,
+                                  onTap: () => onSelected(slot.slotIndex),
+                                ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }
+          }
+
+          class _PartyPokemonButton'''
+          replace_regex(
+              battle_path,
+              r'class _PartyBar extends StatelessWidget \{.*?\n\}\n\nclass _PartyPokemonButton',
+              party_bar,
+          )
+
+          party_button = r'''class _PartyPokemonButton extends StatelessWidget {
+            const _PartyPokemonButton({
+              required this.slot,
+              required this.pokemon,
+              required this.selected,
+              required this.onTap,
+            });
+
+            final TeamSlot slot;
+            final Pokemon? pokemon;
+            final bool selected;
+            final VoidCallback onTap;
+
+            @override
+            Widget build(BuildContext context) {
+              final pokemon = this.pokemon;
+              if (pokemon == null) return const SizedBox.shrink();
+
+              final colorScheme = Theme.of(context).colorScheme;
+              final nickname = slot.nickname?.trim();
+              final name = nickname == null || nickname.isEmpty
+                  ? pokemon.name
+                  : nickname;
+
+              return Padding(
+                padding: const EdgeInsets.only(right: 6),
+                child: InkWell(
+                  onTap: onTap,
+                  borderRadius: BorderRadius.circular(10),
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: selected
+                          ? colorScheme.primaryContainer
+                          : colorScheme.surface,
+                      border: Border.all(
+                        color: selected
+                            ? colorScheme.primary
+                            : colorScheme.outlineVariant,
+                        width: selected ? 2 : 1,
+                      ),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 7,
+                        vertical: 4,
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          PokemonAssetImage(
+                            pokemon: pokemon,
+                            size: 40,
+                            formName: slot.formName,
+                            gender: slot.gender,
+                            isShiny: slot.isShiny,
+                          ),
+                          const SizedBox(width: 4),
+                          SizedBox(
+                            width: 64,
+                            child: Text(
+                              name,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            }
+          }
+
+          class _InitiativeTracker'''
+          replace_regex(
+              battle_path,
+              r'class _PartyPokemonButton extends StatelessWidget \{.*?\n\}\n\nclass _InitiativeTracker',
+              party_button,
+          )
+
+          initiative = r'''class _InitiativeTracker extends StatelessWidget {
+            const _InitiativeTracker({
+              required this.round,
+              required this.entries,
+              required this.currentTurnIndex,
+              required this.trainerInitiativeBonus,
+              required this.onRollTrainer,
+              required this.onAddEntry,
+              required this.onRemoveEntry,
+              required this.onNextTurn,
+            });
+
+            final int round;
+            final List<BattleInitiativeEntry> entries;
+            final int currentTurnIndex;
+            final int trainerInitiativeBonus;
+            final VoidCallback onRollTrainer;
+            final VoidCallback onAddEntry;
+            final ValueChanged<BattleInitiativeEntry> onRemoveEntry;
+            final VoidCallback onNextTurn;
+
+            @override
+            Widget build(BuildContext context) {
+              final currentEntry = entries.isEmpty
+                  ? null
+                  : entries[currentTurnIndex.clamp(0, entries.length - 1).toInt()];
+
+              return Card(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(10, 8, 10, 6),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              'INIZIATIVA',
+                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.w900,
+                              ),
+                            ),
+                          ),
+                          Text('Round $round'),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              currentEntry == null
+                                  ? 'Nessun turno impostato.'
+                                  : 'Turno: ${currentEntry.name}',
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          FilledButton.icon(
+                            onPressed: onNextTurn,
+                            icon: const Icon(Icons.navigate_next),
+                            label: const Text('PROSSIMO'),
+                          ),
+                        ],
+                      ),
+                      ExpansionTile(
+                        tilePadding: EdgeInsets.zero,
+                        childrenPadding: EdgeInsets.zero,
+                        dense: true,
+                        visualDensity: VisualDensity.compact,
+                        title: Text('Ordine e comandi (${entries.length})'),
+                        children: [
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Wrap(
+                              spacing: 8,
+                              runSpacing: 8,
+                              children: [
+                                OutlinedButton.icon(
+                                  onPressed: onRollTrainer,
+                                  icon: const Icon(Icons.casino_outlined),
+                                  label: Text(
+                                    'RITIRA TRAINER (${trainerInitiativeBonus >= 0 ? '+' : ''}$trainerInitiativeBonus)',
+                                  ),
+                                ),
+                                OutlinedButton.icon(
+                                  onPressed: onAddEntry,
+                                  icon: const Icon(Icons.add),
+                                  label: const Text('AGGIUNGI'),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          for (final indexed in entries.indexed)
+                            _InitiativeTile(
+                              entry: indexed.$2,
+                              active: indexed.$1 == currentTurnIndex,
+                              onRemove: indexed.$2.isTrainerGroup
+                                  ? null
+                                  : () => onRemoveEntry(indexed.$2),
+                            ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }
+          }
+
+          class _InitiativeTile'''
+          replace_regex(
+              battle_path,
+              r'class _InitiativeTracker extends StatelessWidget \{.*?\n\}\n\nclass _InitiativeTile',
+              initiative,
+          )
+
+          status_picker = r'''class _StatusPickerSheetState extends State<_StatusPickerSheet> {
+            String? _nonVolatileStatus;
+            late Set<String> _volatileStatuses;
+
+            @override
+            void initState() {
+              super.initState();
+              _nonVolatileStatus = widget.initialNonVolatileStatus;
+              _volatileStatuses = {...widget.initialVolatileStatuses};
+            }
+
+            void _finish() {
+              Navigator.of(context).pop(
+                _StatusPickerResult(
+                  nonVolatileStatus: _nonVolatileStatus,
+                  volatileStatuses: {..._volatileStatuses},
+                ),
+              );
+            }
+
+            void _selectNonVolatile(String? status) {
+              _nonVolatileStatus = status;
+              _finish();
+            }
+
+            void _toggleVolatile(String status, bool selected) {
+              if (selected) {
+                _volatileStatuses.add(status);
+              } else {
+                _volatileStatuses.remove(status);
+              }
+              _finish();
+            }
+
+            @override
+            Widget build(BuildContext context) {
+              return SafeArea(
+                child: ListView(
+                  shrinkWrap: true,
+                  padding: const EdgeInsets.only(bottom: 12),
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+                      child: Text(
+                        'STATUS IN COMBATTIMENTO',
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.fromLTRB(16, 0, 16, 8),
+                      child: Text(
+                        'Tocca uno status per applicarlo subito. Un solo status non-volatile alla volta; gli status volatili terminano fuori dal combattimento.',
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+                      child: Text(
+                        'NON-VOLATILE',
+                        style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 6,
+                      ),
+                      child: Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: [
+                          ChoiceChip(
+                            label: const Text('NESSUNO'),
+                            selected: _nonVolatileStatus == null,
+                            onSelected: (_) => _selectNonVolatile(null),
+                          ),
+                          for (final status in _nonVolatileStatusOptions)
+                            ChoiceChip(
+                              avatar: _StatusIcon(status: status, size: 22),
+                              label: Text(status.toUpperCase()),
+                              selected: _nonVolatileStatus == status,
+                              onSelected: (_) => _selectNonVolatile(status),
+                            ),
+                        ],
+                      ),
+                    ),
+                    const Divider(),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+                      child: Text(
+                        'VOLATILE',
+                        style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                    ),
+                    for (final status in _volatileStatusOptions)
+                      CheckboxListTile(
+                        secondary: _StatusIcon(status: status, size: 28),
+                        title: Text(status.toUpperCase()),
+                        value: _volatileStatuses.contains(status),
+                        onChanged: (value) =>
+                            _toggleVolatile(status, value == true),
+                      ),
+                    if (_nonVolatileStatus != null || _volatileStatuses.isNotEmpty)
+                      ListTile(
+                        leading: const Icon(Icons.clear),
+                        title: const Text('RIMUOVI TUTTI'),
+                        onTap: () => Navigator.of(context).pop(
+                          const _StatusPickerResult(
+                            nonVolatileStatus: null,
+                            volatileStatuses: <String>{},
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              );
+            }
+          }
+
+          class _HeldItemPanel'''
+          replace_regex(
+              battle_path,
+              r'class _StatusPickerSheetState extends State<_StatusPickerSheet> \{.*?\n\}\n\nclass _HeldItemPanel',
+              status_picker,
+          )
+
+          battle_file = Path(battle_path)
+          battle_text = battle_file.read_text(encoding='utf-8')
+          old_padding = 'padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),'
+          if old_padding not in battle_text:
+              raise SystemExit('battle list padding not found')
+          battle_text = battle_text.replace(
+              old_padding,
+              'padding: const EdgeInsets.fromLTRB(12, 8, 12, 24),',
+              1,
+          )
+          battle_file.write_text(battle_text, encoding='utf-8')
+
+          safe_bottom_paths = [
+              'lib/screens/tools/pokemon_generator_screen.dart',
+              'lib/screens/tools/encounter_generator_screen.dart',
+              'lib/screens/tools/encounter_result_screen.dart',
+              'lib/screens/tools/npc_trainer_generator_screen.dart',
+              'lib/screens/tools/npc_trainer_result_screen.dart',
+              'lib/screens/tools/encounter_collection_editor_screen.dart',
+              'lib/screens/tools/encounter_library_screen.dart',
+          ]
+          old = 'padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),'
+          new = (
+              'padding: EdgeInsets.fromLTRB(\n'
+              '  16,\n'
+              '  12,\n'
+              '  16,\n'
+              '  32.0 + MediaQuery.viewPaddingOf(context).bottom,\n'
+              '),'
+          )
+          for path in safe_bottom_paths:
+              file = Path(path)
+              text = file.read_text(encoding='utf-8')
+              count = text.count(old)
+              if count == 0:
+                  raise SystemExit(f'{path}: safe bottom padding target not found')
+              file.write_text(text.replace(old, new), encoding='utf-8')
+
+          changelog = Path('CHANGELOG.md')
+          text = changelog.read_text(encoding='utf-8')
+          marker = '### Modificato\n'
+          addition = (
+              '### Modificato\n\n'
+              '- su smartphone il dettaglio Pokémon scorre fino alle schede Mosse, Features e Traits, mantenendo le tab accessibili;\n'
+              '- Battle Companion usa intestazione, squadra e iniziativa più compatte, con i comandi secondari richiudibili;\n'
+              '- la scelta di uno status nel Battle Companion viene applicata e salvata subito, chiudendo il pannello;\n'
+              '- i generatori e i risultati degli Strumenti del Master rispettano l’area sicura inferiore di Android.\n'
+          )
+          if marker not in text:
+              raise SystemExit('CHANGELOG marker not found')
+          changelog.write_text(text.replace(marker, addition, 1), encoding='utf-8')
+          PY
+
+      - name: Format files
+        run: |
+          dart format \
+            lib/screens/pokemon/pokemon_detail_screen_legacy.dart \
+            lib/screens/battle/battle_screen.dart \
+            lib/screens/tools/pokemon_generator_screen.dart \
+            lib/screens/tools/encounter_generator_screen.dart \
+            lib/screens/tools/encounter_result_screen.dart \
+            lib/screens/tools/npc_trainer_generator_screen.dart \
+            lib/screens/tools/npc_trainer_result_screen.dart \
+            lib/screens/tools/encounter_collection_editor_screen.dart \
+            lib/screens/tools/encounter_library_screen.dart
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze source
+        run: flutter analyze
+
+      - name: Run tests
+        run: flutter test --reporter expanded
+
+      - name: Build Android debug APK
+        run: flutter build apk --debug
+
+      - name: Commit fixes and remove workflow
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm .github/workflows/one-time-mobile-layout-fixes.yml
+          git add CHANGELOG.md lib/screens
+          git commit -m 'Ottimizza layout mobile e aree sicure Android'
+          git push origin main

@@ -62,11 +62,13 @@ void main() {
     setUp(() async {
       hiveDirectory = await Directory.systemTemp.createTemp('pokedex_fakemon_');
       Hive.init(hiveDirectory.path);
+      CustomPokemonRepository.markStorageReady();
       repository = CustomPokemonRepository();
     });
 
     tearDown(() async {
       await Hive.close();
+      CustomPokemonRepository.markStorageUnavailable();
       await hiveDirectory.delete(recursive: true);
     });
 

@@ -5,7 +5,6 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 import '../../models/custom_pokemon_definition.dart';
-import '../../models/custom_pokemon_transfer_bundle.dart';
 import '../../models/move_data.dart';
 import '../../models/pokemon_attributes.dart';
 import '../../repositories/ability_repository.dart';
@@ -1703,8 +1702,9 @@ List<int> _intCsv(String value) {
   final result = <int>[];
   for (final entry in _csv(value)) {
     final number = int.tryParse(entry);
-    if (number == null)
+    if (number == null) {
       throw const FormatException('Elenco numerico non valido.');
+    }
     result.add(number);
   }
   return result;
@@ -1719,8 +1719,9 @@ Map<int, List<String>> _parseLevelMoves(String value) {
     if (separator <= 0) throw FormatException('Riga mosse non valida: $line');
     final level = int.tryParse(line.substring(0, separator).trim());
     final moves = _csv(line.substring(separator + 1));
-    if (level == null || level <= 0 || moves.isEmpty)
+    if (level == null || level <= 0 || moves.isEmpty) {
       throw FormatException('Riga mosse non valida: $line');
+    }
     result[level] = moves;
   }
   return result;

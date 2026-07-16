@@ -62,8 +62,8 @@ replace_once(
 changelog = Path('CHANGELOG.md')
 replace_once(
     changelog,
-    "### Corretto\n\n",
-    "### Corretto\n\n"
+    "### Modificato\n\n",
+    "### Modificato\n\n"
     "- le mosse esclusive dei Fakemon vengono aggiunte al moveset iniziale quando create e le vecchie mosse esclusive non assegnate diventano comunque selezionabili nei dettagli della specie;\n",
     'changelog entry',
 )

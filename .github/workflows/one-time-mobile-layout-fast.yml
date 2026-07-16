@@ -1,0 +1,76 @@
+name: One-time mobile layout fast retry
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/one-time-mobile-layout-fast.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Apply prepared patch
+        shell: bash
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+          import textwrap
+
+          workflow = Path('.github/workflows/one-time-mobile-layout-fixes.yml')
+          raw = workflow.read_text(encoding='utf-8')
+          start = "          python3 <<'PY'\n"
+          end = "\n          PY\n"
+          if start not in raw or end not in raw:
+              raise SystemExit('Unable to extract prepared patch script')
+          script = raw.split(start, 1)[1].split(end, 1)[0]
+          exec(compile(textwrap.dedent(script), str(workflow), 'exec'))
+          PY
+
+      - name: Format files
+        run: |
+          dart format \
+            lib/screens/pokemon/pokemon_detail_screen_legacy.dart \
+            lib/screens/battle/battle_screen.dart \
+            lib/screens/tools/pokemon_generator_screen.dart \
+            lib/screens/tools/encounter_generator_screen.dart \
+            lib/screens/tools/encounter_result_screen.dart \
+            lib/screens/tools/npc_trainer_generator_screen.dart \
+            lib/screens/tools/npc_trainer_result_screen.dart \
+            lib/screens/tools/encounter_collection_editor_screen.dart \
+            lib/screens/tools/encounter_library_screen.dart
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze source
+        run: flutter analyze
+
+      - name: Commit fixes and remove temporary workflows
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm .github/workflows/one-time-mobile-layout-fast.yml
+          git rm .github/workflows/one-time-mobile-layout-fixes.yml
+          git add CHANGELOG.md lib/screens
+          git commit -m 'Ottimizza layout mobile e aree sicure Android'
+          git pull --rebase origin main
+          git push origin main

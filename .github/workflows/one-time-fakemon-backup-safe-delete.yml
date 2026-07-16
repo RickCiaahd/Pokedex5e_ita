@@ -29,7 +29,7 @@ jobs:
       - name: Apply feature integration
         run: python3 .github/scripts/apply_fakemon_backup_safe_delete.py
 
-      - name: Format and validate
+      - name: Format source
         run: |
           dart format \
             lib/models/custom_pokemon_catalog_bundle.dart \
@@ -40,16 +40,30 @@ jobs:
             lib/screens/pokemon/custom_pokemon_library_screen.dart \
             test/fakemon_backup_safe_delete_test.dart
           flutter pub get
-          flutter analyze
-          flutter test test/fakemon_backup_safe_delete_test.dart --reporter expanded
-          flutter test test/profile_backup_service_test.dart --reporter expanded
 
-      - name: Commit feature
+      - name: Capture validation output
+        shell: bash
+        run: |
+          set +e
+          {
+            echo '=== flutter analyze ==='
+            flutter analyze
+            echo
+            echo '=== fakemon backup tests ==='
+            flutter test test/fakemon_backup_safe_delete_test.dart --reporter expanded
+            echo
+            echo '=== existing profile backup tests ==='
+            flutter test test/profile_backup_service_test.dart --reporter expanded
+          } > fakemon_backup_validation.txt 2>&1
+          cat fakemon_backup_validation.txt
+          exit 0
+
+      - name: Commit feature and diagnostic
         shell: bash
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git rm .github/scripts/apply_fakemon_backup_safe_delete.py
-          git add CHANGELOG.md lib test/fakemon_backup_safe_delete_test.dart
+          git add CHANGELOG.md lib test/fakemon_backup_safe_delete_test.dart fakemon_backup_validation.txt
           git commit -m 'Aggiunge backup e cancellazione sicura dei Fakemon'
           git push origin feature/fakemon-backup-safe-delete

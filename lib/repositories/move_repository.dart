@@ -73,10 +73,9 @@ class MoveRepository {
 
   List<MoveData> getLocalMovesForPokemon(int pokemonId) {
     final seen = <String>{};
-    final moves = CustomPokemonRuntimeRegistry.moveCatalogFor(pokemonId)
-        .values
-        .where((move) => seen.add(move.id))
-        .toList(growable: false);
+    final moves = CustomPokemonRuntimeRegistry.moveCatalogFor(
+      pokemonId,
+    ).values.where((move) => seen.add(move.id)).toList(growable: false);
     moves.sort((a, b) => a.name.compareTo(b.name));
     return moves;
   }

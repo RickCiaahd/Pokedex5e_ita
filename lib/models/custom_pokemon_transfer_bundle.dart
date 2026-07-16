@@ -41,11 +41,15 @@ class CustomPokemonTransferBundle {
   factory CustomPokemonTransferBundle.fromJson(Map<String, dynamic> json) {
     if (json['application']?.toString() != applicationId ||
         json['kind']?.toString() != kind) {
-      throw const FormatException('Il file non è un Fakemon di Pokédex 5e ITA.');
+      throw const FormatException(
+        'Il file non è un Fakemon di Pokédex 5e ITA.',
+      );
     }
     final version = _readInt(json['formatVersion']);
     if (version < 1 || version > currentFormatVersion) {
-      throw FormatException('Versione del file Fakemon non supportata: $version.');
+      throw FormatException(
+        'Versione del file Fakemon non supportata: $version.',
+      );
     }
     final rawDefinition = json['definition'];
     if (rawDefinition is! Map) {

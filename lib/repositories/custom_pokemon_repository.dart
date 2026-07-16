@@ -30,7 +30,9 @@ class CustomPokemonRepository {
 
     definitions.sort((a, b) {
       final nameCompare = a.name.toLowerCase().compareTo(b.name.toLowerCase());
-      return nameCompare != 0 ? nameCompare : a.pokemonId.compareTo(b.pokemonId);
+      return nameCompare != 0
+          ? nameCompare
+          : a.pokemonId.compareTo(b.pokemonId);
     });
     CustomPokemonRuntimeRegistry.replaceAll(definitions);
     return definitions;
@@ -101,9 +103,10 @@ class CustomPokemonRepository {
   }
 
   String createStableId() {
-    final timestamp = DateTime.now().toUtc().microsecondsSinceEpoch.toRadixString(
-      36,
-    );
+    final timestamp = DateTime.now()
+        .toUtc()
+        .microsecondsSinceEpoch
+        .toRadixString(36);
     final random = Random.secure().nextInt(0x7fffffff).toRadixString(36);
     return 'fakemon-$timestamp-$random';
   }

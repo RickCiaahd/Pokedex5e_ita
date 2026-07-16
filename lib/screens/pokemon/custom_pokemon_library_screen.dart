@@ -328,8 +328,7 @@ class CustomPokemonEditorScreen extends StatefulWidget {
       _CustomPokemonEditorScreenState();
 }
 
-class _CustomPokemonEditorScreenState
-    extends State<CustomPokemonEditorScreen> {
+class _CustomPokemonEditorScreenState extends State<CustomPokemonEditorScreen> {
   static const _types = [
     'Bug',
     'Dark',
@@ -407,7 +406,9 @@ class _CustomPokemonEditorScreenState
     _speed = TextEditingController(text: '${definition?.speed ?? 30}');
     _hitDice = TextEditingController(text: '${definition?.hitDice ?? 1}');
     _sr = TextEditingController(text: '${definition?.sr ?? 0.5}');
-    _minLevel = TextEditingController(text: '${definition?.minLevelFound ?? 1}');
+    _minLevel = TextEditingController(
+      text: '${definition?.minLevelFound ?? 1}',
+    );
     _height = TextEditingController(text: definition?.height?.toString() ?? '');
     _weight = TextEditingController(text: definition?.weight?.toString() ?? '');
     _genderRatio = TextEditingController(text: definition?.genderRatio ?? '');
@@ -428,9 +429,9 @@ class _CustomPokemonEditorScreenState
       text: definition == null
           ? ''
           : (definition.levelMoves.entries.toList()
-                ..sort((a, b) => a.key.compareTo(b.key)))
-              .map((entry) => '${entry.key}: ${entry.value.join(', ')}')
-              .join('\n'),
+                  ..sort((a, b) => a.key.compareTo(b.key)))
+                .map((entry) => '${entry.key}: ${entry.value.join(', ')}')
+                .join('\n'),
     );
     _tmMoves = TextEditingController(
       text: definition?.tmMoves.join(', ') ?? '',
@@ -548,7 +549,8 @@ class _CustomPokemonEditorScreenState
     if (move == null) return;
     final values = _csv(controller.text);
     if (!values.any(
-      (value) => MoveData.referenceKey(value) == MoveData.referenceKey(move.name),
+      (value) =>
+          MoveData.referenceKey(value) == MoveData.referenceKey(move.name),
     )) {
       values.add(move.name);
       controller.text = values.join(', ');
@@ -605,8 +607,7 @@ class _CustomPokemonEditorScreenState
       final definition = CustomPokemonDefinition(
         formatVersion: CustomPokemonDefinition.currentFormatVersion,
         stableId: existing?.stableId ?? _repository.createStableId(),
-        pokemonId:
-            existing?.pokemonId ?? await _repository.allocatePokemonId(),
+        pokemonId: existing?.pokemonId ?? await _repository.allocatePokemonId(),
         createdAt: existing?.createdAt ?? now,
         updatedAt: now,
         name: _name.text.trim(),
@@ -659,14 +660,18 @@ class _CustomPokemonEditorScreenState
 
   void _showError(String message) {
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.definition == null ? 'NUOVO FAKEMON' : 'MODIFICA FAKEMON'),
+        title: Text(
+          widget.definition == null ? 'NUOVO FAKEMON' : 'MODIFICA FAKEMON',
+        ),
       ),
       body: Form(
         key: _formKey,
@@ -697,7 +702,10 @@ class _CustomPokemonEditorScreenState
                             ? const Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Icon(Icons.add_photo_alternate_outlined, size: 48),
+                                  Icon(
+                                    Icons.add_photo_alternate_outlined,
+                                    size: 48,
+                                  ),
                                   SizedBox(height: 8),
                                   Text('CARICA IMMAGINE'),
                                 ],
@@ -720,9 +728,26 @@ class _CustomPokemonEditorScreenState
                     ),
                   _RequiredTextField(controller: _name, label: 'Nome'),
                   _RequiredTextField(controller: _author, label: 'Autore'),
-                  TextFormField(controller: _genus, decoration: const InputDecoration(labelText: 'Categoria / genere')),
-                  TextFormField(controller: _description, minLines: 3, maxLines: 6, decoration: const InputDecoration(labelText: 'Descrizione')),
-                  TextFormField(controller: _notes, minLines: 2, maxLines: 5, decoration: const InputDecoration(labelText: 'Note del creatore')),
+                  TextFormField(
+                    controller: _genus,
+                    decoration: const InputDecoration(
+                      labelText: 'Categoria / genere',
+                    ),
+                  ),
+                  TextFormField(
+                    controller: _description,
+                    minLines: 3,
+                    maxLines: 6,
+                    decoration: const InputDecoration(labelText: 'Descrizione'),
+                  ),
+                  TextFormField(
+                    controller: _notes,
+                    minLines: 2,
+                    maxLines: 5,
+                    decoration: const InputDecoration(
+                      labelText: 'Note del creatore',
+                    ),
+                  ),
                 ],
               ),
               _EditorSection(
@@ -730,23 +755,52 @@ class _CustomPokemonEditorScreenState
                 children: [
                   Row(
                     children: [
-                      Expanded(child: _typeDropdown('Tipo principale', _primaryType, (value) => setState(() => _primaryType = value!))),
+                      Expanded(
+                        child: _typeDropdown(
+                          'Tipo principale',
+                          _primaryType,
+                          (value) => setState(() => _primaryType = value!),
+                        ),
+                      ),
                       const SizedBox(width: 10),
-                      Expanded(child: _typeDropdown('Tipo secondario', _secondaryType, (value) => setState(() => _secondaryType = value), optional: true)),
+                      Expanded(
+                        child: _typeDropdown(
+                          'Tipo secondario',
+                          _secondaryType,
+                          (value) => setState(() => _secondaryType = value),
+                          optional: true,
+                        ),
+                      ),
                     ],
                   ),
                   DropdownButtonFormField<String>(
                     initialValue: _size,
                     decoration: const InputDecoration(labelText: 'Taglia'),
-                    items: [for (final size in _sizes) DropdownMenuItem(value: size, child: Text(size))],
-                    onChanged: (value) { if (value != null) setState(() => _size = value); },
+                    items: [
+                      for (final size in _sizes)
+                        DropdownMenuItem(value: size, child: Text(size)),
+                    ],
+                    onChanged: (value) {
+                      if (value != null) setState(() => _size = value);
+                    },
                   ),
-                  Row(children: [
-                    Expanded(child: _optionalNumber(_height, 'Altezza (decimetri)')),
-                    const SizedBox(width: 10),
-                    Expanded(child: _optionalNumber(_weight, 'Peso (ettogrammi)')),
-                  ]),
-                  TextFormField(controller: _genderRatio, decoration: const InputDecoration(labelText: 'Rapporto tra i sessi')),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _optionalNumber(_height, 'Altezza (decimetri)'),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: _optionalNumber(_weight, 'Peso (ettogrammi)'),
+                      ),
+                    ],
+                  ),
+                  TextFormField(
+                    controller: _genderRatio,
+                    decoration: const InputDecoration(
+                      labelText: 'Rapporto tra i sessi',
+                    ),
+                  ),
                 ],
               ),
               _EditorSection(
@@ -768,23 +822,63 @@ class _CustomPokemonEditorScreenState
                     spacing: 10,
                     runSpacing: 10,
                     children: [
-                      for (final key in const ['STR', 'DEX', 'CON', 'INT', 'WIS', 'CHA'])
+                      for (final key in const [
+                        'STR',
+                        'DEX',
+                        'CON',
+                        'INT',
+                        'WIS',
+                        'CHA',
+                      ])
                         _numberBox(_scores[key]!, key, min: 1, max: 40),
                     ],
                   ),
-                  TextFormField(controller: _skills, decoration: const InputDecoration(labelText: 'Competenze, separate da virgole')),
-                  TextFormField(controller: _savingThrows, decoration: const InputDecoration(labelText: 'Tiri salvezza, separati da virgole')),
+                  TextFormField(
+                    controller: _skills,
+                    decoration: const InputDecoration(
+                      labelText: 'Competenze, separate da virgole',
+                    ),
+                  ),
+                  TextFormField(
+                    controller: _savingThrows,
+                    decoration: const InputDecoration(
+                      labelText: 'Tiri salvezza, separati da virgole',
+                    ),
+                  ),
                 ],
               ),
               _EditorSection(
                 title: 'Abilità',
                 children: [
-                  TextFormField(controller: _abilities, minLines: 2, maxLines: 4, decoration: const InputDecoration(labelText: 'Abilità disponibili, separate da virgole')),
-                  TextFormField(controller: _hiddenAbility, decoration: const InputDecoration(labelText: 'Abilità nascosta')),
-                  Wrap(spacing: 8, children: [
-                    OutlinedButton.icon(onPressed: _loadingCatalogs ? null : _pickGlobalAbility, icon: const Icon(Icons.search), label: const Text('DAL CATALOGO')),
-                    FilledButton.tonalIcon(onPressed: _addLocalAbility, icon: const Icon(Icons.add), label: const Text('NUOVA ESCLUSIVA')),
-                  ]),
+                  TextFormField(
+                    controller: _abilities,
+                    minLines: 2,
+                    maxLines: 4,
+                    decoration: const InputDecoration(
+                      labelText: 'Abilità disponibili, separate da virgole',
+                    ),
+                  ),
+                  TextFormField(
+                    controller: _hiddenAbility,
+                    decoration: const InputDecoration(
+                      labelText: 'Abilità nascosta',
+                    ),
+                  ),
+                  Wrap(
+                    spacing: 8,
+                    children: [
+                      OutlinedButton.icon(
+                        onPressed: _loadingCatalogs ? null : _pickGlobalAbility,
+                        icon: const Icon(Icons.search),
+                        label: const Text('DAL CATALOGO'),
+                      ),
+                      FilledButton.tonalIcon(
+                        onPressed: _addLocalAbility,
+                        icon: const Icon(Icons.add),
+                        label: const Text('NUOVA ESCLUSIVA'),
+                      ),
+                    ],
+                  ),
                   for (final entry in _localAbilities.indexed)
                     ListTile(
                       title: Text(entry.$2.name),
@@ -792,7 +886,8 @@ class _CustomPokemonEditorScreenState
                       leading: const Icon(Icons.auto_awesome),
                       trailing: IconButton(
                         tooltip: 'Rimuovi',
-                        onPressed: () => setState(() => _localAbilities.removeAt(entry.$1)),
+                        onPressed: () =>
+                            setState(() => _localAbilities.removeAt(entry.$1)),
                         icon: const Icon(Icons.delete_outline),
                       ),
                     ),
@@ -801,31 +896,65 @@ class _CustomPokemonEditorScreenState
               _EditorSection(
                 title: 'Mosse',
                 children: [
-                  _MoveListField(controller: _startingMoves, label: 'Mosse iniziali', onPick: () => _pickGlobalMove(_startingMoves)),
+                  _MoveListField(
+                    controller: _startingMoves,
+                    label: 'Mosse iniziali',
+                    onPick: () => _pickGlobalMove(_startingMoves),
+                  ),
                   TextFormField(
                     controller: _levelMoves,
                     minLines: 3,
                     maxLines: 8,
                     decoration: const InputDecoration(
                       labelText: 'Mosse per livello',
-                      helperText: 'Una riga per livello, ad esempio: 5: Tuonoshock, Agilità',
+                      helperText:
+                          'Una riga per livello, ad esempio: 5: Tuonoshock, Agilità',
                     ),
                     validator: (value) {
-                      try { _parseLevelMoves(value ?? ''); return null; } catch (error) { return _friendlyError(error); }
+                      try {
+                        _parseLevelMoves(value ?? '');
+                        return null;
+                      } catch (error) {
+                        return _friendlyError(error);
+                      }
                     },
                   ),
-                  TextFormField(controller: _tmMoves, decoration: const InputDecoration(labelText: 'Numeri MT, separati da virgole'), validator: (value) { try { _intCsv(value ?? ''); return null; } catch (_) { return 'Inserisci soltanto numeri MT separati da virgole.'; } }),
-                  _MoveListField(controller: _eggMoves, label: 'Egg Moves', onPick: () => _pickGlobalMove(_eggMoves)),
-                  FilledButton.tonalIcon(onPressed: _addLocalMove, icon: const Icon(Icons.add), label: const Text('CREA MOSSA ESCLUSIVA')),
+                  TextFormField(
+                    controller: _tmMoves,
+                    decoration: const InputDecoration(
+                      labelText: 'Numeri MT, separati da virgole',
+                    ),
+                    validator: (value) {
+                      try {
+                        _intCsv(value ?? '');
+                        return null;
+                      } catch (_) {
+                        return 'Inserisci soltanto numeri MT separati da virgole.';
+                      }
+                    },
+                  ),
+                  _MoveListField(
+                    controller: _eggMoves,
+                    label: 'Egg Moves',
+                    onPick: () => _pickGlobalMove(_eggMoves),
+                  ),
+                  FilledButton.tonalIcon(
+                    onPressed: _addLocalMove,
+                    icon: const Icon(Icons.add),
+                    label: const Text('CREA MOSSA ESCLUSIVA'),
+                  ),
                   for (final entry in _localMoves.indexed)
                     ListTile(
                       leading: const Icon(Icons.auto_awesome),
                       title: Text(entry.$2.name),
-                      subtitle: Text('${entry.$2.type} · ${entry.$2.moveTime}\n${entry.$2.description}'),
+                      subtitle: Text(
+                        '${entry.$2.type} · ${entry.$2.moveTime}\n${entry.$2.description}',
+                      ),
                       isThreeLine: true,
                       trailing: IconButton(
                         tooltip: 'Rimuovi',
-                        onPressed: () => setState(() => _localMoves.removeAt(entry.$1)),
+                        onPressed: () =>
+                            setState(() => _localMoves.removeAt(entry.$1)),
                         icon: const Icon(Icons.delete_outline),
                       ),
                     ),
@@ -841,7 +970,11 @@ class _CustomPokemonEditorScreenState
           child: FilledButton.icon(
             onPressed: _saving ? null : _save,
             icon: _saving
-                ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
+                ? const SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
                 : const Icon(Icons.save_outlined),
             label: const Text('SALVA FAKEMON'),
           ),
@@ -850,20 +983,32 @@ class _CustomPokemonEditorScreenState
     );
   }
 
-  Widget _typeDropdown(String label, String? value, ValueChanged<String?> onChanged, {bool optional = false}) {
+  Widget _typeDropdown(
+    String label,
+    String? value,
+    ValueChanged<String?> onChanged, {
+    bool optional = false,
+  }) {
     return DropdownButtonFormField<String?>(
       initialValue: value,
       isExpanded: true,
       decoration: InputDecoration(labelText: label),
       items: [
-        if (optional) const DropdownMenuItem<String?>(value: null, child: Text('Nessuno')),
-        for (final type in _types) DropdownMenuItem<String?>(value: type, child: Text(type)),
+        if (optional)
+          const DropdownMenuItem<String?>(value: null, child: Text('Nessuno')),
+        for (final type in _types)
+          DropdownMenuItem<String?>(value: type, child: Text(type)),
       ],
       onChanged: onChanged,
     );
   }
 
-  Widget _numberBox(TextEditingController controller, String label, {required int min, int? max}) {
+  Widget _numberBox(
+    TextEditingController controller,
+    String label, {
+    required int min,
+    int? max,
+  }) {
     return SizedBox(
       width: 130,
       child: TextFormField(
@@ -881,7 +1026,11 @@ class _CustomPokemonEditorScreenState
     );
   }
 
-  Widget _decimalBox(TextEditingController controller, String label, {required double min}) {
+  Widget _decimalBox(
+    TextEditingController controller,
+    String label, {
+    required double min,
+  }) {
     return SizedBox(
       width: 130,
       child: TextFormField(
@@ -936,40 +1085,83 @@ class _FakemonCard extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            PokemonAssetImage(pokemon: pokemon, size: 104, useLargeArtwork: true),
+            PokemonAssetImage(
+              pokemon: pokemon,
+              size: 104,
+              useLargeArtwork: true,
+            ),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(definition.name, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900)),
+                  Text(
+                    definition.name,
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
                   Text('di ${definition.author} · ID ${definition.pokemonId}'),
                   const SizedBox(height: 6),
-                  Wrap(spacing: 6, runSpacing: 6, children: [for (final type in definition.types) PokemonTypeBadge(type: type, height: 22)]),
+                  Wrap(
+                    spacing: 6,
+                    runSpacing: 6,
+                    children: [
+                      for (final type in definition.types)
+                        PokemonTypeBadge(type: type, height: 22),
+                    ],
+                  ),
                   if (definition.description != null) ...[
                     const SizedBox(height: 8),
-                    Text(definition.description!, maxLines: 3, overflow: TextOverflow.ellipsis),
+                    Text(
+                      definition.description!,
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ],
                   const SizedBox(height: 8),
                   Wrap(
                     spacing: 6,
                     runSpacing: 6,
                     children: [
-                      OutlinedButton.icon(onPressed: onEdit, icon: const Icon(Icons.edit_outlined), label: const Text('MODIFICA')),
-                      OutlinedButton.icon(onPressed: onShare, icon: const Icon(Icons.share_outlined), label: const Text('CONDIVIDI')),
+                      OutlinedButton.icon(
+                        onPressed: onEdit,
+                        icon: const Icon(Icons.edit_outlined),
+                        label: const Text('MODIFICA'),
+                      ),
+                      OutlinedButton.icon(
+                        onPressed: onShare,
+                        icon: const Icon(Icons.share_outlined),
+                        label: const Text('CONDIVIDI'),
+                      ),
                       PopupMenuButton<String>(
                         tooltip: 'Altre azioni',
                         onSelected: (value) {
                           switch (value) {
-                            case 'export': onExport();
-                            case 'duplicate': onDuplicate();
-                            case 'delete': onDelete();
+                            case 'export':
+                              onExport();
+                              break;
+                            case 'duplicate':
+                              onDuplicate();
+                              break;
+                            case 'delete':
+                              onDelete();
+                              break;
                           }
                         },
                         itemBuilder: (_) => const [
-                          PopupMenuItem(value: 'export', child: Text('Esporta file')),
-                          PopupMenuItem(value: 'duplicate', child: Text('Duplica')),
-                          PopupMenuItem(value: 'delete', child: Text('Elimina')),
+                          PopupMenuItem(
+                            value: 'export',
+                            child: Text('Esporta file'),
+                          ),
+                          PopupMenuItem(
+                            value: 'duplicate',
+                            child: Text('Duplica'),
+                          ),
+                          PopupMenuItem(
+                            value: 'delete',
+                            child: Text('Elimina'),
+                          ),
                         ],
                       ),
                     ],
@@ -998,7 +1190,12 @@ class _EditorSection extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(title, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900)),
+            Text(
+              title,
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
+            ),
             const SizedBox(height: 12),
             for (final entry in children.indexed) ...[
               if (entry.$1 > 0) const SizedBox(height: 10),
@@ -1021,13 +1218,18 @@ class _RequiredTextField extends StatelessWidget {
     return TextFormField(
       controller: controller,
       decoration: InputDecoration(labelText: label),
-      validator: (value) => (value ?? '').trim().isEmpty ? 'Campo obbligatorio' : null,
+      validator: (value) =>
+          (value ?? '').trim().isEmpty ? 'Campo obbligatorio' : null,
     );
   }
 }
 
 class _MoveListField extends StatelessWidget {
-  const _MoveListField({required this.controller, required this.label, required this.onPick});
+  const _MoveListField({
+    required this.controller,
+    required this.label,
+    required this.onPick,
+  });
   final TextEditingController controller;
   final String label;
   final VoidCallback onPick;
@@ -1040,7 +1242,11 @@ class _MoveListField extends StatelessWidget {
       maxLines: 4,
       decoration: InputDecoration(
         labelText: '$label, separate da virgole',
-        suffixIcon: IconButton(tooltip: 'Scegli dal catalogo', onPressed: onPick, icon: const Icon(Icons.search)),
+        suffixIcon: IconButton(
+          tooltip: 'Scegli dal catalogo',
+          onPressed: onPick,
+          icon: const Icon(Icons.search),
+        ),
       ),
     );
   }
@@ -1060,22 +1266,56 @@ class _MoveCatalogDialogState extends State<_MoveCatalogDialog> {
   @override
   Widget build(BuildContext context) {
     final query = _query.trim().toLowerCase();
-    final moves = widget.moves.where((move) => query.isEmpty || move.name.toLowerCase().contains(query) || move.type.toLowerCase().contains(query)).toList(growable: false);
+    final moves = widget.moves
+        .where(
+          (move) =>
+              query.isEmpty ||
+              move.name.toLowerCase().contains(query) ||
+              move.type.toLowerCase().contains(query),
+        )
+        .toList(growable: false);
     return AlertDialog(
       title: const Text('Scegli mossa'),
       content: SizedBox(
         width: 560,
         height: 520,
-        child: Column(children: [
-          TextField(decoration: const InputDecoration(prefixIcon: Icon(Icons.search), labelText: 'Cerca'), onChanged: (value) => setState(() => _query = value)),
-          const SizedBox(height: 8),
-          Expanded(child: ListView.builder(itemCount: moves.length, itemBuilder: (context, index) {
-            final move = moves[index];
-            return ListTile(title: Text(move.name), subtitle: Text('${move.type} · ${move.moveTime}\n${move.description}', maxLines: 3, overflow: TextOverflow.ellipsis), isThreeLine: true, onTap: () => Navigator.of(context).pop(move));
-          })),
-        ]),
+        child: Column(
+          children: [
+            TextField(
+              decoration: const InputDecoration(
+                prefixIcon: Icon(Icons.search),
+                labelText: 'Cerca',
+              ),
+              onChanged: (value) => setState(() => _query = value),
+            ),
+            const SizedBox(height: 8),
+            Expanded(
+              child: ListView.builder(
+                itemCount: moves.length,
+                itemBuilder: (context, index) {
+                  final move = moves[index];
+                  return ListTile(
+                    title: Text(move.name),
+                    subtitle: Text(
+                      '${move.type} · ${move.moveTime}\n${move.description}',
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    isThreeLine: true,
+                    onTap: () => Navigator.of(context).pop(move),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
       ),
-      actions: [TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('ANNULLA'))],
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('ANNULLA'),
+        ),
+      ],
     );
   }
 }
@@ -1094,22 +1334,57 @@ class _AbilityCatalogDialogState extends State<_AbilityCatalogDialog> {
   @override
   Widget build(BuildContext context) {
     final query = _query.trim().toLowerCase();
-    final names = widget.abilities.keys.where((name) => query.isEmpty || name.toLowerCase().contains(query) || (widget.abilities[name] ?? '').toLowerCase().contains(query)).toList()..sort();
+    final names =
+        widget.abilities.keys
+            .where(
+              (name) =>
+                  query.isEmpty ||
+                  name.toLowerCase().contains(query) ||
+                  (widget.abilities[name] ?? '').toLowerCase().contains(query),
+            )
+            .toList()
+          ..sort();
     return AlertDialog(
       title: const Text('Scegli abilità'),
       content: SizedBox(
         width: 560,
         height: 520,
-        child: Column(children: [
-          TextField(decoration: const InputDecoration(prefixIcon: Icon(Icons.search), labelText: 'Cerca'), onChanged: (value) => setState(() => _query = value)),
-          const SizedBox(height: 8),
-          Expanded(child: ListView.builder(itemCount: names.length, itemBuilder: (context, index) {
-            final name = names[index];
-            return ListTile(title: Text(name), subtitle: Text(widget.abilities[name] ?? '', maxLines: 3, overflow: TextOverflow.ellipsis), onTap: () => Navigator.of(context).pop(name));
-          })),
-        ]),
+        child: Column(
+          children: [
+            TextField(
+              decoration: const InputDecoration(
+                prefixIcon: Icon(Icons.search),
+                labelText: 'Cerca',
+              ),
+              onChanged: (value) => setState(() => _query = value),
+            ),
+            const SizedBox(height: 8),
+            Expanded(
+              child: ListView.builder(
+                itemCount: names.length,
+                itemBuilder: (context, index) {
+                  final name = names[index];
+                  return ListTile(
+                    title: Text(name),
+                    subtitle: Text(
+                      widget.abilities[name] ?? '',
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    onTap: () => Navigator.of(context).pop(name),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
       ),
-      actions: [TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('ANNULLA'))],
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('ANNULLA'),
+        ),
+      ],
     );
   }
 }
@@ -1125,25 +1400,52 @@ class _LocalAbilityDialogState extends State<_LocalAbilityDialog> {
   final _description = TextEditingController();
 
   @override
-  void dispose() { _name.dispose(); _description.dispose(); super.dispose(); }
+  void dispose() {
+    _name.dispose();
+    _description.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
       title: const Text('Nuova abilità esclusiva'),
-      content: Column(mainAxisSize: MainAxisSize.min, children: [
-        TextField(controller: _name, decoration: const InputDecoration(labelText: 'Nome')),
-        const SizedBox(height: 10),
-        TextField(controller: _description, minLines: 3, maxLines: 7, decoration: const InputDecoration(labelText: 'Descrizione')),
-      ]),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TextField(
+            controller: _name,
+            decoration: const InputDecoration(labelText: 'Nome'),
+          ),
+          const SizedBox(height: 10),
+          TextField(
+            controller: _description,
+            minLines: 3,
+            maxLines: 7,
+            decoration: const InputDecoration(labelText: 'Descrizione'),
+          ),
+        ],
+      ),
       actions: [
-        TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('ANNULLA')),
-        FilledButton(onPressed: () {
-          final name = _name.text.trim();
-          final description = _description.text.trim();
-          if (name.isEmpty || description.isEmpty) return;
-          Navigator.of(context).pop(CustomPokemonAbilityDefinition(id: 'ability-${MoveData.referenceKey(name)}-${DateTime.now().microsecondsSinceEpoch}', name: name, description: description));
-        }, child: const Text('AGGIUNGI')),
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('ANNULLA'),
+        ),
+        FilledButton(
+          onPressed: () {
+            final name = _name.text.trim();
+            final description = _description.text.trim();
+            if (name.isEmpty || description.isEmpty) return;
+            Navigator.of(context).pop(
+              CustomPokemonAbilityDefinition(
+                id: 'ability-${MoveData.referenceKey(name)}-${DateTime.now().microsecondsSinceEpoch}',
+                name: name,
+                description: description,
+              ),
+            );
+          },
+          child: const Text('AGGIUNGI'),
+        ),
       ],
     );
   }
@@ -1168,7 +1470,21 @@ class _LocalMoveDialogState extends State<_LocalMoveDialog> {
   bool _isAttack = true;
 
   @override
-  void dispose() { for (final controller in [_name, _pp, _range, _duration, _time, _description, _save, _damage]) { controller.dispose(); } super.dispose(); }
+  void dispose() {
+    for (final controller in [
+      _name,
+      _pp,
+      _range,
+      _duration,
+      _time,
+      _description,
+      _save,
+      _damage,
+    ]) {
+      controller.dispose();
+    }
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -1176,42 +1492,126 @@ class _LocalMoveDialogState extends State<_LocalMoveDialog> {
       title: const Text('Nuova mossa esclusiva'),
       content: SizedBox(
         width: 620,
-        child: SingleChildScrollView(child: Column(mainAxisSize: MainAxisSize.min, children: [
-          TextField(controller: _name, decoration: const InputDecoration(labelText: 'Nome')),
-          const SizedBox(height: 10),
-          DropdownButtonFormField<String>(initialValue: _type, decoration: const InputDecoration(labelText: 'Tipo'), items: [for (final type in _CustomPokemonEditorScreenState._types) DropdownMenuItem(value: type, child: Text(type))], onChanged: (value) { if (value != null) setState(() => _type = value); }),
-          const SizedBox(height: 10),
-          Row(children: [Expanded(child: TextField(controller: _pp, decoration: const InputDecoration(labelText: 'PP'))), const SizedBox(width: 8), Expanded(child: TextField(controller: _time, decoration: const InputDecoration(labelText: 'Tempo')))]),
-          const SizedBox(height: 10),
-          Row(children: [Expanded(child: TextField(controller: _range, decoration: const InputDecoration(labelText: 'Gittata'))), const SizedBox(width: 8), Expanded(child: TextField(controller: _duration, decoration: const InputDecoration(labelText: 'Durata')))]),
-          SwitchListTile(contentPadding: EdgeInsets.zero, title: const Text('Richiede tiro per colpire'), value: _isAttack, onChanged: (value) => setState(() => _isAttack = value)),
-          TextField(controller: _save, decoration: const InputDecoration(labelText: 'Tiro salvezza, se previsto')),
-          const SizedBox(height: 10),
-          TextField(controller: _damage, decoration: const InputDecoration(labelText: 'Danno al livello 1, es. 2d6')),
-          const SizedBox(height: 10),
-          TextField(controller: _description, minLines: 4, maxLines: 9, decoration: const InputDecoration(labelText: 'Descrizione completa')),
-        ])),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: _name,
+                decoration: const InputDecoration(labelText: 'Nome'),
+              ),
+              const SizedBox(height: 10),
+              DropdownButtonFormField<String>(
+                initialValue: _type,
+                decoration: const InputDecoration(labelText: 'Tipo'),
+                items: [
+                  for (final type in _CustomPokemonEditorScreenState._types)
+                    DropdownMenuItem(value: type, child: Text(type)),
+                ],
+                onChanged: (value) {
+                  if (value != null) setState(() => _type = value);
+                },
+              ),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _pp,
+                      decoration: const InputDecoration(labelText: 'PP'),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: TextField(
+                      controller: _time,
+                      decoration: const InputDecoration(labelText: 'Tempo'),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _range,
+                      decoration: const InputDecoration(labelText: 'Gittata'),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: TextField(
+                      controller: _duration,
+                      decoration: const InputDecoration(labelText: 'Durata'),
+                    ),
+                  ),
+                ],
+              ),
+              SwitchListTile(
+                contentPadding: EdgeInsets.zero,
+                title: const Text('Richiede tiro per colpire'),
+                value: _isAttack,
+                onChanged: (value) => setState(() => _isAttack = value),
+              ),
+              TextField(
+                controller: _save,
+                decoration: const InputDecoration(
+                  labelText: 'Tiro salvezza, se previsto',
+                ),
+              ),
+              const SizedBox(height: 10),
+              TextField(
+                controller: _damage,
+                decoration: const InputDecoration(
+                  labelText: 'Danno al livello 1, es. 2d6',
+                ),
+              ),
+              const SizedBox(height: 10),
+              TextField(
+                controller: _description,
+                minLines: 4,
+                maxLines: 9,
+                decoration: const InputDecoration(
+                  labelText: 'Descrizione completa',
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
       actions: [
-        TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('ANNULLA')),
-        FilledButton(onPressed: () {
-          final name = _name.text.trim();
-          final description = _description.text.trim();
-          if (name.isEmpty || description.isEmpty) return;
-          Navigator.of(context).pop(CustomPokemonMoveDefinition(
-            id: 'move-${MoveData.referenceKey(name)}-${DateTime.now().microsecondsSinceEpoch}',
-            name: name,
-            type: _type,
-            pp: _pp.text.trim().isEmpty ? '-' : _pp.text.trim(),
-            range: _range.text.trim().isEmpty ? '-' : _range.text.trim(),
-            duration: _duration.text.trim().isEmpty ? '-' : _duration.text.trim(),
-            moveTime: _time.text.trim().isEmpty ? '-' : _time.text.trim(),
-            description: description,
-            isAttack: _isAttack,
-            save: _nullable(_save.text),
-            damageByLevel: _damage.text.trim().isEmpty ? const {} : {1: _damage.text.trim()},
-          ));
-        }, child: const Text('AGGIUNGI')),
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('ANNULLA'),
+        ),
+        FilledButton(
+          onPressed: () {
+            final name = _name.text.trim();
+            final description = _description.text.trim();
+            if (name.isEmpty || description.isEmpty) return;
+            Navigator.of(context).pop(
+              CustomPokemonMoveDefinition(
+                id: 'move-${MoveData.referenceKey(name)}-${DateTime.now().microsecondsSinceEpoch}',
+                name: name,
+                type: _type,
+                pp: _pp.text.trim().isEmpty ? '-' : _pp.text.trim(),
+                range: _range.text.trim().isEmpty ? '-' : _range.text.trim(),
+                duration: _duration.text.trim().isEmpty
+                    ? '-'
+                    : _duration.text.trim(),
+                moveTime: _time.text.trim().isEmpty ? '-' : _time.text.trim(),
+                description: description,
+                isAttack: _isAttack,
+                save: _nullable(_save.text),
+                damageByLevel: _damage.text.trim().isEmpty
+                    ? const {}
+                    : {1: _damage.text.trim()},
+              ),
+            );
+          },
+          child: const Text('AGGIUNGI'),
+        ),
       ],
     );
   }
@@ -1226,11 +1626,22 @@ class _FakemonImportDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text('${incoming.name} è già presente'),
-      content: Text('La definizione locale è stata aggiornata il ${existing.updatedAt.toLocal()}. Vuoi aggiornarla mantenendo gli esemplari esistenti, oppure importare una copia separata?'),
+      content: Text(
+        'La definizione locale è stata aggiornata il ${existing.updatedAt.toLocal()}. Vuoi aggiornarla mantenendo gli esemplari esistenti, oppure importare una copia separata?',
+      ),
       actions: [
-        TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('ANNULLA')),
-        OutlinedButton(onPressed: () => Navigator.of(context).pop(_ImportChoice.copy), child: const Text('IMPORTA COPIA')),
-        FilledButton(onPressed: () => Navigator.of(context).pop(_ImportChoice.update), child: const Text('AGGIORNA')),
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('ANNULLA'),
+        ),
+        OutlinedButton(
+          onPressed: () => Navigator.of(context).pop(_ImportChoice.copy),
+          child: const Text('IMPORTA COPIA'),
+        ),
+        FilledButton(
+          onPressed: () => Navigator.of(context).pop(_ImportChoice.update),
+          child: const Text('AGGIORNA'),
+        ),
       ],
     );
   }
@@ -1243,13 +1654,22 @@ class _EmptyFakemonState extends StatelessWidget {
     return const Center(
       child: Padding(
         padding: EdgeInsets.all(32),
-        child: Column(mainAxisSize: MainAxisSize.min, children: [
-          Icon(Icons.auto_awesome, size: 72),
-          SizedBox(height: 16),
-          Text('Nessun Fakemon creato', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900)),
-          SizedBox(height: 8),
-          Text('Crea una nuova specie completa oppure importa un file .p5fakemon.', textAlign: TextAlign.center),
-        ]),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.auto_awesome, size: 72),
+            SizedBox(height: 16),
+            Text(
+              'Nessun Fakemon creato',
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900),
+            ),
+            SizedBox(height: 8),
+            Text(
+              'Crea una nuova specie completa oppure importa un file .p5fakemon.',
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -1273,13 +1693,18 @@ CustomPokemonDefinition _copyDefinition(
   });
 }
 
-List<String> _csv(String value) => value.split(',').map((entry) => entry.trim()).where((entry) => entry.isNotEmpty).toList();
+List<String> _csv(String value) => value
+    .split(',')
+    .map((entry) => entry.trim())
+    .where((entry) => entry.isNotEmpty)
+    .toList();
 
 List<int> _intCsv(String value) {
   final result = <int>[];
   for (final entry in _csv(value)) {
     final number = int.tryParse(entry);
-    if (number == null) throw const FormatException('Elenco numerico non valido.');
+    if (number == null)
+      throw const FormatException('Elenco numerico non valido.');
     result.add(number);
   }
   return result;
@@ -1294,12 +1719,18 @@ Map<int, List<String>> _parseLevelMoves(String value) {
     if (separator <= 0) throw FormatException('Riga mosse non valida: $line');
     final level = int.tryParse(line.substring(0, separator).trim());
     final moves = _csv(line.substring(separator + 1));
-    if (level == null || level <= 0 || moves.isEmpty) throw FormatException('Riga mosse non valida: $line');
+    if (level == null || level <= 0 || moves.isEmpty)
+      throw FormatException('Riga mosse non valida: $line');
     result[level] = moves;
   }
   return result;
 }
 
 String? _nullable(String value) => value.trim().isEmpty ? null : value.trim();
-int? _optionalInt(String value) => value.trim().isEmpty ? null : int.parse(value.trim());
-String _friendlyError(Object error) => error.toString().replaceFirst('FormatException: ', '').replaceFirst('Bad state: ', '').trim();
+int? _optionalInt(String value) =>
+    value.trim().isEmpty ? null : int.parse(value.trim());
+String _friendlyError(Object error) => error
+    .toString()
+    .replaceFirst('FormatException: ', '')
+    .replaceFirst('Bad state: ', '')
+    .trim();

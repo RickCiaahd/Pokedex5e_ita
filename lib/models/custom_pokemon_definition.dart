@@ -375,12 +375,12 @@ class CustomPokemonDefinition {
       creatorNotes: _nullableText(json['creatorNotes']),
       imageMimeType: _nullableText(json['imageMimeType']),
       imageBase64: _nullableText(json['imageBase64']),
-      localMoves: _mapList(json['localMoves'])
-          .map(CustomPokemonMoveDefinition.fromJson)
-          .toList(growable: false),
-      localAbilities: _mapList(json['localAbilities'])
-          .map(CustomPokemonAbilityDefinition.fromJson)
-          .toList(growable: false),
+      localMoves: _mapList(
+        json['localMoves'],
+      ).map(CustomPokemonMoveDefinition.fromJson).toList(growable: false),
+      localAbilities: _mapList(
+        json['localAbilities'],
+      ).map(CustomPokemonAbilityDefinition.fromJson).toList(growable: false),
     );
     definition.validate();
     return definition;
@@ -440,18 +440,24 @@ class CustomPokemonDefinition {
 
   void validate() {
     if (formatVersion < 1 || formatVersion > currentFormatVersion) {
-      throw FormatException(
-        'Versione Fakemon non supportata: $formatVersion.',
-      );
+      throw FormatException('Versione Fakemon non supportata: $formatVersion.');
     }
     if (stableId.isEmpty || name.isEmpty || author.isEmpty) {
-      throw const FormatException('ID, nome e autore del Fakemon sono obbligatori.');
+      throw const FormatException(
+        'ID, nome e autore del Fakemon sono obbligatori.',
+      );
     }
     if (pokemonId < firstCustomPokemonId) {
-      throw const FormatException('Identificatore interno del Fakemon non valido.');
+      throw const FormatException(
+        'Identificatore interno del Fakemon non valido.',
+      );
     }
-    if (types.isEmpty || types.length > 2 || types.any((type) => type.isEmpty)) {
-      throw const FormatException('Un Fakemon deve avere uno o due tipi validi.');
+    if (types.isEmpty ||
+        types.length > 2 ||
+        types.any((type) => type.isEmpty)) {
+      throw const FormatException(
+        'Un Fakemon deve avere uno o due tipi validi.',
+      );
     }
     if (armorClass <= 0 ||
         hitPoints <= 0 ||
@@ -485,7 +491,9 @@ class CustomPokemonDefinition {
       throw FormatException('Formato immagine non supportato: $mimeType.');
     }
     if (bytes != null && bytes.length > maxImageBytes) {
-      throw const FormatException('L’immagine del Fakemon supera il limite di 5 MB.');
+      throw const FormatException(
+        'L’immagine del Fakemon supera il limite di 5 MB.',
+      );
     }
 
     final moveIds = <String>{};
@@ -525,10 +533,7 @@ List<String> _stringList(dynamic value) {
 
 List<int> _intList(dynamic value) {
   if (value is! List) return const [];
-  return value
-      .map(_nullableInt)
-      .whereType<int>()
-      .toList(growable: false);
+  return value.map(_nullableInt).whereType<int>().toList(growable: false);
 }
 
 List<Map<String, dynamic>> _mapList(dynamic value) {

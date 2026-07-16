@@ -13,8 +13,7 @@ class PokemonRepository {
 
   Future<List<Pokemon>> getAllPokemon() async {
     final customRevision = CustomPokemonRepository.revision;
-    if (_cachedAllPokemon != null &&
-        _cachedCustomRevision == customRevision) {
+    if (_cachedAllPokemon != null && _cachedCustomRevision == customRevision) {
       return List<Pokemon>.from(_cachedAllPokemon!);
     }
 

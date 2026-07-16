@@ -22,6 +22,7 @@ import '../../repositories/team_repository.dart';
 import '../../services/battle_environment_service.dart';
 import '../../services/battle_quick_item_service.dart';
 import '../../services/battle_status_rules.dart';
+import '../../services/custom_pokemon_runtime_registry.dart';
 import '../../services/trainer_path_passive_service.dart';
 import '../../widgets/battle/battle_environment_card.dart';
 import '../../widgets/battle/battle_status_assistance_card.dart';
@@ -93,6 +94,19 @@ class _BattleScreenState extends State<BattleScreen> {
     }
 
     final moves = await _moveRepository.getMoves(moveReferences);
+    for (final slot in team) {
+      final pokemonId = slot.pokemonId;
+      if (pokemonId == null) continue;
+      final pokemon = pokemonById[pokemonId];
+      if (pokemon == null) continue;
+      for (final reference in _movesForSlot(slot, pokemon)) {
+        final localMove = CustomPokemonRuntimeRegistry.moveFor(
+          pokemonId,
+          reference,
+        );
+        if (localMove != null) moves[reference] = localMove;
+      }
+    }
 
     final data = _BattleData(
       profile: profile,

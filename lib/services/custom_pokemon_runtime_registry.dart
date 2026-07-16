@@ -12,7 +12,9 @@ class CustomPokemonRuntimeRegistry {
     _definitions
       ..clear()
       ..addEntries(
-        definitions.map((definition) => MapEntry(definition.pokemonId, definition)),
+        definitions.map(
+          (definition) => MapEntry(definition.pokemonId, definition),
+        ),
       );
   }
 

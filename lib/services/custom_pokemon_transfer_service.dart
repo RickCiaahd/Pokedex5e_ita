@@ -28,10 +28,14 @@ class CustomPokemonTransferService {
   }
 
   CustomPokemonTransferBundle decode(String source) {
-    final normalized = source.startsWith('\uFEFF') ? source.substring(1) : source;
+    final normalized = source.startsWith('\uFEFF')
+        ? source.substring(1)
+        : source;
     final decoded = jsonDecode(normalized);
     if (decoded is! Map) {
-      throw const FormatException('Il file Fakemon non contiene un oggetto JSON.');
+      throw const FormatException(
+        'Il file Fakemon non contiene un oggetto JSON.',
+      );
     }
     return CustomPokemonTransferBundle.fromJson(
       Map<String, dynamic>.from(decoded),

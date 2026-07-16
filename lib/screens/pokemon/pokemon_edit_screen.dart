@@ -131,8 +131,9 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
   }
 
   Future<void> _loadChoices() async {
-    final abilityDescriptionsFuture = _abilityRepository
-        .getAbilityDescriptions();
+    final abilityDescriptionsFuture = _abilityRepository.getAbilityDescriptions(
+      pokemonId: widget.pokemon.id,
+    );
     final abilityChoicesFuture = _abilityRepository.getWebAbilities();
     final deprecatedAbilitiesFuture = _abilityRepository
         .getDeprecatedAbilityNames();
@@ -151,6 +152,7 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
     final tmMoveNames = await _tmMoveNamesFromRepository(tmMap);
     final contextualMoveData = await _moveRepository.getMoves(
       _learnsetMoveChoices(tmMoveNames),
+      pokemonId: widget.pokemon.id,
     );
     final moveData = <String, MoveData?>{...contextualMoveData};
     for (final move in catalogMoves) {
@@ -318,6 +320,7 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
     final tmMoveNames = await _tmMoveNamesFromRepository(tmMap);
     final contextualMoveData = await _moveRepository.getMoves(
       _learnsetMoveChoices(tmMoveNames),
+      pokemonId: widget.pokemon.id,
     );
     if (!mounted) return;
 

@@ -28,7 +28,10 @@ void main() {
         restored.localAbilityCatalog()['Conduttore Lunare'],
         contains('luce lunare'),
       );
-      expect(restored.toPokemon().moves.startingMoves, contains('Scarica Astrale'));
+      expect(
+        restored.toPokemon().moves.startingMoves,
+        contains('Scarica Astrale'),
+      );
     });
 
     test('il file portabile rileva una modifica al contenuto', () {
@@ -39,7 +42,9 @@ void main() {
       expect(decoded.definition.name, 'Lunavolt');
 
       final json = Map<String, dynamic>.from(jsonDecode(encoded));
-      final definitionJson = Map<String, dynamic>.from(json['definition'] as Map);
+      final definitionJson = Map<String, dynamic>.from(
+        json['definition'] as Map,
+      );
       definitionJson['name'] = 'Nome alterato';
       json['definition'] = definitionJson;
 

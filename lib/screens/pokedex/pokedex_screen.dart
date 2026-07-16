@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../models/custom_pokemon_definition.dart';
 import '../../models/pokedex_entry.dart';
 import '../../models/pokemon.dart';
 import '../../models/pokemon_flavor.dart';
@@ -12,6 +13,7 @@ import '../../widgets/layout/responsive_content.dart';
 import '../../widgets/pokedex/pokemon_summary_dialog.dart';
 import '../../widgets/pokedex/pokemon_tile.dart';
 import '../../widgets/pokemon/pokemon_asset_image.dart';
+import '../pokemon/custom_pokemon_library_screen.dart';
 
 enum MarkMode { none, seen, unseen, caught }
 
@@ -61,6 +63,7 @@ class _PokedexScreenState extends State<PokedexScreen> {
     'Hisui': [899, 905],
     'Paldea': [906, 1025],
     'Altri': [1026, 9999],
+    'Fakemon': [CustomPokemonDefinition.firstCustomPokemonId, 2147483647],
   };
 
   @override
@@ -362,6 +365,19 @@ class _PokedexScreenState extends State<PokedexScreen> {
     );
   }
 
+  Future<void> _openCustomPokemonLibrary() async {
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute(builder: (_) => const CustomPokemonLibraryScreen()),
+    );
+    if (!mounted) return;
+    PokemonRepository.clearCache();
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+    await _loadPokemon();
+  }
+
   Future<void> _loadEntries() async {
     final entries = await _profileStorageService.loadPokedexEntries();
     _entries
@@ -624,7 +640,16 @@ class _PokedexScreenState extends State<PokedexScreen> {
     }
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Pokédex')),
+      appBar: AppBar(
+        title: const Text('Pokédex'),
+        actions: [
+          IconButton(
+            tooltip: 'I miei Fakemon',
+            onPressed: _openCustomPokemonLibrary,
+            icon: const Icon(Icons.auto_awesome),
+          ),
+        ],
+      ),
       body: ResponsiveContent(maxWidth: 1440, child: content),
     );
   }

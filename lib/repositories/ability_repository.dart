@@ -53,15 +53,18 @@ class AbilityRepository {
       final json = Map<String, dynamic>.from(jsonDecode(jsonString));
       final abilityJson = List<dynamic>.from(json['items'] ?? const []);
 
-      _webAbilityCache = abilityJson
-          .map(
-            (value) => PokemonAbility.fromWebJson(
-              Map<String, dynamic>.from(value),
-            ),
-          )
-          .where((ability) => ability.id.isNotEmpty && ability.name.isNotEmpty)
-          .toList(growable: false)
-        ..sort((a, b) => a.name.compareTo(b.name));
+      _webAbilityCache =
+          abilityJson
+              .map(
+                (value) => PokemonAbility.fromWebJson(
+                  Map<String, dynamic>.from(value),
+                ),
+              )
+              .where(
+                (ability) => ability.id.isNotEmpty && ability.name.isNotEmpty,
+              )
+              .toList(growable: false)
+            ..sort((a, b) => a.name.compareTo(b.name));
     }
 
     final abilities = _webAbilityCache!;

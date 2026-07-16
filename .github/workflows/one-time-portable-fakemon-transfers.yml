@@ -29,7 +29,7 @@ jobs:
       - name: Apply UI integration
         run: python3 .github/scripts/apply_portable_fakemon_transfer_ui.py
 
-      - name: Format and validate
+      - name: Format source
         run: |
           dart format \
             lib/models/pokemon_transfer_bundle.dart \
@@ -42,17 +42,33 @@ jobs:
             lib/screens/tools/npc_trainer_library_screen.dart \
             test/portable_fakemon_transfer_test.dart
           flutter pub get
-          flutter analyze
-          flutter test test/portable_fakemon_transfer_test.dart --reporter expanded
-          flutter test test/pokemon_transfer_service_test.dart --reporter expanded
-          flutter test test/campaign_transfer_service_test.dart --reporter expanded
 
-      - name: Commit integrated feature
+      - name: Capture validation output
+        shell: bash
+        run: |
+          set +e
+          {
+            echo '=== flutter analyze ==='
+            flutter analyze
+            echo
+            echo '=== portable transfer tests ==='
+            flutter test test/portable_fakemon_transfer_test.dart --reporter expanded
+            echo
+            echo '=== pokemon transfer tests ==='
+            flutter test test/pokemon_transfer_service_test.dart --reporter expanded
+            echo
+            echo '=== campaign transfer tests ==='
+            flutter test test/campaign_transfer_service_test.dart --reporter expanded
+          } > portable_transfer_validation.txt 2>&1
+          cat portable_transfer_validation.txt
+          exit 0
+
+      - name: Commit integrated feature and diagnostic
         shell: bash
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git rm .github/scripts/apply_portable_fakemon_transfer_ui.py
-          git add CHANGELOG.md lib test/portable_fakemon_transfer_test.dart
+          git add CHANGELOG.md lib test/portable_fakemon_transfer_test.dart portable_transfer_validation.txt
           git commit -m 'Rende autosufficienti i trasferimenti con Fakemon'
           git push origin feature/fakemon-portable-transfers

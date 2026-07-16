@@ -272,7 +272,7 @@ class ProfileBackupService {
         if (targetId != null) {
           node[key] = separator < 0
               ? targetId.toString()
-              : '${targetId}${value.substring(separator)}';
+              : '$targetId${value.substring(separator)}';
         }
       } else {
         _remapPokemonIdsInJson(value, pokemonIdMap);

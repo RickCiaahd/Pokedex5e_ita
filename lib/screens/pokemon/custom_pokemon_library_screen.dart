@@ -139,21 +139,22 @@ class _CustomPokemonLibraryScreenState
                   'La specie è ancora utilizzata. Rimuovi prima tutti i riferimenti elencati:',
                 ),
                 const SizedBox(height: 12),
-                Flexible(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        for (final reference in report.references)
-                          ListTile(
-                            dense: true,
-                            leading: const Icon(Icons.link),
-                            title: Text(reference.location),
-                            subtitle: Text(
-                              '${reference.profileName} · ${reference.detail}',
-                            ),
-                          ),
-                      ],
-                    ),
+                ConstrainedBox(
+                  constraints: const BoxConstraints(maxHeight: 420),
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: report.references.length,
+                    itemBuilder: (context, index) {
+                      final reference = report.references[index];
+                      return ListTile(
+                        dense: true,
+                        leading: const Icon(Icons.link),
+                        title: Text(reference.location),
+                        subtitle: Text(
+                          '${reference.profileName} · ${reference.detail}',
+                        ),
+                      );
+                    },
                   ),
                 ),
               ],

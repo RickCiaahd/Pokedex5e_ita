@@ -8,6 +8,7 @@ import 'package:pokedex_5e_ita/models/custom_pokemon_definition.dart';
 import 'package:pokedex_5e_ita/models/custom_pokemon_transfer_bundle.dart';
 import 'package:pokedex_5e_ita/models/pokemon_attributes.dart';
 import 'package:pokedex_5e_ita/repositories/custom_pokemon_repository.dart';
+import 'package:pokedex_5e_ita/repositories/move_repository.dart';
 import 'package:pokedex_5e_ita/services/custom_pokemon_runtime_registry.dart';
 import 'package:pokedex_5e_ita/services/custom_pokemon_transfer_service.dart';
 
@@ -63,6 +64,22 @@ void main() {
         () => CustomPokemonTransferBundle.fromJson(json),
         throwsFormatException,
       );
+    });
+
+    test('MoveRepository risolve una mossa Fakemon senza cercare un asset', () async {
+      CustomPokemonRuntimeRegistry.replaceAll([_definition()]);
+      addTearDown(
+        () => CustomPokemonRuntimeRegistry.replaceAll(
+          const <CustomPokemonDefinition>[],
+        ),
+      );
+
+      final move = await MoveRepository().getMove('Scarica Astrale');
+
+      expect(move, isNotNull);
+      expect(move!.name, 'Scarica Astrale');
+      expect(move.type, 'Electric');
+      expect(move.description, contains('energia lunare'));
     });
   });
 

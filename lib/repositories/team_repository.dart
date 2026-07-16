@@ -61,7 +61,10 @@ class TeamRepository {
         final trimmedReference = reference.trim();
         if (trimmedReference.isEmpty) continue;
 
-        final move = await _moveRepository.getMove(trimmedReference);
+        final move = await _moveRepository.getMove(
+          trimmedReference,
+          pokemonId: slot.pokemonId,
+        );
         migratedMoves.add(move?.id ?? trimmedReference);
       }
 

@@ -1,0 +1,50 @@
+name: One-time Fakemon exclusive move fix
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out fix branch
+        uses: actions/checkout@v4
+        with:
+          ref: fix/fakemon-exclusive-move-visibility
+          fetch-depth: 0
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Apply fix
+        run: python3 .github/scripts/fix_fakemon_exclusive_move_visibility.py
+
+      - name: Format and validate
+        run: |
+          dart format \
+            lib/models/custom_pokemon_definition.dart \
+            lib/screens/pokemon/custom_pokemon_library_screen.dart \
+            test/custom_pokemon_definition_test.dart
+          flutter pub get
+          flutter analyze
+          flutter test test/custom_pokemon_definition_test.dart --reporter expanded
+
+      - name: Commit fix
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm .github/scripts/fix_fakemon_exclusive_move_visibility.py
+          git add CHANGELOG.md lib test/custom_pokemon_definition_test.dart
+          git commit -m 'Rende visibili le mosse esclusive dei Fakemon'
+          git push origin fix/fakemon-exclusive-move-visibility

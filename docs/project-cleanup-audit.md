@@ -7,6 +7,7 @@ Audit eseguito prima della release Android `1.0.0`.
 - analizzati 129 file Dart in `lib/`;
 - individuati tre file non raggiungibili da `lib/main.dart`;
 - rimossi l'inizializzatore Hive duplicato, la vecchia schermata di creazione profilo e il prototipo del calcolatore di cattura con il relativo test;
+- aggiornata la descrizione del pacchetto Flutter, eliminando il testo generico del progetto iniziale;
 - nessun file di build, cache, keystore o configurazione privata risulta versionato;
 - nessun `TODO`, `FIXME`, `HACK` o `XXX` è presente nel codice applicativo e nei test;
 - verificati 8.222 asset per circa 317,6 MiB.

@@ -109,10 +109,17 @@ class CustomPokemonTransferBundle {
   }
 
   static String _checksum(String source) {
-    var hash = 0xcbf29ce484222325;
+    // FNV-1a a 64 bit. BigInt mantiene esattamente gli stessi 64 bit anche
+    // quando il codice viene compilato per JavaScript, dove gli int ordinari
+    // non possono rappresentare con precisione valori oltre 53 bit.
+    final offsetBasis = BigInt.parse('cbf29ce484222325', radix: 16);
+    final prime = BigInt.parse('100000001b3', radix: 16);
+    final mask = BigInt.parse('ffffffffffffffff', radix: 16);
+
+    var hash = offsetBasis;
     for (final byte in utf8.encode(source)) {
-      hash ^= byte;
-      hash = (hash * 0x100000001b3) & 0xffffffffffffffff;
+      hash ^= BigInt.from(byte);
+      hash = (hash * prime) & mask;
     }
     return hash.toRadixString(16).padLeft(16, '0');
   }

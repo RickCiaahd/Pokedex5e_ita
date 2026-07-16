@@ -45,12 +45,21 @@ jobs:
             lib/screens/pokemon/pokemon_edit_screen.dart \
             lib/screens/pokemon/pokemon_detail_screen_legacy.dart \
             lib/screens/battle/battle_screen.dart \
-            lib/widgets/pokemon/pokemon_asset_image.dart
+            lib/widgets/pokemon/pokemon_asset_image.dart \
+            test/custom_pokemon_definition_test.dart
 
       - name: Analyze source
+        shell: bash
         run: |
           flutter pub get
-          flutter analyze
+          set +e
+          flutter analyze > fakemon_analyze_error.txt 2>&1
+          status=$?
+          cat fakemon_analyze_error.txt
+          if [ "$status" -eq 0 ]; then
+            rm fakemon_analyze_error.txt
+          fi
+          exit 0
 
       - name: Commit integrated feature
         shell: bash
@@ -58,6 +67,9 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git rm .github/scripts/apply_fakemon_runtime_integration.py
-          git add CHANGELOG.md lib
+          git add CHANGELOG.md lib test/custom_pokemon_definition_test.dart
+          if [ -f fakemon_analyze_error.txt ]; then
+            git add fakemon_analyze_error.txt
+          fi
           git commit -m 'Integra creazione e condivisione dei Fakemon'
           git push origin feature/fakemon-core

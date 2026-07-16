@@ -19,7 +19,7 @@ jobs:
       - name: Check out implementation branch
         uses: actions/checkout@v4
         with:
-          ref: feature/full-move-catalog-impl
+          ref: feature/full-move-catalog-fix
           fetch-depth: 0
 
       - name: Set up Flutter
@@ -46,6 +46,6 @@ jobs:
           git rm .github/scripts/fix_full_move_catalog.py
           git add lib/screens/pokemon/pokemon_edit_screen.dart
           git commit -m 'Corregge il selettore del catalogo mosse'
-          git push origin feature/full-move-catalog-impl
+          git push origin feature/full-move-catalog-fix
 
-# trigger correction retry
+# trigger correction on fresh branch

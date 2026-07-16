@@ -1,0 +1,351 @@
+# Audit di pulizia del progetto
+
+> Audit conservativo: nessun asset viene eliminato soltanto perché non compare testualmente. Nel progetto molti percorsi sono costruiti dinamicamente a partire dai JSON.
+
+## Riepilogo
+
+- File Dart in `lib/`: **129**
+- File Dart raggiungibili da `lib/main.dart`: **126**
+- File Dart non raggiungibili staticamente: **3**
+- Asset: **8222** per **317.6 MiB**
+- Gruppi byte-identici: **8**; duplicazione teorica **315.7 KiB**
+- Asset senza riferimento testuale evidente: **4475**
+- File sospetti per nome: **4**
+- Build/cache/segreti nel checkout: **0**
+- TODO/FIXME/HACK/XXX: **0**
+
+## File Dart non raggiungibili staticamente
+
+- `lib/database/hive_init.dart`
+- `lib/models/capture_calculator.dart`
+- `lib/screens/profile/create_profile_screen.dart`
+
+## Asset byte-identici
+
+- **131.8 KiB × 2**
+  - `assets/textures/textures_webapp/pokemon/minior-core-form/main-shiny.png`
+  - `assets/textures/textures_webapp/pokemon/minior-meteor-form/main-shiny.png`
+- **125.1 KiB × 2**
+  - `assets/textures/textures_webapp/pokemon/minior-core-form/main.png`
+  - `assets/textures/textures_webapp/pokemon/minior-meteor-form/main.png`
+- **25.9 KiB × 2**
+  - `assets/textures/pokemons/029Nidoran.png`
+  - `assets/textures/pokemons/29Nidoran-f.png`
+- **25.7 KiB × 2**
+  - `assets/textures/pokemons/032Nidoran.png`
+  - `assets/textures/pokemons/32Nidoran-m.png`
+- **4.8 KiB × 2**
+  - `assets/textures/textures_webapp/pokemon/minior-core-form/sprite-shiny.png`
+  - `assets/textures/textures_webapp/pokemon/minior-meteor-form/sprite-shiny.png`
+- **1.6 KiB × 2**
+  - `assets/textures/gui/background_gradient.png`
+  - `assets/textures/gui/transparent.png`
+- **488.0 B × 2**
+  - `assets/textures/textures_webapp/pokemon/minior-core-form/sprite.png`
+  - `assets/textures/textures_webapp/pokemon/minior-meteor-form/sprite.png`
+- **344.0 B × 2**
+  - `assets/textures/sprites/741Oricorio P'au Style.png`
+  - `assets/textures/sprites/741Oricorio Pa'u Style.png`
+
+## Asset senza riferimento testuale evidente
+
+- `assets/data/filter_data.json` — 92.6 KiB
+- `assets/data/move_index.json` — 13.0 KiB
+- `assets/data/moves/Absorb.json` — 810.0 B
+- `assets/data/moves/Accelerock.json` — 866.0 B
+- `assets/data/moves/Acid Armor.json` — 837.0 B
+- `assets/data/moves/Acid Spray.json` — 1018.0 B
+- `assets/data/moves/Acid.json` — 822.0 B
+- `assets/data/moves/Acrobatics.json` — 820.0 B
+- `assets/data/moves/Acupressure.json` — 689.0 B
+- `assets/data/moves/Aerial Ace.json` — 851.0 B
+- `assets/data/moves/Aeroblast.json` — 890.0 B
+- `assets/data/moves/After You.json` — 340.0 B
+- `assets/data/moves/Agility.json` — 333.0 B
+- `assets/data/moves/Air Cutter.json` — 814.0 B
+- `assets/data/moves/Air Slash.json` — 823.0 B
+- `assets/data/moves/Ally Switch.json` — 257.0 B
+- `assets/data/moves/Amnesia.json` — 338.0 B
+- `assets/data/moves/Anchor Shot.json` — 1.0 KiB
+- `assets/data/moves/Ancient Power.json` — 932.0 B
+- `assets/data/moves/Aqua Jet.json` — 896.0 B
+- `assets/data/moves/Aqua Ring.json` — 345.0 B
+- `assets/data/moves/Aqua Tail.json` — 756.0 B
+- `assets/data/moves/Arm Thrust.json` — 1002.0 B
+- `assets/data/moves/Aromatherapy.json` — 295.0 B
+- `assets/data/moves/Aromatic Mist.json` — 725.0 B
+- `assets/data/moves/Assist.json` — 345.0 B
+- `assets/data/moves/Assurance.json` — 846.0 B
+- `assets/data/moves/Astonish.json` — 828.0 B
+- `assets/data/moves/Attack Order.json` — 818.0 B
+- `assets/data/moves/Attract.json` — 374.0 B
+- `assets/data/moves/Aura Sphere.json` — 875.0 B
+- `assets/data/moves/Aurora Beam.json` — 887.0 B
+- `assets/data/moves/Aurora Veil.json` — 350.0 B
+- `assets/data/moves/Autotomize.json` — 323.0 B
+- `assets/data/moves/Avalanche.json` — 862.0 B
+- `assets/data/moves/Baby-Doll Eyes.json` — 367.0 B
+- `assets/data/moves/Baneful Bunker.json` — 567.0 B
+- `assets/data/moves/Barrage.json` — 837.0 B
+- `assets/data/moves/Barrier.json` — 314.0 B
+- `assets/data/moves/Baton Pass.json` — 487.0 B
+- `assets/data/moves/Beak Blast.json` — 976.0 B
+- `assets/data/moves/Beat Up.json` — 843.0 B
+- `assets/data/moves/Belch.json` — 965.0 B
+- `assets/data/moves/Belly Drum.json` — 367.0 B
+- `assets/data/moves/Bestow.json` — 263.0 B
+- `assets/data/moves/Bide.json` — 761.0 B
+- `assets/data/moves/Bind.json` — 1.0 KiB
+- `assets/data/moves/Bite.json` — 815.0 B
+- `assets/data/moves/Blast Burn.json` — 997.0 B
+- `assets/data/moves/Blaze Kick.json` — 880.0 B
+- `assets/data/moves/Blizzard.json` — 1004.0 B
+- `assets/data/moves/Block.json` — 277.0 B
+- `assets/data/moves/Blue Flare.json` — 949.0 B
+- `assets/data/moves/Body Slam.json` — 904.0 B
+- `assets/data/moves/Bolt Strike.json` — 1.0 KiB
+- `assets/data/moves/Bone Club.json` — 798.0 B
+- `assets/data/moves/Bone Rush.json` — 1009.0 B
+- `assets/data/moves/Bonemerang.json` — 747.0 B
+- `assets/data/moves/Boomburst.json` — 891.0 B
+- `assets/data/moves/Bounce.json` — 1.2 KiB
+- `assets/data/moves/Brave Bird.json` — 842.0 B
+- `assets/data/moves/Brick Break.json` — 858.0 B
+- `assets/data/moves/Brine.json` — 844.0 B
+- `assets/data/moves/Brutal Swing.json` — 893.0 B
+- `assets/data/moves/Bubble Beam.json` — 879.0 B
+- `assets/data/moves/Bubble.json` — 769.0 B
+- `assets/data/moves/Bug Bite.json` — 840.0 B
+- `assets/data/moves/Bug Buzz.json` — 946.0 B
+- `assets/data/moves/Bulk Up.json` — 328.0 B
+- `assets/data/moves/Bulldoze.json` — 943.0 B
+- `assets/data/moves/Bullet Punch.json` — 910.0 B
+- `assets/data/moves/Bullet Seed.json` — 993.0 B
+- `assets/data/moves/Burn Up.json` — 1.2 KiB
+- `assets/data/moves/Calm Mind.json` — 258.0 B
+- `assets/data/moves/Camouflage.json` — 392.0 B
+- `assets/data/moves/Captivate.json` — 428.0 B
+- `assets/data/moves/Charge Beam.json` — 977.0 B
+- `assets/data/moves/Charge.json` — 332.0 B
+- `assets/data/moves/Charm.json` — 495.0 B
+- `assets/data/moves/Chatter.json` — 822.0 B
+- `assets/data/moves/Chip Away.json` — 820.0 B
+- `assets/data/moves/Circle Throw.json` — 1.0 KiB
+- `assets/data/moves/Clamp.json` — 1.1 KiB
+- `assets/data/moves/Clanging Scales.json` — 1010.0 B
+- `assets/data/moves/Clear Smog.json` — 888.0 B
+- `assets/data/moves/Close Combat.json` — 910.0 B
+- `assets/data/moves/Coil.json` — 250.0 B
+- `assets/data/moves/Comet Punch.json` — 1006.0 B
+- `assets/data/moves/Confide.json` — 345.0 B
+- `assets/data/moves/Confuse Ray.json` — 330.0 B
+- `assets/data/moves/Confusion.json` — 874.0 B
+- `assets/data/moves/Constrict.json` — 1.1 KiB
+- `assets/data/moves/Conversion 2.json` — 380.0 B
+- `assets/data/moves/Conversion.json` — 288.0 B
+- `assets/data/moves/Copycat.json` — 383.0 B
+- `assets/data/moves/Core Enforcer.json` — 931.0 B
+- `assets/data/moves/Cosmic Power.json` — 251.0 B
+- `assets/data/moves/Cotton Guard.json` — 247.0 B
+- `assets/data/moves/Cotton Spore.json` — 468.0 B
+- `assets/data/moves/Counter.json` — 803.0 B
+- `assets/data/moves/Covet.json` — 855.0 B
+- `assets/data/moves/Crabhammer.json` — 815.0 B
+- `assets/data/moves/Crafty Shield.json` — 348.0 B
+- `assets/data/moves/Cross Chop.json` — 828.0 B
+- `assets/data/moves/Cross Poison.json` — 850.0 B
+- `assets/data/moves/Crunch.json` — 965.0 B
+- `assets/data/moves/Crush Claw.json` — 855.0 B
+- `assets/data/moves/Crush Grip.json` — 892.0 B
+- `assets/data/moves/Curse.json` — 1.1 KiB
+- `assets/data/moves/Cut.json` — 748.0 B
+- `assets/data/moves/Dark Pulse.json` — 845.0 B
+- `assets/data/moves/Dark Void.json` — 945.0 B
+- `assets/data/moves/Darkest Lariat.json` — 818.0 B
+- `assets/data/moves/Dazzling Gleam.json` — 865.0 B
+- `assets/data/moves/Defend Order.json` — 410.0 B
+- `assets/data/moves/Defense Curl.json` — 281.0 B
+- `assets/data/moves/Defog.json` — 404.0 B
+- `assets/data/moves/Destiny Bond.json` — 429.0 B
+- `assets/data/moves/Detect.json` — 590.0 B
+- `assets/data/moves/Diamond Storm.json` — 989.0 B
+- `assets/data/moves/Dig.json` — 1.3 KiB
+- `assets/data/moves/Disable.json` — 592.0 B
+- `assets/data/moves/Disarming Voice.json` — 875.0 B
+- `assets/data/moves/Discharge.json` — 944.0 B
+- `assets/data/moves/Dive.json` — 1.2 KiB
+- `assets/data/moves/Dizzy Punch.json` — 900.0 B
+- `assets/data/moves/Doom Desire.json` — 950.0 B
+- `assets/data/moves/Double Hit.json` — 752.0 B
+- `assets/data/moves/Double Iron Bash.json` — 834.0 B
+- `assets/data/moves/Double Kick.json` — 775.0 B
+- `assets/data/moves/Double Slap.json` — 1000.0 B
+- `assets/data/moves/Double Team.json` — 663.0 B
+- `assets/data/moves/Double-Edge.json` — 845.0 B
+- `assets/data/moves/Draco Meteor.json` — 1020.0 B
+- `assets/data/moves/Dragon Ascent.json` — 1.1 KiB
+- `assets/data/moves/Dragon Breath.json` — 918.0 B
+- `assets/data/moves/Dragon Claw.json` — 748.0 B
+- `assets/data/moves/Dragon Dance.json` — 263.0 B
+- `assets/data/moves/Dragon Hammer.json` — 978.0 B
+- `assets/data/moves/Dragon Pulse.json` — 773.0 B
+- `assets/data/moves/Dragon Rage.json` — 871.0 B
+- `assets/data/moves/Dragon Rush.json` — 804.0 B
+- `assets/data/moves/Dragon Tail.json` — 1.0 KiB
+- `assets/data/moves/Drain Punch.json` — 813.0 B
+- `assets/data/moves/Draining Kiss.json` — 824.0 B
+- `assets/data/moves/Dream Eater.json` — 854.0 B
+- `assets/data/moves/Drill Peck.json` — 826.0 B
+- `assets/data/moves/Drill Run.json` — 812.0 B
+- `assets/data/moves/Dual Chop.json` — 772.0 B
+- `assets/data/moves/Dynamic Punch.json` — 829.0 B
+- `assets/data/moves/Earth Power.json` — 857.0 B
+- `assets/data/moves/Earthquake.json` — 1.1 KiB
+- `assets/data/moves/Echoed Voice.json` — 1022.0 B
+- `assets/data/moves/Eerie Impulse.json` — 464.0 B
+- `assets/data/moves/Egg Bomb.json` — 775.0 B
+- `assets/data/moves/Electric Terrain.json` — 512.0 B
+- `assets/data/moves/Electrify.json` — 479.0 B
+- `assets/data/moves/Electro Ball.json` — 961.0 B
+- `assets/data/moves/Electroweb.json` — 932.0 B
+- `assets/data/moves/Embargo.json` — 394.0 B
+- `assets/data/moves/Ember.json` — 822.0 B
+- `assets/data/moves/Encore.json` — 555.0 B
+- `assets/data/moves/Endeavor.json` — 507.0 B
+- `assets/data/moves/Endure.json` — 406.0 B
+- `assets/data/moves/Energy Ball.json` — 879.0 B
+- `assets/data/moves/Entrainment.json` — 431.0 B
+- `assets/data/moves/Eruption.json` — 944.0 B
+- `assets/data/moves/Explosion.json` — 499.0 B
+- `assets/data/moves/Extrasensory.json` — 854.0 B
+- `assets/data/moves/Extreme Speed.json` — 867.0 B
+- `assets/data/moves/Facade.json` — 846.0 B
+- `assets/data/moves/Fairy Lock.json` — 314.0 B
+- `assets/data/moves/Fairy Wind.json` — 807.0 B
+- `assets/data/moves/Fake Out.json` — 827.0 B
+- `assets/data/moves/Fake Tears.json` — 453.0 B
+- `assets/data/moves/False Swipe.json` — 863.0 B
+- `assets/data/moves/Feather Dance.json` — 404.0 B
+- `assets/data/moves/Feint Attack.json` — 798.0 B
+- `assets/data/moves/Feint.json` — 842.0 B
+- `assets/data/moves/Fell Stinger.json` — 889.0 B
+- `assets/data/moves/Fiery Dance.json` — 966.0 B
+- `assets/data/moves/Final Gambit.json` — 486.0 B
+- `assets/data/moves/Fire Blast.json` — 960.0 B
+- `assets/data/moves/Fire Fang.json` — 832.0 B
+- `assets/data/moves/Fire Lash.json` — 1.0 KiB
+- `assets/data/moves/Fire Pledge.json` — 832.0 B
+- `assets/data/moves/Fire Punch.json` — 805.0 B
+- `assets/data/moves/Fire Spin.json` — 926.0 B
+- `assets/data/moves/First Impression.json` — 849.0 B
+- `assets/data/moves/Fissure.json` — 524.0 B
+- `assets/data/moves/Flail.json` — 1.0 KiB
+- `assets/data/moves/Flame Burst.json` — 869.0 B
+- `assets/data/moves/Flame Charge.json` — 936.0 B
+- `assets/data/moves/Flame Wheel.json` — 950.0 B
+- `assets/data/moves/Flamethrower.json` — 931.0 B
+- `assets/data/moves/Flare Blitz.json` — 1.0 KiB
+- `assets/data/moves/Flash Cannon.json` — 899.0 B
+- `assets/data/moves/Flash.json` — 497.0 B
+- `assets/data/moves/Flatter.json` — 389.0 B
+- `assets/data/moves/Fleur Cannon.json` — 995.0 B
+- `assets/data/moves/Fling.json` — 899.0 B
+- `assets/data/moves/Floral Healing.json` — 804.0 B
+- `assets/data/moves/Flower Shield.json` — 368.0 B
+- `assets/data/moves/Fly.json` — 1.2 KiB
+- `assets/data/moves/Flying Press.json` — 915.0 B
+- `assets/data/moves/Focus Blast.json` — 862.0 B
+- `assets/data/moves/Focus Energy.json` — 342.0 B
+- `assets/data/moves/Focus Punch.json` — 855.0 B
+- `assets/data/moves/Follow Me.json` — 711.0 B
+- `assets/data/moves/Force Palm.json` — 1004.0 B
+- `assets/data/moves/Foresight.json` — 467.0 B
+- `assets/data/moves/Forest's Curse.json` — 413.0 B
+- `assets/data/moves/Foul Play.json` — 828.0 B
+- `assets/data/moves/Freeze Shock.json` — 950.0 B
+- `assets/data/moves/Freeze-Dry.json` — 1011.0 B
+- `assets/data/moves/Frenzy Plant.json` — 1.0 KiB
+- `assets/data/moves/Frost Breath.json` — 839.0 B
+- `assets/data/moves/Frustration.json` — 1.0 KiB
+- `assets/data/moves/Fury Attack.json` — 1016.0 B
+- `assets/data/moves/Fury Cutter.json` — 1.0 KiB
+- `assets/data/moves/Fury Swipes.json` — 1021.0 B
+- `assets/data/moves/Fusion Bolt.json` — 989.0 B
+- `assets/data/moves/Fusion Flare.json` — 1.0 KiB
+- `assets/data/moves/Future Sight.json` — 967.0 B
+- `assets/data/moves/Gastro Acid.json` — 383.0 B
+- `assets/data/moves/Gear Grind.json` — 767.0 B
+- `assets/data/moves/Gear Up.json` — 354.0 B
+- `assets/data/moves/Geomancy.json` — 384.0 B
+- `assets/data/moves/Giga Drain.json` — 812.0 B
+- `assets/data/moves/Giga Impact.json` — 828.0 B
+- `assets/data/moves/Glaciate.json` — 968.0 B
+- `assets/data/moves/Glare.json` — 489.0 B
+- `assets/data/moves/Grass Knot.json` — 924.0 B
+- `assets/data/moves/Grass Pledge.json` — 841.0 B
+- `assets/data/moves/Grass Whistle.json` — 346.0 B
+- `assets/data/moves/Grassy Terrain.json` — 597.0 B
+- `assets/data/moves/Gravity.json` — 360.0 B
+- `assets/data/moves/Growl.json` — 443.0 B
+- `assets/data/moves/Growth.json` — 746.0 B
+- `assets/data/moves/Grudge.json` — 433.0 B
+- `assets/data/moves/Guard Split.json` — 479.0 B
+- `assets/data/moves/Guard Swap.json` — 397.0 B
+- `assets/data/moves/Guillotine.json` — 440.0 B
+- `assets/data/moves/Gunk Shot.json` — 803.0 B
+- `assets/data/moves/Gust.json` — 749.0 B
+- `assets/data/moves/Gyro Ball.json` — 846.0 B
+- `assets/data/moves/Hail.json` — 447.0 B
+- `assets/data/moves/Hammer Arm.json` — 861.0 B
+- `assets/data/moves/Happy Hour.json` — 241.0 B
+- `assets/data/moves/Harden.json` — 792.0 B
+- …altri 4225 candidati omessi.
+
+## Asset più grandi
+
+- `assets/data_webapp/pokemon.json` — 2.4 MiB
+- `assets/data_webapp/moves.json` — 629.5 KiB
+- `assets/textures/trainers/trainers.png` — 318.7 KiB
+- `assets/textures/textures_webapp/pokemon/stakataka/main.png` — 261.8 KiB
+- `assets/textures/textures_webapp/pokemon/electrode/main-shiny.png` — 258.2 KiB
+- `assets/textures/textures_webapp/pokemon/cryogonal/main-shiny.png` — 257.6 KiB
+- `assets/textures/textures_webapp/pokemon/voltorb/main-shiny.png` — 249.7 KiB
+- `assets/textures/textures_webapp/pokemon/alolan-golem/main-shiny.png` — 242.5 KiB
+- `assets/textures/textures_webapp/pokemon/sunny-castform/main-shiny.png` — 242.5 KiB
+- `assets/textures/textures_webapp/pokemon/zacian-crowned/main-shiny.png` — 239.8 KiB
+- `assets/textures/textures_webapp/pokemon/tropius/main-shiny.png` — 239.7 KiB
+- `assets/textures/textures_webapp/pokemon/snowy-castform/main-shiny.png` — 236.5 KiB
+- `assets/textures/textures_webapp/pokemon/ivysaur/main-shiny.png` — 235.2 KiB
+- `assets/textures/textures_webapp/pokemon/spiritomb/main-shiny.png` — 232.4 KiB
+- `assets/textures/textures_webapp/pokemon/giratina-origin-forme/main-shiny.png` — 230.5 KiB
+- `assets/textures/textures_webapp/pokemon/regirock/main-shiny.png` — 230.5 KiB
+- `assets/textures/textures_webapp/pokemon/torterra/main-shiny.png` — 229.4 KiB
+- `assets/textures/textures_webapp/pokemon/zamazenta-crowned/main-shiny.png` — 229.4 KiB
+- `assets/textures/textures_webapp/pokemon/palkia/main-shiny.png` — 228.8 KiB
+- `assets/textures/textures_webapp/pokemon/grotle/main-shiny.png` — 223.8 KiB
+- `assets/textures/textures_webapp/pokemon/alolan-sandshrew/main-shiny.png` — 223.5 KiB
+- `assets/textures/textures_webapp/pokemon/golurk/main-shiny.png` — 223.3 KiB
+- `assets/textures/textures_webapp/pokemon/probopass/main-shiny.png` — 223.2 KiB
+- `assets/textures/textures_webapp/pokemon/golem/main-shiny.png` — 221.6 KiB
+- `assets/textures/textures_webapp/pokemon/stakataka/main-shiny.png` — 219.3 KiB
+
+## File sospetti per nome
+
+- `lib/models/profile_backup.dart`
+- `lib/services/profile_backup_service.dart`
+- `test/profile_backup_service_test.dart`
+- `test/profile_backup_test.dart`
+
+## Build, cache o segreti presenti nel checkout
+
+- Nessuno.
+
+## TODO e note tecniche
+
+- Nessuno.
+
+## Criterio di intervento
+
+- Rimuovere automaticamente solo file temporanei o codice chiaramente non raggiungibile.
+- Verificare duplicati e asset dinamici contro cataloghi, forme, fallback e test di integrità.
+- Dopo ogni lotto: `flutter analyze`, validazione dati, suite completa e build Android.

@@ -269,6 +269,19 @@ class CustomPokemonDefinition {
   }
 
   Pokemon toPokemon() {
+    final referencedMoveKeys = <String>{
+      ...startingMoves.map(MoveData.referenceKey),
+      ...levelMoves.values.expand((moves) => moves).map(MoveData.referenceKey),
+      ...eggMoves.map(MoveData.referenceKey),
+    };
+    final effectiveStartingMoves = <String>[...startingMoves];
+    for (final localMove in localMoves) {
+      final key = MoveData.referenceKey(localMove.name);
+      if (key.isNotEmpty && referencedMoveKeys.add(key)) {
+        effectiveStartingMoves.add(localMove.name);
+      }
+    }
+
     return Pokemon(
       id: pokemonId,
       name: name,
@@ -283,7 +296,7 @@ class CustomPokemonDefinition {
       skills: List<String>.unmodifiable(skills),
       savingThrows: List<String>.unmodifiable(savingThrows),
       moves: PokemonMoves(
-        startingMoves: List<String>.unmodifiable(startingMoves),
+        startingMoves: List<String>.unmodifiable(effectiveStartingMoves),
         levelMoves: {
           for (final entry in levelMoves.entries)
             entry.key: List<String>.unmodifiable(entry.value),

@@ -589,7 +589,18 @@ class _CustomPokemonEditorScreenState extends State<CustomPokemonEditorScreen> {
       builder: (_) => const _LocalMoveDialog(),
     );
     if (definition == null) return;
-    setState(() => _localMoves = [..._localMoves, definition]);
+    setState(() {
+      _localMoves = [..._localMoves, definition];
+      final startingMoveNames = _csv(_startingMoves.text);
+      final newMoveKey = MoveData.referenceKey(definition.name);
+      final isAlreadyAssigned = startingMoveNames.any(
+        (move) => MoveData.referenceKey(move) == newMoveKey,
+      );
+      if (!isAlreadyAssigned) {
+        startingMoveNames.add(definition.name);
+        _startingMoves.text = startingMoveNames.join(', ');
+      }
+    });
   }
 
   Future<void> _save() async {

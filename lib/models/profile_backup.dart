@@ -1,6 +1,7 @@
 import 'bag_inventory_entry.dart';
 import 'battle_session.dart';
 import 'breeding_egg.dart';
+import 'custom_pokemon_definition.dart';
 import 'encounter_collection.dart';
 import 'master_battle_session.dart';
 import 'pc_pokemon.dart';
@@ -12,7 +13,7 @@ import 'team_slot.dart';
 import 'user_profile.dart';
 
 class ProfileBackup {
-  static const int currentFormatVersion = 5;
+  static const int currentFormatVersion = 6;
 
   ProfileBackup({
     required this.formatVersion,
@@ -29,6 +30,7 @@ class ProfileBackup {
     this.savedNpcTrainers = const [],
     this.masterBattleSession,
     this.breedingEggs = const [],
+    this.customPokemon = const [],
   });
 
   final int formatVersion;
@@ -45,6 +47,7 @@ class ProfileBackup {
   final List<SavedNpcTrainer> savedNpcTrainers;
   final MasterBattleSession? masterBattleSession;
   final List<BreedingEgg> breedingEggs;
+  final List<CustomPokemonDefinition> customPokemon;
 
   int get seenSpecies => pokedex.where((entry) => entry.seen).length;
 
@@ -65,6 +68,62 @@ class ProfileBackup {
     0,
     (total, entry) => total + (entry.quantity > 0 ? entry.quantity : 0),
   );
+
+  Set<int> get referencedPokemonIds {
+    final ids = <int>{};
+    for (final slot in team) {
+      final id = slot.pokemonId;
+      if (id != null && id > 0) ids.add(id);
+    }
+    ids.addAll(pc.map((pokemon) => pokemon.pokemonId).where((id) => id > 0));
+    ids.addAll(
+      pokedex
+          .where(
+            (entry) => entry.seen || entry.caught || entry.forms.isNotEmpty,
+          )
+          .map((entry) => entry.pokemonId)
+          .where((id) => id > 0),
+    );
+    for (final collection in encounterCollections) {
+      ids.addAll(
+        collection.entries
+            .map((entry) => entry.pokemonId)
+            .where((id) => id > 0),
+      );
+    }
+    for (final encounter in savedEncounters) {
+      ids.addAll(
+        encounter.members
+            .map((member) => member.pokemonId)
+            .where((id) => id > 0),
+      );
+    }
+    for (final trainer in savedNpcTrainers) {
+      ids.addAll(
+        trainer.team.map((member) => member.pokemonId).where((id) => id > 0),
+      );
+    }
+    final playerBattle = battleSession;
+    if (playerBattle != null) {
+      ids.addAll(
+        playerBattle.pokemonStates.values
+            .map((state) => state.pokemonId)
+            .where((id) => id > 0),
+      );
+    }
+    final masterBattle = masterBattleSession;
+    if (masterBattle != null) {
+      for (final participant in masterBattle.participants) {
+        ids.addAll(
+          participant.team
+              .map((state) => state.pokemon.pokemonId)
+              .where((id) => id > 0),
+        );
+      }
+    }
+    ids.addAll(breedingEggs.map((egg) => egg.speciesId).where((id) => id > 0));
+    return Set<int>.unmodifiable(ids);
+  }
 
   Map<String, dynamic> toJson() {
     return {
@@ -90,6 +149,10 @@ class ProfileBackup {
       'breedingEggs': breedingEggs
           .map((egg) => egg.toJson())
           .toList(growable: false),
+      if (formatVersion >= 6)
+        'customPokemon': customPokemon
+            .map((definition) => definition.toJson())
+            .toList(growable: false),
     };
   }
 
@@ -166,6 +229,13 @@ class ProfileBackup {
       breedingEggs: [
         for (final value in _readMapList(json['breedingEggs'], 'breedingEggs'))
           BreedingEgg.fromJson(value),
+      ],
+      customPokemon: [
+        for (final value in _readMapList(
+          json['customPokemon'],
+          'customPokemon',
+        ))
+          CustomPokemonDefinition.fromJson(value),
       ],
     );
 
@@ -304,6 +374,42 @@ class ProfileBackup {
       if (!savedEncounterIds.add(encounter.id)) {
         throw FormatException(
           'L’incontro ${encounter.name} è presente più volte.',
+        );
+      }
+    }
+
+    final customByPokemonId = <int, CustomPokemonDefinition>{};
+    final customStableIds = <String>{};
+    for (final definition in customPokemon) {
+      definition.validate();
+      if (!customStableIds.add(definition.stableId) ||
+          customByPokemonId.containsKey(definition.pokemonId)) {
+        throw const FormatException(
+          'Il backup contiene definizioni Fakemon duplicate.',
+        );
+      }
+      customByPokemonId[definition.pokemonId] = definition;
+    }
+    if (formatVersion >= 6) {
+      final referencedCustomIds = referencedPokemonIds
+          .where((id) => id >= CustomPokemonDefinition.firstCustomPokemonId)
+          .toSet();
+      final missing = referencedCustomIds.difference(
+        customByPokemonId.keys.toSet(),
+      );
+      if (missing.isNotEmpty) {
+        final ordered = missing.toList()..sort();
+        throw FormatException(
+          'Il backup non include le definizioni Fakemon per '
+          '${ordered.map((id) => '#$id').join(', ')}.',
+        );
+      }
+      final unused = customByPokemonId.keys.toSet().difference(
+        referencedCustomIds,
+      );
+      if (unused.isNotEmpty) {
+        throw const FormatException(
+          'Il backup contiene definizioni Fakemon non utilizzate.',
         );
       }
     }

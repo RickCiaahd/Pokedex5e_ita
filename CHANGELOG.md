@@ -31,6 +31,7 @@ Tutte le modifiche rilevanti al progetto vengono documentate in questo file.
 
 ### Modificato
 
+- i backup profilo includono automaticamente i Fakemon utilizzati e ne rimappano i riferimenti durante l importazione; il catalogo globale può essere esportato e importato in blocco e l eliminazione di una specie è bloccata finché esistono riferimenti nei profili;
 - i trasferimenti di singoli Pokemon, squadre, incontri e Allenatori PNG includono automaticamente le definizioni complete dei Fakemon usati e le installano o rimappano durante l importazione;
 - le mosse esclusive dei Fakemon vengono aggiunte al moveset iniziale quando create e le vecchie mosse esclusive non assegnate diventano comunque selezionabili nei dettagli della specie;
 - nell'editor Pokémon il selettore mosse distingue disponibilità attuale, learnset completo e catalogo globale, con ricerca e filtri;

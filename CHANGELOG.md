@@ -6,6 +6,7 @@ Tutte le modifiche rilevanti al progetto vengono documentate in questo file.
 
 ### Aggiunto
 
+- catalogo globale dei Fakemon con scheda 5e, immagine caricata, mosse e abilità esclusive della specie, importazione, esportazione e condivisione portabile;
 - workflow GitHub Actions permanente per `flutter analyze` e l'intera suite di test;
 - test automatico di integrità per cataloghi Pokémon, mosse, abilità, forme e asset;
 - documentazione iniziale del progetto, delle piattaforme supportate e dei controlli locali;

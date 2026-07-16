@@ -248,8 +248,8 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
     };
 
     final results = await Future.wait([
-      _moveRepository.getMoves(moveNames),
-      _abilityRepository.getAbilityDescriptions(),
+      _moveRepository.getMoves(moveNames, pokemonId: _pokemon.id),
+      _abilityRepository.getAbilityDescriptions(pokemonId: _pokemon.id),
       _evolutionRepository.getEvolutionData(),
       _featRepository.getFeatDescriptions(),
       _itemRepository.getWebItems(),

@@ -3,12 +3,21 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 
 import '../models/move_data.dart';
+import '../services/custom_pokemon_runtime_registry.dart';
 
 class MoveRepository {
   final Map<String, MoveData?> _cache = {};
   Map<String, MoveData>? _webMoveCache;
 
-  Future<MoveData?> getMove(String reference) async {
+  Future<MoveData?> getMove(String reference, {int? pokemonId}) async {
+    if (pokemonId != null) {
+      final localMove = CustomPokemonRuntimeRegistry.moveFor(
+        pokemonId,
+        reference,
+      );
+      if (localMove != null) return localMove;
+    }
+
     final cacheKey = _normalizeMoveKey(reference);
     if (_cache.containsKey(cacheKey)) {
       return _cache[cacheKey];
@@ -35,20 +44,21 @@ class MoveRepository {
     }
   }
 
-  Future<Map<String, MoveData?>> getMoves(Iterable<String> names) async {
+  Future<Map<String, MoveData?>> getMoves(
+    Iterable<String> names, {
+    int? pokemonId,
+  }) async {
     final result = <String, MoveData?>{};
 
     for (final name in names) {
-      result[name] = await getMove(name);
+      result[name] = await getMove(name, pokemonId: pokemonId);
     }
 
     return result;
   }
 
-  /// Returns the complete move catalog exposed by the app.
-  ///
-  /// Keeping this entry point independent from the backing asset makes it
-  /// possible to merge additional move sources later without changing the UI.
+  /// Returns the complete global move catalog exposed by the app.
+  /// Species-local Fakemon moves are intentionally excluded.
   Future<List<MoveData>> getAllMoves() => getAllWebMoves();
 
   Future<List<MoveData>> getAllWebMoves() async {
@@ -59,6 +69,15 @@ class MoveRepository {
         .where((move) => seen.add(move.id))
         .toList(growable: false)
       ..sort((a, b) => a.name.compareTo(b.name));
+  }
+
+  List<MoveData> getLocalMovesForPokemon(int pokemonId) {
+    final seen = <String>{};
+    final moves = CustomPokemonRuntimeRegistry.moveCatalogFor(
+      pokemonId,
+    ).values.where((move) => seen.add(move.id)).toList(growable: false);
+    moves.sort((a, b) => a.name.compareTo(b.name));
+    return moves;
   }
 
   Future<Map<String, MoveData>> _getWebMoveCatalog() async {

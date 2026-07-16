@@ -5,14 +5,11 @@ import 'package:flutter/material.dart';
 import '../../models/pokedex_entry.dart';
 import '../../models/pokemon.dart';
 import '../../models/pokemon_evolution_alias_registry.dart';
+import '../../services/custom_pokemon_runtime_registry.dart';
 import 'pokemon_asset_image_legacy.dart' as legacy;
 
-/// Resolves temporary evolution aliases before delegating to the complete
-/// asset resolver.
-///
-/// The compatibility layer is invisible to normal Pokémon: only negative ids
-/// created for an evolution preview are translated to their canonical species
-/// id and form.
+/// Resolves temporary evolution aliases and user-provided Fakemon images before
+/// delegating to the complete bundled-asset resolver.
 class PokemonAssetImage extends StatelessWidget {
   const PokemonAssetImage({
     super.key,
@@ -42,6 +39,65 @@ class PokemonAssetImage extends StatelessWidget {
     final alias = PokemonEvolutionAliasRegistry.aliasFor(pokemon.id);
     final effectivePokemon = alias?.basePokemon ?? pokemon;
     final effectiveFormName = formName ?? alias?.formName;
+    final customBytes = CustomPokemonRuntimeRegistry.imageBytesFor(
+      effectivePokemon.id,
+    );
+
+    if (customBytes != null) {
+      Widget image = Image.memory(
+        customBytes,
+        width: size,
+        height: size,
+        fit: fit,
+        gaplessPlayback: true,
+        errorBuilder: (_, _, _) =>
+            fallback ?? Icon(Icons.catching_pokemon, size: size * 0.48),
+      );
+      final seen = entry?.seen ?? true;
+      final caught = entry?.caught ?? true;
+      if (!seen) {
+        image = ColorFiltered(
+          colorFilter: const ColorFilter.mode(Colors.black, BlendMode.srcATop),
+          child: image,
+        );
+      } else if (!caught) {
+        image = Opacity(
+          opacity: 0.56,
+          child: ColorFiltered(
+            colorFilter: const ColorFilter.matrix(<double>[
+              0.2126,
+              0.7152,
+              0.0722,
+              0,
+              52,
+              0.2126,
+              0.7152,
+              0.0722,
+              0,
+              52,
+              0.2126,
+              0.7152,
+              0.0722,
+              0,
+              52,
+              0,
+              0,
+              0,
+              1,
+              0,
+            ]),
+            child: image,
+          ),
+        );
+      }
+
+      return SizedBox(
+        key: ValueKey<String>('custom-${effectivePokemon.id}-$size'),
+        width: size,
+        height: size,
+        child: Center(child: image),
+      );
+    }
 
     return legacy.PokemonAssetImage(
       key: ValueKey<String>(

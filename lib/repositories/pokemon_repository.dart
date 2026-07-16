@@ -5,12 +5,15 @@ import 'package:flutter/services.dart';
 
 import '../models/pokemon.dart';
 import '../models/pokemon_flavor.dart';
+import 'custom_pokemon_repository.dart';
 
 class PokemonRepository {
   static List<Pokemon>? _cachedAllPokemon;
+  static int _cachedCustomRevision = -1;
 
   Future<List<Pokemon>> getAllPokemon() async {
-    if (_cachedAllPokemon != null) {
+    final customRevision = CustomPokemonRepository.revision;
+    if (_cachedAllPokemon != null && _cachedCustomRevision == customRevision) {
       return List<Pokemon>.from(_cachedAllPokemon!);
     }
 
@@ -31,11 +34,22 @@ class PokemonRepository {
                 .withAdditionalFormDefinitions(pokemon.formDefinitions);
     }
 
+    final customDefinitions = await CustomPokemonRepository().getAll();
+    for (final definition in customDefinitions) {
+      pokemonByNumber[definition.pokemonId] = definition.toPokemon();
+    }
+
     final pokemonList = pokemonByNumber.values.toList(growable: false)
       ..sort((a, b) => a.id.compareTo(b.id));
     _cachedAllPokemon = pokemonList;
+    _cachedCustomRevision = customRevision;
 
     return List<Pokemon>.from(pokemonList);
+  }
+
+  static void clearCache() {
+    _cachedAllPokemon = null;
+    _cachedCustomRevision = -1;
   }
 
   Future<List<Pokemon>> _getLegacyPokemon() async {

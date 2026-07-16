@@ -8,27 +8,33 @@ import '../services/custom_pokemon_runtime_registry.dart';
 
 class CustomPokemonRepository {
   static int _revision = 0;
+  static bool _storageReady = false;
 
   static int get revision => _revision;
+  static bool get storageReady => _storageReady;
+
+  /// Marks the user-data storage as available after Hive has been initialized.
+  static void markStorageReady() {
+    _storageReady = true;
+  }
+
+  /// Used by tests and shutdown flows that close Hive in the current isolate.
+  static void markStorageUnavailable() {
+    _storageReady = false;
+    CustomPokemonRuntimeRegistry.replaceAll(const []);
+  }
 
   Future<Box> _box() => Hive.openBox(HiveBoxes.customPokemon);
 
   Future<List<CustomPokemonDefinition>> getAll() async {
-    Box box;
-    try {
-      box = await _box();
-    } catch (error) {
-      // Il catalogo statico viene caricato anche in test puri che non inizializzano
-      // Hive. In quel contesto l'assenza del deposito utente equivale a non avere
-      // Fakemon installati, mentre ogni altro errore deve continuare a emergere.
-      final message = error.toString();
-      if (message.contains('HiveError') && message.contains('initialize Hive')) {
-        CustomPokemonRuntimeRegistry.replaceAll(const []);
-        return const [];
-      }
-      rethrow;
+    // Pure catalog tests load PokemonRepository without starting the Flutter
+    // persistence layer. In that context there simply are no user Fakemon.
+    if (!_storageReady) {
+      CustomPokemonRuntimeRegistry.replaceAll(const []);
+      return const [];
     }
 
+    final box = await _box();
     final definitions = <CustomPokemonDefinition>[];
 
     for (final value in box.values) {

@@ -8,7 +8,7 @@ L'app raccoglie in un unico progetto gli strumenti principali per giocatori e Ma
 
 - Pokédex con specie, forme, statistiche, mosse, abilità e sprite;
 - profili Allenatore, squadra attiva e Pokémon Center;
-- inventario e calcolatore di cattura;
+- inventario, gestione delle Poké Ball e registrazione delle catture;
 - Battle Companion per il giocatore;
 - generatori di Pokémon, incontri e Allenatori PNG;
 - librerie persistenti di incontri e Allenatori;

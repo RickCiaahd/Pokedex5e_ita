@@ -1,6 +1,11 @@
 name: One-time full move catalog
 
 on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/one-time-full-move-catalog.yml'
   push:
     branches:
       - feature/full-move-catalog

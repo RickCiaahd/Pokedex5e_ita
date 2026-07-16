@@ -1,0 +1,58 @@
+name: One-time portable Fakemon transfers
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  integrate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+
+    steps:
+      - name: Check out feature branch
+        uses: actions/checkout@v4
+        with:
+          ref: feature/fakemon-portable-transfers
+          fetch-depth: 0
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Apply UI integration
+        run: python3 .github/scripts/apply_portable_fakemon_transfer_ui.py
+
+      - name: Format and validate
+        run: |
+          dart format \
+            lib/models/pokemon_transfer_bundle.dart \
+            lib/models/campaign_transfer_bundle.dart \
+            lib/services/embedded_custom_pokemon_transfer_service.dart \
+            lib/services/pokemon_transfer_service.dart \
+            lib/services/campaign_transfer_service.dart \
+            lib/screens/team/team_selection_screen.dart \
+            lib/screens/tools/encounter_library_screen.dart \
+            lib/screens/tools/npc_trainer_library_screen.dart \
+            test/portable_fakemon_transfer_test.dart
+          flutter pub get
+          flutter analyze
+          flutter test test/portable_fakemon_transfer_test.dart --reporter expanded
+          flutter test test/pokemon_transfer_service_test.dart --reporter expanded
+          flutter test test/campaign_transfer_service_test.dart --reporter expanded
+
+      - name: Commit integrated feature
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm .github/scripts/apply_portable_fakemon_transfer_ui.py
+          git add CHANGELOG.md lib test/portable_fakemon_transfer_test.dart
+          git commit -m 'Rende autosufficienti i trasferimenti con Fakemon'
+          git push origin feature/fakemon-portable-transfers

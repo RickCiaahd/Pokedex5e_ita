@@ -4,8 +4,6 @@ on:
   pull_request:
     branches:
       - main
-    paths:
-      - '.github/workflows/one-time-fix-full-move-catalog.yml'
 
 permissions:
   contents: write
@@ -47,5 +45,3 @@ jobs:
           git add lib/screens/pokemon/pokemon_edit_screen.dart
           git commit -m 'Corregge il selettore del catalogo mosse'
           git push origin feature/full-move-catalog-fix
-
-# trigger correction on fresh branch

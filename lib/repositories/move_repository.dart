@@ -45,6 +45,12 @@ class MoveRepository {
     return result;
   }
 
+  /// Returns the complete move catalog exposed by the app.
+  ///
+  /// Keeping this entry point independent from the backing asset makes it
+  /// possible to merge additional move sources later without changing the UI.
+  Future<List<MoveData>> getAllMoves() => getAllWebMoves();
+
   Future<List<MoveData>> getAllWebMoves() async {
     final catalog = await _getWebMoveCatalog();
     final seen = <String>{};

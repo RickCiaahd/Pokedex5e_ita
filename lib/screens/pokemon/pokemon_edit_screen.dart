@@ -79,6 +79,7 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
   List<PokemonAbility> _abilityChoices = const [];
   Set<String> _deprecatedAbilityNames = const {};
   List<String> _tmMoveNames = const [];
+  List<String> _catalogMoveNames = const [];
   Map<String, String> _abilityDescriptions = {};
   Map<String, String> _featDescriptions = {};
   Map<String, MoveData?> _moveData = {};
@@ -138,6 +139,7 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
     final featDescriptionsFuture = _featRepository.getFeatDescriptions();
     final formChoicesFuture = PokemonAssetPaths.formChoices(widget.pokemon);
     final tmMapFuture = _tmRepository.getTmMap();
+    final catalogMovesFuture = _moveRepository.getAllMoves();
 
     final abilityDescriptions = await abilityDescriptionsFuture;
     final abilityChoices = await abilityChoicesFuture;
@@ -145,10 +147,19 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
     final featDescriptions = await featDescriptionsFuture;
     final formChoices = await formChoicesFuture;
     final tmMap = await tmMapFuture;
+    final catalogMoves = await catalogMovesFuture;
     final tmMoveNames = await _tmMoveNamesFromRepository(tmMap);
-    final moveData = await _moveRepository.getMoves(
-      _allMoveChoices(tmMoveNames),
+    final contextualMoveData = await _moveRepository.getMoves(
+      _learnsetMoveChoices(tmMoveNames),
     );
+    final moveData = <String, MoveData?>{...contextualMoveData};
+    for (final move in catalogMoves) {
+      moveData[move.id] = move;
+      moveData[move.name] = move;
+    }
+    final catalogMoveNames = _unique(
+      catalogMoves.map((move) => move.name),
+    )..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
 
     if (!mounted) return;
 
@@ -178,6 +189,7 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
       _featDescriptions = featDescriptions;
       _moveData = moveData;
       _tmMoveNames = tmMoveNames;
+      _catalogMoveNames = catalogMoveNames;
       _formChoices = formChoices;
       _formName = formName;
       _isLoadingChoices = false;
@@ -245,13 +257,14 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
     return _unique(names);
   }
 
-  List<String> _allMoveChoices([List<String>? tmMoves]) {
+  List<String> _learnsetMoveChoices([List<String>? tmMoves]) {
     return _unique([
       ..._movesUpToLevel(20),
       ...(tmMoves ?? _tmMoveNames),
+      ..._formPokemon.moves.eggMoves,
       ...widget.availableMoves,
       ..._selectedMoves,
-    ])..sort();
+    ])..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
   }
 
   List<String> _unique(Iterable<String> values) {
@@ -304,14 +317,14 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
   Future<void> _reloadVariantDependentChoices() async {
     final tmMap = await _tmRepository.getTmMap();
     final tmMoveNames = await _tmMoveNamesFromRepository(tmMap);
-    final moveData = await _moveRepository.getMoves(
-      _allMoveChoices(tmMoveNames),
+    final contextualMoveData = await _moveRepository.getMoves(
+      _learnsetMoveChoices(tmMoveNames),
     );
     if (!mounted) return;
 
     setState(() {
       _tmMoveNames = tmMoveNames;
-      _moveData = moveData;
+      _moveData = {..._moveData, ...contextualMoveData};
     });
   }
 
@@ -354,9 +367,8 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
       MaterialPageRoute(
         builder: (_) => _MovePickerScreen(
           currentLevelMoves: widget.availableMoves,
-          level20Moves: _movesUpToLevel(20),
-          tmMoves: _tmMoveNames,
-          allMoves: _allMoveChoices(),
+          learnsetMoves: _learnsetMoveChoices(),
+          catalogMoves: _catalogMoveNames,
           blockedMoves: blocked,
           moveData: _moveData,
         ),
@@ -1049,17 +1061,15 @@ class _ScoreStepper extends StatelessWidget {
 class _MovePickerScreen extends StatefulWidget {
   const _MovePickerScreen({
     required this.currentLevelMoves,
-    required this.level20Moves,
-    required this.tmMoves,
-    required this.allMoves,
+    required this.learnsetMoves,
+    required this.catalogMoves,
     required this.blockedMoves,
     required this.moveData,
   });
 
   final List<String> currentLevelMoves;
-  final List<String> level20Moves;
-  final List<String> tmMoves;
-  final List<String> allMoves;
+  final List<String> learnsetMoves;
+  final List<String> catalogMoves;
   final Set<String> blockedMoves;
   final Map<String, MoveData?> moveData;
 
@@ -1068,71 +1078,286 @@ class _MovePickerScreen extends StatefulWidget {
 }
 
 class _MovePickerScreenState extends State<_MovePickerScreen> {
-  String _filter = 'current';
+  String _source = 'current';
   String _search = '';
+  String? _selectedType;
+  String _category = 'all';
 
-  List<String> get _activeMoves {
-    final source = switch (_filter) {
-      'tm' => widget.tmMoves,
-      'lv20' => widget.level20Moves,
-      'az' => widget.allMoves,
+  Set<String> get _blockedMoveKeys => widget.blockedMoves
+      .map(MoveData.referenceKey)
+      .where((key) => key.isNotEmpty)
+      .toSet();
+
+  List<String> get _sourceMoves {
+    return switch (_source) {
+      'learnset' => widget.learnsetMoves,
+      'catalog' => widget.catalogMoves,
       _ => widget.currentLevelMoves,
     };
-    final search = _search.trim().toLowerCase();
+  }
 
-    return source.where((move) => !widget.blockedMoves.contains(move)).where((
-      move,
-    ) {
-      if (search.isEmpty) return true;
+  List<String> get _availableTypes {
+    final types = <String>{};
+    for (final move in _sourceMoves) {
+      final type = widget.moveData[move]?.type.trim();
+      if (type != null && type.isNotEmpty) types.add(type);
+    }
+    return types.toList(growable: false)
+      ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+  }
+
+  String _categoryFor(MoveData? move) {
+    if (move?.isAttack == true) return 'attack';
+    if ((move?.save ?? '').trim().isNotEmpty) return 'save';
+    return 'other';
+  }
+
+  String get _sourceLabel {
+    return switch (_source) {
+      'learnset' => 'Learnset completo',
+      'catalog' => 'Catalogo completo',
+      _ => 'Disponibile ora',
+    };
+  }
+
+  String _categoryLabel(String value) {
+    return switch (value) {
+      'attack' => 'Attacchi',
+      'save' => 'Tiri salvezza',
+      'other' => 'Altre mosse',
+      _ => 'Tutte le categorie',
+    };
+  }
+
+  List<String> get _activeMoves {
+    final search = _search.trim().toLowerCase();
+    final selectedType = _selectedType?.toLowerCase();
+    final blocked = _blockedMoveKeys;
+    final seen = <String>{};
+
+    final moves = _sourceMoves.where((move) {
+      final key = MoveData.referenceKey(move);
+      if (key.isEmpty || blocked.contains(key) || !seen.add(key)) return false;
+
       final data = widget.moveData[move];
+      if (selectedType != null &&
+          (data?.type.toLowerCase() ?? '') != selectedType) {
+        return false;
+      }
+      if (_category != 'all' && _categoryFor(data) != _category) {
+        return false;
+      }
+      if (search.isEmpty) return true;
+
       return move.toLowerCase().contains(search) ||
+          (data?.name.toLowerCase().contains(search) ?? false) ||
           (data?.description.toLowerCase().contains(search) ?? false) ||
-          (data?.type.toLowerCase().contains(search) ?? false);
-    }).toList()..sort();
+          (data?.type.toLowerCase().contains(search) ?? false) ||
+          (data?.moveTime.toLowerCase().contains(search) ?? false);
+    }).toList(growable: false);
+
+    return moves
+      ..sort((a, b) {
+        final aLabel = widget.moveData[a]?.name ?? a;
+        final bLabel = widget.moveData[b]?.name ?? b;
+        return aLabel.toLowerCase().compareTo(bLabel.toLowerCase());
+      });
+  }
+
+  void _setSource(String value) {
+    setState(() {
+      _source = value;
+      final currentType = _selectedType;
+      if (currentType != null && !_availableTypes.contains(currentType)) {
+        _selectedType = null;
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return _ChoiceShell(
-      title: 'Scegli mossa',
-      searchLabel: 'Cerca',
-      onSearchChanged: (value) => setState(() => _search = value),
-      sideFilters: [
-        _FilterButton(
-          label: 'Lv.',
-          selected: _filter == 'current',
-          onTap: () => setState(() => _filter = 'current'),
+    final moves = _activeMoves;
+    final availableTypes = _availableTypes;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('SCEGLI MOSSA'),
+        backgroundColor: Colors.orange,
+        foregroundColor: Colors.white,
+      ),
+      body: SafeArea(
+        child: Row(
+          children: [
+            SizedBox(
+              width: 84,
+              child: ListView(
+                padding: const EdgeInsets.only(top: 12),
+                children: [
+                  _FilterButton(
+                    label: 'ORA',
+                    selected: _source == 'current',
+                    onTap: () => _setSource('current'),
+                  ),
+                  _FilterButton(
+                    label: 'LEARN.',
+                    selected: _source == 'learnset',
+                    onTap: () => _setSource('learnset'),
+                  ),
+                  _FilterButton(
+                    label: 'TUTTE',
+                    selected: _source == 'catalog',
+                    onTap: () => _setSource('catalog'),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(12, 12, 12, 8),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        TextField(
+                          textAlign: TextAlign.center,
+                          textInputAction: TextInputAction.search,
+                          decoration: const InputDecoration(
+                            labelText: 'Cerca per nome, tipo o descrizione',
+                            prefixIcon: Icon(Icons.search),
+                            border: OutlineInputBorder(),
+                          ),
+                          onChanged: (value) => setState(() => _search = value),
+                        ),
+                        const SizedBox(height: 8),
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: [
+                            SizedBox(
+                              width: 210,
+                              child: DropdownButtonFormField<String?>(
+                                initialValue: _selectedType,
+                                isExpanded: true,
+                                decoration: const InputDecoration(
+                                  labelText: 'Tipo',
+                                  border: OutlineInputBorder(),
+                                ),
+                                items: [
+                                  const DropdownMenuItem<String?>(
+                                    value: null,
+                                    child: Text('Tutti i tipi'),
+                                  ),
+                                  for (final type in availableTypes)
+                                    DropdownMenuItem<String?>(
+                                      value: type,
+                                      child: Text(type),
+                                    ),
+                                ],
+                                onChanged: (value) =>
+                                    setState(() => _selectedType = value),
+                              ),
+                            ),
+                            SizedBox(
+                              width: 210,
+                              child: DropdownButtonFormField<String>(
+                                initialValue: _category,
+                                isExpanded: true,
+                                decoration: const InputDecoration(
+                                  labelText: 'Categoria',
+                                  border: OutlineInputBorder(),
+                                ),
+                                items: [
+                                  for (final value in const [
+                                    'all',
+                                    'attack',
+                                    'save',
+                                    'other',
+                                  ])
+                                    DropdownMenuItem(
+                                      value: value,
+                                      child: Text(_categoryLabel(value)),
+                                    ),
+                                ],
+                                onChanged: (value) {
+                                  if (value != null) {
+                                    setState(() => _category = value);
+                                  }
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                        if (_source == 'catalog') ...[
+                          const SizedBox(height: 8),
+                          Card(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.secondaryContainer,
+                            child: const Padding(
+                              padding: EdgeInsets.all(10),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Icon(Icons.info_outline, size: 20),
+                                  SizedBox(width: 8),
+                                  Expanded(
+                                    child: Text(
+                                      'Scelta manuale: la compatibilità con la specie non viene verificata.',
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                        Padding(
+                          padding: const EdgeInsets.only(top: 6),
+                          child: Text(
+                            '$_sourceLabel · ${moves.length} mosse',
+                            style: Theme.of(context).textTheme.labelLarge,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: moves.isEmpty
+                        ? const Center(child: Text('Nessuna mossa disponibile.'))
+                        : ListView.builder(
+                            keyboardDismissBehavior:
+                                ScrollViewKeyboardDismissBehavior.onDrag,
+                            padding: const EdgeInsets.fromLTRB(12, 0, 12, 16),
+                            itemCount: moves.length,
+                            itemBuilder: (context, index) {
+                              final move = moves[index];
+                              final data = widget.moveData[move];
+                              final details = <String>[
+                                _sourceLabel,
+                                if (data != null &&
+                                    data.moveTime.trim().isNotEmpty &&
+                                    data.moveTime != '-')
+                                  data.moveTime,
+                                if (data != null &&
+                                    data.description.trim().isNotEmpty)
+                                  data.description.trim(),
+                              ];
+                              return _PickerTile(
+                                label: data?.name ?? move,
+                                type: data?.type,
+                                subtitle: details.join('
+'),
+                                onTap: () => Navigator.of(context).pop(move),
+                              );
+                            },
+                          ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
-        _FilterButton(
-          label: 'MT',
-          selected: _filter == 'tm',
-          onTap: () => setState(() => _filter = 'tm'),
-        ),
-        _FilterButton(
-          label: 'Lv.20',
-          selected: _filter == 'lv20',
-          onTap: () => setState(() => _filter = 'lv20'),
-        ),
-        _FilterButton(
-          label: 'A-Z',
-          selected: _filter == 'az',
-          onTap: () => setState(() => _filter = 'az'),
-        ),
-      ],
-      children: [
-        for (final move in _activeMoves)
-          _PickerTile(
-            label: widget.moveData[move]?.name ?? move,
-            type: widget.moveData[move]?.type,
-            subtitle: widget.moveData[move]?.description,
-            onTap: () => Navigator.of(context).pop(move),
-          ),
-        if (_activeMoves.isEmpty)
-          const Padding(
-            padding: EdgeInsets.all(24),
-            child: Text('Nessuna mossa disponibile.'),
-          ),
-      ],
+      ),
     );
   }
 }

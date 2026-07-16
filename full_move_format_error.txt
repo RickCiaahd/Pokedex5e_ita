@@ -1,0 +1,29 @@
+Warning: Package resolution error when reading "analysis_options.yaml" file:
+Failed to resolve package URI "package:flutter_lints/flutter.yaml" in include at "/home/runner/work/Pokedex5e_ita/Pokedex5e_ita/analysis_options.yaml".
+Warning: Package resolution error when reading "analysis_options.yaml" file:
+Failed to resolve package URI "package:flutter_lints/flutter.yaml" in include at "/home/runner/work/Pokedex5e_ita/Pokedex5e_ita/analysis_options.yaml".
+Could not format because the source could not be parsed:
+
+line 1348, column 56 of lib/screens/pokemon/pokemon_edit_screen.dart: Unterminated string literal.
+     ╷
+1348 │                                 subtitle: details.join('
+     │                                                        ^
+     ╵
+line 1349, column 3 of lib/screens/pokemon/pokemon_edit_screen.dart: Unterminated string literal.
+     ╷
+1349 │ '),
+     │   ^
+     ╵
+line 1352, column 29 of lib/screens/pokemon/pokemon_edit_screen.dart: Expected to find ')'.
+     ╷
+1352 │                             },
+     │                             ^
+     ╵
+line 1350, column 33 of lib/screens/pokemon/pokemon_edit_screen.dart: Expected to find ','.
+     ╷
+1350 │                                 onTap: () => Navigator.of(context).pop(move),
+     │                                 ^^^^^
+     ╵
+Warning: Package resolution error when reading "analysis_options.yaml" file:
+Failed to resolve package URI "package:flutter_lints/flutter.yaml" in include at "/home/runner/work/Pokedex5e_ita/Pokedex5e_ita/analysis_options.yaml".
+Formatted 2 files (0 changed) in 0.01 seconds.

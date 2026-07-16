@@ -1,0 +1,73 @@
+name: One-time full move catalog runner
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/one-time-full-move-catalog-runner.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Check out feature branch
+        uses: actions/checkout@v4
+        with:
+          ref: feature/full-move-catalog
+          fetch-depth: 0
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Apply prepared patch
+        shell: bash
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+          import textwrap
+
+          workflow = Path('.github/workflows/one-time-full-move-catalog.yml')
+          raw = workflow.read_text(encoding='utf-8')
+          start = "          python3 <<'PY'\n"
+          end = "\n          PY\n"
+          if start not in raw or end not in raw:
+              raise SystemExit('Unable to extract prepared patch script')
+          script = raw.split(start, 1)[1].split(end, 1)[0]
+          exec(compile(textwrap.dedent(script), str(workflow), 'exec'))
+          PY
+
+      - name: Format changed Dart files
+        run: |
+          dart format \
+            lib/repositories/move_repository.dart \
+            lib/screens/pokemon/pokemon_edit_screen.dart \
+            test/full_move_catalog_test.dart
+
+      - name: Commit feature branch
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm .github/workflows/one-time-full-move-catalog.yml
+          git add CHANGELOG.md lib test/full_move_catalog_test.dart
+          git commit -m 'Aggiunge il catalogo completo delle mosse'
+          git push origin feature/full-move-catalog
+
+      - name: Remove runner from main
+        shell: bash
+        run: |
+          git fetch origin main
+          git switch main
+          git reset --hard origin/main
+          git rm .github/workflows/one-time-full-move-catalog-runner.yml
+          git commit -m 'Rimuove workflow temporaneo catalogo mosse'
+          git push origin main

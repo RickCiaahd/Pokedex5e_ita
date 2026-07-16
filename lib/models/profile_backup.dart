@@ -76,7 +76,14 @@ class ProfileBackup {
       if (id != null && id > 0) ids.add(id);
     }
     ids.addAll(pc.map((pokemon) => pokemon.pokemonId).where((id) => id > 0));
-    ids.addAll(pokedex.map((entry) => entry.pokemonId).where((id) => id > 0));
+    ids.addAll(
+      pokedex
+          .where(
+            (entry) => entry.seen || entry.caught || entry.forms.isNotEmpty,
+          )
+          .map((entry) => entry.pokemonId)
+          .where((id) => id > 0),
+    );
     for (final collection in encounterCollections) {
       ids.addAll(
         collection.entries

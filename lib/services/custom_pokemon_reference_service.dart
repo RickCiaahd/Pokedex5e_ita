@@ -101,7 +101,11 @@ class CustomPokemonReferenceService {
       }
     }
 
-    if (backup.pokedex.any((entry) => entry.pokemonId == pokemonId)) {
+    if (backup.pokedex.any(
+      (entry) =>
+          entry.pokemonId == pokemonId &&
+          (entry.seen || entry.caught || entry.forms.isNotEmpty),
+    )) {
       references.add(
         CustomPokemonReference(
           profileName: profileName,

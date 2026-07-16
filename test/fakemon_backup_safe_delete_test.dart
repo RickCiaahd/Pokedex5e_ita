@@ -6,9 +6,11 @@ import 'package:hive/hive.dart';
 import 'package:pokedex_5e_ita/models/custom_pokemon_catalog_bundle.dart';
 import 'package:pokedex_5e_ita/models/custom_pokemon_definition.dart';
 import 'package:pokedex_5e_ita/models/pokemon_attributes.dart';
+import 'package:pokedex_5e_ita/models/pokedex_entry.dart';
 import 'package:pokedex_5e_ita/models/profile_backup.dart';
 import 'package:pokedex_5e_ita/models/team_slot.dart';
 import 'package:pokedex_5e_ita/repositories/custom_pokemon_repository.dart';
+import 'package:pokedex_5e_ita/repositories/pokedex_repositry.dart';
 import 'package:pokedex_5e_ita/repositories/profile_repository.dart';
 import 'package:pokedex_5e_ita/repositories/team_repository.dart';
 import 'package:pokedex_5e_ita/services/custom_pokemon_catalog_service.dart';
@@ -134,6 +136,28 @@ void main() {
       );
     },
   );
+
+  test('una voce Pokédex vuota non blocca l’eliminazione', () async {
+    final definition = _definition(
+      stableId: 'fakemon-pokedex-vuoto',
+      pokemonId: CustomPokemonDefinition.firstCustomPokemonId,
+      name: 'Vuoto',
+    );
+    await customPokemonRepository.save(definition);
+    final profile = await profileRepository.createProfile('Archivio');
+    await PokedexRepository().saveEntry(
+      profileId: profile.id,
+      entry: PokedexEntry.empty(definition.pokemonId),
+    );
+
+    final backup = await backupService.createBackup(profile.id);
+    final report = await CustomPokemonReferenceService().findReferences(
+      definition.pokemonId,
+    );
+
+    expect(backup.customPokemon, isEmpty);
+    expect(report.isInUse, isFalse);
+  });
 
   test('il catalogo globale ha checksum e rileva le modifiche', () async {
     final definition = _definition(

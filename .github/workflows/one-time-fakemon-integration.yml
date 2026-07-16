@@ -26,50 +26,23 @@ jobs:
           channel: stable
           cache: true
 
-      - name: Apply runtime integration
-        run: python3 .github/scripts/apply_fakemon_runtime_integration.py
+      - name: Apply final corrections
+        run: python3 .github/scripts/fix_fakemon_analysis.py
 
-      - name: Format Fakemon source
+      - name: Format and analyze Fakemon source
         run: |
           dart format \
-            lib/models/custom_pokemon_definition.dart \
-            lib/models/custom_pokemon_transfer_bundle.dart \
-            lib/repositories/custom_pokemon_repository.dart \
-            lib/repositories/pokemon_repository.dart \
-            lib/repositories/move_repository.dart \
-            lib/repositories/ability_repository.dart \
-            lib/services/custom_pokemon_runtime_registry.dart \
-            lib/services/custom_pokemon_transfer_service.dart \
             lib/screens/pokemon/custom_pokemon_library_screen.dart \
-            lib/screens/pokedex/pokedex_screen.dart \
-            lib/screens/pokemon/pokemon_edit_screen.dart \
-            lib/screens/pokemon/pokemon_detail_screen_legacy.dart \
-            lib/screens/battle/battle_screen.dart \
-            lib/widgets/pokemon/pokemon_asset_image.dart \
             test/custom_pokemon_definition_test.dart
-
-      - name: Analyze source
-        shell: bash
-        run: |
           flutter pub get
-          set +e
-          flutter analyze > fakemon_analyze_error.txt 2>&1
-          status=$?
-          cat fakemon_analyze_error.txt
-          if [ "$status" -eq 0 ]; then
-            rm fakemon_analyze_error.txt
-          fi
-          exit 0
+          flutter analyze
 
-      - name: Commit integrated feature
+      - name: Commit final corrections
         shell: bash
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git rm .github/scripts/apply_fakemon_runtime_integration.py
-          git add CHANGELOG.md lib test/custom_pokemon_definition_test.dart
-          if [ -f fakemon_analyze_error.txt ]; then
-            git add fakemon_analyze_error.txt
-          fi
-          git commit -m 'Integra creazione e condivisione dei Fakemon'
+          git rm .github/scripts/fix_fakemon_analysis.py
+          git add -A
+          git commit -m 'Corregge e valida l’editor Fakemon'
           git push origin feature/fakemon-core

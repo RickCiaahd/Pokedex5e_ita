@@ -1,0 +1,55 @@
+name: One-time Fakemon backup and safe delete
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  integrate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+
+    steps:
+      - name: Check out feature branch
+        uses: actions/checkout@v4
+        with:
+          ref: feature/fakemon-backup-safe-delete
+          fetch-depth: 0
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Apply feature integration
+        run: python3 .github/scripts/apply_fakemon_backup_safe_delete.py
+
+      - name: Format and validate
+        run: |
+          dart format \
+            lib/models/custom_pokemon_catalog_bundle.dart \
+            lib/models/profile_backup.dart \
+            lib/services/custom_pokemon_catalog_service.dart \
+            lib/services/custom_pokemon_reference_service.dart \
+            lib/services/profile_backup_service.dart \
+            lib/screens/pokemon/custom_pokemon_library_screen.dart \
+            test/fakemon_backup_safe_delete_test.dart
+          flutter pub get
+          flutter analyze
+          flutter test test/fakemon_backup_safe_delete_test.dart --reporter expanded
+          flutter test test/profile_backup_service_test.dart --reporter expanded
+
+      - name: Commit feature
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm .github/scripts/apply_fakemon_backup_safe_delete.py
+          git add CHANGELOG.md lib test/fakemon_backup_safe_delete_test.dart
+          git commit -m 'Aggiunge backup e cancellazione sicura dei Fakemon'
+          git push origin feature/fakemon-backup-safe-delete

@@ -9,6 +9,20 @@ def replace_once(path: Path, old: str, new: str, label: str) -> None:
     path.write_text(text.replace(old, new, 1), encoding='utf-8')
 
 
+def replace_exact_count(
+    path: Path,
+    old: str,
+    new: str,
+    expected: int,
+    label: str,
+) -> None:
+    text = path.read_text(encoding='utf-8')
+    count = text.count(old)
+    if count != expected:
+        raise SystemExit(f'{label}: expected {expected} matches, found {count}')
+    path.write_text(text.replace(old, new), encoding='utf-8')
+
+
 pokedex = Path('lib/screens/pokedex/pokedex_screen.dart')
 replace_once(
     pokedex,
@@ -75,23 +89,15 @@ replace_once(
     "        .getAbilityDescriptions(pokemonId: widget.pokemon.id);\n",
     'editor ability context',
 )
-replace_once(
+replace_exact_count(
     editor,
     "    final contextualMoveData = await _moveRepository.getMoves(\n      _learnsetMoveChoices(tmMoveNames),\n    );\n",
     "    final contextualMoveData = await _moveRepository.getMoves(\n"
     "      _learnsetMoveChoices(tmMoveNames),\n"
     "      pokemonId: widget.pokemon.id,\n"
     "    );\n",
-    'editor initial move context',
-)
-replace_once(
-    editor,
-    "    final contextualMoveData = await _moveRepository.getMoves(\n      _learnsetMoveChoices(tmMoveNames),\n    );\n",
-    "    final contextualMoveData = await _moveRepository.getMoves(\n"
-    "      _learnsetMoveChoices(tmMoveNames),\n"
-    "      pokemonId: widget.pokemon.id,\n"
-    "    );\n",
-    'editor reload move context',
+    2,
+    'editor move context',
 )
 
 pokemon_detail = Path('lib/screens/pokemon/pokemon_detail_screen_legacy.dart')

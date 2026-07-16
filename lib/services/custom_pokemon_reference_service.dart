@@ -132,7 +132,8 @@ class CustomPokemonReferenceService {
           CustomPokemonReference(
             profileName: profileName,
             location: 'Incontro',
-            detail: '${encounter.name} · $count esemplar${count == 1 ? 'e' : 'i'}',
+            detail:
+                '${encounter.name} · $count esemplar${count == 1 ? 'e' : 'i'}',
           ),
         );
       }
@@ -147,7 +148,8 @@ class CustomPokemonReferenceService {
           CustomPokemonReference(
             profileName: profileName,
             location: 'Allenatore PNG',
-            detail: '${trainer.name} · $count esemplar${count == 1 ? 'e' : 'i'}',
+            detail:
+                '${trainer.name} · $count esemplar${count == 1 ? 'e' : 'i'}',
           ),
         );
       }
@@ -192,7 +194,9 @@ class CustomPokemonReferenceService {
           CustomPokemonReference(
             profileName: profileName,
             location: 'Allevamento',
-            detail: egg.isReady ? 'uovo pronto alla schiusa' : 'uovo in incubazione',
+            detail: egg.isReady
+                ? 'uovo pronto alla schiusa'
+                : 'uovo in incubazione',
           ),
         );
       }

@@ -11,6 +11,8 @@ import '../../repositories/ability_repository.dart';
 import '../../repositories/custom_pokemon_repository.dart';
 import '../../repositories/move_repository.dart';
 import '../../repositories/pokemon_repository.dart';
+import '../../services/custom_pokemon_catalog_service.dart';
+import '../../services/custom_pokemon_reference_service.dart';
 import '../../services/custom_pokemon_transfer_service.dart';
 import '../../services/native_share_service.dart';
 import '../../widgets/layout/responsive_content.dart';
@@ -33,6 +35,10 @@ class _CustomPokemonLibraryScreenState
   final CustomPokemonTransferService _transferService =
       CustomPokemonTransferService();
   final NativeShareService _shareService = const NativeShareService();
+  final CustomPokemonCatalogService _catalogService =
+      CustomPokemonCatalogService();
+  final CustomPokemonReferenceService _referenceService =
+      CustomPokemonReferenceService();
 
   List<CustomPokemonDefinition> _definitions = const [];
   bool _isLoading = true;
@@ -105,14 +111,71 @@ class _CustomPokemonLibraryScreenState
   }
 
   Future<void> _delete(CustomPokemonDefinition definition) async {
+    if (_isBusy) return;
+    setState(() => _isBusy = true);
+    CustomPokemonReferenceReport report;
+    try {
+      report = await _referenceService.findReferences(definition.pokemonId);
+    } catch (error) {
+      _setMessage(_friendlyError(error), isError: true);
+      if (mounted) setState(() => _isBusy = false);
+      return;
+    }
+    if (!mounted) return;
+    setState(() => _isBusy = false);
+
+    if (report.isInUse) {
+      await showDialog<void>(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: Text('Impossibile eliminare ${definition.name}'),
+          content: SizedBox(
+            width: 620,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'La specie è ancora utilizzata. Rimuovi prima tutti i riferimenti elencati:',
+                ),
+                const SizedBox(height: 12),
+                Flexible(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        for (final reference in report.references)
+                          ListTile(
+                            dense: true,
+                            leading: const Icon(Icons.link),
+                            title: Text(reference.location),
+                            subtitle: Text(
+                              '${reference.profileName} · ${reference.detail}',
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            FilledButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
+      return;
+    }
+
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
         title: Text('Eliminare ${definition.name}?'),
         content: const Text(
-          'La specie verrà rimossa dal catalogo locale. Eventuali esemplari già '
-          'presenti in squadre, PC, incontri o battaglie conserveranno il loro '
-          'riferimento numerico ma non potranno più caricare la scheda completa.',
+          'La specie non è utilizzata da nessun profilo e verrà rimossa dal catalogo globale.',
         ),
         actions: [
           TextButton(
@@ -134,6 +197,65 @@ class _CustomPokemonLibraryScreenState
       PokemonRepository.clearCache();
       await _load();
       _setMessage('${definition.name} eliminato.');
+    } catch (error) {
+      _setMessage(_friendlyError(error), isError: true);
+    } finally {
+      if (mounted) setState(() => _isBusy = false);
+    }
+  }
+
+  Future<void> _exportCatalog() async {
+    if (_isBusy) return;
+    setState(() => _isBusy = true);
+    try {
+      final bundle = await _catalogService.createBundle();
+      final encoded = _catalogService.encode(bundle);
+      final result = await FilePicker.platform.saveFile(
+        dialogTitle: 'Esporta catalogo Fakemon',
+        fileName: _catalogService.fileNameFor(bundle),
+        type: FileType.custom,
+        allowedExtensions: const ['p5fakemonpack'],
+        bytes: Uint8List.fromList(utf8.encode(encoded)),
+      );
+      _setMessage(
+        result == null
+            ? 'Esportazione catalogo annullata.'
+            : '${bundle.definitions.length} Fakemon esportati.',
+      );
+    } catch (error) {
+      _setMessage(_friendlyError(error), isError: true);
+    } finally {
+      if (mounted) setState(() => _isBusy = false);
+    }
+  }
+
+  Future<void> _importCatalog() async {
+    if (_isBusy) return;
+    setState(() => _isBusy = true);
+    try {
+      final result = await FilePicker.platform.pickFiles(
+        dialogTitle: 'Importa catalogo Fakemon',
+        type: FileType.custom,
+        allowedExtensions: const ['p5fakemonpack', 'json'],
+        allowMultiple: false,
+        withData: true,
+      );
+      if (result == null || result.files.isEmpty) {
+        _setMessage('Importazione catalogo annullata.');
+        return;
+      }
+      final picked = result.files.single;
+      final bytes = picked.bytes ?? await picked.xFile.readAsBytes();
+      final bundle = _catalogService.decode(
+        utf8.decode(bytes, allowMalformed: false),
+      );
+      final imported = await _catalogService.importBundle(bundle);
+      PokemonRepository.clearCache();
+      await _load();
+      _setMessage(
+        'Catalogo importato: ${imported.installed} installati, '
+        '${imported.updated} aggiornati, ${imported.remapped} rimappati.',
+      );
     } catch (error) {
       _setMessage(_friendlyError(error), isError: true);
     } finally {
@@ -256,10 +378,36 @@ class _CustomPokemonLibraryScreenState
         leading: const HomeLeadingButton(),
         title: const Text('I MIEI FAKEMON'),
         actions: [
-          IconButton(
-            tooltip: 'Importa Fakemon',
-            onPressed: _isBusy ? null : _import,
-            icon: const Icon(Icons.file_download_outlined),
+          PopupMenuButton<String>(
+            tooltip: 'Importa ed esporta',
+            enabled: !_isBusy,
+            onSelected: (value) {
+              switch (value) {
+                case 'import-single':
+                  _import();
+                  break;
+                case 'import-catalog':
+                  _importCatalog();
+                  break;
+                case 'export-catalog':
+                  _exportCatalog();
+                  break;
+              }
+            },
+            itemBuilder: (_) => const [
+              PopupMenuItem(
+                value: 'import-single',
+                child: Text('Importa Fakemon'),
+              ),
+              PopupMenuItem(
+                value: 'import-catalog',
+                child: Text('Importa catalogo'),
+              ),
+              PopupMenuItem(
+                value: 'export-catalog',
+                child: Text('Esporta catalogo'),
+              ),
+            ],
           ),
         ],
       ),

@@ -95,34 +95,45 @@ void main() {
     expect(importedTeam.first.nickname, 'Luna');
   });
 
-  test('il controllo riferimenti blocca una specie presente in squadra', () async {
-    final definition = _definition(
-      stableId: 'fakemon-usato',
-      pokemonId: CustomPokemonDefinition.firstCustomPokemonId,
-      name: 'Usato',
-    );
-    await customPokemonRepository.save(definition);
-    final profile = await profileRepository.createProfile('Riccardo');
-    await teamRepository.saveTeam(profile.id, [
-      TeamSlot(
-        slotIndex: 1,
-        pokemonId: definition.pokemonId,
-        nickname: 'Compagno',
-      ),
-      TeamSlot(slotIndex: 0, pokemonId: null),
-      for (var index = 2; index < 6; index++)
-        TeamSlot(slotIndex: index, pokemonId: null),
-    ]);
+  test(
+    'il controllo riferimenti blocca una specie presente in squadra',
+    () async {
+      final definition = _definition(
+        stableId: 'fakemon-usato',
+        pokemonId: CustomPokemonDefinition.firstCustomPokemonId,
+        name: 'Usato',
+      );
+      await customPokemonRepository.save(definition);
+      final profile = await profileRepository.createProfile('Riccardo');
+      await teamRepository.saveTeam(profile.id, [
+        TeamSlot(
+          slotIndex: 1,
+          pokemonId: definition.pokemonId,
+          nickname: 'Compagno',
+        ),
+        TeamSlot(slotIndex: 0, pokemonId: null),
+        for (var index = 2; index < 6; index++)
+          TeamSlot(slotIndex: index, pokemonId: null),
+      ]);
 
-    final report = await CustomPokemonReferenceService().findReferences(
-      definition.pokemonId,
-    );
+      final report = await CustomPokemonReferenceService().findReferences(
+        definition.pokemonId,
+      );
 
-    expect(report.isInUse, isTrue);
-    expect(report.references, isNotEmpty);
-    expect(report.references.any((reference) => reference.location == 'Squadra'), isTrue);
-    expect(report.references.any((reference) => reference.detail.contains('slot 2')), isTrue);
-  });
+      expect(report.isInUse, isTrue);
+      expect(report.references, isNotEmpty);
+      expect(
+        report.references.any((reference) => reference.location == 'Squadra'),
+        isTrue,
+      );
+      expect(
+        report.references.any(
+          (reference) => reference.detail.contains('slot 2'),
+        ),
+        isTrue,
+      );
+    },
+  );
 
   test('il catalogo globale ha checksum e rileva le modifiche', () async {
     final definition = _definition(

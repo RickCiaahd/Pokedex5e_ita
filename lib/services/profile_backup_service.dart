@@ -18,6 +18,7 @@ import '../repositories/saved_encounter_repository.dart';
 import '../repositories/saved_npc_trainer_repository.dart';
 import '../repositories/setting_repository.dart';
 import '../repositories/team_repository.dart';
+import 'embedded_custom_pokemon_transfer_service.dart';
 
 class ProfileBackupService {
   ProfileBackupService({
@@ -33,6 +34,7 @@ class ProfileBackupService {
     SavedNpcTrainerRepository? savedNpcTrainerRepository,
     MasterBattleSessionRepository? masterBattleSessionRepository,
     BreedingEggRepository? breedingEggRepository,
+    EmbeddedCustomPokemonTransferService? embeddedCustomPokemonService,
   }) : _profileRepository = profileRepository ?? ProfileRepository(),
        _pokedexRepository = pokedexRepository ?? PokedexRepository(),
        _teamRepository = teamRepository ?? TeamRepository(),
@@ -50,7 +52,10 @@ class ProfileBackupService {
        _masterBattleSessionRepository =
            masterBattleSessionRepository ?? MasterBattleSessionRepository(),
        _breedingEggRepository =
-           breedingEggRepository ?? BreedingEggRepository();
+           breedingEggRepository ?? BreedingEggRepository(),
+       _embeddedCustomPokemonService =
+           embeddedCustomPokemonService ??
+           EmbeddedCustomPokemonTransferService();
 
   final ProfileRepository _profileRepository;
   final PokedexRepository _pokedexRepository;
@@ -64,6 +69,7 @@ class ProfileBackupService {
   final SavedNpcTrainerRepository _savedNpcTrainerRepository;
   final MasterBattleSessionRepository _masterBattleSessionRepository;
   final BreedingEggRepository _breedingEggRepository;
+  final EmbeddedCustomPokemonTransferService _embeddedCustomPokemonService;
 
   Future<ProfileBackup> createBackup(String profileId) async {
     final profiles = await _profileRepository.getProfiles();
@@ -104,8 +110,8 @@ class ProfileBackupService {
     team.sort((a, b) => a.slotIndex.compareTo(b.slotIndex));
     bag.sort((a, b) => a.itemId.compareTo(b.itemId));
 
-    return ProfileBackup(
-      formatVersion: ProfileBackup.currentFormatVersion,
+    final draft = ProfileBackup(
+      formatVersion: 5,
       exportedAt: DateTime.now(),
       profile: profile,
       pokedex: pokedex,
@@ -119,6 +125,25 @@ class ProfileBackupService {
       savedNpcTrainers: savedNpcTrainers,
       masterBattleSession: masterBattleSession,
       breedingEggs: breedingEggs,
+    );
+    final customPokemon = await _embeddedCustomPokemonService
+        .definitionsForPokemonIds(draft.referencedPokemonIds);
+    return ProfileBackup(
+      formatVersion: ProfileBackup.currentFormatVersion,
+      exportedAt: draft.exportedAt,
+      profile: draft.profile,
+      pokedex: draft.pokedex,
+      team: draft.team,
+      pc: draft.pc,
+      bag: draft.bag,
+      settings: draft.settings,
+      battleSession: draft.battleSession,
+      encounterCollections: draft.encounterCollections,
+      savedEncounters: draft.savedEncounters,
+      savedNpcTrainers: draft.savedNpcTrainers,
+      masterBattleSession: draft.masterBattleSession,
+      breedingEggs: draft.breedingEggs,
+      customPokemon: customPokemon,
     );
   }
 
@@ -157,11 +182,17 @@ class ProfileBackupService {
     bool setActive = true,
   }) async {
     backup.validate();
+    final installResult = await _embeddedCustomPokemonService
+        .installDefinitions(backup.customPokemon);
+    final resolvedBackup = _remapBackupPokemonIds(
+      backup,
+      installResult.pokemonIdMap,
+    );
     final profiles = await _profileRepository.getProfiles();
     final existingIds = profiles.map((profile) => profile.id).toSet();
     final isNewProfile = targetProfileId == null;
     final destinationId = targetProfileId ?? _newProfileId(existingIds);
-    final trimmedName = (profileName ?? backup.profile.name).trim();
+    final trimmedName = (profileName ?? resolvedBackup.profile.name).trim();
     if (trimmedName.isEmpty) {
       throw const FormatException('Inserisci un nome valido per il profilo.');
     }
@@ -174,7 +205,7 @@ class ProfileBackupService {
         ? null
         : await createBackup(destinationId);
     final now = DateTime.now();
-    final importedProfile = backup.profile.copyWith(
+    final importedProfile = resolvedBackup.profile.copyWith(
       id: destinationId,
       name: trimmedName,
       createdAt: isNewProfile ? now : backup.profile.createdAt,
@@ -183,7 +214,7 @@ class ProfileBackupService {
 
     try {
       await _writeBackupData(
-        backup: backup,
+        backup: resolvedBackup,
         profile: importedProfile,
         destinationId: destinationId,
       );
@@ -203,6 +234,49 @@ class ProfileBackupService {
       }
       await _profileRepository.setActiveProfile(previousActiveProfile.id);
       rethrow;
+    }
+  }
+
+  ProfileBackup _remapBackupPokemonIds(
+    ProfileBackup backup,
+    Map<int, int> pokemonIdMap,
+  ) {
+    if (pokemonIdMap.isEmpty ||
+        pokemonIdMap.entries.every((entry) => entry.key == entry.value)) {
+      return backup;
+    }
+    final json = Map<String, dynamic>.from(backup.toJson());
+    json['formatVersion'] = 5;
+    json.remove('customPokemon');
+    _remapPokemonIdsInJson(json, pokemonIdMap);
+    return ProfileBackup.fromJson(json);
+  }
+
+  void _remapPokemonIdsInJson(dynamic node, Map<int, int> pokemonIdMap) {
+    if (node is List) {
+      for (final value in node) {
+        _remapPokemonIdsInJson(value, pokemonIdMap);
+      }
+      return;
+    }
+    if (node is! Map) return;
+    for (final key in node.keys.toList()) {
+      final value = node[key];
+      if ((key == 'pokemonId' || key == 'speciesId') && value is num) {
+        node[key] = pokemonIdMap[value.toInt()] ?? value.toInt();
+      } else if (key == 'identityKey' && value is String) {
+        final separator = value.indexOf('::');
+        final rawId = separator < 0 ? value : value.substring(0, separator);
+        final sourceId = int.tryParse(rawId);
+        final targetId = sourceId == null ? null : pokemonIdMap[sourceId];
+        if (targetId != null) {
+          node[key] = separator < 0
+              ? targetId.toString()
+              : '${targetId}${value.substring(separator)}';
+        }
+      } else {
+        _remapPokemonIdsInJson(value, pokemonIdMap);
+      }
     }
   }
 

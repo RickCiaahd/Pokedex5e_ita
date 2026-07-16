@@ -1,0 +1,63 @@
+name: One-time Fakemon integration
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  integrate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Check out Fakemon branch
+        uses: actions/checkout@v4
+        with:
+          ref: feature/fakemon-core
+          fetch-depth: 0
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Apply runtime integration
+        run: python3 .github/scripts/apply_fakemon_runtime_integration.py
+
+      - name: Format Fakemon source
+        run: |
+          dart format \
+            lib/models/custom_pokemon_definition.dart \
+            lib/models/custom_pokemon_transfer_bundle.dart \
+            lib/repositories/custom_pokemon_repository.dart \
+            lib/repositories/pokemon_repository.dart \
+            lib/repositories/move_repository.dart \
+            lib/repositories/ability_repository.dart \
+            lib/services/custom_pokemon_runtime_registry.dart \
+            lib/services/custom_pokemon_transfer_service.dart \
+            lib/screens/pokemon/custom_pokemon_library_screen.dart \
+            lib/screens/pokedex/pokedex_screen.dart \
+            lib/screens/pokemon/pokemon_edit_screen.dart \
+            lib/screens/pokemon/pokemon_detail_screen_legacy.dart \
+            lib/screens/battle/battle_screen.dart \
+            lib/widgets/pokemon/pokemon_asset_image.dart
+
+      - name: Analyze source
+        run: |
+          flutter pub get
+          flutter analyze
+
+      - name: Commit integrated feature
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm .github/scripts/apply_fakemon_runtime_integration.py
+          git add CHANGELOG.md lib
+          git commit -m 'Integra creazione e condivisione dei Fakemon'
+          git push origin feature/fakemon-core

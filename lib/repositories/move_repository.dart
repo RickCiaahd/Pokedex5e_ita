@@ -19,15 +19,20 @@ class MoveRepository {
     }
 
     final cacheKey = _normalizeMoveKey(reference);
-    if (_cache.containsKey(cacheKey)) {
-      return _cache[cacheKey];
-    }
-
     final webMoves = await _getWebMoveCatalog();
     final webMove = webMoves[cacheKey];
     if (webMove != null) {
       _cache[cacheKey] = webMove;
       return webMove;
+    }
+
+    final runtimeMove = CustomPokemonRuntimeRegistry.moveForAny(reference);
+    if (runtimeMove != null) {
+      return runtimeMove;
+    }
+
+    if (_cache.containsKey(cacheKey)) {
+      return _cache[cacheKey];
     }
 
     try {

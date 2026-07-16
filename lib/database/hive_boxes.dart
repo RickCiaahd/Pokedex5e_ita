@@ -10,6 +10,7 @@ class HiveBoxes {
   static const savedNpcTrainers = 'saved_npc_trainers';
   static const masterBattleSessions = 'master_battle_sessions';
   static const breedingEggs = 'breeding_eggs';
+  static const customPokemon = 'custom_pokemon';
   static const settings = 'settings';
   static const appState = 'app_state';
 }

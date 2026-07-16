@@ -17,11 +17,12 @@ class CustomPokemonRepository {
     Box box;
     try {
       box = await _box();
-    } on HiveError catch (error) {
+    } catch (error) {
       // Il catalogo statico viene caricato anche in test puri che non inizializzano
       // Hive. In quel contesto l'assenza del deposito utente equivale a non avere
       // Fakemon installati, mentre ogni altro errore deve continuare a emergere.
-      if (error.toString().contains('initialize Hive')) {
+      final message = error.toString();
+      if (message.contains('HiveError') && message.contains('initialize Hive')) {
         CustomPokemonRuntimeRegistry.replaceAll(const []);
         return const [];
       }

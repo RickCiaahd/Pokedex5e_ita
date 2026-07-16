@@ -200,6 +200,7 @@ class _NpcTrainerLibraryScreenState extends State<NpcTrainerLibraryScreen> {
         sourceProfileName: profile.name,
       );
       final json = await _transferService.encodePortable(bundle);
+      if (!mounted) return;
       final outcome = await _shareService.shareTextFile(
         context: context,
         content: json,

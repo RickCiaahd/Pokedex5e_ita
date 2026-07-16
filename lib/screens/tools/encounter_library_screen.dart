@@ -245,6 +245,7 @@ class _EncounterLibraryScreenState extends State<EncounterLibraryScreen> {
         sourceProfileName: profile.name,
       );
       final json = await _transferService.encodePortable(bundle);
+      if (!mounted) return;
       final outcome = await _shareService.shareTextFile(
         context: context,
         content: json,

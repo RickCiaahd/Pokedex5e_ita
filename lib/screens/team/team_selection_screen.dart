@@ -303,6 +303,7 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
         sourceTrainerName: profile.name,
       );
       final json = await _transferService.encodePortable(bundle);
+      if (!mounted) return;
       final displayName = _displayNameForSlot(slot);
       final outcome = await _shareService.shareTextFile(
         context: context,
@@ -348,6 +349,7 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
         sourceTrainerName: profile.name,
       );
       final json = await _transferService.encodePortable(bundle);
+      if (!mounted) return;
       final outcome = await _shareService.shareTextFile(
         context: context,
         content: json,

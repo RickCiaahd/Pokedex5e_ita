@@ -30,6 +30,7 @@ Tutte le modifiche rilevanti al progetto vengono documentate in questo file.
 
 ### Modificato
 
+- nell'editor Pokémon il selettore mosse distingue disponibilità attuale, learnset completo e catalogo globale, con ricerca e filtri;
 - su smartphone il dettaglio Pokémon scorre fino alle schede Mosse, Features e Traits, mantenendo le tab accessibili;
 - Battle Companion usa intestazione, squadra e iniziativa più compatte, con i comandi secondari richiudibili;
 - la scelta di uno status nel Battle Companion viene applicata e salvata subito, chiudendo il pannello;

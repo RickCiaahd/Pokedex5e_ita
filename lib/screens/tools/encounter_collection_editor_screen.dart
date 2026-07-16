@@ -230,7 +230,12 @@ class _EncounterCollectionEditorScreenState
         actions: const [HomeAppBarAction()],
       ),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
+        padding: EdgeInsets.fromLTRB(
+          16,
+          12,
+          16,
+          32.0 + MediaQuery.viewPaddingOf(context).bottom,
+        ),
         children: [
           TextField(
             controller: _nameController,

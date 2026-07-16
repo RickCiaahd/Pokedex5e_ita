@@ -310,7 +310,12 @@ class _EncounterResultScreenState extends State<EncounterResultScreen> {
         ],
       ),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
+        padding: EdgeInsets.fromLTRB(
+          16,
+          12,
+          16,
+          32.0 + MediaQuery.viewPaddingOf(context).bottom,
+        ),
         children: [
           Card(
             color: Theme.of(context).colorScheme.primaryContainer,

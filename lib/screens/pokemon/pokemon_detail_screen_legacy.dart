@@ -1123,7 +1123,9 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
 
     final damage = move.damageForLevel(_level);
     if (damage != null) {
-      final bonus = damagePathBonus == 0 ? '' : ' ${damagePathBonus > 0 ? '+' : ''}$damagePathBonus';
+      final bonus = damagePathBonus == 0
+          ? ''
+          : ' ${damagePathBonus > 0 ? '+' : ''}$damagePathBonus';
       parts.add('${damage.label}$bonus');
     }
     if (stab.applies) {
@@ -1156,6 +1158,13 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
       pokemon: pokemon,
       slot: _teamSlot,
     );
+    const tabBar = TabBar(
+      tabs: [
+        Tab(text: 'MOSSE'),
+        Tab(text: 'FEATURES'),
+        Tab(text: 'TRAITS'),
+      ],
+    );
 
     return DefaultTabController(
       length: 3,
@@ -1176,95 +1185,129 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
             : Column(
                 children: [
                   Expanded(
-                    child: Column(
-                      children: [
-                        _Header(
-                          pokemon: pokemon,
-                          slot: _teamSlot,
-                          level: _level,
-                          armorClass: _armorClass,
-                          experience: _experience,
-                          currentHp: _currentHp,
-                          maxHp: _maxHp,
-                          loyalty: _loyalty,
-                          isPartyMode: _isPartyMode,
-                          attributes: attributes,
-                          modifierBuilder: _modifier,
-                          proficiency: _proficiency(_level),
-                          savingThrowLoyaltyBonus: _savingThrowLoyaltyBonus,
-                          savingThrows: savingThrows,
-                          statusEffects: _currentStatusEffects,
-                          message: _message,
-                          heldItemLabel: _heldItemDisplayLabel(),
-                          onEditExperience: _editExperience,
-                          onEditHp: _editHp,
-                          onDecreaseHp: () => _changeHp(-1),
-                          onIncreaseHp: () => _changeHp(1),
-                          onDecreaseLoyalty: () => _changeLoyalty(-1),
-                          onIncreaseLoyalty: () => _changeLoyalty(1),
-                          onPokemonCenter: _usePokemonCenter,
-                          onAddStatusEffect: _pickStatusEffect,
-                          onEditHeldItem: _changeHeldItemFromDetail,
-                          evolutionLabel: evolutionLabel,
-                          onEvolve: _evolveCurrentPokemon,
+                    child: NestedScrollView(
+                      headerSliverBuilder: (context, innerBoxIsScrolled) => [
+                        SliverToBoxAdapter(
+                          child: _Header(
+                            pokemon: pokemon,
+                            slot: _teamSlot,
+                            level: _level,
+                            armorClass: _armorClass,
+                            experience: _experience,
+                            currentHp: _currentHp,
+                            maxHp: _maxHp,
+                            loyalty: _loyalty,
+                            isPartyMode: _isPartyMode,
+                            attributes: attributes,
+                            modifierBuilder: _modifier,
+                            proficiency: _proficiency(_level),
+                            savingThrowLoyaltyBonus: _savingThrowLoyaltyBonus,
+                            savingThrows: savingThrows,
+                            statusEffects: _currentStatusEffects,
+                            message: _message,
+                            heldItemLabel: _heldItemDisplayLabel(),
+                            onEditExperience: _editExperience,
+                            onEditHp: _editHp,
+                            onDecreaseHp: () => _changeHp(-1),
+                            onIncreaseHp: () => _changeHp(1),
+                            onDecreaseLoyalty: () => _changeLoyalty(-1),
+                            onIncreaseLoyalty: () => _changeLoyalty(1),
+                            onPokemonCenter: _usePokemonCenter,
+                            onAddStatusEffect: _pickStatusEffect,
+                            onEditHeldItem: _changeHeldItemFromDetail,
+                            evolutionLabel: evolutionLabel,
+                            onEvolve: _evolveCurrentPokemon,
+                          ),
                         ),
                         if (passiveNotes.isNotEmpty)
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(8, 0, 8, 6),
-                            child: TrainerPathPassiveCard(
-                              trainerPath: _profile?.trainerPath ?? '',
-                              notes: passiveNotes,
+                          SliverToBoxAdapter(
+                            child: Padding(
+                              padding: const EdgeInsets.fromLTRB(8, 0, 8, 6),
+                              child: TrainerPathPassiveCard(
+                                trainerPath: _profile?.trainerPath ?? '',
+                                notes: passiveNotes,
+                              ),
                             ),
                           ),
-                        const TabBar(
-                          tabs: [
-                            Tab(text: 'MOSSE'),
-                            Tab(text: 'FEATURES'),
-                            Tab(text: 'TRAITS'),
-                          ],
-                        ),
-                        Expanded(
-                          child: TabBarView(
-                            children: [
-                              _MovesView(
-                                selectedMoves: _selectedMoves(),
-                                moves: _moves,
-                                moveStatsBuilder: _moveStats,
-                              ),
-                              _FeaturesView(
-                                pokemon: pokemon,
-                                slot: _teamSlot,
-                                abilityDescriptions: _abilities,
-                                featDescriptions: _featDescriptions,
-                              ),
-                              _TraitsView(
-                                pokemon: pokemon,
-                                slot: _teamSlot,
-                                attributes: attributes,
-                                modifierBuilder: _modifier,
-                                proficiency: _proficiency(_level),
-                                availableAsiPoints: _teamSlot == null
-                                    ? 0
-                                    : _availableAsiPointsForSlot(_teamSlot!),
-                                onDistributeAsi: _distributePendingAsi,
-                              ),
-                            ],
+                        SliverPersistentHeader(
+                          pinned: true,
+                          delegate: const _PokemonDetailTabBarDelegate(
+                            tabBar: tabBar,
                           ),
                         ),
                       ],
+                      body: TabBarView(
+                        children: [
+                          _MovesView(
+                            selectedMoves: _selectedMoves(),
+                            moves: _moves,
+                            moveStatsBuilder: _moveStats,
+                          ),
+                          _FeaturesView(
+                            pokemon: pokemon,
+                            slot: _teamSlot,
+                            abilityDescriptions: _abilities,
+                            featDescriptions: _featDescriptions,
+                          ),
+                          _TraitsView(
+                            pokemon: pokemon,
+                            slot: _teamSlot,
+                            attributes: attributes,
+                            modifierBuilder: _modifier,
+                            proficiency: _proficiency(_level),
+                            availableAsiPoints: _teamSlot == null
+                                ? 0
+                                : _availableAsiPointsForSlot(_teamSlot!),
+                            onDistributeAsi: _distributePendingAsi,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                   if (_isPartyMode)
-                    _PartySwitcher(
-                      team: _team,
-                      currentSlotIndex: _teamSlot!.slotIndex,
-                      pokemonById: _pokemonById,
-                      onSelect: _switchPartySlot,
+                    SafeArea(
+                      top: false,
+                      child: _PartySwitcher(
+                        team: _team,
+                        currentSlotIndex: _teamSlot!.slotIndex,
+                        pokemonById: _pokemonById,
+                        onSelect: _switchPartySlot,
+                      ),
                     ),
                 ],
               ),
       ),
     );
+  }
+}
+
+class _PokemonDetailTabBarDelegate extends SliverPersistentHeaderDelegate {
+  const _PokemonDetailTabBarDelegate({required this.tabBar});
+
+  final TabBar tabBar;
+
+  @override
+  double get minExtent => tabBar.preferredSize.height;
+
+  @override
+  double get maxExtent => tabBar.preferredSize.height;
+
+  @override
+  Widget build(
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
+    return Material(
+      elevation: overlapsContent ? 2 : 0,
+      color: Theme.of(context).scaffoldBackgroundColor,
+      child: tabBar,
+    );
+  }
+
+  @override
+  bool shouldRebuild(covariant _PokemonDetailTabBarDelegate oldDelegate) {
+    return oldDelegate.tabBar != tabBar;
   }
 }
 

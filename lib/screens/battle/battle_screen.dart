@@ -1122,7 +1122,7 @@ class _BattleScreenState extends State<BattleScreen> {
             return RefreshIndicator(
               onRefresh: () => _reload(),
               child: ListView(
-                padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+                padding: const EdgeInsets.fromLTRB(12, 8, 12, 24),
                 children: [
                   _BattleHeader(
                     round: _round,
@@ -1539,34 +1539,31 @@ class _BattleHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(14),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        child: Row(
           children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
                     'Round $round',
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.w900,
                     ),
                   ),
-                ),
-                Text(
-                  'INIZ. ${trainerInitiativeBonus >= 0 ? '+' : ''}$trainerInitiativeBonus',
-                ),
-              ],
+                  Text(
+                    '${profile.name} · INIZ. ${trainerInitiativeBonus >= 0 ? '+' : ''}$trainerInitiativeBonus',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(height: 4),
-            Text(
-              '${profile.name} e il Pokémon usano un unico tiro iniziativa.',
-            ),
-            const SizedBox(height: 12),
-            OutlinedButton.icon(
+            IconButton(
+              tooltip: 'Termina battaglia',
               onPressed: onEnd,
               icon: const Icon(Icons.stop_circle_outlined),
-              label: const Text('TERMINA'),
             ),
           ],
         ),
@@ -1592,9 +1589,8 @@ class _PartyBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        padding: const EdgeInsets.all(8),
+        child: Row(
           children: [
             Text(
               'SQUADRA',
@@ -1602,19 +1598,21 @@ class _PartyBar extends StatelessWidget {
                 context,
               ).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w900),
             ),
-            const SizedBox(height: 8),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  for (final slot in slots)
-                    _PartyPokemonButton(
-                      slot: slot,
-                      pokemon: pokemonForSlot(slot),
-                      selected: slot.slotIndex == activeSlot.slotIndex,
-                      onTap: () => onSelected(slot.slotIndex),
-                    ),
-                ],
+            const SizedBox(width: 8),
+            Expanded(
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    for (final slot in slots)
+                      _PartyPokemonButton(
+                        slot: slot,
+                        pokemon: pokemonForSlot(slot),
+                        selected: slot.slotIndex == activeSlot.slotIndex,
+                        onTap: () => onSelected(slot.slotIndex),
+                      ),
+                  ],
+                ),
               ),
             ),
           ],
@@ -1647,10 +1645,10 @@ class _PartyPokemonButton extends StatelessWidget {
     final name = nickname == null || nickname.isEmpty ? pokemon.name : nickname;
 
     return Padding(
-      padding: const EdgeInsets.only(right: 8),
+      padding: const EdgeInsets.only(right: 6),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(10),
         child: DecoratedBox(
           decoration: BoxDecoration(
             color: selected
@@ -1662,26 +1660,25 @@ class _PartyPokemonButton extends StatelessWidget {
                   : colorScheme.outlineVariant,
               width: selected ? 2 : 1,
             ),
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(10),
           ),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-            child: Column(
+            padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 4),
+            child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 PokemonAssetImage(
                   pokemon: pokemon,
-                  size: 52,
+                  size: 40,
                   formName: slot.formName,
                   gender: slot.gender,
                   isShiny: slot.isShiny,
                 ),
-                const SizedBox(height: 2),
+                const SizedBox(width: 4),
                 SizedBox(
-                  width: 72,
+                  width: 64,
                   child: Text(
                     name,
-                    textAlign: TextAlign.center,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.labelSmall?.copyWith(
@@ -1727,7 +1724,7 @@ class _InitiativeTracker extends StatelessWidget {
 
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(14),
+        padding: const EdgeInsets.fromLTRB(10, 8, 10, 6),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -1745,47 +1742,67 @@ class _InitiativeTracker extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 4),
-            Text(
-              currentEntry == null
-                  ? 'Nessun turno impostato.'
-                  : 'Turno: ${currentEntry.name}',
-              style: Theme.of(
-                context,
-              ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
-            ),
-            const SizedBox(height: 10),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
+            Row(
               children: [
+                Expanded(
+                  child: Text(
+                    currentEntry == null
+                        ? 'Nessun turno impostato.'
+                        : 'Turno: ${currentEntry.name}',
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
                 FilledButton.icon(
                   onPressed: onNextTurn,
                   icon: const Icon(Icons.navigate_next),
-                  label: const Text('PROSSIMO TURNO'),
-                ),
-                OutlinedButton.icon(
-                  onPressed: onRollTrainer,
-                  icon: const Icon(Icons.casino_outlined),
-                  label: Text(
-                    'RITIRA TRAINER (${trainerInitiativeBonus >= 0 ? '+' : ''}$trainerInitiativeBonus)',
-                  ),
-                ),
-                OutlinedButton.icon(
-                  onPressed: onAddEntry,
-                  icon: const Icon(Icons.add),
-                  label: const Text('AGGIUNGI'),
+                  label: const Text('PROSSIMO'),
                 ),
               ],
             ),
-            const SizedBox(height: 10),
-            for (final indexed in entries.indexed)
-              _InitiativeTile(
-                entry: indexed.$2,
-                active: indexed.$1 == currentTurnIndex,
-                onRemove: indexed.$2.isTrainerGroup
-                    ? null
-                    : () => onRemoveEntry(indexed.$2),
-              ),
+            ExpansionTile(
+              tilePadding: EdgeInsets.zero,
+              childrenPadding: EdgeInsets.zero,
+              dense: true,
+              visualDensity: VisualDensity.compact,
+              title: Text('Ordine e comandi (${entries.length})'),
+              children: [
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      OutlinedButton.icon(
+                        onPressed: onRollTrainer,
+                        icon: const Icon(Icons.casino_outlined),
+                        label: Text(
+                          'RITIRA TRAINER (${trainerInitiativeBonus >= 0 ? '+' : ''}$trainerInitiativeBonus)',
+                        ),
+                      ),
+                      OutlinedButton.icon(
+                        onPressed: onAddEntry,
+                        icon: const Icon(Icons.add),
+                        label: const Text('AGGIUNGI'),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 8),
+                for (final indexed in entries.indexed)
+                  _InitiativeTile(
+                    entry: indexed.$2,
+                    active: indexed.$1 == currentTurnIndex,
+                    onRemove: indexed.$2.isTrainerGroup
+                        ? null
+                        : () => onRemoveEntry(indexed.$2),
+                  ),
+              ],
+            ),
           ],
         ),
       ),
@@ -2207,6 +2224,29 @@ class _StatusPickerSheetState extends State<_StatusPickerSheet> {
     _volatileStatuses = {...widget.initialVolatileStatuses};
   }
 
+  void _finish() {
+    Navigator.of(context).pop(
+      _StatusPickerResult(
+        nonVolatileStatus: _nonVolatileStatus,
+        volatileStatuses: {..._volatileStatuses},
+      ),
+    );
+  }
+
+  void _selectNonVolatile(String? status) {
+    _nonVolatileStatus = status;
+    _finish();
+  }
+
+  void _toggleVolatile(String status, bool selected) {
+    if (selected) {
+      _volatileStatuses.add(status);
+    } else {
+      _volatileStatuses.remove(status);
+    }
+    _finish();
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -2226,7 +2266,7 @@ class _StatusPickerSheetState extends State<_StatusPickerSheet> {
           const Padding(
             padding: EdgeInsets.fromLTRB(16, 0, 16, 8),
             child: Text(
-              'Un solo status non-volatile alla volta. Gli status volatili terminano fuori dal combattimento.',
+              'Tocca uno status per applicarlo subito. Un solo status non-volatile alla volta; gli status volatili terminano fuori dal combattimento.',
             ),
           ),
           Padding(
@@ -2247,15 +2287,14 @@ class _StatusPickerSheetState extends State<_StatusPickerSheet> {
                 ChoiceChip(
                   label: const Text('NESSUNO'),
                   selected: _nonVolatileStatus == null,
-                  onSelected: (_) => setState(() => _nonVolatileStatus = null),
+                  onSelected: (_) => _selectNonVolatile(null),
                 ),
                 for (final status in _nonVolatileStatusOptions)
                   ChoiceChip(
                     avatar: _StatusIcon(status: status, size: 22),
                     label: Text(status.toUpperCase()),
                     selected: _nonVolatileStatus == status,
-                    onSelected: (_) =>
-                        setState(() => _nonVolatileStatus = status),
+                    onSelected: (_) => _selectNonVolatile(status),
                   ),
               ],
             ),
@@ -2275,27 +2314,8 @@ class _StatusPickerSheetState extends State<_StatusPickerSheet> {
               secondary: _StatusIcon(status: status, size: 28),
               title: Text(status.toUpperCase()),
               value: _volatileStatuses.contains(status),
-              onChanged: (value) {
-                setState(() {
-                  if (value == true) {
-                    _volatileStatuses.add(status);
-                  } else {
-                    _volatileStatuses.remove(status);
-                  }
-                });
-              },
+              onChanged: (value) => _toggleVolatile(status, value == true),
             ),
-          const Divider(),
-          ListTile(
-            leading: const Icon(Icons.save_outlined),
-            title: const Text('SALVA STATUS'),
-            onTap: () => Navigator.of(context).pop(
-              _StatusPickerResult(
-                nonVolatileStatus: _nonVolatileStatus,
-                volatileStatuses: _volatileStatuses,
-              ),
-            ),
-          ),
           if (_nonVolatileStatus != null || _volatileStatuses.isNotEmpty)
             ListTile(
               leading: const Icon(Icons.clear),

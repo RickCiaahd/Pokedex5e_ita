@@ -419,7 +419,12 @@ class _EncounterGeneratorScreenState extends State<EncounterGeneratorScreen> {
   Widget _buildAutomaticTab() {
     final candidateCount = _filteredCandidates.length;
     return ListView(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
+      padding: EdgeInsets.fromLTRB(
+        16,
+        12,
+        16,
+        32.0 + MediaQuery.viewPaddingOf(context).bottom,
+      ),
       children: [
         _IntroCard(
           title: 'Composizione automatica',
@@ -537,7 +542,12 @@ class _EncounterGeneratorScreenState extends State<EncounterGeneratorScreen> {
         .where((entry) => visibleKeys.contains(entry.key))
         .fold<int>(0, (sum, entry) => sum + entry.value);
     return ListView(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
+      padding: EdgeInsets.fromLTRB(
+        16,
+        12,
+        16,
+        32.0 + MediaQuery.viewPaddingOf(context).bottom,
+      ),
       children: [
         _IntroCard(
           title: 'Composizione manuale',
@@ -619,7 +629,12 @@ class _EncounterGeneratorScreenState extends State<EncounterGeneratorScreen> {
 
   Widget _buildCollectionsTab() {
     return ListView(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
+      padding: EdgeInsets.fromLTRB(
+        16,
+        12,
+        16,
+        32.0 + MediaQuery.viewPaddingOf(context).bottom,
+      ),
       children: [
         _IntroCard(
           title: 'Raccolte ponderate',

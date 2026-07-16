@@ -256,7 +256,12 @@ class _NpcTrainerResultScreenState extends State<NpcTrainerResultScreen> {
         ],
       ),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
+        padding: EdgeInsets.fromLTRB(
+          16,
+          12,
+          16,
+          32.0 + MediaQuery.viewPaddingOf(context).bottom,
+        ),
         children: [
           _TrainerHeader(trainer: _trainer, preferredType: preferredType),
           if (_message != null) ...[

@@ -11,7 +11,7 @@ permissions:
 jobs:
   diagnose:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
 
     steps:
       - name: Check out Fakemon branch
@@ -25,17 +25,17 @@ jobs:
           channel: stable
           cache: true
 
-      - name: Run Fakemon tests
+      - name: Run complete test suite
         shell: bash
         run: |
           flutter pub get
           set +e
-          flutter test test/custom_pokemon_definition_test.dart --reporter expanded > fakemon-test.log 2>&1
-          cat fakemon-test.log
+          flutter test --reporter expanded > fakemon-full-test.log 2>&1
+          cat fakemon-full-test.log
           exit 0
 
       - name: Upload diagnostic log
         uses: actions/upload-artifact@v4
         with:
-          name: fakemon-test-log
-          path: fakemon-test.log
+          name: fakemon-full-test-log
+          path: fakemon-full-test.log

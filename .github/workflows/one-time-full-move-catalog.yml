@@ -49,4 +49,4 @@ jobs:
           git commit -m 'Aggiunge il catalogo completo delle mosse'
           git push origin feature/full-move-catalog-impl
 
-# trigger implementation
+# trigger implementation retry 2

@@ -48,3 +48,5 @@ jobs:
           git add CHANGELOG.md lib test/full_move_catalog_test.dart
           git commit -m 'Aggiunge il catalogo completo delle mosse'
           git push origin feature/full-move-catalog-impl
+
+# trigger implementation

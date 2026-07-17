@@ -81,8 +81,12 @@ jobs:
               "def replace_once(path, old, new):\n"
               "    file = Path(path)\n"
               "    text = file.read_text()\n"
-              "    if path == 'lib/screens/tools/pokemon_generator_screen.dart':\n"
-              "        print(f'{path}: deferred-complete-generator')\n"
+              "    deferred = {\n"
+              "        'lib/screens/tools/pokemon_generator_screen.dart',\n"
+              "        'lib/screens/battle/battle_screen.dart',\n"
+              "    }\n"
+              "    if path in deferred:\n"
+              "        print(f'{path}: deferred-complete-screen')\n"
               "        return\n"
               "    candidates = [(old, new, 'exact')]\n"
               "    for amount in range(1, 13):\n"
@@ -112,66 +116,173 @@ jobs:
             set +e
             python3 <<'PY' >> .github/phase7-final-bootstrap.txt 2>&1
           from pathlib import Path
-          path = Path('lib/screens/tools/pokemon_generator_screen.dart')
-          text = path.read_text()
 
-          old = "      final moves = await _moveRepository.getMoves(generated.selectedMoves);"
-          new = """      final moves = await _moveRepository.getMovesByPokemon({
-                generated.basePokemon.id: generated.selectedMoves,
-              });"""
-          if text.count(old) != 1:
-              raise RuntimeError('Single generator move lookup not found uniquely.')
-          text = text.replace(old, new, 1)
+          def replace_exact(text, old, new, label, expected=1):
+              count = text.count(old)
+              if count != expected:
+                  raise RuntimeError(f'{label}: expected {expected}, found {count}')
+              return text.replace(old, new, expected)
 
-          old = """  Future<Map<String, MoveData?>> _loadGeneratedMoves(
-              Iterable<GeneratedPokemon> generated,
-            ) {
-              final references = <String>{
-                for (final pokemon in generated) ...pokemon.selectedMoves,
-              };
-              return _moveRepository.getMoves(references);
-            }
-          """
-          new = """  Future<Map<String, MoveData?>> _loadGeneratedMoves(
-              Iterable<GeneratedPokemon> generated,
-            ) {
-              final referencesByPokemon = <int, Set<String>>{};
-              for (final pokemon in generated) {
-                referencesByPokemon
-                    .putIfAbsent(pokemon.basePokemon.id, () => <String>{})
-                    .addAll(pokemon.selectedMoves);
-              }
-              return _moveRepository.getMovesByPokemon(referencesByPokemon);
-            }
-          """
-          if text.count(old) != 1:
-              raise RuntimeError('Batch generator move loader not found uniquely.')
-          text = text.replace(old, new, 1)
-
+          generator_path = Path('lib/screens/tools/pokemon_generator_screen.dart')
+          text = generator_path.read_text()
+          text = replace_exact(
+              text,
+              "      final moves = await _moveRepository.getMoves(generated.selectedMoves);",
+              "      final moves = await _moveRepository.getMovesByPokemon({\n        generated.basePokemon.id: generated.selectedMoves,\n      });",
+              'single generator move lookup',
+          )
+          old = (
+              "  Future<Map<String, MoveData?>> _loadGeneratedMoves(\n"
+              "    Iterable<GeneratedPokemon> generated,\n"
+              "  ) {\n"
+              "    final references = <String>{\n"
+              "      for (final pokemon in generated) ...pokemon.selectedMoves,\n"
+              "    };\n"
+              "    return _moveRepository.getMoves(references);\n"
+              "  }\n"
+          )
+          new = (
+              "  Future<Map<String, MoveData?>> _loadGeneratedMoves(\n"
+              "    Iterable<GeneratedPokemon> generated,\n"
+              "  ) {\n"
+              "    final referencesByPokemon = <int, Set<String>>{};\n"
+              "    for (final pokemon in generated) {\n"
+              "      referencesByPokemon\n"
+              "          .putIfAbsent(pokemon.basePokemon.id, () => <String>{})\n"
+              "          .addAll(pokemon.selectedMoves);\n"
+              "    }\n"
+              "    return _moveRepository.getMovesByPokemon(referencesByPokemon);\n"
+              "  }\n"
+          )
+          text = replace_exact(text, old, new, 'batch generator move loader')
           old = "_generatedMoves[reference]?.id ?? reference"
-          new = """_generatedMoves[
-                    MoveRepository.contextualKey(
-                      generated.basePokemon.id,
-                      reference,
-                    )
-                  ]?.id ??
-                  reference"""
-          if text.count(old) != 2:
-              raise RuntimeError(f'Expected two generated move references, found {text.count(old)}.')
-          text = text.replace(old, new)
-
-          old = "                      move: moves[reference],"
-          new = """                      move: moves[
-                        MoveRepository.contextualKey(
-                          generated.basePokemon.id,
-                          reference,
-                        )
-                      ],"""
-          if text.count(old) != 1:
-              raise RuntimeError('Generated move chip lookup not found uniquely.')
-          text = text.replace(old, new, 1)
-          path.write_text(text)
+          new = (
+              "_generatedMoves[\n"
+              "              MoveRepository.contextualKey(\n"
+              "                generated.basePokemon.id,\n"
+              "                reference,\n"
+              "              )\n"
+              "            ]?.id ??\n"
+              "            reference"
+          )
+          text = replace_exact(text, old, new, 'generated persisted move references', expected=2)
+          text = replace_exact(
+              text,
+              "                      move: moves[reference],",
+              "                      move: moves[\n                        MoveRepository.contextualKey(\n                          generated.basePokemon.id,\n                          reference,\n                        )\n                      ],",
+              'generated move chip lookup',
+          )
+          generator_path.write_text(text)
           print('pokemon_generator_screen.dart: supplemental contextual patch')
+
+          battle_path = Path('lib/screens/battle/battle_screen.dart')
+          text = battle_path.read_text()
+          text = replace_exact(
+              text,
+              "import '../../services/custom_pokemon_runtime_registry.dart';\n",
+              '',
+              'remove obsolete runtime registry import',
+          )
+          old = (
+              "    final moveReferences = <String>{'Struggle'};\n"
+              "\n"
+              "    for (final slot in team) {\n"
+              "      final pokemonId = slot.pokemonId;\n"
+              "      if (pokemonId == null) continue;\n"
+              "      final pokemon = pokemonById[pokemonId];\n"
+              "      if (pokemon == null) continue;\n"
+              "      moveReferences.addAll(_movesForSlot(slot, pokemon));\n"
+              "    }\n"
+              "\n"
+              "    final moves = await _moveRepository.getMoves(moveReferences);\n"
+              "    for (final slot in team) {\n"
+              "      final pokemonId = slot.pokemonId;\n"
+              "      if (pokemonId == null) continue;\n"
+              "      final pokemon = pokemonById[pokemonId];\n"
+              "      if (pokemon == null) continue;\n"
+              "      for (final reference in _movesForSlot(slot, pokemon)) {\n"
+              "        final localMove = CustomPokemonRuntimeRegistry.moveFor(\n"
+              "          pokemonId,\n"
+              "          reference,\n"
+              "        );\n"
+              "        if (localMove != null) moves[reference] = localMove;\n"
+              "      }\n"
+              "    }\n"
+          )
+          new = (
+              "    final referencesByPokemon = <int, Set<String>>{};\n"
+              "    for (final slot in team) {\n"
+              "      final pokemonId = slot.pokemonId;\n"
+              "      if (pokemonId == null) continue;\n"
+              "      final pokemon = pokemonById[pokemonId];\n"
+              "      if (pokemon == null) continue;\n"
+              "      referencesByPokemon\n"
+              "          .putIfAbsent(pokemonId, () => <String>{'Struggle'})\n"
+              "          .addAll(_movesForSlot(slot, pokemon));\n"
+              "    }\n"
+              "    final moves = await _moveRepository.getMovesByPokemon(\n"
+              "      referencesByPokemon,\n"
+              "    );\n"
+          )
+          text = replace_exact(text, old, new, 'battle move loading')
+          old = (
+              "  bool _hasNoPpLeft(\n"
+              "    TeamSlot slot,\n"
+              "    List<String> moveReferences,\n"
+              "    Map<String, MoveData?> moves,\n"
+              "  ) {\n"
+              "    final trackableMoves = moveReferences\n"
+              "        .where((reference) => _maxPpFor(moves[reference]) > 0)\n"
+              "        .toList(growable: false);\n"
+              "\n"
+              "    return trackableMoves.isNotEmpty &&\n"
+              "        trackableMoves.every((reference) {\n"
+              "          return _remainingPp(slot, reference, moves[reference]) <= 0;\n"
+              "        });\n"
+              "  }\n"
+          )
+          new = (
+              "  bool _hasNoPpLeft(\n"
+              "    TeamSlot slot,\n"
+              "    List<String> moveReferences,\n"
+              "    Map<String, MoveData?> moves,\n"
+              "  ) {\n"
+              "    final pokemonId = slot.pokemonId;\n"
+              "    if (pokemonId == null) return false;\n"
+              "    MoveData? resolve(String reference) =>\n"
+              "        moves[MoveRepository.contextualKey(pokemonId, reference)];\n"
+              "    final trackableMoves = moveReferences\n"
+              "        .where((reference) => _maxPpFor(resolve(reference)) > 0)\n"
+              "        .toList(growable: false);\n"
+              "\n"
+              "    return trackableMoves.isNotEmpty &&\n"
+              "        trackableMoves.every((reference) {\n"
+              "          return _remainingPp(slot, reference, resolve(reference)) <= 0;\n"
+              "        });\n"
+              "  }\n"
+          )
+          text = replace_exact(text, old, new, 'battle no PP check')
+          text = replace_exact(
+              text,
+              "            final heldItem = data.heldItemFor(activeSlot);",
+              "            MoveData? moveForActive(String reference) => data.moves[\n                  MoveRepository.contextualKey(activeSlot.pokemonId!, reference)\n                ];\n            final heldItem = data.heldItemFor(activeSlot);",
+              'active battle move resolver',
+          )
+          text = replace_exact(
+              text,
+              "                    _StruggleWarning(move: data.moves['Struggle']),",
+              "                    _StruggleWarning(move: moveForActive('Struggle')) ,",
+              'battle Struggle lookup',
+          )
+          text = replace_exact(
+              text,
+              'data.moves[reference]',
+              'moveForActive(reference)',
+              'active battle move lookups',
+              expected=7,
+          )
+          battle_path.write_text(text)
+          print('battle_screen.dart: supplemental contextual patch')
           PY
             supplemental_status=$?
             set -e

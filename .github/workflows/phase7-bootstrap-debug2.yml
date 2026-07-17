@@ -16,7 +16,7 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.ref }}
           fetch-depth: 0
-      - name: Run patch and persist diagnostics
+      - name: Run flexible patch and persist diagnostics
         shell: bash
         run: |
           python3 <<'PY'
@@ -27,16 +27,54 @@ jobs:
           end = source.index('\n      - uses: subosito/flutter-action@v2', start)
           block = source[start:end]
           lines = [line[10:] if line.startswith('          ') else line for line in block.splitlines()]
-          Path('/tmp/apply-phase7.sh').write_text('\n'.join(lines) + '\n')
+          script = '\n'.join(lines) + '\n'
+          original = (
+              "def replace_once(path, old, new):\n"
+              "    file = Path(path)\n"
+              "    text = file.read_text()\n"
+              "    count = text.count(old)\n"
+              "    if count != 1:\n"
+              "        raise RuntimeError(f\"{path}: expected one occurrence, found {count}\\n--- OLD ---\\n{old}\")\n"
+              "    file.write_text(text.replace(old, new, 1))\n"
+          )
+          flexible = (
+              "def _shift_after_first(value, amount):\n"
+              "    lines = value.splitlines(keepends=True)\n"
+              "    if len(lines) <= 1:\n"
+              "        return value\n"
+              "    shifted = [lines[0]]\n"
+              "    for line in lines[1:]:\n"
+              "        prefix = len(line) - len(line.lstrip(' '))\n"
+              "        remove = min(amount, prefix)\n"
+              "        shifted.append(line[remove:])\n"
+              "    return ''.join(shifted)\n"
+              "\n"
+              "def replace_once(path, old, new):\n"
+              "    file = Path(path)\n"
+              "    text = file.read_text()\n"
+              "    candidates = [(old, new, 'exact')]\n"
+              "    for amount in range(1, 13):\n"
+              "        candidates.append((_shift_after_first(old, amount), _shift_after_first(new, amount), f'shift-after-first-{amount}'))\n"
+              "    for candidate_old, candidate_new, label in candidates:\n"
+              "        count = text.count(candidate_old)\n"
+              "        if count == 1:\n"
+              "            print(f'{path}: {label}')\n"
+              "            file.write_text(text.replace(candidate_old, candidate_new, 1))\n"
+              "            return\n"
+              "    raise RuntimeError(f\"{path}: no unique flexible occurrence found\\n--- OLD ---\\n{old}\")\n"
+          )
+          if original not in script:
+              raise RuntimeError('Unable to replace the bootstrap helper.')
+          Path('/tmp/apply-phase7.sh').write_text(script.replace(original, flexible, 1))
           PY
           set +e
-          bash /tmp/apply-phase7.sh > .github/phase7-bootstrap.txt 2>&1
+          bash /tmp/apply-phase7.sh > .github/phase7-flex-bootstrap.txt 2>&1
           status=$?
           set -e
-          echo "exit_status=$status" >> .github/phase7-bootstrap.txt
+          echo "exit_status=$status" >> .github/phase7-flex-bootstrap.txt
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -f .github/phase7-bootstrap.txt
-          git commit -m "Registra diagnostica bootstrap fase 7"
+          git add -f .github/phase7-flex-bootstrap.txt
+          git commit -m "Registra diagnostica flessibile fase 7"
           git push origin HEAD:${{ github.event.pull_request.head.ref }}
           exit $status

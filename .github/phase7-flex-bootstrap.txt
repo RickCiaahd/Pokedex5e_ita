@@ -1,0 +1,27 @@
+lib/repositories/move_repository.dart: exact
+lib/services/custom_pokemon_runtime_registry.dart: shift-after-first-2
+lib/models/custom_pokemon_definition.dart: shift-after-first-2
+lib/models/custom_pokemon_definition.dart: shift-after-first-2
+lib/models/custom_pokemon_definition.dart: shift-after-first-2
+lib/models/custom_pokemon_definition.dart: shift-after-first-2
+lib/models/custom_pokemon_definition.dart: exact
+lib/models/breeding_species_data.dart: shift-after-first-2
+lib/models/breeding_species_data.dart: shift-after-first-2
+lib/services/custom_pokemon_transfer_service.dart: shift-after-first-2
+lib/services/embedded_custom_pokemon_transfer_service.dart: shift-after-first-2
+lib/services/embedded_custom_pokemon_transfer_service.dart: shift-after-first-2
+lib/services/embedded_custom_pokemon_transfer_service.dart: shift-after-first-2
+lib/screens/pokemon/custom_pokemon_library_screen.dart: exact
+lib/screens/pokemon/custom_pokemon_library_screen.dart: shift-after-first-2
+lib/screens/pokemon/custom_pokemon_library_screen.dart: shift-after-first-2
+lib/screens/pokemon/custom_pokemon_library_screen.dart: shift-after-first-2
+lib/screens/pokemon/custom_pokemon_library_screen.dart: shift-after-first-2
+Traceback (most recent call last):
+  File "<stdin>", line 410, in <module>
+  File "<stdin>", line 26, in replace_once
+RuntimeError: lib/screens/pokemon/custom_pokemon_library_screen.dart: no unique flexible occurrence found
+--- OLD ---
+              _EditorSection(
+          title: 'Mosse',
+  
+exit_status=1

@@ -90,15 +90,24 @@ class _NpcBattleScreenState extends State<NpcBattleScreen> {
   }
 
   Future<void> _loadMoves() async {
-    final references = <String>{'Struggle'};
+    final referencesByPokemon = <int, Set<String>>{};
     for (final participant in _session.participants) {
       for (final state in participant.team) {
-        references.addAll(state.pokemon.selectedMoves);
+        referencesByPokemon
+            .putIfAbsent(state.pokemon.pokemonId, () => <String>{'Struggle'})
+            .addAll(state.pokemon.selectedMoves);
       }
     }
-    final moves = await _moveRepository.getMoves(references);
+    final moves = await _moveRepository.getMovesByPokemon(referencesByPokemon);
     if (!mounted) return;
     setState(() => _moves = moves);
+  }
+
+  MoveData? _moveForState(MasterBattlePokemonState state, String reference) {
+    return _moves[MoveRepository.contextualKey(
+      state.pokemon.pokemonId,
+      reference,
+    )];
   }
 
   Future<void> _commit(MasterBattleSession next, {String? message}) async {
@@ -785,12 +794,18 @@ class _NpcBattleScreenState extends State<NpcBattleScreen> {
             for (final reference in state.pokemon.selectedMoves)
               _NpcMoveCard(
                 reference: reference,
-                move: _moves[reference],
+                move: _moveForState(state, reference),
                 level: state.pokemon.level,
-                remainingPp: _remainingPp(state, reference, _moves[reference]),
-                maxPp: _maxPp(_moves[reference]),
-                onUse: () => _changePp(reference, _moves[reference], -1),
-                onRestore: () => _changePp(reference, _moves[reference], 1),
+                remainingPp: _remainingPp(
+                  state,
+                  reference,
+                  _moveForState(state, reference),
+                ),
+                maxPp: _maxPp(_moveForState(state, reference)),
+                onUse: () =>
+                    _changePp(reference, _moveForState(state, reference), -1),
+                onRestore: () =>
+                    _changePp(reference, _moveForState(state, reference), 1),
               ),
             if (state.pokemon.selectedMoves.isEmpty)
               const Card(

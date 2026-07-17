@@ -62,6 +62,25 @@ class MoveRepository {
     return result;
   }
 
+  static String contextualKey(int pokemonId, String reference) {
+    return '$pokemonId:${MoveData.referenceKey(reference)}';
+  }
+
+  Future<Map<String, MoveData?>> getMovesByPokemon(
+    Map<int, Iterable<String>> referencesByPokemon,
+  ) async {
+    final result = <String, MoveData?>{};
+    for (final entry in referencesByPokemon.entries) {
+      for (final reference in entry.value) {
+        result[contextualKey(entry.key, reference)] = await getMove(
+          reference,
+          pokemonId: entry.key,
+        );
+      }
+    }
+    return result;
+  }
+
   /// Returns the complete global move catalog exposed by the app.
   /// Species-local Fakemon moves are intentionally excluded.
   Future<List<MoveData>> getAllMoves() => getAllWebMoves();

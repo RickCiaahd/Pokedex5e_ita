@@ -98,6 +98,7 @@ class EmbeddedCustomPokemonTransferService {
     var installed = 0;
     var updated = 0;
     var remapped = 0;
+    final installedDefinitions = <CustomPokemonDefinition>[];
 
     for (final definition in incoming) {
       final existed =
@@ -106,6 +107,7 @@ class EmbeddedCustomPokemonTransferService {
         CustomPokemonTransferBundle.create(definition),
       );
       idMap[definition.pokemonId] = result.definition.pokemonId;
+      installedDefinitions.add(result.definition);
       if (result.updatedExisting || existed) {
         updated += 1;
       } else {
@@ -115,6 +117,19 @@ class EmbeddedCustomPokemonTransferService {
           result.definition.pokemonId != definition.pokemonId) {
         remapped += 1;
       }
+    }
+
+    for (final definition in installedDefinitions) {
+      final baseSpeciesId = definition.baseSpeciesId;
+      if (baseSpeciesId == null) continue;
+      final resolvedBaseSpeciesId = idMap[baseSpeciesId] ?? baseSpeciesId;
+      if (resolvedBaseSpeciesId == baseSpeciesId) continue;
+      final updatedDefinition = CustomPokemonDefinition.fromJson({
+        ...definition.toJson(),
+        'baseSpeciesId': resolvedBaseSpeciesId,
+        'updatedAt': DateTime.now().toUtc().toIso8601String(),
+      });
+      await _repository.save(updatedDefinition);
     }
 
     PokemonRepository.clearCache();

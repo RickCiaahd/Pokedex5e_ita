@@ -22,7 +22,6 @@ import '../../repositories/team_repository.dart';
 import '../../services/battle_environment_service.dart';
 import '../../services/battle_quick_item_service.dart';
 import '../../services/battle_status_rules.dart';
-import '../../services/custom_pokemon_runtime_registry.dart';
 import '../../services/trainer_path_passive_service.dart';
 import '../../widgets/battle/battle_environment_card.dart';
 import '../../widgets/battle/battle_status_assistance_card.dart';
@@ -83,30 +82,17 @@ class _BattleScreenState extends State<BattleScreen> {
     };
     final items = await _itemRepository.getWebItems();
     final inventory = await _bagRepository.getInventory(profile.id);
-    final moveReferences = <String>{'Struggle'};
-
+    final referencesByPokemon = <int, Set<String>>{};
     for (final slot in team) {
       final pokemonId = slot.pokemonId;
       if (pokemonId == null) continue;
       final pokemon = pokemonById[pokemonId];
       if (pokemon == null) continue;
-      moveReferences.addAll(_movesForSlot(slot, pokemon));
+      referencesByPokemon
+          .putIfAbsent(pokemonId, () => <String>{'Struggle'})
+          .addAll(_movesForSlot(slot, pokemon));
     }
-
-    final moves = await _moveRepository.getMoves(moveReferences);
-    for (final slot in team) {
-      final pokemonId = slot.pokemonId;
-      if (pokemonId == null) continue;
-      final pokemon = pokemonById[pokemonId];
-      if (pokemon == null) continue;
-      for (final reference in _movesForSlot(slot, pokemon)) {
-        final localMove = CustomPokemonRuntimeRegistry.moveFor(
-          pokemonId,
-          reference,
-        );
-        if (localMove != null) moves[reference] = localMove;
-      }
-    }
+    final moves = await _moveRepository.getMovesByPokemon(referencesByPokemon);
 
     final data = _BattleData(
       profile: profile,
@@ -317,13 +303,17 @@ class _BattleScreenState extends State<BattleScreen> {
     List<String> moveReferences,
     Map<String, MoveData?> moves,
   ) {
+    final pokemonId = slot.pokemonId;
+    if (pokemonId == null) return false;
+    MoveData? resolve(String reference) =>
+        moves[MoveRepository.contextualKey(pokemonId, reference)];
     final trackableMoves = moveReferences
-        .where((reference) => _maxPpFor(moves[reference]) > 0)
+        .where((reference) => _maxPpFor(resolve(reference)) > 0)
         .toList(growable: false);
 
     return trackableMoves.isNotEmpty &&
         trackableMoves.every((reference) {
-          return _remainingPp(slot, reference, moves[reference]) <= 0;
+          return _remainingPp(slot, reference, resolve(reference)) <= 0;
         });
   }
 
@@ -1114,6 +1104,11 @@ class _BattleScreenState extends State<BattleScreen> {
               moveReferences,
               data.moves,
             );
+            MoveData? moveForActive(String reference) =>
+                data.moves[MoveRepository.contextualKey(
+                  activeSlot.pokemonId!,
+                  reference,
+                )];
             final heldItem = data.heldItemFor(activeSlot);
             final passiveNotes = TrainerPathPassiveService.passiveNotes(
               profile: data.profile,
@@ -1254,23 +1249,23 @@ class _BattleScreenState extends State<BattleScreen> {
                   ),
                   const SizedBox(height: 8),
                   if (noPpLeft) ...[
-                    _StruggleWarning(move: data.moves['Struggle']),
+                    _StruggleWarning(move: moveForActive('Struggle')),
                     const SizedBox(height: 8),
                   ],
                   for (final reference in moveReferences)
                     _MoveCard(
                       reference: reference,
-                      move: data.moves[reference],
+                      move: moveForActive(reference),
                       remainingPp: _remainingPp(
                         activeSlot,
                         reference,
-                        data.moves[reference],
+                        moveForActive(reference),
                       ),
-                      maxPp: _maxPpFor(data.moves[reference]),
-                      stats: data.moves[reference] == null
+                      maxPp: _maxPpFor(moveForActive(reference)),
+                      stats: moveForActive(reference) == null
                           ? null
                           : _moveStats(
-                              data.moves[reference]!,
+                              moveForActive(reference)!,
                               pokemon,
                               activeSlot,
                             ),
@@ -1278,14 +1273,14 @@ class _BattleScreenState extends State<BattleScreen> {
                         data,
                         activeSlot,
                         reference,
-                        data.moves[reference],
+                        moveForActive(reference),
                         -1,
                       ),
                       onRestore: () => _changePp(
                         data,
                         activeSlot,
                         reference,
-                        data.moves[reference],
+                        moveForActive(reference),
                         1,
                       ),
                     ),

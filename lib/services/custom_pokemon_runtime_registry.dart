@@ -30,6 +30,10 @@ class CustomPokemonRuntimeRegistry {
     return _definitions[pokemonId];
   }
 
+  static Iterable<CustomPokemonDefinition> get definitions {
+    return _definitions.values;
+  }
+
   static bool isCustomPokemon(int pokemonId) {
     return _definitions.containsKey(pokemonId);
   }

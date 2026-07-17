@@ -147,7 +147,9 @@ class _PokemonGeneratorScreenState extends State<PokemonGeneratorScreen> {
         return;
       }
 
-      final moves = await _moveRepository.getMoves(generated.selectedMoves);
+      final moves = await _moveRepository.getMovesByPokemon({
+        generated.basePokemon.id: generated.selectedMoves,
+      });
       if (!mounted) return;
       setState(() {
         _generated = generated;
@@ -227,10 +229,13 @@ class _PokemonGeneratorScreenState extends State<PokemonGeneratorScreen> {
   Future<Map<String, MoveData?>> _loadGeneratedMoves(
     Iterable<GeneratedPokemon> generated,
   ) {
-    final references = <String>{
-      for (final pokemon in generated) ...pokemon.selectedMoves,
-    };
-    return _moveRepository.getMoves(references);
+    final referencesByPokemon = <int, Set<String>>{};
+    for (final pokemon in generated) {
+      referencesByPokemon
+          .putIfAbsent(pokemon.basePokemon.id, () => <String>{})
+          .addAll(pokemon.selectedMoves);
+    }
+    return _moveRepository.getMovesByPokemon(referencesByPokemon);
   }
 
   void _scrollToResult(GlobalKey resultKey) {
@@ -389,7 +394,12 @@ class _PokemonGeneratorScreenState extends State<PokemonGeneratorScreen> {
     try {
       final moveReferences = [
         for (final reference in generated.selectedMoves)
-          _generatedMoves[reference]?.id ?? reference,
+          _generatedMoves[MoveRepository.contextualKey(
+                    generated.basePokemon.id,
+                    reference,
+                  )]
+                  ?.id ??
+              reference,
       ];
       final freeSlot = _firstFreeUnlockedSlot(profile);
       String destination;
@@ -449,7 +459,12 @@ class _PokemonGeneratorScreenState extends State<PokemonGeneratorScreen> {
   List<String> _resolvedMoveReferences(GeneratedPokemon generated) {
     return [
       for (final reference in generated.selectedMoves)
-        _generatedMoves[reference]?.id ?? reference,
+        _generatedMoves[MoveRepository.contextualKey(
+                  generated.basePokemon.id,
+                  reference,
+                )]
+                ?.id ??
+            reference,
     ];
   }
 
@@ -1098,7 +1113,11 @@ class _GeneratedPokemonCard extends StatelessWidget {
                   for (final reference in generated.selectedMoves)
                     _GeneratedMoveChip(
                       reference: reference,
-                      move: moves[reference],
+                      move:
+                          moves[MoveRepository.contextualKey(
+                            generated.basePokemon.id,
+                            reference,
+                          )],
                     ),
                 ],
               ),

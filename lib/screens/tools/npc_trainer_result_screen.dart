@@ -69,10 +69,13 @@ class _NpcTrainerResultScreenState extends State<NpcTrainerResultScreen> {
   }
 
   Future<void> _loadMoves() async {
-    final references = <String>{
-      for (final pokemon in _trainer.team) ...pokemon.selectedMoves,
-    };
-    final moves = await _moveRepository.getMoves(references);
+    final referencesByPokemon = <int, Set<String>>{};
+    for (final generated in _trainer.team) {
+      referencesByPokemon
+          .putIfAbsent(generated.basePokemon.id, () => <String>{})
+          .addAll(generated.selectedMoves);
+    }
+    final moves = await _moveRepository.getMovesByPokemon(referencesByPokemon);
     if (!mounted) return;
     setState(() => _moves = moves);
   }
@@ -717,7 +720,16 @@ class _NpcPokemonCard extends StatelessWidget {
               runSpacing: 6,
               children: [
                 for (final reference in generated.selectedMoves)
-                  Chip(label: Text(moves[reference]?.name ?? reference)),
+                  Chip(
+                    label: Text(
+                      moves[MoveRepository.contextualKey(
+                                generated.basePokemon.id,
+                                reference,
+                              )]
+                              ?.name ??
+                          reference,
+                    ),
+                  ),
               ],
             ),
           ),

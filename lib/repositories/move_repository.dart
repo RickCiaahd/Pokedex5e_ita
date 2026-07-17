@@ -62,10 +62,12 @@ class MoveRepository {
     return result;
   }
 
+  /// Builds a collision-free key for a move resolved in a species context.
   static String contextualKey(int pokemonId, String reference) {
     return '$pokemonId:${MoveData.referenceKey(reference)}';
   }
 
+  /// Resolves move references separately for every Pokémon species.
   Future<Map<String, MoveData?>> getMovesByPokemon(
     Map<int, Iterable<String>> referencesByPokemon,
   ) async {

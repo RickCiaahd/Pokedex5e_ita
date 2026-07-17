@@ -1,0 +1,1312 @@
+name: Apply Fakemon phase 7 integration
+
+on:
+  push:
+    branches:
+      - feature/issue-61-fakemon-phase-7
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/issue-61-fakemon-phase-7
+          fetch-depth: 0
+
+      - name: Apply phase 7 changes
+        shell: bash
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+
+          def replace_once(path, old, new):
+              file = Path(path)
+              text = file.read_text()
+              count = text.count(old)
+              if count != 1:
+                  raise RuntimeError(f"{path}: expected one occurrence, found {count}\n--- OLD ---\n{old}")
+              file.write_text(text.replace(old, new, 1))
+
+          def write(path, content):
+              file = Path(path)
+              file.parent.mkdir(parents=True, exist_ok=True)
+              file.write_text(content)
+
+          # Species-aware move lookup. A plain move-name map cannot represent two
+          # Fakemon that use the same local name with different definitions.
+          replace_once(
+              'lib/repositories/move_repository.dart',
+              """  Future<Map<String, MoveData?>> getMoves(
+              Iterable<String> names, {
+              int? pokemonId,
+            }) async {
+              final result = <String, MoveData?>{};
+
+              for (final name in names) {
+                result[name] = await getMove(name, pokemonId: pokemonId);
+              }
+
+              return result;
+            }
+
+            """,
+              """  Future<Map<String, MoveData?>> getMoves(
+              Iterable<String> names, {
+              int? pokemonId,
+            }) async {
+              final result = <String, MoveData?>{};
+
+              for (final name in names) {
+                result[name] = await getMove(name, pokemonId: pokemonId);
+              }
+
+              return result;
+            }
+
+            static String contextualKey(int pokemonId, String reference) {
+              return '$pokemonId:${MoveData.referenceKey(reference)}';
+            }
+
+            Future<Map<String, MoveData?>> getMovesByPokemon(
+              Map<int, Iterable<String>> referencesByPokemon,
+            ) async {
+              final result = <String, MoveData?>{};
+              for (final entry in referencesByPokemon.entries) {
+                for (final reference in entry.value) {
+                  result[contextualKey(entry.key, reference)] = await getMove(
+                    reference,
+                    pokemonId: entry.key,
+                  );
+                }
+              }
+              return result;
+            }
+
+            """,
+          )
+
+          replace_once(
+              'lib/services/custom_pokemon_runtime_registry.dart',
+              """  static CustomPokemonDefinition? definitionFor(int pokemonId) {
+                return _definitions[pokemonId];
+              }
+
+            """,
+              """  static CustomPokemonDefinition? definitionFor(int pokemonId) {
+                return _definitions[pokemonId];
+              }
+
+              static Iterable<CustomPokemonDefinition> get definitions {
+                return _definitions.values;
+              }
+
+            """,
+          )
+
+          # Optional breeding metadata is additive and keeps old .p5fakemon files valid.
+          replace_once(
+              'lib/models/custom_pokemon_definition.dart',
+              """    required this.tmMoves,
+                required this.eggMoves,
+                required this.hitDice,
+            """,
+              """    required this.tmMoves,
+                required this.eggMoves,
+                this.eggGroups = const [],
+                this.baseSpeciesId,
+                required this.hitDice,
+            """,
+          )
+          replace_once(
+              'lib/models/custom_pokemon_definition.dart',
+              """  final List<int> tmMoves;
+              final List<String> eggMoves;
+              final int hitDice;
+            """,
+              """  final List<int> tmMoves;
+              final List<String> eggMoves;
+              final List<String> eggGroups;
+              final int? baseSpeciesId;
+              final int hitDice;
+            """,
+          )
+          replace_once(
+              'lib/models/custom_pokemon_definition.dart',
+              """      tmMoves: _intList(json['tmMoves']),
+                  eggMoves: _stringList(json['eggMoves']),
+                  hitDice: _readInt(json['hitDice']),
+            """,
+              """      tmMoves: _intList(json['tmMoves']),
+                  eggMoves: _stringList(json['eggMoves']),
+                  eggGroups: _stringList(json['eggGroups']),
+                  baseSpeciesId: _nullableInt(json['baseSpeciesId']),
+                  hitDice: _readInt(json['hitDice']),
+            """,
+          )
+          replace_once(
+              'lib/models/custom_pokemon_definition.dart',
+              """      'tmMoves': tmMoves,
+                  'eggMoves': eggMoves,
+                  'hitDice': hitDice,
+            """,
+              """      'tmMoves': tmMoves,
+                  'eggMoves': eggMoves,
+                  'eggGroups': eggGroups,
+                  if (baseSpeciesId != null) 'baseSpeciesId': baseSpeciesId,
+                  'hitDice': hitDice,
+            """,
+          )
+          replace_once(
+              'lib/models/custom_pokemon_definition.dart',
+              """    if (armorClass <= 0 ||
+            """,
+              """    if (eggGroups.length > 2 ||
+                    eggGroups.any((group) => group.trim().isEmpty) ||
+                    eggGroups.map((group) => group.trim().toLowerCase()).toSet().length !=
+                        eggGroups.length) {
+                  throw const FormatException(
+                    'Un Fakemon può avere al massimo due Gruppi Uova distinti.',
+                  );
+                }
+                if (baseSpeciesId != null && baseSpeciesId! <= 0) {
+                  throw const FormatException('ID della specie base non valido.');
+                }
+                if (armorClass <= 0 ||
+            """,
+          )
+
+          # Breeding data combines the static table with runtime Fakemon metadata.
+          replace_once(
+              'lib/models/breeding_species_data.dart',
+              """import 'package:flutter/services.dart';
+
+            """,
+              """import 'package:flutter/services.dart';
+
+            import '../services/custom_pokemon_runtime_registry.dart';
+            import 'custom_pokemon_definition.dart';
+
+            """,
+          )
+          replace_once(
+              'lib/models/breeding_species_data.dart',
+              """  Future<Map<int, BreedingSpeciesData>> load() async {
+                final cached = _cache;
+                if (cached != null) return Map<int, BreedingSpeciesData>.from(cached);
+
+                final source = await rootBundle.loadString(
+                  'assets/data/breeding_species.json',
+                );
+                final decoded = Map<String, dynamic>.from(jsonDecode(source));
+                final items = Map<String, dynamic>.from(decoded['items'] ?? const {});
+                final result = <int, BreedingSpeciesData>{};
+                for (final entry in items.entries) {
+                  final id = int.tryParse(entry.key);
+                  if (id == null || entry.value is! Map) continue;
+                  result[id] = BreedingSpeciesData.fromJson(
+                    id,
+                    Map<String, dynamic>.from(entry.value as Map),
+                  );
+                }
+                _cache = result;
+                return Map<int, BreedingSpeciesData>.from(result);
+              }
+            """,
+              """  Future<Map<int, BreedingSpeciesData>> load() async {
+                var cached = _cache;
+                if (cached == null) {
+                  final source = await rootBundle.loadString(
+                    'assets/data/breeding_species.json',
+                  );
+                  final decoded = Map<String, dynamic>.from(jsonDecode(source));
+                  final items = Map<String, dynamic>.from(decoded['items'] ?? const {});
+                  final result = <int, BreedingSpeciesData>{};
+                  for (final entry in items.entries) {
+                    final id = int.tryParse(entry.key);
+                    if (id == null || entry.value is! Map) continue;
+                    result[id] = BreedingSpeciesData.fromJson(
+                      id,
+                      Map<String, dynamic>.from(entry.value as Map),
+                    );
+                  }
+                  _cache = result;
+                  cached = result;
+                }
+
+                return mergeCustomDefinitions(
+                  cached,
+                  CustomPokemonRuntimeRegistry.definitions,
+                );
+              }
+
+              static Map<int, BreedingSpeciesData> mergeCustomDefinitions(
+                Map<int, BreedingSpeciesData> base,
+                Iterable<CustomPokemonDefinition> definitions,
+              ) {
+                final result = Map<int, BreedingSpeciesData>.from(base);
+                for (final definition in definitions) {
+                  if (definition.eggGroups.isEmpty) continue;
+                  result[definition.pokemonId] = BreedingSpeciesData(
+                    speciesId: definition.pokemonId,
+                    eggGroups: List<String>.unmodifiable(definition.eggGroups),
+                    baseSpeciesId:
+                        definition.baseSpeciesId ?? definition.pokemonId,
+                    isBaby: false,
+                    isLegendary: false,
+                    isMythical: false,
+                  );
+                }
+                return result;
+              }
+            """,
+          )
+
+          # Preserve breeding lineage when a Fakemon ID is remapped on import.
+          replace_once(
+              'lib/services/custom_pokemon_transfer_service.dart',
+              """      tmMoves: List<int>.from(source.tmMoves),
+                  eggMoves: List<String>.from(source.eggMoves),
+                  hitDice: source.hitDice,
+            """,
+              """      tmMoves: List<int>.from(source.tmMoves),
+                  eggMoves: List<String>.from(source.eggMoves),
+                  eggGroups: List<String>.from(source.eggGroups),
+                  baseSpeciesId: source.baseSpeciesId == source.pokemonId
+                      ? pokemonId
+                      : source.baseSpeciesId,
+                  hitDice: source.hitDice,
+            """,
+          )
+          replace_once(
+              'lib/services/embedded_custom_pokemon_transfer_service.dart',
+              """    var installed = 0;
+                var updated = 0;
+                var remapped = 0;
+
+            """,
+              """    var installed = 0;
+                var updated = 0;
+                var remapped = 0;
+                final installedDefinitions = <CustomPokemonDefinition>[];
+
+            """,
+          )
+          replace_once(
+              'lib/services/embedded_custom_pokemon_transfer_service.dart',
+              """      idMap[definition.pokemonId] = result.definition.pokemonId;
+                  if (result.updatedExisting || existed) {
+            """,
+              """      idMap[definition.pokemonId] = result.definition.pokemonId;
+                  installedDefinitions.add(result.definition);
+                  if (result.updatedExisting || existed) {
+            """,
+          )
+          replace_once(
+              'lib/services/embedded_custom_pokemon_transfer_service.dart',
+              """    PokemonRepository.clearCache();
+                return EmbeddedCustomPokemonInstallResult(
+            """,
+              """    for (final definition in installedDefinitions) {
+                  final baseSpeciesId = definition.baseSpeciesId;
+                  if (baseSpeciesId == null) continue;
+                  final resolvedBaseSpeciesId = idMap[baseSpeciesId] ?? baseSpeciesId;
+                  if (resolvedBaseSpeciesId == baseSpeciesId) continue;
+                  final updatedDefinition = CustomPokemonDefinition.fromJson({
+                    ...definition.toJson(),
+                    'baseSpeciesId': resolvedBaseSpeciesId,
+                    'updatedAt': DateTime.now().toUtc().toIso8601String(),
+                  });
+                  await _repository.save(updatedDefinition);
+                }
+
+                PokemonRepository.clearCache();
+                return EmbeddedCustomPokemonInstallResult(
+            """,
+          )
+
+          # Fakemon editor: let creators provide the breeding data required by the rules.
+          replace_once(
+              'lib/screens/pokemon/custom_pokemon_library_screen.dart',
+              """  static const _sizes = ['Tiny', 'Small', 'Medium', 'Large', 'Huge'];
+
+            """,
+              """  static const _sizes = ['Tiny', 'Small', 'Medium', 'Large', 'Huge'];
+              static const _eggGroups = [
+                'Monster',
+                'Water 1',
+                'Bug',
+                'Flying',
+                'Field',
+                'Fairy',
+                'Grass',
+                'Human-Like',
+                'Water 3',
+                'Mineral',
+                'Amorphous',
+                'Water 2',
+                'Ditto',
+                'Dragon',
+                'Undiscovered',
+              ];
+
+            """,
+          )
+          replace_once(
+              'lib/screens/pokemon/custom_pokemon_library_screen.dart',
+              """  late final TextEditingController _tmMoves;
+              late final TextEditingController _eggMoves;
+
+            """,
+              """  late final TextEditingController _tmMoves;
+              late final TextEditingController _eggMoves;
+              late final TextEditingController _eggGroupsController;
+              late final TextEditingController _baseSpeciesId;
+
+            """,
+          )
+          replace_once(
+              'lib/screens/pokemon/custom_pokemon_library_screen.dart',
+              """    _eggMoves = TextEditingController(
+                  text: definition?.eggMoves.join(', ') ?? '',
+                );
+
+            """,
+              """    _eggMoves = TextEditingController(
+                  text: definition?.eggMoves.join(', ') ?? '',
+                );
+                _eggGroupsController = TextEditingController(
+                  text: definition?.eggGroups.join(', ') ?? '',
+                );
+                _baseSpeciesId = TextEditingController(
+                  text: definition?.baseSpeciesId?.toString() ?? '',
+                );
+
+            """,
+          )
+          replace_once(
+              'lib/screens/pokemon/custom_pokemon_library_screen.dart',
+              """      _tmMoves,
+                  _eggMoves,
+                  ..._scores.values,
+            """,
+              """      _tmMoves,
+                  _eggMoves,
+                  _eggGroupsController,
+                  _baseSpeciesId,
+                  ..._scores.values,
+            """,
+          )
+          replace_once(
+              'lib/screens/pokemon/custom_pokemon_library_screen.dart',
+              """        tmMoves: _intCsv(_tmMoves.text),
+                    eggMoves: _csv(_eggMoves.text),
+                    hitDice: int.parse(_hitDice.text),
+            """,
+              """        tmMoves: _intCsv(_tmMoves.text),
+                    eggMoves: _csv(_eggMoves.text),
+                    eggGroups: _csv(_eggGroupsController.text),
+                    baseSpeciesId: _optionalInt(_baseSpeciesId.text),
+                    hitDice: int.parse(_hitDice.text),
+            """,
+          )
+          replace_once(
+              'lib/screens/pokemon/custom_pokemon_library_screen.dart',
+              """              _EditorSection(
+                    title: 'Mosse',
+            """,
+              """              _EditorSection(
+                    title: 'Allevamento',
+                    children: [
+                      TextFormField(
+                        controller: _eggGroupsController,
+                        decoration: const InputDecoration(
+                          labelText: 'Gruppi Uova, separati da virgole',
+                          helperText:
+                              'Lascia vuoto per rendere la specie non disponibile all’allevamento.',
+                        ),
+                        validator: (value) {
+                          final groups = _csv(value ?? '');
+                          if (groups.length > 2) {
+                            return 'Scegli al massimo due Gruppi Uova.';
+                          }
+                          for (final group in groups) {
+                            if (!_eggGroups.contains(group)) {
+                              return 'Gruppo Uova non riconosciuto: $group';
+                            }
+                          }
+                          return null;
+                        },
+                      ),
+                      TextFormField(
+                        controller: _baseSpeciesId,
+                        keyboardType: TextInputType.number,
+                        decoration: const InputDecoration(
+                          labelText: 'ID specie base per la schiusa',
+                          helperText:
+                              'Facoltativo. Se vuoto, dall’uovo nascerà questa specie.',
+                        ),
+                        validator: (value) {
+                          final text = (value ?? '').trim();
+                          if (text.isEmpty) return null;
+                          final id = int.tryParse(text);
+                          return id == null || id <= 0 ? 'ID non valido' : null;
+                        },
+                      ),
+                      Wrap(
+                        spacing: 6,
+                        runSpacing: 6,
+                        children: [
+                          for (final group in _eggGroups)
+                            ActionChip(
+                              label: Text(group),
+                              onPressed: () {
+                                final groups = _csv(_eggGroupsController.text);
+                                if (!groups.contains(group) && groups.length < 2) {
+                                  groups.add(group);
+                                  _eggGroupsController.text = groups.join(', ');
+                                }
+                              },
+                            ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  _EditorSection(
+                    title: 'Mosse',
+            """,
+          )
+
+          # Generator screen loads and stores local moves in species context.
+          replace_once(
+              'lib/screens/tools/pokemon_generator_screen.dart',
+              """      final moves = await _moveRepository.getMoves(
+                    generated.selectedMoves,
+                  );
+            """,
+              """      final moves = await _moveRepository.getMovesByPokemon({
+                    generated.basePokemon.id: generated.selectedMoves,
+                  });
+            """,
+          )
+          replace_once(
+              'lib/screens/tools/pokemon_generator_screen.dart',
+              """  Future<void> _loadGeneratedMoves(
+                Iterable<GeneratedPokemon> generated,
+              ) async {
+                final references = <String>{
+                  for (final pokemon in generated) ...pokemon.selectedMoves,
+                };
+                final moves = await _moveRepository.getMoves(references);
+                if (!mounted) return;
+                setState(() => _generatedMoves = moves);
+              }
+            """,
+              """  Future<void> _loadGeneratedMoves(
+                Iterable<GeneratedPokemon> generated,
+              ) async {
+                final referencesByPokemon = <int, Set<String>>{};
+                for (final pokemon in generated) {
+                  referencesByPokemon
+                      .putIfAbsent(pokemon.basePokemon.id, () => <String>{})
+                      .addAll(pokemon.selectedMoves);
+                }
+                final moves = await _moveRepository.getMovesByPokemon(
+                  referencesByPokemon,
+                );
+                if (!mounted) return;
+                setState(() => _generatedMoves = moves);
+              }
+            """,
+          )
+          replace_once(
+              'lib/screens/tools/pokemon_generator_screen.dart',
+              """        for (final reference in generated.selectedMoves)
+                  _generatedMoves[reference]?.id ?? reference,
+            """,
+              """        for (final reference in generated.selectedMoves)
+                  _generatedMoves[
+                        MoveRepository.contextualKey(
+                          generated.basePokemon.id,
+                          reference,
+                        )
+                      ]?.id ??
+                      reference,
+            """,
+          )
+          # The same expression occurs in _resolvedMoveReferences.
+          replace_once(
+              'lib/screens/tools/pokemon_generator_screen.dart',
+              """      for (final reference in generated.selectedMoves)
+                    _generatedMoves[reference]?.id ?? reference,
+            """,
+              """      for (final reference in generated.selectedMoves)
+                    _generatedMoves[
+                          MoveRepository.contextualKey(
+                            generated.basePokemon.id,
+                            reference,
+                          )
+                        ]?.id ??
+                        reference,
+            """,
+          )
+          replace_once(
+              'lib/screens/tools/pokemon_generator_screen.dart',
+              """                      move: moves[reference],
+            """,
+              """                      move: moves[
+                        MoveRepository.contextualKey(
+                          generated.basePokemon.id,
+                          reference,
+                        )
+                      ],
+            """,
+          )
+
+          # Batch result tiles use the same species-aware map.
+          replace_once(
+              'lib/widgets/tools/generated_pokemon_batch_card.dart',
+              """import '../../models/move_data.dart';
+            import '../pokemon/pokemon_asset_image.dart';
+            """,
+              """import '../../models/move_data.dart';
+            import '../../repositories/move_repository.dart';
+            import '../pokemon/pokemon_asset_image.dart';
+            """,
+          )
+          replace_once(
+              'lib/widgets/tools/generated_pokemon_batch_card.dart',
+              """                      Chip(label: Text(moves[reference]?.name ?? reference)),
+            """,
+              """                      Chip(
+                        label: Text(
+                          moves[MoveRepository.contextualKey(
+                                generated.basePokemon.id,
+                                reference,
+                              )]?.name ??
+                              reference,
+                        ),
+                      ),
+            """,
+          )
+
+          # Encounter results.
+          replace_once(
+              'lib/screens/tools/encounter_result_screen.dart',
+              """  Future<void> _loadMoves() async {
+                final references = <String>{
+                  for (final member in _encounter.members) ...member.pokemon.selectedMoves,
+                };
+                final moves = await _moveRepository.getMoves(references);
+                if (!mounted) return;
+                setState(() => _moves = moves);
+              }
+            """,
+              """  Future<void> _loadMoves() async {
+                final referencesByPokemon = <int, Set<String>>{};
+                for (final member in _encounter.members) {
+                  final generated = member.pokemon;
+                  referencesByPokemon
+                      .putIfAbsent(generated.basePokemon.id, () => <String>{})
+                      .addAll(generated.selectedMoves);
+                }
+                final moves = await _moveRepository.getMovesByPokemon(
+                  referencesByPokemon,
+                );
+                if (!mounted) return;
+                setState(() => _moves = moves);
+              }
+            """,
+          )
+          replace_once(
+              'lib/screens/tools/encounter_result_screen.dart',
+              """                  Chip(label: Text(moves[reference]?.name ?? reference)),
+            """,
+              """                  Chip(
+                    label: Text(
+                      moves[MoveRepository.contextualKey(
+                            generated.basePokemon.id,
+                            reference,
+                          )]?.name ??
+                          reference,
+                    ),
+                  ),
+            """,
+          )
+
+          # NPC trainer results.
+          replace_once(
+              'lib/screens/tools/npc_trainer_result_screen.dart',
+              """  Future<void> _loadMoves() async {
+                final references = <String>{
+                  for (final pokemon in _trainer.team) ...pokemon.selectedMoves,
+                };
+                final moves = await _moveRepository.getMoves(references);
+                if (!mounted) return;
+                setState(() => _moves = moves);
+              }
+            """,
+              """  Future<void> _loadMoves() async {
+                final referencesByPokemon = <int, Set<String>>{};
+                for (final generated in _trainer.team) {
+                  referencesByPokemon
+                      .putIfAbsent(generated.basePokemon.id, () => <String>{})
+                      .addAll(generated.selectedMoves);
+                }
+                final moves = await _moveRepository.getMovesByPokemon(
+                  referencesByPokemon,
+                );
+                if (!mounted) return;
+                setState(() => _moves = moves);
+              }
+            """,
+          )
+          replace_once(
+              'lib/screens/tools/npc_trainer_result_screen.dart',
+              """                  Chip(label: Text(moves[reference]?.name ?? reference)),
+            """,
+              """                  Chip(
+                    label: Text(
+                      moves[MoveRepository.contextualKey(
+                            generated.basePokemon.id,
+                            reference,
+                          )]?.name ??
+                          reference,
+                    ),
+                  ),
+            """,
+          )
+
+          # Master Fight with NPC trainers.
+          replace_once(
+              'lib/screens/battle/npc_battle_screen.dart',
+              """  Future<void> _loadMoves() async {
+                final references = <String>{'Struggle'};
+                for (final participant in _session.participants) {
+                  for (final state in participant.team) {
+                    references.addAll(state.pokemon.selectedMoves);
+                  }
+                }
+                final moves = await _moveRepository.getMoves(references);
+                if (!mounted) return;
+                setState(() => _moves = moves);
+              }
+            """,
+              """  Future<void> _loadMoves() async {
+                final referencesByPokemon = <int, Set<String>>{};
+                for (final participant in _session.participants) {
+                  for (final state in participant.team) {
+                    referencesByPokemon
+                        .putIfAbsent(
+                          state.pokemon.pokemonId,
+                          () => <String>{'Struggle'},
+                        )
+                        .addAll(state.pokemon.selectedMoves);
+                  }
+                }
+                final moves = await _moveRepository.getMovesByPokemon(
+                  referencesByPokemon,
+                );
+                if (!mounted) return;
+                setState(() => _moves = moves);
+              }
+
+              MoveData? _moveForState(
+                MasterBattlePokemonState state,
+                String reference,
+              ) {
+                return _moves[MoveRepository.contextualKey(
+                  state.pokemon.pokemonId,
+                  reference,
+                )];
+              }
+            """,
+          )
+          replace_once(
+              'lib/screens/battle/npc_battle_screen.dart',
+              """                move: _moves[reference],
+                    level: state.pokemon.level,
+                    remainingPp: _remainingPp(state, reference, _moves[reference]),
+                    maxPp: _maxPp(_moves[reference]),
+                    onUse: () => _changePp(reference, _moves[reference], -1),
+                    onRestore: () => _changePp(reference, _moves[reference], 1),
+            """,
+              """                move: _moveForState(state, reference),
+                    level: state.pokemon.level,
+                    remainingPp: _remainingPp(
+                      state,
+                      reference,
+                      _moveForState(state, reference),
+                    ),
+                    maxPp: _maxPp(_moveForState(state, reference)),
+                    onUse: () => _changePp(
+                      reference,
+                      _moveForState(state, reference),
+                      -1,
+                    ),
+                    onRestore: () => _changePp(
+                      reference,
+                      _moveForState(state, reference),
+                      1,
+                    ),
+            """,
+          )
+
+          # Player Battle Companion: keep definitions separate for every team member.
+          replace_once(
+              'lib/screens/battle/battle_screen.dart',
+              """import '../../services/custom_pokemon_runtime_registry.dart';
+            """,
+              """""",
+          )
+          replace_once(
+              'lib/screens/battle/battle_screen.dart',
+              """    final moveReferences = <String>{'Struggle'};
+                for (final slot in team) {
+                  moveReferences.addAll(slot.selectedMoves);
+                }
+                final moves = await _moveRepository.getMoves(moveReferences);
+                for (final slot in team) {
+                  final pokemonId = slot.pokemonId;
+                  if (pokemonId == null) continue;
+                  for (final reference in slot.selectedMoves) {
+                    final localMove = CustomPokemonRuntimeRegistry.moveFor(
+                      pokemonId,
+                      reference,
+                    );
+                    if (localMove != null) {
+                      moves[reference] = localMove;
+                    }
+                  }
+                }
+            """,
+              """    final referencesByPokemon = <int, Set<String>>{};
+                for (final slot in team) {
+                  final pokemonId = slot.pokemonId;
+                  if (pokemonId == null) continue;
+                  referencesByPokemon
+                      .putIfAbsent(pokemonId, () => <String>{'Struggle'})
+                      .addAll(slot.selectedMoves);
+                }
+                final moves = await _moveRepository.getMovesByPokemon(
+                  referencesByPokemon,
+                );
+            """,
+          )
+          replace_once(
+              'lib/screens/battle/battle_screen.dart',
+              """  bool _hasNoPpLeft(
+                TeamSlot slot,
+                List<String> references,
+                Map<String, MoveData?> moves,
+              ) {
+                final usable = references.where((reference) {
+                  final move = moves[reference];
+                  return move != null && _maxPpFor(move) > 0;
+                });
+                if (usable.isEmpty) return false;
+                return usable.every(
+                  (reference) =>
+                      _remainingPp(slot, reference, moves[reference]) <= 0,
+                );
+              }
+            """,
+              """  bool _hasNoPpLeft(
+                TeamSlot slot,
+                List<String> references,
+                Map<String, MoveData?> moves,
+              ) {
+                final pokemonId = slot.pokemonId;
+                if (pokemonId == null) return false;
+                final usable = references.where((reference) {
+                  final move = moves[MoveRepository.contextualKey(
+                    pokemonId,
+                    reference,
+                  )];
+                  return move != null && _maxPpFor(move) > 0;
+                });
+                if (usable.isEmpty) return false;
+                return usable.every((reference) {
+                  final move = moves[MoveRepository.contextualKey(
+                    pokemonId,
+                    reference,
+                  )];
+                  return _remainingPp(slot, reference, move) <= 0;
+                });
+              }
+            """,
+          )
+          replace_once(
+              'lib/screens/battle/battle_screen.dart',
+              """            final heldItem = data.heldItemFor(activeSlot);
+            """,
+              """            final moveForActive = (String reference) =>
+                    data.moves[MoveRepository.contextualKey(
+                      pokemon.id,
+                      reference,
+                    )];
+                final heldItem = data.heldItemFor(activeSlot);
+            """,
+          )
+          replace_once(
+              'lib/screens/battle/battle_screen.dart',
+              """                    _StruggleWarning(move: data.moves['Struggle']),
+            """,
+              """                    _StruggleWarning(move: moveForActive('Struggle')),
+            """,
+          )
+          replace_once(
+              'lib/screens/battle/battle_screen.dart',
+              """                      move: data.moves[reference],
+                      remainingPp: _remainingPp(
+                        activeSlot,
+                        reference,
+                        data.moves[reference],
+                      ),
+                      maxPp: _maxPpFor(data.moves[reference]),
+                      stats: data.moves[reference] == null
+                          ? null
+                          : _moveStats(
+                              data.moves[reference]!,
+                              pokemon,
+                              activeSlot,
+                            ),
+                      onUse: () => _changePp(
+                        data,
+                        activeSlot,
+                        reference,
+                        data.moves[reference],
+                        -1,
+                      ),
+                      onRestore: () => _changePp(
+                        data,
+                        activeSlot,
+                        reference,
+                        data.moves[reference],
+                        1,
+                      ),
+            """,
+              """                      move: moveForActive(reference),
+                      remainingPp: _remainingPp(
+                        activeSlot,
+                        reference,
+                        moveForActive(reference),
+                      ),
+                      maxPp: _maxPpFor(moveForActive(reference)),
+                      stats: moveForActive(reference) == null
+                          ? null
+                          : _moveStats(
+                              moveForActive(reference)!,
+                              pokemon,
+                              activeSlot,
+                            ),
+                      onUse: () => _changePp(
+                        data,
+                        activeSlot,
+                        reference,
+                        moveForActive(reference),
+                        -1,
+                      ),
+                      onRestore: () => _changePp(
+                        data,
+                        activeSlot,
+                        reference,
+                        moveForActive(reference),
+                        1,
+                      ),
+            """,
+          )
+
+          write(
+              'test/fakemon_phase7_integration_test.dart',
+              r"""import 'dart:math';
+
+            import 'package:flutter_test/flutter_test.dart';
+            import 'package:pokedex_5e_ita/models/breeding_candidate.dart';
+            import 'package:pokedex_5e_ita/models/breeding_egg.dart';
+            import 'package:pokedex_5e_ita/models/breeding_species_data.dart';
+            import 'package:pokedex_5e_ita/models/custom_pokemon_definition.dart';
+            import 'package:pokedex_5e_ita/models/generated_encounter.dart';
+            import 'package:pokedex_5e_ita/models/generated_npc_trainer.dart';
+            import 'package:pokedex_5e_ita/models/generated_pokemon.dart';
+            import 'package:pokedex_5e_ita/models/pc_pokemon.dart';
+            import 'package:pokedex_5e_ita/models/pokemon.dart';
+            import 'package:pokedex_5e_ita/models/pokemon_attributes.dart';
+            import 'package:pokedex_5e_ita/models/trainer_manual_content.dart';
+            import 'package:pokedex_5e_ita/repositories/move_repository.dart';
+            import 'package:pokedex_5e_ita/services/breeding_service.dart';
+            import 'package:pokedex_5e_ita/services/custom_pokemon_runtime_registry.dart';
+            import 'package:pokedex_5e_ita/services/encounter_generator_service.dart';
+            import 'package:pokedex_5e_ita/services/npc_trainer_generator_service.dart';
+            import 'package:pokedex_5e_ita/services/pokemon_generator_service.dart';
+
+            void main() {
+              TestWidgetsFlutterBinding.ensureInitialized();
+
+              late CustomPokemonDefinition fireDefinition;
+              late CustomPokemonDefinition waterDefinition;
+
+              setUp(() {
+                fireDefinition = _definition(
+                  id: CustomPokemonDefinition.firstCustomPokemonId,
+                  stableId: 'phase7-fire',
+                  name: 'Pyroecho',
+                  type: 'Fire',
+                  moveType: 'Fire',
+                );
+                waterDefinition = _definition(
+                  id: CustomPokemonDefinition.firstCustomPokemonId + 1,
+                  stableId: 'phase7-water',
+                  name: 'Aquaecho',
+                  type: 'Water',
+                  moveType: 'Water',
+                );
+                CustomPokemonRuntimeRegistry.replaceAll([
+                  fireDefinition,
+                  waterDefinition,
+                ]);
+              });
+
+              tearDown(() {
+                CustomPokemonRuntimeRegistry.replaceAll(
+                  const <CustomPokemonDefinition>[],
+                );
+              });
+
+              test(
+                'risolve mosse Fakemon omonime per specie in generatori, incontri e fight',
+                () async {
+                  final repository = MoveRepository();
+                  final moves = await repository.getMovesByPokemon({
+                    fireDefinition.pokemonId: const ['Eco Primordiale'],
+                    waterDefinition.pokemonId: const ['Eco Primordiale'],
+                  });
+
+                  expect(
+                    moves[MoveRepository.contextualKey(
+                      fireDefinition.pokemonId,
+                      'Eco Primordiale',
+                    )]?.type,
+                    'Fire',
+                  );
+                  expect(
+                    moves[MoveRepository.contextualKey(
+                      waterDefinition.pokemonId,
+                      'Eco Primordiale',
+                    )]?.type,
+                    'Water',
+                  );
+                },
+              );
+
+              test(
+                'Fakemon generato conserva specie, abilità e mossa passando tra cattura, squadra e PC',
+                () {
+                  const generator = PokemonGeneratorService();
+                  final generated = generator.generateForPokemon(
+                    pokemon: fireDefinition.toPokemon(),
+                    filters: const PokemonGeneratorFilters(
+                      level: 5,
+                      shinyChance: 0,
+                    ),
+                    random: Random(4),
+                  );
+
+                  expect(generated, isNotNull);
+                  expect(generated!.basePokemon.id, fireDefinition.pokemonId);
+                  expect(generated.selectedMoves, contains('Eco Primordiale'));
+                  expect(generated.ability, 'Risonanza');
+
+                  final capturedSlot = generated.toTeamSlot(slotIndex: 0);
+                  final stored = PcPokemon.fromTeamSlot(capturedSlot);
+                  final restored = stored.toTeamSlot(
+                    slotIndex: 2,
+                    fallbackCurrentHp: generated.maxHp,
+                  );
+
+                  expect(restored.pokemonId, fireDefinition.pokemonId);
+                  expect(restored.selectedMoves, contains('Eco Primordiale'));
+                  expect(restored.abilities, ['Risonanza']);
+                  expect(restored.currentHp, generated.maxHp);
+                },
+              );
+
+              test('incontri manuali accettano una specie Fakemon', () {
+                const service = EncounterGeneratorService();
+                final encounter = service.generateManual(
+                  catalog: [fireDefinition.toPokemon()],
+                  selections: [
+                    EncounterManualSelection(
+                      pokemonId: fireDefinition.pokemonId,
+                      quantity: 2,
+                    ),
+                  ],
+                  party: const EncounterPartyProfile(),
+                  filters: const EncounterGeneratorFilters(level: 4),
+                  targetDifficulty: EncounterDifficulty.medium,
+                  random: Random(8),
+                );
+
+                expect(encounter, isNotNull);
+                expect(encounter!.members, hasLength(2));
+                expect(
+                  encounter.members.every(
+                    (member) =>
+                        member.pokemon.basePokemon.id ==
+                        fireDefinition.pokemonId,
+                  ),
+                  isTrue,
+                );
+              });
+
+              test('il generatore Allenatori PNG usa il Fakemon dal catalogo', () {
+                const service = NpcTrainerGeneratorService();
+                final trainer = service.generate(
+                  catalog: [fireDefinition.toPokemon()],
+                  options: const NpcTrainerGeneratorOptions(
+                    trainerLevel: 5,
+                    pokemonLevel: 5,
+                    teamSize: 1,
+                    specialization: 'Pyromaniac',
+                    composition: NpcTeamComposition.themed,
+                  ),
+                  specializations: const ['Pyromaniac'],
+                  origins: const [
+                    TrainerOrigin(
+                      name: 'Umano',
+                      description: '',
+                      abilityBonuses: {},
+                      skillProficiencies: [],
+                      savingThrowProficiencies: [],
+                    ),
+                  ],
+                  paths: const [TrainerPath(name: 'Ace Trainer', features: [])],
+                  random: Random(3),
+                );
+
+                expect(trainer, isNotNull);
+                expect(trainer!.team.single.basePokemon.id, fireDefinition.pokemonId);
+                expect(trainer.team.single.selectedMoves, contains('Eco Primordiale'));
+              });
+
+              test(
+                'metadati di allevamento Fakemon producono compatibilità e uovo della specie corretta',
+                () {
+                  final speciesData = BreedingDataService.mergeCustomDefinitions(
+                    const <int, BreedingSpeciesData>{},
+                    [fireDefinition, waterDefinition],
+                  );
+                  expect(
+                    speciesData[fireDefinition.pokemonId]?.eggGroups,
+                    ['Field'],
+                  );
+
+                  const service = BreedingService();
+                  final compatibility = service.compatibility(
+                    first: BreedingCandidate(
+                      key: 'fire',
+                      pokemonId: fireDefinition.pokemonId,
+                      displayName: fireDefinition.name,
+                      location: 'Squadra',
+                      gender: 'Male',
+                      loyalty: 2,
+                      selectedMoves: const ['Eco Primordiale'],
+                      abilities: const ['Risonanza'],
+                    ),
+                    second: BreedingCandidate(
+                      key: 'water',
+                      pokemonId: waterDefinition.pokemonId,
+                      displayName: waterDefinition.name,
+                      location: 'PC',
+                      gender: 'Female',
+                      loyalty: 2,
+                      selectedMoves: const ['Eco Primordiale'],
+                      abilities: const ['Risonanza'],
+                    ),
+                    speciesData: speciesData,
+                    catalog: {
+                      fireDefinition.pokemonId: fireDefinition.toPokemon(),
+                      waterDefinition.pokemonId: waterDefinition.toPokemon(),
+                    },
+                  );
+
+                  expect(compatibility.isCompatible, isTrue);
+                  expect(
+                    compatibility.childSpeciesId,
+                    waterDefinition.pokemonId,
+                  );
+
+                  final egg = service.createEgg(
+                    first: BreedingCandidate(
+                      key: 'fire',
+                      pokemonId: fireDefinition.pokemonId,
+                      displayName: fireDefinition.name,
+                      location: 'Squadra',
+                      gender: 'Male',
+                      loyalty: 2,
+                      selectedMoves: const ['Eco Primordiale'],
+                      abilities: const ['Risonanza'],
+                    ),
+                    second: BreedingCandidate(
+                      key: 'water',
+                      pokemonId: waterDefinition.pokemonId,
+                      displayName: waterDefinition.name,
+                      location: 'PC',
+                      gender: 'Female',
+                      loyalty: 2,
+                      selectedMoves: const ['Eco Primordiale'],
+                      abilities: const ['Risonanza'],
+                    ),
+                    compatibility: compatibility,
+                    catalog: {
+                      fireDefinition.pokemonId: fireDefinition.toPokemon(),
+                      waterDefinition.pokemonId: waterDefinition.toPokemon(),
+                    },
+                    selectedGender: 'Female',
+                    selectedAbility: 'Risonanza',
+                    random: Random(2),
+                  );
+                  expect(egg.speciesId, waterDefinition.pokemonId);
+                  expect(egg.selectedMoves, contains('Eco Primordiale'));
+                  expect(egg.ability, 'Risonanza');
+
+                  final hatchedSlot = generatedPokemonFromEgg(
+                    egg,
+                    waterDefinition.toPokemon(),
+                  ).toTeamSlot(slotIndex: 1);
+                  expect(hatchedSlot.pokemonId, waterDefinition.pokemonId);
+                  expect(hatchedSlot.selectedMoves, contains('Eco Primordiale'));
+                  expect(hatchedSlot.abilities, ['Risonanza']);
+                },
+              );
+
+              test('JSON Fakemon mantiene i dati di allevamento', () {
+                final restored = CustomPokemonDefinition.fromJson(
+                  fireDefinition.toJson(),
+                );
+                expect(restored.eggGroups, ['Field']);
+                expect(restored.baseSpeciesId, fireDefinition.pokemonId);
+              });
+            }
+
+            GeneratedPokemon generatedPokemonFromEgg(
+              BreedingEgg egg,
+              Pokemon pokemon,
+            ) {
+              return GeneratedPokemon(
+                basePokemon: pokemon,
+                pokemon: pokemon,
+                formName: egg.formName,
+                level: pokemon.minLevelFound,
+                gender: egg.gender,
+                nature: egg.nature,
+                ability: egg.ability,
+                selectedMoves: egg.selectedMoves,
+                isShiny: egg.isShiny,
+                maxHp: pokemon.hitPoints,
+              );
+            }
+
+            CustomPokemonDefinition _definition({
+              required int id,
+              required String stableId,
+              required String name,
+              required String type,
+              required String moveType,
+            }) {
+              return CustomPokemonDefinition(
+                formatVersion: CustomPokemonDefinition.currentFormatVersion,
+                stableId: stableId,
+                pokemonId: id,
+                createdAt: DateTime.utc(2026, 7, 17),
+                updatedAt: DateTime.utc(2026, 7, 17),
+                name: name,
+                author: 'Phase 7 test',
+                types: [type],
+                armorClass: 12,
+                hitPoints: 20,
+                size: 'Small',
+                speed: 30,
+                attributes: const PokemonAttributes(
+                  strength: 10,
+                  dexterity: 12,
+                  constitution: 12,
+                  intelligence: 8,
+                  wisdom: 10,
+                  charisma: 10,
+                ),
+                abilities: const ['Risonanza'],
+                skills: const [],
+                savingThrows: const [],
+                startingMoves: const ['Eco Primordiale'],
+                levelMoves: const {},
+                tmMoves: const [],
+                eggMoves: const ['Eco Primordiale'],
+                eggGroups: const ['Field'],
+                baseSpeciesId: id,
+                hitDice: 6,
+                sr: 1,
+                minLevelFound: 1,
+                genderRatio: '50% Male / 50% Female',
+                localMoves: [
+                  CustomPokemonMoveDefinition(
+                    id: 'move-eco-$stableId',
+                    name: 'Eco Primordiale',
+                    type: moveType,
+                    pp: '10',
+                    range: '60 ft.',
+                    duration: 'Instantaneous',
+                    moveTime: '1 Action',
+                    description: 'Una mossa locale usata dal test di fase 7.',
+                    damageByLevel: const {1: '1d8'},
+                    isAttack: true,
+                  ),
+                ],
+                localAbilities: const [
+                  CustomPokemonAbilityDefinition(
+                    id: 'ability-risonanza',
+                    name: 'Risonanza',
+                    description: 'Abilità locale usata dal test.',
+                  ),
+                ],
+              );
+            }
+            """,
+          )
+          PY
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Format changed Dart files
+        run: |
+          dart format \
+            lib/repositories/move_repository.dart \
+            lib/services/custom_pokemon_runtime_registry.dart \
+            lib/models/custom_pokemon_definition.dart \
+            lib/models/breeding_species_data.dart \
+            lib/services/custom_pokemon_transfer_service.dart \
+            lib/services/embedded_custom_pokemon_transfer_service.dart \
+            lib/screens/pokemon/custom_pokemon_library_screen.dart \
+            lib/screens/tools/pokemon_generator_screen.dart \
+            lib/widgets/tools/generated_pokemon_batch_card.dart \
+            lib/screens/tools/encounter_result_screen.dart \
+            lib/screens/tools/npc_trainer_result_screen.dart \
+            lib/screens/battle/npc_battle_screen.dart \
+            lib/screens/battle/battle_screen.dart \
+            test/fakemon_phase7_integration_test.dart
+
+      - name: Commit patch and remove temporary workflow
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/phase7-fakemon-integration.yml
+          git add .
+          git commit -m "Completa integrazione Fakemon nei flussi di gioco"
+          git push origin HEAD:feature/issue-61-fakemon-phase-7

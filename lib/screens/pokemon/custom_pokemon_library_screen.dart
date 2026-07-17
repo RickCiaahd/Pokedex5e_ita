@@ -498,6 +498,23 @@ class _CustomPokemonEditorScreenState extends State<CustomPokemonEditorScreen> {
     'Water',
   ];
   static const _sizes = ['Tiny', 'Small', 'Medium', 'Large', 'Huge'];
+  static const _eggGroups = [
+    'Monster',
+    'Water 1',
+    'Bug',
+    'Flying',
+    'Field',
+    'Fairy',
+    'Grass',
+    'Human-Like',
+    'Water 3',
+    'Mineral',
+    'Amorphous',
+    'Water 2',
+    'Ditto',
+    'Dragon',
+    'Undiscovered',
+  ];
 
   final _formKey = GlobalKey<FormState>();
   final CustomPokemonRepository _repository = CustomPokemonRepository();
@@ -526,6 +543,8 @@ class _CustomPokemonEditorScreenState extends State<CustomPokemonEditorScreen> {
   late final TextEditingController _levelMoves;
   late final TextEditingController _tmMoves;
   late final TextEditingController _eggMoves;
+  late final TextEditingController _eggGroupsController;
+  late final TextEditingController _baseSpeciesId;
 
   final Map<String, TextEditingController> _scores = {};
   late String _primaryType;
@@ -587,6 +606,12 @@ class _CustomPokemonEditorScreenState extends State<CustomPokemonEditorScreen> {
     _eggMoves = TextEditingController(
       text: definition?.eggMoves.join(', ') ?? '',
     );
+    _eggGroupsController = TextEditingController(
+      text: definition?.eggGroups.join(', ') ?? '',
+    );
+    _baseSpeciesId = TextEditingController(
+      text: definition?.baseSpeciesId?.toString() ?? '',
+    );
 
     final attributes = definition?.attributes;
     final initialScores = {
@@ -638,6 +663,8 @@ class _CustomPokemonEditorScreenState extends State<CustomPokemonEditorScreen> {
       _levelMoves,
       _tmMoves,
       _eggMoves,
+      _eggGroupsController,
+      _baseSpeciesId,
       ..._scores.values,
     ]) {
       controller.dispose();
@@ -792,6 +819,8 @@ class _CustomPokemonEditorScreenState extends State<CustomPokemonEditorScreen> {
         levelMoves: _parseLevelMoves(_levelMoves.text),
         tmMoves: _intCsv(_tmMoves.text),
         eggMoves: _csv(_eggMoves.text),
+        eggGroups: _csv(_eggGroupsController.text),
+        baseSpeciesId: _optionalInt(_baseSpeciesId.text),
         hitDice: int.parse(_hitDice.text),
         sr: double.parse(_sr.text.replaceAll(',', '.')),
         minLevelFound: int.parse(_minLevel.text),
@@ -1050,6 +1079,63 @@ class _CustomPokemonEditorScreenState extends State<CustomPokemonEditorScreen> {
                         icon: const Icon(Icons.delete_outline),
                       ),
                     ),
+                ],
+              ),
+              _EditorSection(
+                title: 'Allevamento',
+                children: [
+                  TextFormField(
+                    controller: _eggGroupsController,
+                    decoration: const InputDecoration(
+                      labelText: 'Gruppi Uova, separati da virgole',
+                      helperText:
+                          'Lascia vuoto per rendere la specie non disponibile all’allevamento.',
+                    ),
+                    validator: (value) {
+                      final groups = _csv(value ?? '');
+                      if (groups.length > 2) {
+                        return 'Scegli al massimo due Gruppi Uova.';
+                      }
+                      for (final group in groups) {
+                        if (!_eggGroups.contains(group)) {
+                          return 'Gruppo Uova non riconosciuto: $group';
+                        }
+                      }
+                      return null;
+                    },
+                  ),
+                  TextFormField(
+                    controller: _baseSpeciesId,
+                    keyboardType: TextInputType.number,
+                    decoration: const InputDecoration(
+                      labelText: 'ID specie base per la schiusa',
+                      helperText:
+                          'Facoltativo. Se vuoto, dall’uovo nascerà questa specie.',
+                    ),
+                    validator: (value) {
+                      final text = (value ?? '').trim();
+                      if (text.isEmpty) return null;
+                      final id = int.tryParse(text);
+                      return id == null || id <= 0 ? 'ID non valido' : null;
+                    },
+                  ),
+                  Wrap(
+                    spacing: 6,
+                    runSpacing: 6,
+                    children: [
+                      for (final group in _eggGroups)
+                        ActionChip(
+                          label: Text(group),
+                          onPressed: () {
+                            final groups = _csv(_eggGroupsController.text);
+                            if (!groups.contains(group) && groups.length < 2) {
+                              groups.add(group);
+                              _eggGroupsController.text = groups.join(', ');
+                            }
+                          },
+                        ),
+                    ],
+                  ),
                 ],
               ),
               _EditorSection(

@@ -196,6 +196,8 @@ class CustomPokemonDefinition {
     required this.levelMoves,
     required this.tmMoves,
     required this.eggMoves,
+    this.eggGroups = const [],
+    this.baseSpeciesId,
     required this.hitDice,
     required this.sr,
     required this.minLevelFound,
@@ -242,6 +244,8 @@ class CustomPokemonDefinition {
   final Map<int, List<String>> levelMoves;
   final List<int> tmMoves;
   final List<String> eggMoves;
+  final List<String> eggGroups;
+  final int? baseSpeciesId;
   final int hitDice;
   final double sr;
   final int minLevelFound;
@@ -377,6 +381,8 @@ class CustomPokemonDefinition {
       levelMoves: levelMoves,
       tmMoves: _intList(json['tmMoves']),
       eggMoves: _stringList(json['eggMoves']),
+      eggGroups: _stringList(json['eggGroups']),
+      baseSpeciesId: _nullableInt(json['baseSpeciesId']),
       hitDice: _readInt(json['hitDice']),
       sr: _readDouble(json['sr']),
       minLevelFound: _readInt(json['minLevelFound']),
@@ -433,6 +439,8 @@ class CustomPokemonDefinition {
       },
       'tmMoves': tmMoves,
       'eggMoves': eggMoves,
+      'eggGroups': eggGroups,
+      if (baseSpeciesId != null) 'baseSpeciesId': baseSpeciesId,
       'hitDice': hitDice,
       'sr': sr,
       'minLevelFound': minLevelFound,
@@ -471,6 +479,17 @@ class CustomPokemonDefinition {
       throw const FormatException(
         'Un Fakemon deve avere uno o due tipi validi.',
       );
+    }
+    if (eggGroups.length > 2 ||
+        eggGroups.any((group) => group.trim().isEmpty) ||
+        eggGroups.map((group) => group.trim().toLowerCase()).toSet().length !=
+            eggGroups.length) {
+      throw const FormatException(
+        'Un Fakemon può avere al massimo due Gruppi Uova distinti.',
+      );
+    }
+    if (baseSpeciesId != null && baseSpeciesId! <= 0) {
+      throw const FormatException('ID della specie base non valido.');
     }
     if (armorClass <= 0 ||
         hitPoints <= 0 ||

@@ -135,6 +135,10 @@ class CustomPokemonTransferService {
       },
       tmMoves: List<int>.from(source.tmMoves),
       eggMoves: List<String>.from(source.eggMoves),
+      eggGroups: List<String>.from(source.eggGroups),
+      baseSpeciesId: source.baseSpeciesId == source.pokemonId
+          ? pokemonId
+          : source.baseSpeciesId,
       hitDice: source.hitDice,
       sr: source.sr,
       minLevelFound: source.minLevelFound,

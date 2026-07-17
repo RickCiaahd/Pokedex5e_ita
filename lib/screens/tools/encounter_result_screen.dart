@@ -61,10 +61,14 @@ class _EncounterResultScreenState extends State<EncounterResultScreen> {
   }
 
   Future<void> _loadMoves() async {
-    final references = <String>{
-      for (final member in _encounter.members) ...member.pokemon.selectedMoves,
-    };
-    final moves = await _moveRepository.getMoves(references);
+    final referencesByPokemon = <int, Set<String>>{};
+    for (final member in _encounter.members) {
+      final generated = member.pokemon;
+      referencesByPokemon
+          .putIfAbsent(generated.basePokemon.id, () => <String>{})
+          .addAll(generated.selectedMoves);
+    }
+    final moves = await _moveRepository.getMovesByPokemon(referencesByPokemon);
     if (!mounted) return;
     setState(() => _moves = moves);
   }
@@ -634,7 +638,16 @@ class _EncounterMemberCard extends StatelessWidget {
               runSpacing: 6,
               children: [
                 for (final reference in generated.selectedMoves)
-                  Chip(label: Text(moves[reference]?.name ?? reference)),
+                  Chip(
+                    label: Text(
+                      moves[MoveRepository.contextualKey(
+                                generated.basePokemon.id,
+                                reference,
+                              )]
+                              ?.name ??
+                          reference,
+                    ),
+                  ),
               ],
             ),
           ),

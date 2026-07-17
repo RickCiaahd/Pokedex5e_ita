@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../models/generated_pokemon.dart';
 import '../../models/move_data.dart';
+import '../../repositories/move_repository.dart';
 import '../pokemon/pokemon_asset_image.dart';
 
 class GeneratedPokemonBatchCard extends StatelessWidget {
@@ -178,7 +179,16 @@ class _GeneratedBatchTile extends StatelessWidget {
                   runSpacing: 5,
                   children: [
                     for (final reference in generated.selectedMoves)
-                      Chip(label: Text(moves[reference]?.name ?? reference)),
+                      Chip(
+                        label: Text(
+                          moves[MoveRepository.contextualKey(
+                                    generated.basePokemon.id,
+                                    reference,
+                                  )]
+                                  ?.name ??
+                              reference,
+                        ),
+                      ),
                   ],
                 ),
         ),

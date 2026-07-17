@@ -17,13 +17,14 @@ lib/screens/pokemon/custom_pokemon_library_screen.dart: shift-after-first-2
 lib/screens/pokemon/custom_pokemon_library_screen.dart: shift-after-first-2
 lib/screens/pokemon/custom_pokemon_library_screen.dart: shift-after-first-2
 lib/screens/pokemon/custom_pokemon_library_screen.dart: fuzzy-lines
+lib/screens/tools/pokemon_generator_screen.dart: deferred-generator-shape
+lib/screens/tools/pokemon_generator_screen.dart: deferred-generator-shape
 Traceback (most recent call last):
-  File "<stdin>", line 510, in <module>
-  File "<stdin>", line 58, in replace_once
+  File "<stdin>", line 554, in <module>
+  File "<stdin>", line 61, in replace_once
 RuntimeError: lib/screens/tools/pokemon_generator_screen.dart: no unique flexible occurrence found
 --- OLD ---
-      final moves = await _moveRepository.getMoves(
-          generated.selectedMoves,
-        );
+        for (final reference in generated.selectedMoves)
+        _generatedMoves[reference]?.id ?? reference,
   
 exit_status=1

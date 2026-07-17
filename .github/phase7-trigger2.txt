@@ -1,0 +1,1 @@
+Secondo trigger del bootstrap flessibile.

@@ -81,6 +81,9 @@ jobs:
               "def replace_once(path, old, new):\n"
               "    file = Path(path)\n"
               "    text = file.read_text()\n"
+              "    if path == 'lib/screens/tools/pokemon_generator_screen.dart' and ('final moves = await _moveRepository.getMoves' in old or '_loadGeneratedMoves' in old):\n"
+              "        print(f'{path}: deferred-generator-shape')\n"
+              "        return\n"
               "    candidates = [(old, new, 'exact')]\n"
               "    for amount in range(1, 13):\n"
               "        candidates.append((_shift_after_first(old, amount), _shift_after_first(new, amount), f'shift-after-first-{amount}'))\n"
@@ -105,6 +108,44 @@ jobs:
           bash /tmp/apply-phase7.sh > .github/phase7-final-bootstrap.txt 2>&1
           status=$?
           set -e
+          if [ "$status" -eq 0 ]; then
+            python3 <<'PY'
+          from pathlib import Path
+          path = Path('lib/screens/tools/pokemon_generator_screen.dart')
+          text = path.read_text()
+          old = "      final moves = await _moveRepository.getMoves(generated.selectedMoves);"
+          new = """      final moves = await _moveRepository.getMovesByPokemon({
+                generated.basePokemon.id: generated.selectedMoves,
+              });"""
+          if text.count(old) != 1:
+              raise RuntimeError('Single generator move lookup not found uniquely.')
+          text = text.replace(old, new, 1)
+          old = """  Future<Map<String, MoveData?>> _loadGeneratedMoves(
+              Iterable<GeneratedPokemon> generated,
+            ) {
+              final references = <String>{
+                for (final pokemon in generated) ...pokemon.selectedMoves,
+              };
+              return _moveRepository.getMoves(references);
+            }
+          """
+          new = """  Future<Map<String, MoveData?>> _loadGeneratedMoves(
+              Iterable<GeneratedPokemon> generated,
+            ) {
+              final referencesByPokemon = <int, Set<String>>{};
+              for (final pokemon in generated) {
+                referencesByPokemon
+                    .putIfAbsent(pokemon.basePokemon.id, () => <String>{})
+                    .addAll(pokemon.selectedMoves);
+              }
+              return _moveRepository.getMovesByPokemon(referencesByPokemon);
+            }
+          """
+          if text.count(old) != 1:
+              raise RuntimeError('Batch generator move loader not found uniquely.')
+          path.write_text(text.replace(old, new, 1))
+          PY
+          fi
           echo "exit_status=$status" >> .github/phase7-final-bootstrap.txt
           echo "status=$status" >> "$GITHUB_OUTPUT"
 

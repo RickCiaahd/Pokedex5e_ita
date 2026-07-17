@@ -1,0 +1,42 @@
+name: Persist Fakemon phase 7 diagnostics
+
+on:
+  pull_request:
+    types: [synchronize]
+
+permissions:
+  contents: write
+
+jobs:
+  diagnose:
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+      - name: Run patch and persist diagnostics
+        shell: bash
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+          source = Path('.github/workflows/phase7-fakemon-integration.yml').read_text()
+          marker = '        run: |\n'
+          start = source.index(marker) + len(marker)
+          end = source.index('\n      - uses: subosito/flutter-action@v2', start)
+          block = source[start:end]
+          lines = [line[10:] if line.startswith('          ') else line for line in block.splitlines()]
+          Path('/tmp/apply-phase7.sh').write_text('\n'.join(lines) + '\n')
+          PY
+          set +e
+          bash /tmp/apply-phase7.sh > .github/phase7-bootstrap.txt 2>&1
+          status=$?
+          set -e
+          echo "exit_status=$status" >> .github/phase7-bootstrap.txt
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f .github/phase7-bootstrap.txt
+          git commit -m "Registra diagnostica bootstrap fase 7"
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
+          exit $status

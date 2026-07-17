@@ -1,0 +1,114 @@
+name: Apply Fakemon phase 7 with flexible patching
+
+on:
+  pull_request:
+    types: [synchronize]
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+
+      - name: Extract and apply phase 7 patch
+        shell: bash
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+          source = Path('.github/workflows/phase7-fakemon-integration.yml').read_text()
+          marker = '        run: |\n'
+          start = source.index(marker) + len(marker)
+          end = source.index('\n      - uses: subosito/flutter-action@v2', start)
+          block = source[start:end]
+          lines = [line[10:] if line.startswith('          ') else line for line in block.splitlines()]
+          script = '\n'.join(lines) + '\n'
+          original = '''def replace_once(path, old, new):
+              file = Path(path)
+              text = file.read_text()
+              count = text.count(old)
+              if count != 1:
+                  raise RuntimeError(f"{path}: expected one occurrence, found {count}\\n--- OLD ---\\n{old}")
+              file.write_text(text.replace(old, new, 1))
+'''
+          flexible = '''def _shift_after_first(value, amount):
+              lines = value.splitlines(keepends=True)
+              if len(lines) <= 1:
+                  return value
+              shifted = [lines[0]]
+              for line in lines[1:]:
+                  prefix = len(line) - len(line.lstrip(' '))
+                  remove = min(amount, prefix)
+                  shifted.append(line[remove:])
+              return ''.join(shifted)
+
+          def replace_once(path, old, new):
+              file = Path(path)
+              text = file.read_text()
+              candidates = [(old, new, 'exact')]
+              for amount in range(1, 13):
+                  candidates.append((
+                      _shift_after_first(old, amount),
+                      _shift_after_first(new, amount),
+                      f'shift-after-first-{amount}',
+                  ))
+              for candidate_old, candidate_new, label in candidates:
+                  count = text.count(candidate_old)
+                  if count == 1:
+                      print(f'{path}: {label}')
+                      file.write_text(text.replace(candidate_old, candidate_new, 1))
+                      return
+              raise RuntimeError(
+                  f"{path}: no unique flexible occurrence found\\n--- OLD ---\\n{old}"
+              )
+'''
+          if original not in script:
+              raise RuntimeError('Unable to replace the bootstrap helper.')
+          script = script.replace(original, flexible, 1)
+          Path('/tmp/apply-phase7.sh').write_text(script)
+          PY
+          bash /tmp/apply-phase7.sh
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Format changed Dart files
+        run: |
+          dart format \
+            lib/repositories/move_repository.dart \
+            lib/services/custom_pokemon_runtime_registry.dart \
+            lib/models/custom_pokemon_definition.dart \
+            lib/models/breeding_species_data.dart \
+            lib/services/custom_pokemon_transfer_service.dart \
+            lib/services/embedded_custom_pokemon_transfer_service.dart \
+            lib/screens/pokemon/custom_pokemon_library_screen.dart \
+            lib/screens/tools/pokemon_generator_screen.dart \
+            lib/widgets/tools/generated_pokemon_batch_card.dart \
+            lib/screens/tools/encounter_result_screen.dart \
+            lib/screens/tools/npc_trainer_result_screen.dart \
+            lib/screens/battle/npc_battle_screen.dart \
+            lib/screens/battle/battle_screen.dart \
+            test/fakemon_phase7_integration_test.dart
+
+      - name: Commit phase 7 implementation
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          rm -f .github/phase7-bootstrap.txt phase7-bootstrap.log
+          git rm .github/workflows/phase7-fakemon-integration.yml
+          git rm .github/workflows/phase7-pr-bootstrap.yml
+          git rm .github/workflows/phase7-bootstrap-debug.yml
+          git rm .github/workflows/phase7-bootstrap-debug2.yml
+          git rm .github/workflows/phase7-bootstrap-flex.yml
+          git add .
+          git commit -m "Completa integrazione Fakemon nei flussi di gioco"
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}

@@ -27,15 +27,15 @@
       "description": "Forretress si nasconde all’interno del proprio guscio d’acciaio indurito. Lo apre per catturare le prede, ma lo fa tanto rapidamente che nessuno riesce a vederne l’interno."
     },
     "206": {
-      "genus": "Pokémon Serpeterra",
+      "genus": "Pokémon Terraserpe",
       "description": "Dunsparce ha una coda a forma di trivella e la usa per scavare all’indietro nel terreno. È noto per costruire nidi dalle forme complesse nelle profondità del sottosuolo."
     },
     "207": {
-      "genus": "Pokémon Scorpivolo",
+      "genus": "Pokémon Aliscorpio",
       "description": "Gligar plana nell’aria senza produrre alcun suono. Si aggrappa al volto del nemico con le zampe posteriori artigliate e le grandi chele anteriori, quindi lo colpisce con il pungiglione velenoso."
     },
     "208": {
-      "genus": "Pokémon Serpenteferro",
+      "genus": "Pokémon Ferroserpe",
       "description": "Steelix vive ancora più in profondità di Onix e scava in direzione del nucleo terrestre. Esistono testimonianze di esemplari arrivati a oltre un chilometro sotto la superficie."
     },
     "209": {
@@ -51,7 +51,7 @@
       "description": "Qwilfish inghiotte acqua e gonfia il corpo. Sfrutta la pressione accumulata per scagliare contemporaneamente aculei tossici da ogni parte, ma questa forma rende il nuoto piuttosto difficile."
     },
     "212": {
-      "genus": "Pokémon Chele",
+      "genus": "Pokémon Chela",
       "description": "Il corpo di Scizor è duro come l’acciaio e gli attacchi comuni difficilmente lo scalfiscono. Questo Pokémon agita le ali per regolare la propria temperatura corporea."
     },
     "213": {
@@ -63,7 +63,7 @@
       "description": "Heracross carica il nemico in linea retta, si infila sotto la sua presa e lo solleva per scagliarlo via con il possente corno. La sua forza è sufficiente ad abbattere persino un albero gigantesco."
     },
     "215": {
-      "genus": "Pokémon Unghieaffilate",
+      "genus": "Pokémon Lamartigli",
       "description": "Sneasel si arrampica sugli alberi conficcando gli artigli uncinati nella corteccia. Cerca nidi incustoditi e ruba le uova per nutrirsene mentre i genitori sono lontani."
     },
     "216": {
@@ -187,7 +187,7 @@
       "description": "Suicune incarna la purezza e la benevolenza di una sorgente incontaminata. Corre con eleganza attraverso le terre e possiede il potere di purificare l’acqua sporca."
     },
     "246": {
-      "genus": "Pokémon Pellediroccia",
+      "genus": "Pokémon Peldisasso",
       "description": "Larvitar nasce nelle profondità del sottosuolo. Per raggiungere la superficie deve divorare la terra sovrastante e, finché non riesce a farlo, non può vedere i propri genitori."
     },
     "247": {
@@ -207,7 +207,7 @@
       "description": "Le piume di Ho-Oh brillano di sette colori diversi a seconda dell’angolazione della luce. Si dice che portino felicità a chi le possiede e che il Pokémon viva ai piedi di un arcobaleno."
     },
     "251": {
-      "genus": "Pokémon Viaggiotempo",
+      "genus": "Pokémon Tempovia",
       "description": "Questo Pokémon è giunto dal futuro attraversando il tempo. Si crede che, finché Celebi continuerà ad apparire, ci attenda un avvenire luminoso e splendente."
     }
   }

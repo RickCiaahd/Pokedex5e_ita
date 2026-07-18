@@ -7,7 +7,7 @@
   },
   "items": {
     "598": {
-      "genus": "Pokémon Baccello Spina",
+      "genus": "Pokémon Spinasfere",
       "description": "Ferrothorn fa oscillare le tre antenne spinose e scaglia aculei per sopraffare l'avversario."
     },
     "599": {
@@ -35,11 +35,11 @@
       "description": "Gli Eelektross afferrano le prede con la bocca a ventosa e usano le zanne per colpirle con scariche elettriche."
     },
     "605": {
-      "genus": "Pokémon Cerebrale",
+      "genus": "Pokémon Cervello",
       "description": "Elgyem usa i suoi potenti poteri psichici per comprimere il cervello dell'avversario, provocandogli mal di testa insopportabili."
     },
     "606": {
-      "genus": "Pokémon Cerebrale",
+      "genus": "Pokémon Cervello",
       "description": "Sembra che Beheeyem comunichi facendo lampeggiare le tre dita, ma nessuno è ancora riuscito a decifrare quei segnali."
     },
     "607": {
@@ -47,11 +47,11 @@
       "description": "Litwick emette una luce e finge di fare da guida, ma in realtà assorbe la forza vitale di chiunque lo segua."
     },
     "608": {
-      "genus": "Pokémon Lampada",
+      "genus": "Pokémon Lanterna",
       "description": "Gli spiriti assorbiti alimentano il fuoco sinistro di Lampent. Si aggira nei pressi degli ospedali aspettando il passaggio delle anime."
     },
     "609": {
-      "genus": "Pokémon Adescamento",
+      "genus": "Pokémon Attiranime",
       "description": "Le fiamme di Chandelure consumano lo spirito di chi ne viene avvolto, lasciandone intatto il corpo."
     },
     "610": {
@@ -59,11 +59,11 @@
       "description": "Gli Axew usano le zanne per rompere le bacche di cui si nutrono. Poiché ricrescono continuamente, diventano sempre più forti e affilate."
     },
     "611": {
-      "genus": "Pokémon Mascella Ascia",
+      "genus": "Pokémon Mascellascia",
       "description": "Le zanne dei Fraxure possono frantumare le rocce. Le lotte per il territorio tra questi Pokémon sono estremamente violente."
     },
     "612": {
-      "genus": "Pokémon Mascella Ascia",
+      "genus": "Pokémon Mascellascia",
       "description": "Gli Haxorus sono gentili, ma diventano implacabili quando difendono il territorio. Affrontano i nemici con zanne capaci di tagliare l'acciaio."
     },
     "613": {
@@ -71,7 +71,7 @@
       "description": "Il naso di Cubchoo cola continuamente. Tira su il muco perché questa sostanza costituisce la materia prima delle sue mosse."
     },
     "614": {
-      "genus": "Pokémon Congelamento",
+      "genus": "Pokémon Glaciale",
       "description": "I Beartic amano i gelidi mari del nord. Congelando il proprio respiro, creano sentieri sulla superficie dell'oceano."
     },
     "615": {
@@ -79,7 +79,7 @@
       "description": "I Cryogonal nascono nelle nubi di neve. Catturano le prede con catene formate da cristalli di ghiaccio."
     },
     "616": {
-      "genus": "Pokémon Lumaca",
+      "genus": "Pokémon Lumachina",
       "description": "Quando Shelmet e Karrablast si trovano insieme e ricevono entrambi uno stimolo elettrico, si evolvono contemporaneamente."
     },
     "617": {
@@ -91,11 +91,11 @@
       "description": "La pelle di Stunfisk è tanto dura da non subire danni neppure se calpestata da lottatori di sumo. Sorride quando trasmette elettricità."
     },
     "619": {
-      "genus": "Pokémon Arti Marziali",
+      "genus": "Pokémon Marziale",
       "description": "Mienfoo è orgoglioso della velocità con cui esegue le mosse. Compensa la minore potenza con una grande quantità di colpi."
     },
     "620": {
-      "genus": "Pokémon Arti Marziali",
+      "genus": "Pokémon Marziale",
       "description": "Mienshao usa il pelo sulle braccia come una frusta. I suoi attacchi sono così rapidi da risultare invisibili."
     },
     "621": {
@@ -103,23 +103,23 @@
       "description": "Druddigon corre nelle grotte più strette e cattura le prede con gli artigli affilati. La pelle del muso è più dura della roccia."
     },
     "622": {
-      "genus": "Pokémon Automa",
+      "genus": "Pokémon Statuanimata",
       "description": "L'energia che arde all'interno di Golett gli permette di muoversi, ma nessuno è ancora riuscito a identificarne la natura."
     },
     "623": {
-      "genus": "Pokémon Automa",
+      "genus": "Pokémon Statuanimata",
       "description": "Si dice che gli antichi creatori dei Golurk abbiano ordinato loro di proteggere persone e Pokémon."
     },
     "624": {
-      "genus": "Pokémon Lama Affilata",
+      "genus": "Pokémon Lamaffilata",
       "description": "Il corpo di Pawniard è interamente composto da lame. Quando la battaglia le smussa, le affila sulle pietre lungo i fiumi."
     },
     "625": {
-      "genus": "Pokémon Spadalama",
+      "genus": "Pokémon Fildilama",
       "description": "Bisharp comanda un gruppo di Pawniard, che inseguono la preda finché non riesce più a muoversi. A quel punto interviene per concludere lo scontro."
     },
     "626": {
-      "genus": "Pokémon Bufalo Testata",
+      "genus": "Pokémon Sfondatoro",
       "description": "I Bouffalant caricano all'impazzata e colpiscono con la testa qualsiasi cosa. Le loro testate sono abbastanza potenti da far deragliare un treno."
     },
     "627": {
@@ -127,7 +127,7 @@
       "description": "I Rufflet frantumano le bacche con gli artigli. Affrontano coraggiosamente qualunque avversario, per quanto forte possa essere."
     },
     "628": {
-      "genus": "Pokémon Valoroso",
+      "genus": "Pokémon Baldanza",
       "description": "Per proteggere gli amici, questo coraggioso guerriero dei cieli continua a combattere anche quando è ferito."
     },
     "629": {
@@ -135,7 +135,7 @@
       "description": "Le ali di Vullaby sono troppo piccole per volare. Quando si avvicina il momento dell'evoluzione, abbandona le ossa che indossa."
     },
     "630": {
-      "genus": "Pokémon Avvoltoio Osso",
+      "genus": "Pokémon Ossaquila",
       "description": "I Mandibuzz volano in cerchio nel cielo. Quando individuano una preda, la catturano e la trasportano facilmente fino al nido."
     },
     "631": {
@@ -143,15 +143,15 @@
       "description": "Gli Heatmor usano lingue roventi ricoperte di fiamme per attraversare il corpo d'acciaio dei Durant e nutrirsi della loro energia."
     },
     "632": {
-      "genus": "Pokémon Formica Ferro",
+      "genus": "Pokémon Ferformica",
       "description": "Ogni Durant svolge un ruolo differente nel respingere dalla colonia Heatmor, il loro predatore naturale."
     },
     "633": {
-      "genus": "Pokémon Irato",
+      "genus": "Pokémon Impeto",
       "description": "I Deino non possono vedere, perciò urtano e mordono ciò che li circonda per esplorare l'ambiente. Il loro corpo è coperto di ferite."
     },
     "634": {
-      "genus": "Pokémon Ostile",
+      "genus": "Pokémon Irruenza",
       "description": "Le due teste di Zweilous non vanno d'accordo. Quella che mangia più dell'altra ottiene il comando."
     },
     "635": {
@@ -167,7 +167,7 @@
       "description": "Le battaglie dei Volcarona avvolgono l'area in un mare di fuoco, perché le loro sei ali spargono scaglie incandescenti."
     },
     "638": {
-      "genus": "Pokémon Volontà di Ferro",
+      "genus": "Pokémon Metalcuore",
       "description": "Cobalion possiede un corpo e un cuore d'acciaio. Il suo sguardo è sufficiente a far obbedire persino il Pokémon più indisciplinato."
     },
     "639": {
@@ -179,23 +179,23 @@
       "description": "Sulla testa di Virizion crescono corna affilate come lame. Con movimenti simili a un vortice confonde gli avversari e li colpisce rapidamente."
     },
     "641": {
-      "genus": "Pokémon Ciclone",
+      "genus": "Pokémon Turbinio",
       "description": "La metà inferiore del corpo di Tornadus è avvolta da una nube di energia. Sfreccia nel cielo a 320 km/h."
     },
     "642": {
-      "genus": "Pokémon Fulmine",
+      "genus": "Pokémon Fulminante",
       "description": "Le punte sulla coda di Thundurus scagliano fulmini immensi. Vola attraverso la regione di Unima lanciando scariche elettriche."
     },
     "643": {
-      "genus": "Pokémon Biancovasto",
+      "genus": "Pokémon Bianco Verità",
       "description": "Questo Pokémon leggendario può incendiare il mondo intero. Aiuta coloro che desiderano costruire un mondo fondato sulla verità."
     },
     "644": {
-      "genus": "Pokémon Neroprofondo",
+      "genus": "Pokémon Nero Ideale",
       "description": "Questo Pokémon leggendario può devastare il mondo con i fulmini. Sostiene coloro che desiderano costruire un mondo ideale."
     },
     "645": {
-      "genus": "Pokémon Abbondanza",
+      "genus": "Pokémon Fertilità",
       "description": "Le terre visitate da Landorus producono raccolti tanto abbondanti che il Pokémon viene celebrato come il Guardiano dei Campi."
     },
     "646": {

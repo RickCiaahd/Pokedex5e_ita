@@ -23,7 +23,7 @@
       "description": "Cubone sente la mancanza della madre che non rivedrà mai. Quando ne scorge l'immagine nella luna piena, piange. Le macchie sul teschio che indossa sono lasciate dalle sue lacrime."
     },
     "105": {
-      "genus": "Pokémon Guardosso",
+      "genus": "Pokémon Guardaossi",
       "description": "Marowak è l'evoluzione di un Cubone che ha superato il dolore per la perdita della madre ed è diventato forte. Il suo spirito temprato e indurito non si spezza facilmente."
     },
     "106": {
@@ -35,7 +35,7 @@
       "description": "Si dice che Hitmonchan possieda lo spirito di un pugile che aspirava al titolo mondiale. Ha una volontà indomabile e non si arrende mai davanti alle avversità."
     },
     "108": {
-      "genus": "Pokémon Linguata",
+      "genus": "Pokémon Linguaccia",
       "description": "Quando Lickitung incontra qualcosa di nuovo, lo lecca immancabilmente. In questo modo ne memorizza consistenza e sapore. Le cose aspre, però, non gli piacciono molto."
     },
     "109": {
@@ -47,7 +47,7 @@
       "description": "Weezing adora i gas prodotti dai rifiuti di cucina in decomposizione. Cerca una casa sporca e trascurata in cui stabilirsi e, di notte, fruga nella spazzatura mentre gli abitanti dormono."
     },
     "111": {
-      "genus": "Pokémon Spuntoni",
+      "genus": "Pokémon Punzoni",
       "description": "Rhyhorn corre in linea retta distruggendo tutto ciò che incontra. Nemmeno uno scontro frontale con un blocco d'acciaio lo disturba, anche se il giorno dopo potrebbe avvertire qualche dolore."
     },
     "112": {
@@ -75,11 +75,11 @@
       "description": "Seadra dorme dopo essersi insinuato tra i rami dei coralli. Chi cerca di raccoglierli può essere punto dai suoi aculei velenosi se non si accorge della sua presenza."
     },
     "118": {
-      "genus": "Pokémon Pesce Rosso",
+      "genus": "Pokémon Pescerosso",
       "description": "Goldeen è un Pokémon molto bello, con pinne che ondeggiano elegantemente nell'acqua. Non bisogna però abbassare la guardia: potrebbe caricare con forza usando il corno."
     },
     "119": {
-      "genus": "Pokémon Pesce Rosso",
+      "genus": "Pokémon Pescerosso",
       "description": "In autunno i Seaking maschi eseguono danze di corteggiamento sui letti dei fiumi per conquistare le femmine. In questa stagione i colori del loro corpo raggiungono il massimo splendore."
     },
     "120": {
@@ -143,7 +143,7 @@
       "description": "Vaporeon ha subito una mutazione spontanea, sviluppando pinne e branchie che gli consentono di vivere sott'acqua. Questo Pokémon può controllare liberamente l'acqua."
     },
     "135": {
-      "genus": "Pokémon Lampo",
+      "genus": "Pokémon Luminoso",
       "description": "Le cellule di Jolteon producono una debole carica elettrica, amplificata dall'elettricità statica della pelliccia fino a generare fulmini. I peli irti sono aghi carichi di corrente."
     },
     "136": {

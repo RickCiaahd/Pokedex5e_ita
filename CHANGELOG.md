@@ -12,7 +12,8 @@ Tutte le modifiche rilevanti al progetto vengono documentate in questo file.
 
 ### Modificato
 
-- tradotti in italiano genere e descrizione Pokédex dei 151 Pokémon di prima generazione, mantenendo invariati altezza, peso e dati meccanici.
+- tradotti in italiano genere e descrizione Pokédex dei 151 Pokémon di prima generazione, mantenendo invariati altezza, peso e dati meccanici;
+- tradotti in italiano genere e descrizione Pokédex dei 100 Pokémon di seconda generazione, dal #152 al #251, usando lo stesso livello di localizzazione separato dai dati originali.
 
 ## [1.0.0]
 

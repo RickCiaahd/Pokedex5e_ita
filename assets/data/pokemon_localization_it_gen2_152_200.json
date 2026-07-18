@@ -1,0 +1,206 @@
+{
+  "locale": "it",
+  "source": "assets/data/pokemon_flavor.json",
+  "range": {
+    "from": 152,
+    "to": 200
+  },
+  "items": {
+    "152": {
+      "genus": "Pokémon Foglia",
+      "description": "In lotta, Chikorita agita la foglia per tenere il nemico a distanza. Dalla foglia si diffonde però anche un dolce profumo, che calma i Pokémon impegnati nello scontro e crea tutt’intorno un’atmosfera serena e amichevole."
+    },
+    "153": {
+      "genus": "Pokémon Foglia",
+      "description": "Il collo di Bayleef è circondato da foglie arrotolate. All’interno di ogni foglia tubolare cresce un piccolo germoglio, il cui profumo rende le persone più energiche."
+    },
+    "154": {
+      "genus": "Pokémon Erba",
+      "description": "Il profumo del fiore di Meganium placa e calma le emozioni. In battaglia, questo Pokémon ne diffonde una quantità ancora maggiore per smorzare lo spirito combattivo del nemico."
+    },
+    "155": {
+      "genus": "Pokémon Fuocotopo",
+      "description": "Cyndaquil si protegge facendo divampare le fiamme sulla schiena. Quando è arrabbiato ardono vigorose; se è stanco, invece, crepitano in modo irregolare a causa di una combustione incompleta."
+    },
+    "156": {
+      "genus": "Pokémon Vulcano",
+      "description": "Quilava tiene lontani i nemici con l’intensità delle fiamme e raffiche d’aria surriscaldata. La sua straordinaria agilità gli permette di schivare gli attacchi mentre avvolge l’avversario nel fuoco."
+    },
+    "157": {
+      "genus": "Pokémon Vulcano",
+      "description": "Typhlosion si nasconde dietro un tremolio di calore prodotto dalle sue fiamme roventi. È in grado di generare esplosioni ardenti che riducono ogni cosa in cenere."
+    },
+    "158": {
+      "genus": "Pokémon Mascellone",
+      "description": "Nonostante il corpo minuto, Totodile possiede mascelle molto potenti. Anche quando crede di mordicchiare per gioco, il suo morso può provocare ferite gravi."
+    },
+    "159": {
+      "genus": "Pokémon Mascellone",
+      "description": "Quando Croconaw serra le mascelle sul nemico non lo lascia più andare. Le punte delle zanne sono rivolte all’indietro come ami con ardiglione, perciò una volta conficcate diventano quasi impossibili da estrarre."
+    },
+    "160": {
+      "genus": "Pokémon Mascellone",
+      "description": "Feraligatr intimidisce i nemici spalancando la sua enorme bocca. In battaglia scalcia con forza il terreno usando le robuste zampe posteriori, quindi si lancia sull’avversario a velocità incredibile."
+    },
+    "161": {
+      "genus": "Pokémon Esploratore",
+      "description": "Quando i Sentret dormono, uno di loro rimane di guardia e sveglia gli altri al primo segnale di pericolo. Se questo Pokémon viene separato dal branco, la paura gli impedisce di dormire."
+    },
+    "162": {
+      "genus": "Pokémon Lungocorpo",
+      "description": "Furret ha un corpo estremamente sottile. Se viene attaccato, riesce a sgusciare con agilità attraverso passaggi stretti e a fuggire. Nonostante le zampe corte, è molto rapido e scattante."
+    },
+    "163": {
+      "genus": "Pokémon Gufo",
+      "description": "Hoothoot possiede un organo interno che percepisce e segue la rotazione terrestre. Grazie a questo organo speciale, comincia a ululare ogni giorno esattamente alla stessa ora."
+    },
+    "164": {
+      "genus": "Pokémon Gufo",
+      "description": "Noctowl non fallisce mai la cattura di una preda al buio. Il merito è della vista eccezionale, capace di funzionare con pochissima luce, e delle ali morbide e flessibili, che non producono alcun suono in volo."
+    },
+    "165": {
+      "genus": "Pokémon Pentastella",
+      "description": "Ledyba secerne un liquido aromatico dalle giunture delle zampe e lo usa per comunicare con i suoi simili. Cambiandone l’odore, questo Pokémon riesce a trasmettere agli altri le proprie emozioni."
+    },
+    "166": {
+      "genus": "Pokémon Pentastella",
+      "description": "Si dice che nei luoghi dall’aria pulita, dove il cielo è colmo di stelle, vivano innumerevoli Ledian. Il motivo è semplice: questo Pokémon ricava energia dalla luce stellare."
+    },
+    "167": {
+      "genus": "Pokémon Tessifilo",
+      "description": "La ragnatela tessuta da Spinarak può essere considerata un secondo sistema nervoso. Si dice che questo Pokémon riconosca il tipo di preda che la tocca dalle minuscole vibrazioni trasmesse lungo i fili."
+    },
+    "168": {
+      "genus": "Pokémon Lungagamba",
+      "description": "Le zampe di Ariados terminano con piccoli artigli uncinati, che gli permettono di muoversi su soffitti e pareti verticali. Immobilizza il nemico avvolgendolo in fili di seta sottili ma resistenti."
+    },
+    "169": {
+      "genus": "Pokémon Pipistrello",
+      "description": "Se Crobat vola battendo soltanto la coppia d’ali anteriori o posteriori, significa che ha percorso una lunga distanza. Quando si stanca, alterna le ali che utilizza."
+    },
+    "170": {
+      "genus": "Pokémon Pesca",
+      "description": "Chinchou libera cariche elettriche positive e negative dalle due antenne per far svenire la preda. Fa inoltre lampeggiare le sue luci per scambiare segnali con i propri simili."
+    },
+    "171": {
+      "genus": "Pokémon Luce",
+      "description": "Lanturn è soprannominato «la stella degli abissi» per la sua antenna luminosa. Produce luce provocando nell’antenna una reazione chimica tra batteri e fluidi corporei."
+    },
+    "172": {
+      "genus": "Pokémon Topino",
+      "description": "Pichu accumula elettricità più facilmente nei giorni di temporale o quando l’aria è molto secca. Dal suo corpo si può sentire il crepitio dell’elettricità statica."
+    },
+    "173": {
+      "genus": "Pokémon Stellina",
+      "description": "Nelle notti ricche di stelle cadenti, i Cleffa si riuniscono e danzano in cerchio. Continuano fino all’alba, quando si fermano per dissetarsi con la rugiada del mattino."
+    },
+    "174": {
+      "genus": "Pokémon Pallone",
+      "description": "Le corde vocali di Igglybuff non sono ancora completamente sviluppate e cantare troppo gli farebbe male alla gola. Per prendersene cura, questo Pokémon fa gargarismi con l’acqua dolce di ruscelli puliti."
+    },
+    "175": {
+      "genus": "Pokémon Pallapunte",
+      "description": "Togepi trae energia dalle emozioni positive di compassione e gioia emanate da persone e Pokémon. Accumula sentimenti di felicità nel guscio e poi li condivide con gli altri."
+    },
+    "176": {
+      "genus": "Pokémon Felicità",
+      "description": "Si dice che Togetic porti fortuna. Quando incontra qualcuno dal cuore puro, appare davanti a quella persona e condivide con lei la propria felicità."
+    },
+    "177": {
+      "genus": "Pokémon Uccellino",
+      "description": "Natu non riesce ancora a volare perché le sue ali non sono completamente sviluppate. Se incroci il suo sguardo, ti fisserà intensamente; al minimo movimento, però, salterà via per mettersi al sicuro."
+    },
+    "178": {
+      "genus": "Pokémon Mistico",
+      "description": "Xatu rimane immobile nello stesso punto per tutto il giorno. Si crede che lo faccia per paura delle terribili cose che ha previsto nel futuro."
+    },
+    "179": {
+      "genus": "Pokémon Lana",
+      "description": "Il soffice manto di Mareep si sfrega e accumula elettricità statica. Più carica raccoglie, più intensamente brilla la sfera sulla punta della coda."
+    },
+    "180": {
+      "genus": "Pokémon Lana",
+      "description": "La lana di Flaaffy cambia qualità e riesce a generare molta elettricità statica anche in piccole quantità. Le parti glabre e lisce della pelle sono protette dalle scariche."
+    },
+    "181": {
+      "genus": "Pokémon Luce",
+      "description": "Ampharos emette una luce tanto intensa da essere visibile persino dallo spazio. In passato le persone la usavano per scambiarsi segnali a grande distanza."
+    },
+    "182": {
+      "genus": "Pokémon Fiore",
+      "description": "Quando Bellossom riceve molta luce solare, le foglie che circondano il corpo cominciano a ruotare. La danza di questo Pokémon è celebre nelle terre del sud."
+    },
+    "183": {
+      "genus": "Pokémon Acquatopo",
+      "description": "La coda piena d’olio di Marill funziona come un salvagente. Se sulla superficie dell’acqua si vede galleggiare soltanto la coda, significa che il Pokémon si è immerso per nutrirsi di piante acquatiche."
+    },
+    "184": {
+      "genus": "Pokémon Acquaconiglio",
+      "description": "Le lunghe orecchie di Azumarill sono sensori indispensabili. Concentrando l’udito, questo Pokémon riconosce le prede presenti nei dintorni anche nei fiumi più impetuosi."
+    },
+    "185": {
+      "genus": "Pokémon Imitazione",
+      "description": "Sudowoodo si mimetizza da albero per evitare gli attacchi. Poiché le sue mani rimangono verdi tutto l’anno, però, durante l’inverno è facile capire che si tratta di un falso."
+    },
+    "186": {
+      "genus": "Pokémon Rana",
+      "description": "Il ricciolo sulla testa di Politoed dimostra il suo rango di re. Si dice che più è lungo e arricciato, maggiore sia il rispetto che questo Pokémon riceve dai propri simili."
+    },
+    "187": {
+      "genus": "Pokémon Cotonerba",
+      "description": "Hoppip fluttua trasportato dal vento. Quando avverte l’arrivo di forti raffiche, unisce le proprie foglie a quelle degli altri Hoppip per evitare di essere spazzato via."
+    },
+    "188": {
+      "genus": "Pokémon Cotonerba",
+      "description": "Il fiore di Skiploom sboccia quando la temperatura supera i 18 °C. L’apertura dei petali varia in base al calore, perciò questo Pokémon viene talvolta usato come termometro."
+    },
+    "189": {
+      "genus": "Pokémon Cotonerba",
+      "description": "Jumpluff cavalca i caldi venti meridionali, attraversa il mare e raggiunge terre lontane. Quando durante il volo incontra aria fredda, scende a terra."
+    },
+    "190": {
+      "genus": "Pokémon Lungacoda",
+      "description": "La coda di Aipom termina con un’appendice simile a una mano, che sa usare con grande destrezza. Poiché si affida moltissimo alla coda, le sue vere mani sono diventate piuttosto impacciate."
+    },
+    "191": {
+      "genus": "Pokémon Seme",
+      "description": "Sunkern cerca di muoversi il meno possibile per conservare nel corpo tutti i nutrienti necessari all’evoluzione. Non mangia nulla e sopravvive soltanto grazie alla rugiada del mattino."
+    },
+    "192": {
+      "genus": "Pokémon Sole",
+      "description": "Sunflora trasforma l’energia solare in nutrimento. Durante le calde ore del giorno si muove con grande attività, ma si ferma non appena il sole tramonta."
+    },
+    "193": {
+      "genus": "Pokémon Alachiara",
+      "description": "Yanma vede a 360 gradi senza muovere gli occhi. È un volatore eccellente, capace di fermarsi di colpo e cambiare direzione a mezz’aria, e usa questa abilità per inseguire rapidamente le prede."
+    },
+    "194": {
+      "genus": "Pokémon Acquapesce",
+      "description": "Wooper vive di solito nell’acqua, ma a volte si avventura sulla terraferma in cerca di cibo. Fuori dall’acqua ricopre il corpo con una pellicola viscida e tossica."
+    },
+    "195": {
+      "genus": "Pokémon Acquapesce",
+      "description": "Quagsire caccia lasciando la bocca spalancata sott’acqua e aspettando che una preda vi entri senza accorgersene. Poiché resta quasi sempre immobile, non ha bisogno di molto cibo."
+    },
+    "196": {
+      "genus": "Pokémon Sole",
+      "description": "Espeon è estremamente leale verso ogni Allenatore che ritiene degno. Si dice che abbia sviluppato i poteri precognitivi per proteggerlo dai pericoli."
+    },
+    "197": {
+      "genus": "Pokémon Lucelunare",
+      "description": "Umbreon si è evoluto in seguito all’esposizione alle onde lunari. Si nasconde silenziosamente nell’oscurità e attende che il nemico faccia la prima mossa; quando balza all’attacco, gli anelli sul corpo si illuminano."
+    },
+    "198": {
+      "genus": "Pokémon Oscurità",
+      "description": "Murkrow era temuto e detestato perché considerato portatore di sventura. È molto attratto da tutto ciò che brilla o scintilla e cerca persino di rubare gli anelli alle persone."
+    },
+    "199": {
+      "genus": "Pokémon Reale",
+      "description": "Slowking conduce ogni giorno ricerche per svelare i misteri del mondo. Pare però che dimentichi tutto ciò che ha imparato se lo Shellder sulla sua testa si stacca."
+    },
+    "200": {
+      "genus": "Pokémon Strido",
+      "description": "Misdreavus spaventa le persone con un pianto inquietante. A quanto pare usa le sfere rosse per assorbire la paura dei nemici e trasformarla in nutrimento."
+    }
+  }
+}

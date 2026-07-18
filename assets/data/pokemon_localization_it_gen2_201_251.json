@@ -1,0 +1,214 @@
+{
+  "locale": "it",
+  "source": "assets/data/pokemon_flavor.json",
+  "range": {
+    "from": 201,
+    "to": 251
+  },
+  "items": {
+    "201": {
+      "genus": "Pokémon Simbolo",
+      "description": "Questo Pokémon ha la forma di un’antica scrittura. Non si sa se siano apparsi prima i caratteri o le diverse forme di Unown. Le ricerche continuano, ma il mistero rimane irrisolto."
+    },
+    "202": {
+      "genus": "Pokémon Pazienza",
+      "description": "Quando due o più Wobbuffet si incontrano, diventano competitivi e cercano di superarsi in resistenza. Possono persino sfidarsi a restare senza cibo il più a lungo possibile, un’abitudine a cui gli Allenatori devono prestare attenzione."
+    },
+    "203": {
+      "genus": "Pokémon Lungocollo",
+      "description": "Anche la testa posteriore di Girafarig possiede un cervello, sebbene piccolo. Reagisce a odori e rumori e può mordere improvvisamente chi si avvicina al Pokémon da dietro."
+    },
+    "204": {
+      "genus": "Pokémon Larva",
+      "description": "Pineco rimane appeso a un ramo e aspetta pazientemente l’arrivo di una preda. Se qualcuno scuote l’albero e lo disturba mentre mangia, cade a terra ed esplode senza preavviso."
+    },
+    "205": {
+      "genus": "Pokémon Larva",
+      "description": "Forretress si nasconde all’interno del proprio guscio d’acciaio indurito. Lo apre per catturare le prede, ma lo fa tanto rapidamente che nessuno riesce a vederne l’interno."
+    },
+    "206": {
+      "genus": "Pokémon Serpeterra",
+      "description": "Dunsparce ha una coda a forma di trivella e la usa per scavare all’indietro nel terreno. È noto per costruire nidi dalle forme complesse nelle profondità del sottosuolo."
+    },
+    "207": {
+      "genus": "Pokémon Scorpivolo",
+      "description": "Gligar plana nell’aria senza produrre alcun suono. Si aggrappa al volto del nemico con le zampe posteriori artigliate e le grandi chele anteriori, quindi lo colpisce con il pungiglione velenoso."
+    },
+    "208": {
+      "genus": "Pokémon Serpenteferro",
+      "description": "Steelix vive ancora più in profondità di Onix e scava in direzione del nucleo terrestre. Esistono testimonianze di esemplari arrivati a oltre un chilometro sotto la superficie."
+    },
+    "209": {
+      "genus": "Pokémon Fata",
+      "description": "Mostrando le zanne e assumendo un’espressione spaventosa, Snubbull fa fuggire terrorizzati i Pokémon più piccoli. Sembra però diventare un po’ triste quando i nemici scappano."
+    },
+    "210": {
+      "genus": "Pokémon Fata",
+      "description": "Granbull possiede una mandibola particolarmente sviluppata. Le enormi zanne sono tanto pesanti da costringerlo a inclinare la testa all’indietro per mantenere l’equilibrio. Se non viene spaventato, non morde senza motivo."
+    },
+    "211": {
+      "genus": "Pokémon Pallone",
+      "description": "Qwilfish inghiotte acqua e gonfia il corpo. Sfrutta la pressione accumulata per scagliare contemporaneamente aculei tossici da ogni parte, ma questa forma rende il nuoto piuttosto difficile."
+    },
+    "212": {
+      "genus": "Pokémon Chele",
+      "description": "Il corpo di Scizor è duro come l’acciaio e gli attacchi comuni difficilmente lo scalfiscono. Questo Pokémon agita le ali per regolare la propria temperatura corporea."
+    },
+    "213": {
+      "genus": "Pokémon Muffa",
+      "description": "Shuckle si nasconde silenziosamente sotto le rocce, tenendo il corpo al riparo nel duro guscio mentre mangia le bacche che ha raccolto. Mescolandosi con i suoi fluidi corporei, le bacche si trasformano in succo."
+    },
+    "214": {
+      "genus": "Pokémon Monocorno",
+      "description": "Heracross carica il nemico in linea retta, si infila sotto la sua presa e lo solleva per scagliarlo via con il possente corno. La sua forza è sufficiente ad abbattere persino un albero gigantesco."
+    },
+    "215": {
+      "genus": "Pokémon Unghieaffilate",
+      "description": "Sneasel si arrampica sugli alberi conficcando gli artigli uncinati nella corteccia. Cerca nidi incustoditi e ruba le uova per nutrirsene mentre i genitori sono lontani."
+    },
+    "216": {
+      "genus": "Pokémon Orsetto",
+      "description": "Teddiursa ama leccarsi le zampe, rese dolci dal miele in cui sono immerse. Prepara il proprio miele mescolando frutti e polline raccolto dai Beedrill."
+    },
+    "217": {
+      "genus": "Pokémon Letargo",
+      "description": "Si dice che nelle foreste abitate dagli Ursaring vi siano molti ruscelli e grandi alberi presso cui trovano cibo. Ogni giorno questo Pokémon percorre il proprio territorio raccogliendo ciò di cui nutrirsi."
+    },
+    "218": {
+      "genus": "Pokémon Lava",
+      "description": "Nel sistema circolatorio di Slugma scorre magma fuso. Se il Pokémon si raffredda, il magma si indurisce, il corpo diventa fragile e alcuni pezzi si staccano, riducendone le dimensioni."
+    },
+    "219": {
+      "genus": "Pokémon Lava",
+      "description": "Il guscio di Magcargo è in realtà pelle indurita dal raffreddamento. È tanto fragile che può sgretolarsi al semplice tocco. Immergendosi nel magma, il Pokémon ritorna alle dimensioni originarie."
+    },
+    "220": {
+      "genus": "Pokémon Maiale",
+      "description": "Swinub cerca il cibo strofinando il muso sul terreno. Il suo alimento preferito è un fungo che cresce sotto l’erba secca e, scavando, a volte porta alla luce sorgenti termali."
+    },
+    "221": {
+      "genus": "Pokémon Suino",
+      "description": "Piloswine è ricoperto da un fitto manto di lunghi peli che gli permette di resistere al gelo. Usa le zanne per dissotterrare il cibo sepolto sotto il ghiaccio."
+    },
+    "222": {
+      "genus": "Pokémon Corallo",
+      "description": "Quando vengono colpiti dalla luce del sole, i rami di Corsola scintillano magnificamente in sette colori. Se uno si spezza, il Pokémon lo fa ricrescere in una sola notte."
+    },
+    "223": {
+      "genus": "Pokémon Jet",
+      "description": "Remoraid aspira acqua e la espelle ad alta velocità usando i muscoli addominali, così da abbattere le prede in volo. Quando l’evoluzione si avvicina, questo Pokémon scende lungo il corso dei fiumi."
+    },
+    "224": {
+      "genus": "Pokémon Jet",
+      "description": "Octillery afferra il nemico con i tentacoli e cerca di immobilizzarlo prima di sferrare il colpo finale. Se l’avversario è troppo forte, spruzza inchiostro e fugge."
+    },
+    "225": {
+      "genus": "Pokémon Consegna",
+      "description": "Delibird trasporta il cibo avvolto nella coda. Si racconta che un celebre esploratore sia riuscito a raggiungere la vetta della montagna più alta del mondo grazie a uno di questi Pokémon, che condivise con lui le proprie provviste."
+    },
+    "226": {
+      "genus": "Pokémon Aquilone",
+      "description": "Nelle giornate di sole si possono osservare gruppi di Mantine saltare elegantemente sopra le onde. Questo Pokémon non è infastidito dai Remoraid che si fanno trasportare con lui."
+    },
+    "227": {
+      "genus": "Pokémon Armuccello",
+      "description": "Skarmory è completamente rivestito da una dura armatura protettiva. Vola a quasi 300 km/h e lacera i nemici con ali dai bordi affilati come spade."
+    },
+    "228": {
+      "genus": "Pokémon Buio",
+      "description": "Gli Houndour cacciano in branchi perfettamente coordinati. Comunicano con versi diversi per accerchiare le prede e possiedono un gioco di squadra senza eguali."
+    },
+    "229": {
+      "genus": "Pokémon Buio",
+      "description": "In un branco di Houndoom, l’esemplare con le corna più fortemente incurvate all’indietro ricopre il ruolo di capo. Questi Pokémon scelgono il leader combattendo tra loro."
+    },
+    "230": {
+      "genus": "Pokémon Drago",
+      "description": "Kingdra vive a profondità oceaniche estreme, dove non si trovano altre forme di vita. Da tempo si crede che i suoi sbadigli generino correnti marine a spirale."
+    },
+    "231": {
+      "genus": "Pokémon Nasone",
+      "description": "Phanpy scava il proprio nido come una fossa verticale nel terreno, vicino alla riva di un fiume. Segna con la proboscide la zona circostante per far sapere agli altri che il territorio è occupato."
+    },
+    "232": {
+      "genus": "Pokémon Armatura",
+      "description": "L’attacco preferito di Donphan consiste nel raggomitolarsi e caricare il nemico rotolando ad alta velocità. Una volta partito, però, questo Pokémon fatica molto a fermarsi."
+    },
+    "233": {
+      "genus": "Pokémon Virtuale",
+      "description": "Porygon2 è stato creato dagli esseri umani grazie alla scienza. Questo Pokémon artificiale possiede un’intelligenza artificiale che gli permette di apprendere autonomamente nuovi gesti ed emozioni."
+    },
+    "234": {
+      "genus": "Pokémon Grancorno",
+      "description": "Le magnifiche corna di Stantler venivano vendute a prezzi elevati come opere d’arte. Per questo il Pokémon fu cacciato quasi fino all’estinzione da chi desiderava impadronirsene."
+    },
+    "235": {
+      "genus": "Pokémon Pittore",
+      "description": "Smeargle delimita il proprio territorio con un fluido corporeo che fuoriesce dalla punta della coda. Sono stati scoperti più di 5.000 diversi simboli lasciati da questo Pokémon."
+    },
+    "236": {
+      "genus": "Pokémon Baruffa",
+      "description": "Tyrogue si innervosisce se non può allenarsi ogni giorno. Chi alleva questo Pokémon deve stabilire diversi metodi di allenamento e seguirli con costanza."
+    },
+    "237": {
+      "genus": "Pokémon Verticale",
+      "description": "Hitmontop ruota velocemente sulla testa mentre sferra calci. Questa tecnica combina in modo straordinario attacco e difesa, e il Pokémon si sposta più rapidamente girando che camminando."
+    },
+    "238": {
+      "genus": "Pokémon Bacio",
+      "description": "Smoochum corre dappertutto con grande energia, ma cade anche molto spesso. Appena ne ha l’occasione, cerca il proprio riflesso per assicurarsi di non essersi sporcato il viso."
+    },
+    "239": {
+      "genus": "Pokémon Elettrico",
+      "description": "Elekid immagazzina elettricità nel corpo. Se tocca un metallo e scarica accidentalmente tutta l’energia accumulata, comincia a far ruotare le braccia per ricaricarsi."
+    },
+    "240": {
+      "genus": "Pokémon Carbonvivo",
+      "description": "La salute di Magby si valuta osservando il fuoco che espira. Se dalla bocca escono fiamme gialle, il Pokémon è in buone condizioni; quando è affaticato, invece, alle fiamme si mescola fumo nero."
+    },
+    "241": {
+      "genus": "Pokémon Bovino",
+      "description": "Miltank produce ogni giorno più di 19 litri di latte. Il suo sapore dolce piace sia ai bambini sia agli adulti, mentre chi non riesce a berlo lo trasforma in yogurt."
+    },
+    "242": {
+      "genus": "Pokémon Felicità",
+      "description": "Blissey percepisce la tristezza grazie al soffice manto. Quando la avverte, corre dalla persona afflitta, non importa quanto sia lontana, e condivide con lei un Fortunuovo capace di riportare il sorriso."
+    },
+    "243": {
+      "genus": "Pokémon Tuono",
+      "description": "Raikou incarna la velocità del fulmine. I suoi ruggiti generano onde d’urto che fanno tremare l’aria e scuotono il terreno come se vi si abbattessero scariche elettriche."
+    },
+    "244": {
+      "genus": "Pokémon Vulcano",
+      "description": "Entei incarna la passione del magma e si pensa sia nato dall’eruzione di un vulcano. Sprigiona enormi fiammate che consumano completamente tutto ciò che toccano."
+    },
+    "245": {
+      "genus": "Pokémon Aurora",
+      "description": "Suicune incarna la purezza e la benevolenza di una sorgente incontaminata. Corre con eleganza attraverso le terre e possiede il potere di purificare l’acqua sporca."
+    },
+    "246": {
+      "genus": "Pokémon Pellediroccia",
+      "description": "Larvitar nasce nelle profondità del sottosuolo. Per raggiungere la superficie deve divorare la terra sovrastante e, finché non riesce a farlo, non può vedere i propri genitori."
+    },
+    "247": {
+      "genus": "Pokémon Guscioduro",
+      "description": "Pupitar produce un gas nel corpo, lo comprime e lo espelle con forza per muoversi come un jet. Il suo involucro è tanto resistente da non subire danni nemmeno quando urta contro l’acciaio."
+    },
+    "248": {
+      "genus": "Pokémon Armatura",
+      "description": "Tyranitar è così potente da poter abbattere un’intera montagna per costruire il proprio nido. Vaga tra i rilievi alla ricerca di nuovi avversari da affrontare."
+    },
+    "249": {
+      "genus": "Pokémon Immersione",
+      "description": "Le ali di Lugia sprigionano una forza devastante: basta un leggero battito per distruggere una normale abitazione. Per questo il Pokémon sceglie di vivere lontano dagli sguardi, nelle profondità marine."
+    },
+    "250": {
+      "genus": "Pokémon Arcobaleno",
+      "description": "Le piume di Ho-Oh brillano di sette colori diversi a seconda dell’angolazione della luce. Si dice che portino felicità a chi le possiede e che il Pokémon viva ai piedi di un arcobaleno."
+    },
+    "251": {
+      "genus": "Pokémon Viaggiotempo",
+      "description": "Questo Pokémon è giunto dal futuro attraversando il tempo. Si crede che, finché Celebi continuerà ad apparire, ci attenda un avvenire luminoso e splendente."
+    }
+  }
+}

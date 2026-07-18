@@ -1,0 +1,210 @@
+{
+  "locale": "it",
+  "source": "assets/data/pokemon_flavor.json",
+  "range": {
+    "from": 1,
+    "to": 50
+  },
+  "items": {
+    "1": {
+      "genus": "Pokémon Seme",
+      "description": "Bulbasaur viene spesso visto sonnecchiare sotto la luce intensa del sole. Sulla sua schiena si trova un seme che, assorbendo i raggi solari, cresce progressivamente."
+    },
+    "2": {
+      "genus": "Pokémon Seme",
+      "description": "Sulla schiena di questo Pokémon cresce un bocciolo. Per sostenerne il peso, le zampe e il tronco di Ivysaur diventano spessi e robusti. Se passa più tempo disteso al sole, significa che il bocciolo sta per sbocciare in un grande fiore."
+    },
+    "3": {
+      "genus": "Pokémon Seme",
+      "description": "Sulla schiena di Venusaur cresce un grande fiore. Si dice che assuma colori vivaci quando riceve molto nutrimento e luce solare. Il suo aroma placa le emozioni delle persone."
+    },
+    "4": {
+      "genus": "Pokémon Lucertola",
+      "description": "La fiamma che arde sulla punta della coda indica le sue emozioni. Ondeggia quando Charmander è felice e divampa con forza quando il Pokémon si infuria."
+    },
+    "5": {
+      "genus": "Pokémon Fiamma",
+      "description": "Charmeleon annienta senza pietà i nemici con i suoi artigli affilati. Quando incontra un avversario forte diventa aggressivo e, nell'eccitazione, la fiamma sulla punta della coda assume un colore bianco-azzurro."
+    },
+    "6": {
+      "genus": "Pokémon Fiamma",
+      "description": "Charizard vola nei cieli in cerca di avversari potenti. Sputa fiamme tanto calde da fondere qualsiasi cosa, ma non le rivolge mai contro un nemico più debole di lui."
+    },
+    "7": {
+      "genus": "Pokémon Tartaghina",
+      "description": "Il guscio di Squirtle non serve soltanto a proteggerlo. La forma arrotondata e le scanalature sulla superficie riducono la resistenza dell'acqua, permettendogli di nuotare ad alta velocità."
+    },
+    "8": {
+      "genus": "Pokémon Tartaruga",
+      "description": "La sua coda è grande e ricoperta da una pelliccia folta e ricca. Con l'età il colore diventa sempre più intenso. I graffi sul guscio testimoniano la tempra di Wartortle in battaglia."
+    },
+    "9": {
+      "genus": "Pokémon Crostaceo",
+      "description": "Dal guscio di Blastoise sporgono potenti cannoni ad acqua, dotati di una precisione eccezionale. Possono colpire una lattina vuota con proiettili d'acqua da oltre 48 metri di distanza."
+    },
+    "10": {
+      "genus": "Pokémon Baco",
+      "description": "Caterpie ha un appetito vorace e può divorare in un attimo foglie più grandi del suo corpo. Dall'antenna sprigiona un odore terribilmente intenso."
+    },
+    "11": {
+      "genus": "Pokémon Bozzolo",
+      "description": "Il guscio che ricopre il corpo di questo Pokémon è duro come una lastra di ferro. Metapod si muove pochissimo perché, al suo interno, prepara le parti molli del corpo alla prossima evoluzione."
+    },
+    "12": {
+      "genus": "Pokémon Farfalla",
+      "description": "Butterfree possiede un'abilità straordinaria nel trovare il nettare più dolce dei fiori. Riesce a individuarlo, raccoglierlo e trasportarlo anche da fiori sbocciati a oltre 10 km dal nido."
+    },
+    "13": {
+      "genus": "Pokémon Millepiedi",
+      "description": "Weedle ha un olfatto estremamente sviluppato. Annusando con la grande proboscide rossa riesce a distinguere le foglie che preferisce da quelle che non gradisce."
+    },
+    "14": {
+      "genus": "Pokémon Bozzolo",
+      "description": "Kakuna rimane quasi immobile aggrappato a un albero. Al suo interno, però, è molto attivo mentre si prepara all'evoluzione imminente, come dimostra il calore del guscio al tatto."
+    },
+    "15": {
+      "genus": "Pokémon Velenape",
+      "description": "Beedrill è estremamente territoriale. Per la propria sicurezza, nessuno dovrebbe avvicinarsi al suo nido: se viene provocato, attacca in uno sciame furioso."
+    },
+    "16": {
+      "genus": "Pokémon Uccellino",
+      "description": "Pidgey possiede uno straordinario senso dell'orientamento. Riesce sempre a tornare al proprio nido, anche quando viene portato molto lontano dai luoghi che conosce."
+    },
+    "17": {
+      "genus": "Pokémon Uccello",
+      "description": "Pidgeotto rivendica un'ampia zona come proprio territorio e la sorvola continuamente per pattugliarla. Se qualcuno la invade, lo punisce senza pietà con i suoi artigli affilati."
+    },
+    "18": {
+      "genus": "Pokémon Uccello",
+      "description": "Questo Pokémon sfoggia uno splendido piumaggio di penne lucide. Molti Allenatori restano incantati dalla bellezza delle piume sul suo capo e scelgono Pidgeot come proprio Pokémon."
+    },
+    "19": {
+      "genus": "Pokémon Topo",
+      "description": "Rattata è estremamente prudente. Anche mentre dorme muove continuamente le orecchie per ascoltare ciò che accade. Non è esigente sul luogo in cui vivere e costruisce il nido praticamente ovunque."
+    },
+    "20": {
+      "genus": "Pokémon Topo",
+      "description": "I robusti incisivi di Raticate crescono senza sosta. Per consumarli rosicchia rocce e tronchi, arrivando talvolta a mordere persino i muri delle case."
+    },
+    "21": {
+      "genus": "Pokémon Uccellino",
+      "description": "Il verso di Spearow è così forte da essere udito a più di 800 metri. Quando il suo stridio acuto riecheggia tutt'intorno, significa che gli esemplari si stanno avvertendo a vicenda di un pericolo."
+    },
+    "22": {
+      "genus": "Pokémon Becco",
+      "description": "Fearow si riconosce dal collo lungo e dal becco affusolato, perfetti per catturare prede nel terreno o nell'acqua. Muove con grande destrezza il becco lungo e sottile per afferrarle."
+    },
+    "23": {
+      "genus": "Pokémon Serpente",
+      "description": "Ekans si avvolge a spirale durante il riposo. In questa posizione può reagire rapidamente a una minaccia proveniente da qualsiasi direzione, sollevando la testa e fissandola con sguardo minaccioso."
+    },
+    "24": {
+      "genus": "Pokémon Cobra",
+      "description": "Questo Pokémon è dotato di una forza tremenda, necessaria per stritolare le vittime con il corpo. Può persino schiacciare fusti d'acciaio e, una volta che Arbok avvolge il nemico, sfuggire alla sua morsa è impossibile."
+    },
+    "25": {
+      "genus": "Pokémon Topo",
+      "description": "Quando Pikachu incontra qualcosa di nuovo, lo investe con una scarica elettrica. Una bacca annerita è la prova che questo Pokémon ha valutato male l'intensità della propria carica."
+    },
+    "26": {
+      "genus": "Pokémon Topo",
+      "description": "Quando le sacche elettriche sono troppo cariche, Raichu pianta la coda nel terreno e scarica l'elettricità. Nei pressi del suo nido si trovano spesso chiazze di terra bruciacchiata."
+    },
+    "27": {
+      "genus": "Pokémon Topo",
+      "description": "Il corpo di Sandshrew assorbe l'acqua senza sprechi, permettendogli di sopravvivere nei deserti aridi. Per difendersi dai nemici si raggomitola su se stesso."
+    },
+    "28": {
+      "genus": "Pokémon Topo",
+      "description": "Il corpo di Sandslash è ricoperto da aculei duri, formati da sezioni indurite della pelle. Una volta all'anno quelli vecchi cadono e vengono sostituiti da nuovi aculei che crescono al di sotto."
+    },
+    "29": {
+      "genus": "Pokémon Velenago",
+      "description": "Gli aculei di Nidoran♀ secernono un potente veleno e si pensa si siano sviluppati per proteggere il suo piccolo corpo. Quando si infuria, libera una terribile tossina dal corno."
+    },
+    "30": {
+      "genus": "Pokémon Velenago",
+      "description": "Quando i Nidorina sono con amici o familiari, tengono gli aculei ritratti per non ferirsi a vicenda. Questo Pokémon sembra innervosirsi quando viene separato dagli altri."
+    },
+    "31": {
+      "genus": "Pokémon Trapano",
+      "description": "Il corpo di Nidoqueen è rivestito da squame durissime. È abile nel far volare via i nemici con violente cariche e raggiunge la massima forza quando difende i propri piccoli."
+    },
+    "32": {
+      "genus": "Pokémon Velenago",
+      "description": "Nidoran♂ ha sviluppato muscoli che gli permettono di muovere liberamente le grandi orecchie in ogni direzione. Grazie a essi, nemmeno il suono più debole sfugge alla sua attenzione."
+    },
+    "33": {
+      "genus": "Pokémon Velenago",
+      "description": "Il corno di Nidorino è più duro di un diamante. Se avverte una presenza ostile, tutti gli aculei sulla schiena si drizzano e il Pokémon affronta il nemico con ogni sua forza."
+    },
+    "34": {
+      "genus": "Pokémon Trapano",
+      "description": "La spessa coda di Nidoking racchiude un potere distruttivo enorme. Con un solo colpo può abbattere un traliccio metallico e, quando si scatena, niente riesce a fermarlo."
+    },
+    "35": {
+      "genus": "Pokémon Fata",
+      "description": "Nelle notti di luna piena, gruppi di questi Pokémon escono a giocare. All'alba, i Clefairy stanchi tornano nei tranquilli rifugi montani e si addormentano stretti gli uni agli altri."
+    },
+    "36": {
+      "genus": "Pokémon Fata",
+      "description": "Clefable avanza con piccoli balzi leggeri, come se volasse usando le ali. Il suo passo elastico gli consente perfino di camminare sull'acqua e si dice che passeggi sui laghi nelle quiete notti di luna."
+    },
+    "37": {
+      "genus": "Pokémon Volpe",
+      "description": "Alla nascita Vulpix possiede una sola coda bianca. Se riceve molto affetto dal proprio Allenatore, la coda si divide in sei, che diventano magnificamente arricciate."
+    },
+    "38": {
+      "genus": "Pokémon Volpe",
+      "description": "Ninetales emette una luce sinistra dagli occhi rosso vivo per assumere il completo controllo della mente del nemico. Si dice che possa vivere per mille anni."
+    },
+    "39": {
+      "genus": "Pokémon Pallone",
+      "description": "Le corde vocali di Jigglypuff possono regolare liberamente la lunghezza d'onda della voce. Il Pokémon usa questa capacità per cantare alla frequenza perfetta e rendere i nemici estremamente assonnati."
+    },
+    "40": {
+      "genus": "Pokémon Pallone",
+      "description": "Wigglytuff ha grandi occhi simili a piattini, sempre coperti da un sottile velo di lacrime. Se vi entra della polvere, viene rapidamente lavata via."
+    },
+    "41": {
+      "genus": "Pokémon Pipistrello",
+      "description": "Durante le luminose ore del giorno Zubat rimane immobile in un luogo buio, perché un'esposizione prolungata al sole provoca lievi ustioni al suo corpo."
+    },
+    "42": {
+      "genus": "Pokémon Pipistrello",
+      "description": "Golbat ama bere il sangue degli esseri viventi ed è particolarmente attivo nel buio più profondo della notte. Vola nei cieli notturni alla ricerca di sangue fresco."
+    },
+    "43": {
+      "genus": "Pokémon Malerba",
+      "description": "Di giorno Oddish si interra per assorbire dal suolo le sostanze nutritive con tutto il corpo. Più il terreno è fertile, più le sue foglie diventano lucide."
+    },
+    "44": {
+      "genus": "Pokémon Malerba",
+      "description": "Gloom sprigiona dal pistillo del fiore un odore nauseabondo, che peggiora quando è in pericolo. Se si sente tranquillo e al sicuro, non emette il suo consueto fetore."
+    },
+    "45": {
+      "genus": "Pokémon Fiore",
+      "description": "Il polline tossico di Vileplume provoca terribili attacchi allergici. Per questo è consigliabile non avvicinarsi mai ai fiori attraenti della giungla, per quanto belli possano sembrare."
+    },
+    "46": {
+      "genus": "Pokémon Fungo",
+      "description": "Sulla schiena di Paras crescono funghi parassiti chiamati tochukaso. Si sviluppano assorbendo le sostanze nutritive dall'ospite di tipo Coleottero e sono molto apprezzati come medicina per prolungare la vita."
+    },
+    "47": {
+      "genus": "Pokémon Fungo",
+      "description": "È noto che i Parasect infestano in massa i grandi alberi e ne assorbono le sostanze nutritive dalla parte bassa del tronco e dalle radici. Quando l'albero muore, si spostano tutti insieme su un altro."
+    },
+    "48": {
+      "genus": "Pokémon Insetto",
+      "description": "Si dice che Venonat si sia evoluto ricoprendosi di una peluria sottile e rigida che protegge tutto il corpo. I suoi grandi occhi riescono a individuare persino le prede più minuscole."
+    },
+    "49": {
+      "genus": "Pokémon Velentarma",
+      "description": "Venomoth è notturno e si attiva soltanto dopo il tramonto. Le sue prede preferite sono i piccoli insetti che, attratti dalla luce nel buio, si radunano attorno ai lampioni."
+    },
+    "50": {
+      "genus": "Pokémon Talpa",
+      "description": "I Diglett vengono allevati nella maggior parte delle fattorie. Il motivo è semplice: ovunque scavino, lasciano il terreno perfettamente arato e ideale per coltivare verdure deliziose."
+    }
+  }
+}

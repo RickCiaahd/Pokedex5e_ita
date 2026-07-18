@@ -1,0 +1,122 @@
+{
+  "locale": "it",
+  "source": "assets/data/pokemon_flavor.json",
+  "range": {
+    "from": 466,
+    "to": 493
+  },
+  "items": {
+    "466": {
+      "genus": "Pokémon Saetta",
+      "description": "Quando la carica elettrica di Electivire aumenta, tra le sue corna cominciano a crepitare scintille azzurre."
+    },
+    "467": {
+      "genus": "Pokémon Esplosivo",
+      "description": "Magmortar scaglia dalle estremità delle braccia sfere di fuoco a oltre 1.980 °C. Vive nei crateri vulcanici."
+    },
+    "468": {
+      "genus": "Pokémon Festa",
+      "description": "Come tutti sanno, Togekiss visita le regioni pacifiche e porta doni di bontà e dolci benedizioni."
+    },
+    "469": {
+      "genus": "Pokémon Libellorco",
+      "description": "Yanmega preferisce combattere mordendo e staccando all’istante la testa dei nemici mentre sfreccia ad alta velocità."
+    },
+    "470": {
+      "genus": "Pokémon Rigoglioso",
+      "description": "Quando Leafeon dorme in una chiazza illuminata dal sole, sta usando la fotosintesi per produrre aria pulita."
+    },
+    "471": {
+      "genus": "Pokémon Nevefresca",
+      "description": "Controllando il calore del proprio corpo, Glaceon congela l’atmosfera circostante e crea una nevicata di cristalli scintillanti."
+    },
+    "472": {
+      "genus": "Pokémon Scorpidente",
+      "description": "Gliscor osserva le prede restando appeso a testa in giù ai rami. Quando si presenta l’occasione, piomba su di loro."
+    },
+    "473": {
+      "genus": "Pokémon Duezanne",
+      "description": "Un Mamoswine congelato è stato estratto da ghiaccio risalente a 10.000 anni fa. Questo Pokémon esiste da tempi remotissimi."
+    },
+    "474": {
+      "genus": "Pokémon Virtuale",
+      "description": "A Porygon-Z è stato installato un software aggiuntivo per renderlo un Pokémon migliore, ma ha cominciato a comportarsi in modo strano."
+    },
+    "475": {
+      "genus": "Pokémon Lama",
+      "description": "Poiché percepisce ciò che il nemico sta pensando, Gallade attacca per primo con colpi rapidi e feroci."
+    },
+    "476": {
+      "genus": "Pokémon Bussola",
+      "description": "Probopass emette un forte magnetismo da tutto il corpo e controlla tre piccole unità chiamate Mininasi."
+    },
+    "477": {
+      "genus": "Pokémon Pinza",
+      "description": "Si dice che Dusknoir accolga nel proprio corpo flessibile gli spiriti smarriti e li accompagni a casa."
+    },
+    "478": {
+      "genus": "Pokémon Suolnevosa",
+      "description": "Froslass congela i nemici con un respiro gelido vicino ai -50 °C. Quello che sembra il suo corpo è in realtà vuoto."
+    },
+    "479": {
+      "genus": "Pokémon Plasma",
+      "description": "Proseguono le ricerche su Rotom, che potrebbe costituire la fonte di energia di un motore unico nel suo genere."
+    },
+    "480": {
+      "genus": "Pokémon Sapienza",
+      "description": "Uxie è noto come «l’Essere della Sapienza». Si dice che possa cancellare la memoria di chiunque guardi nei suoi occhi."
+    },
+    "481": {
+      "genus": "Pokémon Emozione",
+      "description": "Mesprit è noto come «l’Essere dell’Emozione». Ha insegnato agli esseri umani la nobiltà del dolore, della sofferenza e della gioia."
+    },
+    "482": {
+      "genus": "Pokémon Volontà",
+      "description": "Azelf è noto come «l’Essere della Volontà». Dorme sul fondo di un lago per mantenere il mondo in equilibrio."
+    },
+    "483": {
+      "genus": "Pokémon Tempo",
+      "description": "Dialga è un Pokémon narrato nelle leggende. Si dice che il tempo abbia cominciato a scorrere quando nacque."
+    },
+    "484": {
+      "genus": "Pokémon Spazio",
+      "description": "Si dice che Palkia viva in una fenditura della dimensione spaziale parallela alla nostra. Compare nella mitologia."
+    },
+    "485": {
+      "genus": "Pokémon Cupolalava",
+      "description": "Heatran dimora nelle grotte vulcaniche e conficca le zampe a forma di croce per avanzare su soffitti e pareti."
+    },
+    "486": {
+      "genus": "Pokémon Colossale",
+      "description": "Si dice che Regigigas abbia creato Pokémon simili a sé usando una speciale montagna di ghiaccio, rocce e magma."
+    },
+    "487": {
+      "genus": "Pokémon Ribelle",
+      "description": "Si dice che Giratina viva in un mondo sul lato opposto del nostro, dove le leggi comuni risultano distorte e insolite."
+    },
+    "488": {
+      "genus": "Pokémon Falcato",
+      "description": "Dalle ali di Cresselia si liberano particelle luminose simili a un velo. Si dice che rappresenti la luna crescente."
+    },
+    "489": {
+      "genus": "Pokémon Marideriva",
+      "description": "Quando l’acqua si riscalda, i Phione gonfiano il sacco di galleggiamento sulla testa e si lasciano trasportare lentamente dal mare in gruppo."
+    },
+    "490": {
+      "genus": "Pokémon Oceano",
+      "description": "Manaphy nasce con un potere straordinario che gli permette di creare un legame con qualsiasi specie di Pokémon."
+    },
+    "491": {
+      "genus": "Pokémon Neropesto",
+      "description": "Darkrai allontana persone e Pokémon dal proprio territorio inducendoli a cadere in un sonno profondo e tormentato dagli incubi."
+    },
+    "492": {
+      "genus": "Pokémon Gratitudine",
+      "description": "Shaymin dissolve le tossine presenti nell’aria e trasforma all’istante una terra devastata in un rigoglioso campo di fiori."
+    },
+    "493": {
+      "genus": "Pokémon Primevo",
+      "description": "Secondo le leggende di Sinnoh, Arceus emerse da un uovo e plasmò tutto ciò che esiste nel mondo."
+    }
+  }
+}

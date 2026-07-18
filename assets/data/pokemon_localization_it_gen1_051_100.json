@@ -1,0 +1,210 @@
+{
+  "locale": "it",
+  "source": "assets/data/pokemon_flavor.json",
+  "range": {
+    "from": 51,
+    "to": 100
+  },
+  "items": {
+    "51": {
+      "genus": "Pokémon Talpa",
+      "description": "I Dugtrio sono in realtà tre gemelli nati da un unico corpo. Di conseguenza, ognuno pensa esattamente come gli altri due e collaborano per scavare senza sosta."
+    },
+    "52": {
+      "genus": "Pokémon Graffimiao",
+      "description": "Meowth ritrae gli artigli affilati nelle zampe per muoversi furtivamente senza lasciare impronte compromettenti. Per qualche ragione, adora le monete lucenti che brillano alla luce."
+    },
+    "53": {
+      "genus": "Pokémon Nobilgatto",
+      "description": "Persian possiede sei baffi marcati che gli conferiscono un'aria fiera. I baffi percepiscono i movimenti dell'aria e gli permettono di capire cosa si trova nei dintorni. Diventa docile se viene afferrato per essi."
+    },
+    "54": {
+      "genus": "Pokémon Papero",
+      "description": "Psyduck usa un potere misterioso che genera onde cerebrali normalmente osservate soltanto nelle persone addormentate. La scoperta ha suscitato molte controversie tra gli studiosi."
+    },
+    "55": {
+      "genus": "Pokémon Papero",
+      "description": "Le zampe palmate e il corpo affusolato conferiscono a Golduck una velocità impressionante. Questo Pokémon è decisamente più rapido perfino del nuotatore più atletico."
+    },
+    "56": {
+      "genus": "Pokémon Suinpanzé",
+      "description": "Quando Mankey comincia a tremare e il respiro dal naso diventa affannoso, significa che si sta infuriando. Tuttavia, poiché esplode quasi subito in una rabbia incontenibile, è impossibile sfuggire alla sua collera."
+    },
+    "57": {
+      "genus": "Pokémon Suinpanzé",
+      "description": "Quando Primeape si infuria, la circolazione del sangue accelera e i muscoli diventano ancora più forti. Allo stesso tempo, però, la sua intelligenza diminuisce notevolmente."
+    },
+    "58": {
+      "genus": "Pokémon Cagnolino",
+      "description": "Growlithe ha un olfatto eccezionale. Una volta percepito un odore non lo dimentica mai e usa questo senso sviluppato per comprendere le emozioni degli altri esseri viventi."
+    },
+    "59": {
+      "genus": "Pokémon Leggenda",
+      "description": "Arcanine è famoso per la sua grande velocità. Si dice che possa percorrere oltre 10.000 km in un solo giorno e una sola notte. Il fuoco che arde impetuoso nel suo corpo è la fonte della sua potenza."
+    },
+    "60": {
+      "genus": "Pokémon Girino",
+      "description": "Poliwag ha una pelle sottilissima, attraverso la quale è possibile vedere le interiora disposte a spirale. Nonostante la sottigliezza, la pelle è molto elastica e perfino le zanne affilate vi rimbalzano contro."
+    },
+    "61": {
+      "genus": "Pokémon Girino",
+      "description": "La superficie del corpo di Poliwhirl è sempre bagnata e scivolosa per via di un fluido viscido. Questo rivestimento gli permette di sfuggire facilmente alla presa di qualsiasi nemico in battaglia."
+    },
+    "62": {
+      "genus": "Pokémon Girino",
+      "description": "I muscoli possenti e molto sviluppati di Poliwrath non si affaticano mai, per quanto si alleni. È così instancabile da poter attraversare l'oceano a nuoto avanti e indietro senza sforzo."
+    },
+    "63": {
+      "genus": "Pokémon Psico",
+      "description": "Abra dorme diciotto ore al giorno, ma riesce a percepire la presenza dei nemici anche durante il sonno. In quel caso si teletrasporta immediatamente in un luogo sicuro."
+    },
+    "64": {
+      "genus": "Pokémon Psico",
+      "description": "Kadabra emette una particolare onda alfa quando gli viene il mal di testa. Soltanto le persone dotate di una psiche particolarmente forte possono sperare di diventare Allenatori di questo Pokémon."
+    },
+    "65": {
+      "genus": "Pokémon Psico",
+      "description": "Il cervello di Alakazam continua a crescere, rendendo la testa troppo pesante per essere sostenuta dal collo. Il Pokémon la sorregge grazie ai propri poteri psicocinetici."
+    },
+    "66": {
+      "genus": "Pokémon Megaforza",
+      "description": "I muscoli di Machop sono speciali: non si indolenziscono mai, indipendentemente da quanto vengano allenati. Questo Pokémon ha forza sufficiente per scagliare cento adulti."
+    },
+    "67": {
+      "genus": "Pokémon Megaforza",
+      "description": "I muscoli perfettamente allenati di Machoke sono duri come l'acciaio. È talmente forte da riuscire a sollevare senza difficoltà un lottatore di sumo con un solo dito."
+    },
+    "68": {
+      "genus": "Pokémon Megaforza",
+      "description": "Machamp ha la forza necessaria per scaraventare via qualunque cosa. Tuttavia, quando svolge lavori che richiedono cura e destrezza, le sue braccia finiscono per intrecciarsi. Tende ad agire prima di pensare."
+    },
+    "69": {
+      "genus": "Pokémon Fiore",
+      "description": "Il corpo sottile e flessibile di Bellsprout gli permette di piegarsi e oscillare per schivare qualsiasi attacco, per quanto potente. Dalla bocca sputa un liquido corrosivo capace di sciogliere persino il ferro."
+    },
+    "70": {
+      "genus": "Pokémon Moschivoro",
+      "description": "Weepinbell possiede un grande uncino sulla parte posteriore del corpo. Di notte lo usa per appendersi a un ramo e dormire. Se si muove nel sonno, può risvegliarsi a terra."
+    },
+    "71": {
+      "genus": "Pokémon Moschivoro",
+      "description": "Dalla testa di Victreebel si estende una lunga liana, agitata come se fosse un animale per attirare le prede. Quando una vittima ignara si avvicina, il Pokémon la inghiotte intera."
+    },
+    "72": {
+      "genus": "Pokémon Medusa",
+      "description": "Il corpo di Tentacool è composto in gran parte d'acqua. Se viene tolto dal mare, si secca come pergamena. Quando è disidratato, bisogna rimetterlo in acqua."
+    },
+    "73": {
+      "genus": "Pokémon Medusa",
+      "description": "Tentacruel ha grandi sfere rosse sulla testa. Prima di scatenare una violenta esplosione di ultrasuoni, le sfere si illuminano. Lo sfogo del Pokémon genera onde agitate tutt'intorno."
+    },
+    "74": {
+      "genus": "Pokémon Roccia",
+      "description": "Più a lungo vive, più gli spigoli di Geodude si scheggiano e si consumano, rendendolo sempre più arrotondato. Il suo animo, però, rimane sempre duro, ruvido e spigoloso."
+    },
+    "75": {
+      "genus": "Pokémon Roccia",
+      "description": "Graveler cresce nutrendosi di rocce e sembra preferire quelle ricoperte di muschio. Ogni giorno questo Pokémon divora circa una tonnellata di pietre."
+    },
+    "76": {
+      "genus": "Pokémon Megatone",
+      "description": "I Golem vivono sulle montagne. Quando si verifica un forte terremoto, scendono in massa rotolando dai monti fino alle pendici."
+    },
+    "77": {
+      "genus": "Pokémon Cavalfuoco",
+      "description": "Ponyta è molto debole alla nascita e riesce a malapena a reggersi in piedi. Diventa più forte inciampando e cadendo mentre cerca di tenere il passo del genitore."
+    },
+    "78": {
+      "genus": "Pokémon Cavalfuoco",
+      "description": "Rapidash viene spesso visto trottare tranquillamente nei campi e nelle pianure. Quando fa sul serio, però, le criniere infuocate divampano mentre galoppa fino a circa 240 km/h."
+    },
+    "79": {
+      "genus": "Pokémon Ronfone",
+      "description": "Slowpoke cattura le prede immergendo la coda nell'acqua lungo la riva di un fiume. Spesso però dimentica ciò che sta facendo e trascorre intere giornate a oziare vicino all'acqua."
+    },
+    "80": {
+      "genus": "Pokémon Paguro",
+      "description": "Alla coda di Slowbro è saldamente attaccato uno Shellder con il suo morso. Non potendo più usarla per pescare, Slowbro è costretto controvoglia a nuotare e catturare le prede in altro modo."
+    },
+    "81": {
+      "genus": "Pokémon Calamita",
+      "description": "Magnemite si attacca alle linee elettriche per nutrirsi di corrente. In caso di blackout, controlla gli interruttori: potresti trovare molti esemplari aggrappati al quadro elettrico."
+    },
+    "82": {
+      "genus": "Pokémon Calamita",
+      "description": "Magneton emette una forza magnetica tanto potente da risultare letale per i dispositivi meccanici. Per questo, nelle grandi città suonano sirene che avvertono la popolazione quando ne compare uno sciame."
+    },
+    "83": {
+      "genus": "Pokémon Selvanatra",
+      "description": "Farfetch'd porta sempre con sé il gambo di una pianta. Sembra che esistano gambi buoni e cattivi, e si sa che questo Pokémon combatte con i propri simili per contenderseli."
+    },
+    "84": {
+      "genus": "Pokémon Biuccello",
+      "description": "Le due teste di Doduo non dormono mai contemporaneamente. Si alternano, così una può sorvegliare i nemici mentre l'altra riposa."
+    },
+    "85": {
+      "genus": "Pokémon Triuccello",
+      "description": "Se le tre teste di Dodrio guardano in direzioni diverse, significa che è in allerta. È meglio non avvicinarsi quando è guardingo, perché potrebbe decidere di beccare."
+    },
+    "86": {
+      "genus": "Pokémon Otaria",
+      "description": "Seel caccia le prede nel mare gelido sotto le lastre di ghiaccio. Quando deve respirare, apre un foro colpendo il ghiaccio con la protuberanza appuntita sulla testa."
+    },
+    "87": {
+      "genus": "Pokémon Otaria",
+      "description": "Dewgong ama sonnecchiare sul ghiaccio più freddo. In passato, un marinaio scambiò per una sirena un esemplare addormentato su un ghiacciaio."
+    },
+    "88": {
+      "genus": "Pokémon Melma",
+      "description": "Il corpo fangoso ed elastico di Grimer può attraversare qualsiasi apertura, per quanto stretta. Questo Pokémon entra nelle tubature fognarie per bere le acque di scarico."
+    },
+    "89": {
+      "genus": "Pokémon Melma",
+      "description": "Dal corpo di Muk trasuda un liquido ripugnante che emana un fetore insopportabile. Una sola goccia può rendere stagnante e rancida un'intera pozza."
+    },
+    "90": {
+      "genus": "Pokémon Bivalve",
+      "description": "Di notte questo Pokémon usa la larga lingua per scavare una buca nella sabbia del fondale e dormirvi. Durante il sonno Shellder chiude il guscio, ma lascia la lingua penzolante."
+    },
+    "91": {
+      "genus": "Pokémon Bivalve",
+      "description": "Cloyster nuota nel mare inghiottendo acqua e spruzzandola all'indietro. Usa lo stesso meccanismo per scagliare gli aculei dal guscio."
+    },
+    "92": {
+      "genus": "Pokémon Gas",
+      "description": "Gastly è composto in gran parte da materia gassosa. Se esposto a un vento forte, il suo corpo si disperde rapidamente. Gruppi di questi Pokémon si riparano sotto le grondaie delle case."
+    },
+    "93": {
+      "genus": "Pokémon Gas",
+      "description": "Haunter è un Pokémon pericoloso. Se ti fa cenno mentre fluttua nell'oscurità, non devi mai avvicinarti: cercherà di leccarti con la lingua e sottrarti la vita."
+    },
+    "94": {
+      "genus": "Pokémon Ombra",
+      "description": "A volte, in una notte buia, l'ombra proiettata da un lampione ti supera all'improvviso. In realtà è un Gengar che ti corre accanto fingendo di essere la tua ombra."
+    },
+    "95": {
+      "genus": "Pokémon Serperoccia",
+      "description": "Onix ha nel cervello un magnete che funziona da bussola e gli impedisce di perdere l'orientamento mentre scava. Invecchiando, il suo corpo diventa sempre più arrotondato e levigato."
+    },
+    "96": {
+      "genus": "Pokémon Ipnosi",
+      "description": "Se durante il sonno ti prude il naso, significa che uno di questi Pokémon si trova sopra il cuscino e sta cercando di mangiare il tuo sogno attraverso le narici."
+    },
+    "97": {
+      "genus": "Pokémon Ipnosi",
+      "description": "Hypno tiene in mano un pendolo. Il movimento arcuato e il suo scintillio fanno cadere il nemico in una profonda ipnosi. Mentre cerca una preda, il Pokémon lucida il pendolo."
+    },
+    "98": {
+      "genus": "Pokémon Granchio",
+      "description": "I Krabby vivono sulle spiagge, in buche scavate nella sabbia. Sui litorali poveri di cibo, li si vede litigare tra loro per il territorio."
+    },
+    "99": {
+      "genus": "Pokémon Chela",
+      "description": "Kingler possiede una chela enorme e sovradimensionata. La agita in aria per comunicare con i propri simili, ma il suo peso lo affatica rapidamente."
+    },
+    "100": {
+      "genus": "Pokémon Ball",
+      "description": "Voltorb fu avvistato per la prima volta in un'azienda che produce Poké Ball. Il legame tra quell'avvistamento e la sua straordinaria somiglianza con una Poké Ball rimane un mistero."
+    }
+  }
+}

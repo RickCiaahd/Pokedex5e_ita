@@ -1,0 +1,210 @@
+{
+  "locale": "it",
+  "source": "assets/data/pokemon_flavor.json",
+  "range": {
+    "from": 301,
+    "to": 350
+  },
+  "items": {
+    "301": {
+      "genus": "Pokémon Raffinato",
+      "description": "Delcatty preferisce una vita libera, seguendo soltanto i propri ritmi. Poiché mangia e dorme quando gli va, le sue abitudini quotidiane sono del tutto imprevedibili."
+    },
+    "302": {
+      "genus": "Pokémon Oscurità",
+      "description": "I Sableye conducono una vita tranquilla nelle profondità delle caverne. Sono però temuti perché si pensa che rubino lo spirito delle persone quando i loro occhi brillano sinistramente nel buio."
+    },
+    "303": {
+      "genus": "Pokémon Inganno",
+      "description": "Le enormi fauci di Mawile sono in realtà corna d'acciaio trasformate. Il suo volto docile induce il nemico ad abbassare la guardia, poi lo azzanna quando meno se lo aspetta."
+    },
+    "304": {
+      "genus": "Pokémon Corazza",
+      "description": "Il corpo di Aron è fatto d'acciaio. Per costruirlo si nutre del minerale di ferro che scava nelle montagne e talvolta causa seri problemi divorando ponti e rotaie."
+    },
+    "305": {
+      "genus": "Pokémon Corazza",
+      "description": "Lairon tempra il proprio corpo d'acciaio bevendo acqua minerale molto nutriente fino a gonfiarsi. Costruisce il nido vicino alle sorgenti dall'acqua più buona."
+    },
+    "306": {
+      "genus": "Pokémon Corazza",
+      "description": "Aggron rivendica un'intera montagna come proprio territorio e malmena senza pietà chiunque vi entri. Pattuglia costantemente la zona con grande attenzione."
+    },
+    "307": {
+      "genus": "Pokémon Meditazione",
+      "description": "Meditite affronta un rigoroso allenamento mentale nelle profondità delle montagne. Tuttavia, ogni volta che medita perde la concentrazione e per questo il suo addestramento non finisce mai."
+    },
+    "308": {
+      "genus": "Pokémon Meditazione",
+      "description": "Si dice che con la meditazione Medicham aumenti l'energia nel proprio corpo e affini il sesto senso. Nasconde la sua presenza fondendosi con campi e montagne."
+    },
+    "309": {
+      "genus": "Pokémon Lampo",
+      "description": "Electrike accumula elettricità nel lungo pelo e stimola i muscoli delle zampe con scariche elettriche. Questi impulsi gli conferiscono un'accelerazione esplosiva."
+    },
+    "310": {
+      "genus": "Pokémon Scarica",
+      "description": "Manectric scarica continuamente elettricità dalla criniera e le scintille possono talvolta incendiare le foreste. Quando entra in lotta, crea nubi temporalesche."
+    },
+    "311": {
+      "genus": "Pokémon Incitamento",
+      "description": "Plusle incoraggia sempre i compagni. Quando un alleato si impegna in lotta, manda in cortocircuito il proprio corpo e produce crepitii e scintille per manifestare la sua gioia."
+    },
+    "312": {
+      "genus": "Pokémon Incitamento",
+      "description": "Minun si preoccupa più di sostenere i compagni che della propria sicurezza. Manda in cortocircuito l'elettricità del corpo per creare brillanti piogge di scintille e incoraggiare la squadra."
+    },
+    "313": {
+      "genus": "Pokémon Lucciola",
+      "description": "Con il calare della notte, Volbeat emette luce dalla coda. Comunica regolando l'intensità e il ritmo dei lampi ed è attratto dal dolce profumo di Illumise."
+    },
+    "314": {
+      "genus": "Pokémon Lucciola",
+      "description": "Illumise attira uno sciame di Volbeat con un dolce profumo. Quando si sono radunati, guida lo sciame luminoso tracciando figure geometriche nel cielo notturno."
+    },
+    "315": {
+      "genus": "Pokémon Spina",
+      "description": "Roselia scaglia spine affilate contro chiunque tenti di rubare i fiori sulle sue braccia. Il suo aroma trasmette serenità agli esseri viventi."
+    },
+    "316": {
+      "genus": "Pokémon Stomaco",
+      "description": "Quasi tutto il corpo di Gulpin è costituito dallo stomaco, perciò può inghiottire qualcosa grande quanto lui. Al suo interno si trova un fluido speciale capace di digerire qualsiasi cosa."
+    },
+    "317": {
+      "genus": "Pokémon Sacca Veleno",
+      "description": "Quando individua una preda, Swalot spruzza dai pori un fluido terribilmente tossico. Dopo averla indebolita, la inghiotte intera con la sua bocca smisurata."
+    },
+    "318": {
+      "genus": "Pokémon Feroce",
+      "description": "Le mascelle sviluppate e le zanne appuntite di Carvanha hanno una forza tale da squarciare lo scafo delle imbarcazioni. Molte barche sono state attaccate e affondate da questo Pokémon."
+    },
+    "319": {
+      "genus": "Pokémon Brutale",
+      "description": "Soprannominato il bullo del mare, Sharpedo è molto temuto. Le sue crudeli zanne ricrescono immediatamente se si spezzano e un solo esemplare può fare a pezzi una superpetroliera."
+    },
+    "320": {
+      "genus": "Pokémon Balena Sfera",
+      "description": "Le narici di Wailmer si trovano sopra gli occhi. Questo Pokémon giocherellone ama sorprendere le persone espellendo con forza dalle narici l'acqua di mare immagazzinata nel corpo."
+    },
+    "321": {
+      "genus": "Pokémon Balena Fluttuante",
+      "description": "Wailord è il più grande tra tutti i Pokémon finora identificati. Nuota placidamente nell'oceano aperto, inghiottendo enormi quantità di cibo con la sua bocca gigantesca."
+    },
+    "322": {
+      "genus": "Pokémon Torpore",
+      "description": "Numel è estremamente ottuso e non si accorge nemmeno di essere colpito. Non sopporta però la fame neppure per un secondo: il suo corpo è un calderone ribollente di magma."
+    },
+    "323": {
+      "genus": "Pokémon Eruzione",
+      "description": "Camerupt ha un vulcano all'interno del corpo, attraversato da magma a quasi 10.000 °C. A volte le gobbe sulla schiena eruttano, riversando il magma surriscaldato."
+    },
+    "324": {
+      "genus": "Pokémon Carbone",
+      "description": "Torkoal scava nelle montagne in cerca di carbone. Quando lo trova, riempie le cavità del guscio e lo brucia; se viene attaccato, emette un denso fumo nero per coprire la fuga."
+    },
+    "325": {
+      "genus": "Pokémon Molla",
+      "description": "Spoink rimbalza sulla coda e gli urti fanno battere il suo cuore. Per questo non può permettersi di smettere: se si fermasse, anche il cuore cesserebbe di battere."
+    },
+    "326": {
+      "genus": "Pokémon Manipolazione",
+      "description": "Grumpig usa le perle nere sul corpo per amplificare le onde psichiche e controllare completamente il nemico. Quando impiega questo potere, il suo respiro diventa affannoso."
+    },
+    "327": {
+      "genus": "Pokémon Pandamacchia",
+      "description": "Si dice che ogni Spinda al mondo possieda un disegno di macchie unico. I suoi passi instabili e barcollanti lo fanno sembrare impegnato in una danza."
+    },
+    "328": {
+      "genus": "Pokémon Trappola",
+      "description": "Il nido di Trapinch è una fossa sabbiosa inclinata a forma di scodella. Attende pazientemente che una preda vi rotoli dentro e le sue enormi mascelle possono frantumare perfino i massi."
+    },
+    "329": {
+      "genus": "Pokémon Vibrazione",
+      "description": "Vibrava fa vibrare energicamente le due ali per generare ultrasuoni che fanno svenire la preda. Le onde sono tanto potenti da provocare mal di testa alle persone."
+    },
+    "330": {
+      "genus": "Pokémon Mistico",
+      "description": "Flygon è soprannominato lo spirito elementale del deserto. Le sue ali sollevano nubi di sabbia, perciò durante il volo è sempre avvolto da una tempesta."
+    },
+    "331": {
+      "genus": "Pokémon Cactus",
+      "description": "Cacnea vive in luoghi aridi come i deserti. Il suo fiore emana un forte aroma per attirare le prede e, quando si avvicinano, scaglia dal corpo spine affilate."
+    },
+    "332": {
+      "genus": "Pokémon Spaventapasseri",
+      "description": "Durante il giorno Cacturne rimane immobile per non perdere umidità sotto il sole implacabile del deserto. Diventa attivo di notte, quando la temperatura si abbassa."
+    },
+    "333": {
+      "genus": "Pokémon Alidicotone",
+      "description": "Swablu ha ali leggere e soffici come nuvole di cotone. Non teme le persone e spesso si posa sulla loro testa, rimanendovi come un cappello di ovatta."
+    },
+    "334": {
+      "genus": "Pokémon Canterino",
+      "description": "Altaria danza e volteggia nel cielo tra nuvole gonfie e simili al cotone. Cantando melodie con la sua voce cristallina, fa vivere agli ascoltatori una meravigliosa sensazione da sogno."
+    },
+    "335": {
+      "genus": "Pokémon Furogatto",
+      "description": "Il ricordo delle lotte contro il suo acerrimo rivale Seviper è inciso in ogni cellula del corpo di Zangoose. Schiva gli attacchi con incredibile agilità."
+    },
+    "336": {
+      "genus": "Pokémon Zannaserpe",
+      "description": "Seviper porta avanti da generazioni la rivalità con Zangoose. Le cicatrici sul corpo testimoniano scontri feroci e attacca usando la coda affilata come una spada."
+    },
+    "337": {
+      "genus": "Pokémon Meteorite",
+      "description": "Lunatone fu scoperto nel luogo in cui cadde un meteorite. Per questo alcuni pensano che provenga dallo spazio, ma finora nessuno è riuscito a dimostrarlo."
+    },
+    "338": {
+      "genus": "Pokémon Meteorite",
+      "description": "Solrock è una nuova specie di Pokémon che si dice sia caduta dallo spazio. Fluttua e si muove senza fare rumore; in lotta emette una luce estremamente intensa."
+    },
+    "339": {
+      "genus": "Pokémon Baffetti",
+      "description": "I sensibili baffi di Barboach funzionano come un eccellente radar. Si nasconde nel fango lasciandoli sporgere, in attesa che si avvicini una preda."
+    },
+    "340": {
+      "genus": "Pokémon Baffetti",
+      "description": "Whiscash è estremamente territoriale e un solo esemplare rivendica un grande stagno. Se un nemico si avvicina, si dimena violentemente e provoca un enorme terremoto."
+    },
+    "341": {
+      "genus": "Pokémon Birbone",
+      "description": "I Corphish erano Pokémon stranieri importati come animali da compagnia, ma finirono per diffondersi in natura. Sono molto resistenti e la loro popolazione è aumentata notevolmente."
+    },
+    "342": {
+      "genus": "Pokémon Canaglia",
+      "description": "Crawdaunt ha un'indole estremamente violenta che lo spinge a sfidare in lotta qualsiasi essere vivente. Nessun'altra forma di vita accetta di abitare nei suoi stagni, che diventano luoghi desolati."
+    },
+    "343": {
+      "genus": "Pokémon Bambola Argilla",
+      "description": "Baltoy si sposta ruotando sulla sua unica gamba. In alcune antiche rovine sono stati scoperti dipinti primitivi che lo raffigurano mentre vive insieme agli esseri umani."
+    },
+    "344": {
+      "genus": "Pokémon Bambola Argilla",
+      "description": "Si dice che i Claydol siano bambole di fango create da popoli primitivi e animate dall'esposizione a un raggio misterioso. Si muovono levitando."
+    },
+    "345": {
+      "genus": "Pokémon Gigliomare",
+      "description": "Lileep si estinse circa cento milioni di anni fa. Questo antico Pokémon si fissa a una roccia sul fondale marino e cattura le prede con tentacoli simili a petali."
+    },
+    "346": {
+      "genus": "Pokémon Lepade",
+      "description": "Cradily vaga sul fondale oceanico in cerca di cibo. Allunga liberamente il collo simile a un tronco e cattura le prede ignare con i suoi otto tentacoli."
+    },
+    "347": {
+      "genus": "Pokémon Anticogambero",
+      "description": "Anorith è stato rigenerato da un fossile preistorico. Questo Pokémon primitivo viveva nei mari caldi e stringeva saldamente le prede tra le due grandi chele."
+    },
+    "348": {
+      "genus": "Pokémon Corazza",
+      "description": "La robusta armatura di Armaldo fa rimbalzare qualsiasi attacco. Le sue enormi chele possono allungarsi e ritrarsi liberamente e hanno la forza necessaria per perforare una lastra d'acciaio."
+    },
+    "349": {
+      "genus": "Pokémon Pesce",
+      "description": "Le pinne di Feebas sono lacere e sfilacciate fin dalla nascita. A causa del suo aspetto trasandato viene quasi sempre ignorato, ma può vivere sia in mare sia nei fiumi."
+    },
+    "350": {
+      "genus": "Pokémon Tenerezza",
+      "description": "Si dice che Milotic sia il più bello di tutti i Pokémon. Ha il potere di calmare emozioni come rabbia e ostilità, ponendo fine anche alle rivalità più accese."
+    }
+  }
+}

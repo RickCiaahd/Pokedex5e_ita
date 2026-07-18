@@ -204,3 +204,5 @@ jobs:
           git add assets/data/pokemon_localization_it_gen*.json docs/translation/
           git commit -m "Corregge le categorie Pokémon ufficiali"
           git push origin HEAD:translation/category-audit
+
+# Trigger aggiornato intenzionalmente per avviare l'audit.

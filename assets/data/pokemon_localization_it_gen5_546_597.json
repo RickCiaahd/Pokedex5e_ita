@@ -1,0 +1,218 @@
+{
+  "locale": "it",
+  "source": "assets/data/pokemon_flavor.json",
+  "range": {
+    "from": 546,
+    "to": 597
+  },
+  "items": {
+    "546": {
+      "genus": "Pokémon Batuffolo",
+      "description": "Quando viene attaccato, Cottonee fugge spargendo cotone dal corpo. Il batuffolo funge da esca e distrae l'aggressore."
+    },
+    "547": {
+      "genus": "Pokémon Velovento",
+      "description": "I Whimsicott compaiono insieme ai vortici di vento. Amano fare scherzi, per esempio spostando i mobili e lasciando batuffoli di cotone nelle case."
+    },
+    "548": {
+      "genus": "Pokémon Bulbo",
+      "description": "Le foglie sulla testa di Petilil sono molto amare. È noto che mangiarne una ridoni energia a un corpo stanco."
+    },
+    "549": {
+      "genus": "Pokémon Fioritura",
+      "description": "Il profumo della ghirlanda sulla testa di Lilligant ha un effetto rilassante. Se l'Allenatore non se ne prende cura adeguatamente, la ghirlanda appassisce."
+    },
+    "550": {
+      "genus": "Pokémon Ostile",
+      "description": "I Basculin a strisce rosse e blu sono estremamente violenti e combattono continuamente tra loro. Sono anche sorprendentemente gustosi."
+    },
+    "551": {
+      "genus": "Pokémon Coccodrillo Deserto",
+      "description": "Sandile si muove sotto la superficie della sabbia lasciando scoperti soltanto il naso e gli occhi. Una membrana scura gli protegge la vista dal sole."
+    },
+    "552": {
+      "genus": "Pokémon Coccodrillo Deserto",
+      "description": "I Krokorok vivono in piccoli gruppi. Membrane protettive riparano i loro occhi dalle tempeste di sabbia."
+    },
+    "553": {
+      "genus": "Pokémon Intimidazione",
+      "description": "I Krookodile sono Pokémon molto violenti e tentano di serrare le mascelle su qualunque cosa si muova davanti ai loro occhi."
+    },
+    "554": {
+      "genus": "Pokémon Amuleto Zen",
+      "description": "Gli escrementi di Darumaka sono caldi. In passato le persone li mettevano sotto i vestiti per scaldarsi."
+    },
+    "555": {
+      "genus": "Pokémon Fiammeggiante",
+      "description": "Quando Darmanitan rimane ferito durante una battaglia feroce, il suo corpo si indurisce assumendo l'aspetto della pietra. In questa forma medita e affina la mente."
+    },
+    "556": {
+      "genus": "Pokémon Cactus",
+      "description": "Maractus canta e danza a ritmo sostenuto per scacciare i Pokémon uccello che cercano di mangiare i semi dei suoi fiori."
+    },
+    "557": {
+      "genus": "Pokémon Pietraloggio",
+      "description": "Dwebble scava un foro in una pietra adatta. Se la roccia si rompe, rimane agitato finché non ne trova un'altra."
+    },
+    "558": {
+      "genus": "Pokémon Casapietra",
+      "description": "Crustle possiede zampe dalla forza enorme, capaci di trasportare pesanti lastre per molti giorni anche attraversando terre aride."
+    },
+    "559": {
+      "genus": "Pokémon Muta",
+      "description": "La pelle di Scraggy ha un'elasticità simile alla gomma. Per ridurre i danni degli attacchi, la solleva fino al collo e la usa come protezione."
+    },
+    "560": {
+      "genus": "Pokémon Teppista",
+      "description": "Scrafty solleva la pelle della muta per proteggersi mentre sferra calci. Più grande è la cresta, maggiore è il rispetto che riceve."
+    },
+    "561": {
+      "genus": "Pokémon Avianoide",
+      "description": "I Sigilyph erano i guardiani di un'antica città. Usano i poteri psichici per attaccare i nemici che invadono il loro territorio."
+    },
+    "562": {
+      "genus": "Pokémon Spirito",
+      "description": "Gli Yamask nacquero dagli spiriti di persone sepolte nelle tombe. Ognuno conserva i ricordi della propria vita precedente."
+    },
+    "563": {
+      "genus": "Pokémon Sarcofago",
+      "description": "Si dice che i Cofagrigus inghiottano chi si avvicina troppo e lo trasformino in una mummia. Amano mangiare pepite d'oro."
+    },
+    "564": {
+      "genus": "Pokémon Prototartaruga",
+      "description": "Circa 100 milioni di anni fa i Tirtouga nuotavano negli oceani. Si pensa che raggiungessero anche la terraferma per attaccare le prede."
+    },
+    "565": {
+      "genus": "Pokémon Prototartaruga",
+      "description": "I Carracosta possono vivere sia nell'oceano sia sulla terraferma. Un solo colpo delle loro zampe è sufficiente ad aprire una falla nello scafo di una petroliera."
+    },
+    "566": {
+      "genus": "Pokémon Primo Uccello",
+      "description": "Archen è stato riportato in vita da un fossile e si ritiene che sia l'antenato di tutti i Pokémon uccello."
+    },
+    "567": {
+      "genus": "Pokémon Primo Uccello",
+      "description": "Gli Archeops sono intelligenti e collaborano per catturare le prede. Per spiccare il volo prendono la rincorsa da terra."
+    },
+    "568": {
+      "genus": "Pokémon Sacco Immondizia",
+      "description": "Una reazione chimica tra sacchi della spazzatura e rifiuti industriali diede origine a Trubbish."
+    },
+    "569": {
+      "genus": "Pokémon Cumulo Immondizia",
+      "description": "Garbodor stringe gli avversari con il braccio sinistro e li finisce eruttando dalla bocca un gas velenoso dal fetore insopportabile."
+    },
+    "570": {
+      "genus": "Pokémon Volpe Inganno",
+      "description": "Zorua cambia aspetto per somigliare perfettamente al nemico, lo inganna e approfitta della confusione per fuggire."
+    },
+    "571": {
+      "genus": "Pokémon Volpe Illusione",
+      "description": "Ogni Zoroark può ingannare contemporaneamente un grande gruppo di persone. Protegge la propria tana creando paesaggi illusori."
+    },
+    "572": {
+      "genus": "Pokémon Cincillà",
+      "description": "I Minccino si salutano pulendosi accuratamente a vicenda con la coda."
+    },
+    "573": {
+      "genus": "Pokémon Sciarpa",
+      "description": "Il pelo bianco dei Cinccino è meraviglioso al tatto. Respinge la polvere e impedisce l'accumulo di elettricità statica."
+    },
+    "574": {
+      "genus": "Pokémon Fissazione",
+      "description": "Le antenne simili a nastri dei Gothita amplificano i loro poteri psichici. Sembrano fissare continuamente qualcosa."
+    },
+    "575": {
+      "genus": "Pokémon Manipolazione",
+      "description": "La luce delle stelle è la fonte del potere dei Gothorita. Di notte fanno levitare delle pietre con la forza psichica per segnare la posizione degli astri."
+    },
+    "576": {
+      "genus": "Pokémon Corpo Astrale",
+      "description": "Nel tessuto spaziale deformato dall'intenso potere psichico di Gothitelle si possono osservare cieli stellati distanti migliaia di anni luce."
+    },
+    "577": {
+      "genus": "Pokémon Cellula",
+      "description": "Il corpo dei Solosis è avvolto da un liquido speciale che permette loro di resistere in qualunque ambiente, per quanto estremo."
+    },
+    "578": {
+      "genus": "Pokémon Mitosi",
+      "description": "Poiché Duosion possiede due cervelli separati, a volte tenta improvvisamente di compiere due azioni differenti nello stesso momento."
+    },
+    "579": {
+      "genus": "Pokémon Moltiplicazione",
+      "description": "I Reuniclus controllano con la forza psichica le braccia composte da un liquido speciale. Il loro potere mentale può frantumare i massi."
+    },
+    "580": {
+      "genus": "Pokémon Uccello Acqua",
+      "description": "Quando viene attaccato, Ducklett usa le piume per spruzzare acqua e fugge nascosto dalla nube di goccioline."
+    },
+    "581": {
+      "genus": "Pokémon Uccello Bianco",
+      "description": "Nonostante l'aspetto elegante, gli Swanna battono le ali con grande forza e possono volare per migliaia di chilometri."
+    },
+    "582": {
+      "genus": "Pokémon Neve Fresca",
+      "description": "Il respiro dei Vanillite raggiunge i -50 °C. Creano cristalli di ghiaccio e fanno nevicare nell'area circostante."
+    },
+    "583": {
+      "genus": "Pokémon Neve Gelata",
+      "description": "I Vanillish raffreddano l'aria circostante e producono particelle di ghiaccio, che usano per congelare i nemici."
+    },
+    "584": {
+      "genus": "Pokémon Bufera",
+      "description": "Se entrambe le teste di Vanilluxe si infuriano nello stesso momento, il Pokémon scatena una tormenta che seppellisce ogni cosa sotto la neve."
+    },
+    "585": {
+      "genus": "Pokémon Stagione",
+      "description": "Il colore dei Deerling cambia in base alle stagioni e può essere influenzato leggermente anche dalla temperatura e dall'umidità."
+    },
+    "586": {
+      "genus": "Pokémon Stagione",
+      "description": "I Sawsbuck migrano con il mutare delle stagioni. Osservando le loro corna, le persone possono capire in quale stagione si trovano."
+    },
+    "587": {
+      "genus": "Pokémon Scoiattolo Volante",
+      "description": "Gli Emolga vivono sulle cime degli alberi e planano usando l'interno di una membrana simile a un mantello mentre scaricano elettricità."
+    },
+    "588": {
+      "genus": "Pokémon Pinza",
+      "description": "Questi misteriosi Pokémon si evolvono quando ricevono uno stimolo elettrico mentre si trovano nello stesso luogo di Shelmet."
+    },
+    "589": {
+      "genus": "Pokémon Cavalleria",
+      "description": "Gli Escavalier indossano il guscio sottratto a Shelmet e lo usano per difendersi, attaccando poi con due lance."
+    },
+    "590": {
+      "genus": "Pokémon Fungo",
+      "description": "Foongus attira le persone mostrando il motivo a Poké Ball e poi rilascia spore velenose. Non si sa perché abbia quell'aspetto."
+    },
+    "591": {
+      "genus": "Pokémon Fungo",
+      "description": "Gli Amoonguss mettono in mostra i cappelli simili a Poké Ball per attirare le prede, ma sono pochissimi i Pokémon che cadono nell'inganno."
+    },
+    "592": {
+      "genus": "Pokémon Fluttuante",
+      "description": "I Frillish paralizzano le prede con il veleno e poi le trascinano nelle loro tane, a otto chilometri sotto la superficie del mare."
+    },
+    "593": {
+      "genus": "Pokémon Fluttuante",
+      "description": "Il corpo di Jellicent è composto quasi interamente da acqua marina. Si dice che sul fondale esista un castello formato dalle navi che questi Pokémon hanno affondato."
+    },
+    "594": {
+      "genus": "Pokémon Premuroso",
+      "description": "Gli Alomomola vivono fluttuando in mare aperto. Quando trovano un Pokémon ferito, lo abbracciano e lo trasportano fino a riva."
+    },
+    "595": {
+      "genus": "Pokémon Adesione",
+      "description": "Joltik non può produrre elettricità da solo, perciò si aggrappa ai Pokémon di grandi dimensioni e ne assorbe l'elettricità statica."
+    },
+    "596": {
+      "genus": "Pokémon ElettroRagno",
+      "description": "I Galvantula intrappolano le prede in una ragnatela elettrificata. Mentre il bersaglio è immobilizzato dalle scariche, lo divorano con calma."
+    },
+    "597": {
+      "genus": "Pokémon Seme Spina",
+      "description": "Quando si sente minacciato, Ferroseed scaglia una raffica di spine e approfitta dell'occasione per fuggire rotolando."
+    }
+  }
+}

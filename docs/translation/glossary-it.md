@@ -47,7 +47,7 @@ Questo glossario definisce la terminologia da usare nelle descrizioni visualizza
 | burrowing speed | velocità di scavo |
 | long rest | riposo lungo |
 | short rest | riposo breve |
-| fainted | esausto, quando indica un Pokémon a 0 PF; usare **svenuto** soltanto nei testi narrativi |
+| fainted | svenuto, quando indica un Pokémon a 0 PF |
 | restrained | trattenuto |
 | prone | prono |
 | incapacitated | incapacitato |

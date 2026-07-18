@@ -1,0 +1,170 @@
+{
+  "locale": "it",
+  "source": "assets/data/pokemon_flavor.json",
+  "range": {
+    "from": 426,
+    "to": 465
+  },
+  "items": {
+    "426": {
+      "genus": "Pokémon Dirigibile",
+      "description": "Drifblim trasporta persone e Pokémon durante il volo. Poiché si limita a lasciarsi trascinare, può finire praticamente ovunque."
+    },
+    "427": {
+      "genus": "Pokémon Coniglio",
+      "description": "Le orecchie di Buneary sono sempre arrotolate. Può distenderle con tale forza da frantumare persino un grosso masso."
+    },
+    "428": {
+      "genus": "Pokémon Coniglio",
+      "description": "Lopunny è estremamente prudente e, non appena percepisce un pericolo, balza rapidamente via."
+    },
+    "429": {
+      "genus": "Pokémon Magico",
+      "description": "Mismagius pronuncia formule magiche. Di solito tormentano il bersaglio, ma alcune possono donare felicità."
+    },
+    "430": {
+      "genus": "Pokémon Boss",
+      "description": "Quando Honchkrow emette un richiamo profondo, molti Murkrow si radunano rapidamente. Per questo è chiamato «Evocatore della notte»."
+    },
+    "431": {
+      "genus": "Pokémon Gattino",
+      "description": "Glameow graffia quando è contrariato e fa le fusa quando si mostra affettuoso. La sua volubilità è molto apprezzata da alcune persone."
+    },
+    "432": {
+      "genus": "Pokémon Gattotigre",
+      "description": "Purugly si appropria del nido di un altro Pokémon quando lo trova abbastanza comodo."
+    },
+    "433": {
+      "genus": "Pokémon Sonaglio",
+      "description": "A ogni balzo, Chingling produce un suono squillante. Assorda i nemici emettendo versi ad alta frequenza."
+    },
+    "434": {
+      "genus": "Pokémon Moffetta",
+      "description": "Stunky spruzza dal posteriore un liquido nauseabondo. Il fetore si diffonde per oltre un chilometro e mezzo, mettendo in fuga i Pokémon."
+    },
+    "435": {
+      "genus": "Pokémon Moffetta",
+      "description": "Skuntank attacca spruzzando dalla punta della coda un liquido dal puzzo rivoltante. La sua gittata supera i 48 metri."
+    },
+    "436": {
+      "genus": "Pokémon Bronzo",
+      "description": "Gli antichi credevano che il motivo sulla schiena di Bronzor racchiudesse un potere misterioso."
+    },
+    "437": {
+      "genus": "Pokémon Campanabronzo",
+      "description": "In tempi remoti Bronzong era venerato come portatore di pioggia. Un esemplare fu rinvenuto sepolto nel terreno."
+    },
+    "438": {
+      "genus": "Pokémon Bonsai",
+      "description": "Bonsly predilige gli ambienti aridi. Fa fuoriuscire acqua dagli occhi per regolare la quantità di liquidi nel corpo."
+    },
+    "439": {
+      "genus": "Pokémon Mimo",
+      "description": "Mime Jr. imita i movimenti del nemico per confonderlo, quindi non perde tempo e si dà immediatamente alla fuga."
+    },
+    "440": {
+      "genus": "Pokémon Casetta",
+      "description": "Happiny porta nella tasca sul ventre una pietra rotonda a forma di uovo e la dona ai propri amici."
+    },
+    "441": {
+      "genus": "Pokémon Nota Musicale",
+      "description": "Chatot imita i versi degli altri Pokémon per convincerli di essere uno di loro. In questo modo evita di essere attaccato."
+    },
+    "442": {
+      "genus": "Pokémon Proibito",
+      "description": "Spiritomb è un Pokémon formato da 108 spiriti ed è vincolato a una fessura in un’insolita Roccianima."
+    },
+    "443": {
+      "genus": "Pokémon Squaloterra",
+      "description": "Gible nidifica in cunicoli orizzontali riscaldati dal calore geotermico. I nemici che si avvicinano troppo vengono assaliti e morsi."
+    },
+    "444": {
+      "genus": "Pokémon Grotta",
+      "description": "Gabite adora gli oggetti scintillanti. Cerca tesori nelle caverne e accumula il bottino nel proprio nido."
+    },
+    "445": {
+      "genus": "Pokémon Mach",
+      "description": "Quando ripiega il corpo e distende le ali, Garchomp sembra un aereo a reazione. Vola alla velocità del suono."
+    },
+    "446": {
+      "genus": "Pokémon Mangione",
+      "description": "Munchlax nasconde il cibo sotto il lungo pelo del corpo, ma poi dimentica di averlo messo lì."
+    },
+    "447": {
+      "genus": "Pokémon Emanazione",
+      "description": "Riolu comunica con i propri simili servendosi delle forme assunte dall’aura, che cambiano in base alle emozioni."
+    },
+    "448": {
+      "genus": "Pokémon Aura",
+      "description": "Percependo l’aura emanata dagli altri, Lucario riesce a leggere i loro pensieri e prevederne i movimenti."
+    },
+    "449": {
+      "genus": "Pokémon Ippopotamo",
+      "description": "Hippopotas vive nei luoghi aridi. Invece di sudare, espelle dal corpo sabbia granulosa."
+    },
+    "450": {
+      "genus": "Pokémon Megapeso",
+      "description": "Hippowdon spalanca l’enorme bocca per esibire la propria forza terrificante. Durante gli attacchi solleva immense quantità di sabbia."
+    },
+    "451": {
+      "genus": "Pokémon Scorpione",
+      "description": "Skorupi afferra la preda con gli artigli della coda e le inietta veleno. Non lascia la presa finché la tossina non fa effetto."
+    },
+    "452": {
+      "genus": "Pokémon Orcoscorpione",
+      "description": "Drapion è orgoglioso della propria forza. Pur potendo fare a pezzi i nemici, preferisce finirli con un potentissimo veleno."
+    },
+    "453": {
+      "genus": "Pokémon Boccatossica",
+      "description": "Croagunk possiede sacche velenifere nelle guance. Cerca di cogliere i nemici alla sprovvista e colpirli con le dita tossiche."
+    },
+    "454": {
+      "genus": "Pokémon Boccatossica",
+      "description": "Toxicroak ha una sacca velenifera nella gola. Quando gracida, il veleno accumulato viene rimescolato e diventa ancora più potente."
+    },
+    "455": {
+      "genus": "Pokémon Acchiappainsetti",
+      "description": "Carnivine attira la preda con la saliva dal profumo dolce e poi la azzanna. Impiega un’intera giornata per divorarla."
+    },
+    "456": {
+      "genus": "Pokémon Pescealato",
+      "description": "La linea lungo il fianco di Finneon può immagazzinare luce solare e risplende vividamente durante la notte."
+    },
+    "457": {
+      "genus": "Pokémon Neon",
+      "description": "Lumineon vive sui fondali degli abissi. Attira le prede facendo lampeggiare i motivi sulle quattro pinne caudali."
+    },
+    "458": {
+      "genus": "Pokémon Aquilone",
+      "description": "Il motivo sulla schiena di Mantyke varia da regione a regione. Nuota spesso in branco insieme ai Remoraid."
+    },
+    "459": {
+      "genus": "Pokémon Alberogelato",
+      "description": "Durante le stagioni fredde, Snover migra verso le pendici più basse delle montagne. In primavera torna sulle cime innevate."
+    },
+    "460": {
+      "genus": "Pokémon Alberogelato",
+      "description": "Abomasnow ricopre vaste aree di neve scatenando bufere. È conosciuto anche come «il mostro dei ghiacci»."
+    },
+    "461": {
+      "genus": "Pokémon Lamafredda",
+      "description": "Weavile vive nelle regioni innevate e incide motivi sugli alberi con gli artigli per inviare segnali ai propri simili."
+    },
+    "462": {
+      "genus": "Pokémon Magnetico",
+      "description": "A volte il magnetismo emesso dai Magnezone è così intenso da farli attrarre tra loro, impedendo loro di muoversi."
+    },
+    "463": {
+      "genus": "Pokémon Linguaccia",
+      "description": "Lickilicky avvolge gli oggetti con la lingua estensibile. Avvicinarsi troppo significa ritrovarsi completamente coperti di saliva."
+    },
+    "464": {
+      "genus": "Pokémon Trapano",
+      "description": "Rhyperior spara Geodude dai fori nei palmi delle mani. La sua corazza può resistere persino alle eruzioni vulcaniche."
+    },
+    "465": {
+      "genus": "Pokémon Liana",
+      "description": "Tangrowth intrappola le prede allungando le braccia formate da liane. Non si preoccupa se un predatore gliene strappa qualcuna."
+    }
+  }
+}

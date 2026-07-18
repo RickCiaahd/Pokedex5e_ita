@@ -1,0 +1,199 @@
+name: Translation audit bootstrap
+
+on:
+  push:
+    branches:
+      - translation/italian-content-audit
+    paths:
+      - '.github/workflows/translation-audit-bootstrap.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          ref: translation/italian-content-audit
+
+      - name: Generate translation audit
+        shell: python
+        run: |
+          import json
+          import re
+          from collections import defaultdict
+          from pathlib import Path
+
+          root = Path('.')
+          output_dir = root / 'docs' / 'translation'
+          output_dir.mkdir(parents=True, exist_ok=True)
+
+          def read_json(path):
+              with path.open(encoding='utf-8') as handle:
+                  return json.load(handle)
+
+          def text_values(items, field):
+              values = []
+              for item in items:
+                  if not isinstance(item, dict):
+                      continue
+                  value = item.get(field)
+                  if isinstance(value, str) and value.strip():
+                      values.append(value.strip())
+              return values
+
+          def looks_english(value):
+              text = f' {value.lower()} '
+              markers = (
+                  ' the ', ' a ', ' an ', ' this ', ' that ', ' its ', ' it ',
+                  ' when ', ' while ', ' target ', ' creature ', ' pokemon ',
+                  ' pokémon ', ' damage ', ' attack ', ' move ', ' user ',
+              )
+              return any(marker in text for marker in markers)
+
+          pokemon_data = read_json(root / 'assets' / 'data_webapp' / 'pokemon.json')
+          pokemon_items = pokemon_data.get('items', [])
+
+          grouped = defaultdict(list)
+          for item in pokemon_items:
+              if not isinstance(item, dict):
+                  continue
+              number = item.get('number')
+              if isinstance(number, int) and 1 <= number <= 151:
+                  grouped[number].append(item)
+
+          gen1 = []
+          for number in range(1, 152):
+              candidates = grouped.get(number, [])
+              if not candidates:
+                  raise SystemExit(f'Manca il Pokémon #{number} nel catalogo web.')
+              item = candidates[0]
+              gen1.append({
+                  'number': number,
+                  'id': str(item.get('id', '')).strip(),
+                  'name': str(item.get('name', '')).strip(),
+                  'description': str(item.get('description', '')).strip(),
+              })
+
+          source_path = output_dir / 'gen1-source-descriptions.json'
+          source_path.write_text(
+              json.dumps({'items': gen1}, ensure_ascii=False, indent=2) + '\n',
+              encoding='utf-8',
+          )
+
+          catalogs = []
+
+          pokemon_descriptions = text_values(pokemon_items, 'description')
+          catalogs.append((
+              'Pokémon',
+              'assets/data_webapp/pokemon.json',
+              len(pokemon_items),
+              len(pokemon_descriptions),
+              sum(looks_english(value) for value in pokemon_descriptions),
+              '`description`',
+          ))
+
+          moves_path = root / 'assets' / 'data_webapp' / 'moves.json'
+          if moves_path.exists():
+              moves_data = read_json(moves_path)
+              move_items = moves_data.get('moves', [])
+              move_descriptions = text_values(move_items, 'description')
+              catalogs.append((
+                  'Mosse',
+                  str(moves_path),
+                  len(move_items),
+                  len(move_descriptions),
+                  sum(looks_english(value) for value in move_descriptions),
+                  '`description` e altri campi testuali da validare',
+              ))
+
+          abilities_path = root / 'assets' / 'data_webapp' / 'abilities.json'
+          if abilities_path.exists():
+              abilities_data = read_json(abilities_path)
+              ability_items = abilities_data.get('items', [])
+              ability_descriptions = text_values(ability_items, 'description')
+              catalogs.append((
+                  'Abilità',
+                  str(abilities_path),
+                  len(ability_items),
+                  len(ability_descriptions),
+                  sum(looks_english(value) for value in ability_descriptions),
+                  '`description`',
+              ))
+
+          item_candidates = [
+              root / 'assets' / 'data_webapp' / 'items.json',
+              root / 'assets' / 'data' / 'items.json',
+          ]
+          for items_path in item_candidates:
+              if not items_path.exists():
+                  continue
+              items_data = read_json(items_path)
+              raw_items = items_data.get('items', items_data)
+              if isinstance(raw_items, dict):
+                  item_items = [value for value in raw_items.values() if isinstance(value, dict)]
+              elif isinstance(raw_items, list):
+                  item_items = raw_items
+              else:
+                  item_items = []
+              descriptions = []
+              for field in ('description', 'Description', 'effect', 'Effect'):
+                  descriptions.extend(text_values(item_items, field))
+              catalogs.append((
+                  'Oggetti',
+                  str(items_path),
+                  len(item_items),
+                  len(descriptions),
+                  sum(looks_english(value) for value in descriptions),
+                  'campi descrittivi visualizzati',
+              ))
+              break
+
+          lines = [
+              '# Audit dei contenuti traducibili',
+              '',
+              'Audit generato automaticamente a partire dai cataloghi correnti della repository.',
+              '',
+              '## Cataloghi',
+              '',
+              '| Categoria | Sorgente | Elementi | Testi non vuoti | Testi probabilmente inglesi | Campi traducibili |',
+              '| --- | --- | ---: | ---: | ---: | --- |',
+          ]
+          for label, path, count, texts, english, fields in catalogs:
+              lines.append(f'| {label} | `{path}` | {count} | {texts} | {english} | {fields} |')
+
+          lines.extend([
+              '',
+              '## Vincoli tecnici',
+              '',
+              '- ID, slug, chiavi JSON, nomi dei campi e struttura dei file devono restare invariati.',
+              '- Statistiche, formule, dadi, CD, portate, durate, PP, livelli e riferimenti alle regole non devono essere alterati.',
+              '- Le traduzioni devono essere applicate come valori localizzati caricati dal repository, senza duplicare o rinominare le entità tecniche.',
+              '- Ogni blocco deve superare `flutter analyze`, il test di integrità dei dati, la suite completa e la build Android.',
+              '',
+              '## Primo blocco',
+              '',
+              f'- Estratte {len(gen1)} descrizioni sorgente per i Pokémon dal #001 al #151.',
+              '- Il file `gen1-source-descriptions.json` è una base di revisione e non viene caricato dall’app.',
+          ])
+
+          (output_dir / 'content-audit.md').write_text('\n'.join(lines) + '\n', encoding='utf-8')
+
+      - name: Commit generated audit
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/translation/content-audit.md docs/translation/gen1-source-descriptions.json
+          if git diff --cached --quiet; then
+            echo 'Audit già aggiornato.'
+            exit 0
+          fi
+          git commit -m 'Genera audit iniziale delle traduzioni [skip ci]'
+          git push origin HEAD:translation/italian-content-audit

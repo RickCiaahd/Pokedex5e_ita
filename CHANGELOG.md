@@ -4,6 +4,16 @@ Tutte le modifiche rilevanti al progetto vengono documentate in questo file.
 
 ## [Non rilasciato]
 
+### Aggiunto
+
+- glossario italiano e audit delle sorgenti visualizzate per guidare i prossimi blocchi di traduzione;
+- catalogo separato e validato per i testi italiani dei Pokémon, senza modificare ID, statistiche o file sorgente;
+- test automatico di copertura e integrità delle localizzazioni Pokémon.
+
+### Modificato
+
+- tradotti in italiano genere e descrizione Pokédex dei 151 Pokémon di prima generazione, mantenendo invariati altezza, peso e dati meccanici.
+
 ## [1.0.0]
 
 ### Aggiunto

@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import '../models/pokemon.dart';
 import '../models/pokemon_flavor.dart';
 import 'custom_pokemon_repository.dart';
+import 'pokemon_localization_repository.dart';
 
 class PokemonRepository {
   static List<Pokemon>? _cachedAllPokemon;
@@ -39,7 +40,18 @@ class PokemonRepository {
       pokemonByNumber[definition.pokemonId] = definition.toPokemon();
     }
 
-    final pokemonList = pokemonByNumber.values.toList(growable: false)
+    final localizedTexts = await PokemonLocalizationRepository()
+        .getPokemonTexts();
+    final pokemonList = pokemonByNumber.values
+        .map((pokemon) {
+          final localized = localizedTexts[pokemon.id];
+          if (localized == null) return pokemon;
+          return pokemon.copyWith(
+            genus: localized.genus,
+            description: localized.description,
+          );
+        })
+        .toList(growable: false)
       ..sort((a, b) => a.id.compareTo(b.id));
     _cachedAllPokemon = pokemonList;
     _cachedCustomRevision = customRevision;
@@ -269,13 +281,28 @@ class PokemonRepository {
     );
 
     final Map<String, dynamic> json = jsonDecode(jsonString);
-
-    return json.map(
+    final flavors = json.map<int, PokemonFlavor>(
       (key, value) => MapEntry(
         int.parse(key),
         PokemonFlavor.fromJson(value as Map<String, dynamic>),
       ),
     );
+    final localizedTexts = await PokemonLocalizationRepository()
+        .getPokemonTexts();
+
+    return flavors.map((pokemonId, flavor) {
+      final localized = localizedTexts[pokemonId];
+      if (localized == null) return MapEntry(pokemonId, flavor);
+      return MapEntry(
+        pokemonId,
+        PokemonFlavor(
+          flavor: localized.description,
+          height: flavor.height,
+          weight: flavor.weight,
+          genus: localized.genus,
+        ),
+      );
+    });
   }
 
   String _normalizePokemonFileName(String name) {

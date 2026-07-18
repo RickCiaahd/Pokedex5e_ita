@@ -1,0 +1,166 @@
+{
+  "locale": "it",
+  "source": "assets/data/pokemon_flavor.json",
+  "range": {
+    "from": 387,
+    "to": 425
+  },
+  "items": {
+    "387": {
+      "genus": "Pokémon Fogliolina",
+      "description": "Sotto la luce del sole, Turtwig svolge la fotosintesi su tutto il corpo. Il guscio sulla sua schiena è in realtà formato da terra indurita."
+    },
+    "388": {
+      "genus": "Pokémon Boschetto",
+      "description": "Grotle vive lungo i corsi d’acqua nelle foreste. Di giorno esce dal bosco per scaldare al sole il guscio ricoperto di alberi."
+    },
+    "389": {
+      "genus": "Pokémon Continente",
+      "description": "Gli antichi immaginavano che, nelle profondità del sottosuolo, dimorasse un gigantesco Torterra."
+    },
+    "390": {
+      "genus": "Pokémon Scimpanzé",
+      "description": "La fiamma sul posteriore di Chimchar è alimentata dal gas prodotto nel suo ventre. Nemmeno la pioggia riesce a spegnerla."
+    },
+    "391": {
+      "genus": "Pokémon Briccone",
+      "description": "Monferno controlla abilmente l’intensità della fiamma sulla coda per mantenere i nemici alla distanza ideale."
+    },
+    "392": {
+      "genus": "Pokémon Fiamma",
+      "description": "La corona di fuoco di Infernape riflette il suo temperamento ardente. Nessun altro Pokémon lo supera in rapidità."
+    },
+    "393": {
+      "genus": "Pokémon Pinguino",
+      "description": "Piplup non ama essere accudito. È difficile creare un legame con lui, perché tende a non ascoltare il proprio Allenatore."
+    },
+    "394": {
+      "genus": "Pokémon Pinguino",
+      "description": "Prinplup vive da solo, lontano dai suoi simili. A quanto pare, ogni esemplare è convinto di essere il più importante."
+    },
+    "395": {
+      "genus": "Pokémon Imperatore",
+      "description": "Empoleon nuota veloce quanto un motoscafo. I bordi delle sue ali sono affilati e possono tagliare il ghiaccio alla deriva."
+    },
+    "396": {
+      "genus": "Pokémon Storno",
+      "description": "Gli Starly si riuniscono in stormi numerosi. Nonostante le piccole dimensioni, battono le ali con grande forza."
+    },
+    "397": {
+      "genus": "Pokémon Storno",
+      "description": "Gli Staravia formano stormi enormi, anche se tra gruppi diversi scoppiano spesso violenti scontri."
+    },
+    "398": {
+      "genus": "Pokémon Rapace",
+      "description": "Staraptor possiede muscoli molto sviluppati nelle ali e nelle zampe. Può volare senza difficoltà stringendo tra gli artigli un piccolo Pokémon."
+    },
+    "399": {
+      "genus": "Pokémon Topaffuto",
+      "description": "Bidoof ha nervi d’acciaio e nulla sembra turbarlo. È molto più agile e attivo di quanto il suo aspetto lasci immaginare."
+    },
+    "400": {
+      "genus": "Pokémon Castoro",
+      "description": "Bibarel costruisce instancabilmente il proprio nido accumulando rami e radici che recide con i suoi incisivi affilati."
+    },
+    "401": {
+      "genus": "Pokémon Grillo",
+      "description": "Kricketot comunica con i suoi simili facendo scontrare le antenne. Il suono che produce è un segno tipico dell’autunno."
+    },
+    "402": {
+      "genus": "Pokémon Grillo",
+      "description": "Quando canta, Kricketune incrocia davanti al petto le braccia affilate come lame. È capace di improvvisare melodie."
+    },
+    "403": {
+      "genus": "Pokémon Baleno",
+      "description": "L’estensione e la contrazione dei muscoli di Shinx generano elettricità. Quando è in difficoltà, il suo corpo si illumina."
+    },
+    "404": {
+      "genus": "Pokémon Scintilla",
+      "description": "Gli artigli di Luxio sprigionano una corrente elettrica abbastanza intensa da far svenire. Questi Pokémon vivono in piccoli gruppi."
+    },
+    "405": {
+      "genus": "Pokémon Occhiluce",
+      "description": "Quando gli occhi di Luxray brillano d’oro, riesce a individuare persino le prede nascoste dietro una parete."
+    },
+    "406": {
+      "genus": "Pokémon Germoglio",
+      "description": "Quando percepisce il calore del sole, Budew apre il bocciolo e libera polline. Vive nei pressi di specchi d’acqua limpidi."
+    },
+    "407": {
+      "genus": "Pokémon Bouquet",
+      "description": "Roserade attira le prede con un dolce profumo, poi usa le fruste velenose delle braccia per avvelenarle, immobilizzarle e finirle."
+    },
+    "408": {
+      "genus": "Pokémon Cranio",
+      "description": "Cranidos è stato riportato in vita da un fossile simile a una sfera di ferro. Abbatte le prede con potenti testate."
+    },
+    "409": {
+      "genus": "Pokémon Cranio",
+      "description": "Il cranio di Rampardos resiste a urti di qualsiasi intensità. Di conseguenza, il suo cervello non ha mai avuto occasione di svilupparsi."
+    },
+    "410": {
+      "genus": "Pokémon Schermo",
+      "description": "Shieldon ha l’abitudine di lucidarsi il volto sfregandolo contro i tronchi degli alberi. È vulnerabile agli attacchi alle spalle."
+    },
+    "411": {
+      "genus": "Pokémon Schermo",
+      "description": "Quando i Bastiodon si schieravano fianco a fianco, nessun nemico riusciva a sfondare la loro linea. In questo modo proteggevano i piccoli."
+    },
+    "412": {
+      "genus": "Pokémon Larva",
+      "description": "Per ripararsi dai freddi venti invernali, Burmy si avvolge in un mantello formato da rametti e foglie."
+    },
+    "413": {
+      "genus": "Pokémon Larva",
+      "description": "L’aspetto di Wormadam cambia in base al luogo in cui si è evoluto. I materiali disponibili entrano a far parte del suo corpo."
+    },
+    "414": {
+      "genus": "Pokémon Falena",
+      "description": "Mothim adora il nettare dei fiori e ruba il miele raccolto dai Combee."
+    },
+    "415": {
+      "genus": "Pokémon Apetta",
+      "description": "I tre Combee restano uniti fin dalla nascita. Raccolgono continuamente miele dai fiori per compiacere Vespiquen."
+    },
+    "416": {
+      "genus": "Pokémon Alveare",
+      "description": "Vespiquen ospita la colonia nelle celle del proprio corpo e rilascia diversi feromoni per impartire ordini alle larve."
+    },
+    "417": {
+      "genus": "Pokémon Elescoiattolo",
+      "description": "Pachirisu crea palline di pelo crepitanti di elettricità statica e le conserva insieme alle bacche nelle cavità degli alberi."
+    },
+    "418": {
+      "genus": "Pokémon Maridonnola",
+      "description": "Buizel nuota facendo ruotare le due code come un’elica. Quando si immerge, il suo sacco di galleggiamento si sgonfia."
+    },
+    "419": {
+      "genus": "Pokémon Maridonnola",
+      "description": "Floatzel galleggia grazie al sacco ben sviluppato che circonda il corpo. Aiuta a soccorrere le persone che stanno annegando."
+    },
+    "420": {
+      "genus": "Pokémon Ciliegia",
+      "description": "La luce del sole colora Cherubi di rosso. Quando la piccola sfera esaurisce i nutrienti, avvizzisce annunciando l’imminente evoluzione."
+    },
+    "421": {
+      "genus": "Pokémon Fioritura",
+      "description": "Sotto una luce solare intensa, il bocciolo di Cherrim sboccia, i petali si aprono completamente e il Pokémon diventa molto attivo."
+    },
+    "422": {
+      "genus": "Pokémon Lumaca di Mare",
+      "description": "È meglio non premere con forza il corpo molle di Shellos, perché potrebbe far fuoriuscire un misterioso liquido viola."
+    },
+    "423": {
+      "genus": "Pokémon Lumaca di Mare",
+      "description": "Quando viene attaccato dal suo nemico naturale, Gastrodon secerne un liquido viola e fugge."
+    },
+    "424": {
+      "genus": "Pokémon Lungacoda",
+      "description": "Gli Ambipom vivono in grandi colonie e formano anelli intrecciando le code, apparentemente come segno di amicizia."
+    },
+    "425": {
+      "genus": "Pokémon Pallone",
+      "description": "Drifloon nasce dagli spiriti di persone e Pokémon. Ama le stagioni umide e piovose."
+    }
+  }
+}

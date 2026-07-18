@@ -1,0 +1,218 @@
+{
+  "locale": "it",
+  "source": "assets/data/pokemon_flavor.json",
+  "range": {
+    "from": 494,
+    "to": 545
+  },
+  "items": {
+    "494": {
+      "genus": "Pokémon Vittoria",
+      "description": "Questo Pokémon porta la vittoria. Si dice che gli Allenatori accompagnati da Victini vincano sempre, qualunque sia il tipo di sfida che devono affrontare."
+    },
+    "495": {
+      "genus": "Pokémon Serpente Erba",
+      "description": "L'esposizione alla luce solare rende Snivy più rapido nei movimenti. Usa le liane con maggiore destrezza delle proprie mani."
+    },
+    "496": {
+      "genus": "Pokémon Serpente Erba",
+      "description": "Servine si muove sul terreno come se scivolasse. Con la sua velocità confonde i nemici, per poi attaccarli con una frustata di liane."
+    },
+    "497": {
+      "genus": "Pokémon Regale",
+      "description": "Serperior combatte con tutte le proprie forze soltanto contro avversari potenti che non si lasciano intimidire dallo sguardo dei suoi nobili occhi."
+    },
+    "498": {
+      "genus": "Pokémon Fuocomaiale",
+      "description": "Tepig schiva con agilità gli attacchi del nemico mentre spara palle di fuoco dal naso. Arrostisce le bacche prima di mangiarle."
+    },
+    "499": {
+      "genus": "Pokémon Fuocomaiale",
+      "description": "Più Pignite mangia, più combustibile dispone per alimentare il fuoco nel proprio stomaco. In questo modo la sua forza aumenta ulteriormente."
+    },
+    "500": {
+      "genus": "Pokémon Granfuocomaiale",
+      "description": "Emboar incendia i pugni usando le fiamme del mento e sferra potenti pugni infuocati. Tiene profondamente ai propri amici."
+    },
+    "501": {
+      "genus": "Pokémon Lontra Marina",
+      "description": "La conchiglia sul ventre di Oshawott non serve soltanto in battaglia: può usarla anche per aprire le bacche dalla scorza dura."
+    },
+    "502": {
+      "genus": "Pokémon Disciplina",
+      "description": "Dewott apprende la fluida tecnica di combattimento con le due conchiglie soltanto attraverso un addestramento rigoroso."
+    },
+    "503": {
+      "genus": "Pokémon Formidabile",
+      "description": "Nel tempo impiegato da un nemico per battere le palpebre, Samurott riesce a estrarre e rinfoderare le spade marine fissate alle zampe anteriori."
+    },
+    "504": {
+      "genus": "Pokémon Esploratore",
+      "description": "Grazie al cibo conservato nelle sacche guanciali, i Patrat possono restare di guardia per giorni. Comunicano tra loro usando la coda."
+    },
+    "505": {
+      "genus": "Pokémon Vedetta",
+      "description": "Watchog usa una sostanza luminescente per far brillare gli occhi e il corpo, abbagliando e stordendo gli avversari che lo attaccano."
+    },
+    "506": {
+      "genus": "Pokémon Cagnolino",
+      "description": "Il lungo pelo attorno al muso di Lillipup funziona come uno straordinario radar, capace di percepire i più piccoli cambiamenti nell'ambiente circostante."
+    },
+    "507": {
+      "genus": "Pokémon Cane Fedele",
+      "description": "Herdier è un Pokémon estremamente fedele: aiuta gli Allenatori e si prende cura anche degli altri Pokémon."
+    },
+    "508": {
+      "genus": "Pokémon Generoso",
+      "description": "Stoutland soccorre le persone rimaste isolate dalle bufere di neve in montagna. Il folto pelo lo protegge dal freddo."
+    },
+    "509": {
+      "genus": "Pokémon Subdolo",
+      "description": "L'aria graziosa di Purrloin è soltanto un inganno. Quando le vittime abbassano la guardia, si accorgono che i loro oggetti sono scomparsi. Attacca con artigli affilati."
+    },
+    "510": {
+      "genus": "Pokémon Crudele",
+      "description": "La forma elegante dei Liepard deriva dalla muscolatura ben sviluppata. Corrono silenziosamente nella notte."
+    },
+    "511": {
+      "genus": "Pokémon Scimmia Erba",
+      "description": "Pansage offre la foglia che porta sulla testa ai Pokémon dall'aria stanca. È noto che queste foglie alleviano lo stress."
+    },
+    "512": {
+      "genus": "Pokémon Scimmia Spina",
+      "description": "Simisage colpisce i nemici con la coda ricoperta di spine. Ha un temperamento selvaggio."
+    },
+    "513": {
+      "genus": "Pokémon Alta Temperatura",
+      "description": "Pansear è molto intelligente e arrostisce le bacche prima di mangiarle. Gli piace aiutare le persone."
+    },
+    "514": {
+      "genus": "Pokémon Brace",
+      "description": "Nel corpo di Simisear arde una fiamma. Sparge braci dalla testa e dalla coda per ustionare gli avversari."
+    },
+    "515": {
+      "genus": "Pokémon Spruzzo",
+      "description": "L'acqua conservata nel ciuffo sulla testa di Panpour è ricca di sostanze nutritive. La usa per annaffiare le piante con la coda."
+    },
+    "516": {
+      "genus": "Pokémon Geyser",
+      "description": "L'acqua ad alta pressione espulsa dalla coda di Simipour è tanto potente da abbattere una parete di cemento."
+    },
+    "517": {
+      "genus": "Pokémon Divorasogni",
+      "description": "Munna appare davanti alle persone e ai Pokémon tormentati dagli incubi e divora i loro sogni."
+    },
+    "518": {
+      "genus": "Pokémon Dormiveglia",
+      "description": "La nebbia che si diffonde dalla fronte dei Musharna è colma dei sogni di persone e Pokémon."
+    },
+    "519": {
+      "genus": "Pokémon Piccioncino",
+      "description": "Pidove è talmente smemorato da attendere un nuovo ordine dal proprio Allenatore anche quando ne ha già ricevuto uno."
+    },
+    "520": {
+      "genus": "Pokémon Piccione Selvatico",
+      "description": "Molte persone credono che nel cuore delle foreste abitate dai Tranquill esista un luogo pacifico in cui la guerra non è mai arrivata."
+    },
+    "521": {
+      "genus": "Pokémon Orgoglioso",
+      "description": "I maschi di Unfezant agitano il piumaggio della testa per minacciare gli avversari. Le femmine, invece, sono più abili nel volo."
+    },
+    "522": {
+      "genus": "Pokémon Elettrizzato",
+      "description": "Blitzle appare quando il cielo è coperto da nubi temporalesche. La criniera cattura i fulmini e ne immagazzina l'elettricità."
+    },
+    "523": {
+      "genus": "Pokémon Saetta",
+      "description": "Quando questo Pokémon dal carattere irascibile si scatena, Zebstrika scaglia fulmini dalla criniera in ogni direzione."
+    },
+    "524": {
+      "genus": "Pokémon Mantello",
+      "description": "L'orecchio di Roggenrola ha una forma esagonale. Compresso per lungo tempo nel sottosuolo, il suo corpo è diventato duro come l'acciaio."
+    },
+    "525": {
+      "genus": "Pokémon Minerale",
+      "description": "L'energia di Boldore era troppo intensa per essere contenuta: quella fuoriuscita dal corpo si è cristallizzata formando strutture arancioni."
+    },
+    "526": {
+      "genus": "Pokémon Compresso",
+      "description": "Gigalith trasforma i raggi solari assorbiti nel proprio nucleo energetico e li scaglia sotto forma di una sfera luminosa."
+    },
+    "527": {
+      "genus": "Pokémon Pipistrello",
+      "description": "Woobat vive nelle foreste oscure e nelle grotte. Emette onde ultrasoniche dal naso per conoscere ciò che lo circonda."
+    },
+    "528": {
+      "genus": "Pokémon Corteggiamento",
+      "description": "Swoobat agita vigorosamente la coda quando emette onde ultrasoniche tanto potenti da ridurre il cemento in macerie."
+    },
+    "529": {
+      "genus": "Pokémon Talpa",
+      "description": "Drilbur avanza rapidamente nel terreno unendo i due artigli e facendoli ruotare ad alta velocità."
+    },
+    "530": {
+      "genus": "Pokémon Sotterraneo",
+      "description": "Excadrill è molto utile nella costruzione di gallerie. Il suo trapano si è evoluto in un acciaio tanto resistente da perforare lastre di ferro."
+    },
+    "531": {
+      "genus": "Pokémon Udito",
+      "description": "Grazie alle appendici sulle orecchie, Audino riesce a capire lo stato d'animo di qualcuno e persino quando un uovo sta per schiudersi."
+    },
+    "532": {
+      "genus": "Pokémon Muscoloso",
+      "description": "I Timburr compaiono nei cantieri e aiutano nei lavori di costruzione. Portano sempre con sé travi di legno squadrate."
+    },
+    "533": {
+      "genus": "Pokémon Muscoloso",
+      "description": "Grazie al corpo irrobustito, i Gurdurr maneggiano con destrezza travi d'acciaio e riescono ad abbattere interi edifici."
+    },
+    "534": {
+      "genus": "Pokémon Muscoloso",
+      "description": "Si pensa che più di 2.000 anni fa Conkeldurr abbia insegnato agli esseri umani come produrre il cemento."
+    },
+    "535": {
+      "genus": "Pokémon Girino",
+      "description": "Vibrando le guance, Tympole emette onde sonore impercettibili agli esseri umani e avverte i propri simili del pericolo."
+    },
+    "536": {
+      "genus": "Pokémon Vibrazione",
+      "description": "Quando i Palpitoad fanno vibrare le protuberanze sulla testa, generano onde nell'acqua oppure scosse simili a terremoti sulla terraferma."
+    },
+    "537": {
+      "genus": "Pokémon Vibrazione",
+      "description": "Seismitoad aumenta la potenza dei pugni facendo vibrare le protuberanze sui propri palmi. Con un solo colpo può ridurre un masso in frantumi."
+    },
+    "538": {
+      "genus": "Pokémon Judo",
+      "description": "Quando Throh stringe la cintura, diventa più forte. Gli esemplari selvatici intrecciano da soli la propria cintura usando delle liane."
+    },
+    "539": {
+      "genus": "Pokémon Karate",
+      "description": "Alla ricerca del colpo di karate più potente, i Sawk si isolano sulle montagne e si allenano senza dormire."
+    },
+    "540": {
+      "genus": "Pokémon Cucito",
+      "description": "Sewaddle confeziona da solo i propri abiti. Mastica le foglie e le cuce usando un filo appiccicoso prodotto dalla bocca."
+    },
+    "541": {
+      "genus": "Pokémon Avvoltofoglia",
+      "description": "Le foreste abitate dagli Swadloon hanno una vegetazione rigogliosa, perché le sostanze nutritive che producono dalle foglie cadute alimentano le piante."
+    },
+    "542": {
+      "genus": "Pokémon Premuroso",
+      "description": "Quando Leavanny incontra un piccolo Pokémon, gli confeziona un vestito di foglie usando la seta appiccicosa secreta dalla bocca."
+    },
+    "543": {
+      "genus": "Pokémon Centopiedi",
+      "description": "Venipede comprende ciò che accade attorno a sé usando le antenne sulla testa e sulla coda. È estremamente aggressivo."
+    },
+    "544": {
+      "genus": "Pokémon Rotopiede",
+      "description": "Protetto da un guscio duro, Whirlipede fa ruotare il corpo come una ruota e si schianta con furia contro i nemici."
+    },
+    "545": {
+      "genus": "Pokémon Millepiedi",
+      "description": "Scolipede stringe la preda con gli artigli sul collo finché non smette di muoversi, poi la finisce con un veleno letale."
+    }
+  }
+}

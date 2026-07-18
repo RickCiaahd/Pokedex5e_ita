@@ -1,0 +1,910 @@
+{
+  "items": [
+    {
+      "number": 1,
+      "id": "bulbasaur",
+      "name": "Bulbasaur",
+      "description": "The Seed Pokémon. It can go for days without eating a single morsel. In the bulb on its back, it stores energy."
+    },
+    {
+      "number": 2,
+      "id": "ivysaur",
+      "name": "Ivysaur",
+      "description": "The Seed Pokémon. The bud on its back grows by drawing energy. It gives off an aroma when it is ready to bloom."
+    },
+    {
+      "number": 3,
+      "id": "venusaur",
+      "name": "Venusaur",
+      "description": "The Seed Pokémon. The flower on its back catches the sun’s rays. The sunlight is then absorbed and used for energy"
+    },
+    {
+      "number": 4,
+      "id": "charmander",
+      "name": "Charmander",
+      "description": "The Lizard Pokémon. The flame at the tip of its tail makes a sound as it burns. You can only hear it in quiet places."
+    },
+    {
+      "number": 5,
+      "id": "charmeleon",
+      "name": "Charmeleon",
+      "description": "The Flame Pokémon. Tough fights could excite this Pokémon. When excited, it may breathe out bluish-white flames."
+    },
+    {
+      "number": 6,
+      "id": "charizard",
+      "name": "Charizard",
+      "description": "The Flame Pokémon. When this Pokémon expels a blast of superhot fire, the red flame at the tip of its tail burns more intensely."
+    },
+    {
+      "number": 7,
+      "id": "squirtle",
+      "name": "Squirtle",
+      "description": "The Tiny Turtle Pokémon. Shoots water at prey while in the water. Withdraws into its shell when in danger."
+    },
+    {
+      "number": 8,
+      "id": "wartortle",
+      "name": "Wartortle",
+      "description": "The Turtle Pokémon. When tapped on its head, this Pokémon will pull it in, but its tail will still stick out a little bit."
+    },
+    {
+      "number": 9,
+      "id": "blastoise",
+      "name": "Blastoise",
+      "description": "The Shellfish Pokémon. Once it takes aim at its enemy, it blasts out water with even more force than a fire hose."
+    },
+    {
+      "number": 10,
+      "id": "caterpie",
+      "name": "Caterpie",
+      "description": "The Worm Pokémon. If you touch the feeler on top of its head, it will release a horrible stink to protect itself."
+    },
+    {
+      "number": 11,
+      "id": "metapod",
+      "name": "Metapod",
+      "description": "The Cocoon Pokémon. Hardens its shell to protect itself. However, a large impact may cause it to pop out of its shell."
+    },
+    {
+      "number": 12,
+      "id": "butterfree",
+      "name": "Butterfree",
+      "description": "The Butterfly Pokémon. Its wings, covered with poisonous powder, repel water. This allows it to fly in the rain."
+    },
+    {
+      "number": 13,
+      "id": "weedle",
+      "name": "Weedle",
+      "description": "The Hairy Bug Pokémon. Beware of the sharp stinger on its head. It hides in grass and bushes where it eats leaves."
+    },
+    {
+      "number": 14,
+      "id": "kakuna",
+      "name": "Kakuna",
+      "description": "The Cocoon Pokémon. Able to move only slightly. When endangered, it may stick out its stinger and poison its enemy."
+    },
+    {
+      "number": 15,
+      "id": "beedrill",
+      "name": "Beedrill",
+      "description": "The Poison Bee Pokémon. It has three poisonous stingers on its forelegs and its tail. They are used to jab its enemy repeatedly."
+    },
+    {
+      "number": 16,
+      "id": "pidgey",
+      "name": "Pidgey",
+      "description": "The Tiny Bird Pokémon. Very docile. If attacked, it will often kick up sand to protect itself rather than fight back."
+    },
+    {
+      "number": 17,
+      "id": "pidgeotto",
+      "name": "Pidgeotto",
+      "description": "The Bird Pokémon. This Pokémon is full of vitality. It constantly flies around its large territory in search of prey."
+    },
+    {
+      "number": 18,
+      "id": "pidgeot",
+      "name": "Pidgeot",
+      "description": "The Bird Pokémon. This Pokémon flies at Mach 2 speed, seeking prey. Its large talons are feared as wicked weapons."
+    },
+    {
+      "number": 19,
+      "id": "rattata",
+      "name": "Rattata",
+      "description": "The Mouse Pokémon. Will chew on anything with its fangs. If you see one, you can be certain that 40 more live in the area."
+    },
+    {
+      "number": 20,
+      "id": "raticate",
+      "name": "Raticate",
+      "description": "The Mouse Pokémon. Its hind feet are webbed. They act as flippers, so it can swim in rivers and hunt for prey."
+    },
+    {
+      "number": 21,
+      "id": "spearow",
+      "name": "Spearow",
+      "description": "The Tiny Bird Pokémon. Inept at flying high. However, it can fly around very fast to protect its territory."
+    },
+    {
+      "number": 22,
+      "id": "fearow",
+      "name": "Fearow",
+      "description": "The Beak Pokémon. A Pokémon that dates back many years. If it senses danger, it flies high and away, instantly."
+    },
+    {
+      "number": 23,
+      "id": "ekans",
+      "name": "Ekans",
+      "description": "The Snake Pokémon. The older it gets, the longer it grows. At night, it wraps its long body around tree branches to rest."
+    },
+    {
+      "number": 24,
+      "id": "arbok",
+      "name": "Arbok",
+      "description": "The Cobra Pokémon. The frightening patterns on its belly have been studied. Six variations have been confirmed."
+    },
+    {
+      "number": 25,
+      "id": "pikachu",
+      "name": "Pikachu",
+      "description": "The Mouse Pokémon. This forest-dwelling Pokémon stores electricity in its cheeks, so you’ll feel a tingly shock if you touch it."
+    },
+    {
+      "number": 26,
+      "id": "raichu",
+      "name": "Raichu",
+      "description": "The Mouse Pokémon. When electricity builds up inside its body, it becomes feisty. It also glows in the dark."
+    },
+    {
+      "number": 27,
+      "id": "sandshrew",
+      "name": "Sandshrew",
+      "description": "The Mouse Pokémon. Its body is dry. When it gets cold at night, its hide is said to become coated with a fine dew."
+    },
+    {
+      "number": 28,
+      "id": "sandslash",
+      "name": "Sandslash",
+      "description": "The Mouse Pokémon. It is skilled at slashing enemies with its claws. If broken, they start to grow back in a day."
+    },
+    {
+      "number": 29,
+      "id": "nidoran-f",
+      "name": "Nidoran ♀",
+      "description": "The Poison Pin Pokémon. A mild-mannered Pokémon that does not like to fight. Beware—its small horn secretes venom."
+    },
+    {
+      "number": 30,
+      "id": "nidorina",
+      "name": "Nidorina",
+      "description": "The Poison Pin Pokémon. When resting deep in its burrow, its barbs always retract. This is proof that it is relaxed."
+    },
+    {
+      "number": 31,
+      "id": "nidoqueen",
+      "name": "Nidoqueen",
+      "description": "The Drill Pokémon. Tough scales cover the sturdy body of this Pokémon. It appears that the scales grow in cycles."
+    },
+    {
+      "number": 32,
+      "id": "nidoran-m",
+      "name": "Nidoran ♂",
+      "description": "The Poison Pin Pokémon. Its large ears are always kept upright. If it senses danger, it will attack with a poisonous sting."
+    },
+    {
+      "number": 33,
+      "id": "nidorino",
+      "name": "Nidorino",
+      "description": "The Poison Pin Pokémon. Its horn contains venom. If it stabs an enemy with the horn, the impact makes the poison leak out."
+    },
+    {
+      "number": 34,
+      "id": "nidoking",
+      "name": "Nidoking",
+      "description": "The Drill Pokémon. Its steel-like hide adds to its powerful tackle. Its horns are so hard, they can pierce a diamond."
+    },
+    {
+      "number": 35,
+      "id": "clefairy",
+      "name": "Clefairy",
+      "description": "The Fairy Pokémon. Adored for their cute looks and playfulness. They are thought to be rare, as they do not appear often."
+    },
+    {
+      "number": 36,
+      "id": "clefable",
+      "name": "Clefable",
+      "description": "The Fairy Pokémon. They appear to be very protective of their own world. It is a kind of fairy, rarely seen by people."
+    },
+    {
+      "number": 37,
+      "id": "vulpix",
+      "name": "Vulpix",
+      "description": "The Fox Pokémon. Both its fur and its tails are beautiful. As it grows, the tails split and form more tails."
+    },
+    {
+      "number": 38,
+      "id": "ninetales",
+      "name": "Ninetales",
+      "description": "The Fox Pokémon. According to an enduring legend, nine noble saints were united and reincarnated as this Pokémon."
+    },
+    {
+      "number": 39,
+      "id": "jigglypuff",
+      "name": "Jigglypuff",
+      "description": "The Balloon Pokémon. Uses its cute round eyes to enrapture its foe. It then sings a pleasing melody that lulls the foe to sleep."
+    },
+    {
+      "number": 40,
+      "id": "wigglytuff",
+      "name": "Wigglytuff",
+      "description": "The Balloon Pokémon. Its body is very elastic. By inhaling deeply, it can continue to inflate itself without limit."
+    },
+    {
+      "number": 41,
+      "id": "zubat",
+      "name": "Zubat",
+      "description": "The Bat Pokémon. Emits ultrasonic cries while it flies. They act as a sonar used to check for objects in its way."
+    },
+    {
+      "number": 42,
+      "id": "golbat",
+      "name": "Golbat",
+      "description": "The Bat Pokémon. It attacks in a stealthy manner, without warning. Its sharp fangs are used to bite and to suck blood."
+    },
+    {
+      "number": 43,
+      "id": "oddish",
+      "name": "Oddish",
+      "description": "The Weed Pokémon. It may be mistaken for a clump of weeds. If you try to yank it out of the ground, it shrieks horribly."
+    },
+    {
+      "number": 44,
+      "id": "gloom",
+      "name": "Gloom",
+      "description": "The Weed Pokémon. Smells incredibly foul! However, around one out of a thousand people enjoy sniffing its nose-bending stink."
+    },
+    {
+      "number": 45,
+      "id": "vileplume",
+      "name": "Vileplume",
+      "description": "The Flower Pokémon. Flaps its broad flower petals to scatter its poisonous pollen. The flapping sound is very loud."
+    },
+    {
+      "number": 46,
+      "id": "paras",
+      "name": "Paras",
+      "description": "The Mushroom Pokémon. Burrows under the ground to gnaw on tree roots. The mushrooms on its back absorb most of the nutrition."
+    },
+    {
+      "number": 47,
+      "id": "parasect",
+      "name": "Parasect",
+      "description": "The Mushroom Pokémon. The bug host is drained of energy by the mushroom on its back. The mushroom appears to do all the thinking."
+    },
+    {
+      "number": 48,
+      "id": "venonat",
+      "name": "Venonat",
+      "description": "The Insect Pokémon. Its large eyes act as radar. In a bright place, you can see that they are clusters of many tiny eyes."
+    },
+    {
+      "number": 49,
+      "id": "venomoth",
+      "name": "Venomoth",
+      "description": "The Poison Moth Pokémon. The powdery scales on its wings are hard to remove from skin. They also contain poison that leaks out on contact."
+    },
+    {
+      "number": 50,
+      "id": "diglett",
+      "name": "Diglett",
+      "description": "The Mole Pokémon. It prefers dark places. It spends most of its time underground, though it may pop up in caves."
+    },
+    {
+      "number": 51,
+      "id": "dugtrio",
+      "name": "Dugtrio",
+      "description": "The Mole Pokémon. A team of triplets that can burrow to a depth of 60 miles. It’s reported that this triggers an earthquake."
+    },
+    {
+      "number": 52,
+      "id": "meowth",
+      "name": "Meowth",
+      "description": "The Scratch Cat Pokémon. Appears to be more active at night. It loves round and shiny things. It can’t stop itself from picking them up."
+    },
+    {
+      "number": 53,
+      "id": "persian",
+      "name": "Persian",
+      "description": "The Classy Cat Pokémon. The gem in its forehead glows on its own! It walks with all the grace and elegance of a proud queen."
+    },
+    {
+      "number": 54,
+      "id": "psyduck",
+      "name": "Psyduck",
+      "description": "The Duck Pokémon. Always tormented by headaches. It uses psychic powers, but whether it intends to do so is not known."
+    },
+    {
+      "number": 55,
+      "id": "golduck",
+      "name": "Golduck",
+      "description": "The Duck Pokémon. Its long, slim limbs end in broad flippers. They are used for swimming gracefully in lakes."
+    },
+    {
+      "number": 56,
+      "id": "mankey",
+      "name": "Mankey",
+      "description": "The Pig Monkey Pokémon. An agile Pokémon that lives in trees. It angers easily and will not hesitate to attack anything."
+    },
+    {
+      "number": 57,
+      "id": "primeape",
+      "name": "Primeape",
+      "description": "The Pig Monkey Pokémon. It stops being angry only when nobody else is around. To view this moment is very difficult."
+    },
+    {
+      "number": 58,
+      "id": "growlithe",
+      "name": "Growlithe",
+      "description": "The Puppy Pokémon. A Pokémon with a friendly nature. However, it will bark fiercely at anything invading its territory."
+    },
+    {
+      "number": 59,
+      "id": "arcanine",
+      "name": "Arcanine",
+      "description": "The Legendary Pokémon. A legendary Pokémon in the East. Many people are charmed by the grace and beauty of its running."
+    },
+    {
+      "number": 60,
+      "id": "poliwag",
+      "name": "Poliwag",
+      "description": "The Tadpole Pokémon. The direction of the spiral on the belly differs by area. It is more adept at swimming than walking."
+    },
+    {
+      "number": 61,
+      "id": "poliwhirl",
+      "name": "Poliwhirl",
+      "description": "The Tadpole Pokémon. Under attack, it uses its belly spiral to put the foe to sleep. It then makes its escape."
+    },
+    {
+      "number": 62,
+      "id": "poliwrath",
+      "name": "Poliwrath",
+      "description": "The Tadpole Pokémon. Swims powerfully using all the muscles in its body. It can even overtake world-class swimmers."
+    },
+    {
+      "number": 63,
+      "id": "abra",
+      "name": "Abra",
+      "description": "The Psi Pokémon. Sleeps 18 hours a day. If it senses danger, it will teleport itself to safety even as it sleeps."
+    },
+    {
+      "number": 64,
+      "id": "kadabra",
+      "name": "Kadabra",
+      "description": "The Psi Pokémon. Many odd things happen if this Pokémon is close by. For example, it makes clocks run backward."
+    },
+    {
+      "number": 65,
+      "id": "alakazam",
+      "name": "Alakazam",
+      "description": "The Psi Pokémon. A Pokémon that can memorize anything. It never forgets what it learns—that’s why this Pokémon is smart."
+    },
+    {
+      "number": 66,
+      "id": "machop",
+      "name": "Machop",
+      "description": "The Superpower Pokémon. Very powerful in spite of its small size. Its mastery of many types of martial arts makes it very tough."
+    },
+    {
+      "number": 67,
+      "id": "machoke",
+      "name": "Machoke",
+      "description": "The Superpower Pokémon. The belt around its waist holds back its energy. Without it, this Pokémon would be unstoppable."
+    },
+    {
+      "number": 68,
+      "id": "machamp",
+      "name": "Machamp",
+      "description": "The Superpower Pokémon. One arm alone can move mountains. Using all four arms, this Pokémon fires off awesome punches."
+    },
+    {
+      "number": 69,
+      "id": "bellsprout",
+      "name": "Bellsprout",
+      "description": "The Flower Pokémon. Prefers hot and humid places. It ensnares tiny bugs with its vines and devours them."
+    },
+    {
+      "number": 70,
+      "id": "weepinbell",
+      "name": "Weepinbell",
+      "description": "The Flycatcher Pokémon. When hungry, it swallows anything that moves. Its hapless prey is dissolved by strong acids."
+    },
+    {
+      "number": 71,
+      "id": "victreebel",
+      "name": "Victreebel",
+      "description": "The Flycatcher Pokémon. Lures prey with the sweet aroma of honey. Swallowed whole, the prey is dissolved in a day, bones and all."
+    },
+    {
+      "number": 72,
+      "id": "tentacool",
+      "name": "Tentacool",
+      "description": "The Jellyfish Pokémon. It can sometimes be found all dry and shriveled up on a beach. Toss it back into the sea to revive it."
+    },
+    {
+      "number": 73,
+      "id": "tentacruel",
+      "name": "Tentacruel",
+      "description": "The Jellyfish Pokémon. Its 80 tentacles can stretch and contract freely. They wrap around prey and weaken it with poison."
+    },
+    {
+      "number": 74,
+      "id": "geodude",
+      "name": "Geodude",
+      "description": "The Rock Pokémon. Commonly found near mountain trails and the like. If you step on one by accident, it gets angry."
+    },
+    {
+      "number": 75,
+      "id": "graveler",
+      "name": "Graveler",
+      "description": "The Rock Pokémon. Often seen rolling down mountain trails. Obstacles are just things to roll straight over, not avoid."
+    },
+    {
+      "number": 76,
+      "id": "golem",
+      "name": "Golem",
+      "description": "The Megaton Pokémon. Once it sheds its skin, its body turns tender and whitish. Its hide hardens when it’s exposed to air."
+    },
+    {
+      "number": 77,
+      "id": "ponyta",
+      "name": "Ponyta",
+      "description": "The Fire Horse Pokémon. Capable of jumping incredibly high. Its hooves and sturdy legs absorb the impact of a hard landing."
+    },
+    {
+      "number": 78,
+      "id": "rapidash",
+      "name": "Rapidash",
+      "description": "The Fire Horse Pokémon. Just loves to run. If it sees something faster than itself, it will give chase at top speed."
+    },
+    {
+      "number": 79,
+      "id": "slowpoke",
+      "name": "Slowpoke",
+      "description": "The Dopey Pokémon. Incredibly slow and sluggish. It is quite content to loll about without worrying about the time."
+    },
+    {
+      "number": 80,
+      "id": "slowbro",
+      "name": "Slowbro",
+      "description": "The Hermit Crab Pokémon. Lives lazily by the sea. If the Shellder on its tail comes off, it becomes a Slowpoke again."
+    },
+    {
+      "number": 81,
+      "id": "magnemite",
+      "name": "Magnemite",
+      "description": "The Magnet Pokémon. It is hatched with the ability to defy gravity. It floats while emitting powerful electromagnetic waves."
+    },
+    {
+      "number": 82,
+      "id": "magneton",
+      "name": "Magneton",
+      "description": "The Magnet Pokémon. Generates strange radio signals. It raises the temperature by 3.6 degrees Fahrenheit within 3,300 feet."
+    },
+    {
+      "number": 83,
+      "id": "farfetchd",
+      "name": "Farfetch'd",
+      "description": "The Wild Duck Pokémon. They live where reedy plants grow. Farfetch’d are rarely seen, so it’s thought their numbers are decreasing."
+    },
+    {
+      "number": 84,
+      "id": "doduo",
+      "name": "Doduo",
+      "description": "The Twin Bird Pokémon. Its short wings make flying difficult. Instead, this Pokémon runs at high speed on developed legs."
+    },
+    {
+      "number": 85,
+      "id": "dodrio",
+      "name": "Dodrio",
+      "description": "The Triple Bird Pokémon. One of Doduo’s two heads splits to form a unique species. It runs close to 40 mph in prairies."
+    },
+    {
+      "number": 86,
+      "id": "seel",
+      "name": "Seel",
+      "description": "The Sea Lion Pokémon. Loves freezing-cold conditions. Relishes swimming in a frigid climate of around 14 degrees Fahrenheit."
+    },
+    {
+      "number": 87,
+      "id": "dewgong",
+      "name": "Dewgong",
+      "description": "The Sea Lion Pokémon. Its entire body is a snowy white. Unharmed by even intense cold, it swims powerfully in icy waters."
+    },
+    {
+      "number": 88,
+      "id": "grimer",
+      "name": "Grimer",
+      "description": "The Sludge Pokémon. Made of congealed sludge. It smells too putrid to touch. Even weeds won’t grow in its path."
+    },
+    {
+      "number": 89,
+      "id": "muk",
+      "name": "Muk",
+      "description": "The Sludge Pokémon. Smells so awful, it can cause fainting. Through degeneration of its nose, it lost its sense of smell."
+    },
+    {
+      "number": 90,
+      "id": "shellder",
+      "name": "Shellder",
+      "description": "The Bivalve Pokémon. The shell can withstand any attack. However, when it is open, the tender body is exposed."
+    },
+    {
+      "number": 91,
+      "id": "cloyster",
+      "name": "Cloyster",
+      "description": "The Bivalve Pokémon. For protection, it uses its harder-than-diamond shell. It also shoots spikes from the shell."
+    },
+    {
+      "number": 92,
+      "id": "gastly",
+      "name": "Gastly",
+      "description": "The Gas Pokémon. Said to appear in decrepit, deserted buildings. It has no real shape, as it appears to be made of a gas."
+    },
+    {
+      "number": 93,
+      "id": "haunter",
+      "name": "Haunter",
+      "description": "The Gas Pokémon. By licking, it saps the victim’s life. It causes shaking that won’t stop until the victim’s demise."
+    },
+    {
+      "number": 94,
+      "id": "gengar",
+      "name": "Gengar",
+      "description": "The Shadow Pokémon. A Gengar is close by if you feel a sudden chill. It may be trying to lay a curse on you."
+    },
+    {
+      "number": 95,
+      "id": "onix",
+      "name": "Onix",
+      "description": "The Rock Snake Pokémon. Burrows at high speed in search of food. The tunnels it leaves are used as homes by Diglett."
+    },
+    {
+      "number": 96,
+      "id": "drowzee",
+      "name": "Drowzee",
+      "description": "The Hypnosis Pokémon. If you sleep by it all the time, it will sometimes show you dreams it had eaten in the past."
+    },
+    {
+      "number": 97,
+      "id": "hypno",
+      "name": "Hypno",
+      "description": "The Hypnosis Pokémon. Avoid eye contact if you come across one. It will try to put you to sleep by using its pendulum."
+    },
+    {
+      "number": 98,
+      "id": "krabby",
+      "name": "Krabby",
+      "description": "The River Crab Pokémon. Its pincers are superb weapons. They sometimes break off during battle, but they grow back fast."
+    },
+    {
+      "number": 99,
+      "id": "kingler",
+      "name": "Kingler",
+      "description": "The Pincer Pokémon. One claw grew massively and is as hard as steel. It has 10,000-horsepower strength. However, it is too heavy."
+    },
+    {
+      "number": 100,
+      "id": "voltorb",
+      "name": "Voltorb",
+      "description": "The Ball Pokémon. It is said to camouflage itself as a Poké Ball. It will self-destruct with very little stimulus."
+    },
+    {
+      "number": 101,
+      "id": "electrode",
+      "name": "Electrode",
+      "description": "The Ball Pokémon. Stores electrical energy inside its body. Even the slightest shock could trigger a huge explosion."
+    },
+    {
+      "number": 102,
+      "id": "exeggcute",
+      "name": "Exeggcute",
+      "description": "The Egg Pokémon. The heads attract each other and spin around. There must be six heads for it to maintain balance."
+    },
+    {
+      "number": 103,
+      "id": "exeggutor",
+      "name": "Exeggutor",
+      "description": "The Coconut Pokémon. Its cries are very noisy. This is because each of the three heads thinks about whatever it likes."
+    },
+    {
+      "number": 104,
+      "id": "cubone",
+      "name": "Cubone",
+      "description": "The Lonely Pokémon. Wears the skull of its deceased mother. Its cries echo inside the skull and come out as a sad melody."
+    },
+    {
+      "number": 105,
+      "id": "marowak",
+      "name": "Marowak",
+      "description": "The Bone Keeper Pokémon. Small and weak, this Pokémon is adept with its bone club. It has grown more vicious over the ages."
+    },
+    {
+      "number": 106,
+      "id": "hitmonlee",
+      "name": "Hitmonlee",
+      "description": "The Kicking Pokémon. When kicking, the sole of its foot turns as hard as a diamond on impact and destroys its enemy."
+    },
+    {
+      "number": 107,
+      "id": "hitmonchan",
+      "name": "Hitmonchan",
+      "description": "The Punching Pokémon. Punches in corkscrew fashion. It can punch its way through a concrete wall like a drill."
+    },
+    {
+      "number": 108,
+      "id": "lickitung",
+      "name": "Lickitung",
+      "description": "The Licking Pokémon. Its tongue spans almost seven feet and moves more freely than its forelegs. Its licks can cause paralysis."
+    },
+    {
+      "number": 109,
+      "id": "koffing",
+      "name": "Koffing",
+      "description": "The Poison Gas Pokémon. In hot places, its internal gases could expand and explode without any warning. Be very careful!"
+    },
+    {
+      "number": 110,
+      "id": "weezing",
+      "name": "Weezing",
+      "description": "The Poison Gas Pokémon. This Pokémon lives and grows by absorbing poison gas, dust, and germs that exist inside garbage."
+    },
+    {
+      "number": 111,
+      "id": "rhyhorn",
+      "name": "Rhyhorn",
+      "description": "The Spikes Pokémon. A Pokémon with a one-track mind. Once it charges, it won’t stop running until it falls asleep."
+    },
+    {
+      "number": 112,
+      "id": "rhydon",
+      "name": "Rhydon",
+      "description": "The Drill Pokémon. Its brain developed when it began walking on its hind legs. Its armor-like hide even repels molten lava."
+    },
+    {
+      "number": 113,
+      "id": "chansey",
+      "name": "Chansey",
+      "description": "The Egg Pokémon. A gentle and kindhearted Pokémon that shares its nutritious eggs if it sees an injured Pokémon."
+    },
+    {
+      "number": 114,
+      "id": "tangela",
+      "name": "Tangela",
+      "description": "The Vine Pokémon. Its identity is obscured by masses of thick blue vines. The vines are said to never stop growing."
+    },
+    {
+      "number": 115,
+      "id": "kangaskhan",
+      "name": "Kangaskhan",
+      "description": "The Parent Pokémon. Raises its young in its belly pouch. Won’t run from any fight to keep its young protected."
+    },
+    {
+      "number": 116,
+      "id": "horsea",
+      "name": "Horsea",
+      "description": "The Dragon Pokémon. If it senses any danger, it will vigorously spray water or a special type of ink from its mouth."
+    },
+    {
+      "number": 117,
+      "id": "seadra",
+      "name": "Seadra",
+      "description": "The Dragon Pokémon. Touching the back fin causes numbness. It hooks its tail to coral to stay in place while sleeping."
+    },
+    {
+      "number": 118,
+      "id": "goldeen",
+      "name": "Goldeen",
+      "description": "The Goldfish Pokémon. When it is time for them to lay eggs, they can be seen swimming up rivers and falls in large groups."
+    },
+    {
+      "number": 119,
+      "id": "seaking",
+      "name": "Seaking",
+      "description": "The Goldfish Pokémon. It is the male’s job to make a nest by carving out boulders in a stream using the horn on its head."
+    },
+    {
+      "number": 120,
+      "id": "staryu",
+      "name": "Staryu",
+      "description": "The Star Shape Pokémon. As long as the center section is unharmed, this Pokémon can grow back fully even if it is chopped to bits."
+    },
+    {
+      "number": 121,
+      "id": "starmie",
+      "name": "Starmie",
+      "description": "The Mysterious Pokémon. The center section is named the core. People think it is communicating when it glows in seven colors."
+    },
+    {
+      "number": 122,
+      "id": "mr-mime",
+      "name": "Mr. Mime",
+      "description": "The Barrier Pokémon. Always practicing its pantomime act. It makes enemies believe something exists that really doesn’t."
+    },
+    {
+      "number": 123,
+      "id": "scyther",
+      "name": "Scyther",
+      "description": "The Mantis Pokémon. Leaps out of tall grass and slices prey with its scythes. The movement looks like that of a ninja."
+    },
+    {
+      "number": 124,
+      "id": "jynx",
+      "name": "Jynx",
+      "description": "The Human Shape Pokémon. Appears to move to a rhythm of its own, as if it were dancing. It wiggles its hips as it walks."
+    },
+    {
+      "number": 125,
+      "id": "electabuzz",
+      "name": "Electabuzz",
+      "description": "The Electric Pokémon. If a major power outage occurs, it is certain that this Pokémon has eaten electricity at a power plant."
+    },
+    {
+      "number": 126,
+      "id": "magmar",
+      "name": "Magmar",
+      "description": "The Spitfire Pokémon. Born in an active volcano. Its body is always cloaked in flames, so it looks like a big ball of fire."
+    },
+    {
+      "number": 127,
+      "id": "pinsir",
+      "name": "Pinsir",
+      "description": "The Stag Beetle Pokémon. Grips its prey in its pincers and squeezes hard! It can’t move if it’s cold out, so it lives in warm places."
+    },
+    {
+      "number": 128,
+      "id": "tauros",
+      "name": "Tauros",
+      "description": "The Wild Bull Pokémon. A rowdy Pokémon with a lot of stamina. Once running, it won’t stop until it hits something."
+    },
+    {
+      "number": 129,
+      "id": "magikarp",
+      "name": "Magikarp",
+      "description": "The Fish Pokémon. Famous for being very unreliable. It can be found swimming in seas, lakes, rivers, and shallow puddles."
+    },
+    {
+      "number": 130,
+      "id": "gyarados",
+      "name": "Gyarados",
+      "description": "The Atrocious Pokémon. Brutally vicious and enormously destructive. Known for totally destroying cities in ancient times."
+    },
+    {
+      "number": 131,
+      "id": "lapras",
+      "name": "Lapras",
+      "description": "The Transport Pokémon. A gentle soul that can understand human speech. It can ferry people across the sea on its back."
+    },
+    {
+      "number": 132,
+      "id": "ditto",
+      "name": "Ditto",
+      "description": "The Transform Pokémon. When it spots an enemy, its body transfigures into an almost-perfect copy of its opponent."
+    },
+    {
+      "number": 133,
+      "id": "eevee",
+      "name": "Eevee",
+      "description": "The Evolution Pokémon. Eevee’s genes are the key to solving the mysteries of Pokémon evolution."
+    },
+    {
+      "number": 134,
+      "id": "vaporeon",
+      "name": "Vaporeon",
+      "description": "The Bubble Jet Pokémon. Its cell structure is similar to water molecules. It melts into the water and becomes invisible."
+    },
+    {
+      "number": 135,
+      "id": "jolteon",
+      "name": "Jolteon",
+      "description": "The Lightning Pokémon. A sensitive Pokémon that easily becomes sad or angry. Every time its mood changes, it charges power."
+    },
+    {
+      "number": 136,
+      "id": "flareon",
+      "name": "Flareon",
+      "description": "The Flame Pokémon. It has a flame chamber inside its body. It inhales, then breathes out fire that is over 3,000 degrees Fahrenheit."
+    },
+    {
+      "number": 137,
+      "id": "porygon",
+      "name": "Porygon",
+      "description": "The Virtual Pokémon. The only Pokémon that people anticipate can fly into space. None has managed the feat yet, however."
+    },
+    {
+      "number": 138,
+      "id": "omanyte",
+      "name": "Omanyte",
+      "description": "The Spiral Pokémon. An ancient Pokémon that was recovered from a fossil. It swam by cleverly twisting its 10 tentacles about."
+    },
+    {
+      "number": 139,
+      "id": "omastar",
+      "name": "Omastar",
+      "description": "The Spiral Pokémon. Its sharp beak rings its mouth. Its shell was too big for it to move freely, so it became extinct."
+    },
+    {
+      "number": 140,
+      "id": "kabuto",
+      "name": "Kabuto",
+      "description": "The Shellfish Pokémon. A Pokémon that was recovered from a fossil. It used the eyes on its back while hiding on the seafloor."
+    },
+    {
+      "number": 141,
+      "id": "kabutops",
+      "name": "Kabutops",
+      "description": "The Shellfish Pokémon. A slim and fast swimmer. It sliced its prey with its sharp sickles and drank the body fluids."
+    },
+    {
+      "number": 142,
+      "id": "aerodactyl",
+      "name": "Aerodactyl",
+      "description": "The Fossil Pokémon. A savage Pokémon that died out in ancient times. It was resurrected using DNA taken from amber."
+    },
+    {
+      "number": 143,
+      "id": "snorlax",
+      "name": "Snorlax",
+      "description": "The Sleeping Pokémon. Will eat anything, even if the food happens to be a little moldy. It never gets an upset stomach."
+    },
+    {
+      "number": 144,
+      "id": "articuno",
+      "name": "Articuno",
+      "description": "The Freeze Pokémon. A legendary bird Pokémon. It freezes water that is contained in winter air and makes it snow."
+    },
+    {
+      "number": 145,
+      "id": "zapdos",
+      "name": "Zapdos",
+      "description": "The Electric Pokémon. This legendary bird Pokémon is said to appear when the sky turns dark and lightning showers down."
+    },
+    {
+      "number": 146,
+      "id": "moltres",
+      "name": "Moltres",
+      "description": "The Flame Pokémon. A legendary bird Pokémon. As it flaps its flaming wings, even the night sky will turn red."
+    },
+    {
+      "number": 147,
+      "id": "dratini",
+      "name": "Dratini",
+      "description": "The Dragon Pokémon. Long thought to be a myth, this Pokémon’s existence was only recently confirmed by a fisherman who caught one."
+    },
+    {
+      "number": 148,
+      "id": "dragonair",
+      "name": "Dragonair",
+      "description": "The Dragon Pokémon. According to a witness, its body was surrounded by a strange aura that gave it a mystical look."
+    },
+    {
+      "number": 149,
+      "id": "dragonite",
+      "name": "Dragonite",
+      "description": "The Dragon Pokémon. It is said that this Pokémon lives somewhere in the sea and that it flies. However, these are only rumors."
+    },
+    {
+      "number": 150,
+      "id": "mewtwo",
+      "name": "Mewtwo",
+      "description": "The Genetic Pokémon. Its DNA is almost the same as Mew’s. However, its size and disposition are vastly different."
+    },
+    {
+      "number": 151,
+      "id": "mew",
+      "name": "Mew",
+      "description": "The New Species Pokémon. When viewed through a microscope, this Pokémon’s short, fine, delicate hair can be seen."
+    }
+  ]
+}

@@ -26,6 +26,9 @@ class PokemonLocalizationRepository {
     'assets/data/pokemon_localization_it_gen1_101_151.json',
     'assets/data/pokemon_localization_it_gen2_152_200.json',
     'assets/data/pokemon_localization_it_gen2_201_251.json',
+    'assets/data/pokemon_localization_it_gen3_252_300.json',
+    'assets/data/pokemon_localization_it_gen3_301_350.json',
+    'assets/data/pokemon_localization_it_gen3_351_386.json',
   ];
 
   static Map<int, PokemonLocalizedText>? _cache;

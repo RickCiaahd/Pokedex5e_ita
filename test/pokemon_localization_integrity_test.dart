@@ -89,20 +89,20 @@ void main() {
       }
     }
 
-    final expectedIds = {for (var id = 1; id <= 251; id++) id};
+    final expectedIds = {for (var id = 1; id <= 386; id++) id};
     if (ids.difference(expectedIds).isNotEmpty ||
         expectedIds.difference(ids).isNotEmpty) {
-      errors.add('Le traduzioni non coprono esattamente gli ID 1-251.');
+      errors.add('Le traduzioni non coprono esattamente gli ID 1-386.');
     }
 
     expect(errors, isEmpty, reason: errors.join('\n'));
   });
 
-  test('il repository carica le 251 traduzioni italiane', () async {
+  test('il repository carica le 386 traduzioni italiane', () async {
     final texts = await PokemonLocalizationRepository().getPokemonTexts();
 
-    expect(texts.length, 251);
-    expect(texts.keys.toSet(), {for (var id = 1; id <= 251; id++) id});
+    expect(texts.length, 386);
+    expect(texts.keys.toSet(), {for (var id = 1; id <= 386; id++) id});
     expect(texts[1]?.genus, 'Pokémon Seme');
     expect(texts[1]?.description, startsWith('Bulbasaur'));
     expect(texts[151]?.genus, 'Pokémon Novaspecie');
@@ -110,6 +110,10 @@ void main() {
     expect(texts[152]?.description, startsWith('In lotta, Chikorita'));
     expect(texts[251]?.genus, 'Pokémon Viaggiotempo');
     expect(texts[251]?.description, startsWith('Questo Pokémon'));
+    expect(texts[252]?.genus, 'Pokémon Legnogeco');
+    expect(texts[252]?.description, startsWith('Treecko'));
+    expect(texts[386]?.genus, 'Pokémon DNA');
+    expect(texts[386]?.description, startsWith('Il DNA'));
   });
 
   test('le descrizioni localizzate preservano altezza e peso originali', () async {
@@ -121,7 +125,7 @@ void main() {
     final flavors = await PokemonRepository().getPokemonFlavors();
 
     expect(flavors.length, raw.length);
-    for (var pokemonId = 1; pokemonId <= 251; pokemonId++) {
+    for (var pokemonId = 1; pokemonId <= 386; pokemonId++) {
       final source = Map<String, dynamic>.from(raw['$pokemonId'] as Map);
       final localized = flavors[pokemonId];
       expect(localized, isNotNull, reason: 'Pokémon #$pokemonId mancante.');
@@ -135,6 +139,8 @@ void main() {
     expect(flavors[151]?.genus, 'Pokémon Novaspecie');
     expect(flavors[152]?.genus, 'Pokémon Foglia');
     expect(flavors[251]?.genus, 'Pokémon Viaggiotempo');
+    expect(flavors[252]?.genus, 'Pokémon Legnogeco');
+    expect(flavors[386]?.genus, 'Pokémon DNA');
   });
 }
 

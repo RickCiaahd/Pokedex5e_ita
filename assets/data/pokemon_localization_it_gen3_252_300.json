@@ -1,0 +1,206 @@
+{
+  "locale": "it",
+  "source": "assets/data/pokemon_flavor.json",
+  "range": {
+    "from": 252,
+    "to": 300
+  },
+  "items": {
+    "252": {
+      "genus": "Pokémon Legnogeco",
+      "description": "Treecko possiede piccoli uncini sotto le zampe che gli permettono di arrampicarsi su pareti verticali. Attacca i nemici colpendoli con la sua spessa coda."
+    },
+    "253": {
+      "genus": "Pokémon Legnogeco",
+      "description": "Le foglie che crescono sul corpo di Grovyle gli permettono di mimetizzarsi dai nemici nella foresta. Questo Pokémon è un maestro nell'arrampicarsi sugli alberi della giungla."
+    },
+    "254": {
+      "genus": "Pokémon Foresta",
+      "description": "Le foglie sul corpo di Sceptile hanno bordi estremamente affilati. È molto agile: balza tra i rami degli alberi e piomba sul nemico dall'alto o alle spalle."
+    },
+    "255": {
+      "genus": "Pokémon Pulcino",
+      "description": "Torchic resta sempre vicino al proprio Allenatore, seguendolo con passi incerti. Sputa fiamme a oltre 980 °C, comprese palle di fuoco che lasciano il nemico completamente annerito."
+    },
+    "256": {
+      "genus": "Pokémon Gallinaceo",
+      "description": "Combusken irrobustisce zampe e cosce correndo per campi e montagne. Le sue gambe uniscono velocità e potenza, permettendogli di sferrare dieci calci al secondo."
+    },
+    "257": {
+      "genus": "Pokémon Vampa",
+      "description": "In lotta, Blaziken sprigiona fiamme intense dai polsi e affronta coraggiosamente i nemici. Più forte è l'avversario, più intensamente ardono i suoi polsi."
+    },
+    "258": {
+      "genus": "Pokémon Pescefango",
+      "description": "La pinna sulla testa di Mudkip funziona come un radar estremamente sensibile. Percependo i movimenti dell'acqua e dell'aria, capisce ciò che accade attorno a sé senza usare gli occhi."
+    },
+    "259": {
+      "genus": "Pokémon Pescefango",
+      "description": "La superficie del corpo di Marshtomp è ricoperta da una sottile pellicola appiccicosa che gli permette di vivere sulla terraferma. Quando la marea è bassa, gioca nel fango delle spiagge."
+    },
+    "260": {
+      "genus": "Pokémon Pescefango",
+      "description": "Swampert è estremamente forte e può trascinare senza fatica un masso che pesa più di una tonnellata. La sua vista potente gli consente di vedere anche nelle acque torbide."
+    },
+    "261": {
+      "genus": "Pokémon Morso",
+      "description": "Poochyena morde a prima vista qualsiasi cosa si muova. Insegue la preda finché non è esausta, ma può darsi alla fuga se questa reagisce."
+    },
+    "262": {
+      "genus": "Pokémon Morso",
+      "description": "Mightyena segnala chiaramente quando sta per attaccare: prima ringhia profondamente, poi appiattisce il corpo. Infine azzanna con ferocia usando le sue zanne affilate."
+    },
+    "263": {
+      "genus": "Pokémon Procione",
+      "description": "Zigzagoon vaga senza sosta in ogni direzione. Lo fa per la sua incontenibile curiosità, che lo porta a interessarsi a tutto ciò che vede."
+    },
+    "264": {
+      "genus": "Pokémon Sfreccia",
+      "description": "Linoone corre sempre alla massima velocità e soltanto in linea retta. Davanti a un ostacolo svolta ad angolo retto per evitarlo, mentre affronta con grande difficoltà le strade dalle curve dolci."
+    },
+    "265": {
+      "genus": "Pokémon Baco",
+      "description": "Con gli aculei sulla parte posteriore del corpo, Wurmple scorteccia gli alberi e si nutre della linfa che ne fuoriesce. Le ventose sulle zampe gli permettono di aderire al vetro senza scivolare."
+    },
+    "266": {
+      "genus": "Pokémon Bozzolo",
+      "description": "Silcoon si fissa a un ramo con la seta per non cadere. Rimane appeso e immobile in attesa dell'evoluzione, osservando l'esterno attraverso un piccolo foro nel bozzolo."
+    },
+    "267": {
+      "genus": "Pokémon Farfalla",
+      "description": "Il cibo preferito di Beautifly è il dolce polline dei fiori. Per attirarlo basta lasciare un vaso di fiori accanto a una finestra aperta: arriverà sicuramente in cerca di polline."
+    },
+    "268": {
+      "genus": "Pokémon Bozzolo",
+      "description": "Cascoon crea il proprio bozzolo protettivo avvolgendo completamente il corpo nella seta sottile prodotta dalla bocca. Una volta distesa, la seta si indurisce e al suo interno il Pokémon si prepara all'evoluzione."
+    },
+    "269": {
+      "genus": "Pokémon Velentarma",
+      "description": "Dustox è istintivamente attratto dalla luce. I suoi sciami raggiungono le città illuminate e provocano danni divorando le foglie degli alberi lungo le strade."
+    },
+    "270": {
+      "genus": "Pokémon Erbacqua",
+      "description": "I Lotad vivono in stagni e laghi, galleggiando sulla superficie. Si indeboliscono se la loro larga foglia appassisce e, in rare occasioni, si spostano sulla terraferma in cerca di acqua pulita."
+    },
+    "271": {
+      "genus": "Pokémon Giocondo",
+      "description": "Lombre è notturno e diventa attivo dopo il tramonto. È anche dispettoso: quando vede dei pescatori, tira le loro lenze da sotto la superficie e si diverte a confonderli."
+    },
+    "272": {
+      "genus": "Pokémon Spensierato",
+      "description": "Ludicolo comincia a ballare appena sente musica allegra e festosa. Si dice che compaia quando ode i canti dei bambini durante le escursioni."
+    },
+    "273": {
+      "genus": "Pokémon Ghianda",
+      "description": "Seedot si fissa a un ramo usando la sommità della testa e, mentre pende, assorbe l'umidità dell'albero. Più acqua beve, più il suo corpo diventa lucido."
+    },
+    "274": {
+      "genus": "Pokémon Scaltro",
+      "description": "I Nuzleaf vivono nelle foreste dalla vegetazione più fitta. A volte ne escono per spaventare le persone e non sopportano che qualcuno stringa il loro lungo naso."
+    },
+    "275": {
+      "genus": "Pokémon Burbero",
+      "description": "Shiftry è un Pokémon misterioso che si dice viva sulle cime di alberi millenari. Con i ventagli che tiene tra le mani genera terribili tempeste di vento."
+    },
+    "276": {
+      "genus": "Pokémon Rondinella",
+      "description": "Taillow affronta coraggiosamente qualsiasi nemico, per quanto forte, e resta fiero anche dopo una sconfitta. Tuttavia, quando ha fame piange a gran voce."
+    },
+    "277": {
+      "genus": "Pokémon Rondine",
+      "description": "Swellow vola molto in alto descrivendo archi eleganti nel cielo. Appena individua una preda si lancia in picchiata e la stringe con gli artigli, impedendole di fuggire."
+    },
+    "278": {
+      "genus": "Pokémon Gabbiano",
+      "description": "Wingull ha l'abitudine di trasportare nel becco prede e oggetti di valore, nascondendoli nei luoghi più disparati. Cavalca il vento e vola come se pattinasse nel cielo."
+    },
+    "279": {
+      "genus": "Pokémon Alacquatico",
+      "description": "Pelipper è un trasportatore volante che porta piccoli Pokémon e uova all'interno del suo enorme becco. Costruisce il nido su ripide scogliere affacciate sul mare."
+    },
+    "280": {
+      "genus": "Pokémon Sensazione",
+      "description": "Ralts percepisce le emozioni delle persone con le corna sulla testa. Appare raramente davanti agli esseri umani, ma si avvicina quando avverte un animo positivo."
+    },
+    "281": {
+      "genus": "Pokémon Emozione",
+      "description": "Si dice che un Kirlia esposto alle emozioni positive del proprio Allenatore diventi più bello. Grazie al suo cervello molto sviluppato controlla poteri psicocinetici."
+    },
+    "282": {
+      "genus": "Pokémon Abbraccio",
+      "description": "Gardevoir è in grado di leggere il futuro. Se percepisce un pericolo imminente per il proprio Allenatore, libera tutta la sua energia psicocinetica."
+    },
+    "283": {
+      "genus": "Pokémon Sfiorapozze",
+      "description": "Dalle estremità delle zampe, Surskit secerne un olio che gli permette di camminare sull'acqua come se pattinasse. Si nutre degli organismi microscopici presenti in stagni e laghi."
+    },
+    "284": {
+      "genus": "Pokémon Occhi",
+      "description": "Masquerain intimidisce i nemici con i disegni simili a occhi sulle antenne. Battendo le quattro ali può volare liberamente in qualsiasi direzione, anche di lato o all'indietro, come un elicottero."
+    },
+    "285": {
+      "genus": "Pokémon Fungo",
+      "description": "Gli Shroomish vivono nel terreno umido delle zone più buie delle foreste, spesso immobili sotto le foglie cadute. Si nutrono del compost formato dalle foglie marce."
+    },
+    "286": {
+      "genus": "Pokémon Fungo",
+      "description": "Breloom si avvicina al nemico con passi leggeri e scattanti, poi colpisce con le sue braccia elastiche. La sua tecnica di lotta farebbe sfigurare qualsiasi pugile."
+    },
+    "287": {
+      "genus": "Pokémon Ozioso",
+      "description": "Slakoth passa più di venti ore al giorno sdraiato. Muovendosi pochissimo ha bisogno di poco cibo e il suo unico pasto quotidiano consiste in appena tre foglie."
+    },
+    "288": {
+      "genus": "Pokémon Scimmiafuria",
+      "description": "Vigoroth è sempre irrequieto e desideroso di scatenarsi. Non sopporta di restare fermo neppure per un minuto e il suo stress aumenta se non può muoversi continuamente."
+    },
+    "289": {
+      "genus": "Pokémon Pigrizia",
+      "description": "Slaking trascorre l'intera giornata sdraiato e si nutre dell'erba che cresce alla sua portata. Solo dopo averla finita si sposta controvoglia in un altro punto."
+    },
+    "290": {
+      "genus": "Pokémon Apprendista",
+      "description": "Nincada vive per molti anni sottoterra, nella completa oscurità. Assorbe sostanze nutritive dalle radici degli alberi e resta immobile in attesa dell'evoluzione."
+    },
+    "291": {
+      "genus": "Pokémon Ninja",
+      "description": "Ninjask si muove a una velocità tale da risultare invisibile, anche se il suo verso si sente chiaramente. Per questo, per molto tempo si è creduto che fosse davvero invisibile."
+    },
+    "292": {
+      "genus": "Pokémon Cambiapelle",
+      "description": "Il duro corpo di Shedinja non si muove neppure di un millimetro e sembra soltanto un guscio vuoto. Si crede che rubi lo spirito di chiunque guardi nella cavità sulla sua schiena."
+    },
+    "293": {
+      "genus": "Pokémon Sussurro",
+      "description": "Di solito la voce di Whismur è così bassa da risultare appena udibile anche prestando molta attenzione. Quando percepisce un pericolo, però, comincia a gridare a un volume assordante."
+    },
+    "294": {
+      "genus": "Pokémon Vocione",
+      "description": "Il ruggito di Loudred può demolire completamente una casa di legno. Usa la voce per punire i nemici e le sue orecchie rotonde funzionano come altoparlanti."
+    },
+    "295": {
+      "genus": "Pokémon Frastuono",
+      "description": "Exploud provoca terremoti con le vibrazioni generate dai suoi ruggiti. Quando inspira violentemente dalle aperture sul corpo, significa che sta per liberare un boato enorme."
+    },
+    "296": {
+      "genus": "Pokémon Grinta",
+      "description": "Makuhita è tenace e continua a rialzarsi e ad attaccare, indipendentemente da quante volte venga abbattuto. Ogni volta che si rimette in piedi accumula nel corpo altra energia per l'evoluzione."
+    },
+    "297": {
+      "genus": "Pokémon Sberletese",
+      "description": "Hariyama si allena a sferrare colpi a mano aperta in ogni genere di luogo. Un solo colpo del suo potente palmo può spezzare in due un palo telefonico."
+    },
+    "298": {
+      "genus": "Pokémon Pois",
+      "description": "Azurill fa ruotare la coda come un lazo e poi la scaglia lontano; lo slancio trascina in volo anche il suo corpo. Con questa tecnica un esemplare è riuscito a lanciarsi per circa 10 metri."
+    },
+    "299": {
+      "genus": "Pokémon Bussola",
+      "description": "Il naso magnetico di Nosepass indica sempre il nord. Se due esemplari si avvicinano, non riescono a voltarsi l'uno verso l'altro perché i loro nasi si respingono."
+    },
+    "300": {
+      "genus": "Pokémon Micio",
+      "description": "Skitty rimane affascinato dagli oggetti in movimento e li insegue. È noto che rincorra perfino la propria coda fino a farsi girare la testa."
+    }
+  }
+}

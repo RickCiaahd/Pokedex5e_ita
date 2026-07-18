@@ -4,6 +4,8 @@ Tutte le modifiche rilevanti al progetto vengono documentate in questo file.
 
 ## [Non rilasciato]
 
+## [1.0.0]
+
 ### Aggiunto
 
 - catalogo globale dei Fakemon con scheda 5e, immagine caricata, mosse e abilità esclusive della specie, importazione, esportazione e condivisione portabile;
@@ -31,29 +33,29 @@ Tutte le modifiche rilevanti al progetto vengono documentate in questo file.
 
 ### Modificato
 
-- i backup profilo includono automaticamente i Fakemon utilizzati e ne rimappano i riferimenti durante l importazione; il catalogo globale può essere esportato e importato in blocco e l eliminazione di una specie è bloccata finché esistono riferimenti nei profili;
-- i trasferimenti di singoli Pokemon, squadre, incontri e Allenatori PNG includono automaticamente le definizioni complete dei Fakemon usati e le installano o rimappano durante l importazione;
+- i backup profilo includono automaticamente i Fakemon utilizzati e ne rimappano i riferimenti durante l'importazione; il catalogo globale può essere esportato e importato in blocco e l'eliminazione di una specie è bloccata finché esistono riferimenti nei profili;
+- i trasferimenti di singoli Pokémon, squadre, incontri e Allenatori PNG includono automaticamente le definizioni complete dei Fakemon usati e le installano o rimappano durante l'importazione;
 - le mosse esclusive dei Fakemon vengono aggiunte al moveset iniziale quando create e le vecchie mosse esclusive non assegnate diventano comunque selezionabili nei dettagli della specie;
 - nell'editor Pokémon il selettore mosse distingue disponibilità attuale, learnset completo e catalogo globale, con ricerca e filtri;
 - su smartphone il dettaglio Pokémon scorre fino alle schede Mosse, Features e Traits, mantenendo le tab accessibili;
 - Battle Companion usa intestazione, squadra e iniziativa più compatte, con i comandi secondari richiudibili;
 - la scelta di uno status nel Battle Companion viene applicata e salvata subito, chiudendo il pannello;
-- i generatori e i risultati degli Strumenti del Master rispettano l’area sicura inferiore di Android;
-- rimossi prototipi, test e schermate non più raggiungibili dall’app, mantenendo invariati dati e funzionalità attive;
+- i generatori e i risultati degli Strumenti del Master rispettano l'area sicura inferiore di Android;
+- rimossi prototipi, test e schermate non più raggiungibili dall'app, mantenendo invariati dati e funzionalità attive;
 - ultimo passaggio della review pre-release: Battle Companion, Fight del Master e Strumenti del Master usano larghezze leggibili su desktop; le AppBar espongono Home in modo uniforme, le azioni del fight sono raccolte in menu meno affollati e dialog/bottom sheet critici gestiscono meglio smartphone e testo ingrandito;
 - secondo passaggio della review pre-release: Home, Pokédex, PC Pokémon e Zaino usano larghezze leggibili su desktop; i filtri del Pokédex si impilano su smartphone, il riepilogo Allenatore evita overflow e lo Zaino dispone gli oggetti su due colonne quando lo spazio lo consente;
 - primo passaggio della review pre-release: Squadra, Profili e librerie del Master ora mantengono una larghezza leggibile su Web e Windows; la Squadra usa due colonne sulle finestre ampie e una colonna su smartphone;
 - Home e Strumenti del Master divisi in sezioni più riconoscibili;
 - navigazione interna corretta: la freccia torna alla schermata precedente e il comando Home resta separato;
 - editor delle probabilità delle raccolte corretto per consentire la digitazione di percentuali a più cifre senza perdere il focus;
-- controllo del combattimento semplificato: resta un solo pulsante `PROSSIMO TURNO`, che avanza automaticamente il round al termine dell’iniziativa;
+- controllo del combattimento semplificato: resta un solo pulsante `PROSSIMO TURNO`, che avanza automaticamente il round al termine dell'iniziativa;
 - i privilegi ottenuti ai livelli 5, 9 e 15 sono indicati come `Privilegio del Path`, distinguendoli dalla scelta iniziale del Trainer Path;
 - il cambio di un Trainer Path già salvato richiede ora una conferma esplicita;
 - corretto il salvataggio del primo uovo di un profilo, che prima poteva mostrare `Unsupported operation: insert`;
 - la schiusa considera soltanto i Pokéslot sbloccati: con tutti gli slot disponibili occupati il Pokémon viene depositato nel PC, e gli esemplari finiti in slot bloccati vengono recuperati automaticamente;
 - sprite delle uova ridimensionati e schede della squadra nel PC rese più alte per evitare overflow alle larghezze intermedie;
-- lo sprite personalizzato dell’uovo viene ora usato nella Squadra, nel riepilogo del PC e nelle schede di incubazione;
-- la Classe Armatura effettiva del Pokémon è ora visibile accanto al nome nel Battle Companion, con l’eventuale bonus ambientale evidenziato;
+- lo sprite personalizzato dell'uovo viene ora usato nella Squadra, nel riepilogo del PC e nelle schede di incubazione;
+- la Classe Armatura effettiva del Pokémon è ora visibile accanto al nome nel Battle Companion, con l'eventuale bonus ambientale evidenziato;
 - aggiunti file JSON portabili per esportare e importare un singolo Pokémon o l'intera squadra, preservando mosse, esperienza, natura, abilità, talenti, forma, sesso, Lealtà e personalizzazioni;
 - durante l'importazione i Pokémon sostituiti e gli esuberi vengono trasferiti automaticamente nel PC, mentre le uova restano nei propri Pokéslot;
 - incontri salvati e Allenatori PNG possono essere esportati e importati singolarmente senza sostituire il profilo, con nuovi identificativi e nomi non distruttivi in caso di duplicati;
@@ -63,7 +65,3 @@ Tutte le modifiche rilevanti al progetto vengono documentate in questo file.
 - identità Android impostata su `Pokédex 5e ITA` con Application ID definitivo `io.github.rickciaahd.pokedex5eita`;
 - la build release non usa più la chiave di debug e richiede un keystore configurato esplicitamente;
 - la CI compila anche un APK Android di debug per intercettare regressioni native.
-
-### In programma
-
-- prova finale su dispositivo Android reale, configurazione dei secret di firma e pubblicazione della release `v1.0.0`.

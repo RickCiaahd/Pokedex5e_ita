@@ -1,0 +1,214 @@
+{
+  "locale": "it",
+  "source": "assets/data/pokemon_flavor.json",
+  "range": {
+    "from": 101,
+    "to": 151
+  },
+  "items": {
+    "101": {
+      "genus": "Pokémon Ball",
+      "description": "Electrode si nutre dell'elettricità presente nell'atmosfera. Nei giorni di temporale lo si può vedere esplodere dappertutto dopo averne assorbita troppa."
+    },
+    "102": {
+      "genus": "Pokémon Uovo",
+      "description": "Questo Pokémon è formato da sei uova strettamente unite. Le uova si attraggono e ruotano l'una attorno all'altra. Quando compaiono sempre più crepe, Exeggcute è vicino all'evoluzione."
+    },
+    "103": {
+      "genus": "Pokémon Nocecocco",
+      "description": "Exeggutor proviene originariamente dai tropici. Le sue teste crescono sempre più grazie alla forte luce solare. Si dice che, quando cadono, si raggruppino per formare un Exeggcute."
+    },
+    "104": {
+      "genus": "Pokémon Solitario",
+      "description": "Cubone sente la mancanza della madre che non rivedrà mai. Quando ne scorge l'immagine nella luna piena, piange. Le macchie sul teschio che indossa sono lasciate dalle sue lacrime."
+    },
+    "105": {
+      "genus": "Pokémon Guardosso",
+      "description": "Marowak è l'evoluzione di un Cubone che ha superato il dolore per la perdita della madre ed è diventato forte. Il suo spirito temprato e indurito non si spezza facilmente."
+    },
+    "106": {
+      "genus": "Pokémon Tiracalci",
+      "description": "Le gambe di Hitmonlee si allungano e si contraggono liberamente. Grazie a esse travolge i nemici con calci devastanti. Dopo la lotta le massaggia e scioglie i muscoli per smaltire la fatica."
+    },
+    "107": {
+      "genus": "Pokémon Tirapugni",
+      "description": "Si dice che Hitmonchan possieda lo spirito di un pugile che aspirava al titolo mondiale. Ha una volontà indomabile e non si arrende mai davanti alle avversità."
+    },
+    "108": {
+      "genus": "Pokémon Linguata",
+      "description": "Quando Lickitung incontra qualcosa di nuovo, lo lecca immancabilmente. In questo modo ne memorizza consistenza e sapore. Le cose aspre, però, non gli piacciono molto."
+    },
+    "109": {
+      "genus": "Pokémon Velenuvola",
+      "description": "Quando Koffing si agita, aumenta la tossicità dei gas interni e li espelle da tutto il corpo. Può anche gonfiarsi eccessivamente fino a esplodere."
+    },
+    "110": {
+      "genus": "Pokémon Velenuvola",
+      "description": "Weezing adora i gas prodotti dai rifiuti di cucina in decomposizione. Cerca una casa sporca e trascurata in cui stabilirsi e, di notte, fruga nella spazzatura mentre gli abitanti dormono."
+    },
+    "111": {
+      "genus": "Pokémon Spuntoni",
+      "description": "Rhyhorn corre in linea retta distruggendo tutto ciò che incontra. Nemmeno uno scontro frontale con un blocco d'acciaio lo disturba, anche se il giorno dopo potrebbe avvertire qualche dolore."
+    },
+    "112": {
+      "genus": "Pokémon Trapano",
+      "description": "Il corno di Rhydon può frantumare perfino diamanti grezzi e un colpo della sua coda può abbattere un edificio. La sua pelle è tanto resistente che nemmeno un colpo di cannone diretto la graffia."
+    },
+    "113": {
+      "genus": "Pokémon Uovo",
+      "description": "Chansey depone ogni giorno uova dall'eccellente valore nutritivo. Sono così deliziose da essere divorate con entusiasmo perfino da chi ha perso l'appetito."
+    },
+    "114": {
+      "genus": "Pokémon Liana",
+      "description": "Le liane di Tangela si spezzano facilmente se vengono afferrate. Non gli provoca dolore e gli permette di fuggire rapidamente. Il giorno successivo sono già ricresciute."
+    },
+    "115": {
+      "genus": "Pokémon Genitore",
+      "description": "Se incontri un piccolo Kangaskhan che gioca da solo, non disturbarlo e non cercare di catturarlo. Il genitore è sicuramente nei paraggi e reagirà con estrema furia."
+    },
+    "116": {
+      "genus": "Pokémon Drago",
+      "description": "Horsea si nutre di piccoli insetti e del muschio sulle rocce. Quando la corrente marina diventa forte, avvolge la coda attorno a rocce o coralli per non essere trascinato via."
+    },
+    "117": {
+      "genus": "Pokémon Drago",
+      "description": "Seadra dorme dopo essersi insinuato tra i rami dei coralli. Chi cerca di raccoglierli può essere punto dai suoi aculei velenosi se non si accorge della sua presenza."
+    },
+    "118": {
+      "genus": "Pokémon Pesce Rosso",
+      "description": "Goldeen è un Pokémon molto bello, con pinne che ondeggiano elegantemente nell'acqua. Non bisogna però abbassare la guardia: potrebbe caricare con forza usando il corno."
+    },
+    "119": {
+      "genus": "Pokémon Pesce Rosso",
+      "description": "In autunno i Seaking maschi eseguono danze di corteggiamento sui letti dei fiumi per conquistare le femmine. In questa stagione i colori del loro corpo raggiungono il massimo splendore."
+    },
+    "120": {
+      "genus": "Pokémon Stella",
+      "description": "La parte centrale di Staryu contiene un organo chiamato nucleo, che brilla di un rosso intenso. Verso la fine dell'estate, i nuclei luminosi di questi Pokémon sulla spiaggia sembrano stelle nel cielo."
+    },
+    "121": {
+      "genus": "Pokémon Misterioso",
+      "description": "La parte centrale di Starmie, il nucleo, brilla intensamente in sette colori. Per la sua luminosità, questo Pokémon è soprannominato «la gemma del mare»."
+    },
+    "122": {
+      "genus": "Pokémon Barriera",
+      "description": "Mr. Mime è un maestro della pantomima. I suoi gesti convincono gli osservatori dell'esistenza di qualcosa di invisibile e, quando ne sono persuasi, quella cosa diventa reale."
+    },
+    "123": {
+      "genus": "Pokémon Mantide",
+      "description": "Scyther è incredibilmente veloce. La sua rapidità aumenta l'efficacia delle due falci sugli avambracci, capaci di tagliare grossi tronchi con un solo colpo feroce."
+    },
+    "124": {
+      "genus": "Pokémon Umanoide",
+      "description": "Jynx cammina ritmicamente, ondeggiando i fianchi come se danzasse. I suoi movimenti sono tanto coinvolgenti che chi la vede finisce per imitarla senza rendersene conto."
+    },
+    "125": {
+      "genus": "Pokémon Elettrico",
+      "description": "Quando arriva un temporale, gruppi di Electabuzz competono per raggiungere i luoghi più alti e più esposti ai fulmini. Alcune città li usano al posto dei parafulmini."
+    },
+    "126": {
+      "genus": "Pokémon Sputafuoco",
+      "description": "In battaglia Magmar emette fiamme roventi da tutto il corpo per intimidire l'avversario. Le vampate generano onde di calore che incendiano erba e alberi nei dintorni."
+    },
+    "127": {
+      "genus": "Pokémon Cervolante",
+      "description": "Pinsir è straordinariamente forte. Può stringere tra le corna un nemico che pesa il doppio di lui e sollevarlo con facilità. Nei luoghi freddi i suoi movimenti diventano lenti."
+    },
+    "128": {
+      "genus": "Pokémon Torobrado",
+      "description": "Questo Pokémon non è soddisfatto se non può scatenarsi continuamente. Quando non trova un avversario, Tauros carica grossi alberi e li abbatte per calmarsi."
+    },
+    "129": {
+      "genus": "Pokémon Pesce",
+      "description": "Magikarp è un Pokémon tristemente inaffidabile, capace soltanto di dimenarsi e schizzare acqua. Proprio questo comportamento ha spinto gli scienziati a studiarlo."
+    },
+    "130": {
+      "genus": "Pokémon Atroce",
+      "description": "Quando Magikarp si evolve in Gyarados, le cellule del cervello subiscono una trasformazione strutturale. Si ritiene che sia questa la causa della natura estremamente violenta del Pokémon."
+    },
+    "131": {
+      "genus": "Pokémon Trasporto",
+      "description": "Gli esseri umani hanno portato Lapras quasi all'estinzione. Si dice che la sera questo Pokémon canti malinconicamente mentre cerca i pochi esemplari della sua specie ancora rimasti."
+    },
+    "132": {
+      "genus": "Pokémon Mutante",
+      "description": "Ditto riorganizza la propria struttura cellulare per assumere altre forme. Se però cerca di trasformarsi affidandosi alla memoria, tende a sbagliare alcuni dettagli."
+    },
+    "133": {
+      "genus": "Pokémon Evoluzione",
+      "description": "Eevee possiede un patrimonio genetico instabile che muta improvvisamente in base all'ambiente in cui vive. Le radiazioni emesse da varie pietre ne provocano l'evoluzione."
+    },
+    "134": {
+      "genus": "Pokémon Bollajet",
+      "description": "Vaporeon ha subito una mutazione spontanea, sviluppando pinne e branchie che gli consentono di vivere sott'acqua. Questo Pokémon può controllare liberamente l'acqua."
+    },
+    "135": {
+      "genus": "Pokémon Lampo",
+      "description": "Le cellule di Jolteon producono una debole carica elettrica, amplificata dall'elettricità statica della pelliccia fino a generare fulmini. I peli irti sono aghi carichi di corrente."
+    },
+    "136": {
+      "genus": "Pokémon Fiamma",
+      "description": "La morbida pelliccia di Flareon disperde il calore nell'aria e impedisce al corpo di surriscaldarsi. La sua temperatura può raggiungere circa 900 °C."
+    },
+    "137": {
+      "genus": "Pokémon Virtuale",
+      "description": "Porygon può riconvertirsi completamente in dati di programma ed entrare nel cyberspazio. È protetto contro la copia e non può essere duplicato semplicemente copiandolo."
+    },
+    "138": {
+      "genus": "Pokémon Spirale",
+      "description": "Omanyte è uno degli antichi Pokémon estinti che gli esseri umani hanno rigenerato dai fossili. Quando viene attaccato, si ritira nel duro guscio."
+    },
+    "139": {
+      "genus": "Pokémon Spirale",
+      "description": "Omastar cattura le prede con i tentacoli. Si ritiene che si sia estinto perché il guscio divenne troppo grande e pesante, rendendo i suoi movimenti eccessivamente lenti."
+    },
+    "140": {
+      "genus": "Pokémon Crostaceo",
+      "description": "Kabuto è un Pokémon rigenerato da un fossile. In casi estremamente rari sono stati scoperti esemplari ancora vivi. Non è cambiato affatto in 300 milioni di anni."
+    },
+    "141": {
+      "genus": "Pokémon Crostaceo",
+      "description": "Nell'antichità Kabutops nuotava sott'acqua per cacciare. I primi cambiamenti nelle branchie e nelle zampe indicano che si stava evolvendo per passare dalla vita acquatica a quella terrestre."
+    },
+    "142": {
+      "genus": "Pokémon Fossile",
+      "description": "Aerodactyl è un Pokémon dell'era dei dinosauri, rigenerato da materiale genetico estratto dall'ambra. Si pensa che nell'antichità fosse il re dei cieli."
+    },
+    "143": {
+      "genus": "Pokémon Sonno",
+      "description": "La giornata tipica di Snorlax consiste soltanto nel mangiare e dormire. È così docile che alcuni bambini usano la sua grande pancia come luogo in cui giocare."
+    },
+    "144": {
+      "genus": "Pokémon Gelo",
+      "description": "Articuno è un Pokémon uccello leggendario capace di controllare il ghiaccio. Il battito delle sue ali raffredda l'aria e si dice che, quando vola, inizi a nevicare."
+    },
+    "145": {
+      "genus": "Pokémon Elettrico",
+      "description": "Zapdos è un Pokémon uccello leggendario capace di controllare l'elettricità. Di solito vive nelle nubi temporalesche e acquista potenza quando viene colpito da un fulmine."
+    },
+    "146": {
+      "genus": "Pokémon Fiamma",
+      "description": "Moltres è un Pokémon uccello leggendario capace di controllare il fuoco. Si dice che, quando viene ferito, immerga il corpo nel magma fuso di un vulcano per bruciare le ferite e guarire."
+    },
+    "147": {
+      "genus": "Pokémon Drago",
+      "description": "Dratini muta continuamente, liberandosi della vecchia pelle. Lo fa perché l'energia vitale nel suo corpo cresce senza sosta fino a raggiungere livelli incontrollabili."
+    },
+    "148": {
+      "genus": "Pokémon Drago",
+      "description": "Dragonair immagazzina nel corpo un'enorme quantità di energia. Si dice che possa alterare il tempo atmosferico nei dintorni liberandola dai cristalli sul collo e sulla coda."
+    },
+    "149": {
+      "genus": "Pokémon Drago",
+      "description": "Dragonite può compiere il giro del mondo in sole 16 ore. È un Pokémon dal cuore gentile che, durante le tempeste, guida verso terra le navi smarrite e in difficoltà."
+    },
+    "150": {
+      "genus": "Pokémon Genetico",
+      "description": "Mewtwo è stato creato attraverso la manipolazione genetica. La scienza umana riuscì a dargli un corpo, ma non a dotarlo di un cuore compassionevole."
+    },
+    "151": {
+      "genus": "Pokémon Novaspecie",
+      "description": "Si dice che Mew possieda il patrimonio genetico di tutti i Pokémon. Può rendersi invisibile a volontà e passare completamente inosservato anche quando si avvicina alle persone."
+    }
+  }
+}

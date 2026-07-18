@@ -1,0 +1,65 @@
+name: Translation flavor bootstrap
+
+on:
+  push:
+    branches:
+      - translation/italian-content-audit
+    paths:
+      - '.github/workflows/translation-flavor-bootstrap.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          ref: translation/italian-content-audit
+
+      - name: Extract displayed Gen I descriptions
+        shell: python
+        run: |
+          import json
+          from pathlib import Path
+
+          root = Path('.')
+          source = root / 'assets' / 'data' / 'pokemon_flavor.json'
+          with source.open(encoding='utf-8') as handle:
+              flavor = json.load(handle)
+
+          items = []
+          for number in range(1, 152):
+              entry = flavor.get(str(number))
+              if not isinstance(entry, dict):
+                  raise SystemExit(f'Manca il Pokémon #{number} in {source}.')
+              items.append({
+                  'number': number,
+                  'genus': str(entry.get('genus', '')).strip(),
+                  'description': str(entry.get('flavor', '')).strip(),
+              })
+
+          output = root / 'docs' / 'translation' / 'gen1-source-descriptions.json'
+          output.parent.mkdir(parents=True, exist_ok=True)
+          output.write_text(
+              json.dumps({'source': str(source), 'items': items}, ensure_ascii=False, indent=2) + '\n',
+              encoding='utf-8',
+          )
+
+      - name: Commit corrected source
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/translation/gen1-source-descriptions.json
+          if git diff --cached --quiet; then
+            echo 'Sorgente già aggiornata.'
+            exit 0
+          fi
+          git commit -m 'Usa le descrizioni Pokédex effettivamente visualizzate [skip ci]'
+          git push origin HEAD:translation/italian-content-audit

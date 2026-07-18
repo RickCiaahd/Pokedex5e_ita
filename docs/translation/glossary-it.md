@@ -84,7 +84,9 @@ Questo glossario definisce la terminologia da usare nelle descrizioni visualizza
 
 ## Stile delle descrizioni del Pokédex
 
-- Il genere viene scritto come **Pokémon Seme**, **Pokémon Fiamma**, **Pokémon Topo**, ecc.
+- La categoria viene riportata nella forma italiana ufficiale, per esempio **Pokémon Seme**, **Pokémon Fiamma** o **Pokémon Suincendio**; non deve essere tradotta liberamente dall'inglese.
+- La fonte di riferimento per le categorie è la pagina **Categoria** di Pokémon Central Wiki: `https://wiki.pokemoncentral.it/Categoria`.
+- Prima di aggiungere una nuova generazione, le categorie devono essere confrontate con il riferimento e incluse nel controllo automatico dedicato.
 - Le descrizioni usano il presente e mantengono il nome proprio della specie.
 - Le unità presenti nel testo sorgente possono essere convertite nel sistema metrico soltanto quando la conversione è esatta e non costituisce un valore di regola. In caso di dubbio, mantenere il valore originale.
 - Non introdurre informazioni provenienti da altre voci del Pokédex o da altre generazioni.
@@ -97,4 +99,5 @@ Per ogni blocco verificare:
 2. assenza di campi tecnici modificati;
 3. validità JSON e caricamento tramite `rootBundle`;
 4. test di integrità, suite completa, analisi statica e build Android;
-5. revisione manuale di punteggiatura, apostrofi, accenti e terminologia.
+5. corrispondenza esatta delle categorie con il riferimento italiano ufficiale;
+6. revisione manuale di punteggiatura, apostrofi, accenti e terminologia.

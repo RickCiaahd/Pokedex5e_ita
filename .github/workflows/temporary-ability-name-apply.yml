@@ -1,4 +1,4 @@
-name: Temporary ability name field fix
+name: Temporary ability name detail integration
 
 on:
   pull_request:
@@ -15,66 +15,11 @@ jobs:
         with:
           ref: translation/ability-names
           fetch-depth: 0
-
-      - name: Fix localized label fields
-        shell: bash
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-
-          path = Path('lib/screens/pokemon/pokemon_edit_screen.dart')
-          text = path.read_text(encoding='utf-8')
-
-          wrong_move = (
-              '  final Map<String, MoveData?> moveData;\n'
-              '  final ValueChanged<int> onPick;\n'
-              '  final ValueChanged<int> onRemove;\n'
-              '  final Map<String, String> labels;\n'
-          )
-          right_move = (
-              '  final Map<String, MoveData?> moveData;\n'
-              '  final ValueChanged<int> onPick;\n'
-              '  final ValueChanged<int> onRemove;\n'
-          )
-          if wrong_move not in text:
-              raise SystemExit('Campo labels errato in _MoveSlotGrid non trovato.')
-          text = text.replace(wrong_move, right_move, 1)
-
-          chip_anchor = (
-              '  final VoidCallback? onAdd;\n'
-              '  final ValueChanged<int> onPick;\n'
-              '  final ValueChanged<int> onRemove;\n'
-          )
-          chip_replacement = chip_anchor + '  final Map<String, String> labels;\n'
-          if chip_replacement not in text:
-              if chip_anchor not in text:
-                  raise SystemExit('Campi _ChipSlots non trovati.')
-              text = text.replace(chip_anchor, chip_replacement, 1)
-
-          picker_anchor = (
-              '  final Set<String> blockedOptions;\n'
-              '  final Map<String, String> descriptions;\n'
-              '  final bool includeNone;\n'
-          )
-          picker_replacement = (
-              '  final Set<String> blockedOptions;\n'
-              '  final Map<String, String> descriptions;\n'
-              '  final Map<String, String> labels;\n'
-              '  final bool includeNone;\n'
-          )
-          if picker_replacement not in text:
-              if picker_anchor not in text:
-                  raise SystemExit('Campi _ChoicePickerScreen non trovati.')
-              text = text.replace(picker_anchor, picker_replacement, 1)
-
-          path.write_text(text, encoding='utf-8')
-          PY
-
-      - name: Commit field fix
-        shell: bash
+      - run: python tool/temporary_patch_ability_names.py
+      - name: Commit integration
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add lib/screens/pokemon/pokemon_edit_screen.dart
-          git commit -m "Corregge i campi delle etichette abilità"
+          git add lib/screens/pokemon/pokemon_detail_screen_legacy.dart
+          git commit -m "Mostra i nomi italiani delle abilità nella scheda Pokémon"
           git push origin HEAD:translation/ability-names

@@ -9,7 +9,7 @@ Tutte le modifiche rilevanti al progetto vengono documentate in questo file.
 - glossario italiano e audit delle sorgenti visualizzate per guidare i prossimi blocchi di traduzione;
 - catalogo separato e validato per i testi italiani dei Pokémon, senza modificare ID, statistiche o file sorgente;
 - test automatico di copertura e integrità delle localizzazioni Pokémon;
-- riferimento verificabile delle categorie italiane ufficiali dei Pokémon #001-809 e controllo automatico contro i cataloghi localizzati.
+- riferimento verificabile delle categorie italiane ufficiali dei Pokémon #001-1025 e controllo automatico contro i cataloghi localizzati.
 
 ### Modificato
 
@@ -20,6 +20,8 @@ Tutte le modifiche rilevanti al progetto vengono documentate in questo file.
 - tradotti in italiano genere e descrizione Pokédex dei 156 Pokémon di quinta generazione, dal #494 al #649, mantenendo separati i cataloghi localizzati dai dati sorgente;
 - tradotti in italiano genere e descrizione Pokédex dei 72 Pokémon di sesta generazione, dal #650 al #721, usando le categorie italiane del riferimento verificato;
 - tradotti in italiano genere e descrizione Pokédex degli 88 Pokémon di settima generazione, dal #722 al #809, mantenendo invariati i dati originali e usando le categorie italiane verificate;
+- tradotti in italiano genere e descrizione Pokédex dei 96 Pokémon di ottava generazione, dal #810 al #905, usando il catalogo webapp e le categorie italiane verificate;
+- tradotti in italiano genere e descrizione Pokédex dei 120 Pokémon di nona generazione, dal #906 al #1025, usando il catalogo webapp e le categorie italiane verificate;
 - corrette 198 categorie Pokémon delle prime cinque generazioni confrontandole con il riferimento italiano, tra cui Emboar da `Pokémon Granfuocomaiale` a `Pokémon Suincendio`.
 
 ## [1.0.0]

@@ -1,0 +1,138 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/pokemon.json",
+  "range": {
+    "from": 842,
+    "to": 873
+  },
+  "items": {
+    "842": {
+      "genus": "Pokémon Pomisucco",
+      "description": "Il corpo di Appletun è ricoperto di nettare dolce e la pelle sulla schiena è particolarmente gustosa. Il suo aroma attira i Pokémon coleottero di cui si nutre."
+    },
+    "843": {
+      "genus": "Pokémon Sabbiaserpe",
+      "description": "Mentre scava, Silicobra ingoia sabbia e la conserva nella sacca sul collo, che può contenerne più di 17 libbre."
+    },
+    "844": {
+      "genus": "Pokémon Sabbiaserpe",
+      "description": "Quando contrae il corpo, Sandaconda spruzza dal naso oltre 220 libbre di sabbia. Se la esaurisce completamente, si abbatte."
+    },
+    "845": {
+      "genus": "Pokémon Inghiottone",
+      "description": "L'affamato Cramorant ingoia Arrokuda interi. A volte si sbaglia e cerca di inghiottire un Pokémon diverso dalla sua preda preferita."
+    },
+    "846": {
+      "genus": "Pokémon Carica",
+      "description": "Appena percepisce un movimento, Arrokuda parte subito alla carica con la mascella appuntita in avanti. È molto orgoglioso di quella mascella."
+    },
+    "847": {
+      "genus": "Pokémon Spiedo",
+      "description": "Barraskewda fa ruotare le pinne caudali per spingersi a oltre 100 nodi, poi sperona le prede e le trafigge."
+    },
+    "848": {
+      "genus": "Pokémon Bebè",
+      "description": "Toxel conserva il veleno in una sacca interna e lo secerne attraverso la pelle. Toccarlo provoca una sensazione di formicolio."
+    },
+    "849": {
+      "genus": "Pokémon Punk",
+      "description": "Irascibile e aggressivo, Toxtricity beve grandi quantità d'acqua stagnante per assorbire le tossine che potrebbe contenere."
+    },
+    "850": {
+      "genus": "Pokémon Termogeno",
+      "description": "Sizzlipede avvolge le prede con il corpo rovente e le cuoce tra le proprie spire. Quando sono ben cotte, le divora fino all'ultimo boccone."
+    },
+    "851": {
+      "genus": "Pokémon Termogeno",
+      "description": "Quando si surriscalda, il corpo di Centiskorch raggiunge circa 1,500 °F. Lo agita come una frusta e si scaglia contro i nemici."
+    },
+    "852": {
+      "genus": "Pokémon Bizze",
+      "description": "Clobbopus è molto curioso, ma esamina ciò che incontra prendendolo a pugni con i tentacoli. Si avventura sulla terraferma in cerca di cibo."
+    },
+    "853": {
+      "genus": "Pokémon Jujitsu",
+      "description": "Il corpo di Grapploct è composto quasi interamente da muscoli, rendendo potentissime le prese che esegue con i tentacoli."
+    },
+    "854": {
+      "genus": "Pokémon Tè",
+      "description": "Si dice che Sinistea sia nato quando uno spirito solitario si è impossessato di una tazza di tè avanzato ormai freddo."
+    },
+    "855": {
+      "genus": "Pokémon Tè",
+      "description": "Polteageist vive in teiere antiche. La maggior parte dei recipienti è contraffatta, ma in rare occasioni se ne trova uno autentico."
+    },
+    "856": {
+      "genus": "Pokémon Calma",
+      "description": "Hatenna percepisce le emozioni degli altri tramite la protuberanza sulla testa. Non si affeziona mai a chi non possiede un'indole tranquilla."
+    },
+    "857": {
+      "genus": "Pokémon Quiete",
+      "description": "Chiunque porti emozioni intense vicino a Hattrem viene ridotto violentemente al silenzio, senza alcuna distinzione."
+    },
+    "858": {
+      "genus": "Pokémon Silenzio",
+      "description": "Hatterene emette un potere psichico abbastanza intenso da provocare mal di testa e scoraggiare chiunque dal suo avvicinarsi."
+    },
+    "859": {
+      "genus": "Pokémon Scaltro",
+      "description": "Impidimp aspira dal naso le emanazioni prodotte da persone e Pokémon quando sono irritati. Questa energia negativa lo fa prosperare."
+    },
+    "860": {
+      "genus": "Pokémon Furbizia",
+      "description": "Quando Morgrem si mette a quattro zampe fingendo di chiedere perdono, sta attirando il nemico per trafiggerlo con i capelli simili a una lancia."
+    },
+    "861": {
+      "genus": "Pokémon Granfisico",
+      "description": "I capelli avvolti attorno al corpo potenziano i muscoli di Grimmsnarl, permettendogli di sopraffare perfino Machamp."
+    },
+    "862": {
+      "genus": "Pokémon Bloccaggio",
+      "description": "Obstagoon si è evoluto dopo innumerevoli lotte. Incrocia le braccia e lancia un grido capace di far tentennare qualsiasi avversario."
+    },
+    "863": {
+      "genus": "Pokémon Vichingo",
+      "description": "Quello che sembra un elmo di ferro è in realtà il pelo indurito di Perrserker. Questo Pokémon vive per l'emozione della battaglia."
+    },
+    "864": {
+      "genus": "Pokémon Corallo",
+      "description": "Il guscio di Cursola trabocca di energia ultraterrena. L'ectoplasma protegge lo spirito che costituisce il suo nucleo."
+    },
+    "865": {
+      "genus": "Pokémon Selvanatra",
+      "description": "Soltanto i Farfetch'd sopravvissuti a molte battaglie raggiungono questa evoluzione. Quando il suo porro appassisce, Sirfetch'd si ritira dal combattimento."
+    },
+    "866": {
+      "genus": "Pokémon Comico",
+      "description": "Mr. Rime è abilissimo nel tip tap e agita il bastone di ghiaccio seguendo il ritmo dei propri movimenti aggraziati."
+    },
+    "867": {
+      "genus": "Pokémon Rancore",
+      "description": "Non bisogna mai toccare il corpo simile a un'ombra di Runerigus, o si assisterà agli orribili ricordi legati all'immagine incisa sulla sua superficie."
+    },
+    "868": {
+      "genus": "Pokémon Pannafresca",
+      "description": "Si dice che ogni pasticceria visitata da Milcery sia destinata al successo e alla buona sorte."
+    },
+    "869": {
+      "genus": "Pokémon Pannafresca",
+      "description": "Alcremie produce panna montata, tanto più ricca quanto maggiore è la sua felicità. I dolci preparati con questa panna sono sempre deliziosi e molti pasticceri desiderano averlo come compagno."
+    },
+    "870": {
+      "genus": "Pokémon Schieramento",
+      "description": "Il comandante di Falinks, chiamato testa, usa il corno estensibile per impartire ordini agli altri quando è il momento di cambiare formazione."
+    },
+    "871": {
+      "genus": "Pokémon Echino",
+      "description": "Pincurchin è così timido che perfino sfiorare un'alga lo fa scaricare elettricità per la sorpresa. Le sue labbra non conducono corrente."
+    },
+    "872": {
+      "genus": "Pokémon Baco",
+      "description": "Negli organi interni, Snom amplifica l'aria gelida ottenuta mangiando neve e la usa per creare spine simili a ghiaccioli."
+    },
+    "873": {
+      "genus": "Pokémon Gelofalena",
+      "description": "Mentre Frosmoth sorvola campi e montagne, dalle ali cadono scaglie gelide simili a neve. Le sue ali hanno una temperatura inferiore a -290 °F."
+    }
+  }
+}

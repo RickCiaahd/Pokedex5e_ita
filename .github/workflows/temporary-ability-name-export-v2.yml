@@ -1,0 +1,125 @@
+name: Temporary ability name export v2
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python -m pip install --quiet requests beautifulsoup4
+      - name: Generate official name reference
+        shell: bash
+        run: |
+          mkdir -p generated
+          python - <<'PY'
+          import csv, io, json
+          from pathlib import Path
+          import requests
+          from bs4 import BeautifulSoup
+
+          wiki_url = 'https://wiki.pokemoncentral.it/Abilit%C3%A0'
+          abilities_url = 'https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/abilities.csv'
+          names_url = 'https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/ability_names.csv'
+          headers = {'User-Agent': 'Pokedex5eITA ability-name audit'}
+
+          def download(url):
+              response = requests.get(url, headers=headers, timeout=60)
+              response.raise_for_status()
+              return response.text
+
+          official_ids = {
+              row['identifier']: int(row['id'])
+              for row in csv.DictReader(io.StringIO(download(abilities_url)))
+              if row['is_main_series'] == '1'
+          }
+          pokeapi_it = {
+              int(row['ability_id']): row['name'].strip()
+              for row in csv.DictReader(io.StringIO(download(names_url)))
+              if row['local_language_id'] == '8'
+          }
+
+          soup = BeautifulSoup(download(wiki_url), 'html.parser')
+          heading = soup.find(id='Elenco_delle_abilità') or soup.find(id='Elenco_delle_abilit.C3.A0')
+          table = heading.find_next('table') if heading else None
+          if table is None:
+              raise RuntimeError('Tabella delle abilità non trovata su Pokémon Central.')
+
+          wiki_it = {}
+          for row in table.find_all('tr'):
+              cells = row.find_all(['th', 'td'])
+              if len(cells) >= 2:
+                  number = cells[0].get_text(' ', strip=True)
+                  if number.isdigit():
+                      wiki_it[int(number)] = cells[1].get_text(' ', strip=True)
+          if len(wiki_it) < 250:
+              raise RuntimeError(f'Tabella Pokémon Central incompleta: {len(wiki_it)}')
+
+          source = json.loads(Path('assets/data_webapp/abilities.json').read_text(encoding='utf-8'))['items']
+          aliases = {'as-one': 'as-one-glastrier', 'zen-mode-galarian': 'zen-mode'}
+          matched = {}
+          unmatched = []
+          for item in source:
+              source_id = item['id']
+              number = official_ids.get(aliases.get(source_id, source_id))
+              name = wiki_it.get(number) if number is not None else None
+              if name:
+                  matched[source_id] = {
+                      'officialNumber': number,
+                      'sourceName': item['name'],
+                      'name': name,
+                  }
+              else:
+                  unmatched.append({
+                      'id': source_id,
+                      'name': item['name'],
+                      'deprecated': item.get('deprecated') is True,
+                  })
+
+          differences = [
+              {'number': number, 'pokeapi': pokeapi_it[number], 'pokemonCentral': name}
+              for number, name in sorted(wiki_it.items())
+              if number in pokeapi_it and pokeapi_it[number] != name
+          ]
+          result = {
+              'locale': 'it',
+              'source': wiki_url,
+              'crossReference': [abilities_url, names_url],
+              'catalogCount': len(source),
+              'matchedCount': len(matched),
+              'unmatchedCount': len(unmatched),
+              'crossReferenceDifferences': differences,
+              'items': matched,
+          }
+          Path('generated/ability_names_it_official.json').write_text(
+              json.dumps(result, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+
+          report = [
+              '# Audit dei nomi italiani delle abilità', '',
+              f'- Voci nel catalogo 5e: **{len(source)}**',
+              f'- Abilità ufficiali riconosciute: **{len(matched)}**',
+              f'- Voci senza corrispondenza ufficiale: **{len(unmatched)}**',
+              f'- Differenze rispetto alla copia PokeAPI: **{len(differences)}**',
+              '- Fonte autorevole: Pokémon Central Wiki, pagina Abilità.', '',
+              '## Voci senza corrispondenza ufficiale', ''
+          ]
+          for item in unmatched:
+              suffix = ' — deprecata' if item['deprecated'] else ''
+              report.append(f"- `{item['id']}` — {item['name']}{suffix}")
+          if differences:
+              report += ['', '## Differenze della copia PokeAPI', '']
+              for item in differences:
+                  report.append(f"- #{item['number']:03d}: `{item['pokeapi']}` → `{item['pokemonCentral']}`")
+          Path('generated/ability-name-audit.md').write_text('\n'.join(report) + '\n', encoding='utf-8')
+          print(f'Matched={len(matched)} Unmatched={len(unmatched)} Differences={len(differences)}')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ability-name-audit-v2
+          path: generated
+          if-no-files-found: error
+          retention-days: 2

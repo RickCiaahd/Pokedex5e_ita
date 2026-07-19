@@ -1,0 +1,41 @@
+name: Temporary item localization finalize
+
+on:
+  pull_request:
+
+permissions:
+  contents: write
+
+jobs:
+  finalize:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: translation/items-audit
+          fetch-depth: 0
+
+      - name: Document the localized item block
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('CHANGELOG.md')
+          text = path.read_text(encoding='utf-8')
+          anchor = '- assegnati i nomi italiani ufficiali a 308 abilità confrontate con Pokémon Central, mantenendo invariati nomi tecnici, ID e dati salvati; le 22 voci personalizzate o deprecate conservano il nome originale;\n'
+          addition = '- localizzati con nomi italiani verificati e descrizioni 5e tradotte i 24 tipi di Poké Ball e i 63 oggetti di tipo medicina, conservando ID, costi, asset e nomi tecnici;\n'
+          if addition not in text:
+              if anchor not in text:
+                  raise SystemExit('Anchor del changelog non trovato')
+              text = text.replace(anchor, anchor + addition, 1)
+              path.write_text(text, encoding='utf-8')
+          PY
+
+      - name: Commit documentation
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add CHANGELOG.md
+          git diff --cached --quiet || git commit -m "Documenta il primo blocco di oggetti tradotti"
+          git push origin HEAD:translation/items-audit

@@ -109,7 +109,7 @@ void main() {
     expect(texts[151]?.genus, 'Pokémon Novaspecie');
     expect(texts[152]?.genus, 'Pokémon Foglia');
     expect(texts[152]?.description, startsWith('In lotta, Chikorita'));
-    expect(texts[251]?.genus, 'Pokémon Viaggiotempo');
+    expect(texts[251]?.genus, 'Pokémon Tempovia');
     expect(texts[251]?.description, startsWith('Questo Pokémon'));
     expect(texts[252]?.genus, 'Pokémon Legnogeco');
     expect(texts[252]?.description, startsWith('Treecko'));
@@ -185,7 +185,7 @@ void main() {
     expect(flavors[1]?.genus, 'Pokémon Seme');
     expect(flavors[151]?.genus, 'Pokémon Novaspecie');
     expect(flavors[152]?.genus, 'Pokémon Foglia');
-    expect(flavors[251]?.genus, 'Pokémon Viaggiotempo');
+    expect(flavors[251]?.genus, 'Pokémon Tempovia');
     expect(flavors[252]?.genus, 'Pokémon Legnogeco');
     expect(flavors[386]?.genus, 'Pokémon DNA');
     expect(flavors[387]?.genus, 'Pokémon Fogliolina');

@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 
 import '../models/pokemon_ability.dart';
 import '../services/custom_pokemon_runtime_registry.dart';
+import 'ability_localization_repository.dart';
 
 class AbilityRepository {
   Map<String, String>? _descriptionCache;
@@ -52,6 +53,8 @@ class AbilityRepository {
       );
       final json = Map<String, dynamic>.from(jsonDecode(jsonString));
       final abilityJson = List<dynamic>.from(json['items'] ?? const []);
+      final localizedDescriptions =
+          await AbilityLocalizationRepository().getDescriptions();
 
       _webAbilityCache =
           abilityJson
@@ -62,6 +65,15 @@ class AbilityRepository {
               )
               .where(
                 (ability) => ability.id.isNotEmpty && ability.name.isNotEmpty,
+              )
+              .map(
+                (ability) => PokemonAbility(
+                  id: ability.id,
+                  name: ability.name,
+                  description:
+                      localizedDescriptions[ability.id] ?? ability.description,
+                  deprecated: ability.deprecated,
+                ),
               )
               .toList(growable: false)
             ..sort((a, b) => a.name.compareTo(b.name));

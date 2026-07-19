@@ -81,6 +81,7 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
   List<String> _tmMoveNames = const [];
   List<String> _catalogMoveNames = const [];
   Map<String, String> _abilityDescriptions = {};
+  Map<String, String> _abilityDisplayNames = {};
   Map<String, String> _featDescriptions = {};
   Map<String, MoveData?> _moveData = {};
 
@@ -135,6 +136,9 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
       pokemonId: widget.pokemon.id,
     );
     final abilityChoicesFuture = _abilityRepository.getWebAbilities();
+    final abilityDisplayNamesFuture = _abilityRepository.getAbilityDisplayNames(
+      pokemonId: widget.pokemon.id,
+    );
     final deprecatedAbilitiesFuture = _abilityRepository
         .getDeprecatedAbilityNames();
     final featDescriptionsFuture = _featRepository.getFeatDescriptions();
@@ -144,6 +148,7 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
 
     final abilityDescriptions = await abilityDescriptionsFuture;
     final abilityChoices = await abilityChoicesFuture;
+    final abilityDisplayNames = await abilityDisplayNamesFuture;
     final deprecatedAbilities = await deprecatedAbilitiesFuture;
     final featDescriptions = await featDescriptionsFuture;
     final formChoices = await formChoicesFuture;
@@ -186,6 +191,7 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
     setState(() {
       _abilityDescriptions = abilityDescriptions;
       _abilityChoices = abilityChoices;
+      _abilityDisplayNames = abilityDisplayNames;
       _deprecatedAbilityNames = deprecatedAbilities;
       _featDescriptions = featDescriptions;
       _moveData = moveData;
@@ -447,6 +453,7 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
           pinnedOptions: _naturalAbilities().toSet(),
           blockedOptions: blocked,
           descriptions: _abilityDescriptions,
+          labels: _abilityDisplayNames,
           pinnedLabel: 'Abilità naturali del Pokémon',
         ),
       ),
@@ -617,6 +624,7 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
                     children: [
                       _ChipSlots(
                         values: _abilities,
+                        labels: _abilityDisplayNames,
                         emptyLabel: 'ABILITY',
                         onAdd: _abilities.length >= 2
                             ? null
@@ -893,6 +901,7 @@ class _MoveSlotGrid extends StatelessWidget {
   final Map<String, MoveData?> moveData;
   final ValueChanged<int> onPick;
   final ValueChanged<int> onRemove;
+  final Map<String, String> labels;
 
   @override
   Widget build(BuildContext context) {
@@ -927,6 +936,7 @@ class _ChipSlots extends StatelessWidget {
     required this.onAdd,
     required this.onPick,
     required this.onRemove,
+    this.labels = const {},
   });
 
   final List<String> values;
@@ -945,7 +955,7 @@ class _ChipSlots extends StatelessWidget {
           SizedBox(
             width: 150,
             child: _SingleSlot(
-              label: entry.value,
+              label: labels[entry.value] ?? entry.value,
               onTap: () => onPick(entry.key),
               onRemove: () => onRemove(entry.key),
             ),
@@ -1372,6 +1382,7 @@ class _ChoicePickerScreen extends StatefulWidget {
     this.pinnedLabel,
     this.blockedOptions = const {},
     this.descriptions = const {},
+    this.labels = const {},
     this.includeNone = false,
   });
 
@@ -1400,11 +1411,15 @@ class _ChoicePickerScreenState extends State<_ChoicePickerScreen> {
         .where((option) {
           if (search.isEmpty) return true;
           return option.toLowerCase().contains(search) ||
+              (widget.labels[option] ?? '').toLowerCase().contains(search) ||
               (widget.descriptions[option] ?? '').toLowerCase().contains(
                 search,
               );
         })
-        .toList();
+        .toList()
+      ..sort((a, b) => (widget.labels[a] ?? a).toLowerCase().compareTo(
+        (widget.labels[b] ?? b).toLowerCase(),
+      ));
   }
 
   @override
@@ -1432,7 +1447,7 @@ class _ChoicePickerScreenState extends State<_ChoicePickerScreen> {
           _PickerGroupLabel(label: widget.pinnedLabel!),
         for (final option in pinnedOptions)
           _PickerTile(
-            label: option,
+            label: widget.labels[option] ?? option,
             subtitle: widget.descriptions[option],
             pinned: true,
             onTap: () => Navigator.of(context).pop(option),
@@ -1441,7 +1456,7 @@ class _ChoicePickerScreenState extends State<_ChoicePickerScreen> {
           const _PickerGroupLabel(label: 'Catalogo completo'),
         for (final option in otherOptions)
           _PickerTile(
-            label: option,
+            label: widget.labels[option] ?? option,
             subtitle: widget.descriptions[option],
             onTap: () => Navigator.of(context).pop(option),
           ),

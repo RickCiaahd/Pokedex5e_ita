@@ -1,0 +1,40 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/abilities.json",
+  "range": {
+    "fromIndex": 171,
+    "toIndex": 180
+  },
+  "items": {
+    "natural-cure": {
+      "description": "Questo Pokémon guarisce dalle condizioni negative quando ritorna nella propria Poké Ball."
+    },
+    "neuroforce": {
+      "description": "Quando questo Pokémon danneggia una creatura con una mossa superefficace, può tirare due volte i dadi dei danni e usare il risultato più alto."
+    },
+    "neutralizing-gas": {
+      "description": "Le abilità dei Pokémon entro 30 piedi da questo Pokémon vengono annullate e non possono attivarsi. L’annullamento non si applica a Neutralizing Gas né ai cambi di forma."
+    },
+    "no-guard": {
+      "description": "Ogni attacco effettuato da o contro questo Pokémon ha vantaggio."
+    },
+    "normalize": {
+      "description": "Ogni mossa usata da questo Pokémon diventa di tipo Normale."
+    },
+    "oblivious": {
+      "description": "Questo Pokémon è immune alle mosse che tentano di affascinarlo o provocarlo."
+    },
+    "opportunist": {
+      "description": "Quando la CA, FOR, DES, COS, INT, SAG o CAR di un nemico visibile a questo Pokémon aumenta, il corrispondente valore di questo Pokémon aumenta della stessa quantità. L’effetto dura per la lotta oppure per 1 minuto."
+    },
+    "orichalcum-pulse": {
+      "description": "Come azione bonus, questo Pokémon può trasformare il clima in luce solare intensa per 5 round; può usare questa azione bonus due volte per riposo breve. Sotto luce solare intensa, ha vantaggio ai tiri per colpire delle mosse che usano FOR o COS come Caratteristica della mossa."
+    },
+    "overcoat": {
+      "description": "Questo Pokémon non subisce danni da mosse e fenomeni legati al clima, come Hail o Weather Ball."
+    },
+    "overgrow": {
+      "description": "Questo Pokémon raddoppia il proprio bonus STAB quando possiede il 25% o meno dei suoi PF massimi."
+    }
+  }
+}

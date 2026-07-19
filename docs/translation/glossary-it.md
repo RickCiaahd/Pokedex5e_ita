@@ -82,6 +82,15 @@ Questo glossario definisce la terminologia da usare nelle descrizioni visualizza
 | Pokémon Center | Pokémon Center |
 | Pokédex entry | voce del Pokédex |
 
+
+## Nomi delle abilità
+
+- Le abilità presenti nei videogiochi usano il nome italiano riportato nella pagina **Abilità** di Pokémon Central Wiki: `https://wiki.pokemoncentral.it/Abilit%C3%A0`.
+- Il nome inglese tecnico resta invariato nei JSON sorgente, nei salvataggi, nei trasferimenti e nei riferimenti interni.
+- La localizzazione del nome viene applicata soltanto all'interfaccia.
+- Le capacità personalizzate del sistema 5e, le vecchie mosse registrate come abilità e le voci tecniche di cambio forma conservano il nome originale quando non esiste una corrispondenza ufficiale.
+- Le varianti tecniche della stessa abilità condividono il nome ufficiale verificato, per esempio `power-construct-*` → **Sciamefusione** ed `embody-aspect-*` → **Albergamemorie**.
+
 ## Stile delle descrizioni del Pokédex
 
 - La categoria viene riportata nella forma italiana ufficiale, per esempio **Pokémon Seme**, **Pokémon Fiamma** o **Pokémon Suincendio**; non deve essere tradotta liberamente dall'inglese.

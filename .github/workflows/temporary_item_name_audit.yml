@@ -1,0 +1,161 @@
+name: Temporary item name audit
+
+on:
+  push:
+    branches:
+      - translation/items-audit
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install HTML parser
+        run: python -m pip install --disable-pip-version-check beautifulsoup4
+
+      - name: Compare item names with online Italian references
+        run: |
+          python - <<'PY'
+          import csv
+          import io
+          import json
+          import re
+          import urllib.request
+          from collections import Counter
+          from pathlib import Path
+          from bs4 import BeautifulSoup
+
+          def fetch(url):
+              req = urllib.request.Request(url, headers={'User-Agent': 'Pokedex5eITA-item-audit/1.0'})
+              with urllib.request.urlopen(req, timeout=60) as response:
+                  return response.read().decode('utf-8')
+
+          def normalize(value):
+              value = value.replace('’', "'").replace('–', '-').replace('—', '-')
+              value = re.sub(r'\[[^\]]*\]', '', value)
+              value = re.sub(r'\([^)]*\)$', '', value)
+              value = re.sub(r'[^a-z0-9]+', '-', value.lower())
+              return value.strip('-')
+
+          catalog = json.loads(Path('assets/data_webapp/items.json').read_text(encoding='utf-8'))['items']
+
+          items_csv = list(csv.DictReader(io.StringIO(fetch(
+              'https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/items.csv'
+          ))))
+          names_csv = list(csv.DictReader(io.StringIO(fetch(
+              'https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/item_names.csv'
+          ))))
+          item_by_id = {row['id']: row for row in items_csv}
+          it_by_id = {row['item_id']: row['name'] for row in names_csv if row['local_language_id'] == '8'}
+          en_by_id = {row['item_id']: row['name'] for row in names_csv if row['local_language_id'] == '9'}
+          pokeapi = {
+              row['identifier']: {
+                  'officialId': int(row['id']),
+                  'englishName': en_by_id.get(row['id']),
+                  'italianName': it_by_id.get(row['id']),
+              }
+              for row in items_csv
+              if it_by_id.get(row['id'])
+          }
+
+          html = fetch('https://wiki.pokemoncentral.it/Elenco_degli_strumenti_in_altre_lingue')
+          soup = BeautifulSoup(html, 'html.parser')
+          central_pairs = {}
+          for table in soup.select('table.wikitable'):
+              rows = table.select('tr')
+              if not rows:
+                  continue
+              headers = [cell.get_text(' ', strip=True) for cell in rows[0].select('th,td')]
+              try:
+                  italian_index = next(i for i, value in enumerate(headers) if 'Italiano' in value)
+                  english_index = next(i for i, value in enumerate(headers) if 'Inglese' in value)
+              except StopIteration:
+                  continue
+              for row in rows[1:]:
+                  cells = row.select('th,td')
+                  if len(cells) <= max(italian_index, english_index):
+                      continue
+                  italian = cells[italian_index].get_text(' ', strip=True)
+                  english = cells[english_index].get_text(' ', strip=True)
+                  italian = re.sub(r'\s+', ' ', italian).strip()
+                  english = re.sub(r'\s+', ' ', english).strip()
+                  if not italian or not english:
+                      continue
+                  central_pairs.setdefault(normalize(english), []).append({
+                      'english': english,
+                      'italian': italian,
+                  })
+
+          matched = []
+          unmatched = []
+          disagreements = []
+          for entry in catalog:
+              item_id = entry['id']
+              source_name = entry['name']
+              poke = pokeapi.get(item_id)
+              central = central_pairs.get(normalize(source_name), [])
+              italian = poke['italianName'] if poke else None
+              central_names = sorted({value['italian'] for value in central})
+              if poke:
+                  matched.append({
+                      'id': item_id,
+                      'sourceName': source_name,
+                      'type': entry['type'],
+                      'officialNumber': poke['officialId'],
+                      'pokeapiEnglish': poke['englishName'],
+                      'pokeapiItalian': italian,
+                      'pokemonCentralItalian': central_names,
+                  })
+                  normalized_central = {normalize(value) for value in central_names}
+                  if central_names and normalize(italian) not in normalized_central:
+                      disagreements.append({
+                          'id': item_id,
+                          'sourceName': source_name,
+                          'pokeapiItalian': italian,
+                          'pokemonCentralItalian': central_names,
+                      })
+              else:
+                  unmatched.append({
+                      'id': item_id,
+                      'sourceName': source_name,
+                      'type': entry['type'],
+                      'pokemonCentralItalian': central_names,
+                  })
+
+          report = {
+              'catalogCount': len(catalog),
+              'typeCounts': dict(sorted(Counter(entry['type'] for entry in catalog).items())),
+              'pokeapiExactIdMatches': len(matched),
+              'unmatchedCount': len(unmatched),
+              'pokemonCentralPairCount': sum(len(values) for values in central_pairs.values()),
+              'crossReferenceDisagreementCount': len(disagreements),
+              'matched': matched,
+              'unmatched': unmatched,
+              'crossReferenceDisagreements': disagreements,
+          }
+          Path('item-name-audit.json').write_text(
+              json.dumps(report, ensure_ascii=False, indent=2) + '\n',
+              encoding='utf-8',
+          )
+          Path('pokemon-central-item-pairs.json').write_text(
+              json.dumps(central_pairs, ensure_ascii=False, indent=2) + '\n',
+              encoding='utf-8',
+          )
+          print(json.dumps({key: report[key] for key in [
+              'catalogCount', 'typeCounts', 'pokeapiExactIdMatches',
+              'unmatchedCount', 'pokemonCentralPairCount',
+              'crossReferenceDisagreementCount'
+          ]}, ensure_ascii=False, indent=2))
+          PY
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: item-name-audit
+          path: |
+            item-name-audit.json
+            pokemon-central-item-pairs.json
+          retention-days: 2

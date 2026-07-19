@@ -1,0 +1,40 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/abilities.json",
+  "range": {
+    "fromIndex": 241,
+    "toIndex": 250
+  },
+  "items": {
+    "shed-skin": {
+      "description": "Se questo Pokémon subisce una condizione negativa, può tirare d4 alla fine di ciascuno dei propri turni. Con un risultato di 4, guarisce dalla condizione."
+    },
+    "sheer-force": {
+      "description": "Quando usa una mossa che può imporre una modifica alle statistiche o infliggere una condizione, questo Pokémon può invece raddoppiare il modificatore MOVE, ma non lo STAB, ai danni; in tal caso l’effetto aggiuntivo non può verificarsi."
+    },
+    "shell-armor": {
+      "description": "Questo Pokémon è immune ai danni aggiuntivi inflitti da un colpo critico."
+    },
+    "shield-dust": {
+      "description": "Una volta per riposo lungo, questo Pokémon può ignorare una condizione negativa causata da una mossa nemica."
+    },
+    "shields-down": {
+      "description": "Questo Pokémon è immune alle condizioni di stato non volatili mentre si trova in Meteor Form. Quando scende sotto il 50% dei PF massimi, il guscio esterno si rompe e assume Core Form. In Core Form aggiunge 6 punti alla DES, ma riduce la CA di 4. Deve completare un riposo breve per tornare in Meteor Form."
+    },
+    "simple": {
+      "description": "Una volta per riposo breve, questo Pokémon può raddoppiare il proprio modificatore della mossa per un singolo tiro per colpire o tiro per i danni."
+    },
+    "skill-link": {
+      "description": "Le mosse Combo che possono colpire più volte dopo lo stesso tiro per colpire colpiscono garantitamente almeno due volte, come Fury Swipes, Double Slap e Water Shuriken."
+    },
+    "slow-start": {
+      "description": "Per i primi due round di ogni lotta, la velocità di questo Pokémon è dimezzata e i suoi attacchi hanno svantaggio."
+    },
+    "slush-rush": {
+      "description": "Questo Pokémon è immune ai danni di Hail e la sua velocità raddoppia in condizioni artiche o durante una grandinata."
+    },
+    "sniper": {
+      "description": "Quando questo Pokémon mette a segno un colpo critico, triplica i dadi invece di raddoppiarli."
+    }
+  }
+}

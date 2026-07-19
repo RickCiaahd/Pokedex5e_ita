@@ -8,6 +8,7 @@ import 'ability_localization_repository.dart';
 
 class AbilityRepository {
   Map<String, String>? _descriptionCache;
+  Map<String, String>? _displayNameCache;
   List<PokemonAbility>? _webAbilityCache;
   Set<String>? _deprecatedAbilityCache;
 
@@ -44,6 +45,24 @@ class AbilityRepository {
     };
   }
 
+  Future<Map<String, String>> getAbilityDisplayNames({int? pokemonId}) async {
+    if (_displayNameCache == null) {
+      final abilities = await getWebAbilities(includeDeprecated: true);
+      _displayNameCache = {
+        for (final ability in abilities) ability.name: ability.displayName,
+      };
+    }
+
+    if (pokemonId == null) return _displayNameCache!;
+    final customAbilities = CustomPokemonRuntimeRegistry.abilityCatalogFor(
+      pokemonId,
+    );
+    return {
+      ..._displayNameCache!,
+      for (final name in customAbilities.keys) name: name,
+    };
+  }
+
   Future<List<PokemonAbility>> getWebAbilities({
     bool includeDeprecated = false,
   }) async {
@@ -53,8 +72,10 @@ class AbilityRepository {
       );
       final json = Map<String, dynamic>.from(jsonDecode(jsonString));
       final abilityJson = List<dynamic>.from(json['items'] ?? const []);
-      final localizedDescriptions =
-          await AbilityLocalizationRepository().getDescriptions();
+      final localizationRepository = AbilityLocalizationRepository();
+      final localizedDescriptions = await localizationRepository
+          .getDescriptions();
+      final localizedNames = await localizationRepository.getNames();
 
       _webAbilityCache =
           abilityJson
@@ -70,13 +91,18 @@ class AbilityRepository {
                 (ability) => PokemonAbility(
                   id: ability.id,
                   name: ability.name,
+                  displayName: localizedNames[ability.id] ?? ability.name,
                   description:
                       localizedDescriptions[ability.id] ?? ability.description,
                   deprecated: ability.deprecated,
                 ),
               )
               .toList(growable: false)
-            ..sort((a, b) => a.name.compareTo(b.name));
+            ..sort(
+              (a, b) => a.displayName.toLowerCase().compareTo(
+                b.displayName.toLowerCase(),
+              ),
+            );
     }
 
     final abilities = _webAbilityCache!;

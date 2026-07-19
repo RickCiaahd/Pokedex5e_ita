@@ -1,0 +1,1565 @@
+{
+  "locale": "it",
+  "source": "https://wiki.pokemoncentral.it/Abilit%C3%A0",
+  "crossReference": [
+    "https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/abilities.csv",
+    "https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/ability_names.csv"
+  ],
+  "catalogCount": 330,
+  "matchedCount": 308,
+  "unmatchedCount": 22,
+  "crossReferenceDifferences": [
+    {
+      "number": 38,
+      "pokeapi": "Velenopunto",
+      "pokemonCentral": "Velenopunte"
+    },
+    {
+      "number": 288,
+      "pokeapi": "Ritmo d’Oricalco",
+      "pokemonCentral": "Ritmo d'Oricalco"
+    }
+  ],
+  "items": {
+    "adaptability": {
+      "officialNumber": 91,
+      "sourceName": "Adaptability",
+      "name": "Adattabilità"
+    },
+    "aftermath": {
+      "officialNumber": 106,
+      "sourceName": "Aftermath",
+      "name": "Scoppio"
+    },
+    "air-lock": {
+      "officialNumber": 76,
+      "sourceName": "Air Lock",
+      "name": "Riparo"
+    },
+    "analytic": {
+      "officialNumber": 148,
+      "sourceName": "Analytic",
+      "name": "Ponderazione"
+    },
+    "anger-point": {
+      "officialNumber": 83,
+      "sourceName": "Anger Point",
+      "name": "Grancollera"
+    },
+    "anger-shell": {
+      "officialNumber": 271,
+      "sourceName": "Anger Shell",
+      "name": "Iraguscio"
+    },
+    "anticipation": {
+      "officialNumber": 107,
+      "sourceName": "Anticipation",
+      "name": "Presagio"
+    },
+    "arena-trap": {
+      "officialNumber": 71,
+      "sourceName": "Arena Trap",
+      "name": "Trappoarena"
+    },
+    "armor-tail": {
+      "officialNumber": 296,
+      "sourceName": "Armor Tail",
+      "name": "Codarmatura"
+    },
+    "aroma-veil": {
+      "officialNumber": 165,
+      "sourceName": "Aroma Veil",
+      "name": "Aromavelo"
+    },
+    "as-one": {
+      "officialNumber": 266,
+      "sourceName": "As One",
+      "name": "Sintonia Equina"
+    },
+    "aura-break": {
+      "officialNumber": 188,
+      "sourceName": "Aura Break",
+      "name": "Frangiaura"
+    },
+    "bad-dreams": {
+      "officialNumber": 123,
+      "sourceName": "Bad Dreams",
+      "name": "Sogniamari"
+    },
+    "ball-fetch": {
+      "officialNumber": 237,
+      "sourceName": "Ball Fetch",
+      "name": "Raccattapalle"
+    },
+    "battery": {
+      "officialNumber": 217,
+      "sourceName": "Battery",
+      "name": "Batteria"
+    },
+    "battle-armor": {
+      "officialNumber": 4,
+      "sourceName": "Battle Armor",
+      "name": "Lottascudo"
+    },
+    "beads-of-ruin": {
+      "officialNumber": 287,
+      "sourceName": "Beads of Ruin",
+      "name": "Monile Nefasto"
+    },
+    "beast-boost": {
+      "officialNumber": 224,
+      "sourceName": "Beast Boost",
+      "name": "Ultraboost"
+    },
+    "berserk": {
+      "officialNumber": 201,
+      "sourceName": "Berserk",
+      "name": "Furore"
+    },
+    "big-pecks": {
+      "officialNumber": 145,
+      "sourceName": "Big Pecks",
+      "name": "Pettinfuori"
+    },
+    "blaze": {
+      "officialNumber": 66,
+      "sourceName": "Blaze",
+      "name": "Aiutofuoco"
+    },
+    "bulletproof": {
+      "officialNumber": 171,
+      "sourceName": "Bulletproof",
+      "name": "Antiproiettile"
+    },
+    "cheek-pouch": {
+      "officialNumber": 167,
+      "sourceName": "Cheek Pouch",
+      "name": "Guancegonfie"
+    },
+    "chilling-neigh": {
+      "officialNumber": 264,
+      "sourceName": "Chilling Neigh",
+      "name": "Nitrito Bianco"
+    },
+    "chlorophyll": {
+      "officialNumber": 34,
+      "sourceName": "Chlorophyll",
+      "name": "Clorofilla"
+    },
+    "clear-body": {
+      "officialNumber": 29,
+      "sourceName": "Clear Body",
+      "name": "Corpochiaro"
+    },
+    "cloud-nine": {
+      "officialNumber": 13,
+      "sourceName": "Cloud Nine",
+      "name": "Antimeteo"
+    },
+    "color-change": {
+      "officialNumber": 16,
+      "sourceName": "Color Change",
+      "name": "Cambiacolore"
+    },
+    "comatose": {
+      "officialNumber": 213,
+      "sourceName": "Comatose",
+      "name": "Sonno Assoluto"
+    },
+    "commander": {
+      "officialNumber": 279,
+      "sourceName": "Commander",
+      "name": "Torre di Comando"
+    },
+    "competitive": {
+      "officialNumber": 172,
+      "sourceName": "Competitive",
+      "name": "Tenacia"
+    },
+    "compound-eyes": {
+      "officialNumber": 14,
+      "sourceName": "Compound Eyes",
+      "name": "Insettocchi"
+    },
+    "contrary": {
+      "officialNumber": 126,
+      "sourceName": "Contrary",
+      "name": "Inversione"
+    },
+    "corrosion": {
+      "officialNumber": 212,
+      "sourceName": "Corrosion",
+      "name": "Corrosione"
+    },
+    "costar": {
+      "officialNumber": 294,
+      "sourceName": "Costar",
+      "name": "Coprotagonismo"
+    },
+    "cotton-down": {
+      "officialNumber": 238,
+      "sourceName": "Cotton Down",
+      "name": "Lanugine"
+    },
+    "cud-chew": {
+      "officialNumber": 291,
+      "sourceName": "Cud Chew",
+      "name": "Ruminante"
+    },
+    "curious-medicine": {
+      "officialNumber": 261,
+      "sourceName": "Curious Medicine",
+      "name": "Stranofarmaco"
+    },
+    "cursed-body": {
+      "officialNumber": 130,
+      "sourceName": "Cursed Body",
+      "name": "Corpofunesto"
+    },
+    "cute-charm": {
+      "officialNumber": 56,
+      "sourceName": "Cute Charm",
+      "name": "Incantevole"
+    },
+    "damp": {
+      "officialNumber": 6,
+      "sourceName": "Damp",
+      "name": "Umidità"
+    },
+    "dancer": {
+      "officialNumber": 216,
+      "sourceName": "Dancer",
+      "name": "Sincrodanza"
+    },
+    "dark-aura": {
+      "officialNumber": 186,
+      "sourceName": "Dark Aura",
+      "name": "Auratetra"
+    },
+    "dauntless-shield": {
+      "officialNumber": 235,
+      "sourceName": "Dauntless Shield",
+      "name": "Scudo Saldo"
+    },
+    "dazzling": {
+      "officialNumber": 219,
+      "sourceName": "Dazzling",
+      "name": "Corposgargiante"
+    },
+    "defeatist": {
+      "officialNumber": 129,
+      "sourceName": "Defeatist",
+      "name": "Sconforto"
+    },
+    "defiant": {
+      "officialNumber": 128,
+      "sourceName": "Defiant",
+      "name": "Agonismo"
+    },
+    "desolate-land": {
+      "officialNumber": 190,
+      "sourceName": "Desolate Land",
+      "name": "Terra Estrema"
+    },
+    "disguise": {
+      "officialNumber": 209,
+      "sourceName": "Disguise",
+      "name": "Fantasmanto"
+    },
+    "download": {
+      "officialNumber": 88,
+      "sourceName": "Download",
+      "name": "Download"
+    },
+    "dragons-maw": {
+      "officialNumber": 263,
+      "sourceName": "Dragon's Maw",
+      "name": "Dragomascelle"
+    },
+    "drizzle": {
+      "officialNumber": 2,
+      "sourceName": "Drizzle",
+      "name": "Piovischio"
+    },
+    "drought": {
+      "officialNumber": 70,
+      "sourceName": "Drought",
+      "name": "Siccità"
+    },
+    "dry-skin": {
+      "officialNumber": 87,
+      "sourceName": "Dry Skin",
+      "name": "Pellearsa"
+    },
+    "early-bird": {
+      "officialNumber": 48,
+      "sourceName": "Early Bird",
+      "name": "Sveglialampo"
+    },
+    "earth-eater": {
+      "officialNumber": 297,
+      "sourceName": "Earth Eater",
+      "name": "Mangiaterra"
+    },
+    "effect-spore": {
+      "officialNumber": 27,
+      "sourceName": "Effect Spore",
+      "name": "Spargispora"
+    },
+    "electric-surge": {
+      "officialNumber": 226,
+      "sourceName": "Electric Surge",
+      "name": "Elettrogenesi"
+    },
+    "electromorphosis": {
+      "officialNumber": 280,
+      "sourceName": "Electromorphosis",
+      "name": "Convertivolt"
+    },
+    "embody-aspect-cornerstone": {
+      "officialNumber": 304,
+      "sourceName": "Embody Aspect (Cornerstone)",
+      "name": "Albergamemorie"
+    },
+    "embody-aspect-heartflame": {
+      "officialNumber": 302,
+      "sourceName": "Embody Aspect (Heartflame)",
+      "name": "Albergamemorie"
+    },
+    "embody-aspect-teal": {
+      "officialNumber": 301,
+      "sourceName": "Embody Aspect (Teal)",
+      "name": "Albergamemorie"
+    },
+    "embody-aspect-wellspring": {
+      "officialNumber": 303,
+      "sourceName": "Embody Aspect (Wellspring)",
+      "name": "Albergamemorie"
+    },
+    "emergency-exit": {
+      "officialNumber": 194,
+      "sourceName": "Emergency Exit",
+      "name": "Passoindietro"
+    },
+    "fairy-aura": {
+      "officialNumber": 187,
+      "sourceName": "Fairy Aura",
+      "name": "Aurafolletto"
+    },
+    "filter": {
+      "officialNumber": 111,
+      "sourceName": "Filter",
+      "name": "Filtro"
+    },
+    "flame-body": {
+      "officialNumber": 49,
+      "sourceName": "Flame Body",
+      "name": "Corpodifuoco"
+    },
+    "flare-boost": {
+      "officialNumber": 138,
+      "sourceName": "Flare Boost",
+      "name": "Bruciaimpeto"
+    },
+    "flash-fire": {
+      "officialNumber": 18,
+      "sourceName": "Flash Fire",
+      "name": "Fuocardore"
+    },
+    "flower-gift": {
+      "officialNumber": 122,
+      "sourceName": "Flower Gift",
+      "name": "Regalfiore"
+    },
+    "flower-veil": {
+      "officialNumber": 166,
+      "sourceName": "Flower Veil",
+      "name": "Fiorvelo"
+    },
+    "fluffy": {
+      "officialNumber": 218,
+      "sourceName": "Fluffy",
+      "name": "Morbidone"
+    },
+    "forecast": {
+      "officialNumber": 59,
+      "sourceName": "Forecast",
+      "name": "Previsioni"
+    },
+    "forewarn": {
+      "officialNumber": 108,
+      "sourceName": "Forewarn",
+      "name": "Premonizione"
+    },
+    "friend-guard": {
+      "officialNumber": 132,
+      "sourceName": "Friend Guard",
+      "name": "Amicoscudo"
+    },
+    "frisk": {
+      "officialNumber": 119,
+      "sourceName": "Frisk",
+      "name": "Indagine"
+    },
+    "full-metal-body": {
+      "officialNumber": 230,
+      "sourceName": "Full Metal Body",
+      "name": "Metalprotezione"
+    },
+    "fur-coat": {
+      "officialNumber": 169,
+      "sourceName": "Fur Coat",
+      "name": "Foltopelo"
+    },
+    "gale-wings": {
+      "officialNumber": 177,
+      "sourceName": "Gale Wings",
+      "name": "Aliraffica"
+    },
+    "galvanize": {
+      "officialNumber": 206,
+      "sourceName": "Galvanize",
+      "name": "Pellelettro"
+    },
+    "gluttony": {
+      "officialNumber": 82,
+      "sourceName": "Gluttony",
+      "name": "Voracità"
+    },
+    "gooey": {
+      "officialNumber": 183,
+      "sourceName": "Gooey",
+      "name": "Viscosità"
+    },
+    "good-as-gold": {
+      "officialNumber": 283,
+      "sourceName": "Good as Gold",
+      "name": "Corpo Aureo"
+    },
+    "gorilla-tactics": {
+      "officialNumber": 255,
+      "sourceName": "Gorilla Tactics",
+      "name": "Vigorilla"
+    },
+    "grass-pelt": {
+      "officialNumber": 179,
+      "sourceName": "Grass Pelt",
+      "name": "Peloderba"
+    },
+    "grassy-surge": {
+      "officialNumber": 229,
+      "sourceName": "Grassy Surge",
+      "name": "Erbogenesi"
+    },
+    "grim-neigh": {
+      "officialNumber": 265,
+      "sourceName": "Grim Neigh",
+      "name": "Nitrito Nero"
+    },
+    "guard-dog": {
+      "officialNumber": 275,
+      "sourceName": "Guard Dog",
+      "name": "Cane da Guardia"
+    },
+    "gulp-missile": {
+      "officialNumber": 241,
+      "sourceName": "Gulp Missile",
+      "name": "Inghiottimissile"
+    },
+    "guts": {
+      "officialNumber": 62,
+      "sourceName": "Guts",
+      "name": "Dentistretti"
+    },
+    "hadron-engine": {
+      "officialNumber": 289,
+      "sourceName": "Hadron Engine",
+      "name": "Motore Adronico"
+    },
+    "harvest": {
+      "officialNumber": 139,
+      "sourceName": "Harvest",
+      "name": "Coglibacche"
+    },
+    "healer": {
+      "officialNumber": 131,
+      "sourceName": "Healer",
+      "name": "Curacuore"
+    },
+    "heatproof": {
+      "officialNumber": 85,
+      "sourceName": "Heatproof",
+      "name": "Antifuoco"
+    },
+    "heavy-metal": {
+      "officialNumber": 134,
+      "sourceName": "Heavy Metal",
+      "name": "Metalpesante"
+    },
+    "honey-gather": {
+      "officialNumber": 118,
+      "sourceName": "Honey Gather",
+      "name": "Mielincetta"
+    },
+    "hospitality": {
+      "officialNumber": 299,
+      "sourceName": "Hospitality",
+      "name": "Ospitalità"
+    },
+    "huge-power": {
+      "officialNumber": 37,
+      "sourceName": "Huge Power",
+      "name": "Macroforza"
+    },
+    "hunger-switch": {
+      "officialNumber": 258,
+      "sourceName": "Hunger Switch",
+      "name": "Pancialterna"
+    },
+    "hustle": {
+      "officialNumber": 55,
+      "sourceName": "Hustle",
+      "name": "Tuttafretta"
+    },
+    "hydration": {
+      "officialNumber": 93,
+      "sourceName": "Hydration",
+      "name": "Idratazione"
+    },
+    "hyper-cutter": {
+      "officialNumber": 52,
+      "sourceName": "Hyper Cutter",
+      "name": "Ipertaglio"
+    },
+    "ice-body": {
+      "officialNumber": 115,
+      "sourceName": "Ice Body",
+      "name": "Corpogelo"
+    },
+    "ice-face": {
+      "officialNumber": 248,
+      "sourceName": "Ice Face",
+      "name": "Gelofaccia"
+    },
+    "ice-scales": {
+      "officialNumber": 246,
+      "sourceName": "Ice Scales",
+      "name": "Geloscaglie"
+    },
+    "illuminate": {
+      "officialNumber": 35,
+      "sourceName": "Illuminate",
+      "name": "Risplendi"
+    },
+    "illusion": {
+      "officialNumber": 149,
+      "sourceName": "Illusion",
+      "name": "Illusione"
+    },
+    "immunity": {
+      "officialNumber": 17,
+      "sourceName": "Immunity",
+      "name": "Immunità"
+    },
+    "imposter": {
+      "officialNumber": 150,
+      "sourceName": "Imposter",
+      "name": "Sosia"
+    },
+    "infiltrator": {
+      "officialNumber": 151,
+      "sourceName": "Infiltrator",
+      "name": "Intrapasso"
+    },
+    "innards-out": {
+      "officialNumber": 215,
+      "sourceName": "Innards Out",
+      "name": "Espellinterno"
+    },
+    "inner-focus": {
+      "officialNumber": 39,
+      "sourceName": "Inner Focus",
+      "name": "Forza Interiore"
+    },
+    "insomnia": {
+      "officialNumber": 15,
+      "sourceName": "Insomnia",
+      "name": "Insonnia"
+    },
+    "intimidate": {
+      "officialNumber": 22,
+      "sourceName": "Intimidate",
+      "name": "Prepotenza"
+    },
+    "intrepid-sword": {
+      "officialNumber": 234,
+      "sourceName": "Intrepid Sword",
+      "name": "Spada Indomita"
+    },
+    "iron-barbs": {
+      "officialNumber": 160,
+      "sourceName": "Iron Barbs",
+      "name": "Spineferrate"
+    },
+    "iron-fist": {
+      "officialNumber": 89,
+      "sourceName": "Iron Fist",
+      "name": "Ferropugno"
+    },
+    "justified": {
+      "officialNumber": 154,
+      "sourceName": "Justified",
+      "name": "Giustizia"
+    },
+    "keen-eye": {
+      "officialNumber": 51,
+      "sourceName": "Keen Eye",
+      "name": "Sguardofermo"
+    },
+    "klutz": {
+      "officialNumber": 103,
+      "sourceName": "Klutz",
+      "name": "Impaccio"
+    },
+    "leaf-guard": {
+      "officialNumber": 102,
+      "sourceName": "Leaf Guard",
+      "name": "Fogliamanto"
+    },
+    "levitate": {
+      "officialNumber": 26,
+      "sourceName": "Levitate",
+      "name": "Levitazione"
+    },
+    "libero": {
+      "officialNumber": 236,
+      "sourceName": "Libero",
+      "name": "Libero"
+    },
+    "light-metal": {
+      "officialNumber": 135,
+      "sourceName": "Light Metal",
+      "name": "Metalleggero"
+    },
+    "lightning-rod": {
+      "officialNumber": 31,
+      "sourceName": "Lightning Rod",
+      "name": "Parafulmine"
+    },
+    "limber": {
+      "officialNumber": 7,
+      "sourceName": "Limber",
+      "name": "Scioltezza"
+    },
+    "lingering-aroma": {
+      "officialNumber": 268,
+      "sourceName": "Lingering Aroma",
+      "name": "Odore Tenace"
+    },
+    "liquid-ooze": {
+      "officialNumber": 64,
+      "sourceName": "Liquid Ooze",
+      "name": "Melma"
+    },
+    "liquid-voice": {
+      "officialNumber": 204,
+      "sourceName": "Liquid Voice",
+      "name": "Idrovoce"
+    },
+    "long-reach": {
+      "officialNumber": 203,
+      "sourceName": "Long Reach",
+      "name": "Distacco"
+    },
+    "magic-bounce": {
+      "officialNumber": 156,
+      "sourceName": "Magic Bounce",
+      "name": "Magispecchio"
+    },
+    "magic-guard": {
+      "officialNumber": 98,
+      "sourceName": "Magic Guard",
+      "name": "Magicscudo"
+    },
+    "magma-armor": {
+      "officialNumber": 40,
+      "sourceName": "Magma Armor",
+      "name": "Magmascudo"
+    },
+    "magician": {
+      "officialNumber": 170,
+      "sourceName": "Magician",
+      "name": "Prestigiatore"
+    },
+    "magnet-pull": {
+      "officialNumber": 42,
+      "sourceName": "Magnet Pull",
+      "name": "Magnetismo"
+    },
+    "marvel-scale": {
+      "officialNumber": 63,
+      "sourceName": "Marvel Scale",
+      "name": "Pelledura"
+    },
+    "mega-launcher": {
+      "officialNumber": 178,
+      "sourceName": "Mega Launcher",
+      "name": "Megalancio"
+    },
+    "merciless": {
+      "officialNumber": 196,
+      "sourceName": "Merciless",
+      "name": "Spietatezza"
+    },
+    "mimicry": {
+      "officialNumber": 250,
+      "sourceName": "Mimicry",
+      "name": "Mimetismo"
+    },
+    "minds-eye": {
+      "officialNumber": 300,
+      "sourceName": "Mind's Eye",
+      "name": "Occhio Interiore"
+    },
+    "minus": {
+      "officialNumber": 58,
+      "sourceName": "Minus",
+      "name": "Meno"
+    },
+    "mirror-armor": {
+      "officialNumber": 240,
+      "sourceName": "Mirror Armor",
+      "name": "Blindospecchio"
+    },
+    "misty-surge": {
+      "officialNumber": 228,
+      "sourceName": "Misty Surge",
+      "name": "Nebbiogenesi"
+    },
+    "moody": {
+      "officialNumber": 141,
+      "sourceName": "Moody",
+      "name": "Altalena"
+    },
+    "motor-drive": {
+      "officialNumber": 78,
+      "sourceName": "Motor Drive",
+      "name": "Elettrorapid"
+    },
+    "moxie": {
+      "officialNumber": 153,
+      "sourceName": "Moxie",
+      "name": "Arroganza"
+    },
+    "multiscale": {
+      "officialNumber": 136,
+      "sourceName": "Multiscale",
+      "name": "Multisquame"
+    },
+    "multitype": {
+      "officialNumber": 121,
+      "sourceName": "Multitype",
+      "name": "Multitipo"
+    },
+    "mummy": {
+      "officialNumber": 152,
+      "sourceName": "Mummy",
+      "name": "Mummia"
+    },
+    "mycelium-might": {
+      "officialNumber": 298,
+      "sourceName": "Mycelium Might",
+      "name": "Micoforza"
+    },
+    "natural-cure": {
+      "officialNumber": 30,
+      "sourceName": "Natural Cure",
+      "name": "Alternacura"
+    },
+    "neuroforce": {
+      "officialNumber": 233,
+      "sourceName": "Neuroforce",
+      "name": "Cerebroforza"
+    },
+    "neutralizing-gas": {
+      "officialNumber": 256,
+      "sourceName": "Neutralizing Gas",
+      "name": "Gas Reagente"
+    },
+    "no-guard": {
+      "officialNumber": 99,
+      "sourceName": "No Guard",
+      "name": "Nullodifesa"
+    },
+    "normalize": {
+      "officialNumber": 96,
+      "sourceName": "Normalize",
+      "name": "Normalità"
+    },
+    "oblivious": {
+      "officialNumber": 12,
+      "sourceName": "Oblivious",
+      "name": "Indifferenza"
+    },
+    "opportunist": {
+      "officialNumber": 290,
+      "sourceName": "Opportunist",
+      "name": "Scrocco"
+    },
+    "orichalcum-pulse": {
+      "officialNumber": 288,
+      "sourceName": "Orichalcum Pulse",
+      "name": "Ritmo d'Oricalco"
+    },
+    "overcoat": {
+      "officialNumber": 142,
+      "sourceName": "Overcoat",
+      "name": "Copricapo"
+    },
+    "overgrow": {
+      "officialNumber": 65,
+      "sourceName": "Overgrow",
+      "name": "Erbaiuto"
+    },
+    "own-tempo": {
+      "officialNumber": 20,
+      "sourceName": "Own Tempo",
+      "name": "Mente Locale"
+    },
+    "pastel-veil": {
+      "officialNumber": 257,
+      "sourceName": "Pastel Veil",
+      "name": "Pastelvelo"
+    },
+    "perish-body": {
+      "officialNumber": 253,
+      "sourceName": "Perish Body",
+      "name": "Ultimotocco"
+    },
+    "pickpocket": {
+      "officialNumber": 124,
+      "sourceName": "Pickpocket",
+      "name": "Arraffalesto"
+    },
+    "pickup": {
+      "officialNumber": 53,
+      "sourceName": "Pickup",
+      "name": "Raccolta"
+    },
+    "pixilate": {
+      "officialNumber": 182,
+      "sourceName": "Pixilate",
+      "name": "Pellefolletto"
+    },
+    "plus": {
+      "officialNumber": 57,
+      "sourceName": "Plus",
+      "name": "Più"
+    },
+    "poison-heal": {
+      "officialNumber": 90,
+      "sourceName": "Poison Heal",
+      "name": "Velencura"
+    },
+    "poison-point": {
+      "officialNumber": 38,
+      "sourceName": "Poison Point",
+      "name": "Velenopunte"
+    },
+    "poison-puppeteer": {
+      "officialNumber": 310,
+      "sourceName": "Poison Puppeteer",
+      "name": "Malia Tossica"
+    },
+    "poison-touch": {
+      "officialNumber": 143,
+      "sourceName": "Poison Touch",
+      "name": "Velentocco"
+    },
+    "power-construct-10": {
+      "officialNumber": 211,
+      "sourceName": "Power Construct (10%)",
+      "name": "Sciamefusione"
+    },
+    "power-construct-100": {
+      "officialNumber": 211,
+      "sourceName": "Power Construct (100%)",
+      "name": "Sciamefusione"
+    },
+    "power-construct-50": {
+      "officialNumber": 211,
+      "sourceName": "Power Construct (50%)",
+      "name": "Sciamefusione"
+    },
+    "power-of-alchemy": {
+      "officialNumber": 223,
+      "sourceName": "Power of Alchemy",
+      "name": "Forza Chimica"
+    },
+    "power-spot": {
+      "officialNumber": 249,
+      "sourceName": "Power Spot",
+      "name": "Fonte Energetica"
+    },
+    "prankster": {
+      "officialNumber": 158,
+      "sourceName": "Prankster",
+      "name": "Burla"
+    },
+    "pressure": {
+      "officialNumber": 46,
+      "sourceName": "Pressure",
+      "name": "Pressione"
+    },
+    "primordial-sea": {
+      "officialNumber": 189,
+      "sourceName": "Primordial Sea",
+      "name": "Mare Primordiale"
+    },
+    "prism-armor": {
+      "officialNumber": 232,
+      "sourceName": "Prism Armor",
+      "name": "Scudoprisma"
+    },
+    "propeller-tail": {
+      "officialNumber": 239,
+      "sourceName": "Propeller Tail",
+      "name": "Elicopinna"
+    },
+    "protean": {
+      "officialNumber": 168,
+      "sourceName": "Protean",
+      "name": "Mutatipo"
+    },
+    "protosynthesis": {
+      "officialNumber": 281,
+      "sourceName": "Protosynthesis",
+      "name": "Paleoattivazione"
+    },
+    "psychic-surge": {
+      "officialNumber": 227,
+      "sourceName": "Psychic Surge",
+      "name": "Psicogenesi"
+    },
+    "punk-rock": {
+      "officialNumber": 244,
+      "sourceName": "Punk Rock",
+      "name": "Punk Rock"
+    },
+    "pure-power": {
+      "officialNumber": 74,
+      "sourceName": "Pure Power",
+      "name": "Forzapura"
+    },
+    "purifying-salt": {
+      "officialNumber": 272,
+      "sourceName": "Purifying Salt",
+      "name": "Sale Purificante"
+    },
+    "queenly-majesty": {
+      "officialNumber": 214,
+      "sourceName": "Queenly Majesty",
+      "name": "Regalità"
+    },
+    "quick-draw": {
+      "officialNumber": 259,
+      "sourceName": "Quick Draw",
+      "name": "Colpolesto"
+    },
+    "quick-feet": {
+      "officialNumber": 95,
+      "sourceName": "Quick Feet",
+      "name": "Piedisvelti"
+    },
+    "quark-drive": {
+      "officialNumber": 282,
+      "sourceName": "Quark Drive",
+      "name": "Carica Quark"
+    },
+    "rain-dish": {
+      "officialNumber": 44,
+      "sourceName": "Rain Dish",
+      "name": "Copripioggia"
+    },
+    "rattled": {
+      "officialNumber": 155,
+      "sourceName": "Rattled",
+      "name": "Paura"
+    },
+    "receiver": {
+      "officialNumber": 222,
+      "sourceName": "Receiver",
+      "name": "Ricezione"
+    },
+    "reckless": {
+      "officialNumber": 120,
+      "sourceName": "Reckless",
+      "name": "Temerarietà"
+    },
+    "refrigerate": {
+      "officialNumber": 174,
+      "sourceName": "Refrigerate",
+      "name": "Pellegelo"
+    },
+    "regenerator": {
+      "officialNumber": 144,
+      "sourceName": "Regenerator",
+      "name": "Rigenergia"
+    },
+    "ripen": {
+      "officialNumber": 247,
+      "sourceName": "Ripen",
+      "name": "Maturazione"
+    },
+    "rivalry": {
+      "officialNumber": 79,
+      "sourceName": "Rivalry",
+      "name": "Antagonismo"
+    },
+    "rks-system": {
+      "officialNumber": 225,
+      "sourceName": "RKS System",
+      "name": "Sistema Primevo"
+    },
+    "rock-head": {
+      "officialNumber": 69,
+      "sourceName": "Rock Head",
+      "name": "Testadura"
+    },
+    "rocky-payload": {
+      "officialNumber": 276,
+      "sourceName": "Rocky Payload",
+      "name": "Portamassi"
+    },
+    "rough-skin": {
+      "officialNumber": 24,
+      "sourceName": "Rough Skin",
+      "name": "Cartavetro"
+    },
+    "run-away": {
+      "officialNumber": 50,
+      "sourceName": "Run Away",
+      "name": "Fugafacile"
+    },
+    "sand-force": {
+      "officialNumber": 159,
+      "sourceName": "Sand Force",
+      "name": "Silicoforza"
+    },
+    "sand-rush": {
+      "officialNumber": 146,
+      "sourceName": "Sand Rush",
+      "name": "Remasabbia"
+    },
+    "sand-spit": {
+      "officialNumber": 245,
+      "sourceName": "Sand Spit",
+      "name": "Sputasabbia"
+    },
+    "sand-stream": {
+      "officialNumber": 45,
+      "sourceName": "Sand Stream",
+      "name": "Sabbiafiume"
+    },
+    "sand-veil": {
+      "officialNumber": 8,
+      "sourceName": "Sand Veil",
+      "name": "Sabbiavelo"
+    },
+    "sap-sipper": {
+      "officialNumber": 157,
+      "sourceName": "Sap Sipper",
+      "name": "Mangiaerba"
+    },
+    "schooling": {
+      "officialNumber": 208,
+      "sourceName": "Schooling",
+      "name": "Banco"
+    },
+    "screen-cleaner": {
+      "officialNumber": 251,
+      "sourceName": "Screen Cleaner",
+      "name": "Annullabarriere"
+    },
+    "scrappy": {
+      "officialNumber": 113,
+      "sourceName": "Scrappy",
+      "name": "Nervisaldi"
+    },
+    "seed-sower": {
+      "officialNumber": 269,
+      "sourceName": "Seed Sower",
+      "name": "Spargisemi"
+    },
+    "serene-grace": {
+      "officialNumber": 32,
+      "sourceName": "Serene Grace",
+      "name": "Leggiadro"
+    },
+    "shadow-shield": {
+      "officialNumber": 231,
+      "sourceName": "Shadow Shield",
+      "name": "Spettroguardia"
+    },
+    "shadow-tag": {
+      "officialNumber": 23,
+      "sourceName": "Shadow Tag",
+      "name": "Pedinombra"
+    },
+    "sharpness": {
+      "officialNumber": 292,
+      "sourceName": "Sharpness",
+      "name": "Affilama"
+    },
+    "shed-skin": {
+      "officialNumber": 61,
+      "sourceName": "Shed Skin",
+      "name": "Muta"
+    },
+    "sheer-force": {
+      "officialNumber": 125,
+      "sourceName": "Sheer Force",
+      "name": "Forzabruta"
+    },
+    "shell-armor": {
+      "officialNumber": 75,
+      "sourceName": "Shell Armor",
+      "name": "Guscioscudo"
+    },
+    "shield-dust": {
+      "officialNumber": 19,
+      "sourceName": "Shield Dust",
+      "name": "Polvoscudo"
+    },
+    "shields-down": {
+      "officialNumber": 197,
+      "sourceName": "Shields Down",
+      "name": "Scudosoglia"
+    },
+    "simple": {
+      "officialNumber": 86,
+      "sourceName": "Simple",
+      "name": "Disinvoltura"
+    },
+    "skill-link": {
+      "officialNumber": 92,
+      "sourceName": "Skill Link",
+      "name": "Abillegame"
+    },
+    "slow-start": {
+      "officialNumber": 112,
+      "sourceName": "Slow Start",
+      "name": "Lentoinizio"
+    },
+    "slush-rush": {
+      "officialNumber": 202,
+      "sourceName": "Slush Rush",
+      "name": "Spalaneve"
+    },
+    "sniper": {
+      "officialNumber": 97,
+      "sourceName": "Sniper",
+      "name": "Cecchino"
+    },
+    "snow-cloak": {
+      "officialNumber": 81,
+      "sourceName": "Snow Cloak",
+      "name": "Mantelneve"
+    },
+    "snow-warning": {
+      "officialNumber": 117,
+      "sourceName": "Snow Warning",
+      "name": "Scendineve"
+    },
+    "solar-power": {
+      "officialNumber": 94,
+      "sourceName": "Solar Power",
+      "name": "Solarpotere"
+    },
+    "solid-rock": {
+      "officialNumber": 116,
+      "sourceName": "Solid Rock",
+      "name": "Solidroccia"
+    },
+    "soul-heart": {
+      "officialNumber": 220,
+      "sourceName": "Soul-Heart",
+      "name": "Cuoreanima"
+    },
+    "soundproof": {
+      "officialNumber": 43,
+      "sourceName": "Soundproof",
+      "name": "Antisuono"
+    },
+    "speed-boost": {
+      "officialNumber": 3,
+      "sourceName": "Speed Boost",
+      "name": "Acceleratore"
+    },
+    "stakeout": {
+      "officialNumber": 198,
+      "sourceName": "Stakeout",
+      "name": "Sorveglianza"
+    },
+    "stall": {
+      "officialNumber": 100,
+      "sourceName": "Stall",
+      "name": "Rallentatore"
+    },
+    "stalwart": {
+      "officialNumber": 242,
+      "sourceName": "Stalwart",
+      "name": "Volontà di Ferro"
+    },
+    "stamina": {
+      "officialNumber": 192,
+      "sourceName": "Stamina",
+      "name": "Sopportazione"
+    },
+    "stance-change": {
+      "officialNumber": 176,
+      "sourceName": "Stance Change",
+      "name": "Accendilotta"
+    },
+    "static": {
+      "officialNumber": 9,
+      "sourceName": "Static",
+      "name": "Statico"
+    },
+    "steadfast": {
+      "officialNumber": 80,
+      "sourceName": "Steadfast",
+      "name": "Cuordeciso"
+    },
+    "steam-engine": {
+      "officialNumber": 243,
+      "sourceName": "Steam Engine",
+      "name": "Vapormacchina"
+    },
+    "steelworker": {
+      "officialNumber": 200,
+      "sourceName": "Steelworker",
+      "name": "Tempracciaio"
+    },
+    "steely-spirit": {
+      "officialNumber": 252,
+      "sourceName": "Steely Spirit",
+      "name": "Spiritoferreo"
+    },
+    "stench": {
+      "officialNumber": 1,
+      "sourceName": "Stench",
+      "name": "Tanfo"
+    },
+    "sticky-hold": {
+      "officialNumber": 60,
+      "sourceName": "Sticky Hold",
+      "name": "Antifurto"
+    },
+    "storm-drain": {
+      "officialNumber": 114,
+      "sourceName": "Storm Drain",
+      "name": "Acquascolo"
+    },
+    "strong-jaw": {
+      "officialNumber": 173,
+      "sourceName": "Strong Jaw",
+      "name": "Ferromascella"
+    },
+    "sturdy": {
+      "officialNumber": 5,
+      "sourceName": "Sturdy",
+      "name": "Vigore"
+    },
+    "suction-cups": {
+      "officialNumber": 21,
+      "sourceName": "Suction Cups",
+      "name": "Ventose"
+    },
+    "super-luck": {
+      "officialNumber": 105,
+      "sourceName": "Super Luck",
+      "name": "Supersorte"
+    },
+    "supersweet-syrup": {
+      "officialNumber": 306,
+      "sourceName": "Supersweet Syrup",
+      "name": "Sciroppo Sublime"
+    },
+    "supreme-overlord": {
+      "officialNumber": 293,
+      "sourceName": "Supreme Overlord",
+      "name": "Generale Supremo"
+    },
+    "surge-surfer": {
+      "officialNumber": 207,
+      "sourceName": "Surge Surfer",
+      "name": "Codasurf"
+    },
+    "swarm": {
+      "officialNumber": 68,
+      "sourceName": "Swarm",
+      "name": "Aiutinsetto"
+    },
+    "sweet-veil": {
+      "officialNumber": 175,
+      "sourceName": "Sweet Veil",
+      "name": "Dolcevelo"
+    },
+    "swift-swim": {
+      "officialNumber": 33,
+      "sourceName": "Swift Swim",
+      "name": "Nuotovelox"
+    },
+    "symbiosis": {
+      "officialNumber": 180,
+      "sourceName": "Symbiosis",
+      "name": "Simbiosi"
+    },
+    "synchronize": {
+      "officialNumber": 28,
+      "sourceName": "Synchronize",
+      "name": "Sincronismo"
+    },
+    "tablets-of-ruin": {
+      "officialNumber": 286,
+      "sourceName": "Tablets of Ruin",
+      "name": "Amuleto Nefasto"
+    },
+    "tangled-feet": {
+      "officialNumber": 77,
+      "sourceName": "Tangled Feet",
+      "name": "Intricopiedi"
+    },
+    "tangling-hair": {
+      "officialNumber": 221,
+      "sourceName": "Tangling Hair",
+      "name": "Boccolidoro"
+    },
+    "technician": {
+      "officialNumber": 101,
+      "sourceName": "Technician",
+      "name": "Tecnico"
+    },
+    "telepathy": {
+      "officialNumber": 140,
+      "sourceName": "Telepathy",
+      "name": "Telepatia"
+    },
+    "tera-shell": {
+      "officialNumber": 308,
+      "sourceName": "Tera Shell",
+      "name": "Teraguscio"
+    },
+    "tera-shift": {
+      "officialNumber": 307,
+      "sourceName": "Tera Shift",
+      "name": "Teramorfosi"
+    },
+    "teraform-zero": {
+      "officialNumber": 309,
+      "sourceName": "Teraform Zero",
+      "name": "Zeroformazione"
+    },
+    "teravolt": {
+      "officialNumber": 164,
+      "sourceName": "Teravolt",
+      "name": "Teravolt"
+    },
+    "thermal-exchange": {
+      "officialNumber": 270,
+      "sourceName": "Thermal Exchange",
+      "name": "Termoscambio"
+    },
+    "thick-fat": {
+      "officialNumber": 47,
+      "sourceName": "Thick Fat",
+      "name": "Grassospesso"
+    },
+    "tinted-lens": {
+      "officialNumber": 110,
+      "sourceName": "Tinted Lens",
+      "name": "Lentifumé"
+    },
+    "torrent": {
+      "officialNumber": 67,
+      "sourceName": "Torrent",
+      "name": "Acquaiuto"
+    },
+    "tough-claws": {
+      "officialNumber": 181,
+      "sourceName": "Tough Claws",
+      "name": "Unghiedure"
+    },
+    "toxic-boost": {
+      "officialNumber": 137,
+      "sourceName": "Toxic Boost",
+      "name": "Velenimpeto"
+    },
+    "toxic-chain": {
+      "officialNumber": 305,
+      "sourceName": "Toxic Chain",
+      "name": "Catena Tossica"
+    },
+    "toxic-debris": {
+      "officialNumber": 295,
+      "sourceName": "Toxic Debris",
+      "name": "Mantossina"
+    },
+    "trace": {
+      "officialNumber": 36,
+      "sourceName": "Trace",
+      "name": "Traccia"
+    },
+    "transistor": {
+      "officialNumber": 262,
+      "sourceName": "Transistor",
+      "name": "Transistor"
+    },
+    "triage": {
+      "officialNumber": 205,
+      "sourceName": "Triage",
+      "name": "Primacura"
+    },
+    "truant": {
+      "officialNumber": 54,
+      "sourceName": "Truant",
+      "name": "Pigrone"
+    },
+    "turboblaze": {
+      "officialNumber": 163,
+      "sourceName": "Turboblaze",
+      "name": "Piroturbina"
+    },
+    "unaware": {
+      "officialNumber": 109,
+      "sourceName": "Unaware",
+      "name": "Imprudenza"
+    },
+    "unburden": {
+      "officialNumber": 84,
+      "sourceName": "Unburden",
+      "name": "Agiltecnica"
+    },
+    "unnerve": {
+      "officialNumber": 127,
+      "sourceName": "Unnerve",
+      "name": "Agitazione"
+    },
+    "unseen-fist": {
+      "officialNumber": 260,
+      "sourceName": "Unseen Fist",
+      "name": "Pugni Invisibili"
+    },
+    "vessel-of-ruin": {
+      "officialNumber": 284,
+      "sourceName": "Vessel of Ruin",
+      "name": "Vaso Nefasto"
+    },
+    "victory-star": {
+      "officialNumber": 162,
+      "sourceName": "Victory Star",
+      "name": "Vittorstella"
+    },
+    "vital-spirit": {
+      "officialNumber": 72,
+      "sourceName": "Vital Spirit",
+      "name": "Spiritovivo"
+    },
+    "volt-absorb": {
+      "officialNumber": 10,
+      "sourceName": "Volt Absorb",
+      "name": "Assorbivolt"
+    },
+    "wandering-spirit": {
+      "officialNumber": 254,
+      "sourceName": "Wandering Spirit",
+      "name": "Anima Errante"
+    },
+    "water-absorb": {
+      "officialNumber": 11,
+      "sourceName": "Water Absorb",
+      "name": "Assorbacqua"
+    },
+    "water-bubble": {
+      "officialNumber": 199,
+      "sourceName": "Water Bubble",
+      "name": "Bolladacqua"
+    },
+    "water-compaction": {
+      "officialNumber": 195,
+      "sourceName": "Water Compaction",
+      "name": "Idrorinforzo"
+    },
+    "water-veil": {
+      "officialNumber": 41,
+      "sourceName": "Water Veil",
+      "name": "Idrovelo"
+    },
+    "weak-armor": {
+      "officialNumber": 133,
+      "sourceName": "Weak Armor",
+      "name": "Sottilguscio"
+    },
+    "well-baked-body": {
+      "officialNumber": 273,
+      "sourceName": "Well-Baked Body",
+      "name": "Bentostato"
+    },
+    "white-smoke": {
+      "officialNumber": 73,
+      "sourceName": "White Smoke",
+      "name": "Fumochiaro"
+    },
+    "wimp-out": {
+      "officialNumber": 193,
+      "sourceName": "Wimp Out",
+      "name": "Fuggifuggi"
+    },
+    "wind-power": {
+      "officialNumber": 277,
+      "sourceName": "Wind Power",
+      "name": "Energia Eolica"
+    },
+    "wind-rider": {
+      "officialNumber": 274,
+      "sourceName": "Wind Rider",
+      "name": "Vento Propizio"
+    },
+    "wonder-guard": {
+      "officialNumber": 25,
+      "sourceName": "Wonder Guard",
+      "name": "Magidifesa"
+    },
+    "wonder-skin": {
+      "officialNumber": 147,
+      "sourceName": "Wonder Skin",
+      "name": "Splendicute"
+    },
+    "zen-mode": {
+      "officialNumber": 161,
+      "sourceName": "Zen Mode",
+      "name": "Stato Zen"
+    },
+    "zen-mode-galarian": {
+      "officialNumber": 161,
+      "sourceName": "Zen Mode (Galarian)",
+      "name": "Stato Zen"
+    },
+    "zero-to-hero": {
+      "officialNumber": 278,
+      "sourceName": "Zero to Hero",
+      "name": "Supercambio"
+    },
+    "mold-breaker": {
+      "officialNumber": 104,
+      "sourceName": "Mold Breaker",
+      "name": "Rompiforma"
+    },
+    "sword-of-ruin": {
+      "officialNumber": 285,
+      "sourceName": "Sword of Ruin",
+      "name": "Spada Nefasta"
+    }
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/abilities.json",
+  "range": {
+    "fromIndex": 301,
+    "toIndex": 310
+  },
+  "items": {
+    "trace": {
+      "description": "Quando entra in lotta, questo Pokémon copia un’abilità casuale di un avversario. Non può copiare Flower Gift, Forecast, Illusion, Imposter, Multitype, Trace, Wonder Guard o Zen Mode."
+    },
+    "transformer": {
+      "description": "Questo Pokémon possiede una forma Normale standard da cui derivano tutte le statistiche, ma può cambiare forma come azione bonus per modificare drasticamente le proprie capacità. Può assumere le forme Attack, Defense e Speed. In Attack Form ottiene un ulteriore +5 ai tiri per colpire, ma tutti gli attacchi contro di lui hanno vantaggio. In Defense Form la sua CA aumenta di 3, ma i suoi attacchi hanno svantaggio; se la mossa richiede un tiro salvezza, i bersagli hanno vantaggio. In Speed Form ottiene un’azione di attacco aggiuntiva in ogni turno, ma l’attacco ha svantaggio; se la mossa richiede un tiro salvezza, i bersagli hanno vantaggio."
+    },
+    "transistor": {
+      "description": "Quando questo Pokémon usa una mossa di tipo Elettro, può tirare due volte i dadi dei danni e scegliere uno dei due totali."
+    },
+    "triage": {
+      "description": "Le mosse curative o di assorbimento di questo Pokémon hanno un Tempo della mossa di 1 azione bonus."
+    },
+    "truant": {
+      "description": "Questo Pokémon non può usare la stessa mossa in due round consecutivi."
+    },
+    "turboblaze": {
+      "description": "Le mosse di questo Pokémon ignorano completamente qualsiasi abilità che ostacolerebbe o impedirebbe il loro effetto sul bersaglio o la capacità dell’utilizzatore di colpirlo."
+    },
+    "unaware": {
+      "description": "Quando questo Pokémon attacca un avversario, ignora tutte le modifiche alle statistiche subite dall’avversario dopo l’inizio della lotta."
+    },
+    "unburden": {
+      "description": "Finché questo Pokémon non tiene uno strumento, la sua velocità aumenta di 10 piedi."
+    },
+    "unnerve": {
+      "description": "Gli avversari in lotta con questo Pokémon non possono mangiare le bacche che tengono."
+    },
+    "unseen-fist": {
+      "description": "Gli attacchi in mischia effettuati da questo Pokémon possono infliggere danni nonostante l’avversario usi Protect o Detect."
+    }
+  }
+}

@@ -1,4 +1,4 @@
-name: Temporary Gen8 source extract
+name: Temporary Gen8 integration
 
 on:
   push:
@@ -9,7 +9,7 @@ permissions:
   contents: write
 
 jobs:
-  extract:
+  integrate:
     if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
@@ -18,73 +18,129 @@ jobs:
           ref: translation/pokemon-gen8
           fetch-depth: 0
 
-      - name: Extract generation VIII source text and Italian categories
+      - name: Register catalogs and extend integrity tests
         shell: bash
         run: |
           python - <<'PY'
-          import csv
-          import io
-          import json
-          import urllib.request
           from pathlib import Path
 
-          catalog = json.loads(Path('assets/data_webapp/pokemon.json').read_text(encoding='utf-8'))
-          selected = {}
-          for item in catalog.get('items', []):
-              number = int(item.get('number') or 0)
-              if not 810 <= number <= 905:
-                  continue
-              candidate = {
-                  'name': str(item.get('name') or '').strip(),
-                  'id': str(item.get('id') or '').strip(),
-                  'description': str(item.get('description') or '').strip(),
-              }
-              current = selected.get(number)
-              score = (candidate['id'].count('-'), len(candidate['id']))
-              if current is None or score < current['_score']:
-                  candidate['_score'] = score
-                  selected[number] = candidate
+          repository = Path('lib/repositories/pokemon_localization_repository.dart')
+          text = repository.read_text(encoding='utf-8')
+          marker = "    'assets/data/pokemon_localization_it_gen7_766_809.json',\n"
+          addition = marker + (
+              "    'assets/data/pokemon_localization_it_gen8_810_841.json',\n"
+              "    'assets/data/pokemon_localization_it_gen8_842_873.json',\n"
+              "    'assets/data/pokemon_localization_it_gen8_874_905.json',\n"
+          )
+          if 'pokemon_localization_it_gen8_810_841.json' not in text:
+              if marker not in text:
+                  raise SystemExit('Repository localization marker not found')
+              text = text.replace(marker, addition)
+          repository.write_text(text, encoding='utf-8')
 
-          csv_url = 'https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/pokemon_species_names.csv'
-          with urllib.request.urlopen(csv_url) as response:
-              rows = csv.DictReader(io.StringIO(response.read().decode('utf-8')))
-              categories = {
-                  int(row['pokemon_species_id']): row['genus'].strip()
-                  for row in rows
-                  if row['local_language_id'] == '8'
-                  and 810 <= int(row['pokemon_species_id']) <= 905
-              }
+          test = Path('test/pokemon_localization_integrity_test.dart')
+          text = test.read_text(encoding='utf-8')
+          text = text.replace(
+              'const _maxLocalizedPokemonId = 809;\n',
+              'const _maxLocalizedPokemonId = 905;\n'
+              'const _maxLegacyFlavorPokemonId = 809;\n'
+              "const _allowedLocalizationSources = {\n"
+              "  'assets/data/pokemon_flavor.json',\n"
+              "  'assets/data_webapp/pokemon.json',\n"
+              '};\n',
+          )
+          category_marker = "  'docs/translation/pokemon-categories-it-766-809.json',\n"
+          category_addition = category_marker + (
+              "  'docs/translation/pokemon-categories-it-810-841.json',\n"
+              "  'docs/translation/pokemon-categories-it-842-873.json',\n"
+              "  'docs/translation/pokemon-categories-it-874-905.json',\n"
+          )
+          if 'pokemon-categories-it-810-841.json' not in text:
+              if category_marker not in text:
+                  raise SystemExit('Category reference marker not found')
+              text = text.replace(category_marker, category_addition)
 
-          items = {}
-          for number in range(810, 906):
-              source = selected.get(number)
-              if source is None:
-                  raise SystemExit(f'Missing source Pokémon #{number}')
-              genus = categories.get(number, '')
-              if not genus:
-                  raise SystemExit(f'Missing Italian category #{number}')
-              items[str(number)] = {
-                  'name': source['name'],
-                  'id': source['id'],
-                  'description': source['description'],
-                  'genus': genus,
-              }
+          old_source_check = """      if (document['source'] != 'assets/data/pokemon_flavor.json') {
+        errors.add('$path usa una sorgente inattesa: ${document['source']}.');
+      }
+"""
+          new_source_check = """      if (!_allowedLocalizationSources.contains(document['source'])) {
+        errors.add('$path usa una sorgente inattesa: ${document['source']}.');
+      }
+"""
+          if old_source_check not in text:
+              raise SystemExit('Localization source check not found')
+          text = text.replace(old_source_check, new_source_check)
+          text = text.replace(
+              "test('il repository carica le 809 traduzioni italiane'",
+              "test('il repository carica le 905 traduzioni italiane'",
+          )
 
-          output = {
-              'source': 'assets/data_webapp/pokemon.json',
-              'category_source': 'https://wiki.pokemoncentral.it/Categoria',
-              'range': {'from': 810, 'to': 905},
-              'items': items,
-          }
-          target = Path('docs/translation/gen8-source-extract.json')
-          target.write_text(json.dumps(output, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+          spot_marker = """    expect(texts[809]?.description, startsWith('La forza centrifuga'));
+"""
+          spot_addition = spot_marker + """    expect(texts[810]?.genus, 'Pokémon Scimpanzé');
+    expect(texts[810]?.description, startsWith('Grookey'));
+    expect(texts[898]?.genus, 'Pokémon Re');
+    expect(texts[905]?.genus, 'Pokémon Amoreodio');
+    expect(texts[905]?.description, startsWith('Quando Enamorus'));
+"""
+          if "expect(texts[905]?.genus" not in text:
+              if spot_marker not in text:
+                  raise SystemExit('Generation VII spot-check marker not found')
+              text = text.replace(spot_marker, spot_addition)
+
+          legacy_loop = """    for (var pokemonId = 1;
+        pokemonId <= _maxLocalizedPokemonId;
+        pokemonId++) {
+      final source = Map<String, dynamic>.from(raw['$pokemonId'] as Map);
+"""
+          corrected_loop = """    for (var pokemonId = 1;
+        pokemonId <= _maxLegacyFlavorPokemonId;
+        pokemonId++) {
+      final source = Map<String, dynamic>.from(raw['$pokemonId'] as Map);
+"""
+          if legacy_loop not in text:
+              raise SystemExit('Legacy flavor loop not found')
+          text = text.replace(legacy_loop, corrected_loop)
+          test.write_text(text, encoding='utf-8')
+
+          changelog = Path('CHANGELOG.md')
+          text = changelog.read_text(encoding='utf-8')
+          text = text.replace(
+              '#001-809 e controllo automatico',
+              '#001-905 e controllo automatico',
+          )
+          generation_marker = (
+              '- tradotti in italiano genere e descrizione Pokédex degli 88 Pokémon di '
+              'settima generazione, dal #722 al #809, mantenendo invariati i dati originali '
+              'e usando le categorie italiane verificate;\n'
+          )
+          generation_addition = generation_marker + (
+              '- tradotti in italiano genere e descrizione Pokédex dei 96 Pokémon di ottava '
+              'generazione, dal #810 al #905, usando i dati del catalogo webapp e le categorie '
+              'italiane verificate;\n'
+          )
+          if '96 Pokémon di ottava' not in text:
+              if generation_marker not in text:
+                  raise SystemExit('Changelog generation marker not found')
+              text = text.replace(generation_marker, generation_addition)
+          changelog.write_text(text, encoding='utf-8')
           PY
 
-      - name: Commit extracted source data
+      - name: Remove temporary extraction files
+        shell: bash
+        run: |
+          rm -f docs/translation/gen8-source-extract.json
+          git rm .github/workflows/temporary-gen8-source-extract.yml
+
+      - name: Commit integration
         shell: bash
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add lib/repositories/pokemon_localization_repository.dart
+          git add test/pokemon_localization_integrity_test.dart
+          git add CHANGELOG.md
           git add docs/translation/gen8-source-extract.json
-          git commit -m "Registra le sorgenti temporanee della Gen VIII"
+          git commit -m "Integra la localizzazione Pokémon di ottava generazione"
           git push origin HEAD:translation/pokemon-gen8

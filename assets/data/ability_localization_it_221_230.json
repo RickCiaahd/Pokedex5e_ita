@@ -1,0 +1,40 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/abilities.json",
+  "range": {
+    "fromIndex": 221,
+    "toIndex": 230
+  },
+  "items": {
+    "rivalry": {
+      "description": "Questo Pokémon aggiunge il proprio bonus di competenza ai danni quando attacca un Pokémon dello stesso tipo."
+    },
+    "rks-system": {
+      "description": "Il tipo di questo Pokémon è determinato dal Memory Disc che tiene. Se non tiene alcun Memory Disc, il suo tipo è Normale."
+    },
+    "rock-head": {
+      "description": "Questo Pokémon non subisce danni da contraccolpo."
+    },
+    "rocky-payload": {
+      "description": "Quando questo Pokémon usa una mossa di tipo Roccia, può tirare due volte i dadi dei danni e scegliere uno dei due totali."
+    },
+    "rough-skin": {
+      "description": "Quando questo Pokémon viene colpito da un attacco in mischia, può tirare d4. Con un risultato di 4, infligge all’attaccante danni senza tipo pari al proprio modificatore di competenza."
+    },
+    "run-away": {
+      "description": "Questo Pokémon non può essere bersagliato da attacchi di opportunità."
+    },
+    "sand-force": {
+      "description": "Questo Pokémon è immune ai danni di Sandstorm. Durante una Sandstorm, può raddoppiare il proprio bonus STAB quando colpisce un avversario."
+    },
+    "sand-rush": {
+      "description": "Questo Pokémon è immune ai danni di Sandstorm e la sua velocità raddoppia nei terreni desertici o durante una Sandstorm."
+    },
+    "sand-spit": {
+      "description": "Quando questo Pokémon subisce danni, può usare la propria reazione per generare una Sandstorm centrata su di sé con raggio di 30 piedi. La Sandstorm dura cinque round. Può farlo un numero di volte pari al proprio bonus di competenza e recupera tutti gli usi dopo un riposo lungo."
+    },
+    "sand-stream": {
+      "description": "Quando questo Pokémon entra in una lotta all’aperto, il clima cambia immediatamente in Sandstorm per 5 round. Se è presente un altro Pokémon con un’abilità atmosferica simile, prevale il Pokémon con il punteggio di DES più alto."
+    }
+  }
+}

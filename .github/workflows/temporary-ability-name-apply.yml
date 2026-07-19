@@ -1,4 +1,4 @@
-name: Temporary ability name detail integration
+name: Temporary ability name documentation
 
 on:
   pull_request:
@@ -16,10 +16,10 @@ jobs:
           ref: translation/ability-names
           fetch-depth: 0
       - run: python tool/temporary_patch_ability_names.py
-      - name: Commit integration
+      - name: Commit documentation
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add lib/screens/pokemon/pokemon_detail_screen_legacy.dart
-          git commit -m "Mostra i nomi italiani delle abilità nella scheda Pokémon"
+          git add CHANGELOG.md docs/translation/glossary-it.md
+          git commit -m "Documenta i nomi italiani ufficiali delle abilità"
           git push origin HEAD:translation/ability-names

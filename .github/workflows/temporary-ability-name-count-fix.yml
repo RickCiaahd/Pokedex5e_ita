@@ -1,4 +1,4 @@
-name: Temporary ability name count fix
+name: Temporary ability name set diagnostic
 
 on:
   pull_request:
@@ -7,7 +7,7 @@ permissions:
   contents: write
 
 jobs:
-  fix:
+  diagnose:
     if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
@@ -15,19 +15,21 @@ jobs:
         with:
           ref: translation/ability-names
           fetch-depth: 0
-      - name: Remove entries without an official match
+      - name: Compare reference and source sets
         run: |
           python - <<'PY'
           import json
           from pathlib import Path
 
-          source_path = Path('assets/data_webapp/abilities.json')
-          reference_path = Path('assets/data/ability_names_it_official.json')
-          source = json.loads(source_path.read_text(encoding='utf-8'))['items']
-          reference = json.loads(reference_path.read_text(encoding='utf-8'))
-
+          source = json.loads(
+              Path('assets/data_webapp/abilities.json').read_text(encoding='utf-8')
+          )['items']
+          reference = json.loads(
+              Path('assets/data/ability_names_it_official.json').read_text(encoding='utf-8')
+          )
           source_ids = {item['id'] for item in source}
-          unmatched = {
+          reference_ids = set(reference['items'])
+          declared_unmatched = {
               'air-slash', 'blizzard', 'drifter',
               'form-change-arceus', 'form-change-cherrim',
               'form-change-giratina', 'form-change-hoopa',
@@ -39,29 +41,33 @@ jobs:
               'hydro-pump', 'leaf-storm', 'overheat',
               'paper-thin', 'transformer',
           }
-          expected = source_ids - unmatched
-          items = reference['items']
-          extra = set(items) - expected
-          missing = expected - set(items)
-          if missing:
-              raise SystemExit(f'Nomi ufficiali mancanti: {sorted(missing)}')
-          if len(extra) != 1:
-              raise SystemExit(f'Attesa una voce estranea, trovate: {sorted(extra)}')
-          removed = extra.pop()
-          del items[removed]
-          reference['catalogCount'] = len(source_ids)
-          reference['matchedCount'] = len(items)
-          reference['unmatchedCount'] = len(unmatched)
-          reference_path.write_text(
-              json.dumps(reference, ensure_ascii=False, indent=2) + '\n',
+          expected = source_ids - declared_unmatched
+          diagnostic = {
+              'sourceCount': len(source_ids),
+              'referenceCount': len(reference_ids),
+              'declaredUnmatchedCount': len(declared_unmatched),
+              'referenceOutsideSource': sorted(reference_ids - source_ids),
+              'sourceWithoutReference': sorted(source_ids - reference_ids),
+              'unexpectedReferenceEntries': sorted(reference_ids - expected),
+              'expectedEntriesMissing': sorted(expected - reference_ids),
+              'declaredUnmatchedWithReference': sorted(
+                  declared_unmatched & reference_ids
+              ),
+              'undeclaredUnmatched': sorted(
+                  (source_ids - reference_ids) - declared_unmatched
+              ),
+          }
+          path = Path('docs/translation/ability-name-set-diagnostic.json')
+          path.write_text(
+              json.dumps(diagnostic, ensure_ascii=False, indent=2) + '\n',
               encoding='utf-8',
           )
-          print(f'Rimossa voce non presente nel catalogo sorgente: {removed}')
+          print(json.dumps(diagnostic, ensure_ascii=False, indent=2))
           PY
-      - name: Commit correction
+      - name: Commit diagnostic
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add assets/data/ability_names_it_official.json
-          git commit -m "Allinea il riferimento ai 330 elementi del catalogo"
+          git add docs/translation/ability-name-set-diagnostic.json
+          git commit -m "Registra la diagnostica dei nomi abilità"
           git push origin HEAD:translation/ability-names

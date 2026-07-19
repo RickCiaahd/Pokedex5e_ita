@@ -1,0 +1,17 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/abilities.json",
+  "range": {"fromIndex": 51, "toIndex": 60},
+  "items": {
+    "disguise": {"description": "Questo Pokémon possiede un travestimento che gli concede PF temporanei pari al doppio del proprio livello. Quando i PF temporanei scendono a zero, il travestimento si rompe e richiede un riposo breve per essere riparato."},
+    "download": {"description": "Una volta per riposo breve, questo Pokémon può scegliere un tipo di danno diverso per uno dei propri attacchi normali."},
+    "dragons-maw": {"description": "Quando questo Pokémon usa una mossa di tipo Drago, può tirare due volte i dadi dei danni e scegliere uno dei due totali."},
+    "drifter": {"description": "In condizioni ventose, a discrezione del DM, la velocità di volo stazionario di questo Pokémon raddoppia finché termina il vento."},
+    "drizzle": {"description": "Quando questo Pokémon entra in una lotta all’aperto, il clima cambia immediatamente in pioggia leggera per 5 round. Se è presente un altro Pokémon con un’abilità atmosferica simile, prevale il Pokémon con il punteggio di DES più alto."},
+    "drought": {"description": "Quando questo Pokémon entra in una lotta all’aperto, il clima cambia immediatamente in luce solare intensa per 5 round. Se è presente un altro Pokémon con un’abilità atmosferica simile, prevale il Pokémon con il punteggio di DES più alto."},
+    "dry-skin": {"description": "Alla fine di ciascuno dei turni di questo Pokémon, esso subisce danni pari al proprio modificatore di competenza sotto luce solare intensa oppure recupera la stessa quantità di PF durante la pioggia."},
+    "early-bird": {"description": "Questo Pokémon ha vantaggio ai tiri per svegliarsi dal sonno."},
+    "earth-eater": {"description": "Questo Pokémon non subisce danni dagli attacchi di tipo Terra. Assorbe invece metà dei danni di tipo Terra che avrebbe subito, recuperando un pari numero di PF."},
+    "effect-spore": {"description": "Quando viene colpito da un attacco in mischia, tira d4. Con un risultato di 4, infligge all’attaccante danni di tipo Erba pari al proprio modificatore di competenza."}
+  }
+}

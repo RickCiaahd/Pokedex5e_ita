@@ -1,0 +1,50 @@
+{
+  "sourceCount": 330,
+  "referenceCount": 309,
+  "declaredUnmatchedCount": 22,
+  "referenceOutsideSource": [
+    "delta-stream",
+    "parental-bond",
+    "power-construct"
+  ],
+  "sourceWithoutReference": [
+    "air-slash",
+    "blizzard",
+    "drifter",
+    "form-change-arceus",
+    "form-change-cherrim",
+    "form-change-giratina",
+    "form-change-hoopa",
+    "form-change-keldeo",
+    "form-change-kyurem",
+    "form-change-meloetta",
+    "form-change-necrozma",
+    "form-change-ogerpon",
+    "form-change-oricorio",
+    "form-change-rotom",
+    "form-change-shaymin",
+    "form-change-terapagos",
+    "form-change-ultra-necrozma",
+    "hydro-pump",
+    "leaf-storm",
+    "mold-breaker",
+    "overheat",
+    "paper-thin",
+    "sword-of-ruin",
+    "transformer"
+  ],
+  "unexpectedReferenceEntries": [
+    "delta-stream",
+    "parental-bond",
+    "power-construct"
+  ],
+  "expectedEntriesMissing": [
+    "mold-breaker",
+    "sword-of-ruin"
+  ],
+  "declaredUnmatchedWithReference": [],
+  "undeclaredUnmatched": [
+    "mold-breaker",
+    "sword-of-ruin"
+  ]
+}

@@ -32,6 +32,10 @@ jobs:
               with urllib.request.urlopen(req, timeout=60) as response:
                   return response.read().decode('utf-8')
 
+          def clean_cell(value, language):
+              value = re.sub(r'^' + language + r'\s*:\s*', '', value, flags=re.I)
+              return re.sub(r'\s+', ' ', value).strip()
+
           def normalize(value):
               value = value.replace('’', "'").replace('–', '-').replace('—', '-')
               value = re.sub(r'\[[^\]]*\]', '', value)
@@ -58,6 +62,11 @@ jobs:
               for row in items_csv
               if it_by_id.get(row['id'])
           }
+          pokeapi_by_english = {}
+          for value in pokeapi.values():
+              english = value.get('englishName')
+              if english:
+                  pokeapi_by_english.setdefault(normalize(english), []).append(value)
 
           html = fetch('https://wiki.pokemoncentral.it/Elenco_degli_strumenti_in_altre_lingue')
           soup = BeautifulSoup(html, 'html.parser')
@@ -76,8 +85,8 @@ jobs:
                   cells = row.select('th,td')
                   if len(cells) <= max(italian_index, english_index):
                       continue
-                  italian = re.sub(r'\s+', ' ', cells[italian_index].get_text(' ', strip=True)).strip()
-                  english = re.sub(r'\s+', ' ', cells[english_index].get_text(' ', strip=True)).strip()
+                  italian = clean_cell(cells[italian_index].get_text(' ', strip=True), 'Italiano')
+                  english = clean_cell(cells[english_index].get_text(' ', strip=True), 'Inglese')
                   if not italian or not english:
                       continue
                   central_pairs.setdefault(normalize(english), []).append({
@@ -91,22 +100,31 @@ jobs:
           for entry in catalog:
               item_id = entry['id']
               source_name = entry['name']
+              source_key = normalize(source_name)
               poke = pokeapi.get(item_id)
-              central = central_pairs.get(normalize(source_name), [])
+              match_method = 'exact-id' if poke else None
+              if poke is None:
+                  candidates = pokeapi_by_english.get(source_key, [])
+                  if len(candidates) == 1:
+                      poke = candidates[0]
+                      match_method = 'english-name'
+              central = central_pairs.get(source_key, [])
               central_names = sorted({value['italian'] for value in central})
-              if poke:
-                  italian = poke['italianName']
+              if poke or central_names:
+                  italian = poke['italianName'] if poke else central_names[0]
                   matched.append({
                       'id': item_id,
                       'sourceName': source_name,
                       'type': entry['type'],
-                      'officialNumber': poke['officialId'],
-                      'pokeapiEnglish': poke['englishName'],
-                      'pokeapiItalian': italian,
+                      'matchMethod': match_method or 'pokemon-central-name',
+                      'officialNumber': poke['officialId'] if poke else None,
+                      'pokeapiEnglish': poke['englishName'] if poke else None,
+                      'pokeapiItalian': poke['italianName'] if poke else None,
                       'pokemonCentralItalian': central_names,
+                      'resolvedItalian': italian,
                   })
                   normalized_central = {normalize(value) for value in central_names}
-                  if central_names and normalize(italian) not in normalized_central:
+                  if poke and central_names and normalize(italian) not in normalized_central:
                       disagreements.append({
                           'id': item_id,
                           'sourceName': source_name,
@@ -118,13 +136,13 @@ jobs:
                       'id': item_id,
                       'sourceName': source_name,
                       'type': entry['type'],
-                      'pokemonCentralItalian': central_names,
                   })
 
           report = {
               'catalogCount': len(catalog),
               'typeCounts': dict(sorted(Counter(entry['type'] for entry in catalog).items())),
-              'pokeapiExactIdMatches': len(matched),
+              'matchedCount': len(matched),
+              'matchMethodCounts': dict(sorted(Counter(entry['matchMethod'] for entry in matched).items())),
               'unmatchedCount': len(unmatched),
               'pokemonCentralPairCount': sum(len(values) for values in central_pairs.values()),
               'crossReferenceDisagreementCount': len(disagreements),
@@ -141,7 +159,7 @@ jobs:
               encoding='utf-8',
           )
           print(json.dumps({key: report[key] for key in [
-              'catalogCount', 'typeCounts', 'pokeapiExactIdMatches',
+              'catalogCount', 'typeCounts', 'matchedCount', 'matchMethodCounts',
               'unmatchedCount', 'pokemonCentralPairCount',
               'crossReferenceDisagreementCount'
           ]}, ensure_ascii=False, indent=2))

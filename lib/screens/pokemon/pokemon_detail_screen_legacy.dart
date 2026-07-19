@@ -148,6 +148,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
   UserProfile? _profile;
   Map<String, MoveData?> _moves = {};
   Map<String, String> _abilities = {};
+  Map<String, String> _abilityDisplayNames = {};
   Map<String, String> _featDescriptions = {};
   Map<String, BagItem> _itemCatalog = {};
   Map<String, EvolutionData> _evolutions = {};
@@ -250,14 +251,15 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
     final results = await Future.wait([
       _moveRepository.getMoves(moveNames, pokemonId: _pokemon.id),
       _abilityRepository.getAbilityDescriptions(pokemonId: _pokemon.id),
+      _abilityRepository.getAbilityDisplayNames(pokemonId: _pokemon.id),
       _evolutionRepository.getEvolutionData(),
       _featRepository.getFeatDescriptions(),
       _itemRepository.getWebItems(),
       _profileRepository.getActiveProfile(),
     ]);
 
-    final evolutions = results[2] as Map<String, EvolutionData>;
-    final items = results[4] as List<BagItem>;
+    final evolutions = results[3] as Map<String, EvolutionData>;
+    final items = results[5] as List<BagItem>;
     final evolutionChoices = await _buildEvolutionChoices(
       evolution: _evolutionForPokemon(_pokemon, evolutions),
       slot: _teamSlot,
@@ -268,10 +270,11 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
     setState(() {
       _moves = results[0] as Map<String, MoveData?>;
       _abilities = results[1] as Map<String, String>;
+      _abilityDisplayNames = results[2] as Map<String, String>;
       _evolutions = evolutions;
-      _featDescriptions = results[3] as Map<String, String>;
+      _featDescriptions = results[4] as Map<String, String>;
       _itemCatalog = {for (final item in items) item.id: item};
-      _profile = results[5] as UserProfile;
+      _profile = results[6] as UserProfile;
       _evolutionChoices = evolutionChoices;
       _isLoading = false;
     });
@@ -1247,6 +1250,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
                             pokemon: pokemon,
                             slot: _teamSlot,
                             abilityDescriptions: _abilities,
+                            abilityDisplayNames: _abilityDisplayNames,
                             featDescriptions: _featDescriptions,
                           ),
                           _TraitsView(
@@ -2379,12 +2383,14 @@ class _FeaturesView extends StatelessWidget {
     required this.pokemon,
     required this.slot,
     required this.abilityDescriptions,
+    required this.abilityDisplayNames,
     required this.featDescriptions,
   });
 
   final Pokemon pokemon;
   final TeamSlot? slot;
   final Map<String, String> abilityDescriptions;
+  final Map<String, String> abilityDisplayNames;
   final Map<String, String> featDescriptions;
 
   @override
@@ -2404,7 +2410,7 @@ class _FeaturesView extends StatelessWidget {
       children: [
         for (final ability in abilities)
           _InfoCard(
-            title: ability,
+            title: abilityDisplayNames[ability] ?? ability,
             child: Text(
               abilityDescriptions[ability] ?? 'Descrizione non disponibile.',
             ),

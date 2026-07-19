@@ -15,8 +15,11 @@ class ItemLocalization {
 }
 
 class ItemLocalizationRepository {
-  static const String assetPath =
-      'assets/data/item_localization_it_pokeball_medicine.json';
+  static const List<String> assetPaths = [
+    'assets/data/item_localization_it_pokeball_001_024.json',
+    'assets/data/item_localization_it_medicine_025_055.json',
+    'assets/data/item_localization_it_medicine_056_087.json',
+  ];
 
   static const String sourceAssetPath = 'assets/data_webapp/items.json';
   static const int catalogCount = 366;
@@ -30,73 +33,80 @@ class ItemLocalizationRepository {
       return Map<String, ItemLocalization>.unmodifiable(cached);
     }
 
-    final jsonString = await rootBundle.loadString(assetPath);
-    final decoded = jsonDecode(jsonString);
-    if (decoded is! Map) {
-      throw FormatException('$assetPath non contiene un oggetto JSON.');
-    }
-
-    final document = Map<String, dynamic>.from(decoded);
-    if (document['locale']?.toString() != 'it') {
-      throw FormatException('$assetPath non dichiara la lingua italiana.');
-    }
-    if (document['source']?.toString() != sourceAssetPath) {
-      throw FormatException('$assetPath dichiara una sorgente non valida.');
-    }
-    if (_readInt(document['catalogCount']) != catalogCount ||
-        _readInt(document['localizedCount']) != localizedCount) {
-      throw FormatException('$assetPath contiene conteggi non validi.');
-    }
-
-    final rawTypes = List<dynamic>.from(document['types'] ?? const []);
-    final types = rawTypes.map((value) => value.toString()).toSet();
-    if (!types.containsAll(const {'pokeball', 'medicine'}) ||
-        types.length != 2) {
-      throw FormatException('$assetPath dichiara tipi non validi.');
-    }
-
-    final rawItems = document['items'];
-    if (rawItems is! Map) {
-      throw FormatException('$assetPath non contiene la mappa items.');
-    }
-
     final result = <String, ItemLocalization>{};
-    for (final entry in rawItems.entries) {
-      final itemId = entry.key.toString().trim();
-      if (itemId.isEmpty || entry.value is! Map) {
-        throw FormatException('Localizzazione oggetto non valida in $assetPath.');
-      }
-      if (result.containsKey(itemId)) {
-        throw FormatException('Localizzazione duplicata per l’oggetto $itemId.');
+    var declaredCount = 0;
+
+    for (final path in assetPaths) {
+      final document = await _loadDocument(path);
+      declaredCount += _readInt(document['localizedCount']);
+
+      final rawItems = document['items'];
+      if (rawItems is! Map) {
+        throw FormatException('$path non contiene la mappa items.');
       }
 
-      final item = Map<String, dynamic>.from(entry.value as Map);
-      final sourceName = item['sourceName']?.toString().trim() ?? '';
-      final name = item['name']?.toString().trim() ?? '';
-      final rawDescription = item['description'];
-      if (sourceName.isEmpty || name.isEmpty || rawDescription is! List) {
-        throw FormatException(
-          'Localizzazione incompleta per l’oggetto $itemId.',
+      for (final entry in rawItems.entries) {
+        final itemId = entry.key.toString().trim();
+        if (itemId.isEmpty || entry.value is! Map) {
+          throw FormatException('Localizzazione oggetto non valida in $path.');
+        }
+        if (result.containsKey(itemId)) {
+          throw FormatException('Localizzazione duplicata per l’oggetto $itemId.');
+        }
+
+        final item = Map<String, dynamic>.from(entry.value as Map);
+        final sourceName = item['sourceName']?.toString().trim() ?? '';
+        final name = item['name']?.toString().trim() ?? '';
+        final rawDescription = item['description'];
+        if (sourceName.isEmpty || name.isEmpty || rawDescription is! List) {
+          throw FormatException(
+            'Localizzazione incompleta per l’oggetto $itemId.',
+          );
+        }
+
+        result[itemId] = ItemLocalization(
+          sourceName: sourceName,
+          name: name,
+          description: List<String>.unmodifiable(
+            rawDescription.map((value) => value.toString()),
+          ),
         );
       }
-
-      result[itemId] = ItemLocalization(
-        sourceName: sourceName,
-        name: name,
-        description: List<String>.unmodifiable(
-          rawDescription.map((value) => value.toString()),
-        ),
-      );
     }
 
-    if (result.length != localizedCount) {
+    if (declaredCount != localizedCount || result.length != localizedCount) {
       throw FormatException(
-        '$assetPath contiene ${result.length} oggetti anziché $localizedCount.',
+        'I cataloghi contengono ${result.length} oggetti anziché $localizedCount.',
       );
     }
 
     _cache = Map<String, ItemLocalization>.unmodifiable(result);
     return Map<String, ItemLocalization>.unmodifiable(result);
+  }
+
+  Future<Map<String, dynamic>> _loadDocument(String path) async {
+    final jsonString = await rootBundle.loadString(path);
+    final decoded = jsonDecode(jsonString);
+    if (decoded is! Map) {
+      throw FormatException('$path non contiene un oggetto JSON.');
+    }
+
+    final document = Map<String, dynamic>.from(decoded);
+    if (document['locale']?.toString() != 'it') {
+      throw FormatException('$path non dichiara la lingua italiana.');
+    }
+    if (document['source']?.toString() != sourceAssetPath) {
+      throw FormatException('$path dichiara una sorgente non valida.');
+    }
+    final type = document['type']?.toString();
+    if (type != 'pokeball' && type != 'medicine') {
+      throw FormatException('$path dichiara un tipo non valido.');
+    }
+    if (_readInt(document['localizedCount']) <= 0) {
+      throw FormatException('$path dichiara un conteggio non valido.');
+    }
+
+    return document;
   }
 
   static void clearCache() {

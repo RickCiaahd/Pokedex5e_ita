@@ -1,0 +1,40 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/abilities.json",
+  "range": {
+    "fromIndex": 211,
+    "toIndex": 220
+  },
+  "items": {
+    "queenly-majesty": {
+      "description": "Le creature visibili a questo Pokémon non possono usare azioni bonus per attivare mosse. Le mosse che normalmente hanno un Tempo della mossa di “1 azione bonus” hanno invece un Tempo della mossa di “1 azione”."
+    },
+    "quick-draw": {
+      "description": "Questo Pokémon ha vantaggio ai tiri di iniziativa."
+    },
+    "quick-feet": {
+      "description": "Quando subisce una condizione negativa, la velocità di questo Pokémon aumenta di 15 piedi."
+    },
+    "rain-dish": {
+      "description": "Durante la pioggia, questo Pokémon recupera PF pari al proprio bonus di competenza alla fine di ciascuno dei propri turni."
+    },
+    "rattled": {
+      "description": "Quando questo Pokémon viene colpito da una mossa dannosa di tipo Buio, Coleottero o Spettro, effettua il proprio attacco successivo con vantaggio."
+    },
+    "receiver": {
+      "description": "Quando entra in campo dopo che un alleato è svenuto, questo Pokémon copia l’abilità non nascosta dell’alleato svenuto finché non viene sostituito."
+    },
+    "reckless": {
+      "description": "Quando attacca con mosse che infliggono danni da contraccolpo, questo Pokémon raddoppia il proprio bonus STAB."
+    },
+    "refrigerate": {
+      "description": "Tutte le mosse di tipo Normale di questo Pokémon diventano di tipo Ghiaccio."
+    },
+    "regenerator": {
+      "description": "Una volta per riposo lungo, quando ritorna nella propria Poké Ball, questo Pokémon recupera PF pari al proprio livello."
+    },
+    "ripen": {
+      "description": "Raddoppia gli effetti delle bacche consumate da questo Pokémon."
+    }
+  }
+}

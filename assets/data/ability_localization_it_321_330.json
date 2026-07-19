@@ -1,0 +1,40 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/abilities.json",
+  "range": {
+    "fromIndex": 321,
+    "toIndex": 330
+  },
+  "items": {
+    "well-baked-body": {
+      "description": "Questo Pokémon non subisce danni dal fuoco né dagli attacchi di tipo Fuoco. La sua CA aumenta invece di 2 finché non subisce danni o per 1 minuto, a seconda di quale condizione si verifica prima. L’effetto non è cumulabile con se stesso."
+    },
+    "white-smoke": {
+      "description": "Le mosse e le abilità degli altri Pokémon non possono ridurre le statistiche di questo Pokémon."
+    },
+    "wimp-out": {
+      "description": "Quando una mossa che infligge danni fa scendere questo Pokémon sotto il 50% dei PF massimi, esso DEVE usare Disimpegno e muoversi come azione gratuita fino alla propria velocità in linea retta verso l’Allenatore. Se così entra nella portata necessaria per essere sostituito, deve essere sostituito con un’altra azione gratuita, purché sia disponibile un altro Pokémon."
+    },
+    "wind-power": {
+      "description": "Dopo che una mossa del vento che influenza questo Pokémon viene usata, il numero di dadi dei danni della sua prossima mossa di tipo Elettro raddoppia. Le mosse del vento comprendono Aeroblast, Air Cutter, Bleakwind Storm, Blizzard, Fairy Wind, Gust, Heat Wave, Hurricane, Icy Wind, Petal Blizzard, Sandsear Storm, Sandstorm, Springtide Storm, Tailwind, Twister, Whirlwind e Wildbolt Storm."
+    },
+    "wind-rider": {
+      "description": "Questo Pokémon è immune ai danni inflitti dalle mosse del vento. Inoltre, la sua velocità di movimento raddoppia quando si muove nella direzione del vento e si dimezza quando si muove controvento."
+    },
+    "wonder-guard": {
+      "description": "Questo Pokémon è immune alle mosse che infliggono danni di tipi non presenti nella propria lista di vulnerabilità. Solo Shedinja; l’abilità non può essere trasmessa né scambiata."
+    },
+    "wonder-skin": {
+      "description": "Questo Pokémon ha vantaggio a tutti i tiri salvezza contro le condizioni scottato, congelato, avvelenato o paralizzato."
+    },
+    "zen-mode": {
+      "description": "Quando Darmanitan scende sotto il 50% dei propri PF, entra in Zen Mode. In Zen Mode assume la forma di una statua solida, il suo tipo diventa Fuoco/Psico, ottiene +4 alla CA e scambia i punteggi di FOR e SAG."
+    },
+    "zen-mode-galarian": {
+      "description": "Quando Galarian Darmanitan scende sotto il 50% dei propri PF, entra in Zen Mode. In Zen Mode assume la forma di un pupazzo di neve in fiamme, il suo tipo diventa Ghiaccio/Fuoco e i suoi punteggi di FOR e DES aumentano entrambi di +2."
+    },
+    "zero-to-hero": {
+      "description": "Quando un alleato non Pokémon di Palafin subisce danni da una fonte fuori dal controllo dell’alleato, Palafin può assumere Hero Form. In Hero Form la sua taglia diventa Media, la CA aumenta di 4 e i punteggi di FOR e DES aumentano entrambi di 4, fino a un massimo di 22. Può farlo una volta per riposo lungo e torna alla forma normale alla fine della lotta."
+    }
+  }
+}

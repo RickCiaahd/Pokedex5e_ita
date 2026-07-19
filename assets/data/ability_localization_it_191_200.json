@@ -1,0 +1,40 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/abilities.json",
+  "range": {
+    "fromIndex": 191,
+    "toIndex": 200
+  },
+  "items": {
+    "poison-point": {
+      "description": "Quando questo Pokémon viene colpito da un attacco in mischia, tira 1d4. Con un risultato di 4, l’attaccante subisce danni di tipo Veleno pari al modificatore di competenza di questo Pokémon."
+    },
+    "poison-puppeteer": {
+      "description": "Quando questo Pokémon infligge la condizione avvelenato o gravemente avvelenato, infligge anche la condizione affascinato. Le creature affascinate in questo modo possono tentare di terminare l’effetto alla fine di ciascuno dei propri turni con un tiro salvezza su CAR contro la CD di CAR di questo Pokémon."
+    },
+    "poison-touch": {
+      "description": "Quando questo Pokémon colpisce con un attacco in mischia, tira d10. Con un risultato di 10, il bersaglio diventa avvelenato."
+    },
+    "power-construct-10": {
+      "description": "Quando Zygarde 10% viene ridotto a meno della metà dei propri PF massimi, si trasforma in Zygarde 50% Forme e recupera tutti i PF."
+    },
+    "power-construct-50": {
+      "description": "Quando Zygarde 50% viene ridotto a meno della metà dei propri PF massimi, si trasforma in Complete Forme e recupera tutti i PF."
+    },
+    "power-construct-100": {
+      "description": "Quando Zygarde viene ridotto a meno della metà dei propri PF massimi, si trasforma in Complete Forme e resta in quella forma indipendentemente dalle successive variazioni dei PF."
+    },
+    "power-of-alchemy": {
+      "description": "Quando entra in campo dopo che un alleato è svenuto, questo Pokémon copia l’abilità non nascosta dell’alleato svenuto finché non viene sostituito."
+    },
+    "power-spot": {
+      "description": "Gli alleati entro 15 piedi da questo Pokémon possono aggiungere 1d6 ai danni inflitti dalle proprie mosse. Il dado può essere usato una sola volta per mossa per turno. Al livello 10, il danno bonus diventa invece 1d8."
+    },
+    "prankster": {
+      "description": "Una volta per riposo breve, questo Pokémon può portarsi in cima all’ordine di iniziativa per un singolo round, ma nel proprio turno deve usare una mossa che infligge una condizione."
+    },
+    "pressure": {
+      "description": "Ogni mossa che bersaglia direttamente questo Pokémon, quindi non ad area, consuma due PP quando viene usata."
+    }
+  }
+}

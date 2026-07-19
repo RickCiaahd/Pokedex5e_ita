@@ -1,0 +1,40 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/abilities.json",
+  "range": {
+    "fromIndex": 181,
+    "toIndex": 190
+  },
+  "items": {
+    "overheat": {
+      "description": "Questo Pokémon conosce Overheat come quinta mossa. Dimentica la mossa se assume qualsiasi altra forma."
+    },
+    "own-tempo": {
+      "description": "Questo Pokémon è immune alla condizione confuso."
+    },
+    "paper-thin": {
+      "description": "Questo Pokémon ha sempre 1 PF massimo. Solo Shedinja; l’abilità non può essere trasmessa né scambiata."
+    },
+    "pastel-veil": {
+      "description": "Questo Pokémon e i suoi alleati non possono essere avvelenati finché esso resta in lotta."
+    },
+    "perish-body": {
+      "description": "Quando questo Pokémon viene colpito da un attacco in mischia, sia esso sia l’attaccante svengono dopo 3 round, all’inizio dei rispettivi turni, a meno che non fuggano o vengano sostituiti dal proprio Allenatore prima della fine dei tre round."
+    },
+    "pickpocket": {
+      "description": "Quando viene colpito da un attacco in mischia, questo Pokémon può usare una reazione per tentare di rubare lo strumento tenuto dalla creatura con una prova di Rapidità di Mano contrapposta alla Percezione passiva del bersaglio. Dopo il primo tentativo, tutti gli altri tentativi contro lo stesso avversario hanno svantaggio."
+    },
+    "pickup": {
+      "description": "Se un avversario usa in lotta uno strumento tenuto consumabile, questo Pokémon ne ottiene una copia, purché non stia già tenendo uno strumento."
+    },
+    "pixilate": {
+      "description": "Tutte le mosse di tipo Normale di questo Pokémon diventano di tipo Folletto."
+    },
+    "plus": {
+      "description": "Questo Pokémon ottiene 2 ai tiri per colpire e ai tiri per i danni se un alleato possiede a sua volta l’abilità Plus o Minus."
+    },
+    "poison-heal": {
+      "description": "Questo Pokémon non subisce lo svantaggio causato dalla condizione avvelenato. Inoltre, quando dovrebbe subire danni di tipo Veleno o danni dalla condizione avvelenato, recupera invece PF pari alla metà dei danni che avrebbe subito."
+    }
+  }
+}

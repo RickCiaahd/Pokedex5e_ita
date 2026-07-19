@@ -1,0 +1,40 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/abilities.json",
+  "range": {
+    "fromIndex": 231,
+    "toIndex": 240
+  },
+  "items": {
+    "sand-veil": {
+      "description": "Questo Pokémon è immune ai danni di Sandstorm. Inoltre, la sua CA aumenta di 2 nei terreni desertici o durante una Sandstorm."
+    },
+    "sap-sipper": {
+      "description": "Questo Pokémon non subisce danni dagli attacchi di tipo Erba. Quando viene colpito da una mossa di tipo Erba, assorbe invece l’energia e ottiene vantaggio al proprio attacco successivo."
+    },
+    "schooling": {
+      "description": "A partire dal livello 5, questo Pokémon può assumere School Form come azione gratuita quando inizia il proprio turno con più del 25% dei PF massimi. In School Form aggiunge 5 a CA e ai punteggi di FOR, DES e COS; la COS aggiuntiva non modifica i PF del Pokémon in questa forma. Torna in Solo Form quando scende sotto il 25% dei PF massimi e deve completare un riposo breve prima di poter usare nuovamente questa abilità."
+    },
+    "scrappy": {
+      "description": "Le mosse di tipo Normale e Lotta di questo Pokémon ignorano le immunità concesse dal tipo Pokémon. Se il tipo secondario del bersaglio concede vulnerabilità o resistenza all’attacco, per questo effetto si applica il tipo secondario."
+    },
+    "screen-cleaner": {
+      "description": "Light Screen, Reflect e Aurora Veil non hanno effetto entro 40 piedi da questo Pokémon."
+    },
+    "seed-sower": {
+      "description": "Quando viene colpito da un attacco che infligge danni, questo Pokémon può usare la propria reazione per usare Grassy Terrain. Non deve conoscere la mossa e non spende PP per usarla. Può farlo fino a tre volte per riposo lungo."
+    },
+    "serene-grace": {
+      "description": "La CD della mossa per superare un tiro salvezza contro una mossa di questo Pokémon aumenta di 1."
+    },
+    "shadow-shield": {
+      "description": "Se questo Pokémon possiede tutti i propri PF, i primi danni che subisce vengono dimezzati."
+    },
+    "shadow-tag": {
+      "description": "Le creature entro 50 piedi da questo Pokémon non possono fuggire né essere sostituite, tranne che tramite uno strumento, una mossa o un’abilità."
+    },
+    "sharpness": {
+      "description": "Le mosse che contengono Cut, Blade, Slash, Edge, Cleave, Razor, Sword o Axe nel nome raddoppiano il proprio modificatore ai danni MOVE."
+    }
+  }
+}

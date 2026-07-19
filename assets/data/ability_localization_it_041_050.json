@@ -1,0 +1,17 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/abilities.json",
+  "range": {"fromIndex": 41, "toIndex": 50},
+  "items": {
+    "cursed-body": {"description": "Quando viene colpito da un attacco in mischia, questo Pokémon può tirare 1d4. Con un risultato di 4, l’avversario che ha effettuato l’attacco non può usare la stessa mossa nel proprio turno successivo."},
+    "cute-charm": {"description": "Una volta per riposo breve, questo Pokémon può imporre svantaggio a un tiro per colpire nemico a sua scelta."},
+    "damp": {"description": "Questo Pokémon non subisce gli effetti delle mosse Self Destruct ed Explosion."},
+    "dancer": {"description": "Se una creatura visibile a questo Pokémon usa una mossa che contiene Dance nel nome, questo Pokémon può usare immediatamente una delle proprie mosse come reazione."},
+    "dark-aura": {"description": "Quando questo Pokémon è in lotta, tutte le mosse di tipo Buio usate da alleati o avversari entro 100 piedi infliggono il doppio dei danni."},
+    "dauntless-shield": {"description": "Gli attacchi in mischia effettuati contro questo Pokémon hanno svantaggio."},
+    "dazzling": {"description": "Le creature visibili a questo Pokémon non possono usare azioni bonus per attivare mosse. Le mosse che normalmente hanno un Tempo della mossa di “1 azione bonus” hanno invece un Tempo della mossa di “1 azione”."},
+    "defeatist": {"description": "Quando questo Pokémon scende sotto il 25% dei propri PF massimi, effettua tutti i propri attacchi con svantaggio."},
+    "defiant": {"description": "Finché questo Pokémon subisce una condizione negativa o una modifica negativa alle statistiche imposta da un avversario, ottiene +2 a tutti i tiri per colpire."},
+    "desolate-land": {"description": "Finché questo Pokémon è impegnato in lotta, il clima è Luce Solare Estremamente Intensa e non può essere modificato. La Luce Solare Estremamente Intensa funziona come la Luce Solare Intensa, con l’effetto aggiuntivo di annullare i danni di tipo Acqua. Se è attiva anche Primordial Sea, il clima è contemporaneamente Luce Solare Estremamente Intensa e Pioggia Battente."}
+  }
+}

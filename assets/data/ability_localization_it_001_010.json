@@ -1,0 +1,17 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/abilities.json",
+  "range": {"fromIndex": 1, "toIndex": 10},
+  "items": {
+    "adaptability": {"description": "Quando questo Pokémon usa una mossa del proprio tipo, può tirare due volte i dadi dei danni e scegliere uno dei due totali."},
+    "aftermath": {"description": "Quando viene mandato KO da una mossa in mischia, questo Pokémon infligge all’attaccante danni pari alla metà dei danni ricevuti."},
+    "air-lock": {"description": "Finché questo Pokémon è in lotta, le abilità legate alle condizioni atmosferiche non hanno effetto sui Pokémon che le possiedono."},
+    "air-slash": {"description": "Questo Pokémon conosce Air Slash come quinta mossa. Dimentica la mossa se assume qualsiasi altra forma."},
+    "analytic": {"description": "Dopo che questo Pokémon manca un attacco, effettua il suo attacco successivo con vantaggio."},
+    "anger-point": {"description": "Dopo aver subito un colpo critico, questo Pokémon raddoppia i dadi dei danni di una singola mossa che usa nel turno successivo."},
+    "anger-shell": {"description": "Quando i PF di questo Pokémon scendono sotto la metà dei suoi PF massimi, la sua CA diminuisce di 2, ma i suoi punteggi di FOR e DES aumentano entrambi di 2, fino a un massimo di 22. Dopo un riposo lungo, CA, FOR e DES tornano ai valori precedenti."},
+    "anticipation": {"description": "Quando questo Pokémon entra in lotta, un avversario deve rivelare se possiede una mossa a cui il Pokémon è vulnerabile. Non deve rivelare quale sia la mossa, ma soltanto che ne possiede una."},
+    "arena-trap": {"description": "Le creature a terra entro 50 piedi da questo Pokémon non possono fuggire né essere sostituite, tranne che tramite uno strumento, una mossa o un’abilità."},
+    "armor-tail": {"description": "Finché questo Pokémon è in campo, i Pokémon ostili che può vedere non possono usare mosse che richiedono un’azione bonus."}
+  }
+}

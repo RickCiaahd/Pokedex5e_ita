@@ -1,0 +1,40 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/abilities.json",
+  "range": {
+    "fromIndex": 151,
+    "toIndex": 160
+  },
+  "items": {
+    "magic-guard": {
+      "description": "Se questo Pokémon è soggetto a una mossa che richiede un tiro salvezza per subire soltanto metà dei danni, in caso di successo non subisce alcun danno."
+    },
+    "magician": {
+      "description": "Se non tiene già uno strumento, questo Pokémon ruba lo strumento tenuto da qualsiasi Pokémon che colpisce con un attacco in mischia."
+    },
+    "magma-armor": {
+      "description": "Questo Pokémon è immune alla condizione congelato."
+    },
+    "magnet-pull": {
+      "description": "Gli avversari di tipo Acciaio in lotta con questo Pokémon non possono essere sostituiti né fuggire."
+    },
+    "marvel-scale": {
+      "description": "La CA di questo Pokémon aumenta di 2 mentre subisce una condizione negativa."
+    },
+    "mega-launcher": {
+      "description": "Le mosse Aura e Pulse usate da questo Pokémon infliggono danni o forniscono cure aggiuntive pari al bonus di competenza del Pokémon."
+    },
+    "merciless": {
+      "description": "Questo Pokémon raddoppia i dadi dei danni quando infligge danni a un avversario avvelenato."
+    },
+    "mimicry": {
+      "description": "Il tipo di questo Pokémon cambia in base al terreno. Se è attiva una mossa Terrain, il suo tipo diventa quello della mossa Terrain. Il tipo originale viene ripristinato quando l’effetto del terreno termina."
+    },
+    "minds-eye": {
+      "description": "Questo Pokémon ignora l’immunità alle proprie mosse di tipo Normale e Lotta. Ignora inoltre lo svantaggio agli attacchi effettuati contro bersagli che può vedere."
+    },
+    "minus": {
+      "description": "Questo Pokémon ottiene 2 ai tiri per colpire e ai tiri per i danni se un alleato possiede a sua volta l’abilità Plus o Minus."
+    }
+  }
+}

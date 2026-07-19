@@ -1,0 +1,40 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/abilities.json",
+  "range": {
+    "fromIndex": 271,
+    "toIndex": 280
+  },
+  "items": {
+    "strong-jaw": {
+      "description": "Per le mosse basate sui morsi usate da questo Pokémon, come Bite, Thunder Fang e Crunch, può tirare due volte i dadi dei danni e scegliere uno dei due totali."
+    },
+    "sturdy": {
+      "description": "Quando questo Pokémon dovrebbe subire danni pari ad almeno la metà dei propri PF attuali, tira d4. Con un risultato di 3 o 4, dimezza i danni inflitti."
+    },
+    "suction-cups": {
+      "description": "Questo Pokémon non può essere costretto a uscire dalla lotta dalle mosse di un avversario."
+    },
+    "super-luck": {
+      "description": "Questo Pokémon aumenta di 1 il proprio intervallo di colpo critico, per esempio da 20 a 19+."
+    },
+    "supersweet-syrup": {
+      "description": "I tiri per colpire effettuati contro creature entro 30 piedi da questo Pokémon aggiungono 1d4 al tiro. Le creature prive di olfatto non subiscono questa abilità."
+    },
+    "supreme-overlord": {
+      "description": "Questo Pokémon aggiunge +1 ai propri tiri per colpire per ogni alleato attualmente a terra, fino a un massimo di +5."
+    },
+    "surge-surfer": {
+      "description": "Quando questo Pokémon inizia il proprio turno nell’area d’effetto di Electric Terrain, la sua velocità raddoppia fino all’inizio del turno successivo."
+    },
+    "swarm": {
+      "description": "Questo Pokémon raddoppia il proprio bonus STAB quando possiede il 25% o meno dei suoi PF massimi."
+    },
+    "sweet-veil": {
+      "description": "Ogni alleato entro 15 piedi da questo Pokémon è immune alla condizione di sonno."
+    },
+    "swift-swim": {
+      "description": "La velocità di questo Pokémon raddoppia durante la pioggia."
+    }
+  }
+}

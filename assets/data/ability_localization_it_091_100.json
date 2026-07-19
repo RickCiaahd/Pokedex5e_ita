@@ -1,0 +1,17 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/abilities.json",
+  "range": {"fromIndex": 91, "toIndex": 100},
+  "items": {
+    "form-change-ultra-necrozma": {"description": "Questo Pokémon può trasformarsi in Ultra Necrozma come azione bonus nel proprio turno. La trasformazione viene considerata una megaevoluzione permanente e segue le regole indicate nel Pokémon 5e Player Handbook."},
+    "friend-guard": {"description": "Una volta per riposo lungo, quando un alleato entro 15 piedi da questo Pokémon viene colpito da un attacco, questo Pokémon può scegliere di dimezzare i danni inflitti."},
+    "frisk": {"description": "Quando entra in lotta, viene rivelato lo strumento tenuto da un singolo avversario, se ne possiede uno."},
+    "full-metal-body": {"description": "Le mosse e le abilità degli altri Pokémon non possono ridurre le statistiche di questo Pokémon."},
+    "fur-coat": {"description": "Una volta per riposo lungo, questo Pokémon può dimezzare i danni inflitti da un singolo attacco."},
+    "gale-wings": {"description": "Questo Pokémon ottiene un ulteriore +1 ai tiri per colpire quando usa attacchi di tipo Volante."},
+    "galvanize": {"description": "Tutte le mosse di tipo Normale di questo Pokémon diventano di tipo Elettro."},
+    "gluttony": {"description": "Questo Pokémon deve mangiare la bacca che tiene quando scende sotto la metà dei propri PF massimi."},
+    "good-as-gold": {"description": "Questo Pokémon è immune alle condizioni di stato."},
+    "gooey": {"description": "Quando questo Pokémon viene colpito da un attacco in mischia, tira 1d4. Con un risultato di 3 o 4, la velocità dell’attaccante viene ridotta a 0 fino alla fine del suo turno successivo."}
+  }
+}

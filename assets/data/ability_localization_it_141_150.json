@@ -1,0 +1,40 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/abilities.json",
+  "range": {
+    "fromIndex": 141,
+    "toIndex": 150
+  },
+  "items": {
+    "levitate": {
+      "description": "Questo Pokémon è immune alle mosse di tipo Terra."
+    },
+    "libero": {
+      "description": "Mentre esegue una mossa, il tipo di questo Pokémon diventa lo stesso della mossa e può aggiungervi il proprio bonus STAB."
+    },
+    "light-metal": {
+      "description": "Questo Pokémon è particolarmente leggero per la propria specie. Una volta per riposo lungo, può imporre svantaggio a un tiro per colpire effettuato contro di lui."
+    },
+    "lightning-rod": {
+      "description": "Se questo Pokémon o un alleato entro 30 piedi viene bersagliato direttamente da una mossa di tipo Elettro che infligge danni, questo Pokémon può usare la propria reazione per diventare il nuovo bersaglio e, se la mossa lo colpisce, subire la metà dei danni."
+    },
+    "limber": {
+      "description": "Questo Pokémon è immune alla condizione paralizzato."
+    },
+    "lingering-aroma": {
+      "description": "Quando questo Pokémon viene colpito da un attacco in mischia o colpisce con un attacco in mischia, un’abilità casuale dell’altra creatura diventa Lingering Aroma fino alla fine dell’incontro o finché quella creatura non viene sostituita."
+    },
+    "liquid-ooze": {
+      "description": "Se un nemico usa contro questo Pokémon una mossa che assorbe o sottrae energia, deve superare un tiro salvezza su COS con CD 12 oppure diventare avvelenato."
+    },
+    "liquid-voice": {
+      "description": "Ogni mossa basata sul suono usata da questo Pokémon diventa di tipo Acqua."
+    },
+    "long-reach": {
+      "description": "Questo Pokémon ottiene 5 piedi aggiuntivi di portata con tutti gli attacchi in mischia e gli attacchi di opportunità."
+    },
+    "magic-bounce": {
+      "description": "Una volta per riposo lungo, quando dovrebbe subire una condizione negativa, questo Pokémon può invece rifletterla sull’attaccante."
+    }
+  }
+}

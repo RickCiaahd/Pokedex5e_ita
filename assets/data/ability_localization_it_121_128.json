@@ -1,0 +1,34 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/abilities.json",
+  "range": {
+    "fromIndex": 121,
+    "toIndex": 128
+  },
+  "items": {
+    "ice-body": {
+      "description": "Mentre nevica o grandina, questo Pokémon recupera PF pari al proprio modificatore di competenza alla fine di ciascuno dei propri turni."
+    },
+    "ice-face": {
+      "description": "Questo Pokémon possiede due forme: Ice Form e No-Ice Form. In Ice Form, la prima volta che subisce danni li dimezza, ma si trasforma in No-Ice Form. In No-Ice Form, la sua CA diminuisce di 3 e ciascuna delle sue velocità di movimento aumenta di 5 piedi. Torna in Ice Form dopo un riposo breve oppure all’inizio del proprio turno mentre si trova nella grandine."
+    },
+    "ice-scales": {
+      "description": "Questo Pokémon ha resistenza ai danni inflitti dalle mosse la cui Caratteristica della mossa è INT, SAG o CAR."
+    },
+    "illuminate": {
+      "description": "Questo Pokémon conosce il trucchetto Light e può lanciarlo a volontà."
+    },
+    "illusion": {
+      "description": "Questo Pokémon può assumere l’aspetto di qualsiasi Pokémon che riesca a vedere. Può farlo un numero di volte per riposo lungo pari al proprio livello. L’illusione dura un’ora oppure finché il Pokémon non viene colpito da una mossa che infligge danni."
+    },
+    "immunity": {
+      "description": "Questo Pokémon è immune alla condizione avvelenato."
+    },
+    "imposter": {
+      "description": "Questo Pokémon può usare Transform come azione bonus."
+    },
+    "infiltrator": {
+      "description": "Questo Pokémon ignora Light Screen, Reflect, Substitute, Mist, Safeguard e Aurora Veil."
+    }
+  }
+}

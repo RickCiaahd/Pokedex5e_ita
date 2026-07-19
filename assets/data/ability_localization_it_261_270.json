@@ -1,0 +1,40 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/abilities.json",
+  "range": {
+    "fromIndex": 261,
+    "toIndex": 270
+  },
+  "items": {
+    "stamina": {
+      "description": "Quando questo Pokémon subisce danni da una mossa, la sua CA aumenta di 2 fino all’inizio del proprio turno successivo. L’effetto non è cumulabile e resta attivo se il Pokémon viene colpito con successo in più turni consecutivi."
+    },
+    "stance-change": {
+      "description": "Aegislash possiede due forme. Quando usa King’s Shield, assume Shield Forme e scambia i valori di CA e DES. Quando usa una mossa che infligge danni, ritorna immediatamente in Blade Forme e ripristina le statistiche normali."
+    },
+    "static": {
+      "description": "Quando questo Pokémon viene colpito da un attacco in mischia, tira d4. Con un risultato di 4, l’attaccante subisce danni di tipo Elettro pari al bonus di competenza di questo Pokémon."
+    },
+    "steadfast": {
+      "description": "Una volta per riposo lungo, quando questo Pokémon fallisce un tiro salvezza contro una condizione negativa, può scegliere di superarlo invece."
+    },
+    "steam-engine": {
+      "description": "Quando subisce danni da una mossa di tipo Fuoco o Acqua, la velocità base di questo Pokémon diventa il doppio del valore normale fino alla fine del suo turno successivo."
+    },
+    "steelworker": {
+      "description": "Questo Pokémon aggiunge il proprio bonus di competenza ai danni inflitti dalle mosse di tipo Acciaio."
+    },
+    "steely-spirit": {
+      "description": "Questo Pokémon e i suoi alleati entro 30 piedi aumentano i tiri per i danni delle proprie mosse di tipo Acciaio di una quantità pari al modificatore di CAR di questo Pokémon. L’effetto può cumularsi fino a due volte."
+    },
+    "stench": {
+      "description": "Quando questo Pokémon viene colpito da un attacco in mischia, tira d10. Con un risultato di 10, l’attaccante diventa FLINCHED."
+    },
+    "sticky-hold": {
+      "description": "Gli strumenti tenuti da questo Pokémon non possono essere rubati né fatti cadere."
+    },
+    "storm-drain": {
+      "description": "Se questo Pokémon o un alleato entro 30 piedi viene bersagliato direttamente da una mossa di tipo Acqua che infligge danni, questo Pokémon può usare la propria reazione per diventare il nuovo bersaglio e, se la mossa lo colpisce, subire la metà dei danni."
+    }
+  }
+}

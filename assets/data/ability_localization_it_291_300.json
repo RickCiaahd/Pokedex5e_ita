@@ -1,0 +1,40 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/abilities.json",
+  "range": {
+    "fromIndex": 291,
+    "toIndex": 300
+  },
+  "items": {
+    "teraform-zero": {
+      "description": "Finché Terapagos si trova in Stellar Form, tutti gli effetti di terreno e clima entro 1000 piedi terminano e il terreno e il clima non possono essere modificati."
+    },
+    "teravolt": {
+      "description": "Le mosse di questo Pokémon ignorano completamente qualsiasi abilità che ostacolerebbe o impedirebbe il loro effetto sul bersaglio o la capacità dell’utilizzatore di colpirlo."
+    },
+    "thermal-exchange": {
+      "description": "Questo Pokémon non può essere scottato. Quando subisce danni di tipo Fuoco, effettua il proprio attacco successivo con vantaggio."
+    },
+    "thick-fat": {
+      "description": "Questo Pokémon subisce la metà dei danni di tipo Ghiaccio e Fuoco che subirebbe normalmente."
+    },
+    "tinted-lens": {
+      "description": "Le mosse di questo Pokémon ignorano le resistenze."
+    },
+    "torrent": {
+      "description": "Questo Pokémon raddoppia il proprio bonus STAB quando possiede il 25% o meno dei suoi PF massimi."
+    },
+    "tough-claws": {
+      "description": "Un attacco in mischia riuscito di questo Pokémon ottiene automaticamente lo STAB, indipendentemente dal tipo. Se otterrebbe già lo STAB, raddoppia il bonus STAB aggiunto ai danni."
+    },
+    "toxic-boost": {
+      "description": "Quando questo Pokémon viene colpito da un attacco di tipo Veleno, effettua il proprio attacco successivo con vantaggio."
+    },
+    "toxic-chain": {
+      "description": "Quando questo Pokémon colpisce un bersaglio con un attacco in mischia, il bersaglio deve superare un tiro salvezza su COS con CD 16 oppure diventare gravemente avvelenato."
+    },
+    "toxic-debris": {
+      "description": "Quando questo Pokémon subisce danni, può usare la propria reazione per emettere Toxic Spikes. Ogni creatura entro 5 piedi deve effettuare un tiro salvezza su DES contro una CD pari al livello di questo Pokémon + 2. In caso di fallimento, la creatura diventa avvelenata."
+    }
+  }
+}

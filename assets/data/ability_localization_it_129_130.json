@@ -1,0 +1,16 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/abilities.json",
+  "range": {
+    "fromIndex": 129,
+    "toIndex": 130
+  },
+  "items": {
+    "innards-out": {
+      "description": "Quando questo Pokémon viene mandato KO da una mossa che infligge danni, l’attaccante subisce danni senza tipo pari ai PF persi da questo Pokémon."
+    },
+    "inner-focus": {
+      "description": "Questo Pokémon è immune allo status FLINCHED."
+    }
+  }
+}

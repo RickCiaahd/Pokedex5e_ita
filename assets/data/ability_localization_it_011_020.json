@@ -1,0 +1,17 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/abilities.json",
+  "range": {"fromIndex": 11, "toIndex": 20},
+  "items": {
+    "aroma-veil": {"description": "Ogni alleato entro 15 piedi da questo Pokémon supera automaticamente qualsiasi tiro salvezza su SAG che deve effettuare."},
+    "as-one": {"description": "Gli avversari in lotta con questo Pokémon non possono mangiare le bacche che tengono. Quando manda KO un avversario, questo Pokémon può muoversi immediatamente fino a 20 piedi ed effettuare un’altra azione. Questa abilità non può essere scambiata o rimossa da questo Pokémon."},
+    "aura-break": {"description": "Quando questo Pokémon è in lotta, il potenziamento delle abilità Fairy Aura e Dark Aura viene invertito: ogni mossa del tipo applicabile usata entro 100 piedi infligge la metà dei danni invece del doppio."},
+    "bad-dreams": {"description": "Se un avversario in lotta con questo Pokémon si addormenta, subisce danni pari al bonus di competenza di questo Pokémon alla fine di ciascuno dei propri turni."},
+    "ball-fetch": {"description": "Questo Pokémon ha vantaggio nelle prove per afferrare o intercettare oggetti lanciati o in caduta."},
+    "battery": {"description": "Gli alleati che usano mosse di tipo Elettro entro 20 piedi da questo Pokémon raddoppiano i dadi dei danni."},
+    "battle-armor": {"description": "Questo Pokémon è immune ai danni aggiuntivi inflitti da un colpo critico."},
+    "beads-of-ruin": {"description": "Le creature entro 60 piedi da questo Pokémon che non possiedono un’abilità “* of Ruin” subiscono -4 al punteggio di CAR, fino a un minimo di 1. Questo effetto non è cumulabile e il punteggio di CAR della creatura viene ripristinato quando esce dall’area d’effetto."},
+    "beast-boost": {"description": "Quando manda KO un avversario, questo Pokémon aumenta di 2 i punteggi delle caratteristiche in cui possiede competenza nei tiri salvezza fino alla fine della lotta. L’effetto è cumulabile fino a un massimo di +10 a ciascun punteggio di caratteristica."},
+    "berserk": {"description": "Quando questo Pokémon scende sotto il 25% dei propri PF massimi, effettua tutti gli attacchi con svantaggio, ma infligge il doppio dei danni. Se una mossa usata richiede un tiro salvezza, i bersagli hanno vantaggio al tiro."}
+  }
+}

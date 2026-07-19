@@ -1,0 +1,40 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/abilities.json",
+  "range": {
+    "fromIndex": 281,
+    "toIndex": 290
+  },
+  "items": {
+    "sword-of-ruin": {
+      "description": "Le creature entro 60 piedi da questo Pokémon che non possiedono un’abilità “* of Ruin” subiscono -4 al punteggio di COS, fino a un minimo di 1. Questo effetto non è cumulabile e il punteggio di COS della creatura viene ripristinato quando esce dall’area d’effetto."
+    },
+    "symbiosis": {
+      "description": "Questo Pokémon può scambiare lo strumento tenuto con quello di un alleato come azione gratuita, purché si trovino entro 15 piedi l’uno dall’altro."
+    },
+    "synchronize": {
+      "description": "Se questo Pokémon diventa scottato, paralizzato o avvelenato, anche il suo attaccante subisce la stessa condizione negativa, se non ne è immune."
+    },
+    "tablets-of-ruin": {
+      "description": "Le creature entro 60 piedi da questo Pokémon che non possiedono un’abilità “* of Ruin” subiscono -4 al punteggio di FOR, fino a un minimo di 1. Questo effetto non è cumulabile e il punteggio di FOR della creatura viene ripristinato quando esce dall’area d’effetto."
+    },
+    "tangled-feet": {
+      "description": "Gli attacchi effettuati contro questo Pokémon hanno svantaggio mentre esso è confuso."
+    },
+    "tangling-hair": {
+      "description": "Gli avversari entro la portata in mischia di questo Pokémon non possono usare l’azione Disimpegno per allontanarsi."
+    },
+    "technician": {
+      "description": "Per le mosse che infliggono danni usate da questo Pokémon e possiedono almeno 15 PP massimi, può tirare due volte i dadi dei danni e scegliere uno dei due totali."
+    },
+    "telepathy": {
+      "description": "Questo Pokémon non può subire danni dagli attacchi dei propri alleati."
+    },
+    "tera-shell": {
+      "description": "Finché Terapagos possiede tutti i propri PF, ha resistenza a tutti i tipi di danno."
+    },
+    "tera-shift": {
+      "description": "Terapagos può assumere la Terastal Form come azione gratuita un numero di volte al giorno pari al proprio modificatore di COS. Torna alla forma normale dopo 10 minuti o quando lo desidera."
+    }
+  }
+}

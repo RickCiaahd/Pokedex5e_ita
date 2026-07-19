@@ -158,6 +158,11 @@ jobs:
               json.dumps(central_pairs, ensure_ascii=False, indent=2) + '\n',
               encoding='utf-8',
           )
+          selected = [entry for entry in catalog if entry['type'] in {'pokeball', 'medicine'}]
+          Path('item-source-pokeball-medicine.json').write_text(
+              json.dumps({'items': selected}, ensure_ascii=False, indent=2) + '\n',
+              encoding='utf-8',
+          )
           print(json.dumps({key: report[key] for key in [
               'catalogCount', 'typeCounts', 'matchedCount', 'matchMethodCounts',
               'unmatchedCount', 'pokemonCentralPairCount',
@@ -171,4 +176,5 @@ jobs:
           path: |
             item-name-audit.json
             pokemon-central-item-pairs.json
+            item-source-pokeball-medicine.json
           retention-days: 2

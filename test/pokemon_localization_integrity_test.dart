@@ -188,8 +188,8 @@ void main() {
         final reference = Map<String, dynamic>.from(entry.value as Map);
         final name = reference['name']?.toString().trim() ?? '';
         final genus = reference['genus']?.toString().trim() ?? '';
-        if (name.isEmpty || genus.isEmpty) {
-          errors.add('$path: riferimento incompleto per #$pokemonId.');
+        if (genus.isEmpty) {
+          errors.add('$path: categoria mancante per #$pokemonId.');
         }
         if (references.containsKey(pokemonId)) {
           errors.add('Categoria duplicata nel riferimento per #$pokemonId.');

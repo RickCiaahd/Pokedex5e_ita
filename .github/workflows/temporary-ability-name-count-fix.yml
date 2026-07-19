@@ -1,4 +1,4 @@
-name: Temporary ability name set diagnostic
+name: Temporary ability name set fix
 
 on:
   pull_request:
@@ -7,7 +7,7 @@ permissions:
   contents: write
 
 jobs:
-  diagnose:
+  fix:
     if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
@@ -15,21 +15,40 @@ jobs:
         with:
           ref: translation/ability-names
           fetch-depth: 0
-      - name: Compare reference and source sets
+      - name: Align official names with the source catalog
         run: |
           python - <<'PY'
           import json
           from pathlib import Path
 
-          source = json.loads(
-              Path('assets/data_webapp/abilities.json').read_text(encoding='utf-8')
-          )['items']
-          reference = json.loads(
-              Path('assets/data/ability_names_it_official.json').read_text(encoding='utf-8')
-          )
-          source_ids = {item['id'] for item in source}
-          reference_ids = set(reference['items'])
-          declared_unmatched = {
+          source_path = Path('assets/data_webapp/abilities.json')
+          reference_path = Path('assets/data/ability_names_it_official.json')
+          source = json.loads(source_path.read_text(encoding='utf-8'))['items']
+          source_by_id = {item['id']: item for item in source}
+          reference = json.loads(reference_path.read_text(encoding='utf-8'))
+          items = reference['items']
+
+          for stale_id in ('delta-stream', 'parental-bond', 'power-construct'):
+              items.pop(stale_id, None)
+
+          additions = {
+              'mold-breaker': {
+                  'officialNumber': 104,
+                  'sourceName': source_by_id['mold-breaker']['name'],
+                  'name': 'Rompiforma',
+              },
+              'sword-of-ruin': {
+                  'officialNumber': 285,
+                  'sourceName': source_by_id['sword-of-ruin']['name'],
+                  'name': 'Spada Nefasta',
+              },
+          }
+          items.update(additions)
+
+          source_ids = set(source_by_id)
+          reference_ids = set(items)
+          unmatched = source_ids - reference_ids
+          expected_unmatched = {
               'air-slash', 'blizzard', 'drifter',
               'form-change-arceus', 'form-change-cherrim',
               'form-change-giratina', 'form-change-hoopa',
@@ -41,33 +60,36 @@ jobs:
               'hydro-pump', 'leaf-storm', 'overheat',
               'paper-thin', 'transformer',
           }
-          expected = source_ids - declared_unmatched
-          diagnostic = {
-              'sourceCount': len(source_ids),
-              'referenceCount': len(reference_ids),
-              'declaredUnmatchedCount': len(declared_unmatched),
-              'referenceOutsideSource': sorted(reference_ids - source_ids),
-              'sourceWithoutReference': sorted(source_ids - reference_ids),
-              'unexpectedReferenceEntries': sorted(reference_ids - expected),
-              'expectedEntriesMissing': sorted(expected - reference_ids),
-              'declaredUnmatchedWithReference': sorted(
-                  declared_unmatched & reference_ids
-              ),
-              'undeclaredUnmatched': sorted(
-                  (source_ids - reference_ids) - declared_unmatched
-              ),
-          }
-          path = Path('docs/translation/ability-name-set-diagnostic.json')
-          path.write_text(
-              json.dumps(diagnostic, ensure_ascii=False, indent=2) + '\n',
+          if reference_ids - source_ids:
+              raise SystemExit(
+                  f'Riferimenti estranei: {sorted(reference_ids - source_ids)}'
+              )
+          if unmatched != expected_unmatched:
+              raise SystemExit(
+                  f'Voci senza riferimento inattese: {sorted(unmatched)}'
+              )
+          if len(items) != 308:
+              raise SystemExit(f'Attesi 308 nomi, trovati {len(items)}')
+
+          reference['catalogCount'] = len(source_ids)
+          reference['matchedCount'] = len(items)
+          reference['unmatchedCount'] = len(unmatched)
+          reference_path.write_text(
+              json.dumps(reference, ensure_ascii=False, indent=2) + '\n',
               encoding='utf-8',
           )
-          print(json.dumps(diagnostic, ensure_ascii=False, indent=2))
+
+          diagnostic_path = Path(
+              'docs/translation/ability-name-set-diagnostic.json'
+          )
+          if diagnostic_path.exists():
+              diagnostic_path.unlink()
           PY
-      - name: Commit diagnostic
+      - name: Commit corrected reference
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/translation/ability-name-set-diagnostic.json
-          git commit -m "Registra la diagnostica dei nomi abilità"
+          git add assets/data/ability_names_it_official.json
+          git add -u docs/translation/ability-name-set-diagnostic.json
+          git commit -m "Allinea i nomi abilità al catalogo sorgente"
           git push origin HEAD:translation/ability-names

@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - translation/pokemon-gen8
+  pull_request:
+    branches:
+      - main
 
 permissions:
   contents: write
@@ -131,6 +134,7 @@ jobs:
         shell: bash
         run: |
           rm -f docs/translation/gen8-source-extract.json
+          rm -f docs/translation/gen8-integration-trigger.txt
           git rm .github/workflows/temporary-gen8-source-extract.yml
 
       - name: Commit integration
@@ -142,5 +146,6 @@ jobs:
           git add test/pokemon_localization_integrity_test.dart
           git add CHANGELOG.md
           git add docs/translation/gen8-source-extract.json
+          git add docs/translation/gen8-integration-trigger.txt
           git commit -m "Integra la localizzazione Pokémon di ottava generazione"
           git push origin HEAD:translation/pokemon-gen8

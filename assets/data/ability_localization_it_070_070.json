@@ -1,0 +1,10 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/abilities.json",
+  "range": {"fromIndex": 70, "toIndex": 70},
+  "items": {
+    "flame-body": {
+      "description": "Le fiamme del corpo di questo Pokémon emanano luce fioca entro un raggio di 15 piedi. Inoltre, quando viene colpito da un attacco in mischia, tira d10. Con un risultato di 10, l’attaccante diventa scottato."
+    }
+  }
+}

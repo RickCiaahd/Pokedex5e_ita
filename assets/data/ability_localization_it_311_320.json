@@ -1,0 +1,40 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/abilities.json",
+  "range": {
+    "fromIndex": 311,
+    "toIndex": 320
+  },
+  "items": {
+    "vessel-of-ruin": {
+      "description": "Le creature entro 60 piedi da questo Pokémon che non possiedono un’abilità “* of Ruin” subiscono -4 al punteggio di SAG, fino a un minimo di 1. Questo effetto non è cumulabile e il punteggio di SAG della creatura viene ripristinato quando esce dall’area d’effetto."
+    },
+    "victory-star": {
+      "description": "Finché questo Pokémon è in lotta, tutti i Pokémon alleati ottengono un ulteriore +1 ai tiri per colpire."
+    },
+    "vital-spirit": {
+      "description": "Questo Pokémon non può essere addormentato."
+    },
+    "volt-absorb": {
+      "description": "Questo Pokémon non subisce danni dall’elettricità né dagli attacchi di tipo Elettro. Assorbe invece metà dei danni elettrici che avrebbe subito, recuperando un pari numero di PF."
+    },
+    "wandering-spirit": {
+      "description": "Quando questo Pokémon viene colpito da un attacco in mischia, un’abilità casuale dell’attaccante diventa Wandering Spirit per il resto dell’incontro, mentre l’abilità sostituita prende il posto di Wandering Spirit su questo Pokémon."
+    },
+    "water-absorb": {
+      "description": "Questo Pokémon non subisce danni dall’acqua né dagli attacchi di tipo Acqua. Assorbe invece metà dei danni di tipo Acqua che avrebbe subito, recuperando un pari numero di PF."
+    },
+    "water-bubble": {
+      "description": "Questo Pokémon ha resistenza ai danni di tipo Fuoco ed è immune alla condizione scottato."
+    },
+    "water-compaction": {
+      "description": "Dopo aver subito danni da una mossa di tipo Acqua, tutti gli altri danni inflitti a questo Pokémon fino all’inizio del suo turno successivo vengono dimezzati."
+    },
+    "water-veil": {
+      "description": "Questo Pokémon è immune alla condizione scottato."
+    },
+    "weak-armor": {
+      "description": "Quando un attacco colpisce questo Pokémon, la sua velocità aumenta di 5 piedi, ma la CA viene temporaneamente ridotta di 1 fino alla fine della lotta, fino a una riduzione massima di -5."
+    }
+  }
+}

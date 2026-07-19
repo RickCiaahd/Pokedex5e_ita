@@ -1,0 +1,90 @@
+name: Temporary Gen8 source extract
+
+on:
+  push:
+    branches:
+      - translation/pokemon-gen8
+
+permissions:
+  contents: write
+
+jobs:
+  extract:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: translation/pokemon-gen8
+          fetch-depth: 0
+
+      - name: Extract generation VIII source text and Italian categories
+        shell: bash
+        run: |
+          python - <<'PY'
+          import csv
+          import io
+          import json
+          import urllib.request
+          from pathlib import Path
+
+          catalog = json.loads(Path('assets/data_webapp/pokemon.json').read_text(encoding='utf-8'))
+          selected = {}
+          for item in catalog.get('items', []):
+              number = int(item.get('number') or 0)
+              if not 810 <= number <= 905:
+                  continue
+              candidate = {
+                  'name': str(item.get('name') or '').strip(),
+                  'id': str(item.get('id') or '').strip(),
+                  'description': str(item.get('description') or '').strip(),
+              }
+              current = selected.get(number)
+              score = (candidate['id'].count('-'), len(candidate['id']))
+              if current is None or score < current['_score']:
+                  candidate['_score'] = score
+                  selected[number] = candidate
+
+          csv_url = 'https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/pokemon_species_names.csv'
+          with urllib.request.urlopen(csv_url) as response:
+              rows = csv.DictReader(io.StringIO(response.read().decode('utf-8')))
+              categories = {
+                  int(row['pokemon_species_id']): row['genus'].strip()
+                  for row in rows
+                  if row['local_language_id'] == '8'
+                  and 810 <= int(row['pokemon_species_id']) <= 905
+              }
+
+          items = {}
+          for number in range(810, 906):
+              source = selected.get(number)
+              if source is None:
+                  raise SystemExit(f'Missing source Pokémon #{number}')
+              genus = categories.get(number, '')
+              if not genus:
+                  raise SystemExit(f'Missing Italian category #{number}')
+              items[str(number)] = {
+                  'name': source['name'],
+                  'id': source['id'],
+                  'description': source['description'],
+                  'genus': genus,
+              }
+
+          output = {
+              'source': 'assets/data_webapp/pokemon.json',
+              'category_source': 'https://wiki.pokemoncentral.it/Categoria',
+              'range': {'from': 810, 'to': 905},
+              'items': items,
+          }
+          target = Path('docs/translation/gen8-source-extract.json')
+          target.write_text(json.dumps(output, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+          PY
+
+      - name: Commit extracted source data
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/translation/gen8-source-extract.json
+          git commit -m "Registra le sorgenti temporanee della Gen VIII"
+          git push origin HEAD:translation/pokemon-gen8

@@ -1,0 +1,44 @@
+name: Temporary Gen6 text fix
+
+on:
+  push:
+    branches:
+      - translation/pokemon-gen6
+
+permissions:
+  contents: write
+
+jobs:
+  fix-text:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: translation/pokemon-gen6
+          fetch-depth: 0
+      - name: Preserve the move name
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('assets/data/pokemon_localization_it_gen6_650_685.json')
+          text = path.read_text(encoding='utf-8')
+          old = "L'attacco Azione di Chesnaught"
+          new = "La mossa Tackle di Chesnaught"
+          if old not in text:
+              print('Testo già corretto.')
+          else:
+              path.write_text(text.replace(old, new), encoding='utf-8')
+          PY
+      - name: Commit the correction
+        shell: bash
+        run: |
+          if git diff --quiet; then
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/data/pokemon_localization_it_gen6_650_685.json
+          git commit -m "Mantiene invariato il nome della mossa Tackle"
+          git push origin HEAD:translation/pokemon-gen6

@@ -25,73 +25,143 @@ jobs:
           path = Path('lib/screens/pokemon/pokemon_edit_screen.dart')
           text = path.read_text(encoding='utf-8')
 
-          replacements = [
-            (
-              '  Map<String, String> _abilityDescriptions = {};\n  Map<String, String> _featDescriptions = {};',
-              '  Map<String, String> _abilityDescriptions = {};\n  Map<String, String> _abilityDisplayNames = {};\n  Map<String, String> _featDescriptions = {};',
-            ),
-            (
-              '    final abilityChoicesFuture = _abilityRepository.getWebAbilities();\n    final deprecatedAbilitiesFuture = _abilityRepository',
-              '    final abilityChoicesFuture = _abilityRepository.getWebAbilities();\n    final abilityDisplayNamesFuture = _abilityRepository.getAbilityDisplayNames(\n      pokemonId: widget.pokemon.id,\n    );\n    final deprecatedAbilitiesFuture = _abilityRepository',
-            ),
-            (
-              '    final abilityChoices = await abilityChoicesFuture;\n    final deprecatedAbilities = await deprecatedAbilitiesFuture;',
-              '    final abilityChoices = await abilityChoicesFuture;\n    final abilityDisplayNames = await abilityDisplayNamesFuture;\n    final deprecatedAbilities = await deprecatedAbilitiesFuture;',
-            ),
-            (
-              '      _abilityChoices = abilityChoices;\n      _deprecatedAbilityNames = deprecatedAbilities;',
-              '      _abilityChoices = abilityChoices;\n      _abilityDisplayNames = abilityDisplayNames;\n      _deprecatedAbilityNames = deprecatedAbilities;',
-            ),
-            (
-              '          descriptions: _abilityDescriptions,\n          pinnedLabel: \'Abilità naturali del Pokémon\',',
-              '          descriptions: _abilityDescriptions,\n          labels: _abilityDisplayNames,\n          pinnedLabel: \'Abilità naturali del Pokémon\',',
-            ),
-            (
-              '                        values: _abilities,\n                        emptyLabel: \'ABILITY\',',
-              '                        values: _abilities,\n                        labels: _abilityDisplayNames,\n                        emptyLabel: \'ABILITY\',',
-            ),
-            (
-              '    required this.onRemove,\n  });\n\n  final List<String> values;',
-              '    required this.onRemove,\n    this.labels = const {},\n  });\n\n  final List<String> values;',
-            ),
-            (
-              '  final ValueChanged<int> onRemove;\n\n  @override',
-              '  final ValueChanged<int> onRemove;\n  final Map<String, String> labels;\n\n  @override',
-            ),
-            (
-              '              label: entry.value,\n              onTap: () => onPick(entry.key),',
-              '              label: labels[entry.value] ?? entry.value,\n              onTap: () => onPick(entry.key),',
-            ),
-            (
-              '    this.descriptions = const {},\n    this.includeNone = false,',
-              '    this.descriptions = const {},\n    this.labels = const {},\n    this.includeNone = false,',
-            ),
-            (
-              '  final Map<String, String> descriptions;\n  final bool includeNone;',
-              '  final Map<String, String> descriptions;\n  final Map<String, String> labels;\n  final bool includeNone;',
-            ),
-            (
-              '           return option.toLowerCase().contains(search) ||\n               (widget.descriptions[option] ?? \'\').toLowerCase().contains(\n                 search,\n               );',
-              '           return option.toLowerCase().contains(search) ||\n               (widget.labels[option] ?? \'\').toLowerCase().contains(search) ||\n               (widget.descriptions[option] ?? \'\').toLowerCase().contains(\n                 search,\n               );',
-            ),
-            (
-              '         .toList();\n  }\n\n  @override\n  Widget build(BuildContext context) {\n    final options = _options;',
-              '         .toList()\n      ..sort((a, b) => (widget.labels[a] ?? a).toLowerCase().compareTo(\n        (widget.labels[b] ?? b).toLowerCase(),\n      ));\n  }\n\n  @override\n  Widget build(BuildContext context) {\n    final options = _options;',
-            ),
-            (
-              '             label: option,\n             subtitle: widget.descriptions[option],\n             pinned: true,',
-              '             label: widget.labels[option] ?? option,\n             subtitle: widget.descriptions[option],\n             pinned: true,',
-            ),
-            (
-              '             label: option,\n             subtitle: widget.descriptions[option],\n             onTap: () => Navigator.of(context).pop(option),',
-              '             label: widget.labels[option] ?? option,\n             subtitle: widget.descriptions[option],\n             onTap: () => Navigator.of(context).pop(option),',
-            ),
-          ]
+          def add_after(anchor, addition, label):
+              global text
+              if addition.strip() in text:
+                  print(f'{label}: already applied')
+                  return
+              if anchor not in text:
+                  raise SystemExit(f'{label}: anchor not found')
+              text = text.replace(anchor, anchor + addition, 1)
+              print(f'{label}: applied')
 
-          for old, new in replacements:
+          def replace_once(old, new, label):
+              global text
+              if new in text:
+                  print(f'{label}: already applied')
+                  return
               if old not in text:
-                  raise SystemExit(f'Blocco atteso non trovato:\n{old}')
+                  raise SystemExit(f'{label}: block not found')
               text = text.replace(old, new, 1)
+              print(f'{label}: applied')
+
+          add_after(
+              '  Map<String, String> _abilityDescriptions = {};\n',
+              '  Map<String, String> _abilityDisplayNames = {};\n',
+              'state map',
+          )
+          add_after(
+              '    final abilityChoicesFuture = _abilityRepository.getWebAbilities();\n',
+              '    final abilityDisplayNamesFuture = _abilityRepository.getAbilityDisplayNames(\n'
+              '      pokemonId: widget.pokemon.id,\n'
+              '    );\n',
+              'display-name future',
+          )
+          add_after(
+              '    final abilityChoices = await abilityChoicesFuture;\n',
+              '    final abilityDisplayNames = await abilityDisplayNamesFuture;\n',
+              'await display names',
+          )
+          add_after(
+              '      _abilityChoices = abilityChoices;\n',
+              '      _abilityDisplayNames = abilityDisplayNames;\n',
+              'store display names',
+          )
+          replace_once(
+              '          descriptions: _abilityDescriptions,\n'
+              "          pinnedLabel: 'Abilità naturali del Pokémon',",
+              '          descriptions: _abilityDescriptions,\n'
+              '          labels: _abilityDisplayNames,\n'
+              "          pinnedLabel: 'Abilità naturali del Pokémon',",
+              'picker labels',
+          )
+          replace_once(
+              '                        values: _abilities,\n'
+              "                        emptyLabel: 'ABILITY',",
+              '                        values: _abilities,\n'
+              '                        labels: _abilityDisplayNames,\n'
+              "                        emptyLabel: 'ABILITY',",
+              'chip labels',
+          )
+          replace_once(
+              '    required this.onRemove,\n'
+              '  });\n\n'
+              '  final List<String> values;',
+              '    required this.onRemove,\n'
+              '    this.labels = const {},\n'
+              '  });\n\n'
+              '  final List<String> values;',
+              'chip constructor',
+          )
+          add_after(
+              '  final ValueChanged<int> onRemove;\n',
+              '  final Map<String, String> labels;\n',
+              'chip labels field',
+          )
+          replace_once(
+              '              label: entry.value,',
+              '              label: labels[entry.value] ?? entry.value,',
+              'chip visible label',
+          )
+          replace_once(
+              '    this.descriptions = const {},\n'
+              '    this.includeNone = false,',
+              '    this.descriptions = const {},\n'
+              '    this.labels = const {},\n'
+              '    this.includeNone = false,',
+              'picker constructor',
+          )
+          add_after(
+              '  final Map<String, String> descriptions;\n',
+              '  final Map<String, String> labels;\n',
+              'picker labels field',
+          )
+          replace_once(
+              '          return option.toLowerCase().contains(search) ||\n'
+              "              (widget.descriptions[option] ?? '').toLowerCase().contains(\n"
+              '                search,\n'
+              '              );',
+              '          return option.toLowerCase().contains(search) ||\n'
+              "              (widget.labels[option] ?? '').toLowerCase().contains(search) ||\n"
+              "              (widget.descriptions[option] ?? '').toLowerCase().contains(\n"
+              '                search,\n'
+              '              );',
+              'picker search',
+          )
+          replace_once(
+              '        .toList();\n'
+              '  }\n\n'
+              '  @override\n'
+              '  Widget build(BuildContext context) {\n'
+              '    final options = _options;',
+              '        .toList()\n'
+              '      ..sort((a, b) => (widget.labels[a] ?? a).toLowerCase().compareTo(\n'
+              '        (widget.labels[b] ?? b).toLowerCase(),\n'
+              '      ));\n'
+              '  }\n\n'
+              '  @override\n'
+              '  Widget build(BuildContext context) {\n'
+              '    final options = _options;',
+              'picker sorting',
+          )
+          replace_once(
+              '            label: option,\n'
+              '            subtitle: widget.descriptions[option],\n'
+              '            pinned: true,',
+              '            label: widget.labels[option] ?? option,\n'
+              '            subtitle: widget.descriptions[option],\n'
+              '            pinned: true,',
+              'pinned visible label',
+          )
+          replace_once(
+              '            label: option,\n'
+              '            subtitle: widget.descriptions[option],\n'
+              '            onTap: () => Navigator.of(context).pop(option),',
+              '            label: widget.labels[option] ?? option,\n'
+              '            subtitle: widget.descriptions[option],\n'
+              '            onTap: () => Navigator.of(context).pop(option),',
+              'catalog visible label',
+          )
 
           path.write_text(text, encoding='utf-8')
           PY
@@ -99,6 +169,9 @@ jobs:
       - name: Commit editor integration
         shell: bash
         run: |
+          if git diff --quiet; then
+            exit 0
+          fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add lib/screens/pokemon/pokemon_edit_screen.dart

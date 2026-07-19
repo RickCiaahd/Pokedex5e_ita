@@ -1,0 +1,67 @@
+name: Temporary ability name count fix
+
+on:
+  pull_request:
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: translation/ability-names
+          fetch-depth: 0
+      - name: Remove entries without an official match
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          source_path = Path('assets/data_webapp/abilities.json')
+          reference_path = Path('assets/data/ability_names_it_official.json')
+          source = json.loads(source_path.read_text(encoding='utf-8'))['items']
+          reference = json.loads(reference_path.read_text(encoding='utf-8'))
+
+          source_ids = {item['id'] for item in source}
+          unmatched = {
+              'air-slash', 'blizzard', 'drifter',
+              'form-change-arceus', 'form-change-cherrim',
+              'form-change-giratina', 'form-change-hoopa',
+              'form-change-keldeo', 'form-change-kyurem',
+              'form-change-meloetta', 'form-change-necrozma',
+              'form-change-ogerpon', 'form-change-oricorio',
+              'form-change-rotom', 'form-change-shaymin',
+              'form-change-terapagos', 'form-change-ultra-necrozma',
+              'hydro-pump', 'leaf-storm', 'overheat',
+              'paper-thin', 'transformer',
+          }
+          expected = source_ids - unmatched
+          items = reference['items']
+          extra = set(items) - expected
+          missing = expected - set(items)
+          if missing:
+              raise SystemExit(f'Nomi ufficiali mancanti: {sorted(missing)}')
+          if len(extra) != 1:
+              raise SystemExit(f'Attesa una voce estranea, trovate: {sorted(extra)}')
+          removed = extra.pop()
+          del items[removed]
+          reference['catalogCount'] = len(source_ids)
+          reference['matchedCount'] = len(items)
+          reference['unmatchedCount'] = len(unmatched)
+          reference_path.write_text(
+              json.dumps(reference, ensure_ascii=False, indent=2) + '\n',
+              encoding='utf-8',
+          )
+          print(f'Rimossa voce non presente nel catalogo sorgente: {removed}')
+          PY
+      - name: Commit correction
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/data/ability_names_it_official.json
+          git commit -m "Allinea il riferimento ai 330 elementi del catalogo"
+          git push origin HEAD:translation/ability-names

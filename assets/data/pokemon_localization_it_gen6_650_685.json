@@ -1,0 +1,154 @@
+{
+  "locale": "it",
+  "source": "assets/data/pokemon_flavor.json",
+  "range": {
+    "from": 650,
+    "to": 685
+  },
+  "items": {
+    "650": {
+      "genus": "Pokémon Castanriccio",
+      "description": "Gli aculei sulla testa di Chespin sono normalmente morbidi. Quando li irrigidisce, le punte diventano tanto dure e affilate da poter perforare la roccia."
+    },
+    "651": {
+      "genus": "Pokémon Spincorazza",
+      "description": "Quilladin si affida al suo robusto guscio per respingere gli attacchi dei predatori, poi contrattacca con i suoi aculei affilati."
+    },
+    "652": {
+      "genus": "Pokémon Spincorazza",
+      "description": "L'attacco Azione di Chesnaught è abbastanza potente da ribaltare un carro armato da 50 tonnellate. Protegge gli alleati dal pericolo usando il proprio corpo come scudo."
+    },
+    "653": {
+      "genus": "Pokémon Volpe",
+      "description": "Mangiare un ramoscello riempie Fennekin di energia. Dalle sue grandi orecchie fuoriesce aria a una temperatura superiore a 390 °F."
+    },
+    "654": {
+      "genus": "Pokémon Volpe",
+      "description": "Braixen tiene un ramoscello infilato nella coda. Lo incendia sfregandolo contro il pelo e si lancia in battaglia."
+    },
+    "655": {
+      "genus": "Pokémon Volpe",
+      "description": "Delphox fissa la fiamma sulla punta del proprio ramo per raggiungere uno stato di profonda concentrazione che gli permette di vedere nel futuro."
+    },
+    "656": {
+      "genus": "Pokémon Schiumorana",
+      "description": "Froakie secerne bolle elastiche dal petto e dalla schiena. Queste bolle attutiscono i danni che subirebbe quando viene attaccato."
+    },
+    "657": {
+      "genus": "Pokémon Schiumorana",
+      "description": "Frogadier lancia con grande precisione sassolini ricoperti di bolle, riuscendo a colpire lattine vuote fino a 100 piedi di distanza."
+    },
+    "658": {
+      "genus": "Pokémon Ninja",
+      "description": "Greninja crea stelle da lancio con acqua compressa. Facendole ruotare e scagliandole ad alta velocità, può perfino tagliare in due il metallo."
+    },
+    "659": {
+      "genus": "Pokémon Scavabuche",
+      "description": "Bunnelby usa le grandi orecchie per scavare tane e può continuare a lavorare per tutta la notte."
+    },
+    "660": {
+      "genus": "Pokémon Scavabuche",
+      "description": "Con le sue potenti orecchie, Diggersby solleva facilmente massi del peso di una tonnellata o più. È di grande aiuto nei cantieri."
+    },
+    "661": {
+      "genus": "Pokémon Pettirosso",
+      "description": "Questi Pokémon amichevoli comunicano tra loro con splendidi cinguettii e movimenti delle penne della coda."
+    },
+    "662": {
+      "genus": "Pokémon Sfavillante",
+      "description": "Fletchinder espelle dal becco scintille che incendiano l'erba alta, poi si avventa sulle prede disorientate che saltano fuori dalle fiamme."
+    },
+    "663": {
+      "genus": "Pokémon Ardifiamma",
+      "description": "Nel fervore di una lotta emozionante, Talonflame sparge scintille dagli spazi tra le piume e si libra in volo."
+    },
+    "664": {
+      "genus": "Pokémon Tirascaglie",
+      "description": "Quando viene attaccato da Pokémon uccello, Scatterbug emette una polvere nera e velenosa che paralizza al contatto."
+    },
+    "665": {
+      "genus": "Pokémon Tirascaglie",
+      "description": "Spewpa vive nascosto nell'ombra dei cespugli. Quando un predatore lo attacca, rizza rapidamente il pelo che ricopre il corpo per intimidirlo."
+    },
+    "666": {
+      "genus": "Pokémon Farfascaglia",
+      "description": "In tutto il mondo si trovano Vivillon con motivi molto diversi. Il disegno delle ali dipende dal clima del loro habitat."
+    },
+    "667": {
+      "genus": "Pokémon Leoncino",
+      "description": "Più è forte l'avversario affrontato da Litleo, più calore si sprigiona dalla sua criniera e più potere scorre nel suo corpo."
+    },
+    "668": {
+      "genus": "Pokémon Reale",
+      "description": "Il Pyroar maschio con la criniera di fuoco più grande è il capo del branco."
+    },
+    "669": {
+      "genus": "Pokémon Monofiore",
+      "description": "Flabébé richiama e controlla il potere nascosto dei fiori. È molto probabile che il fiore che porta con sé faccia parte del suo corpo."
+    },
+    "670": {
+      "genus": "Pokémon Monofiore",
+      "description": "Floette svolazza nei campi fioriti e si prende cura dei fiori che iniziano ad appassire. In battaglia richiama il potere nascosto dei fiori."
+    },
+    "671": {
+      "genus": "Pokémon Giardino",
+      "description": "Florges rivendica come territorio splendidi giardini fioriti e ottiene potere immergendosi nell'energia emanata dalle piante in fiore."
+    },
+    "672": {
+      "genus": "Pokémon Cavalcatura",
+      "description": "Si ritiene che Skiddo sia stato uno dei primi Pokémon a vivere in armonia con gli esseri umani. Ha un'indole molto pacifica."
+    },
+    "673": {
+      "genus": "Pokémon Cavalcatura",
+      "description": "Gogoat percepisce lo stato d'animo del proprio Allenatore dalle minime variazioni nella presa sulle corna. Grazie a questa empatia, i due possono correre come un solo essere."
+    },
+    "674": {
+      "genus": "Pokémon Briccone",
+      "description": "Pancham fa del suo meglio per farsi prendere sul serio dai nemici, ma il suo sguardo non è abbastanza minaccioso. Masticare una foglia è il suo tratto distintivo."
+    },
+    "675": {
+      "genus": "Pokémon Occhiotruce",
+      "description": "Nonostante il carattere violento, Pangoro non tollera i prepotenti. Usa la foglia che tiene in bocca per percepire i movimenti dei nemici."
+    },
+    "676": {
+      "genus": "Pokémon Barboncino",
+      "description": "Tagliare il soffice pelo di Furfrou non lo rende soltanto più elegante, ma aumenta anche la rapidità dei suoi movimenti."
+    },
+    "677": {
+      "genus": "Pokémon Moderazione",
+      "description": "L'organo che sprigiona l'intenso potere psichico di Espurr è protetto dalle orecchie, così da impedire all'energia di disperdersi."
+    },
+    "678": {
+      "genus": "Pokémon Temperanza",
+      "description": "Quando è in pericolo, Meowstic solleva le orecchie e libera una potenza psichica sufficiente a ridurre in polvere un autocarro da 10 tonnellate."
+    },
+    "679": {
+      "genus": "Pokémon Armabianca",
+      "description": "Pare che Honedge nasca quando lo spirito di un defunto prende possesso di una spada. Si lega alle persone e ne assorbe la forza vitale."
+    },
+    "680": {
+      "genus": "Pokémon Armabianca",
+      "description": "Evolvendosi, Honedge si divide in due spade. I due corpi comunicano telepaticamente per coordinare gli attacchi e fare a brandelli i nemici."
+    },
+    "681": {
+      "genus": "Pokémon Spadareale",
+      "description": "Generazioni di sovrani sono state servite da Aegislash, che usava il proprio potere spettrale per manipolare e controllare esseri umani e Pokémon."
+    },
+    "682": {
+      "genus": "Pokémon Profumo",
+      "description": "Spritzee emana un profumo che incanta chiunque lo respiri. La fragranza cambia a seconda di ciò che ha mangiato."
+    },
+    "683": {
+      "genus": "Pokémon Fragranza",
+      "description": "Aromatisse crea fragranze di ogni tipo, piacevoli o sgradevoli, e diffonde quelle odiate dai nemici per ottenere un vantaggio in battaglia."
+    },
+    "684": {
+      "genus": "Pokémon Zuccherino",
+      "description": "Per intrappolare gli avversari, Swirlix produce fili bianchi dolci e appiccicosi come lo zucchero filato."
+    },
+    "685": {
+      "genus": "Pokémon Panna",
+      "description": "Slurpuff distingue perfino gli odori più tenui. Sfrutta il suo sensibilissimo olfatto per aiutare i pasticceri nel loro lavoro."
+    }
+  }
+}

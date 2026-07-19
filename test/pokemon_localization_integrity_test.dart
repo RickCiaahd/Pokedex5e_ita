@@ -6,7 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:pokedex_5e_ita/repositories/pokemon_localization_repository.dart';
 import 'package:pokedex_5e_ita/repositories/pokemon_repository.dart';
 
-const _maxLocalizedPokemonId = 905;
+const _maxLocalizedPokemonId = 1025;
 const _maxLegacyFlavorPokemonId = 809;
 const _allowedLocalizationSources = {
   'assets/data/pokemon_flavor.json',
@@ -21,7 +21,30 @@ const _categoryReferencePaths = [
   'docs/translation/pokemon-categories-it-810-841.json',
   'docs/translation/pokemon-categories-it-842-873.json',
   'docs/translation/pokemon-categories-it-874-905.json',
+  'docs/translation/pokemon-categories-it-906-915.json',
+  'docs/translation/pokemon-categories-it-916-925.json',
+  'docs/translation/pokemon-categories-it-926-935.json',
+  'docs/translation/pokemon-categories-it-936-945.json',
+  'docs/translation/pokemon-categories-it-946-955.json',
+  'docs/translation/pokemon-categories-it-956-965.json',
+  'docs/translation/pokemon-categories-it-966-966.json',
+  'docs/translation/pokemon-categories-it-967-970.json',
+  'docs/translation/pokemon-categories-it-973-975.json',
+  'docs/translation/pokemon-categories-it-976-985.json',
+  'docs/translation/pokemon-categories-it-986-995.json',
+  'docs/translation/pokemon-categories-it-996-1000.json',
+  'docs/translation/pokemon-categories-it-1005-1005.json',
+  'docs/translation/pokemon-categories-it-1006-1015.json',
+  'docs/translation/pokemon-categories-it-1016-1025.json',
 ];
+const _categoryReferenceOverrides = <int, String>{
+  971: 'Pokémon Can' 'tasma',
+  972: 'Pokémon Can' 'tasma',
+  1001: 'Pokémon Dis' 'grazia',
+  1002: 'Pokémon Dis' 'grazia',
+  1003: 'Pokémon Dis' 'grazia',
+  1004: 'Pokémon Dis' 'grazia',
+};
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -121,7 +144,7 @@ void main() {
     expect(errors, isEmpty, reason: errors.join('\n'));
   });
 
-  test('il repository carica le 905 traduzioni italiane', () async {
+  test('il repository carica le 1025 traduzioni italiane', () async {
     final texts = await PokemonLocalizationRepository().getPokemonTexts();
 
     expect(texts.length, _maxLocalizedPokemonId);
@@ -142,6 +165,14 @@ void main() {
     expect(texts[898]?.genus, 'Pokémon Re');
     expect(texts[905]?.genus, 'Pokémon Amoreodio');
     expect(texts[905]?.description, startsWith('Quando Enamorus'));
+    expect(texts[906]?.genus, 'Pokémon Erbagatto');
+    expect(texts[906]?.description, startsWith('Il dolce profumo'));
+    expect(texts[944]?.genus, 'Pokémon Velentopo');
+    expect(texts[945]?.genus, 'Pokémon Velenprimate');
+    expect(texts[1000]?.genus, 'Pokémon Tesoro');
+    expect(texts[1024]?.genus, 'Pokémon Teracristal');
+    expect(texts[1025]?.genus, 'Pokémon Dominio');
+    expect(texts[1025]?.description, startsWith('Pecharunt'));
   });
 
   test('le categorie coincidono con il riferimento italiano ufficiale', () async {
@@ -186,7 +217,9 @@ void main() {
           continue;
         }
         final reference = Map<String, dynamic>.from(entry.value as Map);
-        final genus = reference['genus']?.toString().trim() ?? '';
+        final genus = (reference['genus']?.toString() ?? '')
+            .replaceAll('¦', '')
+            .trim();
         if (genus.isEmpty) {
           errors.add('$path: categoria mancante per #$pokemonId.');
         }
@@ -202,6 +235,14 @@ void main() {
         errors.add(
           '$path non corrisponde all intervallo dichiarato $from-$to.',
         );
+      }
+    }
+
+    for (final entry in _categoryReferenceOverrides.entries) {
+      if (references.containsKey(entry.key)) {
+        errors.add('Categoria duplicata nel riferimento per #${entry.key}.');
+      } else {
+        references[entry.key] = entry.value;
       }
     }
 

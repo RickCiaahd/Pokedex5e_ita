@@ -1,4 +1,4 @@
-name: Temporary ability name apply
+name: Temporary ability name field fix
 
 on:
   pull_request:
@@ -16,7 +16,7 @@ jobs:
           ref: translation/ability-names
           fetch-depth: 0
 
-      - name: Apply localized ability labels to the editor
+      - name: Fix localized label fields
         shell: bash
         run: |
           python - <<'PY'
@@ -25,155 +25,56 @@ jobs:
           path = Path('lib/screens/pokemon/pokemon_edit_screen.dart')
           text = path.read_text(encoding='utf-8')
 
-          def add_after(anchor, addition, label):
-              global text
-              if addition.strip() in text:
-                  print(f'{label}: already applied')
-                  return
-              if anchor not in text:
-                  raise SystemExit(f'{label}: anchor not found')
-              text = text.replace(anchor, anchor + addition, 1)
-              print(f'{label}: applied')
+          wrong_move = (
+              '  final Map<String, MoveData?> moveData;\n'
+              '  final ValueChanged<int> onPick;\n'
+              '  final ValueChanged<int> onRemove;\n'
+              '  final Map<String, String> labels;\n'
+          )
+          right_move = (
+              '  final Map<String, MoveData?> moveData;\n'
+              '  final ValueChanged<int> onPick;\n'
+              '  final ValueChanged<int> onRemove;\n'
+          )
+          if wrong_move not in text:
+              raise SystemExit('Campo labels errato in _MoveSlotGrid non trovato.')
+          text = text.replace(wrong_move, right_move, 1)
 
-          def replace_once(old, new, label):
-              global text
-              if new in text:
-                  print(f'{label}: already applied')
-                  return
-              if old not in text:
-                  raise SystemExit(f'{label}: block not found')
-              text = text.replace(old, new, 1)
-              print(f'{label}: applied')
+          chip_anchor = (
+              '  final VoidCallback? onAdd;\n'
+              '  final ValueChanged<int> onPick;\n'
+              '  final ValueChanged<int> onRemove;\n'
+          )
+          chip_replacement = chip_anchor + '  final Map<String, String> labels;\n'
+          if chip_replacement not in text:
+              if chip_anchor not in text:
+                  raise SystemExit('Campi _ChipSlots non trovati.')
+              text = text.replace(chip_anchor, chip_replacement, 1)
 
-          add_after(
-              '  Map<String, String> _abilityDescriptions = {};\n',
-              '  Map<String, String> _abilityDisplayNames = {};\n',
-              'state map',
+          picker_anchor = (
+              '  final Set<String> blockedOptions;\n'
+              '  final Map<String, String> descriptions;\n'
+              '  final bool includeNone;\n'
           )
-          add_after(
-              '    final abilityChoicesFuture = _abilityRepository.getWebAbilities();\n',
-              '    final abilityDisplayNamesFuture = _abilityRepository.getAbilityDisplayNames(\n'
-              '      pokemonId: widget.pokemon.id,\n'
-              '    );\n',
-              'display-name future',
+          picker_replacement = (
+              '  final Set<String> blockedOptions;\n'
+              '  final Map<String, String> descriptions;\n'
+              '  final Map<String, String> labels;\n'
+              '  final bool includeNone;\n'
           )
-          add_after(
-              '    final abilityChoices = await abilityChoicesFuture;\n',
-              '    final abilityDisplayNames = await abilityDisplayNamesFuture;\n',
-              'await display names',
-          )
-          add_after(
-              '      _abilityChoices = abilityChoices;\n',
-              '      _abilityDisplayNames = abilityDisplayNames;\n',
-              'store display names',
-          )
-          replace_once(
-              '          descriptions: _abilityDescriptions,\n'
-              "          pinnedLabel: 'Abilità naturali del Pokémon',",
-              '          descriptions: _abilityDescriptions,\n'
-              '          labels: _abilityDisplayNames,\n'
-              "          pinnedLabel: 'Abilità naturali del Pokémon',",
-              'picker labels',
-          )
-          replace_once(
-              '                        values: _abilities,\n'
-              "                        emptyLabel: 'ABILITY',",
-              '                        values: _abilities,\n'
-              '                        labels: _abilityDisplayNames,\n'
-              "                        emptyLabel: 'ABILITY',",
-              'chip labels',
-          )
-          replace_once(
-              '    required this.onRemove,\n'
-              '  });\n\n'
-              '  final List<String> values;',
-              '    required this.onRemove,\n'
-              '    this.labels = const {},\n'
-              '  });\n\n'
-              '  final List<String> values;',
-              'chip constructor',
-          )
-          add_after(
-              '  final ValueChanged<int> onRemove;\n',
-              '  final Map<String, String> labels;\n',
-              'chip labels field',
-          )
-          replace_once(
-              '              label: entry.value,',
-              '              label: labels[entry.value] ?? entry.value,',
-              'chip visible label',
-          )
-          replace_once(
-              '    this.descriptions = const {},\n'
-              '    this.includeNone = false,',
-              '    this.descriptions = const {},\n'
-              '    this.labels = const {},\n'
-              '    this.includeNone = false,',
-              'picker constructor',
-          )
-          add_after(
-              '  final Map<String, String> descriptions;\n',
-              '  final Map<String, String> labels;\n',
-              'picker labels field',
-          )
-          replace_once(
-              '          return option.toLowerCase().contains(search) ||\n'
-              "              (widget.descriptions[option] ?? '').toLowerCase().contains(\n"
-              '                search,\n'
-              '              );',
-              '          return option.toLowerCase().contains(search) ||\n'
-              "              (widget.labels[option] ?? '').toLowerCase().contains(search) ||\n"
-              "              (widget.descriptions[option] ?? '').toLowerCase().contains(\n"
-              '                search,\n'
-              '              );',
-              'picker search',
-          )
-          replace_once(
-              '        .toList();\n'
-              '  }\n\n'
-              '  @override\n'
-              '  Widget build(BuildContext context) {\n'
-              '    final options = _options;',
-              '        .toList()\n'
-              '      ..sort((a, b) => (widget.labels[a] ?? a).toLowerCase().compareTo(\n'
-              '        (widget.labels[b] ?? b).toLowerCase(),\n'
-              '      ));\n'
-              '  }\n\n'
-              '  @override\n'
-              '  Widget build(BuildContext context) {\n'
-              '    final options = _options;',
-              'picker sorting',
-          )
-          replace_once(
-              '            label: option,\n'
-              '            subtitle: widget.descriptions[option],\n'
-              '            pinned: true,',
-              '            label: widget.labels[option] ?? option,\n'
-              '            subtitle: widget.descriptions[option],\n'
-              '            pinned: true,',
-              'pinned visible label',
-          )
-          replace_once(
-              '            label: option,\n'
-              '            subtitle: widget.descriptions[option],\n'
-              '            onTap: () => Navigator.of(context).pop(option),',
-              '            label: widget.labels[option] ?? option,\n'
-              '            subtitle: widget.descriptions[option],\n'
-              '            onTap: () => Navigator.of(context).pop(option),',
-              'catalog visible label',
-          )
+          if picker_replacement not in text:
+              if picker_anchor not in text:
+                  raise SystemExit('Campi _ChoicePickerScreen non trovati.')
+              text = text.replace(picker_anchor, picker_replacement, 1)
 
           path.write_text(text, encoding='utf-8')
           PY
 
-      - name: Commit editor integration
+      - name: Commit field fix
         shell: bash
         run: |
-          if git diff --quiet; then
-            exit 0
-          fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add lib/screens/pokemon/pokemon_edit_screen.dart
-          git commit -m "Mostra i nomi italiani delle abilità nell'editor"
+          git commit -m "Corregge i campi delle etichette abilità"
           git push origin HEAD:translation/ability-names

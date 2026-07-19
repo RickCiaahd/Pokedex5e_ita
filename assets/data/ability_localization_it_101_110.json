@@ -1,0 +1,17 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/abilities.json",
+  "range": {"fromIndex": 101, "toIndex": 110},
+  "items": {
+    "gorilla-tactics": {"description": "Quando questo Pokémon entra in campo, scegli una delle sue mosse. Raddoppia il modificatore MOVE ai danni della mossa scelta; il modificatore MOVE ai danni delle altre mosse di questo Pokémon diventa 0. L’effetto si azzera quando questo Pokémon lascia il campo."},
+    "grass-pelt": {"description": "Questo Pokémon ottiene +1 alla CA mentre si trova su Grassy Terrain."},
+    "grassy-surge": {"description": "Se conosce la mossa, questo Pokémon può usare Grassy Terrain come azione bonus."},
+    "grim-neigh": {"description": "Quando manda KO un avversario, questo Pokémon può muoversi immediatamente fino a 20 piedi ed effettuare un’altra azione."},
+    "guard-dog": {"description": "Questo Pokémon non può essere sostituito forzatamente da altre mosse. Le prove di Intimidazione effettuate contro di lui hanno svantaggio. Questo Pokémon non subisce gli effetti dell’abilità Intimidate."},
+    "gulp-missile": {"description": "Dopo aver completato Surf o Dive, questo Pokémon può tentare di afferrare una creatura come azione bonus. Come azione bonus, può scagliare una creatura da lui afferrata fino a 15 piedi, infliggendole danni da caduta equivalenti alla distanza del lancio."},
+    "guts": {"description": "Quando questo Pokémon è scottato o avvelenato, non subisce gli effetti di svantaggio o riduzione dei danni causati dalla condizione. Continua comunque a subire danni alla fine di ciascuno dei propri turni."},
+    "hadron-engine": {"description": "Come azione bonus, questo Pokémon può trasformare il terreno in Electric Terrain per 5 round; può usare questa azione bonus due volte per riposo breve. Su Electric Terrain, ha vantaggio ai tiri per colpire delle mosse che usano DES o SAG come Caratteristica della mossa."},
+    "harvest": {"description": "Alla fine del turno di questo Pokémon, se ha usato una bacca, tira 1d4. Con un risultato di 3 o 4, recupera quella bacca come strumento tenuto."},
+    "healer": {"description": "Come azione, questo Pokémon può toccare una creatura per guarirla da avvelenamento, scottatura o paralisi. Quando usa questa abilità, tira d4. Con un risultato di 1 o 2, la condizione viene trasferita a questo Pokémon."}
+  }
+}

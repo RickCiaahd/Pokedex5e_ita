@@ -6,11 +6,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:pokedex_5e_ita/repositories/pokemon_localization_repository.dart';
 import 'package:pokedex_5e_ita/repositories/pokemon_repository.dart';
 
-const _maxLocalizedPokemonId = 721;
+const _maxLocalizedPokemonId = 809;
 const _categoryReferencePaths = [
   'docs/translation/pokemon-categories-it-001-649.json',
   'docs/translation/pokemon-categories-it-650-685.json',
   'docs/translation/pokemon-categories-it-686-721.json',
+  'docs/translation/pokemon-categories-it-722-765.json',
+  'docs/translation/pokemon-categories-it-766-809.json',
 ];
 
 void main() {
@@ -110,7 +112,7 @@ void main() {
     expect(errors, isEmpty, reason: errors.join('\n'));
   });
 
-  test('il repository carica le 721 traduzioni italiane', () async {
+  test('il repository carica le 809 traduzioni italiane', () async {
     final texts = await PokemonLocalizationRepository().getPokemonTexts();
 
     expect(texts.length, _maxLocalizedPokemonId);
@@ -142,6 +144,11 @@ void main() {
     expect(texts[720]?.genus, 'Pokémon Birba');
     expect(texts[721]?.genus, 'Pokémon Vapore');
     expect(texts[721]?.description, startsWith('Volcanion'));
+    expect(texts[722]?.genus, 'Pokémon Aliderba');
+    expect(texts[722]?.description, startsWith('Questo Pokémon diffidente'));
+    expect(texts[808]?.genus, 'Pokémon Bullone');
+    expect(texts[809]?.genus, 'Pokémon Bullone');
+    expect(texts[809]?.description, startsWith('La forza centrifuga'));
   });
 
   test('le categorie coincidono con il riferimento italiano ufficiale', () async {
@@ -267,6 +274,9 @@ void main() {
     expect(flavors[650]?.genus, 'Pokémon Castanriccio');
     expect(flavors[720]?.genus, 'Pokémon Birba');
     expect(flavors[721]?.genus, 'Pokémon Vapore');
+    expect(flavors[722]?.genus, 'Pokémon Aliderba');
+    expect(flavors[808]?.genus, 'Pokémon Bullone');
+    expect(flavors[809]?.genus, 'Pokémon Bullone');
   });
 }
 

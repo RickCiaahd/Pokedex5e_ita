@@ -1,0 +1,47 @@
+name: Temporary Gen6 test diagnostic
+
+on:
+  push:
+    branches:
+      - translation/pokemon-gen6
+
+permissions:
+  contents: write
+
+jobs:
+  capture-test-output:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          ref: translation/pokemon-gen6
+          fetch-depth: 0
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Capture localization test output
+        shell: bash
+        run: |
+          set +e
+          flutter test test/pokemon_localization_integrity_test.dart --reporter expanded > docs/translation/gen6-test-diagnostic.txt 2>&1
+          status=$?
+          echo "EXIT_STATUS=$status" >> docs/translation/gen6-test-diagnostic.txt
+          exit 0
+
+      - name: Commit diagnostic log
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/translation/gen6-test-diagnostic.txt
+          git commit -m "Registra la diagnostica temporanea dei test Gen VI"
+          git push origin HEAD:translation/pokemon-gen6

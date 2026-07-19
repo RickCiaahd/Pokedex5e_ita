@@ -1,0 +1,154 @@
+{
+  "locale": "it",
+  "source": "assets/data/pokemon_flavor.json",
+  "range": {
+    "from": 686,
+    "to": 721
+  },
+  "items": {
+    "686": {
+      "genus": "Pokémon Volteggio",
+      "description": "Gli avversari che fissano i punti luminosi sul corpo di Inkay restano storditi e perdono la volontà di combattere."
+    },
+    "687": {
+      "genus": "Pokémon Giravolta",
+      "description": "Malamar possiede i poteri ipnotici più irresistibili tra tutti i Pokémon e costringe gli altri a eseguire ogni suo ordine."
+    },
+    "688": {
+      "genus": "Pokémon Bimano",
+      "description": "Due Binacle vivono insieme sulla stessa roccia. Quando litigano, uno dei due si trasferisce su una roccia diversa."
+    },
+    "689": {
+      "genus": "Pokémon Aggregato",
+      "description": "Quando si evolvono, i due Binacle diventano sette. Barbaracle combatte sfruttando la forza di sette esemplari."
+    },
+    "690": {
+      "genus": "Pokémon Similalga",
+      "description": "Camuffato da alga marcia, Skrelp spruzza veleno liquido sulle prede che si avvicinano senza accorgersi della sua presenza, poi le finisce."
+    },
+    "691": {
+      "genus": "Pokémon Similalga",
+      "description": "Il veleno di Dragalge è abbastanza potente da corrodere lo scafo di una petroliera. Lo sputa senza esitazione contro tutto ciò che entra nel suo territorio."
+    },
+    "692": {
+      "genus": "Pokémon Zampillo",
+      "description": "Clauncher abbatte le prede in volo sparando acqua compressa dalle sue enormi chele come se usasse una pistola."
+    },
+    "693": {
+      "genus": "Pokémon Acqualancio",
+      "description": "Le gigantesche chele di Clawitzer sparano proiettili d'acqua abbastanza potenti da perforare lo scafo di una petroliera."
+    },
+    "694": {
+      "genus": "Pokémon Generatore",
+      "description": "Helioptile vive nei deserti e ricava energia esponendosi al sole, perciò non ha bisogno di mangiare."
+    },
+    "695": {
+      "genus": "Pokémon Generatore",
+      "description": "Heliolisk apre il collare e genera energia. Un solo esemplare può produrre elettricità sufficiente ad alimentare un grattacielo."
+    },
+    "696": {
+      "genus": "Pokémon Principino",
+      "description": "Tyrunt è stato riportato in vita da un fossile. Quando accade qualcosa che non gli piace, fa i capricci e si scatena."
+    },
+    "697": {
+      "genus": "Pokémon Tiranno",
+      "description": "Le gigantesche mascelle di Tyrantrum potevano ridurre spesse lastre di metallo in brandelli come fossero carta. Nell'antico mondo in cui viveva era invincibile."
+    },
+    "698": {
+      "genus": "Pokémon Tundra",
+      "description": "Questo antico Pokémon è stato riportato in vita da una parte del suo corpo rimasta congelata nel ghiaccio per oltre 100 milioni di anni."
+    },
+    "699": {
+      "genus": "Pokémon Tundra",
+      "description": "I cristalli a forma di diamante sul corpo di Aurorus espellono aria fredda fino a -240 °F, circondando i nemici e imprigionandoli nel ghiaccio."
+    },
+    "700": {
+      "genus": "Pokémon Legame",
+      "description": "Sylveon emana dai nastri un'aura rasserenante che placa i conflitti."
+    },
+    "701": {
+      "genus": "Pokémon Lottalibera",
+      "description": "Nonostante il corpo minuto, Hawlucha è tanto abile nella lotta da poter tenere testa a colossi come Machamp e Hariyama."
+    },
+    "702": {
+      "genus": "Pokémon Antenna",
+      "description": "I baffi di Dedenne fungono da antenne. Trasmettendo e ricevendo onde elettriche, può comunicare con altri esemplari a grandissima distanza."
+    },
+    "703": {
+      "genus": "Pokémon Gemma",
+      "description": "Carbink nasce dalle temperature e dalle pressioni delle profondità terrestri. Spara raggi dalla pietra che porta sulla testa."
+    },
+    "704": {
+      "genus": "Pokémon Mollusco",
+      "description": "Goomy è il Pokémon di tipo Drago più debole. Vive in luoghi umidi e ombrosi per evitare che il suo corpo si secchi."
+    },
+    "705": {
+      "genus": "Pokémon Mollusco",
+      "description": "Sliggoo allontana i nemici secernendo un liquido appiccicoso capace di sciogliere qualsiasi cosa. I suoi occhi si sono atrofizzati e non vede più nulla."
+    },
+    "706": {
+      "genus": "Pokémon Drago",
+      "description": "Questo amichevole Pokémon di tipo Drago abbraccia con entusiasmo il proprio Allenatore, ricoprendolo di bava appiccicosa."
+    },
+    "707": {
+      "genus": "Pokémon Portachiavi",
+      "description": "Questi collezionisti di chiavi minacciano gli aggressori facendo tintinnare con forza il proprio mazzo."
+    },
+    "708": {
+      "genus": "Pokémon Ceppo",
+      "description": "Phantump nasce quando uno spirito prende possesso di un ceppo marcio. Preferisce vivere nelle foreste abbandonate."
+    },
+    "709": {
+      "genus": "Pokémon Alberantico",
+      "description": "Trevenant controlla gli alberi a piacimento. Intrappola chi danneggia la foresta, impedendogli per sempre di trovare l'uscita."
+    },
+    "710": {
+      "genus": "Pokémon Zucca",
+      "description": "Il corpo a forma di zucca di Pumpkaboo ospita uno spirito rimasto intrappolato in questo mondo. Al tramonto diventa irrequieto e attivo."
+    },
+    "711": {
+      "genus": "Pokémon Zucca",
+      "description": "Nelle notti di luna nuova, Gourgeist vaga per le strade delle città cantando con voce inquietante. Chiunque ascolti il suo canto viene maledetto."
+    },
+    "712": {
+      "genus": "Pokémon Ghiacciolo",
+      "description": "Bergmite blocca gli attacchi con il ghiaccio che ne protegge il corpo. Usa aria gelida per riparare ogni crepa con nuovo ghiaccio."
+    },
+    "713": {
+      "genus": "Pokémon Iceberg",
+      "description": "Il corpo ricoperto di ghiaccio di Avalugg è duro come l'acciaio. La sua imponente mole travolge tutto ciò che incontra."
+    },
+    "714": {
+      "genus": "Pokémon Ondasonora",
+      "description": "Noibat vive in caverne completamente buie. Le sue enormi orecchie possono emettere ultrasuoni a 200.000 hertz."
+    },
+    "715": {
+      "genus": "Pokémon Ondasonora",
+      "description": "Noivern vola nelle notti senza luna e attacca le prede distratte. Nel combattimento al buio non ha rivali."
+    },
+    "716": {
+      "genus": "Pokémon Creazione",
+      "description": "Secondo le leggende, Xerneas può condividere la vita eterna. Prima di risvegliarsi ha dormito per mille anni assumendo la forma di un albero."
+    },
+    "717": {
+      "genus": "Pokémon Distruzione",
+      "description": "Quando le ali e le penne della coda di questo Pokémon leggendario si spiegano e risplendono di rosso, Yveltal assorbe la forza vitale degli esseri viventi."
+    },
+    "718": {
+      "genus": "Pokémon Equilibrio",
+      "description": "Quando l'ecosistema della regione di Kalos perde il proprio equilibrio, Zygarde appare e rivela il suo potere segreto."
+    },
+    "719": {
+      "genus": "Pokémon Gemma",
+      "description": "Diancie nasce da un'improvvisa trasformazione di Carbink. Si dice che il suo corpo rosa e scintillante sia lo spettacolo più bello del mondo."
+    },
+    "720": {
+      "genus": "Pokémon Birba",
+      "description": "Nella sua vera forma, Hoopa possiede un potere enorme. Le leggende sulla sua avidità raccontano che un tempo portò via un intero castello per impadronirsi del tesoro nascosto al suo interno."
+    },
+    "721": {
+      "genus": "Pokémon Vapore",
+      "description": "Volcanion emette grandi nubi di vapore e scompare nella fitta nebbia. Si dice che viva su montagne mai percorse dagli esseri umani."
+    }
+  }
+}

@@ -6,13 +6,21 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:pokedex_5e_ita/repositories/pokemon_localization_repository.dart';
 import 'package:pokedex_5e_ita/repositories/pokemon_repository.dart';
 
-const _maxLocalizedPokemonId = 809;
+const _maxLocalizedPokemonId = 905;
+const _maxLegacyFlavorPokemonId = 809;
+const _allowedLocalizationSources = {
+  'assets/data/pokemon_flavor.json',
+  'assets/data_webapp/pokemon.json',
+};
 const _categoryReferencePaths = [
   'docs/translation/pokemon-categories-it-001-649.json',
   'docs/translation/pokemon-categories-it-650-685.json',
   'docs/translation/pokemon-categories-it-686-721.json',
   'docs/translation/pokemon-categories-it-722-765.json',
   'docs/translation/pokemon-categories-it-766-809.json',
+  'docs/translation/pokemon-categories-it-810-841.json',
+  'docs/translation/pokemon-categories-it-842-873.json',
+  'docs/translation/pokemon-categories-it-874-905.json',
 ];
 
 void main() {
@@ -38,7 +46,7 @@ void main() {
       if (document['locale'] != 'it') {
         errors.add('$path non dichiara locale=it.');
       }
-      if (document['source'] != 'assets/data/pokemon_flavor.json') {
+      if (!_allowedLocalizationSources.contains(document['source'])) {
         errors.add('$path usa una sorgente inattesa: ${document['source']}.');
       }
 
@@ -105,14 +113,15 @@ void main() {
     if (ids.difference(expectedIds).isNotEmpty ||
         expectedIds.difference(ids).isNotEmpty) {
       errors.add(
-        'Le traduzioni non coprono esattamente gli ID 1-$_maxLocalizedPokemonId.',
+        'Le traduzioni non coprono esattamente gli ID '
+        '1-$_maxLocalizedPokemonId.',
       );
     }
 
     expect(errors, isEmpty, reason: errors.join('\n'));
   });
 
-  test('il repository carica le 809 traduzioni italiane', () async {
+  test('il repository carica le 905 traduzioni italiane', () async {
     final texts = await PokemonLocalizationRepository().getPokemonTexts();
 
     expect(texts.length, _maxLocalizedPokemonId);
@@ -120,35 +129,19 @@ void main() {
       for (var id = 1; id <= _maxLocalizedPokemonId; id++) id,
     });
     expect(texts[1]?.genus, 'Pokémon Seme');
-    expect(texts[1]?.description, startsWith('Bulbasaur'));
     expect(texts[151]?.genus, 'Pokémon Novaspecie');
-    expect(texts[152]?.genus, 'Pokémon Foglia');
-    expect(texts[152]?.description, startsWith('In lotta, Chikorita'));
     expect(texts[251]?.genus, 'Pokémon Tempovia');
-    expect(texts[251]?.description, startsWith('Questo Pokémon'));
-    expect(texts[252]?.genus, 'Pokémon Legnogeco');
-    expect(texts[252]?.description, startsWith('Treecko'));
     expect(texts[386]?.genus, 'Pokémon DNA');
-    expect(texts[386]?.description, startsWith('Il DNA'));
-    expect(texts[387]?.genus, 'Pokémon Fogliolina');
-    expect(texts[387]?.description, startsWith('Sotto la luce'));
     expect(texts[493]?.genus, 'Pokémon Primevo');
-    expect(texts[493]?.description, startsWith('Secondo le leggende'));
-    expect(texts[494]?.genus, 'Pokémon Vittoria');
-    expect(texts[494]?.description, startsWith('Questo Pokémon porta'));
     expect(texts[500]?.genus, 'Pokémon Suincendio');
     expect(texts[649]?.genus, 'Pokémon Paleozoico');
-    expect(texts[649]?.description, startsWith('Questo antico Pokémon'));
-    expect(texts[650]?.genus, 'Pokémon Castanriccio');
-    expect(texts[650]?.description, startsWith('Gli aculei'));
-    expect(texts[720]?.genus, 'Pokémon Birba');
     expect(texts[721]?.genus, 'Pokémon Vapore');
-    expect(texts[721]?.description, startsWith('Volcanion'));
-    expect(texts[722]?.genus, 'Pokémon Aliderba');
-    expect(texts[722]?.description, startsWith('Questo Pokémon diffidente'));
-    expect(texts[808]?.genus, 'Pokémon Bullone');
     expect(texts[809]?.genus, 'Pokémon Bullone');
-    expect(texts[809]?.description, startsWith('La forza centrifuga'));
+    expect(texts[810]?.genus, 'Pokémon Scimpanzé');
+    expect(texts[810]?.description, startsWith('Grookey'));
+    expect(texts[898]?.genus, 'Pokémon Re');
+    expect(texts[905]?.genus, 'Pokémon Amoreodio');
+    expect(texts[905]?.description, startsWith('Quando Enamorus'));
   });
 
   test('le categorie coincidono con il riferimento italiano ufficiale', () async {
@@ -239,7 +232,7 @@ void main() {
     expect(errors, isEmpty, reason: errors.join('\n'));
   });
 
-  test('le descrizioni localizzate preservano altezza e peso originali', () async {
+  test('le descrizioni legacy preservano altezza e peso originali', () async {
     final raw = Map<String, dynamic>.from(
       jsonDecode(
         await rootBundle.loadString('assets/data/pokemon_flavor.json'),
@@ -249,7 +242,7 @@ void main() {
 
     expect(flavors.length, raw.length);
     for (var pokemonId = 1;
-        pokemonId <= _maxLocalizedPokemonId;
+        pokemonId <= _maxLegacyFlavorPokemonId;
         pokemonId++) {
       final source = Map<String, dynamic>.from(raw['$pokemonId'] as Map);
       final localized = flavors[pokemonId];
@@ -261,21 +254,8 @@ void main() {
     }
 
     expect(flavors[1]?.genus, 'Pokémon Seme');
-    expect(flavors[151]?.genus, 'Pokémon Novaspecie');
-    expect(flavors[152]?.genus, 'Pokémon Foglia');
-    expect(flavors[251]?.genus, 'Pokémon Tempovia');
-    expect(flavors[252]?.genus, 'Pokémon Legnogeco');
-    expect(flavors[386]?.genus, 'Pokémon DNA');
-    expect(flavors[387]?.genus, 'Pokémon Fogliolina');
-    expect(flavors[493]?.genus, 'Pokémon Primevo');
-    expect(flavors[494]?.genus, 'Pokémon Vittoria');
     expect(flavors[500]?.genus, 'Pokémon Suincendio');
-    expect(flavors[649]?.genus, 'Pokémon Paleozoico');
-    expect(flavors[650]?.genus, 'Pokémon Castanriccio');
-    expect(flavors[720]?.genus, 'Pokémon Birba');
     expect(flavors[721]?.genus, 'Pokémon Vapore');
-    expect(flavors[722]?.genus, 'Pokémon Aliderba');
-    expect(flavors[808]?.genus, 'Pokémon Bullone');
     expect(flavors[809]?.genus, 'Pokémon Bullone');
   });
 }

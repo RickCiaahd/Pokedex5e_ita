@@ -1,0 +1,224 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/items.json",
+  "nameSources": [
+    "https://wiki.pokemoncentral.it/Elenco_degli_strumenti_in_altre_lingue",
+    "https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/item_names.csv"
+  ],
+  "type": "medicine",
+  "range": {
+    "start": 56,
+    "end": 87
+  },
+  "localizedCount": 32,
+  "items": {
+    "calcium": {
+      "sourceName": "Calcium",
+      "name": "Calcio",
+      "description": [
+        "Un Allenatore può usare un'azione per somministrare questo oggetto a un Pokémon. La CON del Pokémon aumenta di 1. Questo effetto non può portare il punteggio di caratteristica del Pokémon oltre 20.",
+        "È una vitamina. Un Pokémon può beneficiare degli effetti di un massimo di tre vitamine in totale."
+      ]
+    },
+    "zinc": {
+      "sourceName": "Zinc",
+      "name": "Zinco",
+      "description": [
+        "Un Allenatore può usare un'azione per somministrare questo oggetto a un Pokémon. La WIS del Pokémon aumenta di 1. Questo effetto non può portare il punteggio di caratteristica del Pokémon oltre 20.",
+        "È una vitamina. Un Pokémon può beneficiare degli effetti di un massimo di tre vitamine in totale."
+      ]
+    },
+    "pp-up": {
+      "sourceName": "PP Up",
+      "name": "PP-Su",
+      "description": [
+        "Un Allenatore può usare un'azione per somministrare questo oggetto a un Pokémon. I PP massimi di una delle mosse del Pokémon aumentano di 2. Questo effetto non può aumentare i PP della mossa oltre il doppio dei suoi PP di base.",
+        "È una vitamina. Un Pokémon può beneficiare degli effetti di un massimo di tre vitamine in totale."
+      ]
+    },
+    "ability-capsule": {
+      "sourceName": "Ability Capsule",
+      "name": "Capsula Abilità",
+      "description": [
+        "Quando viene consumata da un Pokémon durante un riposo lungo, il Pokémon può sostituire l'abilità non nascosta che conosce con l'altra disponibile, se esistono due opzioni."
+      ]
+    },
+    "guard-spec": {
+      "sourceName": "Guard Spec",
+      "name": "Superguardia",
+      "description": [
+        "Un Allenatore può usare un'azione per somministrare questo oggetto a un Pokémon. Per 1 minuto, il Pokémon non può essere affetto da nuove condizioni di stato."
+      ]
+    },
+    "dire-hit": {
+      "sourceName": "Dire Hit",
+      "name": "Supercolpo",
+      "description": [
+        "Un Allenatore può usare un'azione per somministrare questo oggetto a un Pokémon. Per 1 minuto, l'intervallo di colpo critico del Pokémon aumenta di uno.",
+        "Nella maggior parte dei casi, ciò significa che gli attacchi infliggono un colpo critico con un 19 o 20 naturale. Per una mossa come Slash, che amplia già l'intervallo di colpo critico, il colpo critico può verificarsi con un 18, 19 o 20 naturale."
+      ]
+    },
+    "x-attack": {
+      "sourceName": "X Attack",
+      "name": "Attacco X",
+      "description": [
+        "Un Allenatore può usare un'azione per somministrare questo oggetto a un Pokémon. Per 1 minuto, il Pokémon aggiunge +2 ai propri tiri per colpire."
+      ]
+    },
+    "x-defense": {
+      "sourceName": "X Defense",
+      "name": "Difesa X",
+      "description": [
+        "Un Allenatore può usare un'azione per somministrare questo oggetto a un Pokémon. Per 1 minuto, il Pokémon aggiunge +2 alla propria AC."
+      ]
+    },
+    "x-speed": {
+      "sourceName": "X Speed",
+      "name": "Velocità X",
+      "description": [
+        "Un Allenatore può usare un'azione per somministrare questo oggetto a un Pokémon. Per 1 minuto, la velocità di movimento del Pokémon aumenta di 10ft."
+      ]
+    },
+    "x-accuracy": {
+      "sourceName": "X Accuracy",
+      "name": "Precisione X",
+      "description": [
+        "Un Allenatore può usare un'azione per somministrare questo oggetto a un Pokémon. Il Pokémon ottiene vantaggio sui suoi prossimi tre tiri per colpire."
+      ]
+    },
+    "x-sp-atk": {
+      "sourceName": "X Sp. Atk",
+      "name": "Att. Speciale X",
+      "description": [
+        "Un Allenatore può usare un'azione per somministrare questo oggetto a un Pokémon. Per 1 minuto, il Pokémon aggiunge +2 alla propria Move DC."
+      ]
+    },
+    "x-sp-def": {
+      "sourceName": "X Sp. Def",
+      "name": "Dif. Sp. X",
+      "description": [
+        "Un Allenatore può usare un'azione per somministrare questo oggetto a un Pokémon. Per 1 minuto, il Pokémon aggiunge +2 ai tiri salvezza."
+      ]
+    },
+    "red-nectar": {
+      "sourceName": "Red Nectar",
+      "name": "Nettare Rosso",
+      "description": [
+        "Quando viene dato a Oricorio, ne cambia la forma in Oricorio Stile Flamenco."
+      ]
+    },
+    "yellow-nectar": {
+      "sourceName": "Yellow Nectar",
+      "name": "Nettare Giallo",
+      "description": [
+        "Quando viene dato a Oricorio, ne cambia la forma in Oricorio Stile Cheerdance."
+      ]
+    },
+    "pink-nectar": {
+      "sourceName": "Pink Nectar",
+      "name": "Nettare Rosa",
+      "description": [
+        "Quando viene dato a Oricorio, ne cambia la forma in Oricorio Stile Hula."
+      ]
+    },
+    "purple-nectar": {
+      "sourceName": "Purple Nectar",
+      "name": "Nettare Viola",
+      "description": [
+        "Quando viene dato a Oricorio, ne cambia la forma in Oricorio Stile Buyō."
+      ]
+    },
+    "pewter-crunchies": {
+      "sourceName": "Pewter Crunchies",
+      "name": "Plumbeosalatini",
+      "description": []
+    },
+    "health-candy": {
+      "sourceName": "Health Candy",
+      "name": "Caramella vitalità S",
+      "description": [
+        "Quando viene consumata da un Pokémon, gli conferisce 20 HP temporanei per 1 minuto. Un Pokémon può beneficiare di un solo oggetto Candy alla volta."
+      ]
+    },
+    "mighty-candy": {
+      "sourceName": "Mighty Candy",
+      "name": "Caramella potenza S",
+      "description": [
+        "Quando viene consumata da un Pokémon, la sua STR aumenta di 1 per 1 minuto. Un Pokémon può beneficiare di un solo oggetto Candy alla volta."
+      ]
+    },
+    "tough-candy": {
+      "sourceName": "Tough Candy",
+      "name": "Caramella protezione S",
+      "description": [
+        "Quando viene consumata da un Pokémon, la sua AC aumenta di 1 per 1 minuto. Un Pokémon può beneficiare di un solo oggetto Candy alla volta."
+      ]
+    },
+    "smart-candy": {
+      "sourceName": "Smart Candy",
+      "name": "Caramella acume S",
+      "description": [
+        "Quando viene consumata da un Pokémon, la sua INT aumenta di 1 per 1 minuto. Un Pokémon può beneficiare di un solo oggetto Candy alla volta."
+      ]
+    },
+    "courage-candy": {
+      "sourceName": "Courage Candy",
+      "name": "Caramella intuito S",
+      "description": [
+        "Quando viene consumata da un Pokémon, la sua WIS aumenta di 1 per 1 minuto. Un Pokémon può beneficiare di un solo oggetto Candy alla volta."
+      ]
+    },
+    "quick-candy": {
+      "sourceName": "Quick Candy",
+      "name": "Caramella rapidità S",
+      "description": [
+        "Quando viene consumata da un Pokémon, la sua DEX aumenta di 1 per 1 minuto. Un Pokémon può beneficiare di un solo oggetto Candy alla volta."
+      ]
+    },
+    "health-wing": {
+      "sourceName": "Health Feather",
+      "name": "Piumsalute",
+      "description": []
+    },
+    "muscle-wing": {
+      "sourceName": "Muscle Feather",
+      "name": "Piumpotenza",
+      "description": []
+    },
+    "resist-wing": {
+      "sourceName": "Resist Feather",
+      "name": "Piumtutela",
+      "description": []
+    },
+    "genius-wing": {
+      "sourceName": "Genius Feather",
+      "name": "Piumingegno",
+      "description": []
+    },
+    "clever-wing": {
+      "sourceName": "Clever Feather",
+      "name": "Piumintuito",
+      "description": []
+    },
+    "swift-wing": {
+      "sourceName": "Swift Feather",
+      "name": "Piumreazione",
+      "description": []
+    },
+    "max-honey": {
+      "sourceName": "Max Honey",
+      "name": "Mielemax",
+      "description": []
+    },
+    "max-mushrooms": {
+      "sourceName": "Max Mushrooms",
+      "name": "Fungomax",
+      "description": []
+    },
+    "ability-patch": {
+      "sourceName": "Ability Patch",
+      "name": "Cerotto abilità",
+      "description": []
+    }
+  }
+}

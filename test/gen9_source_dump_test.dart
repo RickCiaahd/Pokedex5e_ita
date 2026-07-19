@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'dart:convert';
 
 import 'package:flutter/services.dart';
@@ -40,6 +42,6 @@ void main() {
       }
     }
 
-    fail('Diagnostica temporanea: rimuovere questo test dopo aver acquisito le sorgenti.');
+    expect(selected.length, 120);
   });
 }

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -108,7 +109,7 @@ void main() {
     expect(texts[151]?.genus, 'Pokémon Novaspecie');
     expect(texts[152]?.genus, 'Pokémon Foglia');
     expect(texts[152]?.description, startsWith('In lotta, Chikorita'));
-    expect(texts[251]?.genus, 'Pokémon Viaggiotempo');
+    expect(texts[251]?.genus, 'Pokémon Tempovia');
     expect(texts[251]?.description, startsWith('Questo Pokémon'));
     expect(texts[252]?.genus, 'Pokémon Legnogeco');
     expect(texts[252]?.description, startsWith('Treecko'));
@@ -120,8 +121,46 @@ void main() {
     expect(texts[493]?.description, startsWith('Secondo le leggende'));
     expect(texts[494]?.genus, 'Pokémon Vittoria');
     expect(texts[494]?.description, startsWith('Questo Pokémon porta'));
+    expect(texts[500]?.genus, 'Pokémon Suincendio');
     expect(texts[649]?.genus, 'Pokémon Paleozoico');
     expect(texts[649]?.description, startsWith('Questo antico Pokémon'));
+  });
+
+  test('le categorie coincidono con il riferimento italiano ufficiale', () async {
+    final referenceFile = File(
+      'docs/translation/pokemon-categories-it-001-649.json',
+    );
+    final decoded = jsonDecode(await referenceFile.readAsString());
+    expect(decoded, isA<Map>());
+
+    final document = Map<String, dynamic>.from(decoded as Map);
+    expect(document['source'], 'https://wiki.pokemoncentral.it/Categoria');
+    expect(document['range'], {'from': 1, 'to': 649});
+
+    final rawItems = document['items'];
+    expect(rawItems, isA<Map>());
+    final referenceItems = Map<String, dynamic>.from(rawItems as Map);
+    expect(referenceItems.length, 649);
+
+    final texts = await PokemonLocalizationRepository().getPokemonTexts();
+    final errors = <String>[];
+    for (var pokemonId = 1; pokemonId <= 649; pokemonId++) {
+      final rawReference = referenceItems['$pokemonId'];
+      if (rawReference is! Map) {
+        errors.add('Riferimento mancante per il Pokémon #$pokemonId.');
+        continue;
+      }
+      final reference = Map<String, dynamic>.from(rawReference);
+      final expectedGenus = reference['genus']?.toString().trim() ?? '';
+      final actualGenus = texts[pokemonId]?.genus ?? '';
+      if (actualGenus != expectedGenus) {
+        errors.add(
+          '#$pokemonId: categoria "$actualGenus", attesa "$expectedGenus".',
+        );
+      }
+    }
+
+    expect(errors, isEmpty, reason: errors.join('\n'));
   });
 
   test('le descrizioni localizzate preservano altezza e peso originali', () async {
@@ -146,12 +185,13 @@ void main() {
     expect(flavors[1]?.genus, 'Pokémon Seme');
     expect(flavors[151]?.genus, 'Pokémon Novaspecie');
     expect(flavors[152]?.genus, 'Pokémon Foglia');
-    expect(flavors[251]?.genus, 'Pokémon Viaggiotempo');
+    expect(flavors[251]?.genus, 'Pokémon Tempovia');
     expect(flavors[252]?.genus, 'Pokémon Legnogeco');
     expect(flavors[386]?.genus, 'Pokémon DNA');
     expect(flavors[387]?.genus, 'Pokémon Fogliolina');
     expect(flavors[493]?.genus, 'Pokémon Primevo');
     expect(flavors[494]?.genus, 'Pokémon Vittoria');
+    expect(flavors[500]?.genus, 'Pokémon Suincendio');
     expect(flavors[649]?.genus, 'Pokémon Paleozoico');
   });
 }

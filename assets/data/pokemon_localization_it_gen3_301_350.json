@@ -7,7 +7,7 @@
   },
   "items": {
     "301": {
-      "genus": "Pokémon Raffinato",
+      "genus": "Pokémon Finezza",
       "description": "Delcatty preferisce una vita libera, seguendo soltanto i propri ritmi. Poiché mangia e dorme quando gli va, le sue abitudini quotidiane sono del tutto imprevedibili."
     },
     "302": {
@@ -43,7 +43,7 @@
       "description": "Electrike accumula elettricità nel lungo pelo e stimola i muscoli delle zampe con scariche elettriche. Questi impulsi gli conferiscono un'accelerazione esplosiva."
     },
     "310": {
-      "genus": "Pokémon Scarica",
+      "genus": "Pokémon Scossa",
       "description": "Manectric scarica continuamente elettricità dalla criniera e le scintille possono talvolta incendiare le foreste. Quando entra in lotta, crea nubi temporalesche."
     },
     "311": {
@@ -71,7 +71,7 @@
       "description": "Quasi tutto il corpo di Gulpin è costituito dallo stomaco, perciò può inghiottire qualcosa grande quanto lui. Al suo interno si trova un fluido speciale capace di digerire qualsiasi cosa."
     },
     "317": {
-      "genus": "Pokémon Sacca Veleno",
+      "genus": "Pokémon Velenosacco",
       "description": "Quando individua una preda, Swalot spruzza dai pori un fluido terribilmente tossico. Dopo averla indebolita, la inghiotte intera con la sua bocca smisurata."
     },
     "318": {
@@ -83,11 +83,11 @@
       "description": "Soprannominato il bullo del mare, Sharpedo è molto temuto. Le sue crudeli zanne ricrescono immediatamente se si spezzano e un solo esemplare può fare a pezzi una superpetroliera."
     },
     "320": {
-      "genus": "Pokémon Balena Sfera",
+      "genus": "Pokémon Balenottero",
       "description": "Le narici di Wailmer si trovano sopra gli occhi. Questo Pokémon giocherellone ama sorprendere le persone espellendo con forza dalle narici l'acqua di mare immagazzinata nel corpo."
     },
     "321": {
-      "genus": "Pokémon Balena Fluttuante",
+      "genus": "Pokémon Megabalena",
       "description": "Wailord è il più grande tra tutti i Pokémon finora identificati. Nuota placidamente nell'oceano aperto, inghiottendo enormi quantità di cibo con la sua bocca gigantesca."
     },
     "322": {
@@ -107,11 +107,11 @@
       "description": "Spoink rimbalza sulla coda e gli urti fanno battere il suo cuore. Per questo non può permettersi di smettere: se si fermasse, anche il cuore cesserebbe di battere."
     },
     "326": {
-      "genus": "Pokémon Manipolazione",
+      "genus": "Pokémon Raggiro",
       "description": "Grumpig usa le perle nere sul corpo per amplificare le onde psichiche e controllare completamente il nemico. Quando impiega questo potere, il suo respiro diventa affannoso."
     },
     "327": {
-      "genus": "Pokémon Pandamacchia",
+      "genus": "Pokémon Macchipanda",
       "description": "Si dice che ogni Spinda al mondo possieda un disegno di macchie unico. I suoi passi instabili e barcollanti lo fanno sembrare impegnato in una danza."
     },
     "328": {
@@ -123,7 +123,7 @@
       "description": "Vibrava fa vibrare energicamente le due ali per generare ultrasuoni che fanno svenire la preda. Le onde sono tanto potenti da provocare mal di testa alle persone."
     },
     "330": {
-      "genus": "Pokémon Mistico",
+      "genus": "Pokémon Magico",
       "description": "Flygon è soprannominato lo spirito elementale del deserto. Le sue ali sollevano nubi di sabbia, perciò durante il volo è sempre avvolto da una tempesta."
     },
     "331": {
@@ -131,7 +131,7 @@
       "description": "Cacnea vive in luoghi aridi come i deserti. Il suo fiore emana un forte aroma per attirare le prede e, quando si avvicinano, scaglia dal corpo spine affilate."
     },
     "332": {
-      "genus": "Pokémon Spaventapasseri",
+      "genus": "Pokémon Spavento",
       "description": "Durante il giorno Cacturne rimane immobile per non perdere umidità sotto il sole implacabile del deserto. Diventa attivo di notte, quando la temperatura si abbassa."
     },
     "333": {
@@ -175,15 +175,15 @@
       "description": "Crawdaunt ha un'indole estremamente violenta che lo spinge a sfidare in lotta qualsiasi essere vivente. Nessun'altra forma di vita accetta di abitare nei suoi stagni, che diventano luoghi desolati."
     },
     "343": {
-      "genus": "Pokémon Bambola Argilla",
+      "genus": "Pokémon Argilla",
       "description": "Baltoy si sposta ruotando sulla sua unica gamba. In alcune antiche rovine sono stati scoperti dipinti primitivi che lo raffigurano mentre vive insieme agli esseri umani."
     },
     "344": {
-      "genus": "Pokémon Bambola Argilla",
+      "genus": "Pokémon Argilla",
       "description": "Si dice che i Claydol siano bambole di fango create da popoli primitivi e animate dall'esposizione a un raggio misterioso. Si muovono levitando."
     },
     "345": {
-      "genus": "Pokémon Gigliomare",
+      "genus": "Pokémon Fiordimare",
       "description": "Lileep si estinse circa cento milioni di anni fa. Questo antico Pokémon si fissa a una roccia sul fondale marino e cattura le prede con tentacoli simili a petali."
     },
     "346": {
@@ -191,11 +191,11 @@
       "description": "Cradily vaga sul fondale oceanico in cerca di cibo. Allunga liberamente il collo simile a un tronco e cattura le prede ignare con i suoi otto tentacoli."
     },
     "347": {
-      "genus": "Pokémon Anticogambero",
+      "genus": "Pokémon Primaceo",
       "description": "Anorith è stato rigenerato da un fossile preistorico. Questo Pokémon primitivo viveva nei mari caldi e stringeva saldamente le prede tra le due grandi chele."
     },
     "348": {
-      "genus": "Pokémon Corazza",
+      "genus": "Pokémon Piastre",
       "description": "La robusta armatura di Armaldo fa rimbalzare qualsiasi attacco. Le sue enormi chele possono allungarsi e ritrarsi liberamente e hanno la forza necessaria per perforare una lastra d'acciaio."
     },
     "349": {

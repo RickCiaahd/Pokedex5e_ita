@@ -23,23 +23,23 @@
       "description": "Torchic resta sempre vicino al proprio Allenatore, seguendolo con passi incerti. Sputa fiamme a oltre 980 °C, comprese palle di fuoco che lasciano il nemico completamente annerito."
     },
     "256": {
-      "genus": "Pokémon Gallinaceo",
+      "genus": "Pokémon Rampollo",
       "description": "Combusken irrobustisce zampe e cosce correndo per campi e montagne. Le sue gambe uniscono velocità e potenza, permettendogli di sferrare dieci calci al secondo."
     },
     "257": {
-      "genus": "Pokémon Vampa",
+      "genus": "Pokémon Vampe",
       "description": "In lotta, Blaziken sprigiona fiamme intense dai polsi e affronta coraggiosamente i nemici. Più forte è l'avversario, più intensamente ardono i suoi polsi."
     },
     "258": {
-      "genus": "Pokémon Pescefango",
+      "genus": "Pokémon Fango Pesce",
       "description": "La pinna sulla testa di Mudkip funziona come un radar estremamente sensibile. Percependo i movimenti dell'acqua e dell'aria, capisce ciò che accade attorno a sé senza usare gli occhi."
     },
     "259": {
-      "genus": "Pokémon Pescefango",
+      "genus": "Pokémon Fango Pesce",
       "description": "La superficie del corpo di Marshtomp è ricoperta da una sottile pellicola appiccicosa che gli permette di vivere sulla terraferma. Quando la marea è bassa, gioca nel fango delle spiagge."
     },
     "260": {
-      "genus": "Pokémon Pescefango",
+      "genus": "Pokémon Fango Pesce",
       "description": "Swampert è estremamente forte e può trascinare senza fatica un masso che pesa più di una tonnellata. La sua vista potente gli consente di vedere anche nelle acque torbide."
     },
     "261": {
@@ -55,7 +55,7 @@
       "description": "Zigzagoon vaga senza sosta in ogni direzione. Lo fa per la sua incontenibile curiosità, che lo porta a interessarsi a tutto ciò che vede."
     },
     "264": {
-      "genus": "Pokémon Sfreccia",
+      "genus": "Pokémon Sfrecciante",
       "description": "Linoone corre sempre alla massima velocità e soltanto in linea retta. Davanti a un ostacolo svolta ad angolo retto per evitarlo, mentre affronta con grande difficoltà le strade dalle curve dolci."
     },
     "265": {
@@ -79,11 +79,11 @@
       "description": "Dustox è istintivamente attratto dalla luce. I suoi sciami raggiungono le città illuminate e provocano danni divorando le foglie degli alberi lungo le strade."
     },
     "270": {
-      "genus": "Pokémon Erbacqua",
+      "genus": "Pokémon Alga",
       "description": "I Lotad vivono in stagni e laghi, galleggiando sulla superficie. Si indeboliscono se la loro larga foglia appassisce e, in rare occasioni, si spostano sulla terraferma in cerca di acqua pulita."
     },
     "271": {
-      "genus": "Pokémon Giocondo",
+      "genus": "Pokémon Giocoso",
       "description": "Lombre è notturno e diventa attivo dopo il tramonto. È anche dispettoso: quando vede dei pescatori, tira le loro lenze da sotto la superficie e si diverte a confonderli."
     },
     "272": {
@@ -151,7 +151,7 @@
       "description": "Slakoth passa più di venti ore al giorno sdraiato. Muovendosi pochissimo ha bisogno di poco cibo e il suo unico pasto quotidiano consiste in appena tre foglie."
     },
     "288": {
-      "genus": "Pokémon Scimmiafuria",
+      "genus": "Pokémon Indocile",
       "description": "Vigoroth è sempre irrequieto e desideroso di scatenarsi. Non sopporta di restare fermo neppure per un minuto e il suo stress aumenta se non può muoversi continuamente."
     },
     "289": {
@@ -159,7 +159,7 @@
       "description": "Slaking trascorre l'intera giornata sdraiato e si nutre dell'erba che cresce alla sua portata. Solo dopo averla finita si sposta controvoglia in un altro punto."
     },
     "290": {
-      "genus": "Pokémon Apprendista",
+      "genus": "Pokémon Novizio",
       "description": "Nincada vive per molti anni sottoterra, nella completa oscurità. Assorbe sostanze nutritive dalle radici degli alberi e resta immobile in attesa dell'evoluzione."
     },
     "291": {
@@ -179,11 +179,11 @@
       "description": "Il ruggito di Loudred può demolire completamente una casa di legno. Usa la voce per punire i nemici e le sue orecchie rotonde funzionano come altoparlanti."
     },
     "295": {
-      "genus": "Pokémon Frastuono",
+      "genus": "Pokémon Fragore",
       "description": "Exploud provoca terremoti con le vibrazioni generate dai suoi ruggiti. Quando inspira violentemente dalle aperture sul corpo, significa che sta per liberare un boato enorme."
     },
     "296": {
-      "genus": "Pokémon Grinta",
+      "genus": "Pokémon Coraggio",
       "description": "Makuhita è tenace e continua a rialzarsi e ad attaccare, indipendentemente da quante volte venga abbattuto. Ogni volta che si rimette in piedi accumula nel corpo altra energia per l'evoluzione."
     },
     "297": {

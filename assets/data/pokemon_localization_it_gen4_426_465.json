@@ -19,15 +19,15 @@
       "description": "Lopunny è estremamente prudente e, non appena percepisce un pericolo, balza rapidamente via."
     },
     "429": {
-      "genus": "Pokémon Magico",
+      "genus": "Pokémon Stregone",
       "description": "Mismagius pronuncia formule magiche. Di solito tormentano il bersaglio, ma alcune possono donare felicità."
     },
     "430": {
-      "genus": "Pokémon Boss",
+      "genus": "Pokémon Grancapo",
       "description": "Quando Honchkrow emette un richiamo profondo, molti Murkrow si radunano rapidamente. Per questo è chiamato «Evocatore della notte»."
     },
     "431": {
-      "genus": "Pokémon Gattino",
+      "genus": "Pokémon Felide",
       "description": "Glameow graffia quando è contrariato e fa le fusa quando si mostra affettuoso. La sua volubilità è molto apprezzata da alcune persone."
     },
     "432": {
@@ -51,7 +51,7 @@
       "description": "Gli antichi credevano che il motivo sulla schiena di Bronzor racchiudesse un potere misterioso."
     },
     "437": {
-      "genus": "Pokémon Campanabronzo",
+      "genus": "Pokémon Squibronzo",
       "description": "In tempi remoti Bronzong era venerato come portatore di pioggia. Un esemplare fu rinvenuto sepolto nel terreno."
     },
     "438": {
@@ -63,11 +63,11 @@
       "description": "Mime Jr. imita i movimenti del nemico per confonderlo, quindi non perde tempo e si dà immediatamente alla fuga."
     },
     "440": {
-      "genus": "Pokémon Casetta",
+      "genus": "Pokémon Ovettino",
       "description": "Happiny porta nella tasca sul ventre una pietra rotonda a forma di uovo e la dona ai propri amici."
     },
     "441": {
-      "genus": "Pokémon Nota Musicale",
+      "genus": "Pokémon Musicale",
       "description": "Chatot imita i versi degli altri Pokémon per convincerli di essere uno di loro. In questo modo evita di essere attaccato."
     },
     "442": {
@@ -87,7 +87,7 @@
       "description": "Quando ripiega il corpo e distende le ali, Garchomp sembra un aereo a reazione. Vola alla velocità del suono."
     },
     "446": {
-      "genus": "Pokémon Mangione",
+      "genus": "Pokémon Ghiottone",
       "description": "Munchlax nasconde il cibo sotto il lungo pelo del corpo, ma poi dimentica di averlo messo lì."
     },
     "447": {
@@ -99,11 +99,11 @@
       "description": "Percependo l’aura emanata dagli altri, Lucario riesce a leggere i loro pensieri e prevederne i movimenti."
     },
     "449": {
-      "genus": "Pokémon Ippopotamo",
+      "genus": "Pokémon Ippo",
       "description": "Hippopotas vive nei luoghi aridi. Invece di sudare, espelle dal corpo sabbia granulosa."
     },
     "450": {
-      "genus": "Pokémon Megapeso",
+      "genus": "Pokémon Grandepeso",
       "description": "Hippowdon spalanca l’enorme bocca per esibire la propria forza terrificante. Durante gli attacchi solleva immense quantità di sabbia."
     },
     "451": {
@@ -111,19 +111,19 @@
       "description": "Skorupi afferra la preda con gli artigli della coda e le inietta veleno. Non lascia la presa finché la tossina non fa effetto."
     },
     "452": {
-      "genus": "Pokémon Orcoscorpione",
+      "genus": "Pokémon Scorpiaccio",
       "description": "Drapion è orgoglioso della propria forza. Pur potendo fare a pezzi i nemici, preferisce finirli con un potentissimo veleno."
     },
     "453": {
-      "genus": "Pokémon Boccatossica",
+      "genus": "Pokémon Inveieleno",
       "description": "Croagunk possiede sacche velenifere nelle guance. Cerca di cogliere i nemici alla sprovvista e colpirli con le dita tossiche."
     },
     "454": {
-      "genus": "Pokémon Boccatossica",
+      "genus": "Pokémon Inveieleno",
       "description": "Toxicroak ha una sacca velenifera nella gola. Quando gracida, il veleno accumulato viene rimescolato e diventa ancora più potente."
     },
     "455": {
-      "genus": "Pokémon Acchiappainsetti",
+      "genus": "Pokémon Insettivoro",
       "description": "Carnivine attira la preda con la saliva dal profumo dolce e poi la azzanna. Impiega un’intera giornata per divorarla."
     },
     "456": {
@@ -139,15 +139,15 @@
       "description": "Il motivo sulla schiena di Mantyke varia da regione a regione. Nuota spesso in branco insieme ai Remoraid."
     },
     "459": {
-      "genus": "Pokémon Alberogelato",
+      "genus": "Pokémon Albergelo",
       "description": "Durante le stagioni fredde, Snover migra verso le pendici più basse delle montagne. In primavera torna sulle cime innevate."
     },
     "460": {
-      "genus": "Pokémon Alberogelato",
+      "genus": "Pokémon Albergelo",
       "description": "Abomasnow ricopre vaste aree di neve scatenando bufere. È conosciuto anche come «il mostro dei ghiacci»."
     },
     "461": {
-      "genus": "Pokémon Lamafredda",
+      "genus": "Pokémon Lamartigli",
       "description": "Weavile vive nelle regioni innevate e incide motivi sugli alberi con gli artigli per inviare segnali ai propri simili."
     },
     "462": {

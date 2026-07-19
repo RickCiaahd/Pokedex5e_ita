@@ -1,0 +1,17 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/abilities.json",
+  "range": {"fromIndex": 81, "toIndex": 90},
+  "items": {
+    "form-change-hoopa": {"description": "Quando tiene la Prison Bottle, Hoopa Confined si trasforma in Hoopa Unbound."},
+    "form-change-keldeo": {"description": "La forma standard di Keldeo è Ordinary Form. Quando impara la mossa Secret Sword, assume Resolute Form finché la mossa resta nel suo elenco di mosse."},
+    "form-change-kyurem": {"description": "In presenza di un Reshiram o Zekrom consenziente, Kyurem può fondersi a volontà con uno dei due Pokémon mediante un DNA Splicer. Questo processo, chiamato Absofusion, produce White Kyurem se si fonde con Reshiram oppure Black Kyurem se si fonde con Zekrom."},
+    "form-change-meloetta": {"description": "Finché Meloetta si trova fuori dalla lotta, assume Aria Forme. Quando viene usata la mossa Relic Song, Meloetta alterna Aria Forme e Pirouette Forme."},
+    "form-change-necrozma": {"description": "Necrozma può fondersi a volontà con un Solgaleo consenziente mediante N-Solarizer oppure con Lunala mediante N-Lunarizer. La fusione produce Dusk Mane Necrozma con Solgaleo oppure Dawn Wings Necrozma con Lunala, mantenendo gli stessi PF attuali."},
+    "form-change-ogerpon": {"description": "La forma di Ogerpon cambia in base alla maschera indossata. Le quattro maschere disponibili sono Teal Mask di tipo Erba, Wellspring Mask di tipo Acqua, Heartflame Mask di tipo Fuoco e Cornerstone Mask di tipo Roccia. Inoltre, quando viene Teracristallizzato, il tipo di Ogerpon diventa quello della maschera indipendentemente dal proprio Tera Type."},
+    "form-change-oricorio": {"description": "La forma di questo Pokémon può cambiare dandogli un determinato tipo di Nectar. Red Nectar lo trasforma in Baile Style, Pink Nectar in Pa’u Style, Purple Nectar in Sensu Style e Yellow Nectar in Pom-Pom Style."},
+    "form-change-rotom": {"description": "Rotom possiede 5 forme alternative che può assumere quando si trova vicino a un elettrodomestico. Come azione bonus, può assumere Heat Form, Wash Form, Frost Form, Fan Form o Mow Form, modificando tipo e statistiche. La forma dipende dal tipo di elettrodomestico posseduto, a discrezione del DM. Per ciascuna forma è fornita una scheda statistiche separata."},
+    "form-change-shaymin": {"description": "La forma predefinita di Shaymin è Land Form. Quando tiene una Gracidea Flower, può trasformarsi in Sky Form, ottenendo nuovi tipi, statistiche e mosse."},
+    "form-change-terapagos": {"description": "Terapagos assume Stellar Form ogni volta che viene Teracristallizzato. In Stellar Form, il suo tipo è Stellar indipendentemente dal proprio Tera Type. Quando termina la Teracristallizzazione, ritorna alla Normal Form o Terastal Form in cui si trovava prima."}
+  }
+}

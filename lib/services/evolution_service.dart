@@ -39,6 +39,7 @@ class EvolutionService {
         .map((entry) => entry.itemId)
         .toSet();
     final itemByName = {
+      for (final item in itemCatalog) _referenceKey(item.technicalName): item,
       for (final item in itemCatalog) _referenceKey(item.name): item,
       for (final item in itemCatalog) _referenceKey(item.id): item,
     };

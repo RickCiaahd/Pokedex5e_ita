@@ -186,7 +186,6 @@ void main() {
           continue;
         }
         final reference = Map<String, dynamic>.from(entry.value as Map);
-        final name = reference['name']?.toString().trim() ?? '';
         final genus = reference['genus']?.toString().trim() ?? '';
         if (genus.isEmpty) {
           errors.add('$path: categoria mancante per #$pokemonId.');

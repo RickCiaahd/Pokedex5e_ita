@@ -1,9 +1,7 @@
 name: Temporary item name audit
 
 on:
-  push:
-    branches:
-      - translation/items-audit
+  pull_request:
 
 permissions:
   contents: read
@@ -49,7 +47,6 @@ jobs:
           names_csv = list(csv.DictReader(io.StringIO(fetch(
               'https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/item_names.csv'
           ))))
-          item_by_id = {row['id']: row for row in items_csv}
           it_by_id = {row['item_id']: row['name'] for row in names_csv if row['local_language_id'] == '8'}
           en_by_id = {row['item_id']: row['name'] for row in names_csv if row['local_language_id'] == '9'}
           pokeapi = {
@@ -79,10 +76,8 @@ jobs:
                   cells = row.select('th,td')
                   if len(cells) <= max(italian_index, english_index):
                       continue
-                  italian = cells[italian_index].get_text(' ', strip=True)
-                  english = cells[english_index].get_text(' ', strip=True)
-                  italian = re.sub(r'\s+', ' ', italian).strip()
-                  english = re.sub(r'\s+', ' ', english).strip()
+                  italian = re.sub(r'\s+', ' ', cells[italian_index].get_text(' ', strip=True)).strip()
+                  english = re.sub(r'\s+', ' ', cells[english_index].get_text(' ', strip=True)).strip()
                   if not italian or not english:
                       continue
                   central_pairs.setdefault(normalize(english), []).append({
@@ -98,9 +93,9 @@ jobs:
               source_name = entry['name']
               poke = pokeapi.get(item_id)
               central = central_pairs.get(normalize(source_name), [])
-              italian = poke['italianName'] if poke else None
               central_names = sorted({value['italian'] for value in central})
               if poke:
+                  italian = poke['italianName']
                   matched.append({
                       'id': item_id,
                       'sourceName': source_name,

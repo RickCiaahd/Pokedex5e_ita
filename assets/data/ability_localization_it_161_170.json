@@ -1,0 +1,40 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/abilities.json",
+  "range": {
+    "fromIndex": 161,
+    "toIndex": 170
+  },
+  "items": {
+    "mirror-armor": {
+      "description": "Quando subisce un effetto che riduce il tiro per colpire, la CA, il movimento o i punteggi di caratteristica, lo stesso effetto viene applicato alla fonte, quando possibile."
+    },
+    "misty-surge": {
+      "description": "Se conosce la mossa, questo Pokémon può usare Misty Terrain come azione bonus."
+    },
+    "mold-breaker": {
+      "description": "Le mosse di questo Pokémon ignorano le abilità che ne ridurrebbero l’effetto o la capacità di colpire un avversario, come Water Absorb, Snow Cloak, Thick Fat o Sturdy."
+    },
+    "moody": {
+      "description": "Alla fine di ogni riposo lungo, questo Pokémon tira nuovamente sulla tabella delle nature e sostituisce la propria natura con il risultato fino al riposo lungo successivo."
+    },
+    "motor-drive": {
+      "description": "Quando viene colpito da una mossa di tipo Elettro, se non ne è immune, la velocità di questo Pokémon aumenta di 10 piedi fino alla fine della lotta, fino a un massimo di 50 piedi aggiuntivi."
+    },
+    "moxie": {
+      "description": "Quando manda KO un avversario, questo Pokémon può effettuare immediatamente un’altra azione."
+    },
+    "multiscale": {
+      "description": "Se questo Pokémon possiede tutti i propri PF, i primi danni che subisce vengono dimezzati."
+    },
+    "multitype": {
+      "description": "Il tipo e la forma di questo Pokémon cambiano per corrispondere al tipo della Elemental Plate che tiene. La lastra non può essere influenzata da abilità o mosse che rimuovono strumenti."
+    },
+    "mummy": {
+      "description": "Quando questo Pokémon viene colpito da un attacco in mischia, un’abilità casuale dell’attaccante diventa Mummy per il resto dell’incontro."
+    },
+    "mycelium-might": {
+      "description": "Una volta per riposo breve, quando costringe una creatura a effettuare un tiro salvezza che infliggerebbe una condizione in caso di fallimento, questo Pokémon può invocare Mycelium Might per far effettuare quel tiro con svantaggio."
+    }
+  }
+}

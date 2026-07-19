@@ -24,6 +24,56 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
+      - name: Extract temporary generation IX source data
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          catalog = json.loads(Path('assets/data_webapp/pokemon.json').read_text(encoding='utf-8'))
+          selected = {}
+          for item in catalog.get('items', []):
+              number = int(item.get('number') or 0)
+              if not 906 <= number <= 1025:
+                  continue
+              candidate = {
+                  'number': number,
+                  'name': str(item.get('name') or '').strip(),
+                  'id': str(item.get('id') or '').strip(),
+                  'description': str(item.get('description') or '').strip(),
+              }
+              current = selected.get(number)
+              score = (candidate['id'].count('-'), len(candidate['id']))
+              if current is None or score < current['_score']:
+                  candidate['_score'] = score
+                  selected[number] = candidate
+
+          missing = [number for number in range(906, 1026) if number not in selected]
+          if missing:
+              raise SystemExit(f'Missing source Pokémon: {missing}')
+          output = {
+              str(number): {
+                  key: value
+                  for key, value in selected[number].items()
+                  if key != '_score'
+              }
+              for number in range(906, 1026)
+          }
+          Path('gen9-source.json').write_text(
+              json.dumps(output, ensure_ascii=False, indent=2) + '\n',
+              encoding='utf-8',
+          )
+          PY
+
+      - name: Upload temporary generation IX source data
+        uses: actions/upload-artifact@v4
+        with:
+          name: gen9-source-dump
+          path: gen9-source.json
+          if-no-files-found: error
+          retention-days: 1
+
       - name: Set up Java
         uses: actions/setup-java@v4
         with:

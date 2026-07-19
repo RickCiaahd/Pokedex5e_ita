@@ -901,7 +901,6 @@ class _MoveSlotGrid extends StatelessWidget {
   final Map<String, MoveData?> moveData;
   final ValueChanged<int> onPick;
   final ValueChanged<int> onRemove;
-  final Map<String, String> labels;
 
   @override
   Widget build(BuildContext context) {
@@ -944,6 +943,7 @@ class _ChipSlots extends StatelessWidget {
   final VoidCallback? onAdd;
   final ValueChanged<int> onPick;
   final ValueChanged<int> onRemove;
+  final Map<String, String> labels;
 
   @override
   Widget build(BuildContext context) {
@@ -1394,6 +1394,7 @@ class _ChoicePickerScreen extends StatefulWidget {
   final String? pinnedLabel;
   final Set<String> blockedOptions;
   final Map<String, String> descriptions;
+  final Map<String, String> labels;
   final bool includeNone;
 
   @override

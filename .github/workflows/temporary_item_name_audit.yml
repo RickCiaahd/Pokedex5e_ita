@@ -62,7 +62,7 @@ jobs:
           html = fetch('https://wiki.pokemoncentral.it/Elenco_degli_strumenti_in_altre_lingue')
           soup = BeautifulSoup(html, 'html.parser')
           central_pairs = {}
-          for table in soup.select('table.wikitable'):
+          for table in soup.find_all('table'):
               rows = table.select('tr')
               if not rows:
                   continue

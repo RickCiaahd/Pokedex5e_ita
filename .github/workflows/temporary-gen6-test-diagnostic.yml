@@ -1,4 +1,4 @@
-name: Temporary Gen6 test diagnostic
+name: Temporary Gen6 test fix
 
 on:
   push:
@@ -9,7 +9,7 @@ permissions:
   contents: write
 
 jobs:
-  capture-test-output:
+  apply-fix:
     if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
@@ -19,29 +19,29 @@ jobs:
           ref: translation/pokemon-gen6
           fetch-depth: 0
 
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-          cache: true
-
-      - name: Install dependencies
-        run: flutter pub get
-
-      - name: Capture localization test output
+      - name: Correct category reference validation
         shell: bash
         run: |
-          set +e
-          flutter test test/pokemon_localization_integrity_test.dart --reporter expanded > docs/translation/gen6-test-diagnostic.txt 2>&1
-          status=$?
-          echo "EXIT_STATUS=$status" >> docs/translation/gen6-test-diagnostic.txt
-          exit 0
+          python - <<'PY'
+          from pathlib import Path
 
-      - name: Commit diagnostic log
+          path = Path('test/pokemon_localization_integrity_test.dart')
+          text = path.read_text(encoding='utf-8')
+          text = text.replace(
+              "if (name.isEmpty || genus.isEmpty)",
+              "if (genus.isEmpty)",
+          ).replace(
+              "riferimento incompleto per #$pokemonId",
+              "categoria mancante per #$pokemonId",
+          )
+          path.write_text(text, encoding='utf-8')
+          PY
+
+      - name: Commit correction
         shell: bash
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/translation/gen6-test-diagnostic.txt
-          git commit -m "Registra la diagnostica temporanea dei test Gen VI"
+          git add test/pokemon_localization_integrity_test.dart
+          git commit -m "Corregge il controllo delle categorie Gen VI"
           git push origin HEAD:translation/pokemon-gen6

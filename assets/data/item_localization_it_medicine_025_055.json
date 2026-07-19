@@ -1,0 +1,237 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/items.json",
+  "nameSources": [
+    "https://wiki.pokemoncentral.it/Elenco_degli_strumenti_in_altre_lingue",
+    "https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/item_names.csv"
+  ],
+  "type": "medicine",
+  "range": {
+    "start": 25,
+    "end": 55
+  },
+  "localizedCount": 31,
+  "items": {
+    "potion": {
+      "sourceName": "Potion",
+      "name": "Pozione",
+      "description": [
+        "Un Allenatore può usare un'azione per far recuperare 2d4 + 2 HP a un Pokémon adiacente. Si consuma con l'uso."
+      ]
+    },
+    "super-potion": {
+      "sourceName": "Super Potion",
+      "name": "Superpozione",
+      "description": [
+        "Un Allenatore può usare un'azione per far recuperare 3d6 + 6 HP a un Pokémon adiacente. Si consuma con l'uso."
+      ]
+    },
+    "hyper-potion": {
+      "sourceName": "Hyper Potion",
+      "name": "Iperpozione",
+      "description": [
+        "Un Allenatore può usare un'azione per far recuperare 4d12 + 10 HP a un Pokémon adiacente. Si consuma con l'uso."
+      ]
+    },
+    "antidote": {
+      "sourceName": "Antidote",
+      "name": "Antidoto",
+      "description": [
+        "Un Allenatore può usare un'azione per curare un Pokémon adiacente dalle condizioni Poisoned o Badly Poisoned. Si consuma con l'uso."
+      ]
+    },
+    "burn-heal": {
+      "sourceName": "Burn Heal",
+      "name": "Antiscottatura",
+      "description": [
+        "Un Allenatore può usare un'azione per curare un Pokémon adiacente dalla condizione Burned. Si consuma con l'uso."
+      ]
+    },
+    "ice-heal": {
+      "sourceName": "Ice Heal",
+      "name": "Antigelo",
+      "description": [
+        "Un Allenatore può usare un'azione per curare un Pokémon adiacente dalla condizione Frozen. Si consuma con l'uso."
+      ]
+    },
+    "awakening": {
+      "sourceName": "Awakening",
+      "name": "Sveglia",
+      "description": [
+        "Un Allenatore può usare un'azione per curare un Pokémon adiacente dalla condizione Asleep. Si consuma con l'uso."
+      ]
+    },
+    "paralyze-heal": {
+      "sourceName": "Paralyze Heal",
+      "name": "Antiparalisi",
+      "description": [
+        "Un Allenatore può usare un'azione per curare un Pokémon adiacente dalla condizione Paralysis. Si consuma con l'uso."
+      ]
+    },
+    "max-potion": {
+      "sourceName": "Max Potion",
+      "name": "Pozione Max",
+      "description": [
+        "Un Allenatore può usare un'azione per somministrare questo medicinale a un Pokémon adiacente. Dopo 10 minuti dal consumo, il Pokémon recupera 70 HP. Si consuma con l'uso."
+      ]
+    },
+    "full-heal": {
+      "sourceName": "Full Heal",
+      "name": "Cura Totale",
+      "description": [
+        "Un Allenatore può usare un'azione per curare un Pokémon adiacente da tutte le condizioni di stato e renderlo immune a tutte le condizioni di stato per un round. Si consuma con l'uso."
+      ]
+    },
+    "full-restore": {
+      "sourceName": "Full Restore",
+      "name": "Ricarica Totale",
+      "description": [
+        "Un Allenatore può usare un'azione per somministrare questo medicinale a un Pokémon adiacente. Dopo 10 minuti dal consumo, il Pokémon recupera 70 HP e viene curato da tutte le condizioni di stato. Si consuma con l'uso."
+      ]
+    },
+    "revive": {
+      "sourceName": "Revive",
+      "name": "Revitalizzante",
+      "description": [
+        "Un Allenatore può usare un'azione per far recuperare 2d4 + 2 HP a un Pokémon svenuto. Si consuma con l'uso."
+      ]
+    },
+    "max-revive": {
+      "sourceName": "Max Revive",
+      "name": "Revitalizzante Max",
+      "description": [
+        "Un Allenatore può usare un'azione per far recuperare 4d12 + 10 HP a un Pokémon svenuto. Si consuma con l'uso."
+      ]
+    },
+    "fresh-water": {
+      "sourceName": "Fresh Water",
+      "name": "Acqua Fresca",
+      "description": [
+        "Quando viene consumata, fa recuperare 7 HP. Un Allenatore può usare un'azione bonus per consumare questo oggetto oppure un'azione completa per somministrarlo a un Pokémon adiacente."
+      ]
+    },
+    "soda-pop": {
+      "sourceName": "Soda Pop",
+      "name": "Gassosa",
+      "description": [
+        "Quando viene consumata, fa recuperare 10 HP. Un Allenatore può usare un'azione bonus per consumare questo oggetto oppure un'azione completa per somministrarlo a un Pokémon adiacente."
+      ]
+    },
+    "berry-juice": {
+      "sourceName": "Berry Juice",
+      "name": "Succo di Bacca",
+      "description": [
+        "Quando viene consumato, fa recuperare 20 HP. Un Allenatore può usare un'azione bonus per consumare questo oggetto oppure un'azione completa per somministrarlo a un Pokémon adiacente."
+      ]
+    },
+    "lemonade": {
+      "sourceName": "Lemonade",
+      "name": "Lemonsucco",
+      "description": [
+        "Quando viene consumato, fa recuperare 30 HP. Un Allenatore può usare un'azione bonus per consumare questo oggetto oppure un'azione completa per somministrarlo a un Pokémon adiacente."
+      ]
+    },
+    "moomoo-milk": {
+      "sourceName": "Moomoo Milk",
+      "name": "Latte Mumu",
+      "description": [
+        "Quando viene consumato, fa recuperare 50 HP. Un Allenatore può usare un'azione bonus per consumare questo oggetto oppure un'azione completa per somministrarlo a un Pokémon adiacente."
+      ]
+    },
+    "energy-powder": {
+      "sourceName": "Energy Powder",
+      "name": "Polvenergia",
+      "description": [
+        "Un Allenatore può usare un'azione per far recuperare 3d6 + 6 HP a un Pokémon adiacente. Si consuma con l'uso. La maggior parte dei Pokémon non gradisce la Polvenergia, quindi un uso eccessivo può ridurre il legame: c'è una probabilità di 1/4 che il livello di Bond diminuisca di 1."
+      ]
+    },
+    "energy-root": {
+      "sourceName": "Energy Root",
+      "name": "Radicenergia",
+      "description": [
+        "Un Allenatore può usare un'azione per far recuperare 4d12 + 10 HP a un Pokémon adiacente. Si consuma con l'uso. La maggior parte dei Pokémon non gradisce la Radicenergia, quindi un uso eccessivo può ridurre il legame: c'è una probabilità di 1/4 che il livello di Bond diminuisca di 1."
+      ]
+    },
+    "heal-powder": {
+      "sourceName": "Heal Powder",
+      "name": "Polvocura",
+      "description": [
+        "Un Allenatore può usare un'azione per curare un Pokémon adiacente da tutte le condizioni di stato. Si consuma con l'uso. La maggior parte dei Pokémon non gradisce la Polvocura, quindi un uso eccessivo può ridurre il legame: c'è una probabilità di 1/4 che il livello di Bond diminuisca di 1."
+      ]
+    },
+    "revival-herb": {
+      "sourceName": "Revival Herb",
+      "name": "Vitalerba",
+      "description": [
+        "Un Allenatore può usare un'azione per far recuperare 4d12 + 10 HP a un Pokémon svenuto contenuto in una Poké Ball. Si consuma con l'uso. La maggior parte dei Pokémon non gradisce la Vitalerba, quindi un uso eccessivo può ridurre il legame: c'è una probabilità di 1/4 che il livello di Bond diminuisca di 1."
+      ]
+    },
+    "ether": {
+      "sourceName": "Ether",
+      "name": "Etere",
+      "description": [
+        "Un Allenatore può usare un'azione per ripristinare 5 PP di una singola mossa di un Pokémon adiacente. Si consuma con l'uso."
+      ]
+    },
+    "max-ether": {
+      "sourceName": "Max Ether",
+      "name": "Etere Max",
+      "description": [
+        "Un Allenatore può usare un'azione per ripristinare 10 PP di una singola mossa di un Pokémon adiacente. Si consuma con l'uso."
+      ]
+    },
+    "elixir": {
+      "sourceName": "Elixir",
+      "name": "Elisir",
+      "description": [
+        "Un Allenatore può usare un'azione per ripristinare 5 PP di tutte le mosse di un Pokémon adiacente. Si consuma con l'uso."
+      ]
+    },
+    "max-elixir": {
+      "sourceName": "Max Elixir",
+      "name": "Elisir Max",
+      "description": [
+        "Un Allenatore può usare un'azione per ripristinare 10 PP di tutte le mosse di un Pokémon adiacente. Si consuma con l'uso."
+      ]
+    },
+    "sacred-ash": {
+      "sourceName": "Sacred Ash",
+      "name": "Ceneremagica",
+      "description": [
+        "Un Allenatore può impiegare 5 minuti per rianimare fino a sei Pokémon svenuti. Ogni Pokémon rianimato in questo modo recupera metà dei propri HP massimi."
+      ]
+    },
+    "hp-up": {
+      "sourceName": "HP Up",
+      "name": "PS-Su",
+      "description": [
+        "Un Allenatore può usare un'azione per somministrare questo oggetto a un Pokémon. Gli HP massimi del Pokémon aumentano di un valore pari al risultato massimo di uno dei suoi Dadi Vita.",
+        "È una vitamina. Un Pokémon può beneficiare degli effetti di un massimo di tre vitamine in totale."
+      ]
+    },
+    "protein": {
+      "sourceName": "Protein",
+      "name": "Proteina",
+      "description": [
+        "Un Allenatore può usare un'azione per somministrare questo oggetto a un Pokémon. La STR del Pokémon aumenta di 1. Questo effetto non può portare il punteggio di caratteristica del Pokémon oltre 20.",
+        "È una vitamina. Un Pokémon può beneficiare degli effetti di un massimo di tre vitamine in totale."
+      ]
+    },
+    "iron": {
+      "sourceName": "Iron",
+      "name": "Ferro",
+      "description": [
+        "Un Allenatore può usare un'azione per somministrare questo oggetto a un Pokémon. La DEX del Pokémon aumenta di 1. Questo effetto non può portare il punteggio di caratteristica del Pokémon oltre 20.",
+        "È una vitamina. Un Pokémon può beneficiare degli effetti di un massimo di tre vitamine in totale."
+      ]
+    },
+    "carbos": {
+      "sourceName": "Carbos",
+      "name": "Carburante",
+      "description": [
+        "Un Allenatore può usare un'azione per somministrare questo oggetto a un Pokémon. La CHA del Pokémon aumenta di 1. Questo effetto non può portare il punteggio di caratteristica del Pokémon oltre 20.",
+        "È una vitamina. Un Pokémon può beneficiare degli effetti di un massimo di tre vitamine in totale."
+      ]
+    }
+  }
+}

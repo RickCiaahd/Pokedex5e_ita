@@ -1,0 +1,186 @@
+{
+  "locale": "it",
+  "source": "assets/data/pokemon_flavor.json",
+  "range": {
+    "from": 766,
+    "to": 809
+  },
+  "items": {
+    "766": {
+      "genus": "Pokémon Giocosquadra",
+      "description": "Passimian forma gruppi di circa 20 individui. Il legame che li unisce è straordinario e nessuno di loro abbandonerebbe mai un compagno."
+    },
+    "767": {
+      "genus": "Pokémon Lestopode",
+      "description": "Questo Pokémon è un codardo. Mentre fugge disperatamente, il movimento frenetico delle sue numerose zampe lascia dietro di sé un sentiero perfettamente pulito."
+    },
+    "768": {
+      "genus": "Pokémon Blindato",
+      "description": "Con un rapido fendente dei giganteschi artigli affilati, Golisopod può dividere in due l'acqua del mare o perfino l'aria."
+    },
+    "769": {
+      "genus": "Pokémon Montesabbia",
+      "description": "Nato da un mucchio di sabbia costruito per gioco da un bambino, questo Pokémon racchiude il rancore dei defunti."
+    },
+    "770": {
+      "genus": "Pokémon Castelsabbia",
+      "description": "Le persone possedute e controllate da questo Pokémon hanno trasformato il suo cumulo di sabbia in un castello. Evolvendosi, il suo potere di lanciare maledizioni è aumentato."
+    },
+    "771": {
+      "genus": "Pokémon Oloturia",
+      "description": "Pyukumuku vive nei mari poco profondi, per esempio vicino alle spiagge. Può espellere gli organi interni per avvolgere le prede o affrontare i nemici."
+    },
+    "772": {
+      "genus": "Pokémon Multigene",
+      "description": "La pesante maschera di controllo che indossa limita le sue capacità innate. Questo Pokémon nasconde un potere speciale."
+    },
+    "773": {
+      "genus": "Pokémon Multigene",
+      "description": "La fiducia nel proprio compagno risveglia Silvally. Può cambiare tipo e mostra tutta la sua versatilità in battaglia."
+    },
+    "774": {
+      "genus": "Pokémon Meteora",
+      "description": "Originario dello strato di ozono, Minior precipita al suolo quando il guscio che avvolge il suo corpo diventa troppo pesante."
+    },
+    "775": {
+      "genus": "Pokémon Dormiveglia",
+      "description": "Komala nasce addormentato e muore addormentato. Tutti i suoi movimenti sembrano soltanto il risultato del suo agitarsi mentre sogna."
+    },
+    "776": {
+      "genus": "Pokémon Tartabomba",
+      "description": "Il guscio sul dorso di Turtonator è chimicamente instabile ed esplode con violenza se viene colpito. Il foro sul ventre è il suo punto debole."
+    },
+    "777": {
+      "genus": "Pokémon Ricciopalla",
+      "description": "Di solito il pelo spinoso sul dorso di Togedemaru resta abbassato. Quando si agita, si rizza e punge chi lo attacca."
+    },
+    "778": {
+      "genus": "Pokémon Fantasmanto",
+      "description": "Il vero aspetto di Mimikyu è sconosciuto. Uno studioso che vide cosa si nascondeva sotto il panno fu sopraffatto dal terrore e morì per lo shock."
+    },
+    "779": {
+      "genus": "Pokémon Sfregadenti",
+      "description": "Quando Bruxish libera il potere psichico dalla protuberanza sulla testa, nell'area risuona lo stridio dei suoi denti che digrignano."
+    },
+    "780": {
+      "genus": "Pokémon Tuttacalma",
+      "description": "Drampa ha un carattere compassionevole, ma se si arrabbia distrugge ciò che lo circonda con il suo respiro potentissimo."
+    },
+    "781": {
+      "genus": "Pokémon Brandellalga",
+      "description": "Facendo oscillare la sua enorme ancora, Dhelmise può mandare KO Wailord con un solo colpo. Quella che sembra un'alga verde è in realtà il suo corpo."
+    },
+    "782": {
+      "genus": "Pokémon Squama",
+      "description": "Jangmo-o esprime le proprie emozioni facendo sbattere le squame. Sulle alte montagne in cui vive riecheggiano suoni metallici."
+    },
+    "783": {
+      "genus": "Pokémon Squama",
+      "description": "Hakamo-o si lancia sulla preda con un grido coraggioso. I suoi pugni ricoperti di squame fanno a brandelli gli avversari."
+    },
+    "784": {
+      "genus": "Pokémon Squama",
+      "description": "Quando individua un nemico, Kommo-o lo minaccia facendo tintinnare le squame sulla coda. Gli avversari più deboli cedono e fuggono in preda al panico."
+    },
+    "785": {
+      "genus": "Pokémon Nume Locale",
+      "description": "Questa divinità protettrice di Mele Mele è colma di curiosità. Evoca nubi temporalesche e immagazzina nel corpo i loro fulmini."
+    },
+    "786": {
+      "genus": "Pokémon Nume Locale",
+      "description": "Questa divinità protettrice di Akala è ingenuamente crudele. Il profumo dei fiori è la fonte della sua energia."
+    },
+    "787": {
+      "genus": "Pokémon Nume Locale",
+      "description": "Tapu Bulu sradica grandi alberi e li fa roteare. Fa crescere la vegetazione e poi ne assorbe l'energia."
+    },
+    "788": {
+      "genus": "Pokémon Nume Locale",
+      "description": "La fitta nebbia creata da Tapu Fini porta rovina e distruzione tra i nemici confusi. Le correnti oceaniche sono la fonte della sua energia."
+    },
+    "789": {
+      "genus": "Pokémon Nebulosa",
+      "description": "Il corpo di Cosmog è gassoso e fragile. Cresce lentamente raccogliendo polvere dall'atmosfera."
+    },
+    "790": {
+      "genus": "Pokémon Protostella",
+      "description": "Cosmoem resta immobile come se fosse morto, ma il suo corpo è appena tiepido al tatto. In un lontano passato era chiamato bozzolo delle stelle."
+    },
+    "791": {
+      "genus": "Pokémon Solare",
+      "description": "Si dice che Solgaleo viva in un altro mondo. La luce intensa irradiata dal suo corpo può illuminare la notte più buia come fosse mezzogiorno."
+    },
+    "792": {
+      "genus": "Pokémon Lunare",
+      "description": "Si dice che Lunala sia l'evoluzione femminile di Cosmog. Quando il suo terzo occhio si attiva, vola via verso un altro mondo."
+    },
+    "793": {
+      "genus": "Pokémon Parassita",
+      "description": "È una delle misteriose Ultracreature. Alcuni testimoni riferiscono che le persone infestate da Nihilego diventano improvvisamente violente."
+    },
+    "794": {
+      "genus": "Pokémon Gonfiacorpo",
+      "description": "Questa Ultracreatura è apparsa da un altro mondo. Mette in mostra il proprio corpo, ma non è chiaro se lo faccia per vantarsi o per minacciare."
+    },
+    "795": {
+      "genus": "Pokémon Leggiadria",
+      "description": "Una delle pericolose Ultracreature, Pheromosa è stata vista correre sulla terraferma a velocità impressionante."
+    },
+    "796": {
+      "genus": "Pokémon Luminaria",
+      "description": "È una delle misteriose forme di vita note come Ultracreature. Secondo i testimoni, dal suo intero corpo si sprigionano scariche elettriche stupefacenti."
+    },
+    "797": {
+      "genus": "Pokémon Decollo",
+      "description": "Celesteela è apparsa da un Ultravarco. Alcuni testimoni l'hanno vista attraversare il cielo ad altissima velocità."
+    },
+    "798": {
+      "genus": "Pokémon Spadatratta",
+      "description": "Questa Ultracreatura è giunta da un Ultravarco. Sembra non attaccare spontaneamente i nemici, ma il suo corpo affilato è già un'arma pericolosa."
+    },
+    "799": {
+      "genus": "Pokémon Divoratutto",
+      "description": "Secondo alcuni rapporti, Guzzlord ha divorato montagne e inghiottito interi edifici. È una delle Ultracreature."
+    },
+    "800": {
+      "genus": "Pokémon Prisma",
+      "description": "Questa forma di vita ricorda le Ultracreature. Pare dormisse sottoterra e si ritiene sia giunta da un altro mondo in tempi antichi."
+    },
+    "801": {
+      "genus": "Pokémon Artificiale",
+      "description": "Questo Pokémon artificiale, costruito più di 500 anni fa, comprende il linguaggio umano ma non è in grado di parlare."
+    },
+    "802": {
+      "genus": "Pokémon Vivinombra",
+      "description": "Marshadow sa nascondersi nelle ombre e non si mostra mai agli esseri umani, tanto che la sua stessa esistenza era considerata una leggenda."
+    },
+    "803": {
+      "genus": "Pokémon Velenago",
+      "description": "Nel suo mondo questa Ultracreatura è abbastanza apprezzata da essere scelta come primo compagno."
+    },
+    "804": {
+      "genus": "Pokémon Velenago",
+      "description": "Naganadel conserva nel corpo centinaia di litri di liquido velenoso. È uno degli organismi noti come Ultracreature."
+    },
+    "805": {
+      "genus": "Pokémon Bastione",
+      "description": "Stakataka è apparso da un Ultravarco. Ogni esemplare sembra formato da numerose forme di vita impilate una sull'altra."
+    },
+    "806": {
+      "genus": "Pokémon Pirotecnico",
+      "description": "Blacephalon si avvicina alle persone serpeggiando e poi, senza preavviso, fa esplodere la propria testa. Pare sia una specie di Ultracreatura."
+    },
+    "807": {
+      "genus": "Pokémon Fulmirapido",
+      "description": "Zeraora elettrifica gli artigli e con essi fa a brandelli gli avversari. Anche se schivano l'attacco, le scintille sprigionate li investono con una scarica."
+    },
+    "808": {
+      "genus": "Pokémon Bullone",
+      "description": "I Meltan vivono in gruppo, ma quando arriva il momento un esemplare particolarmente forte assorbe tutti gli altri e si evolve."
+    },
+    "809": {
+      "genus": "Pokémon Bullone",
+      "description": "La forza centrifuga alimenta i pugni delle pesanti braccia a dado esagonale di Melmetal. Si dice che sferri i pugni più potenti tra tutti i Pokémon."
+    }
+  }
+}

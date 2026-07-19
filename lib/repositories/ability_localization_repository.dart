@@ -4,7 +4,18 @@ import 'package:flutter/services.dart';
 
 class AbilityLocalizationRepository {
   static const List<String> assetPaths = [
-    'assets/data/ability_localization_it_001_110.json',
+    'assets/data/ability_localization_it_001_010.json',
+    'assets/data/ability_localization_it_011_020.json',
+    'assets/data/ability_localization_it_021_030.json',
+    'assets/data/ability_localization_it_031_040.json',
+    'assets/data/ability_localization_it_041_050.json',
+    'assets/data/ability_localization_it_051_060.json',
+    'assets/data/ability_localization_it_061_069.json',
+    'assets/data/ability_localization_it_070_070.json',
+    'assets/data/ability_localization_it_071_080.json',
+    'assets/data/ability_localization_it_081_090.json',
+    'assets/data/ability_localization_it_091_100.json',
+    'assets/data/ability_localization_it_101_110.json',
     'assets/data/ability_localization_it_111_120.json',
     'assets/data/ability_localization_it_121_128.json',
     'assets/data/ability_localization_it_129_130.json',

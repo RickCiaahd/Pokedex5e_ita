@@ -1,0 +1,40 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/abilities.json",
+  "range": {
+    "fromIndex": 131,
+    "toIndex": 140
+  },
+  "items": {
+    "insomnia": {
+      "description": "Questo Pokémon è immune alla condizione di sonno."
+    },
+    "intimidate": {
+      "description": "Una volta per riposo breve, questo Pokémon può imporre svantaggio a un tiro per colpire nemico a sua scelta."
+    },
+    "intrepid-sword": {
+      "description": "Questo Pokémon effettua gli attacchi in mischia con vantaggio."
+    },
+    "iron-barbs": {
+      "description": "Quando questo Pokémon viene colpito da un attacco in mischia, può tirare d4. Con un risultato di 4, infligge all’attaccante danni di tipo Acciaio pari al proprio modificatore di competenza."
+    },
+    "iron-fist": {
+      "description": "Quando attacca con una mossa basata sui pugni, come Mega Punch, Dynamic Punch, Ice Punch, Fire Punch o Thunder Punch, questo Pokémon può tirare due volte i dadi dei danni e scegliere uno dei due totali."
+    },
+    "justified": {
+      "description": "Quando questo Pokémon viene colpito da una mossa di tipo Buio, ha vantaggio al proprio attacco successivo."
+    },
+    "keen-eye": {
+      "description": "Questo Pokémon ignora lo svantaggio quando è causato dalla vista."
+    },
+    "klutz": {
+      "description": "Questo Pokémon non può tenere strumenti."
+    },
+    "leaf-guard": {
+      "description": "Questo Pokémon non subisce condizioni negative sotto luce solare intensa."
+    },
+    "leaf-storm": {
+      "description": "Questo Pokémon conosce Leaf Storm come quinta mossa. Dimentica la mossa se assume qualsiasi altra forma."
+    }
+  }
+}

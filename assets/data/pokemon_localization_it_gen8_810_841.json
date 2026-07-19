@@ -1,0 +1,138 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/pokemon.json",
+  "range": {
+    "from": 810,
+    "to": 841
+  },
+  "items": {
+    "810": {
+      "genus": "Pokémon Scimpanzé",
+      "description": "Grookey attacca percuotendo con un bastone. Più accelera il ritmo dei colpi, più cresce la sua eccitazione."
+    },
+    "811": {
+      "genus": "Pokémon Ritmo",
+      "description": "Più rapidamente Thwackey riesce a scandire un ritmo con i suoi due bastoni, più rispetto conquista tra i suoi simili."
+    },
+    "812": {
+      "genus": "Pokémon Percussione",
+      "description": "Percuotendo il suo speciale ceppo, Rillaboom ne richiama il potere. In battaglia le radici del ceppo si muovono secondo i suoi ordini."
+    },
+    "813": {
+      "genus": "Pokémon Coniglio",
+      "description": "Correre per riscaldarsi fa scorrere energia infuocata nel corpo di Scorbunny. A quel punto è pronto a combattere a piena potenza."
+    },
+    "814": {
+      "genus": "Pokémon Coniglio",
+      "description": "Raboot stacca le bacche dai rami con un calcio e poi le palleggia con i piedi per allenare la propria tecnica."
+    },
+    "815": {
+      "genus": "Pokémon Cannoniere",
+      "description": "Cinderace palleggia un sassolino con i piedi trasformandolo in un pallone infuocato. I suoi tiri colpiscono duramente gli avversari e li bruciano."
+    },
+    "816": {
+      "genus": "Pokémon Acquacertola",
+      "description": "Quando ha paura, Sobble piange. Le sue lacrime hanno un effetto chimico pari a quello di 100 cipolle e fanno lacrimare senza sosta gli aggressori."
+    },
+    "817": {
+      "genus": "Pokémon Acquacertola",
+      "description": "Drizzile è un combattente astuto e lotta usando palloncini d'acqua creati con l'umidità secreta dai palmi delle mani."
+    },
+    "818": {
+      "genus": "Pokémon Agente",
+      "description": "Inteleon possiede molte capacità nascoste: può sparare acqua dalla punta delle dita e planare nell'aria grazie alla membrana sulla schiena."
+    },
+    "819": {
+      "genus": "Pokémon Guancepiene",
+      "description": "Skwovet mangia bacche senza sosta, abitudine che lo ha reso più resistente di quanto sembri. Compare spesso nelle fattorie in cerca di altro cibo."
+    },
+    "820": {
+      "genus": "Pokémon Ingordigia",
+      "description": "Greedent accumula nella coda così tante bacche che continuano a cadere. È però un po' ottuso e non si accorge di perderle."
+    },
+    "821": {
+      "genus": "Pokémon Uccellino",
+      "description": "Rookidee saltella con agilità e sfrutta anche la più piccola occasione per disorientare avversari molto più grandi di lui."
+    },
+    "822": {
+      "genus": "Pokémon Corvo",
+      "description": "Corvisquire è abbastanza intelligente da usare strumenti in battaglia: può scagliare pietre o avvolgere i nemici con delle corde."
+    },
+    "823": {
+      "genus": "Pokémon Corvo",
+      "description": "Grazie alla grande intelligenza e all'abilità nel volo, Corviknight incute terrore nei nemici con il nero splendore del suo corpo d'acciaio."
+    },
+    "824": {
+      "genus": "Pokémon Coleolarva",
+      "description": "Blipbug si trova spesso nei giardini. Usa i peli che ricoprono il suo corpo per percepire e valutare ciò che lo circonda."
+    },
+    "825": {
+      "genus": "Pokémon Radome",
+      "description": "Dottler si muove a malapena, ma è ancora vivo. Restare nascosto nel guscio senza cibo né acqua sembra aver risvegliato i suoi poteri psichici."
+    },
+    "826": {
+      "genus": "Pokémon Settepunti",
+      "description": "Orbeetle è famoso per la sua elevata intelligenza. Le grandi dimensioni del cervello dimostrano anche l'immenso potere psichico che possiede."
+    },
+    "827": {
+      "genus": "Pokémon Volpe",
+      "description": "Astuto e prudente, Nickit sopravvive rubando il cibo altrui. Mentre fugge con il bottino cancella le proprie tracce usando la coda."
+    },
+    "828": {
+      "genus": "Pokémon Volpe",
+      "description": "Thievul marca di nascosto le possibili vittime con un odore. Seguendo la traccia le pedina e le deruba quando meno se lo aspettano."
+    },
+    "829": {
+      "genus": "Pokémon Fiorfronzolo",
+      "description": "Gossifleur si fissa al terreno con la sua unica gamba e si espone al sole. Dopo aver assorbito abbastanza luce, apre i petali e fiorisce magnificamente."
+    },
+    "830": {
+      "genus": "Pokémon Cotofronzolo",
+      "description": "I semi attaccati alla lanugine di Eldegoss sono ricchi di sostanze nutritive. Li disperde nel vento perché piante e altri Pokémon possano beneficiarne."
+    },
+    "831": {
+      "genus": "Pokémon Pecora",
+      "description": "Il vello riccio di Wooloo è un cuscino così efficace che il Pokémon potrebbe cadere da una rupe e rialzarsi illeso una volta arrivato in fondo."
+    },
+    "832": {
+      "genus": "Pokémon Pecora",
+      "description": "Un tappeto tessuto con la lana elastica di Dubwool assomiglia più a un trampolino: chiunque vi metta piede comincia subito a rimbalzare."
+    },
+    "833": {
+      "genus": "Pokémon Mordace",
+      "description": "Chewtle apre lo scontro attaccando con il corno duro come la roccia. Non appena il nemico tentenna, lo morde e non lascia più la presa."
+    },
+    "834": {
+      "genus": "Pokémon Morso",
+      "description": "Le mascelle di Drednaw possono tranciare barre d'acciaio. Questo Pokémon estremamente aggressivo azzanna senza pietà le sue sfortunate prede."
+    },
+    "835": {
+      "genus": "Pokémon Cagnolino",
+      "description": "Yamper, molto goloso, aiuta le persone nel lavoro soltanto per ricevere bocconcini. Quando corre, il suo corpo crepita di elettricità."
+    },
+    "836": {
+      "genus": "Pokémon Cane",
+      "description": "Boltund genera elettricità e la convoglia nelle zampe per mantenerle vigorose. Può correre senza fermarsi per tre giorni interi."
+    },
+    "837": {
+      "genus": "Pokémon Carbone",
+      "description": "Quasi tutto il corpo di Rolycoly ha la stessa composizione del carbone. Fu scoperto nelle miniere di carbone circa 400 anni fa."
+    },
+    "838": {
+      "genus": "Pokémon Carbone",
+      "description": "Facendo ruotare rapidamente le zampe, Carkol supera le 18 mph. Le fiamme che emette raggiungono temperature superiori a 1,800 °F."
+    },
+    "839": {
+      "genus": "Pokémon Carbone",
+      "description": "Durante la lotta, la montagna di carbone sul corpo di Coalossal diventa incandescente e scaglia scintille che bruciano l'area circostante."
+    },
+    "840": {
+      "genus": "Pokémon Pomicolo",
+      "description": "Applin trascorre tutta la vita dentro una mela. Si nasconde dai Pokémon uccello, suoi nemici naturali, fingendo di essere un semplice frutto."
+    },
+    "841": {
+      "genus": "Pokémon Pomivolo",
+      "description": "Flapple vola con ali formate dalla buccia della mela e sputa un acido potente. Può anche richiudersi assumendo la forma di una mela."
+    }
+  }
+}

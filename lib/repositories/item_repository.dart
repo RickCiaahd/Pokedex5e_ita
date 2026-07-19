@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import '../models/bag_item.dart';
 import '../models/move_data.dart';
 import '../models/tm_data.dart';
+import 'item_localization_repository.dart';
 import 'move_repository.dart';
 import 'tm_repository.dart';
 
@@ -41,9 +42,11 @@ class ItemRepository {
     );
     final json = Map<String, dynamic>.from(jsonDecode(jsonString));
     final itemsJson = List<dynamic>.from(json['items'] ?? const []);
+    final localizations = await ItemLocalizationRepository().getEntries();
     final items = itemsJson
         .map((value) => BagItem.fromWebJson(Map<String, dynamic>.from(value)))
         .where((item) => item.id.isNotEmpty)
+        .map((item) => _localizedItem(item, localizations[item.id]))
         .toList(growable: true);
 
     items.addAll(await _getTmItems());
@@ -56,6 +59,25 @@ class ItemRepository {
       });
 
     return _webItemCache!;
+  }
+
+  BagItem _localizedItem(BagItem item, ItemLocalization? localization) {
+    if (localization == null) return item;
+    if (localization.sourceName != item.name) {
+      throw FormatException(
+        'Il nome tecnico di ${item.id} non coincide con la localizzazione.',
+      );
+    }
+
+    return BagItem(
+      id: item.id,
+      name: localization.name,
+      sourceName: item.name,
+      type: item.type,
+      description: localization.description,
+      cost: item.cost,
+      spriteAssetPath: item.spriteAssetPath,
+    );
   }
 
   Future<List<BagItem>> _getTmItems() async {

@@ -1,0 +1,184 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/items.json",
+  "nameSources": [
+    "https://wiki.pokemoncentral.it/Elenco_degli_strumenti_in_altre_lingue",
+    "https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/item_names.csv"
+  ],
+  "type": "pokeball",
+  "range": {
+    "start": 1,
+    "end": 24
+  },
+  "localizedCount": 24,
+  "items": {
+    "poke-ball": {
+      "sourceName": "Poké Ball",
+      "name": "Poké Ball",
+      "description": [
+        "Permette a un Allenatore di effettuare un tiro di cattura per catturare un Pokémon."
+      ]
+    },
+    "great-ball": {
+      "sourceName": "Great Ball",
+      "name": "Mega Ball",
+      "description": [
+        "Permette a un Allenatore di effettuare un tiro di cattura per catturare un Pokémon. Riduce la CD di cattura di 5."
+      ]
+    },
+    "ultra-ball": {
+      "sourceName": "Ultra Ball",
+      "name": "Ultra Ball",
+      "description": [
+        "Permette a un Allenatore di effettuare un tiro di cattura per catturare un Pokémon. Riduce la CD di cattura di 10."
+      ]
+    },
+    "master-ball": {
+      "sourceName": "Master Ball",
+      "name": "Master Ball",
+      "description": [
+        "Permette a un Allenatore di superare automaticamente un tiro di cattura per catturare un Pokémon."
+      ]
+    },
+    "safari-ball": {
+      "sourceName": "Safari Ball",
+      "name": "Safari Ball",
+      "description": [
+        "Permette a un Allenatore di effettuare un tiro di cattura per catturare un Pokémon. Riduce la CD di cattura di un valore pari al modificatore della skill Nature dell'Allenatore."
+      ]
+    },
+    "fast-ball": {
+      "sourceName": "Fast Ball",
+      "name": "Rapid Ball",
+      "description": [
+        "Permette a un Allenatore di effettuare un tiro di cattura per catturare un Pokémon. Può essere lanciata come reazione contro un Pokémon in fuga."
+      ]
+    },
+    "level-ball": {
+      "sourceName": "Level Ball",
+      "name": "Level Ball",
+      "description": [
+        "Permette a un Allenatore di effettuare un tiro di cattura per catturare un Pokémon. Riduce la CD di cattura di 5 se il livello dell'Allenatore è superiore a quello del Pokémon bersaglio."
+      ]
+    },
+    "lure-ball": {
+      "sourceName": "Lure Ball",
+      "name": "Esca Ball",
+      "description": [
+        "Permette a un Allenatore di effettuare un tiro di cattura per catturare un Pokémon. Riduce la CD di cattura di 10 se viene usata mentre si pesca."
+      ]
+    },
+    "heavy-ball": {
+      "sourceName": "Heavy Ball",
+      "name": "Peso Ball",
+      "description": [
+        "Permette a un Allenatore di effettuare un tiro di cattura per catturare un Pokémon. Riduce la CD di cattura di 10 se il Pokémon bersaglio è di taglia Media o superiore."
+      ]
+    },
+    "love-ball": {
+      "sourceName": "Love Ball",
+      "name": "Love Ball",
+      "description": [
+        "Permette a un Allenatore di effettuare un tiro di cattura per catturare un Pokémon. Riduce la CD di cattura di un valore pari al doppio del modificatore di Carisma del Pokémon attivo."
+      ]
+    },
+    "friend-ball": {
+      "sourceName": "Friend Ball",
+      "name": "Friend Ball",
+      "description": [
+        "Permette a un Allenatore di effettuare un tiro di cattura per catturare un Pokémon. Riduce la CD di cattura di un valore pari al modificatore della skill Persuasion dell'Allenatore."
+      ]
+    },
+    "moon-ball": {
+      "sourceName": "Moon Ball",
+      "name": "Luna Ball",
+      "description": [
+        "Permette a un Allenatore di effettuare un tiro di cattura per catturare un Pokémon. Riduce la CD di cattura di 10 contro i Pokémon che possono evolversi usando una Pietralunare."
+      ]
+    },
+    "sport-ball": {
+      "sourceName": "Sport Ball",
+      "name": "Gara Ball",
+      "description": [
+        "Permette a un Allenatore di effettuare un tiro di cattura per catturare un Pokémon. Riduce la CD di cattura di un valore pari al modificatore della skill Athletics dell'Allenatore."
+      ]
+    },
+    "net-ball": {
+      "sourceName": "Net Ball",
+      "name": "Rete Ball",
+      "description": [
+        "Permette a un Allenatore di effettuare un tiro di cattura per catturare un Pokémon. Riduce la CD di cattura di 10 contro i Pokémon di tipo Acqua o Coleottero."
+      ]
+    },
+    "dive-ball": {
+      "sourceName": "Dive Ball",
+      "name": "Sub Ball",
+      "description": [
+        "Permette a un Allenatore di effettuare un tiro di cattura per catturare un Pokémon. Riduce la CD di cattura di 10 sott'acqua."
+      ]
+    },
+    "nest-ball": {
+      "sourceName": "Nest Ball",
+      "name": "Minor Ball",
+      "description": [
+        "Permette a un Allenatore di effettuare un tiro di cattura per catturare un Pokémon. Riduce la CD di cattura di 5 se il Pokémon bersaglio è di livello 5 o inferiore."
+      ]
+    },
+    "repeat-ball": {
+      "sourceName": "Repeat Ball",
+      "name": "Bis Ball",
+      "description": [
+        "Permette a un Allenatore di effettuare un tiro di cattura per catturare un Pokémon. Riduce la CD di cattura di 10 contro una specie già catturata in precedenza."
+      ]
+    },
+    "timer-ball": {
+      "sourceName": "Timer Ball",
+      "name": "Timer Ball",
+      "description": [
+        "Permette a un Allenatore di effettuare un tiro di cattura per catturare un Pokémon. Quando usa l'azione Throw Pokéball, l'Allenatore può invece trattenere la Ball e iniziare a concentrarsi. Quando la lancia in un round successivo, riduce la CD di cattura di 1 per ogni turno trascorso a concentrarsi, fino a un massimo di 10."
+      ]
+    },
+    "luxury-ball": {
+      "sourceName": "Luxury Ball",
+      "name": "Chic Ball",
+      "description": [
+        "Permette a un Allenatore di effettuare un tiro di cattura per catturare un Pokémon. I Pokémon contenuti in una Chic Ball ottengono +1 al numero massimo di Dadi Vita."
+      ]
+    },
+    "premier-ball": {
+      "sourceName": "Premier Ball",
+      "name": "Premier Ball",
+      "description": [
+        "Permette a un Allenatore di effettuare un tiro di cattura per catturare un Pokémon. È rara ed è spesso considerata un simbolo di classe."
+      ]
+    },
+    "dusk-ball": {
+      "sourceName": "Dusk Ball",
+      "name": "Scuro Ball",
+      "description": [
+        "Permette a un Allenatore di effettuare un tiro di cattura per catturare un Pokémon. Riduce la CD di cattura di 10 di notte o nell'oscurità."
+      ]
+    },
+    "heal-ball": {
+      "sourceName": "Heal Ball",
+      "name": "Cura Ball",
+      "description": [
+        "Permette a un Allenatore di effettuare un tiro di cattura per catturare un Pokémon. Quando il Pokémon contenuto in una Cura Ball spende un Dado Vita durante un riposo breve, può tirarlo due volte e usare il risultato più alto."
+      ]
+    },
+    "quick-ball": {
+      "sourceName": "Quick Ball",
+      "name": "Velox Ball",
+      "description": [
+        "Permette a un Allenatore di effettuare un tiro di cattura per catturare un Pokémon. Riduce la CD di cattura di 15 se viene usata durante il primo round di combattimento."
+      ]
+    },
+    "dream-ball": {
+      "sourceName": "Dream Ball",
+      "name": "Dream Ball",
+      "description": [
+        "Riduce la CD di cattura di 5 se viene usata su un Pokémon affetto dalla condizione Sleep."
+      ]
+    }
+  }
+}

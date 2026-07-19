@@ -6,14 +6,26 @@ class BagItem {
     required this.description,
     required this.cost,
     required this.spriteAssetPath,
+    this.sourceName,
   });
 
   final String id;
+
+  /// Nome mostrato nell'interfaccia.
   final String name;
+
+  /// Nome tecnico del catalogo sorgente, mantenuto per riferimenti e salvataggi.
+  final String? sourceName;
+
   final String type;
   final List<String> description;
   final int? cost;
   final String? spriteAssetPath;
+
+  String get technicalName {
+    final value = sourceName?.trim();
+    return value == null || value.isEmpty ? name : value;
+  }
 
   String get displayDescription {
     if (description.isEmpty) return 'Nessuna descrizione disponibile.';

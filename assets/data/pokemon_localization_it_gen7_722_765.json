@@ -1,0 +1,186 @@
+{
+  "locale": "it",
+  "source": "assets/data/pokemon_flavor.json",
+  "range": {
+    "from": 722,
+    "to": 765
+  },
+  "items": {
+    "722": {
+      "genus": "Pokémon Aliderba",
+      "description": "Questo Pokémon diffidente usa la fotosintesi per accumulare energia durante il giorno e diventa attivo di notte."
+    },
+    "723": {
+      "genus": "Pokémon Piumaffilata",
+      "description": "Piuttosto vanitoso, Dartrix trascorre il tempo libero a sistemarsi le ali. La sua ossessione per ogni traccia di sporco sul piumaggio può impedirgli di combattere."
+    },
+    "724": {
+      "genus": "Pokémon Alifreccia",
+      "description": "Decidueye scaglia dalle ali piume simili a frecce con una precisione tale da perforare un sassolino a oltre 100 iarde di distanza."
+    },
+    "725": {
+      "genus": "Pokémon Pirofelino",
+      "description": "Mentre si pulisce, Litten accumula pelo nello stomaco. Poi gli dà fuoco e sputa attacchi infuocati, che cambiano a seconda di come tossisce."
+    },
+    "726": {
+      "genus": "Pokémon Pirofelino",
+      "description": "Torracat porta alla gola un sonaglio di fuoco, che risuona con forza ogni volta che sputa fiamme."
+    },
+    "727": {
+      "genus": "Pokémon Colpibassi",
+      "description": "Questo Pokémon ha un carattere violento ed egoista. Quando non ha voglia di ascoltare, ignora con totale noncuranza gli ordini del proprio Allenatore."
+    },
+    "728": {
+      "genus": "Pokémon Otaria",
+      "description": "Popplio espelle fluidi corporei dal naso e forma palloni con cui colpisce i nemici. È famoso per essere un gran lavoratore."
+    },
+    "729": {
+      "genus": "Pokémon Pop Star",
+      "description": "Abile ballerino, Brionne crea una sequenza di palloni d'acqua mentre danza e bombarda rapidamente i nemici."
+    },
+    "730": {
+      "genus": "Pokémon Solista",
+      "description": "Primarina controlla i propri palloni d'acqua con il canto. Impara la melodia dagli altri esemplari e la tramanda di generazione in generazione."
+    },
+    "731": {
+      "genus": "Pokémon Picchio",
+      "description": "Pikipek può beccare 16 volte al secondo e perforare i tronchi. Usa i fori per conservare il cibo e costruire il nido."
+    },
+    "732": {
+      "genus": "Pokémon Trombecco",
+      "description": "Trumbeak mangia bacche e ne conserva i semi nel becco. Quando incontra nemici o prede, li spara tutti insieme in una raffica."
+    },
+    "733": {
+      "genus": "Pokémon Cannone",
+      "description": "Durante la lotta, il becco di Toucannon si riscalda e può superare facilmente i 212 °F, provocando gravi ustioni quando colpisce."
+    },
+    "734": {
+      "genus": "Pokémon Pattuglia",
+      "description": "Yungoos morde qualsiasi cosa con le sue zanne affilate. Non è originario di Alola, ma è stato importato da un'altra regione."
+    },
+    "735": {
+      "genus": "Pokémon Sorveglianza",
+      "description": "Quando trova una traccia della preda, Gumshoos sorveglia pazientemente il luogo, ma al calare della notte finisce sempre per addormentarsi."
+    },
+    "736": {
+      "genus": "Pokémon Coleolarva",
+      "description": "La forte mandibola permette a Grubbin di raschiare i tronchi e succhiarne la linfa. Di solito vive sottoterra."
+    },
+    "737": {
+      "genus": "Pokémon Batteria",
+      "description": "Il corpo di Charjabug può immagazzinare elettricità. Durante i campeggi, averne uno vicino è di grande aiuto."
+    },
+    "738": {
+      "genus": "Pokémon Cervolante",
+      "description": "Vikavolt sfreccia in cerca di un'apertura, concentra energia elettrica nelle grandi mandibole e la usa per folgorare i nemici."
+    },
+    "739": {
+      "genus": "Pokémon Pugile",
+      "description": "Crabrawler protegge i punti deboli con le chele, cerca un'apertura e sferra pugni. Quando perde, gli viene la schiuma alla bocca e sviene."
+    },
+    "740": {
+      "genus": "Pokémon Peligranchio",
+      "description": "Crabominable puntava alla vetta, ma si perse e finì su una montagna innevata. Costretto a sopportare il freddo, si evolse e sviluppò una folta pelliccia."
+    },
+    "741": {
+      "genus": "Pokémon Danza",
+      "description": "Oricorio batte le ali tra loro per creare fuoco. Seguendo i passi della sua splendida danza, investe gli avversari con fiamme intense."
+    },
+    "742": {
+      "genus": "Pokémon Bombilide",
+      "description": "Cutiefly si nutre di nettare e polline. Poiché percepisce le aure, riesce a individuare i fiori che stanno per sbocciare."
+    },
+    "743": {
+      "genus": "Pokémon Bombilide",
+      "description": "Ribombee arrotola il polline formando piccoli batuffoli. Ne prepara molte varietà diverse, alcune usate come cibo e altre in battaglia."
+    },
+    "744": {
+      "genus": "Pokémon Cagnolino",
+      "description": "Rockruff è considerato adatto agli Allenatori alle prime armi grazie alla sua socievolezza, ma crescendo sviluppa un carattere più irruento."
+    },
+    "745": {
+      "genus": "Pokémon Lupo",
+      "description": "I rapidi movimenti di Lycanroc confondono i nemici. Oltre a zanne e artigli, usa come armi anche le rocce affilate della criniera."
+    },
+    "746": {
+      "genus": "Pokémon Pesciolino",
+      "description": "Quando è in pericolo, gli occhi di Wishiwashi si inumidiscono e iniziano a brillare. La luce richiama i compagni, che affrontano insieme i nemici."
+    },
+    "747": {
+      "genus": "Pokémon Stellatroce",
+      "description": "Mareanie conficca nella preda l'aculeo velenoso che ha sulla testa. Quando la vittima si è indebolita, la finisce con i suoi 10 tentacoli."
+    },
+    "748": {
+      "genus": "Pokémon Stellatroce",
+      "description": "Toxapex avanza sul fondale oceanico usando le sue 12 zampe e lascia dietro di sé una scia di frammenti di Corsola."
+    },
+    "749": {
+      "genus": "Pokémon Ciuconiglio",
+      "description": "Il fango attaccato agli zoccoli di Mudbray ne migliora la presa e rende più potente la sua corsa."
+    },
+    "750": {
+      "genus": "Pokémon Fortequino",
+      "description": "Mudsdale sputa un fango resistente al vento e alla pioggia, perciò un tempo veniva spesso usato per rivestire le pareti delle case."
+    },
+    "751": {
+      "genus": "Pokémon Bolladacqua",
+      "description": "Dewpider si spinge sulla terraferma in cerca di cibo. La bolla d'acqua gli permette di respirare e protegge la sua testa delicata."
+    },
+    "752": {
+      "genus": "Pokémon Bolladacqua",
+      "description": "Araquanid colpisce con la bolla d'acqua che porta sulla testa. I Pokémon più piccoli vengono risucchiati nella bolla, dove non riescono più a respirare."
+    },
+    "753": {
+      "genus": "Pokémon Mantiderba",
+      "description": "Di giorno Fomantis dorme e assorbe luce. Quando cala la notte, si sposta alla ricerca di un luogo più sicuro in cui riposare."
+    },
+    "754": {
+      "genus": "Pokémon Mantifiore",
+      "description": "Mantenere i colori vivaci di Lurantis richiede molto impegno, ma alcuni collezionisti amano occuparsene e ne fanno il proprio passatempo."
+    },
+    "755": {
+      "genus": "Pokémon Luminescenza",
+      "description": "Morelull diffonde spore che scintillano e risplendono. Chiunque osservi quelle luci cade in un sonno profondo."
+    },
+    "756": {
+      "genus": "Pokémon Luminescenza",
+      "description": "È pericoloso entrare di notte nelle foreste abitate da Shiinotic. Chi viene confuso dalle sue strane luci non riesce più a ritrovare la strada di casa."
+    },
+    "757": {
+      "genus": "Pokémon Lucertossina",
+      "description": "Salandit brucia i propri fluidi corporei per produrre un gas velenoso. Quando i nemici restano disorientati dopo averlo inalato, li attacca."
+    },
+    "758": {
+      "genus": "Pokémon Lucertossina",
+      "description": "Per qualche ragione sono stati osservati soltanto esemplari femmina. Salazzle vive circondata da numerosi Salandit maschi."
+    },
+    "759": {
+      "genus": "Pokémon Bizzoso",
+      "description": "Nonostante l'aspetto adorabile, quando Stufful si arrabbia e agita braccia e gambe può mandare al tappeto perfino un lottatore professionista."
+    },
+    "760": {
+      "genus": "Pokémon Fortebraccio",
+      "description": "Questo Pokémon estremamente pericoloso possiede una forza fisica travolgente. Il suo habitat è generalmente interdetto."
+    },
+    "761": {
+      "genus": "Pokémon Frutto",
+      "description": "Dal corpo di Bounsweet si diffonde un aroma delizioso. I Toucannon, attirati dal profumo, spesso lo inghiottono intero."
+    },
+    "762": {
+      "genus": "Pokémon Frutto",
+      "description": "I sepali sulla testa di Steenee si sono sviluppati per proteggerne il corpo. Sono così duri che i colpi di becco dei Pokémon uccello non gli fanno nulla."
+    },
+    "763": {
+      "genus": "Pokémon Frutto",
+      "description": "Le lunghe e appariscenti gambe di Tsareena non servono soltanto a fare bella figura, ma anche a sferrare calci abilissimi. Dopo la vittoria colpisce gli avversari sconfitti ridendo fragorosamente."
+    },
+    "764": {
+      "genus": "Pokémon Ghirlanda",
+      "description": "Comfey lega fiori alla propria liana molto nutriente. Questo li rinvigorisce e fa sì che diffondano un profumo aromatico."
+    },
+    "765": {
+      "genus": "Pokémon Saggio",
+      "description": "Noto per la sua intelligenza straordinaria, Oranguru guarda dall'alto in basso gli Allenatori inesperti ed è quindi più adatto ai veterani."
+    }
+  }
+}

@@ -1,0 +1,185 @@
+{
+  "source": "https://wiki.pokemoncentral.it/Categoria",
+  "range": {
+    "from": 766,
+    "to": 809
+  },
+  "items": {
+    "766": {
+      "name": "Passimian",
+      "genus": "Pokémon Giocosquadra"
+    },
+    "767": {
+      "name": "Wimpod",
+      "genus": "Pokémon Lestopode"
+    },
+    "768": {
+      "name": "Golisopod",
+      "genus": "Pokémon Blindato"
+    },
+    "769": {
+      "name": "Sandygast",
+      "genus": "Pokémon Montesabbia"
+    },
+    "770": {
+      "name": "Palossand",
+      "genus": "Pokémon Castelsabbia"
+    },
+    "771": {
+      "name": "Pyukumuku",
+      "genus": "Pokémon Oloturia"
+    },
+    "772": {
+      "name": "Type: Null",
+      "genus": "Pokémon Multigene"
+    },
+    "773": {
+      "name": "Silvally",
+      "genus": "Pokémon Multigene"
+    },
+    "774": {
+      "name": "Minior",
+      "genus": "Pokémon Meteora"
+    },
+    "775": {
+      "name": "Komala",
+      "genus": "Pokémon Dormiveglia"
+    },
+    "776": {
+      "name": "Turtonator",
+      "genus": "Pokémon Tartabomba"
+    },
+    "777": {
+      "name": "Togedemaru",
+      "genus": "Pokémon Ricciopalla"
+    },
+    "778": {
+      "name": "Mimikyu",
+      "genus": "Pokémon Fantasmanto"
+    },
+    "779": {
+      "name": "Bruxish",
+      "genus": "Pokémon Sfregadenti"
+    },
+    "780": {
+      "name": "Drampa",
+      "genus": "Pokémon Tuttacalma"
+    },
+    "781": {
+      "name": "Dhelmise",
+      "genus": "Pokémon Brandellalga"
+    },
+    "782": {
+      "name": "Jangmo-o",
+      "genus": "Pokémon Squama"
+    },
+    "783": {
+      "name": "Hakamo-o",
+      "genus": "Pokémon Squama"
+    },
+    "784": {
+      "name": "Kommo-o",
+      "genus": "Pokémon Squama"
+    },
+    "785": {
+      "name": "Tapu Koko",
+      "genus": "Pokémon Nume Locale"
+    },
+    "786": {
+      "name": "Tapu Lele",
+      "genus": "Pokémon Nume Locale"
+    },
+    "787": {
+      "name": "Tapu Bulu",
+      "genus": "Pokémon Nume Locale"
+    },
+    "788": {
+      "name": "Tapu Fini",
+      "genus": "Pokémon Nume Locale"
+    },
+    "789": {
+      "name": "Cosmog",
+      "genus": "Pokémon Nebulosa"
+    },
+    "790": {
+      "name": "Cosmoem",
+      "genus": "Pokémon Protostella"
+    },
+    "791": {
+      "name": "Solgaleo",
+      "genus": "Pokémon Solare"
+    },
+    "792": {
+      "name": "Lunala",
+      "genus": "Pokémon Lunare"
+    },
+    "793": {
+      "name": "Nihilego",
+      "genus": "Pokémon Parassita"
+    },
+    "794": {
+      "name": "Buzzwole",
+      "genus": "Pokémon Gonfiacorpo"
+    },
+    "795": {
+      "name": "Pheromosa",
+      "genus": "Pokémon Leggiadria"
+    },
+    "796": {
+      "name": "Xurkitree",
+      "genus": "Pokémon Luminaria"
+    },
+    "797": {
+      "name": "Celesteela",
+      "genus": "Pokémon Decollo"
+    },
+    "798": {
+      "name": "Kartana",
+      "genus": "Pokémon Spadatratta"
+    },
+    "799": {
+      "name": "Guzzlord",
+      "genus": "Pokémon Divoratutto"
+    },
+    "800": {
+      "name": "Necrozma",
+      "genus": "Pokémon Prisma"
+    },
+    "801": {
+      "name": "Magearna",
+      "genus": "Pokémon Artificiale"
+    },
+    "802": {
+      "name": "Marshadow",
+      "genus": "Pokémon Vivinombra"
+    },
+    "803": {
+      "name": "Poipole",
+      "genus": "Pokémon Velenago"
+    },
+    "804": {
+      "name": "Naganadel",
+      "genus": "Pokémon Velenago"
+    },
+    "805": {
+      "name": "Stakataka",
+      "genus": "Pokémon Bastione"
+    },
+    "806": {
+      "name": "Blacephalon",
+      "genus": "Pokémon Pirotecnico"
+    },
+    "807": {
+      "name": "Zeraora",
+      "genus": "Pokémon Fulmirapido"
+    },
+    "808": {
+      "name": "Meltan",
+      "genus": "Pokémon Bullone"
+    },
+    "809": {
+      "name": "Melmetal",
+      "genus": "Pokémon Bullone"
+    }
+  }
+}

@@ -1,0 +1,185 @@
+{
+  "source": "https://wiki.pokemoncentral.it/Categoria",
+  "range": {
+    "from": 722,
+    "to": 765
+  },
+  "items": {
+    "722": {
+      "name": "Rowlet",
+      "genus": "Pokémon Aliderba"
+    },
+    "723": {
+      "name": "Dartrix",
+      "genus": "Pokémon Piumaffilata"
+    },
+    "724": {
+      "name": "Decidueye",
+      "genus": "Pokémon Alifreccia"
+    },
+    "725": {
+      "name": "Litten",
+      "genus": "Pokémon Pirofelino"
+    },
+    "726": {
+      "name": "Torracat",
+      "genus": "Pokémon Pirofelino"
+    },
+    "727": {
+      "name": "Incineroar",
+      "genus": "Pokémon Colpibassi"
+    },
+    "728": {
+      "name": "Popplio",
+      "genus": "Pokémon Otaria"
+    },
+    "729": {
+      "name": "Brionne",
+      "genus": "Pokémon Pop Star"
+    },
+    "730": {
+      "name": "Primarina",
+      "genus": "Pokémon Solista"
+    },
+    "731": {
+      "name": "Pikipek",
+      "genus": "Pokémon Picchio"
+    },
+    "732": {
+      "name": "Trumbeak",
+      "genus": "Pokémon Trombecco"
+    },
+    "733": {
+      "name": "Toucannon",
+      "genus": "Pokémon Cannone"
+    },
+    "734": {
+      "name": "Yungoos",
+      "genus": "Pokémon Pattuglia"
+    },
+    "735": {
+      "name": "Gumshoos",
+      "genus": "Pokémon Sorveglianza"
+    },
+    "736": {
+      "name": "Grubbin",
+      "genus": "Pokémon Coleolarva"
+    },
+    "737": {
+      "name": "Charjabug",
+      "genus": "Pokémon Batteria"
+    },
+    "738": {
+      "name": "Vikavolt",
+      "genus": "Pokémon Cervolante"
+    },
+    "739": {
+      "name": "Crabrawler",
+      "genus": "Pokémon Pugile"
+    },
+    "740": {
+      "name": "Crabominable",
+      "genus": "Pokémon Peligranchio"
+    },
+    "741": {
+      "name": "Oricorio",
+      "genus": "Pokémon Danza"
+    },
+    "742": {
+      "name": "Cutiefly",
+      "genus": "Pokémon Bombilide"
+    },
+    "743": {
+      "name": "Ribombee",
+      "genus": "Pokémon Bombilide"
+    },
+    "744": {
+      "name": "Rockruff",
+      "genus": "Pokémon Cagnolino"
+    },
+    "745": {
+      "name": "Lycanroc",
+      "genus": "Pokémon Lupo"
+    },
+    "746": {
+      "name": "Wishiwashi",
+      "genus": "Pokémon Pesciolino"
+    },
+    "747": {
+      "name": "Mareanie",
+      "genus": "Pokémon Stellatroce"
+    },
+    "748": {
+      "name": "Toxapex",
+      "genus": "Pokémon Stellatroce"
+    },
+    "749": {
+      "name": "Mudbray",
+      "genus": "Pokémon Ciuconiglio"
+    },
+    "750": {
+      "name": "Mudsdale",
+      "genus": "Pokémon Fortequino"
+    },
+    "751": {
+      "name": "Dewpider",
+      "genus": "Pokémon Bolladacqua"
+    },
+    "752": {
+      "name": "Araquanid",
+      "genus": "Pokémon Bolladacqua"
+    },
+    "753": {
+      "name": "Fomantis",
+      "genus": "Pokémon Mantiderba"
+    },
+    "754": {
+      "name": "Lurantis",
+      "genus": "Pokémon Mantifiore"
+    },
+    "755": {
+      "name": "Morelull",
+      "genus": "Pokémon Luminescenza"
+    },
+    "756": {
+      "name": "Shiinotic",
+      "genus": "Pokémon Luminescenza"
+    },
+    "757": {
+      "name": "Salandit",
+      "genus": "Pokémon Lucertossina"
+    },
+    "758": {
+      "name": "Salazzle",
+      "genus": "Pokémon Lucertossina"
+    },
+    "759": {
+      "name": "Stufful",
+      "genus": "Pokémon Bizzoso"
+    },
+    "760": {
+      "name": "Bewear",
+      "genus": "Pokémon Fortebraccio"
+    },
+    "761": {
+      "name": "Bounsweet",
+      "genus": "Pokémon Frutto"
+    },
+    "762": {
+      "name": "Steenee",
+      "genus": "Pokémon Frutto"
+    },
+    "763": {
+      "name": "Tsareena",
+      "genus": "Pokémon Frutto"
+    },
+    "764": {
+      "name": "Comfey",
+      "genus": "Pokémon Ghirlanda"
+    },
+    "765": {
+      "name": "Oranguru",
+      "genus": "Pokémon Saggio"
+    }
+  }
+}

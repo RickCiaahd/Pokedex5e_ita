@@ -4,10 +4,18 @@ class PokemonAbility {
     required this.name,
     required this.description,
     required this.deprecated,
-  });
+    String? displayName,
+  }) : displayName = displayName ?? name;
 
   final String id;
+
+  /// Nome tecnico conservato nei dati e nei salvataggi.
   final String name;
+
+  /// Nome mostrato all'utente, localizzato quando esiste un equivalente
+  /// ufficiale nei videogiochi.
+  final String displayName;
+
   final String description;
   final bool deprecated;
 

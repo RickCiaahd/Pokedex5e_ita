@@ -1,0 +1,40 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/abilities.json",
+  "range": {
+    "fromIndex": 251,
+    "toIndex": 260
+  },
+  "items": {
+    "snow-cloak": {
+      "description": "Questo Pokémon è immune ai danni di Hail. La sua CA aumenta di 2 in condizioni artiche oppure mentre nevica o grandina."
+    },
+    "snow-warning": {
+      "description": "Quando questo Pokémon entra in una lotta all’aperto, il clima cambia immediatamente in grandine per 5 round. Se è presente un altro Pokémon con un’abilità atmosferica simile, prevale il Pokémon con il punteggio di DES più alto."
+    },
+    "solar-power": {
+      "description": "I tiri per i danni di questo Pokémon ottengono un ulteriore +2 sotto luce solare intensa."
+    },
+    "solid-rock": {
+      "description": "Questo Pokémon non subisce danni aggiuntivi da un colpo critico."
+    },
+    "soul-heart": {
+      "description": "Quando vede un alleato svenire, questo Pokémon aumenta di 2 i punteggi delle caratteristiche in cui possiede competenza nei tiri salvezza fino alla fine della lotta. L’effetto è cumulabile fino a un massimo di +10 a ciascun punteggio di caratteristica."
+    },
+    "soundproof": {
+      "description": "Questo Pokémon è immune alle mosse basate sul suono."
+    },
+    "speed-boost": {
+      "description": "La velocità di questo Pokémon aumenta di 10 piedi quando si trova in un ambiente collegato al proprio tipo, a discrezione del DM."
+    },
+    "stakeout": {
+      "description": "Quando un avversario viene sostituito in lotta, questo Pokémon raddoppia i danni inflitti se bersaglia il sostituto nel primo turno immediatamente successivo al cambio."
+    },
+    "stall": {
+      "description": "Questo Pokémon agisce sempre per ultimo nell’ordine di iniziativa."
+    },
+    "stalwart": {
+      "description": "Questo Pokémon può sempre scegliere i propri bersagli, ignorando gli effetti delle mosse che reindirizzano i bersagli."
+    }
+  }
+}

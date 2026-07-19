@@ -1,0 +1,42 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/pokemon.json",
+  "range": {
+    "from": 874,
+    "to": 905
+  },
+  "items": {
+    "874": {"genus": "Pokémon Megalito", "description": "Stonjourner resta immobile nelle praterie osservando il sole scendere dallo zenit all'orizzonte. È particolarmente abile nello sferrare calci potenti."},
+    "875": {"genus": "Pokémon Pinguino", "description": "Eiscue è arrivato da una regione gelida trasportato dalle correnti oceaniche. Mantiene la testa costantemente ghiacciata per conservarla al freddo."},
+    "876": {"genus": "Pokémon Emozione", "description": "Indeedee percepisce le emozioni altrui tramite le corna. I maschi servono come valletti e si occupano di ogni necessità delle persone a cui sono devoti."},
+    "877": {"genus": "Pokémon Doppiafaccia", "description": "Mangiando i semi conservati nelle tasche, Morpeko non si limita a placare la sua fame costante, ma genera anche elettricità."},
+    "878": {"genus": "Pokémon Bronzofante", "description": "Cufant scava il terreno con la proboscide. È così forte da trasportare senza difficoltà carichi superiori a cinque tonnellate."},
+    "879": {"genus": "Pokémon Bronzofante", "description": "I Copperajah giunsero molto tempo fa da un'altra regione e lavorarono insieme agli esseri umani. La loro pelle verde è resistente all'acqua."},
+    "880": {"genus": "Pokémon Fossile", "description": "Nell'antichità Dracozolt era imbattibile grazie alla potente parte inferiore del corpo, ma si estinse dopo aver esaurito tutte le fonti di nutrimento vegetale."},
+    "881": {"genus": "Pokémon Fossile", "description": "Arctozolt genera elettricità facendo tremare la parte superiore congelata del corpo. Muoversi a piedi gli risulta molto difficile."},
+    "882": {"genus": "Pokémon Fossile", "description": "Le potenti zampe e mascelle resero Dracovish il predatore dominante della sua epoca. Consumò però così tante risorse da causare la propria estinzione."},
+    "883": {"genus": "Pokémon Fossile", "description": "Arctovish cattura le prede congelando l'ambiente circostante, ma poi fatica a mangiarle perché la bocca si trova sulla sommità della testa."},
+    "884": {"genus": "Pokémon Metallolega", "description": "Il corpo di Duraludon ricorda metallo lucido ed è al tempo stesso leggero e resistente. Il suo unico punto debole è la facilità con cui arrugginisce."},
+    "885": {"genus": "Pokémon Risentimento", "description": "Rinato come Pokémon spettro, Dreepy vaga nelle zone che abitava quando era ancora vivo nei mari preistorici."},
+    "886": {"genus": "Pokémon Sostegno", "description": "Drakloak può volare a oltre 120 mph. Combatte insieme ai Dreepy e si prende cura di loro finché non riescono a evolversi."},
+    "887": {"genus": "Pokémon Furtivo", "description": "Fuori dalla lotta Dragapult ospita dei Dreepy nei fori delle corna. Appena inizia uno scontro, li lancia come missili supersonici."},
+    "888": {"genus": "Pokémon Guerriero", "description": "Conosciuto come eroe leggendario, Zacian assorbe particelle metalliche e le trasforma nell'arma che usa in battaglia."},
+    "889": {"genus": "Pokémon Guerriero", "description": "In tempi remoti Zamazenta collaborò con un sovrano umano per salvare la regione di Galar. Assorbe metallo e lo utilizza in battaglia."},
+    "890": {"genus": "Pokémon Gigante", "description": "Il nucleo sul petto di Eternatus assorbe l'energia emanata dalle terre della regione di Galar, permettendo al Pokémon di restare attivo."},
+    "891": {"genus": "Pokémon Kung Fu", "description": "Kubfu si allena duramente per perfezionare le proprie mosse. Le tecniche che padroneggia determinano la forma che assumerà evolvendosi."},
+    "892": {"genus": "Pokémon Kung Fu", "description": "Questa forma di Urshifu crede fermamente nella vittoria ottenuta sommergendo il nemico con numerosi colpi. I suoi attacchi scorrono ininterrotti come un fiume."},
+    "893": {"genus": "Pokémon Scimmialigna", "description": "Zarude vive in branchi nelle foreste più fitte. È incredibilmente aggressivo e tutti gli altri Pokémon del bosco lo temono."},
+    "894": {"genus": "Pokémon Elettrone", "description": "Regieleki è un ammasso di energia elettrica. Si dice che rimuovere gli anelli dal suo corpo libererebbe tutto il suo potere latente."},
+    "895": {"genus": "Pokémon Dracosfera", "description": "Secondo una teoria accademica, le braccia di Regidrago erano un tempo la testa di un antico Pokémon drago. La teoria non è mai stata dimostrata."},
+    "896": {"genus": "Pokémon Furiequino", "description": "Glastrier emette un freddo intenso dagli zoccoli. È anche molto bellicoso e si impadronisce con la forza di tutto ciò che desidera."},
+    "897": {"genus": "Pokémon Sveltequino", "description": "Spectrier esplora l'ambiente con tutti i sensi tranne la vista. Si dice che i suoi calci possano separare lo spirito dal corpo."},
+    "898": {"genus": "Pokémon Re", "description": "Calyrex è un Pokémon misericordioso, capace di guarire e impartire benedizioni. In tempi antichi regnava sulla regione di Galar."},
+    "899": {"genus": "Pokémon Grancorno", "description": "Le sfere nere di Wyrdeer brillano di una luce inquietante quando innalza barriere invisibili. Il pelo della barba trattiene bene il calore ed è molto utile per gli abiti invernali."},
+    "900": {"genus": "Pokémon Scure", "description": "Kleavor abbatte alberi imponenti con le sue rozze asce e si protegge con dura pietra. Incontrarlo allo stato selvatico lascia una sola possibilità: fuggire."},
+    "901": {"genus": "Pokémon Torba", "description": "Si ritiene che il terreno paludoso di Hisui abbia donato a Ursaluna il fisico massiccio e la nuova capacità di manipolare liberamente la torba."},
+    "902": {"genus": "Pokémon Pescegrosso", "description": "Basculegion si avvolge nelle energie dei compagni scomparsi prima di completare il viaggio controcorrente. Nessun'altra specie dei fiumi di Hisui può eguagliarlo."},
+    "903": {"genus": "Pokémon Scalata", "description": "Nessuna specie degli altopiani gelati può competere con il veleno virulento e la temibile forza fisica di Sneasler. Predilige la solitudine e non forma branchi."},
+    "904": {"genus": "Pokémon Spinoso", "description": "Gli aculei simili a lance e l'indole feroce hanno fatto guadagnare a Overqwil il soprannome di demone marino. Aspira veleno per nutrirsi."},
+    "905": {"genus": "Pokémon Amoreodio", "description": "Quando Enamorus giunge da oltre il mare, il rigido inverno termina. Secondo la leggenda, il suo amore fa germogliare nuova vita in tutta Hisui."}
+  }
+}

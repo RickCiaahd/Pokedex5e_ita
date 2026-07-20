@@ -27,22 +27,17 @@ jobs:
           ref: ${{ github.head_ref || github.ref_name }}
           fetch-depth: 0
 
-      - name: Polish and integrate move localization 451-650
+      - name: Diagnose move localization polish
         if: github.head_ref == 'translation/moves-451-650'
         shell: bash
         run: |
-          if [ ! -f tools/polish_move_localization_451_650.py ]; then
-            echo 'Polish script already completed.'
-            exit 0
-          fi
-          python tools/polish_move_localization_451_650.py
+          python tools/polish_move_localization_451_650.py > docs/translation/move-451-650-polish-diagnostic.log 2>&1 || true
           git fetch origin main
           git checkout origin/main -- .github/workflows/flutter-ci.yml
-          rm -f tools/polish_move_localization_451_650.py
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -A
-          git commit -m 'Revisiona e integra le mosse 451-650'
+          git commit -m 'Registra la diagnostica della revisione mosse 451-650'
           git push origin HEAD:translation/moves-451-650
 
       - name: Set up Java

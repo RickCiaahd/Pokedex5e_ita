@@ -1,0 +1,29 @@
+name: Temporary item berry patch
+
+on:
+  push:
+    branches:
+      - translation/item-berries
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: translation/item-berries
+          fetch-depth: 0
+      - name: Update item localization tests
+        run: python tool/temporary_patch_item_berries.py
+      - name: Remove temporary files and commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm tool/temporary_patch_item_berries.py .github/workflows/temporary_item_berry_patch.yml
+          git add test/item_localization_integrity_test.dart
+          git commit -m "Estende i test di integrità alle bacche"
+          git push origin HEAD:translation/item-berries

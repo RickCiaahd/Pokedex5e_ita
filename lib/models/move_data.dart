@@ -151,7 +151,7 @@ class MoveData {
   static List<String> _normalizePowers(dynamic value) {
     return _readStringList(value)
         .where((power) => power.toLowerCase() != 'none')
-        .map((power) => _localizeAbilityAbbreviation(power.toUpperCase()))
+        .map((power) => power.toUpperCase())
         .toList(growable: false);
   }
 

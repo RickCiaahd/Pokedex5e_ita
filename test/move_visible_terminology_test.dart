@@ -23,6 +23,16 @@ void main() {
         'dc': 'MOVE',
       },
     });
+    final reactionMove = MoveData.fromWebJson({
+      'id': 'reaction-test',
+      'name': 'Reaction Test',
+      'type': 'normal',
+      'time': '1 reaction',
+      'duration': 'instantaneous',
+      'range': 'melee',
+      'pp': 1,
+      'description': const <String>[],
+    });
 
     expect(move.moveTime, '1 azione bonus');
     expect(move.duration, '1 minuto, concentrazione');
@@ -34,6 +44,9 @@ void main() {
     expect(move.description, contains('CD della mossa'));
     expect(move.description, contains('5 punti ferita'));
     expect(move.description, isNot(contains('Move DC')));
+    expect(reactionMove.moveTime, '1 reazione');
+    expect(reactionMove.duration, 'istantanea');
+    expect(reactionMove.range, 'mischia');
   });
 
   test('Tackle viene mostrata come Azione senza perdere il nome tecnico', () async {

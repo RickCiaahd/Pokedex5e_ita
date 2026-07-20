@@ -1,0 +1,74 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/items.json",
+  "nameSources": [
+    "https://wiki.pokemoncentral.it/Elenco_degli_strumenti_in_altre_lingue",
+    "https://wiki.pokemoncentral.it/Strumenti_tenuti",
+    "https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/item_names.csv"
+  ],
+  "type": "held item",
+  "range": {
+    "start": 165,
+    "end": 174
+  },
+  "localizedCount": 10,
+  "items": {
+    "cell-battery": {
+      "sourceName": "Cell Battery",
+      "name": "Ricaripila",
+      "description": []
+    },
+    "clear-amulet": {
+      "sourceName": "Clear Amulet",
+      "name": "Ciondolochiaro",
+      "description": []
+    },
+    "covert-cloak": {
+      "sourceName": "Covert Cloak",
+      "name": "Anonimanto",
+      "description": []
+    },
+    "destiny-knot": {
+      "sourceName": "Destiny Knot",
+      "name": "Destincomune",
+      "description": []
+    },
+    "eject-button": {
+      "sourceName": "Eject Button",
+      "name": "Pulsantefuga",
+      "description": [
+        "Questo strumento possiede 1 carica. Quando il possessore subisce danni da un attacco, il suo Allenatore può sostituirlo con un altro dei propri Pokémon come azione gratuita, consumando la carica.",
+        "Il Pulsantefuga recupera la propria carica ogni giorno all'alba."
+      ]
+    },
+    "eject-pack": {
+      "sourceName": "Eject Pack",
+      "name": "Zainofuga",
+      "description": []
+    },
+    "eviolite": {
+      "sourceName": "Eviolite",
+      "name": "Evolcondensa",
+      "description": [
+        "Il possessore non può evolversi. Se il Pokémon che tiene questo strumento non è nella propria forma evolutiva finale, subisce 3 danni in meno da tutte le fonti di danno."
+      ]
+    },
+    "exp-share": {
+      "sourceName": "Exp Share",
+      "name": "Condividi Esperienza",
+      "description": [
+        "Un Pokémon che tiene questo strumento riceve fino alla metà dell'esperienza totale ottenuta in ogni combattimento mentre fa parte della squadra."
+      ]
+    },
+    "expert-belt": {
+      "sourceName": "Expert Belt",
+      "name": "Abilcintura",
+      "description": []
+    },
+    "float-stone": {
+      "sourceName": "Float Stone",
+      "name": "Pietralieve",
+      "description": []
+    }
+  }
+}

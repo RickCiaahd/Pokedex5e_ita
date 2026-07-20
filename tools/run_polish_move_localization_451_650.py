@@ -10,11 +10,14 @@ if spec is None or spec.loader is None:
 module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
 
+# Le sigle tecniche restano case-sensitive: in questo modo parole comuni come
+# "move", "concentration" o "strong" non vengono scambiate per MOVE, CON o STR.
 module.MECHANICAL_RE = re.compile(
     r'\b\d+d\d+\b|\bd\d+\b|[+\-]\s*\d+|\b\d+[sx]\b|'
     r'\b\d+(?:ft|\s*(?:feet|foot|piedi|piede))?\b|'
-    r'\b(?:hit points?|punti ferita|HP|PF|STR|FOR|DEX|DES|CON|COS|WIS|SAG|CHA|CAR|INT|AC|CA|STAB|DC|CD|MOVE|PP|SR|FLINCHED|flinch(?:es|ed)?)\b',
-    flags=re.IGNORECASE,
+    r'\b(?:hit points?|Hit Points?|punti ferita|Punti ferita)\b|'
+    r'\b(?:HP|PF|STR|FOR|DEX|DES|CON|COS|WIS|SAG|CHA|CAR|INT|AC|CA|STAB|DC|CD|MOVE|PP|SR|FLINCHED)\b|'
+    r'\b(?:flinch|flinches|flinched)\b'
 )
 
 
@@ -41,8 +44,7 @@ old_expression = """  final expression = RegExp(
     r'\\b\\d+d\\d+\\b|\\bd\\d+\\b|[+\\-]\\s*\\d+|\\b\\d+(?:ft|\\s*(?:feet|foot|piedi|piede))?\\b|\\b(?:HP|PF|STR|FOR|DEX|DES|CON|COS|WIS|SAG|CHA|CAR|INT|AC|CA|STAB|DC|CD|MOVE|PP|SR|FLINCHED|flinch(?:es|ed)?)\\b',
   );"""
 new_expression = """  final expression = RegExp(
-    r'\\b\\d+d\\d+\\b|\\bd\\d+\\b|[+\\-]\\s*\\d+|\\b\\d+[sx]\\b|\\b\\d+(?:ft|\\s*(?:feet|foot|piedi|piede))?\\b|\\b(?:hit points?|punti ferita|HP|PF|STR|FOR|DEX|DES|CON|COS|WIS|SAG|CHA|CAR|INT|AC|CA|STAB|DC|CD|MOVE|PP|SR|FLINCHED|flinch(?:es|ed)?)\\b',
-    caseSensitive: false,
+    r'\\b\\d+d\\d+\\b|\\bd\\d+\\b|[+\\-]\\s*\\d+|\\b\\d+[sx]\\b|\\b\\d+(?:ft|\\s*(?:feet|foot|piedi|piede))?\\b|\\b(?:hit points?|Hit Points?|punti ferita|Punti ferita)\\b|\\b(?:HP|PF|STR|FOR|DEX|DES|CON|COS|WIS|SAG|CHA|CAR|INT|AC|CA|STAB|DC|CD|MOVE|PP|SR|FLINCHED)\\b|\\b(?:flinch|flinches|flinched)\\b',
   );"""
 if old_expression not in text:
     raise RuntimeError('Espressione meccanica Dart non trovata.')

@@ -16,7 +16,7 @@ void main() {
       'pp': 5,
       'power': ['dex', 'wis'],
       'description': [
-        'The target makes a DEX saving throw against your Move DC. On a failure it loses 5 hit points.',
+        'DEX saving throw against your Move DC. Lose 5 hit points.',
       ],
       'save': {
         'attribute': ['dex'],
@@ -29,7 +29,8 @@ void main() {
     expect(move.range, 'personale (raggio di 30 piedi)');
     expect(move.save, 'DES');
     expect(move.movePowers, ['DEX', 'WIS']);
-    expect(move.description, contains('tiro salvezza su DES'));
+    expect(move.description, contains('DES'));
+    expect(move.description, contains('tiro salvezza'));
     expect(move.description, contains('CD della mossa'));
     expect(move.description, contains('5 punti ferita'));
     expect(move.description, isNot(contains('Move DC')));

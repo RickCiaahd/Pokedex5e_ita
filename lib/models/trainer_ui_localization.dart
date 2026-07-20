@@ -171,6 +171,11 @@ class TrainerUiLocalization {
   }
 
   static String visibleText(String value) {
+    final exactFeature = featureLabels[value];
+    if (exactFeature != null) return exactFeature;
+    final exactPath = trainerPathLabels[value];
+    if (exactPath != null) return exactPath;
+
     var result = value;
     const phraseReplacements = <String, String>{
       'Trainer Path': 'Percorso Allenatore',
@@ -186,6 +191,7 @@ class TrainerUiLocalization {
       'Egg Move': 'Mossa Uovo',
       'Speak with Animals': 'Parlare con gli Animali',
       'Copy Meowth': 'Copia Meowth',
+      'livello trainer': "livello dell'Allenatore",
       'level up': 'aumento di livello',
       'stat block': 'blocco statistiche',
       'Pokecenter': 'Centro Pokémon',
@@ -194,8 +200,12 @@ class TrainerUiLocalization {
       'Loyal': 'Leale',
       'Disloyal': 'Sleale',
       'Indifferent': 'Indifferente',
+      'Feature': 'Privilegio',
       'feature': 'privilegio',
+      'Path': 'Percorso',
       'path': 'percorso',
+      'DM': 'Master',
+      'pool': 'elenco',
       'item': 'oggetto',
       'tier': 'grado',
       'treat': 'leccornia',

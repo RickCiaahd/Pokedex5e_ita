@@ -36,9 +36,9 @@
     }
   ],
   "zen-headbutt": [
-    "Concentri energia psichica nella testa e colpisci il bersaglio. Effettua un attacco in mischia, infliggendo 2d6 + MOVE danni di tipo Psico se colpisci. Con un tiro per colpire naturale di 19 o 20, il bersaglio diventa FLINCHED."
+    "Concentri energia psichica nella testa e colpisci il bersaglio. Effettua un attacco in mischia, infliggendo 2d6 + MOVE danni di tipo Psico se colpisci. Con un tiro per colpire naturale di 17 o più, il bersaglio diventa FLINCHED."
   ],
   "zing-zap": [
-    "Ti scagli contro una creatura avvolto dall'elettricità. Effettua un attacco in mischia, infliggendo 2d6 + MOVE danni di tipo Elettro se colpisci. Con un tiro per colpire naturale di 19 o 20, il bersaglio diventa FLINCHED."
+    "Scateni una forte scarica elettrica contro due bersagli diversi a gittata. Effettua due attacchi a distanza, ciascuno dei quali infligge 2d6 + MOVE danni di tipo Elettro se colpisce. Con un tiro per colpire naturale di 18 o più, il bersaglio diventa FLINCHED."
   ]
 }

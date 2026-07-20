@@ -256,14 +256,18 @@ Map<String, int> _mechanicalTokenCounts(
 }) {
   var normalizedValue = value;
   for (final pattern in <RegExp>[
-    RegExp(r'\bvalore CD per questa mossa\b', caseSensitive: false),
     RegExp(r'\bCD della mossa\b', caseSensitive: false),
-    RegExp(r'\bCD di questa mossa\b', caseSensitive: false),
-    RegExp(r'\bCD per questa mossa\b', caseSensitive: false),
     RegExp(r'\bMovimento CD\b', caseSensitive: false),
     RegExp(r'\bMove DC\b', caseSensitive: false),
   ]) {
     normalizedValue = normalizedValue.replaceAll(pattern, 'MOVE DC');
+  }
+  for (final pattern in <RegExp>[
+    RegExp(r'\bvalore CD per questa mossa\b', caseSensitive: false),
+    RegExp(r'\bCD di questa mossa\b', caseSensitive: false),
+    RegExp(r'\bCD per questa mossa\b', caseSensitive: false),
+  ]) {
+    normalizedValue = normalizedValue.replaceAll(pattern, 'DC');
   }
 
   final expression = RegExp(

@@ -1,0 +1,89 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/items.json",
+  "nameSources": [
+    "https://wiki.pokemoncentral.it/Elenco_degli_strumenti_in_altre_lingue",
+    "https://wiki.pokemoncentral.it/Elenco_degli_strumenti_chiave_in_nona_generazione",
+    "https://wiki.pokemoncentral.it/Elenco_degli_strumenti_in_Pok%C3%A9mon_GO",
+    "https://wiki.pokemoncentral.it/Styler_di_cattura",
+    "https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/item_names.csv"
+  ],
+  "type": "trainer gear",
+  "range": {
+    "start": 348,
+    "end": 357
+  },
+  "localizedCount": 10,
+  "items": {
+    "solar-lantern": {
+      "sourceName": "Solar Lantern",
+      "name": "Lanterna solare",
+      "description": [
+        "Proietta luce intensa entro un raggio di 30 piedi e luce fioca per ulteriori 30 piedi. Deve ricaricarsi alla luce del sole per un riposo breve; una volta carica, fornisce 4 ore di luce."
+      ]
+    },
+    "mess-kit": {
+      "sourceName": "Mess Kit",
+      "name": "Gavetta",
+      "description": [
+        "Questa scatola d'acciaio inossidabile contiene una tazza e posate semplici. Le due metà si chiudono insieme: una può essere usata come padella, l'altra come piatto o ciotola poco profonda."
+      ]
+    },
+    "multi-tool": {
+      "sourceName": "Multi-tool",
+      "name": "Attrezzo multiuso",
+      "description": [
+        "Un attrezzo che comprende pinze, forbici, coltello e altri strumenti di base. Aggiungi il tuo modificatore di competenza alle prove correlate."
+      ]
+    },
+    "pocket-knife": {
+      "sourceName": "Pocket Knife",
+      "name": "Coltellino tascabile",
+      "description": [
+        "Un piccolo coltellino tascabile dotato di microstrumenti. Aggiungi il tuo modificatore di competenza alle prove correlate."
+      ]
+    },
+    "camping-ration": {
+      "sourceName": "Camping Ration",
+      "name": "Razione da campeggio",
+      "description": [
+        "Una confezione ermetica di cibo liofilizzato. Aggiungi acqua calda per reidratarlo. Fornisce il pasto giornaliero per una persona."
+      ]
+    },
+    "rebreather": {
+      "sourceName": "Rebreather",
+      "name": "Respiratore subacqueo",
+      "description": [
+        "Un piccolo respiratore che permette di respirare sott'acqua. Il filtro deve essere sostituito dopo 4 ore di utilizzo."
+      ]
+    },
+    "rebreather-filter": {
+      "sourceName": "Rebreather Filter",
+      "name": "Filtro per respiratore",
+      "description": [
+        "Un filtro per un respiratore subacqueo."
+      ]
+    },
+    "sleeping-bag": {
+      "sourceName": "Sleeping Bag",
+      "name": "Sacco a pelo",
+      "description": [
+        "Un sacco a pelo per una persona."
+      ]
+    },
+    "solar-charger": {
+      "sourceName": "Solar Charger",
+      "name": "Caricatore solare",
+      "description": [
+        "Un caricatore solare accumula luce solare durante un riposo breve svolto di giorno e può essere usato per ricaricare due celle energetiche durante un riposo lungo."
+      ]
+    },
+    "small-tent": {
+      "sourceName": "Small Tent",
+      "name": "Tenda piccola",
+      "description": [
+        "Una tenda per due persone."
+      ]
+    }
+  }
+}

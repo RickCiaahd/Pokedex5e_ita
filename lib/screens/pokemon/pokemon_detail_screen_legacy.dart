@@ -7,6 +7,7 @@ import '../../models/move_data.dart';
 import '../../models/pokemon.dart';
 import '../../models/pokemon_nature.dart';
 import '../../models/team_slot.dart';
+import '../../models/trainer_ui_localization.dart';
 import '../../models/user_profile.dart';
 import '../../repositories/ability_repository.dart';
 import '../../repositories/bag_inventory_repository.dart';
@@ -45,12 +46,14 @@ class PokemonDetailScreen extends StatefulWidget {
 class _StatusEffectInfo {
   const _StatusEffectInfo({
     required this.name,
+    required this.displayName,
     required this.shortLabel,
     required this.description,
     required this.assetCandidates,
   });
 
   final String name;
+  final String displayName;
   final String shortLabel;
   final String description;
   final List<String> assetCandidates;
@@ -59,9 +62,10 @@ class _StatusEffectInfo {
 const _statusEffectInfos = [
   _StatusEffectInfo(
     name: 'Asleep',
+    displayName: 'Addormentato',
     shortLabel: 'SLP',
     description:
-        'Incapacitated and restrained, and rolls all saving throws with disadvantage. Lasts three rounds. When subject to forced movement and at the end of each of its turns, roll a d20. On 11 or higher, the condition ends.',
+        'È incapacitato e trattenuto e ha svantaggio a tutti i tiri salvezza. Dura tre round. Quando subisce un movimento forzato e alla fine di ciascun suo turno, tira 1d20: con 11 o più la condizione termina.',
     assetCandidates: [
       'assets/textures/gui/status/sleep_down.png',
       'assets/textures/gui/status/sleep_up.png',
@@ -69,9 +73,10 @@ const _statusEffectInfos = [
   ),
   _StatusEffectInfo(
     name: 'Burned',
+    displayName: 'Scottato',
     shortLabel: 'BRN',
     description:
-        'Rolls all damage rolls twice and takes the lower result. Until cured or the creature becomes unconscious, it takes damage equal to its proficiency bonus at the end of each of its turns. Fire-type pokemon are immune to this condition.',
+        'Tira due volte tutti i dadi di danno e usa il risultato inferiore. Finché non viene curato o perde i sensi, subisce danni pari al proprio bonus di competenza alla fine di ciascun turno. I Pokémon di tipo Fuoco sono immuni.',
     assetCandidates: [
       'assets/textures/gui/status/burn_down.png',
       'assets/textures/gui/status/burn_up.png',
@@ -79,9 +84,10 @@ const _statusEffectInfos = [
   ),
   _StatusEffectInfo(
     name: 'Confused',
+    displayName: 'Confuso',
     shortLabel: 'CNF',
     description:
-        "Cannot take reactions. Lasts three rounds. At the start of the creature's turn, roll a d8 to determine its behavior. On an 8, the condition ends.",
+        "Non può effettuare reazioni. Dura tre round. All'inizio del suo turno tira 1d8 per determinarne il comportamento; con 8 la condizione termina.",
     assetCandidates: [
       'assets/textures/gui/status/confuse_down.png',
       'assets/textures/gui/status/confuse_up.png',
@@ -89,16 +95,18 @@ const _statusEffectInfos = [
   ),
   _StatusEffectInfo(
     name: 'Flinched',
+    displayName: 'Tentennamento',
     shortLabel: 'FLN',
     description:
-        'Disadvantage on all attack rolls, ability checks, and saving throws until the end of its next turn. This status is shown for reference and is not manually selectable.',
+        'Ha svantaggio a tutti i tiri per colpire, alle prove di caratteristica e ai tiri salvezza fino alla fine del suo prossimo turno. È mostrato solo come riferimento e non può essere selezionato manualmente.',
     assetCandidates: [],
   ),
   _StatusEffectInfo(
     name: 'Frozen',
+    displayName: 'Congelato',
     shortLabel: 'FRZ',
     description:
-        'Incapacitated and restrained. Ends if the creature breaks free, takes fire-type damage, or is affected by a move that can inflict Burned. Ice-type pokemon are immune.',
+        'È incapacitato e trattenuto. La condizione termina se si libera, subisce danni di tipo Fuoco o viene colpito da una mossa che può provocare Scottatura. I Pokémon di tipo Ghiaccio sono immuni.',
     assetCandidates: [
       'assets/textures/gui/status/frozen_down.png',
       'assets/textures/gui/status/frozen_up.png',
@@ -106,9 +114,10 @@ const _statusEffectInfos = [
   ),
   _StatusEffectInfo(
     name: 'Paralyzed',
+    displayName: 'Paralizzato',
     shortLabel: 'PAR',
     description:
-        'Disadvantage on STR and DEX saving throws, and moves at half speed. At the start of its turn, roll a d4. On a 1, it is incapacitated and restrained until the start of its next turn. Electric-type pokemon are immune.',
+        'Ha svantaggio ai tiri salvezza su FOR e DES e si muove a velocità dimezzata. All’inizio del suo turno tira 1d4: con 1 è incapacitato e trattenuto fino all’inizio del turno successivo. I Pokémon di tipo Elettro sono immuni.',
     assetCandidates: [
       'assets/textures/gui/status/paralyze_down.png',
       'assets/textures/gui/status/paralyze_up.png',
@@ -116,9 +125,10 @@ const _statusEffectInfos = [
   ),
   _StatusEffectInfo(
     name: 'Poisoned',
+    displayName: 'Avvelenato',
     shortLabel: 'PSN',
     description:
-        'Disadvantage on all ability checks and attack rolls. Until cured or unconscious, it takes damage equal to its proficiency bonus at the end of each of its turns. Poison- and Steel-type pokemon are immune.',
+        'Ha svantaggio a tutte le prove di caratteristica e ai tiri per colpire. Finché non viene curato o perde i sensi, subisce danni pari al proprio bonus di competenza alla fine di ciascun turno. I Pokémon di tipo Veleno e Acciaio sono immuni.',
     assetCandidates: [
       'assets/textures/gui/status/poisoned_down.png',
       'assets/textures/gui/status/poisoned_up.png',
@@ -485,7 +495,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
 
   String _heldItemDisplayLabel() {
     final heldItem = _teamSlot?.heldItem;
-    if (heldItem == null || heldItem.trim().isEmpty) return 'NONE';
+    if (heldItem == null || heldItem.trim().isEmpty) return 'NESSUNO';
 
     return _itemByReference(heldItem)?.name.toUpperCase() ??
         heldItem.toUpperCase();
@@ -612,7 +622,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 10),
               child: Text(
-                'ADD STATUS EFFECT',
+                'AGGIUNGI STATUS',
                 style: Theme.of(
                   context,
                 ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
@@ -623,7 +633,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
             ))
               CheckboxListTile(
                 secondary: _StatusIcon(info: info, size: 28),
-                title: Text(info.name.toUpperCase()),
+                title: Text(info.displayName.toUpperCase()),
                 subtitle: Text(info.description),
                 value: current.contains(info.name),
                 onChanged: (_) => Navigator.of(context).pop(info.name),
@@ -633,13 +643,15 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
                 info: _statusEffectInfoByName['Flinched'],
                 size: 28,
               ),
-              title: const Text('FLINCHED'),
+              title: Text(
+                _statusEffectInfoByName['Flinched']!.displayName.toUpperCase(),
+              ),
               subtitle: Text(_statusEffectInfoByName['Flinched']!.description),
             ),
             if (current.isNotEmpty)
               ListTile(
                 leading: const Icon(Icons.clear),
-                title: const Text('REMOVE ALL STATUS EFFECTS'),
+                title: const Text('RIMUOVI TUTTI GLI STATUS'),
                 onTap: () => Navigator.of(context).pop('__clear__'),
               ),
           ],
@@ -765,7 +777,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
     return showDialog<String>(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Aumento Ability Score'),
+        title: const Text('Aumento di Caratteristica'),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -774,7 +786,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
               const SizedBox(height: 8),
               for (final label in labels)
                 ListTile(
-                  title: Text(label),
+                  title: Text(TrainerUiLocalization.abilityAbbreviation(label)),
                   subtitle: Text(
                     '${attributes[label] ?? 0} → ${(attributes[label] ?? 0) + 1}',
                   ),
@@ -1121,7 +1133,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
       parts.add('AB: ${attackBonus >= 0 ? '+' : ''}$attackBonus');
     }
     if (move.save != null) {
-      parts.add('DC: ${8 + proficiency + moveModifier}');
+      parts.add('CD: ${8 + proficiency + moveModifier}');
     }
 
     final damage = move.damageForLevel(_level);
@@ -1164,8 +1176,8 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
     const tabBar = TabBar(
       tabs: [
         Tab(text: 'MOSSE'),
-        Tab(text: 'FEATURES'),
-        Tab(text: 'TRAITS'),
+        Tab(text: 'PRIVILEGI'),
+        Tab(text: 'TRATTI'),
       ],
     );
 
@@ -1461,11 +1473,11 @@ class _Header extends StatelessWidget {
                     Row(
                       children: [
                         Expanded(
-                          child: _MetricBox(label: 'Lv.', value: '$level'),
+                          child: _MetricBox(label: 'Liv.', value: '$level'),
                         ),
                         const SizedBox(width: 6),
                         Expanded(
-                          child: _MetricBox(label: 'AC:', value: '$armorClass'),
+                          child: _MetricBox(label: 'CA:', value: '$armorClass'),
                         ),
                       ],
                     ),
@@ -1510,7 +1522,7 @@ class _Header extends StatelessWidget {
                 child: InkWell(
                   onTap: isPartyMode ? onEditHeldItem : null,
                   borderRadius: BorderRadius.circular(8),
-                  child: _PanelButton(label: 'ITEM: $heldItemLabel'),
+                  child: _PanelButton(label: 'STRUMENTO: $heldItemLabel'),
                 ),
               ),
             ],
@@ -1529,7 +1541,7 @@ class _Header extends StatelessWidget {
                     child: Row(
                       children: [
                         Text(
-                          'HP: $currentHp/$maxHp',
+                          'PF: $currentHp/$maxHp',
                           style: Theme.of(context).textTheme.titleLarge
                               ?.copyWith(fontWeight: FontWeight.w800),
                         ),
@@ -1847,7 +1859,38 @@ class _LoyaltyRow extends StatelessWidget {
       children: [
         _FightIconButton(icon: Icons.remove, onPressed: onDecrease),
         const SizedBox(width: 6),
-        Expanded(child: _PanelButton(label: 'LEALTÀ: ${_signed(loyalty)}')),
+        Expanded(
+          child: Container(
+            height: 38,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: Theme.of(context).colorScheme.outlineVariant,
+              ),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'LEALTÀ',
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    fontWeight: FontWeight.w800,
+                    height: 1,
+                  ),
+                ),
+                Text(
+                  _signed(loyalty),
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w900,
+                    height: 1,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
         const SizedBox(width: 6),
         _FightIconButton(icon: Icons.add, onPressed: onIncrease),
       ],
@@ -1989,7 +2032,7 @@ class _FightStatsGrid extends StatelessWidget {
           children: [
             for (final entry in attributes.entries)
               _FightStatBox(
-                label: entry.key,
+                label: TrainerUiLocalization.abilityAbbreviation(entry.key),
                 score: entry.value,
                 modifier: modifierBuilder(entry.value),
               ),
@@ -2073,7 +2116,7 @@ class _SavingThrowsRow extends StatelessWidget {
     return Column(
       children: [
         Text(
-          'SAVING THROWS',
+          'TIRI SALVEZZA',
           style: Theme.of(context).textTheme.labelMedium?.copyWith(
             color: Theme.of(context).colorScheme.onSurfaceVariant,
             fontWeight: FontWeight.w800,
@@ -2158,7 +2201,7 @@ class _StatusPanelButton extends StatelessWidget {
         ),
         child: statuses.isEmpty
             ? Text(
-                '+ ADD STATUS EFFECTS',
+                '+ AGGIUNGI STATUS',
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
@@ -2273,7 +2316,7 @@ class _MovesView extends StatelessWidget {
       padding: const EdgeInsets.all(12),
       children: [
         _MoveSection(
-          title: 'Moveset',
+          title: 'Mosse equipaggiate',
           names: [...selectedMoves, 'Struggle'],
           moves: moves,
           moveStatsBuilder: moveStatsBuilder,
@@ -2471,7 +2514,7 @@ class _TraitsView extends StatelessWidget {
               children: [
                 for (final entry in attributes.entries)
                   _AttributeBox(
-                    label: entry.key,
+                    label: TrainerUiLocalization.abilityAbbreviation(entry.key),
                     score: entry.value,
                     modifier: modifierBuilder(entry.value),
                   ),
@@ -2499,10 +2542,13 @@ class _TraitsView extends StatelessWidget {
                 label: 'Competenze',
                 value: [...pokemon.skills, ...?slot?.extraSkills].join(', '),
               ),
-              _InfoRow(label: 'Natura', value: slot?.nature ?? 'No Nature'),
+              _InfoRow(
+                label: 'Natura',
+                value: slot?.nature ?? 'Nessuna natura',
+              ),
               _InfoRow(label: 'Forma', value: slot?.formName ?? '-'),
               _InfoRow(
-                label: 'Shiny',
+                label: 'Cromatico',
                 value: slot?.isShiny == true ? 'Si' : 'No',
               ),
               _InfoRow(label: 'Sesso', value: slot?.gender ?? '-'),
@@ -2810,12 +2856,12 @@ class _HpDialogState extends State<_HpDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Modifica HP'),
+      title: const Text('Modifica PF'),
       content: TextField(
         controller: _controller,
         autofocus: true,
         decoration: InputDecoration(
-          labelText: 'HP',
+          labelText: 'PF',
           helperText: 'Usa +5 per curare, -5 per danneggiare, 5 per impostare.',
           hintText: widget.currentHp.toString(),
           suffixText: '/ ${widget.maxHp}',

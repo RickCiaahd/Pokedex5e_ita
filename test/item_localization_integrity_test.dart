@@ -94,6 +94,34 @@ const _expectedNames = <String, String>{
   'max-honey': 'Mielemax',
   'max-mushrooms': 'Fungomax',
   'ability-patch': 'Cerotto abilità',
+  'cheri-berry': 'Baccaliegia',
+  'chesto-berry': 'Baccastagna',
+  'pecha-berry': 'Baccapesca',
+  'rawst-berry': 'Baccafrago',
+  'aspear-berry': 'Baccaperina',
+  'leppa-berry': 'Baccamela',
+  'oran-berry': 'Baccarancia',
+  'persim-berry': 'Baccaki',
+  'lum-berry': 'Baccaprugna',
+  'sitrus-berry': 'Baccacedro',
+  'occa-berry': 'Baccacao',
+  'passho-berry': 'Baccapasflo',
+  'wacan-berry': 'Baccaparmen',
+  'rindo-berry': 'Baccarindo',
+  'yache-berry': 'Baccamoya',
+  'chople-berry': 'Baccarosmel',
+  'kebia-berry': 'Baccakebia',
+  'shuca-berry': 'Baccanaca',
+  'coba-berry': 'Baccababa',
+  'payapa-berry': 'Baccapayapa',
+  'tanga-berry': 'Baccaitan',
+  'charti-berry': 'Baccaciofo',
+  'kasib-berry': 'Baccacitrus',
+  'haban-berry': 'Baccahaban',
+  'colbur-berry': 'Baccaxan',
+  'babiri-berry': 'Baccababiri',
+  'chilan-berry': 'Baccacinlan',
+  'roseli-berry': 'Baccarcadè',
 };
 
 void main() {
@@ -101,10 +129,16 @@ void main() {
 
   setUp(ItemLocalizationRepository.clearCache);
 
-  test('il primo blocco copre tutte le Poké Ball e le medicine', () async {
+  test('i blocchi completati coprono Poké Ball, medicine e bacche', () async {
     final sourceItems = await _sourceItems();
     final scopedItems = sourceItems
-        .where((item) => const {'pokeball', 'medicine'}.contains(item['type']))
+        .where(
+          (item) => const {
+            'pokeball',
+            'medicine',
+            'berry',
+          }.contains(item['type']),
+        )
         .toList(growable: false);
     final sourceById = {
       for (final item in sourceItems) item['id'].toString(): item,
@@ -124,7 +158,10 @@ void main() {
         ItemLocalizationRepository.sourceAssetPath,
         reason: path,
       );
-      expect(const {'pokeball', 'medicine'}, contains(document['type']));
+      expect(
+        const {'pokeball', 'medicine', 'berry'},
+        contains(document['type']),
+      );
       expect(document['range'], isA<Map>());
       expect(document['localizedCount'], items.length, reason: path);
       declaredCount += document['localizedCount'] as int;
@@ -137,8 +174,8 @@ void main() {
 
     expect(sourceItems.length, ItemLocalizationRepository.catalogCount);
     expect(scopedItems.length, ItemLocalizationRepository.localizedCount);
-    expect(declaredCount, 87);
-    expect(localizedItems.length, 87);
+    expect(declaredCount, 115);
+    expect(localizedItems.length, 115);
     expect(localizedItems.keys.toSet(), _expectedNames.keys.toSet());
 
     final errors = <String>[];
@@ -175,7 +212,7 @@ void main() {
   test('i nomi coincidono con il riferimento italiano verificato', () async {
     final entries = await ItemLocalizationRepository().getEntries();
 
-    expect(entries.length, 87);
+    expect(entries.length, 115);
     expect(
       {for (final entry in entries.entries) entry.key: entry.value.name},
       _expectedNames,
@@ -185,6 +222,11 @@ void main() {
     expect(entries['berry-juice']?.name, 'Succo di Bacca');
     expect(entries['x-sp-def']?.name, 'Dif. Sp. X');
     expect(entries['red-nectar']?.name, 'Nettare Rosso');
+    expect(entries['cheri-berry']?.name, 'Baccaliegia');
+    expect(entries['sitrus-berry']?.name, 'Baccacedro');
+    expect(entries['passho-berry']?.name, 'Baccapasflo');
+    expect(entries['chople-berry']?.name, 'Baccarosmel');
+    expect(entries['roseli-berry']?.name, 'Baccarcadè');
   });
 
   test('il repository localizza la UI e conserva i dati tecnici', () async {
@@ -212,6 +254,10 @@ void main() {
     expect(byId['great-ball']?.technicalName, 'Great Ball');
     expect(byId['potion']?.name, 'Pozione');
     expect(byId['potion']?.technicalName, 'Potion');
+    expect(byId['cheri-berry']?.name, 'Baccaliegia');
+    expect(byId['cheri-berry']?.technicalName, 'Cheri Berry');
+    expect(byId['roseli-berry']?.name, 'Baccarcadè');
+    expect(byId['roseli-berry']?.technicalName, 'Roseli Berry');
     expect(byId['backpack']?.name, 'Backpack');
     expect(byId['backpack']?.technicalName, 'Backpack');
   });

@@ -1,0 +1,310 @@
+exit_status=1
+
+Resolving dependencies...
+Downloading packages...
+  file_picker 10.3.10 (11.0.2 available)
+  hooks 2.0.2 (2.1.0 available)
+  matcher 0.12.19 (0.12.20 available)
+  meta 1.18.0 (1.19.0 available)
+  package_config 2.2.0 (3.0.0 available)
+  record_use 0.6.0 (1.0.0 available)
+  share_plus 12.0.2 (13.2.1 available)
+  share_plus_platform_interface 6.1.0 (7.1.0 available)
+  test_api 0.7.11 (0.7.13 available)
+  uuid 4.5.3 (4.6.0 available)
+  vector_math 2.2.0 (2.4.0 available)
+  win32 5.15.0 (6.3.0 available)
+  xml 6.6.1 (7.0.1 available)
+Got dependencies!
+13 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.
+00:00 +0: loading /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokedex_form_entry_test.dart
+00:00 +0: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokedex_form_entry_test.dart: PokedexEntry form migration legacy species state becomes the base form
+00:00 +1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokedex_form_entry_test.dart: PokedexEntry form migration stored full form names resolve to the canonical species form
+00:00 +2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokedex_form_entry_test.dart: PokedexEntry preview priority base wins when both forms have the same state
+00:00 +3: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokedex_form_entry_test.dart: PokedexEntry preview priority caught form wins over a form that is only seen
+00:00 +4: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokedex_form_entry_test.dart: PokedexEntry preview priority an alternative is used when the base form is unknown
+00:00 +5: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokedex_form_entry_test.dart: temporary battle transformations are not tracked as forms
+00:00 +6: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokedex_form_entry_test.dart: form state survives JSON serialization
+00:00 +7: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/breeding_egg_test.dart: BreedingEgg mantiene incubazione e contenuto nel JSON
+00:00 +8: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/egg_pc_storage_test.dart: i salvataggi precedenti considerano l’uovo fuori dal PC
+00:00 +9: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/egg_pc_storage_test.dart: deposito e ritiro dal PC mantengono il contenuto dell’uovo
+00:00 +10: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/battle_status_rules_test.dart: BattleStatusRules non mostra assistenza senza status supportati
+00:00 +11: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/battle_status_rules_test.dart: BattleStatusRules ordina Paralyzed prima di Asleep e Confused
+00:00 +12: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/battle_status_rules_test.dart: BattleStatusRules Burned ricorda danni a inizio turno e riduzione dei danni
+00:00 +13: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/battle_status_rules_test.dart: BattleStatusRules Poisoned e Badly Poisoned usano il promemoria di fine turno
+00:00 +14: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/battle_status_rules_test.dart: BattleStatusRules Frozen ricorda sia il TS sia lo scioglimento da mossa
+00:00 +15: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/battle_status_rules_test.dart: BattleStatusRules Asleep ricorda entrambi i tiri di risveglio
+00:00 +16: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/battle_status_rules_test.dart: BattleStatusRules Flinched ricorda penalità e scadenza senza autorimozione
+00:01 +17: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/npc_library_master_battle_test.dart: saved NPC trainer JSON preserves identity and complete team
+00:01 +18: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/npc_library_master_battle_test.dart: saved NPC trainer mapper restores generated Pokémon
+00:01 +19: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/npc_library_master_battle_test.dart: master fight supports multiple trainers with independent active teams
+00:01 +20: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/npc_library_master_battle_test.dart: wild encounter starts a temporary Master fight
+00:01 +21: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/npc_library_master_battle_test.dart: master battle session JSON preserves HP, PP and statuses
+00:01 +22: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/breeding_service_test.dart: accetta sesso opposto, Lealtà +2 e Gruppo Uova condiviso
+00:01 +23: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/breeding_service_test.dart: rifiuta Lealtà insufficiente e stesso sesso
+00:01 +24: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/breeding_service_test.dart: Ditto ignora sesso e Gruppo Uova ma non può accoppiarsi con Ditto
+00:01 +25: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/breeding_service_test.dart: calcola CD e tempi di schiusa dalla tabella del manuale
+00:01 +26: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/breeding_service_test.dart: un uovo occupa un Pokéslot e viene ritrovato nello stesso slot
+00:01 +27: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/breeding_service_test.dart: Pokémon Breeder applica WIS al tentativo e vantaggio al d100
+00:01 +28: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/breeding_service_test.dart: ignora gli slot vuoti non ancora sbloccati alla schiusa
+00:01 +29: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/breeding_service_test.dart: individua Pokémon rimasti per errore in slot bloccati
+00:01 +30: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/android_release_config_test.dart: la configurazione Android usa l’identità release definitiva
+00:01 +31: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/android_release_config_test.dart: la pipeline Android e la documentazione release sono presenti
+00:02 +32: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/breeding_egg_repository_test.dart: (setUpAll)
+00:02 +32: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/breeding_egg_repository_test.dart: salva il primo uovo anche quando il profilo non ne contiene ancora
+00:02 +33: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/breeding_egg_repository_test.dart: (tearDownAll)
+00:02 +33: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/egg_asset_image_test.dart: EggAssetImage usa lo sprite caricato nel progetto
+00:02 +34: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/navigation_and_percentage_test.dart: il pulsante indietro torna di un solo livello
+00:03 +35: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/navigation_and_percentage_test.dart: il pulsante indietro torna di un solo livello
+00:03 +36: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/navigation_and_percentage_test.dart: il pulsante indietro torna di un solo livello
+00:03 +37: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/navigation_and_percentage_test.dart: il pulsante Home torna direttamente alla radice
+00:03 +38: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/navigation_and_percentage_test.dart: la percentuale accetta più cifre senza perdere il focus
+00:04 +39: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/breeding_data_test.dart: il catalogo Gruppi Uova include specie comuni e casi speciali
+00:04 +40: loading /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_form_mechanics_test.dart
+00:04 +40: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_form_mechanics_test.dart: Alolan Rattata applies mechanical variant data
+00:04 +41: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_form_mechanics_test.dart: Alolan Rattata applies mechanical variant data
+00:04 +42: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_form_mechanics_test.dart: Alolan Rattata applies mechanical variant data
+00:04 +43: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_form_mechanics_test.dart: Alolan Rattata applies mechanical variant data
+00:04 +44: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_form_mechanics_test.dart: Alolan Rattata applies mechanical variant data
+00:04 +45: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_form_mechanics_test.dart: Alolan Rattata applies mechanical variant data
+00:04 +46: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_form_mechanics_test.dart: Alolan Rattata applies mechanical variant data
+00:05 +47: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_form_mechanics_test.dart: Dusk Mane Necrozma deep-merges stats and types
+00:05 +48: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_form_mechanics_test.dart: web gender variants are selected from the saved gender
+00:05 +49: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_generator_service_test.dart: filters by query, type, SR, generation and available level
+00:05 +50: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_generator_service_test.dart: generates a legal permanent form and level-ready moves
+00:05 +51: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_generator_service_test.dart: uses a form-only type and SR without generating the base form
+00:05 +52: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_generator_service_test.dart: includes types from permanent forms in the filter catalog
+00:09 +53: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/widget_test.dart: (setUpAll)
+00:09 +53: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/widget_test.dart: shows the home screen
+00:09 +54: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_summary_dialog_layout_test.dart: Pokédex summary dialog lays out the horizontal form selector
+00:10 +55: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/layout_second_pass_integration_test.dart: le schermate principali usano il secondo passaggio responsivo
+00:10 +56: loading /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/custom_pokemon_definition_test.dart
+00:10 +56: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/custom_pokemon_definition_test.dart: CustomPokemonDefinition conserva immagine, mosse e abilità esclusive nel JSON
+00:10 +57: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/trainer_path_passive_service_test.dart: TrainerPathPassiveService Ace Trainer applica attacco, danno e Max Potential
+00:10 +58: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/trainer_path_passive_service_test.dart: TrainerPathPassiveService Ace Trainer applica attacco, danno e Max Potential
+00:10 +59: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/custom_pokemon_definition_test.dart: CustomPokemonDefinition il file portabile rileva una modifica al contenuto
+00:10 +60: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/custom_pokemon_definition_test.dart: CustomPokemonDefinition il file portabile rileva una modifica al contenuto
+00:10 +61: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/trainer_path_passive_service_test.dart: TrainerPathPassiveService Type Master usa al massimo due specializzazioni compatibili
+00:11 +62: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/custom_pokemon_definition_test.dart: CustomPokemonDefinition MoveRepository risolve una mossa Fakemon senza cercare un asset
+00:11 +63: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/custom_pokemon_definition_test.dart: CustomPokemonDefinition MoveRepository risolve una mossa Fakemon senza cercare un asset
+00:11 +64: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/custom_pokemon_definition_test.dart: CustomPokemonDefinition MoveRepository risolve una mossa Fakemon senza cercare un asset
+00:11 +65: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/custom_pokemon_definition_test.dart: CustomPokemonDefinition MoveRepository risolve una mossa Fakemon senza cercare un asset
+00:11 +66: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/custom_pokemon_definition_test.dart: CustomPokemonRepository salva la specie globale e aggiorna il registro runtime
+00:11 +67: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/data_integrity_test.dart: (setUpAll)
+00:11 +68: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/data_integrity_test.dart: (setUpAll)
+00:11 +69: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/data_integrity_test.dart: (setUpAll)
+00:11 +70: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/data_integrity_test.dart: (setUpAll)
+00:12 +71: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/data_integrity_test.dart: (setUpAll)
+00:12 +72: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/data_integrity_test.dart: (setUpAll)
+00:12 +73: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/data_integrity_test.dart: (setUpAll)
+00:12 +74: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/data_integrity_test.dart: (setUpAll)
+00:12 +74: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/data_integrity_test.dart: File sorgente l indice legacy punta solo a file Pokemon validi
+00:12 +75: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/data_integrity_test.dart: File sorgente i cataloghi web hanno identificatori univoci e campi minimi
+00:12 +76: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/data_integrity_test.dart: Catalogo unificato contiene tutte le specie con ID positivi e univoci
+00:12 +77: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/data_integrity_test.dart: Catalogo unificato statistiche, mosse e forme rispettano i vincoli minimi
+00:12 +78: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/data_integrity_test.dart: Catalogo unificato ogni specie ha almeno un immagine inclusa nel bundle
+00:12 +79: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/data_integrity_test.dart: Catalogo unificato i cataloghi di mosse e abilita sono caricabili
+00:12 +80: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/data_integrity_test.dart: (tearDownAll)
+00:12 +80: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/item_localization_integrity_test.dart: i cataloghi italiani coprono tutti i sei blocchi completati
+00:12 +81: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/item_localization_integrity_test.dart: i 39 oggetti evolutivi usano i nomi verificati
+00:12 +82: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/item_localization_integrity_test.dart: i 163 strumenti da tenere usano i nomi verificati
+00:12 +83: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/item_localization_integrity_test.dart: i 49 strumenti dell’Allenatore usano i nomi verificati
+00:12 +84: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/item_localization_integrity_test.dart: il repository localizza la UI e conserva i dati tecnici
+00:13 +85: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/trainer_path_automation_test.dart: TrainerPathAutomationService resources calcola automaticamente dadi e utilizzi dalle caratteristiche
+00:13 +86: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/trainer_path_automation_test.dart: TrainerPathAutomationService resources i punti di Grunt e Tactician seguono il livello
+00:13 +87: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/trainer_path_automation_test.dart: TrainerPathAutomationService resources la riserva di Nurse vale livello per cinque
+00:13 +88: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/trainer_path_automation_test.dart: TrainerPathAutomationService resources il riposo breve recupera solo le risorse corrette
+00:13 +89: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/trainer_path_automation_test.dart: TrainerPathAutomationService resources il cambio di caratteristica riduce senza superare il nuovo massimo
+00:13 +90: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/trainer_path_automation_test.dart: TrainerPathAutomationService choices Researcher richiede la scelta tra WIS e INT
+00:13 +91: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/trainer_path_automation_test.dart: TrainerPathAutomationService choices Type Master limita la resistenza ai tipi specializzati
+00:13 +92: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/trainer_path_automation_test.dart: TrainerPathAutomationService choices il secondo legame del Ranger è facoltativo
+00:13 +93: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/trainer_path_automation_test.dart: UserProfile mantiene compatibilità e serializza lo stato del path
+00:13 +94: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/portable_fakemon_transfer_test.dart: il trasferimento di un Pokémon incorpora la specie Fakemon
+00:13 +95: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/portable_fakemon_transfer_test.dart: il trasferimento di un Pokémon incorpora la specie Fakemon
+00:13 +96: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/portable_fakemon_transfer_test.dart: il trasferimento di un Pokémon incorpora la specie Fakemon
+00:13 +97: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/portable_fakemon_transfer_test.dart: un incontro incorpora una sola volta ogni Fakemon usato
+00:13 +98: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/portable_fakemon_transfer_test.dart: un conflitto numerico rimappa la specie importata
+00:13 +99: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/portable_fakemon_transfer_test.dart: i trasferimenti versione 1 restano importabili
+00:14 +100: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/battle_round_controls_test.dart: ogni fight espone un solo controllo Prossimo turno
+00:14 +101: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/full_move_catalog_test.dart: il catalogo completo delle mosse contiene Surf
+00:14 +102: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/full_move_catalog_test.dart: l editor separa learnset e scelta manuale globale
+00:14 +103: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/move_localization_integrity_test.dart: i cataloghi italiani coprono le prime 50 mosse in ordine
+00:15 +103 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/move_localization_integrity_test.dart: i cataloghi italiani coprono le prime 50 mosse in ordine [E]
+  Expected: empty
+    Actual: [
+              'absorb: valori meccanici modificati.',
+              'accelerock: valori meccanici modificati.',
+              'acid: valori meccanici modificati.',
+              'acid-armor: valori meccanici modificati.',
+              'acid-spray: valori meccanici modificati.',
+              'acrobatics: valori meccanici modificati.',
+              'acupressure: valori meccanici modificati.',
+              'aerial-ace: valori meccanici modificati.',
+              'aeroblast: valori meccanici modificati.',
+              'agility: valori meccanici modificati.',
+              'air-cutter: valori meccanici modificati.',
+              'air-slash: valori meccanici modificati.',
+              'alluring-voice: valori meccanici modificati.',
+              'amnesia: valori meccanici modificati.',
+              'anchor-shot: valori meccanici modificati.',
+              'ancient-power: valori meccanici modificati.',
+              'apple-acid: valori meccanici modificati.',
+              'aqua-cutter: valori meccanici modificati.',
+              'aqua-jet: valori meccanici modificati.',
+              'aqua-ring: valori meccanici modificati.',
+              'aqua-step: valori meccanici modificati.',
+              'aqua-tail: valori meccanici modificati.',
+              'arm-thrust: valori meccanici modificati.',
+              'armor-cannon: valori meccanici modificati.',
+              ...
+            ]
+  absorb: valori meccanici modificati.
+  accelerock: valori meccanici modificati.
+  acid: valori meccanici modificati.
+  acid-armor: valori meccanici modificati.
+  acid-spray: valori meccanici modificati.
+  acrobatics: valori meccanici modificati.
+  acupressure: valori meccanici modificati.
+  aerial-ace: valori meccanici modificati.
+  aeroblast: valori meccanici modificati.
+  agility: valori meccanici modificati.
+  air-cutter: valori meccanici modificati.
+  air-slash: valori meccanici modificati.
+  alluring-voice: valori meccanici modificati.
+  amnesia: valori meccanici modificati.
+  anchor-shot: valori meccanici modificati.
+  ancient-power: valori meccanici modificati.
+  apple-acid: valori meccanici modificati.
+  aqua-cutter: valori meccanici modificati.
+  aqua-jet: valori meccanici modificati.
+  aqua-ring: valori meccanici modificati.
+  aqua-step: valori meccanici modificati.
+  aqua-tail: valori meccanici modificati.
+  arm-thrust: valori meccanici modificati.
+  armor-cannon: valori meccanici modificati.
+  aromatic-mist: valori meccanici modificati.
+  assist: valori meccanici modificati.
+  assurance: valori meccanici modificati.
+  astonish: valori meccanici modificati.
+  astral-barrage: valori meccanici modificati.
+  attack-order: valori meccanici modificati.
+  attract: valori meccanici modificati.
+  aura-sphere: valori meccanici modificati.
+  aura-wheel: valori meccanici modificati.
+  aurora-beam: valori meccanici modificati.
+  aurora-veil: valori meccanici modificati.
+  autotomize: valori meccanici modificati.
+  avalanche: valori meccanici modificati.
+  axe-kick: valori meccanici modificati.
+  baby-doll-eyes: valori meccanici modificati.
+  baneful-bunker: valori meccanici modificati.
+  barb-barrage: valori meccanici modificati.
+  barrage: valori meccanici modificati.
+  barrier: valori meccanici modificati.
+  beak-blast: valori meccanici modificati.
+  beat-up: valori meccanici modificati.
+  behemoth-bash: valori meccanici modificati.
+  
+  package:matcher                                     expect
+  package:flutter_test/src/widget_tester.dart 473:18  expect
+  test/move_localization_integrity_test.dart 100:5    main.<fn>
+  
+00:15 +103 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/move_localization_integrity_test.dart: le prime 50 mosse usano i nomi italiani verificati
+00:15 +104 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/move_localization_integrity_test.dart: il repository mostra l’italiano e conserva i riferimenti inglesi
+00:15 +105 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/encounter_generator_service_test.dart: filters by habitat and excludes legendary species by default
+00:15 +106 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/encounter_generator_service_test.dart: automatic generation respects the requested enemy bounds
+00:15 +107 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/encounter_generator_service_test.dart: manual generation creates the requested quantities
+00:15 +108 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/encounter_generator_service_test.dart: manual generation preserves the selected permanent form
+00:15 +109 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/encounter_generator_service_test.dart: a 100 percent collection always selects its only species
+00:15 +110 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/encounter_generator_service_test.dart: weighted collections preserve an explicitly selected form
+00:15 +111 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/encounter_generator_service_test.dart: collection generation without duplicates returns unique species
+00:15 +112 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/profile_backup_test.dart: round-trips every profile section through JSON
+00:15 +113 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/profile_backup_test.dart: rejects backups created by a newer unsupported format
+00:15 +114 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/profile_backup_test.dart: rejects duplicate team slots before importing
+00:15 +115 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/layout_final_block_integration_test.dart: l’ultimo blocco layout copre combattimenti e strumenti del Master
+00:16 +116 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/native_share_service_test.dart: restituisce il messaggio di successo personalizzato
+00:16 +117 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/native_share_service_test.dart: distingue annullamento ed esito non comunicato
+00:16 +118 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/ability_localization_integrity_test.dart: le traduzioni coprono una sola volta tutte le abilità sorgente
+00:16 +119 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/ability_localization_integrity_test.dart: numeri, dadi e percentuali restano invariati
+00:16 +120 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/ability_localization_integrity_test.dart: il repository applica 330 descrizioni senza cambiare i metadati
+00:17 +121 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/saved_encounter_mapper_service_test.dart: saved encounter JSON preserves every generated member field
+00:17 +122 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/saved_encounter_mapper_service_test.dart: mapper restores an exact form and recalculates the estimate
+00:17 +123 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/evolution_form_alias_service_test.dart: Alolan Rattata prefers Alolan Raticate for the base target name
+00:17 +124 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_battle_attributes_card_test.dart: mostra tutte le caratteristiche e i modificatori
+00:17 +125 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_battle_attributes_card_test.dart: mostra tutte le caratteristiche e i modificatori
+00:17 +126 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_battle_attributes_card_test.dart: mostra tutte le caratteristiche e i modificatori
+00:18 +127 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/fakemon_backup_safe_delete_test.dart: il backup v6 incorpora e rimappa un Fakemon in conflitto
+POKEDEX REPOSITORY: caricate 1 entries per profilo 1784545034254838
+POKEDEX REPOSITORY: salvato pokemon 2000001 seen=true caught=true forms=1 profilo=1784545034365207
+00:18 +128 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/fakemon_backup_safe_delete_test.dart: il controllo riferimenti blocca una specie presente in squadra
+POKEDEX REPOSITORY: caricate 1 entries per profilo 1784545034400558
+POKEDEX REPOSITORY: caricate 0 entries per profilo default
+00:18 +129 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/breeder_features_test.dart: riconosce Good Genes e Master of Traits ai livelli corretti
+00:18 +129 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/fakemon_backup_safe_delete_test.dart: una voce Pokédex vuota non blocca l’eliminazione
+POKEDEX REPOSITORY: salvato pokemon 2000000 seen=false caught=false forms=0 profilo=1784545034443984
+POKEDEX REPOSITORY: caricate 1 entries per profilo 1784545034443984
+00:18 +130 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/fakemon_backup_safe_delete_test.dart: una voce Pokédex vuota non blocca l’eliminazione
+POKEDEX REPOSITORY: caricate 1 entries per profilo 1784545034443984
+POKEDEX REPOSITORY: caricate 0 entries per profilo default
+00:18 +131 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/fakemon_backup_safe_delete_test.dart: una voce Pokédex vuota non blocca l’eliminazione
+00:18 +132 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/breeder_features_test.dart: il modello uovo conserva PF e scelte Good Genes nei backup
+00:18 +133 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/fakemon_backup_safe_delete_test.dart: il catalogo globale ha checksum e rileva le modifiche
+00:18 +134 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/fakemon_backup_safe_delete_test.dart: il catalogo globale ha checksum e rileva le modifiche
+00:18 +135 -1: loading /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/level_progression_test.dart
+00:19 +135 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/level_progression_test.dart: LevelProgression adds experience with signed input and recalculates level
+00:19 +136 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/level_progression_test.dart: LevelProgression sets absolute experience with unsigned input
+00:19 +137 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_localization_integrity_test.dart: i file italiani coprono una sola volta tutti i Pokémon localizzati
+00:19 +138 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_localization_integrity_test.dart: il repository carica le 1025 traduzioni italiane
+00:19 +139 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_localization_integrity_test.dart: le categorie coincidono con il riferimento italiano ufficiale
+00:19 +140 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_localization_integrity_test.dart: le descrizioni legacy preservano altezza e peso originali
+00:20 +141 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/ability_name_localization_integrity_test.dart: il riferimento ufficiale copre 308 delle 330 voci del catalogo
+00:20 +142 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/ability_name_localization_integrity_test.dart: i nomi verificati coincidono con le denominazioni italiane attese
+00:20 +143 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/ability_name_localization_integrity_test.dart: il repository conserva il nome tecnico e localizza solo la UI
+00:20 +144 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/responsive_content_test.dart: limita la larghezza sulle finestre desktop
+00:20 +145 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/responsive_content_test.dart: limita la larghezza sulle finestre desktop
+00:21 +146 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/responsive_content_test.dart: usa tutta la larghezza disponibile su smartphone
+00:21 +147 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/profile_backup_service_test.dart: (setUpAll)
+00:21 +147 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/profile_backup_service_test.dart: imports every section with a new ID and deletes it completely
+POKEDEX REPOSITORY: salvato pokemon 25 seen=true caught=true forms=1 profilo=1784545036984883
+POKEDEX REPOSITORY: caricate 2 entries per profilo 1784545036984883
+POKEDEX REPOSITORY: salvato pokemon 1 seen=true caught=true forms=1 profilo=1784545037102480
+POKEDEX REPOSITORY: salvato pokemon 25 seen=true caught=true forms=1 profilo=1784545037102480
+POKEDEX REPOSITORY: caricate 0 entries per profilo 1784545037102480
+00:21 +148 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/profile_backup_service_test.dart: (tearDownAll)
+00:21 +148 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/campaign_transfer_service_test.dart: CampaignTransferBundle serializza e rilegge un incontro
+00:21 +149 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/campaign_transfer_service_test.dart: CampaignTransferBundle serializza e rilegge un Allenatore PNG
+00:21 +150 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/campaign_transfer_service_test.dart: CampaignTransferService imports importa un incontro con nuovo id e nome non distruttivo
+00:21 +151 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/campaign_transfer_service_test.dart: CampaignTransferService imports importa un Allenatore PNG e conserva la scheda
+00:21 +152 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/campaign_transfer_service_test.dart: CampaignTransferService imports rifiuta specie non presenti nel catalogo
+00:21 +153 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/campaign_transfer_service_test.dart: il riepilogo del Fight include turno, PF, status e PP
+00:22 +154 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/npc_trainer_generator_service_test.dart: a themed trainer receives only Pokémon of the preferred type
+00:22 +155 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/npc_trainer_generator_service_test.dart: duplicates disabled produces distinct species
+00:22 +156 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/npc_trainer_generator_service_test.dart: trainer rank increases the maximum controllable SR
+00:22 +157 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/npc_trainer_generator_service_test.dart: themed generation fails clearly when the type has no candidates
+00:22 +158 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/battle_quick_item_service_test.dart: resolves usable battle items even with non-standard catalog types
+00:22 +159 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/battle_quick_item_service_test.dart: classifies Poké Ball IDs without relying on the type field
+00:22 +160 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_generator_multi_select_test.dart: deduplicates type aliases and sorts them by Italian label
+00:22 +161 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_generator_multi_select_test.dart: accepts Italian type labels in filters and free-text search
+00:22 +162 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_generator_multi_select_test.dart: generates one independent result for every selected species
+00:22 +163 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_transfer_service_test.dart: il file di un singolo Pokémon conserva tutti i dati utili
+00:22 +164 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_transfer_service_test.dart: importare un Pokémon sostituisce lo slot e salva il precedente nel PC
+00:22 +165 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_transfer_service_test.dart: importare una squadra preserva le uova e manda gli esuberi nel PC
+00:22 +166 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_transfer_service_test.dart: un uovo non può essere esportato come Pokémon
+00:23 +167 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/battle_environment_service_test.dart: la tabella meteo rispetta i confini stagionali del manuale
+00:23 +168 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/battle_environment_service_test.dart: il vantaggio opzionale usa il tipo della mossa e Weather Ball
+00:23 +169 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/battle_environment_service_test.dart: Terrain Adept configurato concede +2 solo nel terreno scelto
+00:23 +170 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/battle_environment_service_test.dart: abilità ambientali modificano CA, velocità e danni
+00:23 +171 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/battle_environment_service_test.dart: Grandine e Tempesta di sabbia rispettano immunità e livello
+00:23 +172 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/battle_environment_service_test.dart: durate e ambiente sopravvivono al salvataggio della battaglia
+00:23 +173 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/user_profile_test.dart: UserProfile reads older saved profiles with trainer defaults
+00:23 +174 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/user_profile_test.dart: UserProfile persists trainer companion fields
+00:23 +175 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/user_profile_test.dart: UserProfile copyWith updates trainer companion fields
+00:23 +176 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/trainer_progression_test.dart: TrainerProgression returns pokeslots from trainer level breakpoints
+00:23 +177 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/trainer_progression_test.dart: TrainerProgression returns max controlled SR from trainer level breakpoints
+00:23 +178 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/trainer_progression_test.dart: TrainerProgression checks if a trainer can control a Pokemon SR
+00:23 +179 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/trainer_progression_test.dart: TrainerProgression returns the next progression upgrade levels
+00:23 +180 -1: Some tests failed.
+
+Failing tests:
+  /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/move_localization_integrity_test.dart: i cataloghi italiani coprono le prime 50 mosse in ordine

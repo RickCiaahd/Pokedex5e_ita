@@ -163,8 +163,11 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
     for (final move in catalogMoves) {
       moveData[move.id] = move;
       moveData[move.name] = move;
+      moveData[move.technicalName] = move;
     }
-    final catalogMoveNames = _unique(catalogMoves.map((move) => move.name))
+    final catalogMoveNames = _unique(
+      catalogMoves.map((move) => move.technicalName),
+    )
       ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
 
     if (!mounted) return;
@@ -213,7 +216,7 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
       if (tm == null) continue;
 
       final move = await _moveRepository.getMove(tm.moveId);
-      tmMoveNames.add(move?.name ?? _labelFromId(tm.moveId));
+      tmMoveNames.add(move?.technicalName ?? _labelFromId(tm.moveId));
     }
 
     return _unique(tmMoveNames);

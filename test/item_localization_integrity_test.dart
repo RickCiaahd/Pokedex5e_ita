@@ -10,6 +10,7 @@ import 'fixtures/item_held_names_it_155_194.dart';
 import 'fixtures/item_held_names_it_195_234.dart';
 import 'fixtures/item_held_names_it_235_274.dart';
 import 'fixtures/item_held_names_it_275_317.dart';
+import 'fixtures/item_trainer_gear_names_it_318_366.dart';
 
 const _allowedTypes = {
   'pokeball',
@@ -17,6 +18,7 @@ const _allowedTypes = {
   'berry',
   'evolution',
   'held item',
+  'trainer gear',
 };
 
 const _expectedHeldItemNames = <String, String>{
@@ -73,7 +75,7 @@ void main() {
 
   setUp(ItemLocalizationRepository.clearCache);
 
-  test('i cataloghi italiani coprono i cinque blocchi completati', () async {
+  test('i cataloghi italiani coprono tutti i sei blocchi completati', () async {
     final sourceItems = await _sourceItems();
     final sourceById = {
       for (final item in sourceItems) item['id'].toString(): item,
@@ -190,6 +192,35 @@ void main() {
     expect(names['megalite-stone'], 'Megalite Stone');
   });
 
+  test('i 49 strumenti dell’Allenatore usano i nomi verificati', () async {
+    final names = <String, String>{};
+    var declaredCount = 0;
+
+    for (final path in ItemLocalizationRepository.assetPaths.where(
+      (path) => path.contains('_trainer_gear_'),
+    )) {
+      final document = await _loadLocalizationDocument(path);
+      expect(document['type'], 'trainer gear', reason: path);
+      declaredCount += document['localizedCount'] as int;
+      names.addAll(_localizedNames(document));
+    }
+
+    expect(declaredCount, 49);
+    expect(names.length, 49);
+    expect(names, trainerGearNames318To366);
+    expect(names['dna-splicer'], 'Cuneo DNA');
+    expect(names['n-solarizer'], 'Necrosolix');
+    expect(names['n-lunarizer'], 'Necrolunix');
+    expect(names['prison-bottle'], 'Vaso del vincolo');
+    expect(names['old-rod'], 'Amo Vecchio');
+    expect(names['good-rod'], 'Amo Buono');
+    expect(names['super-rod'], 'Super Amo');
+    expect(names['key-stone'], 'Pietrachiave');
+    expect(names['tera-orb'], 'Terasfera');
+    expect(names['capture-styler'], 'Styler di cattura');
+    expect(names['egg-incubator-super'], 'Superincubatrice');
+  });
+
   test('il repository localizza la UI e conserva i dati tecnici', () async {
     final sourceItems = await _sourceItems();
     final sourceById = {
@@ -225,8 +256,21 @@ void main() {
     expect(byId['blue-orb']?.name, 'Gemma blu');
     expect(byId['blue-orb']?.technicalName, 'Blue Orb');
     expect(byId['megalite-stone']?.name, 'Megalite Stone');
-    expect(byId['backpack']?.name, 'Backpack');
+    expect(byId['dna-splicer']?.name, 'Cuneo DNA');
+    expect(byId['dna-splicer']?.technicalName, 'DNA Splicer');
+    expect(byId['old-rod']?.name, 'Amo Vecchio');
+    expect(byId['old-rod']?.technicalName, 'Old Rod');
+    expect(byId['tera-orb']?.name, 'Terasfera');
+    expect(byId['tera-orb']?.technicalName, 'Tera Orb');
+    expect(byId['capture-styler']?.name, 'Styler di cattura');
+    expect(byId['capture-styler']?.technicalName, 'Capture Styler');
+    expect(byId['backpack']?.name, 'Zaino');
     expect(byId['backpack']?.technicalName, 'Backpack');
+    expect(byId['egg-incubator-super']?.name, 'Superincubatrice');
+    expect(
+      byId['egg-incubator-super']?.technicalName,
+      'Egg Incubator Super',
+    );
   });
 }
 
@@ -272,6 +316,9 @@ Map<String, int> _tokenCounts(String value) {
   for (final match in expression.allMatches(value)) {
     var token = match.group(0)!.replaceAll(' ', '');
     if (token == 'CD') token = 'DC';
+    if (token.endsWith('ft')) {
+      token = token.substring(0, token.length - 2);
+    }
     result[token] = (result[token] ?? 0) + 1;
   }
   return result;

@@ -1,0 +1,93 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/items.json",
+  "nameSources": [
+    "https://wiki.pokemoncentral.it/Elenco_degli_strumenti_in_altre_lingue",
+    "https://wiki.pokemoncentral.it/Elenco_degli_strumenti_chiave_in_nona_generazione",
+    "https://wiki.pokemoncentral.it/Elenco_degli_strumenti_in_Pok%C3%A9mon_GO",
+    "https://wiki.pokemoncentral.it/Styler_di_cattura",
+    "https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/item_names.csv"
+  ],
+  "type": "trainer gear",
+  "range": {
+    "start": 318,
+    "end": 327
+  },
+  "localizedCount": 10,
+  "items": {
+    "dna-splicer": {
+      "sourceName": "DNA Splicer",
+      "name": "Cuneo DNA",
+      "description": [
+        "In presenza di un Reshiram o di uno Zekrom consenziente, Kyurem può fondersi a volontà con uno dei due Pokémon con l'aiuto di un Cuneo DNA. Questo processo è chiamato Absofusion e produce Kyurem Bianco (se si fonde con Reshiram) o Kyurem Nero (se si fonde con Zekrom)."
+      ]
+    },
+    "n-solarizer": {
+      "sourceName": "N-Solarizer",
+      "name": "Necrosolix",
+      "description": [
+        "Un Allenatore che possiede sia Solgaleo sia Necrozma può usare un'azione per fonderli in Necrozma Criniera del Vespro. Può inoltre usare un'azione per separare Necrozma Criniera del Vespro in Solgaleo e Necrozma."
+      ]
+    },
+    "n-lunarizer": {
+      "sourceName": "N-Lunarizer",
+      "name": "Necrolunix",
+      "description": [
+        "Un Allenatore che possiede sia Lunala sia Necrozma può usare un'azione per fonderli in Necrozma Ali dell'Aurora. Può inoltre usare un'azione per separare Necrozma Ali dell'Aurora in Lunala e Necrozma."
+      ]
+    },
+    "prison-bottle": {
+      "sourceName": "Prison Bottle",
+      "name": "Vaso del vincolo",
+      "description": [
+        "Un Allenatore può usare la propria azione per liberare un Hoopa nelle vicinanze, trasformandolo dalla Forma Vincolata alla Forma Libera per tre giorni."
+      ]
+    },
+    "trainers-license": {
+      "sourceName": "Trainer's License",
+      "name": "Licenza Allenatore",
+      "description": [
+        "Soltanto gli Allenatori muniti di licenza possono catturare Pokémon, e questa licenza certifica tale autorizzazione. Consente inoltre di accedere ai servizi speciali dei Centri Pokémon e di acquistare merci nei Pokémon-Market.",
+        "Gli Allenatori possono perdere la licenza se attaccano altri Allenatori o i loro Pokémon, oppure se non si prendono cura dei propri Pokémon."
+      ]
+    },
+    "pokedex": {
+      "sourceName": "Pokédex",
+      "name": "Pokédex",
+      "description": [
+        "Un computer portatile dotato di fotocamera avanzata e software di riconoscimento delle immagini. Un Allenatore può usare un'azione bonus per identificare un Pokémon entro 60 piedi tramite lo scanner del Pokédex. In questo modo registra il Pokémon nel Pokédex e ne rivela l'SR base e alcune brevi informazioni sulla specie."
+      ]
+    },
+    "old-rod": {
+      "sourceName": "Old Rod",
+      "name": "Amo Vecchio",
+      "description": [
+        "Permette di pescare Pokémon. Pescare richiede un'ora e il Pokémon incontrato viene determinato casualmente.",
+        "L'Amo Vecchio permette di pescare soltanto Magikarp."
+      ]
+    },
+    "good-rod": {
+      "sourceName": "Good Rod",
+      "name": "Amo Buono",
+      "description": [
+        "Permette di pescare Pokémon. Pescare richiede un'ora e il Pokémon incontrato viene determinato casualmente.",
+        "L'Amo Buono permette di pescare Alomomola, Azumarill, Barboach, Basculin, Bibarel, Briionne, Bruxish, Buizel, Carvanha, Chinchou, Clamperl, Clauncher, Corphish, Corsola, Crawdaunt, Croconaw, Dewpider, Dewott, Ducklett, Feebas, Finneon, Frillish, Froakie, Frogadier, Goldeen, Horsea, Inkay, Kabuto, Krabby, Lanturn, Lombre, Lotad, Luvdisc, Magikarp, Mantyke, Mareanie, Marill, Marshtomp, Mudkip, Octillery, Omanyte, Oshawott, Palpitoad, Piplup, Poliwag, Poliwhirl, Popplio, Prinplup, Psyduck, Pyukumuku, Quagsire, Qwilfish, Remoraid, Seel, Shellder, Shellos, Skrelp, Slowpoke, Spheal, Squirtle, Staryu, Stunfisk, Surskit, Tentacool, Tirtouga, Totodile, Tympole, Tynamo, Wailmer, Wartortle, Whiscash, Wimpod, Wingull, Wishiwashi o Wooper."
+      ]
+    },
+    "super-rod": {
+      "sourceName": "Super Rod",
+      "name": "Super Amo",
+      "description": [
+        "Permette di pescare Pokémon. Pescare richiede un'ora e il Pokémon incontrato viene determinato casualmente.",
+        "Il Super Amo permette di pescare Araquanid, Blastoise, Carracosta, Clawitzer, Cloyster, Dewgong, Dragalge, Empoleon, Feraligatr, Floatzel, Gastrodon, Golduck, Golisopod, Gorebyss, Greninja, Gyarados, Huntail, Jellicent, Kabutops, Kingdra, Kingler, Lapras, Ludicolo, Lumineon, Malamar, Mantine, Milotic, Omastar, Politoed, Poliwrath, Primarina, Relicanth, Samurott, Seadra, Seaking, Sealeo, Seismitoad, Sharpedo, Slowbro, Slowking, Starmie, Swampert, Tentacruel, Toxapex, Wailord o Walrein."
+      ]
+    },
+    "escape-rope": {
+      "sourceName": "Escape Rope",
+      "name": "Fune di fuga",
+      "description": [
+        "Può essere consumata per riuscire automaticamente a fuggire da una lotta contro Pokémon selvatici."
+      ]
+    }
+  }
+}

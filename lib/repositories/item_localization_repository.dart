@@ -38,11 +38,16 @@ class ItemLocalizationRepository {
     'assets/data/item_localization_it_held_295_304.json',
     'assets/data/item_localization_it_held_305_314.json',
     'assets/data/item_localization_it_held_315_317.json',
+    'assets/data/item_localization_it_trainer_gear_318_327.json',
+    'assets/data/item_localization_it_trainer_gear_328_337.json',
+    'assets/data/item_localization_it_trainer_gear_338_347.json',
+    'assets/data/item_localization_it_trainer_gear_348_357.json',
+    'assets/data/item_localization_it_trainer_gear_358_366.json',
   ];
 
   static const String sourceAssetPath = 'assets/data_webapp/items.json';
   static const int catalogCount = 366;
-  static const int localizedCount = 317;
+  static const int localizedCount = 366;
 
   static Map<String, ItemLocalization>? _cache;
 
@@ -124,6 +129,7 @@ class ItemLocalizationRepository {
       'berry',
       'evolution',
       'held item',
+      'trainer gear',
     }.contains(type)) {
       throw FormatException('$path dichiara un tipo non valido.');
     }

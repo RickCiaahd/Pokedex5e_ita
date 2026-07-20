@@ -1,0 +1,90 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/items.json",
+  "nameSources": [
+    "https://wiki.pokemoncentral.it/Elenco_degli_strumenti_in_altre_lingue",
+    "https://wiki.pokemoncentral.it/Elenco_degli_strumenti_chiave_in_nona_generazione",
+    "https://wiki.pokemoncentral.it/Elenco_degli_strumenti_in_Pok%C3%A9mon_GO",
+    "https://wiki.pokemoncentral.it/Styler_di_cattura",
+    "https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/item_names.csv"
+  ],
+  "type": "trainer gear",
+  "range": {
+    "start": 328,
+    "end": 337
+  },
+  "localizedCount": 10,
+  "items": {
+    "honey": {
+      "sourceName": "Honey",
+      "name": "Miele",
+      "description": [
+        "Può essere usato per attirare automaticamente un singolo Pokémon presente nell'area. La scelta del Pokémon è a discrezione del DM."
+      ]
+    },
+    "key-stone": {
+      "sourceName": "Key Stone",
+      "name": "Pietrachiave",
+      "description": [
+        "Permette a un Allenatore di far megaevolvere il proprio Pokémon. Possiede una carica e la recupera ogni giorno all'alba."
+      ]
+    },
+    "z-ring": {
+      "sourceName": "Z-Ring",
+      "name": "Cerchio Z",
+      "description": [
+        "Permette a un Allenatore di sprigionare il Potere Z del proprio Pokémon sotto forma di mossa Z. Possiede una carica e la recupera ogni giorno all'alba."
+      ]
+    },
+    "dynamax-band": {
+      "sourceName": "Dynamax Band",
+      "name": "Polsino Dynamax",
+      "description": [
+        "Permette a un Allenatore di dynamaxizzare il proprio Pokémon. Possiede una carica e la recupera ogni giorno all'alba."
+      ]
+    },
+    "tera-orb": {
+      "sourceName": "Tera Orb",
+      "name": "Terasfera",
+      "description": [
+        "Permette a un Allenatore di teracristallizzare il proprio Pokémon. Possiede una carica e la recupera ogni giorno all'alba."
+      ]
+    },
+    "capture-styler": {
+      "sourceName": "Capture Styler",
+      "name": "Styler di cattura",
+      "description": [
+        "Permette a un Pokémon Ranger di aggiungere +10 ai propri tiri di cattura contro i Pokémon che ha circondato completamente usando il proprio movimento.",
+        "Può essere usato soltanto dagli Allenatori che scelgono il percorso dell'Allenatore Ranger."
+      ]
+    },
+    "backpack": {
+      "sourceName": "Backpack",
+      "name": "Zaino",
+      "description": [
+        "Uno zaino che può contenere fino a 30 libbre."
+      ]
+    },
+    "binoculars": {
+      "sourceName": "Binoculars",
+      "name": "Binocolo",
+      "description": [
+        "Permette di vedere gli oggetti fino al doppio delle loro dimensioni."
+      ]
+    },
+    "camping-kettle": {
+      "sourceName": "Camping Kettle",
+      "name": "Bollitore da campeggio",
+      "description": [
+        "Un bollitore che può essere collocato nel fuoco da campo o sospeso sopra di esso per riscaldare liquidi."
+      ]
+    },
+    "camping-stove": {
+      "sourceName": "Camping Stove",
+      "name": "Fornello da campeggio",
+      "description": [
+        "Un fornello leggero e portatile alimentato con trucioli di legno."
+      ]
+    }
+  }
+}

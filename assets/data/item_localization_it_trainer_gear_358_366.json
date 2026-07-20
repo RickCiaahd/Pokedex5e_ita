@@ -1,0 +1,82 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/items.json",
+  "nameSources": [
+    "https://wiki.pokemoncentral.it/Elenco_degli_strumenti_in_altre_lingue",
+    "https://wiki.pokemoncentral.it/Elenco_degli_strumenti_chiave_in_nona_generazione",
+    "https://wiki.pokemoncentral.it/Elenco_degli_strumenti_in_Pok%C3%A9mon_GO",
+    "https://wiki.pokemoncentral.it/Styler_di_cattura",
+    "https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/item_names.csv"
+  ],
+  "type": "trainer gear",
+  "range": {
+    "start": 358,
+    "end": 366
+  },
+  "localizedCount": 9,
+  "items": {
+    "large-tent": {
+      "sourceName": "Large Tent",
+      "name": "Tenda grande",
+      "description": [
+        "Una tenda per quattro persone."
+      ]
+    },
+    "artisan-tools": {
+      "sourceName": "Artisan Tools",
+      "name": "Strumenti da artigiano",
+      "description": [
+        "Strumenti usati dagli artigiani, come calligrafi, artisti o fabbri. Al momento dell'acquisto scegli un tipo di strumenti da artigiano. Aggiungi il tuo modificatore di competenza alle prove correlate."
+      ]
+    },
+    "thieves-tools": {
+      "sourceName": "Thieves' Tools",
+      "name": "Arnesi da scasso",
+      "description": [
+        "Puoi aggiungere il tuo modificatore di competenza alle prove effettuate per disarmare trappole o aprire serrature."
+      ]
+    },
+    "dungeoneers-pack": {
+      "sourceName": "Dungeoneer's Pack",
+      "name": "Dotazione da avventuriero",
+      "description": [
+        "Contiene uno zaino, un kit da scalatore, una torcia elettrica, 5 celle energetiche, pietra focaia e acciarino, 10 razioni da campeggio, una borraccia e 30 piedi di corda."
+      ]
+    },
+    "explorers-pack": {
+      "sourceName": "Explorer's Pack",
+      "name": "Dotazione da esploratore",
+      "description": [
+        "Contiene uno zaino, un sacco a pelo, una gavetta, pietra focaia e acciarino, una torcia elettrica, 5 celle energetiche, 10 razioni da campeggio, una borraccia e 30 piedi di corda."
+      ]
+    },
+    "filchers-pack": {
+      "sourceName": "Filcher's Pack",
+      "name": "Dotazione da scassinatore",
+      "description": [
+        "Contiene uno zaino, arnesi da scasso, 20 piedi di filo metallico, una campanella, una lanterna, 3 celle energetiche, 5 razioni da campeggio, pietra focaia e acciarino e una borraccia."
+      ]
+    },
+    "egg-incubator": {
+      "sourceName": "Egg Incubator",
+      "name": "Incubatrice Uova",
+      "description": [
+        "Quando vi viene collocato un Uovo, riduce il Tempo di Schiusa di 1d20 ogni giorno. Una volta che l'Uovo si schiude, l'incubatrice perde la propria efficacia."
+      ]
+    },
+    "egg-incubator-plus": {
+      "sourceName": "Egg Incubator Plus",
+      "name": "Incubatrice Uova Plus",
+      "description": [
+        "Quando vi viene collocato un Uovo, riduce il Tempo di Schiusa di 2d20 ogni giorno. Una volta che l'Uovo si schiude, l'incubatrice perde la propria efficacia."
+      ]
+    },
+    "egg-incubator-super": {
+      "sourceName": "Egg Incubator Super",
+      "name": "Superincubatrice",
+      "description": [
+        "Quando vi viene collocato un Uovo, riduce il Tempo di Schiusa di 3d20 ogni giorno. Una volta che l'Uovo si schiude, l'incubatrice perde la propria efficacia."
+      ]
+    }
+  }
+}

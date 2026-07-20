@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: flutter-ci-${{ github.workflow }}-${{ github.ref }}
@@ -18,14 +18,11 @@ jobs:
   quality:
     name: Analyze, test and build Android
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 45
 
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.head_ref || github.ref_name }}
-          fetch-depth: 0
 
       - name: Set up Java
         uses: actions/setup-java@v4
@@ -44,19 +41,6 @@ jobs:
 
       - name: Install dependencies
         run: flutter pub get
-
-      - name: Save move localization test diagnostics
-        if: github.head_ref == 'translation/moves-651-830'
-        shell: bash
-        run: |
-          flutter test test/move_localization_integrity_test.dart --reporter expanded > docs/translation/move-651-830-test-diagnostic.txt 2>&1 || true
-          git fetch origin main
-          git checkout origin/main -- .github/workflows/flutter-ci.yml
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -A
-          git commit -m 'Registra la diagnostica finale delle mosse 651-830'
-          git push origin HEAD:translation/moves-651-830
 
       - name: Analyze source
         run: flutter analyze

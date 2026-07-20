@@ -1,0 +1,213 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/items.json",
+  "nameSources": [
+    "https://wiki.pokemoncentral.it/Elenco_degli_strumenti_in_altre_lingue",
+    "https://wiki.pokemoncentral.it/Elenco_di_bacche",
+    "https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/item_names.csv"
+  ],
+  "type": "berry",
+  "range": {
+    "start": 88,
+    "end": 115
+  },
+  "localizedCount": 28,
+  "items": {
+    "cheri-berry": {
+      "sourceName": "Cheri Berry",
+      "name": "Baccaliegia",
+      "description": [
+        "Consumala per curare la paralisi. Puoi consumare questa bacca come reazione quando vieni paralizzato. Puoi comunque usare questa reazione anche se lo status normalmente te lo impedirebbe."
+      ]
+    },
+    "chesto-berry": {
+      "sourceName": "Chesto Berry",
+      "name": "Baccastagna",
+      "description": [
+        "Consumala per curare il sonno. Puoi consumare questa bacca come reazione quando ti addormenti. Puoi comunque usare questa reazione anche se lo status normalmente te lo impedirebbe."
+      ]
+    },
+    "pecha-berry": {
+      "sourceName": "Pecha Berry",
+      "name": "Baccapesca",
+      "description": [
+        "Consumala per curare l'avvelenamento. Puoi consumare questa bacca come reazione quando diventi avvelenato o gravemente avvelenato."
+      ]
+    },
+    "rawst-berry": {
+      "sourceName": "Rawst Berry",
+      "name": "Baccafrago",
+      "description": [
+        "Consumala per curare una scottatura. Puoi consumare questa bacca come reazione quando vieni scottato."
+      ]
+    },
+    "aspear-berry": {
+      "sourceName": "Aspear Berry",
+      "name": "Baccaperina",
+      "description": [
+        "Consumala per curare il congelamento. Puoi consumare questa bacca come reazione quando vieni congelato. Puoi comunque usare questa reazione anche se lo status normalmente te lo impedirebbe."
+      ]
+    },
+    "leppa-berry": {
+      "sourceName": "Leppa Berry",
+      "name": "Baccamela",
+      "description": [
+        "Consumala per ripristinare 10 PP a una mossa. Può essere consumata come reazione quando una delle tue mosse raggiunge 0 PP."
+      ]
+    },
+    "oran-berry": {
+      "sourceName": "Oran Berry",
+      "name": "Baccarancia",
+      "description": [
+        "Consumala per recuperare 2d4 + 2 HP. Può essere consumata come reazione quando i tuoi HP scendono sotto la metà."
+      ]
+    },
+    "persim-berry": {
+      "sourceName": "Persim Berry",
+      "name": "Baccaki",
+      "description": [
+        "Consumala per curare la confusione. Puoi consumare questa bacca come reazione quando diventi confuso. Puoi comunque usare questa reazione anche se lo status normalmente te lo impedirebbe."
+      ]
+    },
+    "lum-berry": {
+      "sourceName": "Lum Berry",
+      "name": "Baccaprugna",
+      "description": [
+        "Consumala per curare un singolo effetto di stato. Puoi consumare questa bacca come reazione quando vieni colpito da un effetto di stato. Puoi comunque usare questa reazione anche se lo status normalmente te lo impedirebbe."
+      ]
+    },
+    "sitrus-berry": {
+      "sourceName": "Sitrus Berry",
+      "name": "Baccacedro",
+      "description": [
+        "Consumala per recuperare 30 HP. Può essere consumata come reazione quando i tuoi HP scendono sotto la metà."
+      ]
+    },
+    "occa-berry": {
+      "sourceName": "Occa Berry",
+      "name": "Baccacao",
+      "description": [
+        "Può essere consumata come reazione quando subisci danni di tipo Fuoco. Subisci invece la metà di quei danni."
+      ]
+    },
+    "passho-berry": {
+      "sourceName": "Passho Berry",
+      "name": "Baccapasflo",
+      "description": [
+        "Può essere consumata come reazione quando subisci danni di tipo Acqua. Subisci invece la metà di quei danni."
+      ]
+    },
+    "wacan-berry": {
+      "sourceName": "Wacan Berry",
+      "name": "Baccaparmen",
+      "description": [
+        "Può essere consumata come reazione quando subisci danni di tipo Elettro. Subisci invece la metà di quei danni."
+      ]
+    },
+    "rindo-berry": {
+      "sourceName": "Rindo Berry",
+      "name": "Baccarindo",
+      "description": [
+        "Può essere consumata come reazione quando subisci danni di tipo Erba. Subisci invece la metà di quei danni."
+      ]
+    },
+    "yache-berry": {
+      "sourceName": "Yache Berry",
+      "name": "Baccamoya",
+      "description": [
+        "Può essere consumata come reazione quando subisci danni di tipo Ghiaccio. Subisci invece la metà di quei danni."
+      ]
+    },
+    "chople-berry": {
+      "sourceName": "Chople Berry",
+      "name": "Baccarosmel",
+      "description": [
+        "Può essere consumata come reazione quando subisci danni di tipo Lotta. Subisci invece la metà di quei danni."
+      ]
+    },
+    "kebia-berry": {
+      "sourceName": "Kebia Berry",
+      "name": "Baccakebia",
+      "description": [
+        "Può essere consumata come reazione quando subisci danni di tipo Veleno. Subisci invece la metà di quei danni."
+      ]
+    },
+    "shuca-berry": {
+      "sourceName": "Shuca Berry",
+      "name": "Baccanaca",
+      "description": [
+        "Può essere consumata come reazione quando subisci danni di tipo Terra. Subisci invece la metà di quei danni."
+      ]
+    },
+    "coba-berry": {
+      "sourceName": "Coba Berry",
+      "name": "Baccababa",
+      "description": [
+        "Può essere consumata come reazione quando subisci danni di tipo Volante. Subisci invece la metà di quei danni."
+      ]
+    },
+    "payapa-berry": {
+      "sourceName": "Payapa Berry",
+      "name": "Baccapayapa",
+      "description": [
+        "Può essere consumata come reazione quando subisci danni di tipo Psico. Subisci invece la metà di quei danni."
+      ]
+    },
+    "tanga-berry": {
+      "sourceName": "Tanga Berry",
+      "name": "Baccaitan",
+      "description": [
+        "Può essere consumata come reazione quando subisci danni di tipo Coleottero. Subisci invece la metà di quei danni."
+      ]
+    },
+    "charti-berry": {
+      "sourceName": "Charti Berry",
+      "name": "Baccaciofo",
+      "description": [
+        "Può essere consumata come reazione quando subisci danni di tipo Roccia. Subisci invece la metà di quei danni."
+      ]
+    },
+    "kasib-berry": {
+      "sourceName": "Kasib Berry",
+      "name": "Baccacitrus",
+      "description": [
+        "Può essere consumata come reazione quando subisci danni di tipo Spettro. Subisci invece la metà di quei danni."
+      ]
+    },
+    "haban-berry": {
+      "sourceName": "Haban Berry",
+      "name": "Baccahaban",
+      "description": [
+        "Può essere consumata come reazione quando subisci danni di tipo Drago. Subisci invece la metà di quei danni."
+      ]
+    },
+    "colbur-berry": {
+      "sourceName": "Colbur Berry",
+      "name": "Baccaxan",
+      "description": [
+        "Può essere consumata come reazione quando subisci danni di tipo Buio. Subisci invece la metà di quei danni."
+      ]
+    },
+    "babiri-berry": {
+      "sourceName": "Babiri Berry",
+      "name": "Baccababiri",
+      "description": [
+        "Può essere consumata come reazione quando subisci danni di tipo Acciaio. Subisci invece la metà di quei danni."
+      ]
+    },
+    "chilan-berry": {
+      "sourceName": "Chilan Berry",
+      "name": "Baccacinlan",
+      "description": [
+        "Può essere consumata come reazione quando subisci danni di tipo Normale. Subisci invece la metà di quei danni."
+      ]
+    },
+    "roseli-berry": {
+      "sourceName": "Roseli Berry",
+      "name": "Baccarcadè",
+      "description": [
+        "Può essere consumata come reazione quando subisci danni di tipo Folletto. Subisci invece la metà di quei danni."
+      ]
+    }
+  }
+}

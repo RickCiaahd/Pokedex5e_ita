@@ -3,7 +3,7 @@
 
 The script is intentionally diagnostic: it never edits application data. It
 compares the catalog with Pokémon Central (primary source) and PokéAPI
-(secondary source), then writes a JSON/CSV report suitable for review.
+(secondary source), then writes JSON/CSV reports suitable for review.
 """
 
 from __future__ import annotations
@@ -12,6 +12,7 @@ import csv
 import io
 import json
 import re
+import shutil
 import unicodedata
 from pathlib import Path
 from typing import Any
@@ -45,17 +46,25 @@ def _normalize(value: str) -> str:
 
 
 def _clean_cell(cell: Tag) -> str:
-    # Remove references and small generation annotations before reading text.
+    """Read the current name from a multilingual table cell.
+
+    Pokémon Central may show the current name followed by historical variants
+    and generation annotations. The current form is the first meaningful text
+    fragment after references and annotations are removed.
+    """
+
     clone = BeautifulSoup(str(cell), "html.parser")
     for node in clone.select("sup, small, .reference, .mw-editsection"):
         node.decompose()
     text = clone.get_text("\n", strip=True)
     parts = [part.strip() for part in text.splitlines() if part.strip()]
-    # Pokémon Central lists the current Italian name before historical variants.
     for part in parts:
-        if re.fullmatch(r"[IVX]+|[+\-–—]+", part):
+        cleaned = re.sub(r"\s+", " ", part)
+        if re.fullmatch(r"[IVX]+|[+\-–—]+", cleaned):
             continue
-        return re.sub(r"\s+", " ", part)
+        if cleaned.casefold() in {"italiano", "inglese", "#"}:
+            continue
+        return cleaned
     return ""
 
 
@@ -69,28 +78,21 @@ def _pokemon_central_names() -> dict[str, str]:
     soup = BeautifulSoup(response.text, "html.parser")
     result: dict[str, str] = {}
 
+    # The multilingual tables consistently use: number, Italian, English, ...
+    # Header markup varies between table sections, so positional parsing is
+    # more reliable than deriving column indexes from the first row.
     for table in soup.select("table.wikitable"):
-        rows = table.select("tr")
-        if not rows:
-            continue
-        headers = [
-            re.sub(r"\s+", " ", cell.get_text(" ", strip=True))
-            for cell in rows[0].select("th, td")
-        ]
-        try:
-            italian_index = headers.index("Italiano")
-            english_index = headers.index("Inglese")
-        except ValueError:
-            continue
-
-        for row in rows[1:]:
-            cells = row.select("th, td")
-            if max(italian_index, english_index) >= len(cells):
+        for row in table.select("tr"):
+            cells = row.find_all(["th", "td"], recursive=False)
+            if len(cells) < 3:
                 continue
-            italian = _clean_cell(cells[italian_index])
-            english = _clean_cell(cells[english_index])
-            if italian and english:
-                result.setdefault(_normalize(english), italian)
+            italian = _clean_cell(cells[1])
+            english = _clean_cell(cells[2])
+            if not italian or not english:
+                continue
+            if italian.casefold() == "italiano" or english.casefold() == "inglese":
+                continue
+            result.setdefault(_normalize(english), italian)
 
     return result
 
@@ -173,10 +175,12 @@ def main() -> None:
         )
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(CATALOG_PATH, OUTPUT_DIR / "move-catalog-source.json")
     (OUTPUT_DIR / "move-name-audit.json").write_text(
         json.dumps(
             {
                 "catalogCount": len(rows),
+                "pokemonCentralCatalogCount": len(pcw),
                 "pokemonCentralMatches": sum(
                     row["nameSource"] == "pokemon-central" for row in rows
                 ),
@@ -202,6 +206,7 @@ def main() -> None:
 
     unmatched = [row for row in rows if row["nameSource"] == "fallback"]
     print(f"catalogCount={len(rows)}")
+    print(f"pokemonCentralCatalogCount={len(pcw)}")
     print(
         "pokemonCentralMatches="
         f"{sum(row['nameSource'] == 'pokemon-central' for row in rows)}"

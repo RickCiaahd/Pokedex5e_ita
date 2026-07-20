@@ -59,7 +59,7 @@
       "sourceName": "Oran Berry",
       "name": "Baccarancia",
       "description": [
-        "Consumala per recuperare 2d4 + 2 HP. Può essere consumata come reazione quando i tuoi HP scendono sotto la metà."
+        "Consumala per recuperare 2d4 + 2 HP. Può essere consumata come reazione quando i tuoi punti ferita scendono sotto la metà."
       ]
     },
     "persim-berry": {
@@ -80,7 +80,7 @@
       "sourceName": "Sitrus Berry",
       "name": "Baccacedro",
       "description": [
-        "Consumala per recuperare 30 HP. Può essere consumata come reazione quando i tuoi HP scendono sotto la metà."
+        "Consumala per recuperare 30 HP. Può essere consumata come reazione quando i tuoi punti ferita scendono sotto la metà."
       ]
     },
     "occa-berry": {

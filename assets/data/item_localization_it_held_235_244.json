@@ -1,0 +1,87 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/items.json",
+  "nameSources": [
+    "https://wiki.pokemoncentral.it/Elenco_degli_strumenti_in_altre_lingue",
+    "https://wiki.pokemoncentral.it/Strumenti_tenuti",
+    "https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/item_names.csv"
+  ],
+  "type": "held item",
+  "range": {
+    "start": 235,
+    "end": 244
+  },
+  "localizedCount": 10,
+  "items": {
+    "dragon-fang": {
+      "sourceName": "Dragon Fang",
+      "name": "Dentedidrago",
+      "description": [
+        "Il possessore aggiunge il proprio bonus di competenza ai danni di tipo Drago che infligge, una volta per mossa."
+      ]
+    },
+    "fairy-feather": {
+      "sourceName": "Fairy Feather",
+      "name": "Piuma fatata",
+      "description": [
+        "Il possessore aggiunge il proprio bonus di competenza ai danni di tipo Folletto che infligge, una volta per mossa."
+      ]
+    },
+    "hard-stone": {
+      "sourceName": "Hard Stone",
+      "name": "Pietradura",
+      "description": [
+        "Il possessore aggiunge il proprio bonus di competenza ai danni di tipo Roccia che infligge, una volta per mossa."
+      ]
+    },
+    "magnet": {
+      "sourceName": "Magnet",
+      "name": "Calamita",
+      "description": [
+        "Il possessore aggiunge il proprio bonus di competenza ai danni di tipo Elettro che infligge, una volta per mossa."
+      ]
+    },
+    "miracle-seed": {
+      "sourceName": "Miracle Seed",
+      "name": "Miracolseme",
+      "description": [
+        "Il possessore aggiunge il proprio bonus di competenza ai danni di tipo Erba che infligge, una volta per mossa."
+      ]
+    },
+    "mystic-water": {
+      "sourceName": "Mystic Water",
+      "name": "Acqua Magica",
+      "description": [
+        "Il possessore aggiunge il proprio bonus di competenza ai danni di tipo Acqua che infligge, una volta per mossa."
+      ]
+    },
+    "never-melt-ice": {
+      "sourceName": "Never-Melt Ice",
+      "name": "Gelomai",
+      "description": [
+        "Il possessore aggiunge il proprio bonus di competenza ai danni di tipo Ghiaccio che infligge, una volta per mossa."
+      ]
+    },
+    "poison-barb": {
+      "sourceName": "Poison Barb",
+      "name": "Velenaculeo",
+      "description": [
+        "Il possessore aggiunge il proprio bonus di competenza ai danni di tipo Veleno che infligge, una volta per mossa."
+      ]
+    },
+    "sharp-beak": {
+      "sourceName": "Sharp Beak",
+      "name": "Beccaffilato",
+      "description": [
+        "Il possessore aggiunge il proprio bonus di competenza ai danni di tipo Volante che infligge, una volta per mossa."
+      ]
+    },
+    "silk-scarf": {
+      "sourceName": "Silk Scarf",
+      "name": "Sciarpa Seta",
+      "description": [
+        "Il possessore aggiunge il proprio bonus di competenza ai danni di tipo Normale che infligge, una volta per mossa."
+      ]
+    }
+  }
+}

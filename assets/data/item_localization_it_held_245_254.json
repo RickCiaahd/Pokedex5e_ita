@@ -1,0 +1,75 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/items.json",
+  "nameSources": [
+    "https://wiki.pokemoncentral.it/Elenco_degli_strumenti_in_altre_lingue",
+    "https://wiki.pokemoncentral.it/Strumenti_tenuti",
+    "https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/item_names.csv"
+  ],
+  "type": "held item",
+  "range": {
+    "start": 245,
+    "end": 254
+  },
+  "localizedCount": 10,
+  "items": {
+    "silver-powder": {
+      "sourceName": "Silver Powder",
+      "name": "Argenpolvere",
+      "description": [
+        "Il possessore aggiunge il proprio bonus di competenza ai danni di tipo Coleottero che infligge, una volta per mossa."
+      ]
+    },
+    "soft-sand": {
+      "sourceName": "Soft Sand",
+      "name": "Sabbia Soffice",
+      "description": [
+        "Il possessore aggiunge il proprio bonus di competenza ai danni di tipo Terra che infligge, una volta per mossa."
+      ]
+    },
+    "spell-tag": {
+      "sourceName": "Spell Tag",
+      "name": "Spettrotarga",
+      "description": [
+        "Il possessore aggiunge il proprio bonus di competenza ai danni di tipo Spettro che infligge, una volta per mossa."
+      ]
+    },
+    "twisted-spoon": {
+      "sourceName": "Twisted Spoon",
+      "name": "Cucchiaio Torto",
+      "description": [
+        "Il possessore aggiunge il proprio bonus di competenza ai danni di tipo Psico che infligge, una volta per mossa."
+      ]
+    },
+    "full-incense": {
+      "sourceName": "Full Incense",
+      "name": "Gonfioaroma",
+      "description": []
+    },
+    "lax-incense": {
+      "sourceName": "Lax Incense",
+      "name": "Distraroma",
+      "description": []
+    },
+    "odd-incense": {
+      "sourceName": "Odd Incense",
+      "name": "Bizzoaroma",
+      "description": []
+    },
+    "rock-incense": {
+      "sourceName": "Rock Incense",
+      "name": "Roccioaroma",
+      "description": []
+    },
+    "rose-incense": {
+      "sourceName": "Rose Incense",
+      "name": "Rosaroma",
+      "description": []
+    },
+    "sea-incense": {
+      "sourceName": "Sea Incense",
+      "name": "Marearoma",
+      "description": []
+    }
+  }
+}

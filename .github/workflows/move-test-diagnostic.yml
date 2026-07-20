@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   diagnose:
-    if: github.event.head_commit.message == 'Raccoglie la diagnostica dei test delle mosse'
+    if: github.event.head_commit.message == 'Raccoglie la seconda diagnostica dei test delle mosse'
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
@@ -37,7 +37,7 @@ jobs:
           {
             echo "exit_status=$status"
             echo
-            tail -n 500 /tmp/move-tests.log
+            tail -n 800 /tmp/move-tests.log
           } > docs/translation/move-test-diagnostic.txt
           exit 0
 
@@ -46,5 +46,5 @@ jobs:
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
           git add docs/translation/move-test-diagnostic.txt
-          git commit -m "Registra la diagnostica temporanea dei test delle mosse"
+          git commit -m "Aggiorna la diagnostica temporanea dei test delle mosse"
           git push origin HEAD:translation/moves-audit

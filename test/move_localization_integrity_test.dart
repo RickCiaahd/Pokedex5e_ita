@@ -9,13 +9,14 @@ import 'fixtures/move_names_it_001_050.dart';
 import 'fixtures/move_names_it_051_250.dart';
 import 'fixtures/move_names_it_251_450.dart';
 import 'fixtures/move_names_it_451_650.dart';
+import 'fixtures/move_names_it_651_830.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   setUp(MoveLocalizationRepository.clearCache);
 
-  test('i cataloghi italiani coprono le prime 650 mosse in ordine', () async {
+  test('i cataloghi italiani coprono le tutte le 830 mosse in ordine', () async {
     final sourceMoves = await _sourceMoves();
     final sourceById = {
       for (final move in sourceMoves) move['id'].toString(): move,
@@ -26,6 +27,7 @@ void main() {
       ...moveNames51To250,
       ...moveNames251To450,
       ...moveNames451To650,
+      ...moveNames651To830,
     };
     var declaredCount = 0;
 
@@ -117,13 +119,14 @@ void main() {
     expect(errors, isEmpty, reason: errors.join('\n'));
   });
 
-  test('le prime 650 mosse usano i nomi italiani verificati', () async {
+  test('le tutte le 830 mosse usano i nomi italiani verificati', () async {
     final names = <String, String>{};
     final expectedNames = <String, String>{
       ...moveNames1To50,
       ...moveNames51To250,
       ...moveNames251To450,
       ...moveNames451To650,
+      ...moveNames651To830,
     };
 
     for (final path in MoveLocalizationRepository.assetPaths) {
@@ -154,6 +157,10 @@ void main() {
     expect(names['natures-madness'], 'Ira della Natura');
     expect(names['raging-bull'], 'Scatenatoro');
     expect(names['sludge-bomb'], 'Fangobomba');
+    expect(names['syrup-bomb'], 'Bomba Sciroppata');
+    expect(names['thunderbolt'], 'Fulmine');
+    expect(names['water-spout'], 'Zampillo');
+    expect(names['zing-zap'], 'Elettropizzico');
   });
 
   test('il repository mostra l’italiano e conserva i riferimenti inglesi', () async {
@@ -169,7 +176,8 @@ void main() {
     final acupressure = await repository.getMove('Acupressure');
     final mistBallByItalianName = await repository.getMove('Foschisfera');
     final sludgeBombByEnglishName = await repository.getMove('Sludge Bomb');
-    final unlocalized = await repository.getMove('sludge-wave');
+    final syrupBombByItalianName = await repository.getMove('Bomba Sciroppata');
+    final zingZapByEnglishName = await repository.getMove('Zing Zap');
 
     expect(absorbById, isNotNull);
     expect(absorbById?.name, 'Assorbimento');
@@ -200,8 +208,10 @@ void main() {
     expect(acupressure?.description, contains('d6 | Effetto'));
     expect(acupressure?.description, contains('+10 PF temporanei'));
 
-    expect(unlocalized?.name, 'Sludge Wave');
-    expect(unlocalized?.technicalName, 'Sludge Wave');
+    expect(syrupBombByItalianName?.id, 'syrup-bomb');
+    expect(syrupBombByItalianName?.technicalName, 'Syrup Bomb');
+    expect(zingZapByEnglishName?.name, 'Elettropizzico');
+    expect(zingZapByEnglishName?.technicalName, 'Zing Zap');
   });
 }
 

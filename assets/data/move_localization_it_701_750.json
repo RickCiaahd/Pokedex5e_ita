@@ -1,0 +1,451 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/moves.json",
+  "nameSources": [
+    "https://wiki.pokemoncentral.it/Elenco_delle_mosse_in_altre_lingue",
+    "https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/move_names.csv"
+  ],
+  "type": "move",
+  "range": {
+    "start": 701,
+    "end": 750
+  },
+  "localizedCount": 50,
+  "items": {
+    "strange-steam": {
+      "sourceName": "Strange Steam",
+      "name": "Vapore Incantato",
+      "description": [
+        "L'utente attacca i bersagli nell'area emettendo vapore. Ogni creatura in fila deve effettuare un tiro salvezza su DES. Una creatura subisce 2d6 + MOVE danni da fata e diventa confusa se fallisce il tiro salvezza. In caso di successo, subiscono la metà dei danni e non vengono confusi."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d8 al livello 5, 4d6 al livello 10 e 6d6 al livello 17."
+    },
+    "strength": {
+      "sourceName": "Strength",
+      "name": "Forza",
+      "description": [
+        "Colpisci una creatura con forza bruta. Effettua un tiro per colpire in mischia, infliggendo 2d6 + MOVE danni normali in caso di colpo. In caso di colpo, puoi anche scegliere di spingere via la creatura 5 feet."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d8 al livello 5, 4d6 al livello 10 e 6d6 al livello 17."
+    },
+    "strength-sap": {
+      "sourceName": "Strength Sap",
+      "name": "Assorbiforza",
+      "description": [
+        "Se una creatura tenta di utilizzare una mossa che aumenta le sue statistiche, puoi usare la tua reazione per annullare l'aumento e convertirlo in energia curativa, recuperando PF 1d10 + MOVE. Ciò include bonus per i colpi critici, aumenti di CA, aumenti di velocità, attacco e danno, ecc."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d8 al livello 5, 5d4 al livello 10 e 4d8 al livello 17."
+    },
+    "string-shot": {
+      "sourceName": "String Shot",
+      "name": "Millebave",
+      "description": [
+        "Scagli una corda appiccicosa contro una creatura nel raggio d'azione, rallentandola. Effettua un tiro per colpire a distanza contro un bersaglio. In caso di colpo, la velocità del bersaglio viene ridotta di 10 per tutta la durata. La mossa è impilabile a qualsiasi importo. Il bersaglio può intraprendere un'azione per tentare di sbarazzarsi di qualsiasi corda con un tiro salvezza su FOR contro il tuo Movimento CD. Se questa riduzione di velocità fa sì che la loro velocità diventi 0, vengono trattenuti."
+      ],
+      "higherLevels": null
+    },
+    "struggle": {
+      "sourceName": "Struggle",
+      "name": "Scontro",
+      "description": [
+        "Questa mossa è conosciuta da tutti i Pokémon e può essere utilizzata in qualsiasi momento. Sferri un colpo senz'armi o usi un'arma improvvisata da vicino o a distanza per danneggiare una creatura. Effettua un tiro per colpire in mischia o a distanza, infliggendo danni pari a 2 + MOVE danni senza tipo in caso di colpo. Il danno di questa mossa non può essere aumentato da un'altra mossa, oggetto o abilità."
+      ],
+      "higherLevels": null
+    },
+    "struggle-bug": {
+      "sourceName": "Struggle Bug",
+      "name": "Entomoblocco",
+      "description": [
+        "Resisti a un attacco, combattendo contro una creatura. Quando vieni colpito da un attacco in mischia, puoi usare una reazione per reagire immediatamente con un tuo tiro per colpire, infliggendo 1d6 + MOVE danni da Coleottero in caso di colpo."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 1d10 al livello 5, 2d8 al livello 10 e 5d4 al livello 17."
+    },
+    "stuff-cheeks": {
+      "sourceName": "Stuff Cheeks",
+      "name": "Riempiguance",
+      "description": [
+        "Consumi un alimento trattenuto, ottenendone gli effetti. Inoltre, il tuo CA aumenta di 2 per 10 minuti. Il bonus massimo CA che puoi ottenere in questo modo è 4. Questa mossa funziona anche in presenza di Unnerve o Magic Room."
+      ],
+      "higherLevels": null
+    },
+    "stun-spore": {
+      "sourceName": "Stun Spore",
+      "name": "Paralizzante",
+      "description": [
+        "Quando sei soggetto a un attacco in mischia, puoi usare la tua reazione per rilasciare una spora che tenta di stordire il tuo aggressore. La creatura deve effettuare un tiro salvezza su COS contro il tuo Movimento CD, rimanendo paralizzata in caso di fallimento."
+      ],
+      "higherLevels": null
+    },
+    "submission": {
+      "sourceName": "Submission",
+      "name": "Sottomissione",
+      "description": [
+        "Tenti di lottare con forza contro un bersaglio. Effettua un attacco in mischia, infliggendo 2d6 + MOVE danno da combattimento in caso di colpo, ma subendo un quarto del danno inflitto in caso di rinculo. In caso di colpo, il bersaglio viene afferrato. All'inizio di ogni suo turno, può tentare di scappare con un tiro salvezza su FOR contro il tuo Movimento CD. Mentre una creatura è afferrata, questa mossa può essere attivata nuovamente come azione bonus con un colpo automatico, infliggendo 2d6 danno da combattimento con un quarto del danno inflitto con rinculo senza tipo."
+      ],
+      "higherLevels": "I dadi di danno lanciati per questa mossa cambiano in 2d8 al livello 5, 4d6 al livello 10 e 6d6 al livello 17."
+    },
+    "substitute": {
+      "sourceName": "Substitute",
+      "name": "Sostituto",
+      "description": [
+        "Cedi un quarto dei tuoi attuali PF (arrotondati per difetto) in PF temporanei sotto forma di uno scudo. Durante questo periodo, lo scudo ti garantisce l'immunità alle NUOVE condizioni negative (incluse cose come prono, trattenuto, ecc.) e assorbe tutti i danni esterni che normalmente subiresti finché non viene distrutto. Lo scudo è considerato \"senza tipo\" per resistenza ai danni, vulnerabilità e immunità. Lo scudo e l'utilizzatore non possono essere curati mentre sono attivi e non assorbe condizioni autoinflitte o danni causati da ustioni, veleni o confusione preesistenti. Lo scudo si rompe quando viene ridotto a 0 PF e l'utilizzatore subisce il danno da traboccamento. Le mosse basate sul suono aggirano lo scudo (Supersonico, Fischio d'erba, ecc.)"
+      ],
+      "higherLevels": null
+    },
+    "sucker-punch": {
+      "sourceName": "Sucker Punch",
+      "name": "Sbigoattacco",
+      "description": [
+        "Sferra un pugno veloce prima che una creatura abbia la possibilità di attaccare. Quando sei preso di mira da un attacco in mischia, puoi usare la tua reazione per tentare di colpire una creatura prima che venga lanciato il suo attacco. Effettua un attacco in mischia, infliggendo 1d6 + MOVE danni oscuri in caso di colpo."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 1d12 al livello 5, 2d8 al livello 10 e 4d6 al livello 17."
+    },
+    "sunny-day": {
+      "sourceName": "Sunny Day",
+      "name": "Giornodisole",
+      "description": [
+        "Cambia il tempo in una forte luce solare per i round 5."
+      ],
+      "higherLevels": null
+    },
+    "sunsteel-strike": {
+      "sourceName": "Sunsteel Strike",
+      "name": "Astrocarica",
+      "description": [
+        "Colpisci il bersaglio con la forza di una meteora. Effettua un attacco in mischia, infliggendo 5d6 + MOVE danni acciaio in caso di colpo. Questa mossa ignora qualsiasi abilità della creatura bersaglio che ne ridurrebbe la capacità di colpire o di infliggere danno completo."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 4d10 al livello 5, 6d10 al livello 10 e 8d12 al livello 17."
+    },
+    "super-fang": {
+      "sourceName": "Super Fang",
+      "name": "Superzanna",
+      "description": [
+        "Ti sferri con un incredibile attacco con le zanne. Effettua un attacco in mischia, infliggendo 2d6 +MOVE danni normali in caso di colpo. In caso di colpi critici, invece di raddoppiare i dadi, puoi scegliere di infliggere un danno pari alla metà dell'attuale PF del bersaglio (fino a un massimo di 5 volte il tuo livello)."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d8 al livello 5, 4d6 al livello 10 e 6d6 al livello 17."
+    },
+    "supercell-slam": {
+      "sourceName": "Supercell Slam",
+      "name": "Elettrotuffo",
+      "description": [
+        "Elettrizzi il tuo corpo e cadi sul bersaglio. Effettua un attacco in mischia, infliggendo 2d8 + MOVE danni elettrici in caso di colpo. Se fallisci, subisci danni senza tipo pari al tuo bonus di competenza."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d10 al livello 5, 3d10 al livello 10 e 4d12 al livello 17."
+    },
+    "superpower": {
+      "sourceName": "Superpower",
+      "name": "Troppoforte",
+      "description": [
+        "Colpisci un bersaglio con una potenza incredibile, ma da un grande potere derivano grandi responsabilità. Effettua un attacco in mischia contro una creatura, infliggendo 4d6 + MOVE danno da combattimento in caso di colpo. Questa mossa ti esaurisce e i tuoi punteggi di abilità FOR e DES vengono entrambi ridotti di 10 fino alla fine del tuo turno successivo."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 5d6 al livello 5, 6d8 al livello 10 e 6d12 al livello 17."
+    },
+    "supersonic": {
+      "sourceName": "Supersonic",
+      "name": "Supersuono",
+      "description": [
+        "Emetti uno stridio acuto udibile solo dal bersaglio. Scegli un bersaglio nel raggio d'azione. Il bersaglio deve superare un tiro salvezza su SAG contro il tuo Movimento CD o rimanere confuso."
+      ],
+      "higherLevels": null
+    },
+    "surf": {
+      "sourceName": "Surf",
+      "name": "Surf",
+      "description": [
+        "Evochi un'onda in rapido movimento di fronte a te che si abbatte sulle creature in un cono 30 foot. Qualsiasi creatura coinvolta nell'esplosione deve effettuare un tiro salvezza su FOR, subendo 2d8 + MOVE danni da acqua e cadendo prono in caso di fallimento, o la metà di questi danni senza cadere prono in caso di successo."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d10 al livello 5, 3d10 al livello 10 e 4d12 al livello 17."
+    },
+    "surging-strikes": {
+      "sourceName": "Surging Strikes",
+      "name": "Idroraffica",
+      "description": [
+        "Colpisci il bersaglio tre volte con un unico movimento fluido. Effettua tre attacchi in mischia contro un singolo bersaglio. Ad ogni colpo, infliggi 1d6 + 5 + MOVE danni da acqua."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 1d8 al livello 5, 1d12 al livello 10 e 3d6 al livello 17."
+    },
+    "swagger": {
+      "sourceName": "Swagger",
+      "name": "Bullo",
+      "description": [
+        "Forza un bersaglio nel raggio d'azione a effettuare un salvataggio SAG contro il tuo Movimento CD. In caso di fallimento, il bersaglio è confuso, ma aggiunge +2 ai suoi tiri per colpire mentre è confuso."
+      ],
+      "higherLevels": null
+    },
+    "swallow": {
+      "sourceName": "Swallow",
+      "name": "Introenergia",
+      "description": [
+        "Assorbi l'energia accumulata per curare le tue ferite. Quando attivato dopo aver utilizzato Stockpile, riacquista un 1d6 base + PF di movimento. Il lancio del dado viene raddoppiato se vengono accumulati due turni di energia. Il lancio del dado viene triplicato se vengono accumulati tre turni di energia."
+      ],
+      "higherLevels": "Il tiro di dado curativo base per questa mossa cambia in 1d12 al livello 5, 2d8 al livello 10 e 4d6 al livello 17."
+    },
+    "sweet-kiss": {
+      "sourceName": "Sweet Kiss",
+      "name": "Dolcebacio",
+      "description": [
+        "Poni un bacio su una creatura, tentando di confonderla. Il bersaglio deve effettuare un tiro salvezza su CAR contro il tuo Movimento CD o rimanere confuso."
+      ],
+      "higherLevels": null
+    },
+    "sweet-scent": {
+      "sourceName": "Sweet Scent",
+      "name": "Profumino",
+      "description": [
+        "Rilasci un dolce odore diretto verso un bersaglio a gittata. Il bersaglio deve effettuare un tiro salvezza su CAR contro il tuo Movimento CD. In caso di fallimento, hai vantaggio sui tuoi prossimi due attacchi contro quel bersaglio."
+      ],
+      "higherLevels": null
+    },
+    "swift": {
+      "sourceName": "Swift",
+      "name": "Comete",
+      "description": [
+        "Lanci due proiettili contro qualsiasi creatura a tua scelta nel raggio d'azione. Non devono necessariamente prendere di mira la stessa creatura. Ogni colpo infligge 1d4 danni normali. Questa mossa prende di mira anche le creature durante le fasi di invulnerabilità di Scavare, Volare, Rimbalzare, ecc."
+      ],
+      "higherLevels": "Spara proiettili 4 al livello 5, proiettili 5 al livello 10 e proiettili 6 al livello 17."
+    },
+    "switcheroo": {
+      "sourceName": "Switcheroo",
+      "name": "Rapidscambio",
+      "description": [
+        "Le tue mani si muovono con incredibile velocità mentre tenti di scambiare gli oggetti tenuti con una creatura. Obbliga una creatura a effettuare un tiro salvezza su DES contro il tuo Movimento CD. In caso di fallimento, prendi l'oggetto trattenuto e lo sostituisci con il tuo. Se non hai un oggetto trattenuto, prendi semplicemente il suo senza sostituzione."
+      ],
+      "higherLevels": null
+    },
+    "swords-dance": {
+      "sourceName": "Swords Dance",
+      "name": "Danzaspada",
+      "description": [
+        "Quando attivi questa mossa, appare una spada che danza intorno a te, aumentando il tuo CA di 1. Come azione bonus in un turno futuro, puoi abbassare la concentrazione per rilasciare questa spada e lanciare un attacco a distanza contro un bersaglio entro 30 feet da te, infliggendo 2d6 + MOVE danno normale con un colpo."
+      ],
+      "higherLevels": "I dadi di danno per questa mossa cambiano in 2d8 al livello 5. Al livello 10, ora puoi creare due spade da +2 a CA e due attacchi a distanza. Al livello 17, i dadi di danno per ogni spada aumentano a 3d8."
+    },
+    "synchronoise": {
+      "sourceName": "Synchronoise",
+      "name": "Sincrumore",
+      "description": [
+        "Emetti una strana onda sonora che danneggia solo le creature che condividono un tipo con te. Qualsiasi creatura all'interno di 20 feet da te che condivide almeno uno dei tuoi tipi deve effettuare un tiro salvezza su COS contro il tuo Movimento CD, subendo 2d10 + MOVE danni psichici in caso di fallimento, o la metà di questi danni in caso di successo."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 3d8 al livello 5, 4d10 al livello 10 e 7d8 al livello 17."
+    },
+    "synthesis": {
+      "sourceName": "Synthesis",
+      "name": "Sintesi",
+      "description": [
+        "Ti rigeneri dall'interno, curando alcune delle tue ferite. Curati per i PF 1d12 + MOVE. Se attivato in pieno sole, raddoppia i dadi curativi."
+      ],
+      "higherLevels": "Il lancio dei dadi curativi per questa mossa cambia in 2d8 al livello 5, 2d12 al livello 10 e 6d6 al livello 17."
+    },
+    "syrup-bomb": {
+      "sourceName": "Syrup Bomb",
+      "name": "Bomba Sciroppata",
+      "description": [
+        "Hai innescato un'esplosione di sciroppo di caramelle appiccicose in un punto a portata di tiro. Ogni creatura entro 5ft da quel punto deve effettuare un tiro salvezza su DES contro il tuo Movimento CD, subendo 1d10 + MOVE danni erba in caso di fallimento, metà in caso di successo. In caso di fallimento, la creatura cade anche Prona.",
+        "Lo sciroppo copre quindi il terreno entro 5ft dal punto bersaglio per la durata. Una creatura che entra nell'area o termina il suo turno lì deve effettuare un tiro salvezza su DES contro il tuo Movimento CD, cadendo Prono in caso di fallimento."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d8 al livello 5, 5d4 al livello 10 e 4d8 al livello 17."
+    },
+    "tachyon-cutter": {
+      "sourceName": "Tachyon Cutter",
+      "name": "Tachiontaglio",
+      "description": [
+        "Lanci lame particellari contro l'avversario due volte di seguito. È garantito che questa mossa colpisca due volte, ciascuno per 1d4 + MOVE danno acciaio, a meno che durante la fase di invulnerabilità delle mosse Vola, Scava, Rimbalza, Tuffati, ecc."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 1d6 al livello 5, 1d10 al livello 10 e 2d8 al livello 17."
+    },
+    "tackle": {
+      "sourceName": "Tackle",
+      "name": "Azione",
+      "description": [
+        "Corri in avanti e vai a sbattere contro una creatura. Effettua un tiro per colpire in mischia contro un bersaglio, infliggendo 1d6 + MOVE danni normali in caso di colpo."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 1d10 al livello 5, 2d8 al livello 10 e 5d4 al livello 17."
+    },
+    "tail-glow": {
+      "sourceName": "Tail Glow",
+      "name": "Codadiluce",
+      "description": [
+        "La tua coda emette un lampo di luce, potenziando il tuo attacco. Per tutta la durata, raddoppia il danno STAB."
+      ],
+      "higherLevels": null
+    },
+    "tail-slap": {
+      "sourceName": "Tail Slap",
+      "name": "Spazzasberla",
+      "description": [
+        "Colpisci una creatura dotata di una coda dura e che colpisce rapidamente. Effettua un tiro per colpire in mischia, infliggendo 1d4 + MOVE danni normali in caso di colpo. Dopo aver colpito con successo un bersaglio, lancia uno d4. Con un risultato di 3 o 4, puoi immediatamente colpire di nuovo per un ulteriore danno normale 1d4. Continua questo processo finché non fallisci nel lanciare uno 3 o 4 sul tiro d4, fino a un massimo di quattro colpi aggiuntivi."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d4 al livello 5, 1d12 al livello 10 e 4d4 al livello 17."
+    },
+    "tail-whip": {
+      "sourceName": "Tail Whip",
+      "name": "Colpocoda",
+      "description": [
+        "Scuoti la coda verso un bersaglio, distraendolo e aprendo le sue difese. La creatura deve effettuare un tiro salvezza su SAG contro il tuo Movimento CD. In caso di fallimento, gli alleati aggiungono +1 a qualsiasi attacco con cui lo prendono di mira per la durata. Questo modificatore può essere cumulato se fallisce più tiri salvezza con la frusta di coda, fino a un massimo di +5."
+      ],
+      "higherLevels": null
+    },
+    "tailwind": {
+      "sourceName": "Tailwind",
+      "name": "Ventoincoda",
+      "description": [
+        "Scatti un turbine turbolento che aumenta la velocità di tutti gli alleati in un cerchio di 30 piede di raggio, centrato su di te. La velocità di te e di qualsiasi alleato che inizia il turno all'interno dell'area raddoppia fino alla fine del turno."
+      ],
+      "higherLevels": null
+    },
+    "take-down": {
+      "sourceName": "Take Down",
+      "name": "Riduttore",
+      "description": [
+        "Sacrifichi la tua posizione per abbattere una creatura. Effettua un tiro per colpire in mischia. Se colpisci, infliggi 2d8 + MOVE danno normale, subendo un quarto del danno totale (arrotondato per difetto) in un rinculo senza tipo."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d10 al livello 5, 3d10 al livello 10 e 4d12 al livello 17."
+    },
+    "take-heart": {
+      "sourceName": "Take Heart",
+      "name": "Baldimpulso",
+      "description": [
+        "Come reazione al ricevimento di una condizione di stato negativa o all'essere spaventato, guarisci te stesso da quella condizione e diventa immune alla ricezione di nuove condizioni di stato o all'essere spaventato fino alla fine del tuo turno successivo. Inoltre, fino alla fine del tuo turno successivo, ottieni vantaggio sui tiri per colpire effettuati con SAG o CAR come Potere di Movimento e su tutti i tiri salvezza SAG o CAR."
+      ],
+      "higherLevels": null
+    },
+    "tar-shot": {
+      "sourceName": "Tar Shot",
+      "name": "Colpocatrame",
+      "description": [
+        "Lanci catrame appiccicoso sul bersaglio. Effettua un tiro per colpire a distanza, infliggendo 1d4 + MOVE danni da roccia. In caso di colpo, la velocità del bersaglio viene ridotta di 10ft per il resto dell'incontro. Questa diminuzione può essere cumulativa finché la velocità della creatura non diventa 0.",
+        "Inoltre, mentre è affetto dal catrame, il bersaglio è vulnerabile ai danni da fuoco. Se era resistente, ora subisce danni normali. Se era immune, rimane immune.",
+        "Il bersaglio può intraprendere un'azione per rimuovere qualsiasi catrame dalla sua faccia, ripristinando l'effetto."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d4 al livello 5, 1d12 al livello 10 e 4d4 al livello 17."
+    },
+    "taunt": {
+      "sourceName": "Taunt",
+      "name": "Provocazione",
+      "description": [
+        "Provochi una creatura affinché ti attacchi solo con attacchi dannosi. Scegli un bersaglio nel raggio d'azione e forzalo a effettuare un tiro salvezza su SAG contro il tuo Movimento CD. In caso di fallimento, il bersaglio può usare solo attacchi dannosi che ti prendono di mira per la durata."
+      ],
+      "higherLevels": null
+    },
+    "tearful-look": {
+      "sourceName": "Tearful Look",
+      "name": "Occhionilucidi",
+      "description": [
+        "Ti riempi gli occhi di lacrime per far perdere il loro spirito combattivo a tutte le creature nel raggio d'azione. Tutte le creature nel raggio d'azione devono effettuare un tiro salvezza su CAR contro il tuo Movimento CD. In caso di fallimento, aggiungono -1 a qualsiasi attacco effettuato per la durata. Questo modificatore può essere cumulato se una creatura influenzata fallisce più tiri salvezza Sguardo Lacrimoso, fino a un massimo di -5."
+      ],
+      "higherLevels": null
+    },
+    "teatime": {
+      "sourceName": "Teatime",
+      "name": "Ora del Tè",
+      "description": [
+        "È l'ora del tè! Tutte le creature nel raggio d'azione devono effettuare un tiro salvezza su CAR contro il tuo Movimento CD. In caso di fallimento, la creatura deve spendere la sua azione successiva consumando la bacca trattenuta. Questa mossa non ha effetto sulla creatura se non ha in mano una bacca. Inoltre consumi immediatamente la bacca trattenuta. Al di fuori del combattimento, questa mossa può essere utilizzata una volta durante un riposo breve per garantire a ciascun alleato un dado vita di recupero gratuito."
+      ],
+      "higherLevels": null
+    },
+    "techno-blast": {
+      "sourceName": "Techno Blast",
+      "name": "Tecnobotto",
+      "description": [
+        "Spari un potente raggio di pura luce. La linea è lunga 80 feet e larga 5 feet, e tutte le creature coinvolte nell'esplosione devono effettuare un tiro salvezza su DES contro il tuo Movimento CD, subendo 3d10 + MOVE danni in caso di fallimento, o la metà di danni in caso di successo. Il tipo di danno dipende dal Drive posseduto dall'utente. (Brucia - Fuoco, Gelo - Ghiaccio, Douse - Acqua, Shock - Elettrico)"
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 6d6 al livello 5, 8d6 al livello 10 e 7d12 al livello 17."
+    },
+    "teeter-dance": {
+      "sourceName": "Teeter Dance",
+      "name": "Strampadanza",
+      "description": [
+        "Inizi a eseguire una danza difficile, confondendo tutte le creature nel raggio d'azione. Le creature all'interno di 20 feet devono effettuare un tiro salvezza su SAG contro il tuo Movimento CD, diventando confuse in caso di fallimento."
+      ],
+      "higherLevels": null
+    },
+    "telekinesis": {
+      "sourceName": "Telekinesis",
+      "name": "Telecinesi",
+      "description": [
+        "Usi il tuo potere psichico per tentare di tenere una creatura sopra il terreno, rendendola vulnerabile agli attacchi. Obbliga una creatura nel raggio d'azione a effettuare un tiro salvezza su COS contro il tuo Movimento CD. In caso di fallimento, la creatura viene afferrata e trattenuta per tutta la durata, incapace di liberarsi finché si mantiene la concentrazione. Mentre è in lotta, la creatura è considerata sollevata."
+      ],
+      "higherLevels": null
+    },
+    "teleport": {
+      "sourceName": "Teleport",
+      "name": "Teletrasporto",
+      "description": [
+        "Scompari dalla vista e riappari in un punto non occupato entro la gittata. Nelle battaglie tra creature selvagge, questa mossa può essere attivata per contare automaticamente come un singolo successo in una prova di gruppo DES per scappare."
+      ],
+      "higherLevels": null
+    },
+    "temper-flare": {
+      "sourceName": "Temper Flare",
+      "name": "Rabbia Bruciante",
+      "description": [
+        "Spinto dalla disperazione, attacchi il bersaglio. Effettua un attacco in mischia, infliggendo 2d4 + MOVE danni da fuoco in caso di colpo. Se hai mancato un tiro per colpire nell'ultimo turno, aggiungi un ulteriore dado per i danni al tuo tiro per i danni."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d6 al livello 5, 2d8 al livello 10 e 3d10 al livello 17."
+    },
+    "tera-blast": {
+      "sourceName": "Tera Blast",
+      "name": "Terascoppio",
+      "description": [
+        "Scateni il potere del tuo tipo tera come un raggio focalizzato di energia elementale. Effettua un attacco a distanza contro una creatura, infliggendo 2d6 + MOVE danni al colpo. Se sei terastallizzato, il tipo di questo danno è lo stesso del tuo tipo tera. Altrimenti, è normale."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d8 al livello 5, 4d6 al livello 10 e 6d6 al livello 17."
+    },
+    "tera-starstorm": {
+      "sourceName": "Tera Starstorm",
+      "name": "Teracluster",
+      "description": [
+        "Con il potere dei tuoi cristalli bombardi ed elimini il bersaglio. Scegli un punto che puoi vedere nel raggio d'azione. Ogni creatura in una sfera con raggio 20ft centrata sul punto effettua un tiro salvezza su DES contro il tuo Movimento CD. Una creatura subisce 2d12 + MOVE danni stellari se fallisce il tiro salvezza o la metà se lo supera.",
+        "Solo Terapagos può usare questa mossa. Se Terapagos è nella sua Forma Stellare, allora puoi scegliere quattro punti invece di uno. Una creatura in un'area di più di un tera sfera viene influenzata solo una volta.",
+        "I Pokémon terastallizzati sono vulnerabili ai danni di tipo stellare. Altrimenti, tutte le creature di qualsiasi tipo subiscono danni normali."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 3d10 al livello 5, 7d6 al livello 10 e 8d8 al livello 17."
+    },
+    "terrain-pulse": {
+      "sourceName": "Terrain Pulse",
+      "name": "Campopulsar",
+      "description": [
+        "Utilizzi l'energia del terreno per attaccare. Quando sei entro gli effetti di un terreno speciale, puoi prendere di mira un qualsiasi numero di creature soggette allo stesso terreno (fino a una portata massima di 120ft). Ogni creatura bersaglio effettua un tiro salvezza su SAG contro il tuo Movimento CD, subendo 1d4 + MOVE danni in caso di fallimento o la metà in caso di successo. Il tipo di danno inflitto dipende dal tipo di terreno.",
+        "Se non sei soggetto ad alcun terreno speciale, il raggio di questa mossa è Self (raggio 30ft).",
+        {
+          "type": "tavolo",
+          "headers": [
+            "Terreno",
+            "Tipo di danno"
+          ],
+          "rows": [
+            [
+              "Nessun terreno",
+              "Normale"
+            ],
+            [
+              "Terreno elettrico",
+              "Elettrico"
+            ],
+            [
+              "Terreno erboso",
+              "Erba"
+            ],
+            [
+              "Terreno nebbioso",
+              "Fata"
+            ],
+            [
+              "Terreno psichico",
+              "Psichico"
+            ]
+          ]
+        }
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d4 al livello 5, 1d12 al livello 10 e 4d4 al livello 17."
+    },
+    "thief": {
+      "sourceName": "Thief",
+      "name": "Furto",
+      "description": [
+        "Ti scagli con un attacco rapido che potrebbe rubare l'oggetto tenuto da una creatura. Effettua un attacco in mischia contro una creatura, infliggendo 1d10 + MOVE danni oscuri in caso di colpo. Se l'utente non ha alcun oggetto, il bersaglio deve effettuare un salvataggio DES contro il tuo Movimento CD o farsi rubare l'oggetto dall'utente."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d8 al livello 5, 5d4 al livello 10 e 4d8 al livello 17."
+    }
+  }
+}

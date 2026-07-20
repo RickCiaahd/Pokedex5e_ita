@@ -43,3 +43,5 @@ jobs:
           git add -A
           git commit -m 'Genera la base italiana delle mosse 451-650'
           git push origin HEAD:translation/moves-451-650
+
+# Triggered after opening PR #95.

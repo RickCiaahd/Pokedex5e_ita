@@ -1,0 +1,89 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/items.json",
+  "nameSources": [
+    "https://wiki.pokemoncentral.it/Elenco_degli_strumenti_in_altre_lingue",
+    "https://wiki.pokemoncentral.it/Elenco_degli_strumenti_chiave_in_nona_generazione",
+    "https://wiki.pokemoncentral.it/Elenco_degli_strumenti_in_Pok%C3%A9mon_GO",
+    "https://wiki.pokemoncentral.it/Styler_di_cattura",
+    "https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/item_names.csv"
+  ],
+  "type": "trainer gear",
+  "range": {
+    "start": 338,
+    "end": 347
+  },
+  "localizedCount": 10,
+  "items": {
+    "canteen": {
+      "sourceName": "Canteen",
+      "name": "Borraccia",
+      "description": [
+        "Una borraccia di metallo o plastica per trasportare acqua o altri liquidi."
+      ]
+    },
+    "energy-cell": {
+      "sourceName": "Energy Cell",
+      "name": "Cella energetica",
+      "description": [
+        "Un piccolo disco piatto usato per fornire energia a diversi oggetti alimentati."
+      ]
+    },
+    "flashlight": {
+      "sourceName": "Flashlight",
+      "name": "Torcia elettrica",
+      "description": [
+        "Proietta luce intensa in un cono di 15 piedi e luce fioca per ulteriori 30 piedi. Richiede una nuova cella energetica dopo 4 ore di utilizzo."
+      ]
+    },
+    "solar-flashlight": {
+      "sourceName": "Solar Flashlight",
+      "name": "Torcia solare",
+      "description": [
+        "Proietta luce intensa in un cono di 15 piedi e luce fioca per ulteriori 30 piedi. Si ricarica alla luce del sole: per ogni ora di ricarica ottiene un'ora di utilizzo, fino a un massimo di 4 ore."
+      ]
+    },
+    "flint-and-steel": {
+      "sourceName": "Flint and Steel",
+      "name": "Pietra focaia e acciarino",
+      "description": [
+        "Un pezzo d'acciaio a forma di «D» e una pietra focaia quadrata, usati per produrre una scintilla e accendere un fuoco."
+      ]
+    },
+    "climbers-kit": {
+      "sourceName": "Climber's Kit",
+      "name": "Kit da scalatore",
+      "description": [
+        "Include chiodi speciali, punte per gli stivali, guanti e un'imbracatura. Conferisce vantaggio alle prove per scalare e, in caso di fallimento, impedisce di cadere per più di 25 piedi. Aggiungi il tuo modificatore di competenza alle prove correlate."
+      ]
+    },
+    "cooking-kit": {
+      "sourceName": "Cooking Kit",
+      "name": "Kit da cucina",
+      "description": [
+        "Include pentole, padelle, utensili e stampi da cucina. Si usa per preparare cibo in una cucina o in una struttura simile. Aggiungi il tuo modificatore di competenza alle prove correlate."
+      ]
+    },
+    "divers-kit": {
+      "sourceName": "Diver's Kit",
+      "name": "Kit da sub",
+      "description": [
+        "Include muta, cintura da sub, maschera, pinne e bombole d'aria. Quando lo indossi, la tua velocità di movimento si riduce di 20 piedi, ma ottieni una velocità di nuoto di 30 piedi. Inoltre disponi di 2 ore d'aria, puoi immergerti fino a 200 piedi di profondità e non subisci gli effetti della temperatura dell'acqua."
+      ]
+    },
+    "gardeners-kit": {
+      "sourceName": "Gardener's Kit",
+      "name": "Kit da giardinaggio",
+      "description": [
+        "Include cesoie, guanti, una vanga e un annaffiatoio. Contiene tutto il necessario per raccogliere e curare piante, bacche e alberi di Ghicocche. Aggiungi il tuo modificatore di competenza alle prove correlate."
+      ]
+    },
+    "lantern": {
+      "sourceName": "Lantern",
+      "name": "Lanterna",
+      "description": [
+        "Proietta luce intensa entro un raggio di 30 piedi e luce fioca per ulteriori 30 piedi. Richiede una nuova cella energetica dopo 4 ore di utilizzo."
+      ]
+    }
+  }
+}

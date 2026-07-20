@@ -46,11 +46,11 @@
             ],
             [
               "Roccia di Re",
-              "Fa diventare FLINCHED"
+              "Fa tentennare"
             ],
             [
               "Affilodente",
-              "Fa diventare FLINCHED"
+              "Fa tentennare"
             ],
             [
               "Velenaculeo",
@@ -73,7 +73,7 @@
       "sourceName": "Floral Healing",
       "name": "Cura Floreale",
       "description": [
-        "Trasmetti energia curativa a una creatura a gittata, facendole recuperare 2d8 + MOVE PF. Se il terreno è erboso, raddoppia il tuo modificatore MOVE."
+        "Trasmetti energia curativa a una creatura a gittata, facendole recuperare 2d8 + MOVE punti ferita. Se il terreno è erboso, raddoppia il tuo modificatore MOVE."
       ],
       "higherLevels": "Il dado di questa mossa diventa 2d10 al livello 5, 3d10 al livello 10 e 4d12 al livello 17."
     },
@@ -81,7 +81,7 @@
       "sourceName": "Flower Shield",
       "name": "Fiordifesa",
       "description": [
-        "Grandi fiori sbocciano dagli alleati di tipo Erba a gittata, rafforzandone le difese. Per 1 minuto, finché mantieni la concentrazione, gli alleati di tipo Erba entro 15 piedi da te ottengono +2 alla CA."
+        "Grandi fiori sbocciano dagli alleati di tipo Erba a gittata, rafforzandone le difese. Per un minuto, finché mantieni la concentrazione, gli alleati di tipo Erba entro 15 piedi da te ottengono +2 alla CA."
       ],
       "higherLevels": null
     },

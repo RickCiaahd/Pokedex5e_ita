@@ -393,7 +393,7 @@
       "name": "Tentacolock",
       "description": [
         "Effettua una prova di lotta contro il bersaglio. Se hai successo, la sua CA si riduce di 1. All'inizio di ogni tuo turno puoi usare un'azione gratuita per ridurre di un ulteriore 1 la CA del bersaglio afferrato con questa mossa. La riduzione è cumulabile fino a 5 volte, per un massimo di -5 alla CA.",
-        "La CA del bersaglio torna al valore normale quando la presa viene rilasciata o spezzata."
+        "Quando la presa viene rilasciata o spezzata, la riduzione della CA del bersaglio torna a 0."
       ],
       "higherLevels": null
     },
@@ -454,7 +454,7 @@
       "sourceName": "Outrage",
       "name": "Oltraggio",
       "description": [
-        "Entri in una furia incontrollabile per 3 round. La mossa colpisce automaticamente e infligge 1d6 + MOVE danni di tipo Drago nel primo round, 2d6 + MOVE nel secondo e 4d6 + MOVE nel terzo. La mossa termina se perdi la concentrazione o diventi incapacitato. Quando termina, dopo il terzo round o per la perdita di concentrazione, diventi confuso."
+        "Entri in una furia incontrollabile per tre round. La mossa colpisce automaticamente e infligge 1d6 + MOVE danni di tipo Drago nel primo round, 2d6 + MOVE nel secondo e 4d6 + MOVE nel terzo. La mossa termina se perdi la concentrazione o diventi incapacitato. Quando termina, dopo il terzo round o per la perdita di concentrazione, diventi confuso."
       ],
       "higherLevels": "Il dado usato da questa mossa diventa d8 al livello 5, d10 al livello 10 e d12 al livello 17."
     },

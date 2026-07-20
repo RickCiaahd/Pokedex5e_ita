@@ -40,7 +40,7 @@
       "sourceName": "Rage",
       "name": "Ira",
       "description": [
-        "Entri in preda all'ira e attacchi con furia implacabile. Finché dura, ottieni +1 ai tiri per i danni, una sola volta per mossa, hai resistenza ai danni di tipo Normale e vantaggio alle prove di FOR. L'ira termina se perdi la concentrazione oppure se concludi il turno senza aver attaccato una creatura ostile né aver subito danni dal tuo turno precedente."
+        "Entri in preda all'ira e attacchi con furia implacabile. Finché dura, ottieni +1 ai tiri per i danni, una sola volta per mossa, hai resistenza ai danni di tipo Normale e vantaggio alle prove di Forza. L'ira termina se perdi la concentrazione oppure se concludi il turno senza aver attaccato una creatura ostile né aver subito danni dal tuo turno precedente."
       ],
       "higherLevels": "Quando sei in preda all’ira, il bonus ai danni diventa +2 al livello 5, +4 al livello 10 e +6 al livello 17."
     },

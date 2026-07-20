@@ -112,7 +112,7 @@
       "sourceName": "Pollen Puff",
       "name": "Sferapolline",
       "description": [
-        "Scagli una sfera di polline contro un bersaglio a gittata. Effettua un attacco a distanza, infliggendo 2d8 + MOVE danni di tipo Coleottero se colpisci. Se il bersaglio è un alleato, la mossa colpisce automaticamente e gli fa recuperare PF pari ai danni che avrebbe inflitto."
+        "Scagli una sfera di polline contro un bersaglio a gittata. Effettua un attacco a distanza, infliggendo 2d8 + MOVE danni di tipo Coleottero se colpisci. Se il bersaglio è un alleato, la mossa colpisce automaticamente e gli restituisce salute per un ammontare pari ai danni che avrebbe inflitto."
       ],
       "higherLevels": "Il dado di danno di questa mossa diventa 2d10 al livello 5, 3d10 al livello 10 e 4d12 al livello 17."
     },

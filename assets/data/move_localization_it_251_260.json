@@ -1,0 +1,129 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/moves.json",
+  "nameSources": [
+    "https://wiki.pokemoncentral.it/Elenco_delle_mosse_in_altre_lingue",
+    "https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/move_names.csv"
+  ],
+  "type": "move",
+  "range": {
+    "start": 251,
+    "end": 260
+  },
+  "localizedCount": 10,
+  "items": {
+    "fleur-cannon": {
+      "sourceName": "Fleur Cannon",
+      "name": "Cannonfiore",
+      "description": [
+        "Scateni un raggio di energia lungo 80 piedi e largo 5 piedi. Tutte le creature lungo il suo percorso devono effettuare un tiro salvezza su DES contro la tua CD della mossa, subendo 5d4 + MOVE danni di tipo Folletto se lo falliscono, o la metà dei danni se lo superano. Dopo aver attivato questa mossa, effettui con svantaggio il tuo prossimo attacco. Se il prossimo attacco richiede un tiro salvezza, il bersaglio o i bersagli hanno vantaggio."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 3d10 al livello 5, 5d8 al livello 10 e 8d8 al livello 17."
+    },
+    "fling": {
+      "sourceName": "Fling",
+      "name": "Lancio",
+      "description": [
+        "Sacrifichi lo strumento che impugni per scagliarlo contro una creatura. Effettua un attacco a distanza. Se colpisci, i danni di tipo Buio inflitti sono pari al prezzo dello strumento nel manuale diviso per 100, arrotondato per difetto, più STAB se applicabile. Inoltre, determinati strumenti producono effetti aggiuntivi quando questa mossa colpisce. Dopo averla attivata, che l'attacco colpisca o manchi, lo strumento scompare.",
+        {
+          "type": "table",
+          "headers": [
+            "Strumento",
+            "Effetto"
+          ],
+          "rows": [
+            [
+              "Fiammosfera",
+              "Scotta"
+            ],
+            [
+              "Tossicsfera",
+              "Avvelena gravemente"
+            ],
+            [
+              "Elettropalla",
+              "Paralizza"
+            ],
+            [
+              "Roccia di Re",
+              "Fa diventare FLINCHED"
+            ],
+            [
+              "Affilodente",
+              "Fa diventare FLINCHED"
+            ],
+            [
+              "Velenaculeo",
+              "Avvelena"
+            ]
+          ]
+        }
+      ],
+      "higherLevels": null
+    },
+    "flip-turn": {
+      "sourceName": "Flip Turn",
+      "name": "Virata",
+      "description": [
+        "Dopo aver attaccato, lasci il posto a un alleato. Effettua un attacco in mischia, infliggendo 1d12 + MOVE danni di tipo Acqua se colpisci. Dopo l'attivazione della mossa, l'Allenatore deve sostituire l'utilizzatore come azione gratuita."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d8 al livello 5, 2d12 al livello 10 e 6d6 al livello 17."
+    },
+    "floral-healing": {
+      "sourceName": "Floral Healing",
+      "name": "Cura Floreale",
+      "description": [
+        "Trasmetti energia curativa a una creatura a gittata, facendole recuperare 2d8 + MOVE PF. Se il terreno è erboso, raddoppia il tuo modificatore MOVE."
+      ],
+      "higherLevels": "Il dado di questa mossa diventa 2d10 al livello 5, 3d10 al livello 10 e 4d12 al livello 17."
+    },
+    "flower-shield": {
+      "sourceName": "Flower Shield",
+      "name": "Fiordifesa",
+      "description": [
+        "Grandi fiori sbocciano dagli alleati di tipo Erba a gittata, rafforzandone le difese. Per 1 minuto, finché mantieni la concentrazione, gli alleati di tipo Erba entro 15 piedi da te ottengono +2 alla CA."
+      ],
+      "higherLevels": null
+    },
+    "flower-trick": {
+      "sourceName": "Flower Trick",
+      "name": "Prestigiafiore",
+      "description": [
+        "Scagli contro il bersaglio un bouquet di fiori truccato. Il bersaglio effettua un tiro salvezza su DES contro la tua CD della mossa, subendo 1d12 + MOVE danni di tipo Erba se lo fallisce, o la metà dei danni se lo supera. Ai fini di altri effetti o attivazioni, questo attacco è considerato un colpo critico."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d8 al livello 5, 2d12 al livello 10 e 6d6 al livello 17."
+    },
+    "fly": {
+      "sourceName": "Fly",
+      "name": "Volo",
+      "description": [
+        "Voli in alto per preparare un attacco in picchiata. Quando attivi questa mossa, consumi 10 piedi del tuo movimento per scomparire e salire verso il cielo, rimanendo invulnerabile fino al tuo turno successivo. Durante questo periodo sei immune ai danni e agli effetti di ogni mossa. Se non ti rimane movimento oppure sei afferrato o trattenuto prima di attivare la mossa, questa fallisce. Nel turno successivo, come azione, riappari ed effettui con vantaggio un attacco in mischia in picchiata contro una creatura a gittata, infliggendo 2d8 + MOVE danni di tipo Volante se colpisci."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d10 al livello 5, 3d10 al livello 10 e 4d12 al livello 17."
+    },
+    "flying-press": {
+      "sourceName": "Flying Press",
+      "name": "Schiacciatuffo",
+      "description": [
+        "Ti tuffi contro una creatura con riflessi tanto rapidi da poter cambiare il tipo dell'attacco quando la raggiungi. Effettua un attacco in mischia contro un bersaglio, infliggendo 4d4 + MOVE danni di tipo Volante oppure Lotta, a tua scelta. Puoi aggiungere STAB a questa mossa soltanto se sei di tipo Lotta."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d12 al livello 5, 4d8 al livello 10 e 8d6 al livello 17."
+    },
+    "focus-blast": {
+      "sourceName": "Focus Blast",
+      "name": "Focalcolpo",
+      "description": [
+        "Concentri la tua energia e la scateni contro una creatura. Effettua un attacco a distanza, infliggendo 2d10 + MOVE danni di tipo Lotta se colpisci. Con un risultato naturale di 19 o 20 al tiro per colpire, il prossimo attacco contro il bersaglio viene effettuato con vantaggio."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 3d8 al livello 5, 4d10 al livello 10 e 7d8 al livello 17."
+    },
+    "focus-energy": {
+      "sourceName": "Focus Energy",
+      "name": "Focalenergia",
+      "description": [
+        "Chiudi gli occhi e ti concentri sull'energia dentro di te prima di colpire. Per la durata, estendi di 2 il tuo intervallo di colpo critico, per esempio da 20 a 18+ oppure da 19+ a 17+. Questa mossa non è cumulabile."
+      ],
+      "higherLevels": null
+    }
+  }
+}

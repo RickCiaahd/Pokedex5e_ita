@@ -1,0 +1,15 @@
+name: Evolution catalog audit
+
+on:
+  pull_request:
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python tool/temporary_extract_evolution_items.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: evolution-items-source
+          path: docs/translation/temporary-evolution-items-source.json

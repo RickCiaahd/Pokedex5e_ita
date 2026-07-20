@@ -568,7 +568,7 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
       context: context,
       showDragHandle: true,
       builder: (_) => _StringPickerSheet(
-        title: 'Pack iniziale',
+        title: 'Dotazione iniziale',
         options: TrainerManualOptions.startingPacks,
         selected: _startingPack,
         displayNames: TrainerUiLocalization.startingPackLabels,
@@ -1132,9 +1132,9 @@ class _TrainerSheetMainColumn extends StatelessWidget {
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             ),
             _SheetInfoBox(
-              label: 'Bonus competenza',
+              label: 'Competenza',
               value: _signed(_trainerProficiencyBonus(trainerLevel)),
-              width: 92,
+              width: 108,
             ),
           ],
         ),
@@ -1228,22 +1228,22 @@ class _TrainerSheetMainColumn extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 _SheetChoiceBox(
-                  label: 'Pack iniziale',
+                  label: 'Dotazione iniziale',
                   value: startingPack.isEmpty
                       ? 'Scegli'
                       : TrainerUiLocalization.startingPackName(startingPack),
-                  detail: 'Equipaggiamento rapido. Lo zaino lo separiamo dopo.',
+                  detail: 'Equipaggiamento iniziale dell’Allenatore.',
                   onTap: onStartingPackTap,
                 ),
                 const SizedBox(height: 8),
                 _ManualBulletCard(
-                  title: 'Prossimi upgrade',
+                  title: 'Prossimi avanzamenti',
                   bullets: [
                     nextPokeslotLevel == null
-                        ? 'Pokéslot: massimo gia raggiunto.'
+                        ? 'Pokéslot: massimo già raggiunto.'
                         : 'Nuovo Pokéslot al livello $nextPokeslotLevel.',
                     nextControlLevel == null
-                        ? 'Controllo SR: massimo gia raggiunto.'
+                        ? 'Controllo SR: massimo già raggiunto.'
                         : 'Nuovo limite SR al livello $nextControlLevel.',
                   ],
                 ),
@@ -1666,7 +1666,7 @@ class _TrainerProgressionColumn extends StatelessWidget {
         final feature = _trainerPathFeatureFor(level);
         slots.add(
           _ProgressionChoiceBox(
-            title: 'Privilegio del Path',
+            title: 'Privilegio del Percorso',
             level: level,
             value: feature == null
                 ? (trainerPath.isEmpty
@@ -1735,7 +1735,7 @@ class _TrainerProgressionColumn extends StatelessWidget {
   String _specializationDetail(int index) {
     final specialization = _specializationAt(index);
     if (specialization.isEmpty) {
-      return 'Tocca il box e scegli dal pool disponibile.';
+      return 'Tocca il riquadro e scegli dall’elenco disponibile.';
     }
 
     return TrainerUiLocalization.visibleText(

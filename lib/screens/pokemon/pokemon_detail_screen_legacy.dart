@@ -2526,8 +2526,11 @@ class _TraitsView extends StatelessWidget {
           title: 'Dettagli',
           child: Column(
             children: [
-              _InfoRow(label: 'Taglia', value: pokemon.size),
-              _InfoRow(label: 'Velocità', value: '${pokemon.speed} ft'),
+              _InfoRow(
+                label: 'Taglia',
+                value: TrainerUiLocalization.sizeName(pokemon.size),
+              ),
+              _InfoRow(label: 'Velocità', value: '${pokemon.speed} piedi'),
               _InfoRow(label: 'Dado vita', value: 'd${pokemon.hitDice}'),
               _InfoRow(label: 'Competenza', value: '+$proficiency'),
               _InfoRow(
@@ -2536,22 +2539,32 @@ class _TraitsView extends StatelessWidget {
               ),
               _InfoRow(
                 label: 'Tiri salvezza',
-                value: pokemon.savingThrows.join(', '),
+                value: pokemon.savingThrows
+                    .map(TrainerUiLocalization.abilityAbbreviation)
+                    .join(', '),
               ),
               _InfoRow(
                 label: 'Competenze',
-                value: [...pokemon.skills, ...?slot?.extraSkills].join(', '),
+                value: [
+                  ...pokemon.skills,
+                  ...?slot?.extraSkills,
+                ].map(TrainerUiLocalization.skillName).join(', '),
               ),
               _InfoRow(
                 label: 'Natura',
-                value: slot?.nature ?? 'Nessuna natura',
+                value: TrainerUiLocalization.natureName(
+                  slot?.nature ?? 'No Nature',
+                ),
               ),
               _InfoRow(label: 'Forma', value: slot?.formName ?? '-'),
               _InfoRow(
                 label: 'Cromatico',
-                value: slot?.isShiny == true ? 'Si' : 'No',
+                value: slot?.isShiny == true ? 'Sì' : 'No',
               ),
-              _InfoRow(label: 'Sesso', value: slot?.gender ?? '-'),
+              _InfoRow(
+                label: 'Sesso',
+                value: TrainerUiLocalization.genderName(slot?.gender ?? '-'),
+              ),
             ],
           ),
         ),

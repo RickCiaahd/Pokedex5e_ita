@@ -40,6 +40,10 @@ void main() {
       'Cambio Rapido',
     );
     expect(TrainerUiLocalization.featureName('Follow Me'), 'Sonoqui');
+    expect(TrainerUiLocalization.natureName('Adamant'), 'Decisa');
+    expect(TrainerUiLocalization.natureName('Jolly'), 'Allegra');
+    expect(TrainerUiLocalization.sizeName('Medium'), 'Media');
+    expect(TrainerUiLocalization.genderName('Female'), 'Femmina');
   });
 
   test('la UI non reintroduce le principali etichette inglesi', () {
@@ -59,5 +63,7 @@ void main() {
     expect(trainerSheet, contains("title: 'ABILITÀ'"));
     expect(trainerSheet, contains("title: 'TIRI SALVEZZA'"));
     expect(trainerSheet, contains("title: 'AVANZAMENTO'"));
+    expect(trainerSheet, contains("title: 'Privilegio del Percorso'"));
+    expect(trainerSheet, contains("label: 'Dotazione iniziale'"));
   });
 }

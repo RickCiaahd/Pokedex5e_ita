@@ -9,6 +9,7 @@ Questo blocco confronta i 39 oggetti di tipo `evolution` presenti in `assets/dat
 - `Alola Stone` è una voce personalizzata del catalogo 5e senza una corrispondenza ufficiale uno-a-uno nei videogiochi e mantiene quindi il nome originale.
 - `Sweet` rappresenta nel catalogo una categoria aggregata: viene mostrato come **Bonbon**, mentre la descrizione riporta i sette strumenti ufficiali specifici.
 - Per `Metal Coat` viene usato **Metalcoperta**, denominazione riportata nella tabella multilingue di Pokémon Central e confermata dal catalogo italiano di PokéAPI.
+- Le descrizioni italiane conservano paragrafi, dadi, valori numerici, abbreviazioni tecniche e riferimenti alle regole presenti nella sorgente.
 
 ## Corrispondenze verificate
 

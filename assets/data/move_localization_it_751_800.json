@@ -1,0 +1,419 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/moves.json",
+  "nameSources": [
+    "https://wiki.pokemoncentral.it/Elenco_delle_mosse_in_altre_lingue",
+    "https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/move_names.csv"
+  ],
+  "type": "move",
+  "range": {
+    "start": 751,
+    "end": 800
+  },
+  "localizedCount": 50,
+  "items": {
+    "thousand-arrows": {
+      "sourceName": "Thousand Arrows",
+      "name": "Mille Frecce",
+      "description": [
+        "Evochi una raffica di frecce verdi per perforare le creature a gittata. Tutte le creature in un raggio di 30 piedi, centrato su un punto a gittata, devono effettuare un tiro salvezza su DES contro la tua CD della mossa, subendo 2d8 + MOVE danni di tipo Terra se colpiscono, o la metà dei danni se colpiscono. Le creature di tipo volante o quelle con Levitazione, Aumento magnetico o abilità simili POSSONO essere colpite da questa mossa. Qualsiasi creatura che fallisce il tiro salvezza cade a terra e ora è a terra. Le creature a terra sono suscettibili alle mosse di tipo terra finché non si rialzano, indipendentemente dal loro tipo o abilità."
+      ],
+      "higherLevels": "Il dado di danno per questa mossa diventa 2d10 al livello 5, 3d10 al livello 10 e 4d12 al livello 17."
+    },
+    "thousand-waves": {
+      "sourceName": "Thousand Waves",
+      "name": "Mille Onde",
+      "description": [
+        "Un'ondata di energia verde attraversa il campo di battaglia in un cono 60 piedi, centrato su di te. Qualsiasi creatura catturata nell'onda deve effettuare un tiro salvezza su DES contro la tua CD della mossa, subendo 2d8 + MOVE danni di tipo Terra se lo fallisce, o la metà dei danni se lo supera. Qualsiasi creatura che fallisce il tiro salvezza non può fuggire o essere scambiata finché rimani in battaglia."
+      ],
+      "higherLevels": "Il dado di danno per questa mossa diventa 2d10 al livello 5, 3d10 al livello 10 e 4d12 al livello 17."
+    },
+    "thrash": {
+      "sourceName": "Thrash",
+      "name": "Colpo",
+      "description": [
+        "Ti dibatti selvaggiamente, eseguendo diversi attacchi senza controllo. Effettua un attacco in mischia, infliggendo 1d10 + MOVE danni normali se colpisci. Dopo aver colpito con successo un bersaglio, lancia un d4. Con un risultato di 3 o 4, puoi immediatamente colpire di nuovo per un ulteriore danni di tipo Normale 1d10. Continua questo processo finché non fallisci nel lanciare 3 o 4 sul tiro d4, fino a un massimo di due colpi aggiuntivi. Alla fine di questo attacco, diventi confuso."
+      ],
+      "higherLevels": "I dadi di danno per questa mossa diventano 2d8 al livello 5, 2d10 al livello 10 e 4d6 al livello 17."
+    },
+    "throat-chop": {
+      "sourceName": "Throat Chop",
+      "name": "Colpo Infernale",
+      "description": [
+        "Ti concentri su un attacco alla gola del bersaglio. Effettua un attacco in mischia, infliggendo 2d6 + MOVE danni di tipo Buio se colpisci. Quando viene colpito, il bersaglio non è in grado di attivare attacchi basati sul suono per i successivi 1d4 turni."
+      ],
+      "higherLevels": "Il dado di danno per questa mossa diventa 2d8 al livello 5, 4d6 al livello 10 e 6d6 al livello 17."
+    },
+    "thunder": {
+      "sourceName": "Thunder",
+      "name": "Tuono",
+      "description": [
+        "Una potente energia elettrica si sprigiona da te, colpendo qualsiasi creatura nel raggio 20 piedi, centrata su di te. Le creature catturate nell'area devono effettuare un tiro salvezza su DES contro la tua CD della mossa, subendo 3d6 + MOVE danni di tipo Elettro se lo fallisce e la metà se lo supera. Le creature che falliscono il tiro salvezza di 5 o più rimangono paralizzate. Le creature a gittata che sono in volo o nella fase di invulnerabilità di Vola o Rimbalza subiscono il doppio del danno da questa mossa."
+      ],
+      "higherLevels": "Il dado di danno per questa mossa diventa 3d8 al livello 5, 6d6 al livello 10 e 7d8 al livello 17."
+    },
+    "thunder-cage": {
+      "sourceName": "Thunder Cage",
+      "name": "Elettrogabbia",
+      "description": [
+        "Crei una gabbia di elettricità che avvolge una creatura a gittata. Effettua un attacco a distanza. Se colpisci, il bersaglio subisce 1d6 + MOVE danni di tipo Elettro ed è trattenuto. All'inizio di ogni suo turno, può tentare di scappare con un tiro salvezza su DES contro la tua CD della mossa. Ad ogni turno successivo, se la creatura è ancora trattenuta, puoi usare nuovamente questa mossa (come azione) e colpire automaticamente."
+      ],
+      "higherLevels": "Il dado di danno per questa mossa diventa 1d10 al livello 5, 2d8 al livello 10 e 5d4 al livello 17."
+    },
+    "thunder-fang": {
+      "sourceName": "Thunder Fang",
+      "name": "Fulmindenti",
+      "description": [
+        "Mordi una creatura con zanne cariche di elettricità. Effettua un attacco in mischia, infliggendo 1d10 + MOVE danni di tipo Elettro se colpisci. Con un tiro per colpire naturale di 19 o 20, il bersaglio diventa paralizzato e FLINCHED."
+      ],
+      "higherLevels": "Il dado di danno per questa mossa diventa 2d8 al livello 5, 5d4 al livello 10 e 4d8 al livello 17."
+    },
+    "thunder-punch": {
+      "sourceName": "Thunder Punch",
+      "name": "Tuonopugno",
+      "description": [
+        "I tuoi pugni sono intrisi di energia elettrica. Effettua un attacco in mischia contro un bersaglio, infliggendo 1d12 + MOVE danni di tipo Elettro se colpisci. Con un tiro per colpire naturale di 19 o 20, il bersaglio è paralizzato."
+      ],
+      "higherLevels": "Il dado di danno per questa mossa diventa 2d8 al livello 5, 2d12 al livello 10 e 6d6 al livello 17."
+    },
+    "thunder-shock": {
+      "sourceName": "Thunder Shock",
+      "name": "Tuonoshock",
+      "description": [
+        "Si eroga una scossa elettrica a un bersaglio a portata. Effettua un attacco a distanza, infliggendo 1d6 + MOVE danni di tipo Elettro se colpisci."
+      ],
+      "higherLevels": "Il dado di danno per questa mossa diventa 1d12 al livello 5, 2d8 al livello 10 e 4d6 al livello 17."
+    },
+    "thunder-wave": {
+      "sourceName": "Thunder Wave",
+      "name": "Tuononda",
+      "description": [
+        "Invii un'onda di energia elettrica che circonda una creatura a gittata. Il bersaglio deve effettuare un tiro salvezza su COS contro la tua CD della mossa o rimanere paralizzato."
+      ],
+      "higherLevels": null
+    },
+    "thunderbolt": {
+      "sourceName": "Thunderbolt",
+      "name": "Fulmine",
+      "description": [
+        "Invii una potente scarica elettrica a un bersaglio a gittata. Effettua un attacco a distanza, infliggendo 2d8 + MOVE danni di tipo Elettro se colpisci. Con un tiro per colpire naturale di 19 o 20, il bersaglio è paralizzato."
+      ],
+      "higherLevels": "Il dado di danno per questa mossa diventa 2d10 al livello 5, 3d10 al livello 10 e 4d12 al livello 17."
+    },
+    "thunderclap": {
+      "sourceName": "Thunderclap",
+      "name": "Saetta",
+      "description": [
+        "Come reazione all'attacco con un attacco a distanza da parte di una creatura che puoi vedere a portata, puoi colpire per primo con una scossa elettrica. Effettua un attacco a distanza contro l'attaccante, infliggendo 1d6 + MOVE danni di tipo Elettro se colpisci. Il tuo tiro avviene prima del loro."
+      ],
+      "higherLevels": "Il dado di danno per questa mossa diventa 1d12 al livello 5, 2d8 al livello 10 e 4d6 al livello 17."
+    },
+    "thunderous-kick": {
+      "sourceName": "Thunderous Kick",
+      "name": "Calcio Tonante",
+      "description": [
+        "Travolgi il bersaglio con un movimento fulmineo prima di sferrare un calcio. Effettua un attacco in mischia contro un bersaglio, infliggendo 2d8 + MOVE danni di tipo Lotta se colpisci. Se colpisci, il bersaglio deve effettuare un tiro salvezza su COS contro la tua CD della mossa, venendo buttato a terra e respinto fino a 15 piedi se lo fallisce."
+      ],
+      "higherLevels": "Il dado di danno per questa mossa diventa 2d10 al livello 5, 3d10 al livello 10 e 4d12 al livello 17."
+    },
+    "tickle": {
+      "sourceName": "Tickle",
+      "name": "Solletico",
+      "description": [
+        "Dopo aver effettuato un attacco in mischia nel tuo turno, puoi usare un'azione bonus per solleticare il bersaglio. La creatura deve effettuare un tiro salvezza su COS contro la tua CD della mossa; se lo fallisce, diventa FLINCHED."
+      ],
+      "higherLevels": null
+    },
+    "tidy-up": {
+      "sourceName": "Tidy Up",
+      "name": "Pulizie",
+      "description": [
+        "Fai tutto il necessario per mantenere pulito questo spazio. Fino alla fine del tuo turno successivo, il prossimo tiro per colpire che effettuerai verrà effettuato con vantaggio. Le creature di tua scelta all'interno di 80 piedi da te che puoi vedere e che sono sotto l'effetto di Sostituto devono effettuare un tiro salvezza su COS contro la tua CD della mossa, terminando gli effetti di Sostituto se il tiro salvezza fallisce.",
+        "Per il minuto successivo, ogni volta che una creatura che puoi vedere entro 80 piedi da te usa Punte, Roccia Stealth, Ragnatela Adesiva, Punte Tossiche o Sostituto, puoi usare la tua reazione per costringere la creatura a effettuare un tiro salvezza su COS contro la tua CD della mossa. Se il tiro salvezza fallisce, la mossa svanisce senza alcun effetto; la creatura spende comunque un PP usando la mossa.",
+        "L'effetto di Tidy Up su chi lo usa persiste anche quando viene messo fuori combattimento. Puoi invocare la reazione di Tidy Up anche mentre vieni scambiato o inserito. Ad esempio, se un nemico usa Spikes come reazione al tuo cambio, puoi invocare la reazione di Tidy Up per tentare di dissipare Spikes prima che lo scambio venga completato."
+      ],
+      "higherLevels": null
+    },
+    "topsy-turvy": {
+      "sourceName": "Topsy-Turvy",
+      "name": "Sottosopra",
+      "description": [
+        "Scateni un'energia oscura che ha il potere di invertire i cambiamenti delle statistiche di una creatura. Obbliga una creatura a gittata a effettuare un tiro salvezza su CAR contro la tua CD della mossa. Se lo fallisce, qualsiasi modifica alle caratteristiche che attualmente influenza il bersaglio ha l'effetto opposto."
+      ],
+      "higherLevels": null
+    },
+    "torch-song": {
+      "sourceName": "Torch Song",
+      "name": "Canzone Ardente",
+      "description": [
+        "Spegni fiamme violente mentre canti una canzone. Scegli un numero qualsiasi di creature entro un raggio 20 piedi. Ogni creatura deve effettuare un tiro salvezza su CAR contro la tua CD della mossa. Se lo fallisce, la creatura subisce 1d10 + MOVE danni di tipo Fuoco, la metà se lo supera. Il valore CD per questa mossa aumenta di 1 per ogni turno consecutivo in cui viene utilizzato, fino a un massimo di +5, e si azzera dopo non essere stato utilizzato per un turno."
+      ],
+      "higherLevels": "Il dado di danno per questa mossa diventa 2d6 al livello 5, 5d4 al livello 10 e 5d6 al livello 17."
+    },
+    "torment": {
+      "sourceName": "Torment",
+      "name": "Attaccalite",
+      "description": [
+        "Invii un'energia oscura per tormentare una creatura a gittata che ti attacca. Quando vieni colpito da un attacco in mischia o a distanza, costringi il bersaglio a effettuare un tiro salvezza su SAG contro la tua CD della mossa. Se lo fallisce, il bersaglio non potrà usare la stessa mossa che ti ha colpito nel turno successivo."
+      ],
+      "higherLevels": null
+    },
+    "toxic": {
+      "sourceName": "Toxic",
+      "name": "Tossina",
+      "description": [
+        "Invii un acquazzone di pioggia potente e velenosa in un raggio 5 piedi, centrato su un punto entro il raggio d'azione. I bersagli nell'area devono effettuare un tiro salvezza su COS contro la tua CD della mossa o diventeranno gravemente avvelenati."
+      ],
+      "higherLevels": null
+    },
+    "toxic-spikes": {
+      "sourceName": "Toxic Spikes",
+      "name": "Fielepunte",
+      "description": [
+        "Evochi rapidamente una trappola di aculei velenosi attorno a una creatura che entra in battaglia. Quando una creatura viene messa in battaglia, puoi usare la tua reazione per forzare una creatura a effettuare un tiro salvezza su COS contro la tua CD della mossa, diventando avvelenato se lo fallisce. Se la creatura fallisce di 5 o più, diventa invece gravemente avvelenata."
+      ],
+      "higherLevels": null
+    },
+    "toxic-thread": {
+      "sourceName": "Toxic Thread",
+      "name": "Velenotela",
+      "description": [
+        "Lanci una serie di fili velenosi contro una creatura a gittata. Effettua un attacco a distanza contro un bersaglio, coprendolo con fili se colpisci. Finché i fili entrano in contatto con il bersaglio, quest'ultimo diventa avvelenato e la sua velocità viene ridotta di 10. Questa mossa è cumulabile a qualsiasi livello, tuttavia l'effetto veleno non influenza il bersaglio più di una volta. Se questa riduzione della velocità fa sì che la sua velocità diventi 0, il bersaglio viene trattenuto. Il bersaglio può usare un'azione per rimuovere i fili dal suo corpo, curando lo stato di avvelenamento."
+      ],
+      "higherLevels": null
+    },
+    "trailblaze": {
+      "sourceName": "Trailblaze",
+      "name": "Apripista",
+      "description": [
+        "Attacchi all'improvviso come se saltassi fuori dall'erba alta. Effettua un attacco in mischia, infliggendo 1d8 + MOVE danni di tipo Erba se colpisci. Con ogni colpo andato a segno con questa mossa, aumenta la tua velocità di movimento di 5 finché non diventi inabile, vieni sostituito o il combattimento termina. (Massimo di +30 alla velocità di movimento)"
+      ],
+      "higherLevels": "Il dado di danno per questa mossa diventa 2d6 al livello 5, 4d4 al livello 10 e 3d10 al livello 17."
+    },
+    "transform": {
+      "sourceName": "Transform",
+      "name": "Trasformazione",
+      "description": [
+        "Tenti di trasformarti in una copia quasi esatta di una creatura a gittata. La base SR del bersaglio deve poter essere controllata dal tuo allenatore, altrimenti la mossa fallirà. Per tutta la durata, copi il tipo del bersaglio, i punteggi di caratteristica, CA, abilità, velocità, sensi, abilità e mosse attuali. Mantieni i tuoi talenti, il tuo livello e il tuo PF (COS modificato non ha alcun impatto sul tuo PF)."
+      ],
+      "higherLevels": null
+    },
+    "tri-attack": {
+      "sourceName": "Tri Attack",
+      "name": "Tripletta",
+      "description": [
+        "Colpisci con un attacco simultaneo a tre raggi. Ogni creatura in un cono 30 piedi, centrato su di te, deve effettuare un tiro salvezza su DES contro la tua CD della mossa, subendo 2d6 + MOVE danni di tipo Normale se lo fallisce e la metà se lo supera. I bersagli che falliscono il tiro salvezza di 5 o più devono tirare un d4, ottenendo la condizione di stato come segue: 1. Il bersaglio viene bruciato. 2. Il bersaglio viene congelato. 3. Il bersaglio diventa paralizzato. 4. È necessario ripetere il lancio finché non appare un numero diverso da 4."
+      ],
+      "higherLevels": "Il dado di danno per questa mossa diventa 2d8 al livello 5, 4d6 al livello 10 e 6d6 al livello 17."
+    },
+    "trick": {
+      "sourceName": "Trick",
+      "name": "Raggiro",
+      "description": [
+        "Ti muovi rapidamente per tentare di scambiare gli oggetti tenuti con una creatura. Effettua un attacco in mischia contro una creatura, scambiando con essa gli oggetti tenuti se colpisci."
+      ],
+      "higherLevels": null
+    },
+    "trick-room": {
+      "sourceName": "Trick Room",
+      "name": "Distortozona",
+      "description": [
+        "Il mondo intorno a te sembra girare per un momento e l'intero campo di battaglia è colpito da una sensazione bizzarra. A partire dall’inizio del round di combattimento successivo all’attivazione di questa mossa, l’ordine di iniziativa viene permanentemente invertito."
+      ],
+      "higherLevels": null
+    },
+    "trick-or-treat": {
+      "sourceName": "Trick-or-Treat",
+      "name": "Halloween",
+      "description": [
+        "Tenti di spaventare lo spirito di una creatura a gittata. Obbliga una creatura a gittata a effettuare un tiro salvezza su CAR contro la tua CD della mossa. Se lo fallisce, il suo tipo viene cambiato in Fantasma durante i successivi tre turni di battaglia."
+      ],
+      "higherLevels": null
+    },
+    "triple-arrows": {
+      "sourceName": "Triple Arrows",
+      "name": "Triplodardo",
+      "description": [
+        "Scagli tre frecce contro lo stesso bersaglio a gittata. Effettua tre attacchi a distanza, ciascuno dei quali infligge 1d4 + MOVE danni di tipo Lotta se colpisce.",
+        "Il primo attacco mette a segno un colpo critico con un risultato naturale di 19 o 20. Il secondo riduce di 1 la CA del bersaglio fino alla fine del combattimento, cumulabile fino a 5 volte. Se il terzo colpisce, il bersaglio diventa FLINCHED."
+      ],
+      "higherLevels": "Il dado di danno per questa mossa diventa 1d6 al livello 5, 1d8 al livello 10 e 1d10 al livello 17."
+    },
+    "triple-axel": {
+      "sourceName": "Triple Axel",
+      "name": "Triplo Axel",
+      "description": [
+        "Colpisci con tre calci consecutivi. Effettua tre tiri per colpire in mischia in ordine, infliggendo 1d4 + MOVE danni di tipo Ghiaccio ad ogni colpo. Non appena un attacco fallisce, la mossa termina."
+      ],
+      "higherLevels": "Il dado di danno per questa mossa diventa 1d6 al livello 5, 1d8 al livello 10 e 2d6 al livello 17."
+    },
+    "triple-dive": {
+      "sourceName": "Triple Dive",
+      "name": "Triplo Tuffo",
+      "description": [
+        "Esegui una tripla immersione perfettamente sincronizzata. Effettua tre tiri per colpire in mischia contro un bersaglio, infliggendo 1d6 + MOVE danni di tipo Acqua a ogni colpo."
+      ],
+      "higherLevels": "Il dado di danno per questa mossa diventa 1d12 al livello 5, 2d8 al livello 10 e 4d6 al livello 17."
+    },
+    "triple-kick": {
+      "sourceName": "Triple Kick",
+      "name": "Triplocalcio",
+      "description": [
+        "Colpisci con tre calci consecutivi. Effettua tre tiri per colpire in mischia in ordine, infliggendo 1d4 + MOVE danni di tipo Lotta ad ogni colpo. Non appena un attacco fallisce, la mossa termina."
+      ],
+      "higherLevels": "Il dado di danno per questa mossa diventa 1d6 al livello 5, 1d8 al livello 10 e 2d6 al livello 17."
+    },
+    "trop-kick": {
+      "sourceName": "Trop Kick",
+      "name": "Tropicalcio",
+      "description": [
+        "Tenti di sferrare un calcio intenso di origini tropicali sul bersaglio. Effettua un attacco in mischia, infliggendo 1d12 + MOVE danni di tipo Erba se colpisci. Con un ruolo naturale di 16 o più, il bersaglio aggiunge -1 a qualsiasi attacco che effettua per il resto del combattimento. Questo modificatore può essere accumulato fino a un massimo di -3."
+      ],
+      "higherLevels": "Il dado di danno per questa mossa diventa 2d8 al livello 5, 2d12 al livello 10 e 6d6 al livello 17."
+    },
+    "trump-card": {
+      "sourceName": "Trump Card",
+      "name": "Asso",
+      "description": [
+        "Colpisci con un'esplosione di energia che aumenta di forza quanto più viene utilizzata. Effettua un attacco a distanza contro una creatura, infliggendo 1d6 + MOVE danni normali se colpisci. Aumenta il danno del tuo modificatore di Movimento per ogni PP che è stato speso per il movimento, prima che il movimento fosse attivato. Usare un riparatore per riconquistare PP azzera il danno di questo attacco."
+      ],
+      "higherLevels": "Il dado di danno per questa mossa diventa 1d8 al livello 5, 2d6 al livello 10 e 4d6 al livello 17."
+    },
+    "twin-beam": {
+      "sourceName": "Twin Beam",
+      "name": "Doppioraggio",
+      "description": [
+        "Spara raggi mistici dai tuoi occhi. Effettua due tiri per colpire a distanza contro un bersaglio, infliggendo 1d6 + MOVE danni di tipo Psico a ogni colpo."
+      ],
+      "higherLevels": "Il dado di danno per questa mossa diventa 1d12 al livello 5, 2d8 al livello 10 e 4d6 al livello 17."
+    },
+    "twineedle": {
+      "sourceName": "Twineedle",
+      "name": "Doppio Ago",
+      "description": [
+        "Lanci due proiettili affilati contro una creatura a gittata. Non devono necessariamente prendere di mira la stessa creatura. Effettua due tiri per colpire a distanza, infliggendo 1d4 + MOVE danni di tipo Coleottero a ogni colpo. Se il risultato naturale di uno dei due attacchi è 19 o 20, il bersaglio è avvelenato."
+      ],
+      "higherLevels": "Il dado di danno per questa mossa diventa 2d4 al livello 5, 1d12 al livello 10 e 4d4 al livello 17."
+    },
+    "twister": {
+      "sourceName": "Twister",
+      "name": "Tornado",
+      "description": [
+        "Scateni una raffica di vento vorticoso contro una creatura. Effettua un attacco a distanza, infliggendo 1d6 + MOVE danni di tipo Drago se colpisci. Con un tiro per colpire naturale di 16 o più, il bersaglio diventa FLINCHED."
+      ],
+      "higherLevels": "Il dado di danno per questa mossa diventa 1d12 al livello 5, 2d8 al livello 10 e 4d6 al livello 17."
+    },
+    "u-turn": {
+      "sourceName": "U-Turn",
+      "name": "Retromarcia",
+      "description": [
+        "Ti scagli con un colpo veloce prima di scappare. Effettua un attacco in mischia, infliggendo 1d12 + MOVE danni di tipo Coleottero se colpisci. Dopo che questa mossa è stata attivata, un allenatore deve cambiare l'utente come azione gratuita."
+      ],
+      "higherLevels": "Il dado di danno per questa mossa diventa 2d8 al livello 5, 2d12 al livello 10 e 6d6 al livello 17."
+    },
+    "upper-hand": {
+      "sourceName": "Upper Hand",
+      "name": "Colpo di Mano",
+      "description": [
+        "Reagisci al movimento del bersaglio e colpisci con il palmo della mano. Quando sei preso di mira da un attacco in mischia, puoi usare la tua reazione per tentare di colpire una creatura prima che venga lanciato il suo attacco. Effettua un attacco in mischia, infliggendo 1d6 + MOVE danni di tipo Lotta se colpisci."
+      ],
+      "higherLevels": "Il dado di danno per questa mossa diventa 1d12 al livello 5, 2d8 al livello 10 e 4d6 al livello 17."
+    },
+    "uproar": {
+      "sourceName": "Uproar",
+      "name": "Baraonda",
+      "description": [
+        "Provochi un tumulto sul campo di battaglia in un cerchio del raggio di 30 piedi, centrato su di te, per tre round di combattimento. Durante il tumulto, la tua azione viene spesa per continuare il movimento (senza spendere PP) e qualsiasi creatura a gittata si sveglia e non riesce ad addormentarsi. (Ciò include le creature che si addormenterebbero di proposito usando mosse come Riposo) Inoltre, le creature nell'area all'inizio del loro turno devono effettuare un tiro salvezza su COS contro la tua CD della mossa, subendo 2d8 + MOVE danni di tipo Normale se lo fallisce, o metà del danno se lo supera."
+      ],
+      "higherLevels": "Il dado di danno per questa mossa diventa 2d10 al livello 5, 3d10 al livello 10 e 4d12 al livello 17."
+    },
+    "v-create": {
+      "sourceName": "V-Create",
+      "name": "Generatore V",
+      "description": [
+        "La tua fronte brucia come carboni ardenti mentre sbatti la testa contro una creatura. Effettua un attacco in mischia, infliggendo 3d10 + MOVE danni di tipo Fuoco se colpisci. Dopo aver attivato questa mossa, la tua CA diminuisce di 2 fino all'inizio del tuo prossimo turno."
+      ],
+      "higherLevels": "Il dado di danno per questa mossa diventa 6d6 al livello 5, 8d6 al livello 10 e 7d12 al livello 17."
+    },
+    "vacuum-wave": {
+      "sourceName": "Vacuum Wave",
+      "name": "Vuotonda",
+      "description": [
+        "Ruoti i pugni con un attacco veloce che spinge una rapida raffica di vento contro una creatura a gittata. Effettua un attacco a distanza contro una creatura, infliggendo 1d4 danni di tipo Lotta se colpisci."
+      ],
+      "higherLevels": "Il dado di danno per questa mossa diventa 1d6 al livello 5, 1d10 al livello 10 e 1d12 al livello 17."
+    },
+    "venom-drench": {
+      "sourceName": "Venom Drench",
+      "name": "Velenotrappola",
+      "description": [
+        "Inzuppi una creatura con uno strano liquido velenoso. Obbliga una creatura a effettuare un tiro salvezza su COS contro la tua CD della mossa, diventando avvelenata se lo fallisce. Se il bersaglio è già avvelenato, questa mossa colpisce automaticamente, facendo sì che la creatura subisca il doppio del danni di tipo Veleno base alla fine di ciascuno dei suoi turni."
+      ],
+      "higherLevels": null
+    },
+    "venoshock": {
+      "sourceName": "Venoshock",
+      "name": "Velenoshock",
+      "description": [
+        "Tenti di inzuppare una creatura in un liquido velenoso. Effettua un attacco a distanza contro una creatura, infliggendo 1d10 + MOVE danni di tipo Veleno se colpisci. Se il bersaglio è già avvelenato, raddoppia il tiro di dado per il danno"
+      ],
+      "higherLevels": "Il dado di danno per questa mossa diventa 2d6 al livello 5, 2d12 al livello 10 e 3d10 al livello 17."
+    },
+    "vice-grip": {
+      "sourceName": "Vice Grip",
+      "name": "Presa",
+      "description": [
+        "Schiaccia una creatura con un attacco potente e avvincente. Effettua un attacco in mischia, infliggendo 1d8 + MOVE danni normali se colpisci, afferrando il bersaglio. Ad ogni turno successivo, se la creatura è ancora in lotta, puoi usare nuovamente questa mossa (come azione) e colpire automaticamente. Una creatura può tentare di sfuggire alla presa all'inizio dei suoi turni con un tiro salvezza su FOR contro la tua CD della mossa."
+      ],
+      "higherLevels": "Il dado di danno per questa mossa diventa 2d6 al livello 5, 4d4 al livello 10 e 3d10 al livello 17."
+    },
+    "victory-dance": {
+      "sourceName": "Victory Dance",
+      "name": "Danzavittoria",
+      "description": [
+        "Esegui una danza intensa per inaugurare la vittoria. Per tutta la durata, aggiungi +1 alla tua CA, tiri per colpire e tiri salvezza."
+      ],
+      "higherLevels": "Aggiungi +2 alla tua CA, tiri per colpire e tiri salvezza al livello 10 e superiore"
+    },
+    "vine-whip": {
+      "sourceName": "Vine Whip",
+      "name": "Frustata",
+      "description": [
+        "Allunghi un rampicante affilato con cui frustare il bersaglio. Questa vite può colpire qualsiasi cosa entro 15 piedi da te. Effettua un attacco in mischia, infliggendo 1d6 + MOVE danni di tipo Erba se colpisci."
+      ],
+      "higherLevels": "Il dado di danno per questa mossa diventa 1d12 al livello 5, 2d8 al livello 10 e 4d6 al livello 17."
+    },
+    "vital-throw": {
+      "sourceName": "Vital Throw",
+      "name": "Vitaltiro",
+      "description": [
+        "Un attacco di combattimento lento che prende a pugni una creatura. Come azione nel tuo turno, mantieni questa mossa fino al turno successivo, dove colpirà automaticamente 1d12 + MOVE danni di tipo Lotta finché il bersaglio rimane nel raggio di mischia."
+      ],
+      "higherLevels": "Il dado di danno per questa mossa diventa 2d8 al livello 5, 2d12 al livello 10 e 6d6 al livello 17."
+    },
+    "volt-switch": {
+      "sourceName": "Volt Switch",
+      "name": "Invertivolt",
+      "description": [
+        "Ti scagli con un rapido colpo elettrico prima di scappare. Effettua un attacco in mischia, infliggendo 1d12 + MOVE danni di tipo Elettro se colpisci. Dopo che questa mossa è stata attivata, un allenatore deve cambiare l'utente come azione gratuita."
+      ],
+      "higherLevels": "Il dado di danno per questa mossa diventa 2d8 al livello 5, 2d12 al livello 10 e 6d6 al livello 17."
+    },
+    "volt-tackle": {
+      "sourceName": "Volt Tackle",
+      "name": "Locomovolt",
+      "description": [
+        "Ti precipiti in avanti in un lampo di elettricità con portata estesa, sbattendo contro una creatura. Quando attivi questa mossa, esegui un flash forward 15 piedi ed effettui un tiro per colpire in mischia contro una creatura, infliggendo 2d10 + danni di tipo Elettro di movimento se colpisci. Se colpisci, subisci anche un quarto del totale (arrotondato per difetto) in danni da rinculo senza tipo."
+      ],
+      "higherLevels": "Il dado di danno per questa mossa diventa 3d8 al livello 5, 4d10 al livello 10 e 7d8 al livello 17."
+    },
+    "wake-up-slap": {
+      "sourceName": "Wake-Up Slap",
+      "name": "Svegliopacca",
+      "description": [
+        "Attacchi con uno schiaffo violento dai palmi delle mani. Effettua un attacco in mischia contro una creatura, infliggendo 1d12 + MOVE danni di tipo Lotta se colpisci. Se il bersaglio sta dormendo, raddoppia il tuo modificatore di Movimento quando aggiungi il danno, ma il bersaglio si sveglia automaticamente."
+      ],
+      "higherLevels": "Il dado di danno per questa mossa diventa 2d8 al livello 5, 2d12 al livello 10 e 6d6 al livello 17."
+    }
+  }
+}

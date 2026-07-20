@@ -9,13 +9,14 @@ import 'fixtures/move_names_it_001_050.dart';
 import 'fixtures/move_names_it_051_250.dart';
 import 'fixtures/move_names_it_251_450.dart';
 import 'fixtures/move_names_it_451_650.dart';
+import 'fixtures/move_names_it_651_830.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   setUp(MoveLocalizationRepository.clearCache);
 
-  test('i cataloghi italiani coprono le prime 650 mosse in ordine', () async {
+  test('i cataloghi italiani coprono tutte le 830 mosse in ordine', () async {
     final sourceMoves = await _sourceMoves();
     final sourceById = {
       for (final move in sourceMoves) move['id'].toString(): move,
@@ -26,6 +27,7 @@ void main() {
       ...moveNames51To250,
       ...moveNames251To450,
       ...moveNames451To650,
+      ...moveNames651To830,
     };
     var declaredCount = 0;
 
@@ -100,30 +102,33 @@ void main() {
         _flattenText(localizedDescription),
         localizedHigherLevels ?? '',
       ].join(' ');
-      if (!_sameCounts(
-        _mechanicalTokenCounts(
-          sourceText,
-          includeHealthPhrases: localizedPosition > 450,
-        ),
-        _mechanicalTokenCounts(
-          localizedText,
-          includeHealthPhrases: localizedPosition > 450,
-        ),
-      )) {
-        errors.add('${entry.key}: valori meccanici modificati.');
+      final sourceTokens = _mechanicalTokenCounts(
+        sourceText,
+        includeHealthPhrases: localizedPosition > 450,
+      );
+      final localizedTokens = _mechanicalTokenCounts(
+        localizedText,
+        includeHealthPhrases: localizedPosition > 450,
+      );
+      if (!_sameCounts(sourceTokens, localizedTokens)) {
+        errors.add(
+          '${entry.key}: valori meccanici modificati. '
+          'sorgente=$sourceTokens localizzato=$localizedTokens',
+        );
       }
     }
 
     expect(errors, isEmpty, reason: errors.join('\n'));
   });
 
-  test('le prime 650 mosse usano i nomi italiani verificati', () async {
+  test('tutte le 830 mosse usano i nomi italiani verificati', () async {
     final names = <String, String>{};
     final expectedNames = <String, String>{
       ...moveNames1To50,
       ...moveNames51To250,
       ...moveNames251To450,
       ...moveNames451To650,
+      ...moveNames651To830,
     };
 
     for (final path in MoveLocalizationRepository.assetPaths) {
@@ -154,6 +159,10 @@ void main() {
     expect(names['natures-madness'], 'Ira della Natura');
     expect(names['raging-bull'], 'Scatenatoro');
     expect(names['sludge-bomb'], 'Fangobomba');
+    expect(names['syrup-bomb'], 'Bomba Sciroppata');
+    expect(names['thunderbolt'], 'Fulmine');
+    expect(names['water-spout'], 'Zampillo');
+    expect(names['zing-zap'], 'Elettropizzico');
   });
 
   test('il repository mostra l’italiano e conserva i riferimenti inglesi', () async {
@@ -169,7 +178,8 @@ void main() {
     final acupressure = await repository.getMove('Acupressure');
     final mistBallByItalianName = await repository.getMove('Foschisfera');
     final sludgeBombByEnglishName = await repository.getMove('Sludge Bomb');
-    final unlocalized = await repository.getMove('sludge-wave');
+    final syrupBombByItalianName = await repository.getMove('Bomba Sciroppata');
+    final zingZapByEnglishName = await repository.getMove('Zing Zap');
 
     expect(absorbById, isNotNull);
     expect(absorbById?.name, 'Assorbimento');
@@ -200,8 +210,10 @@ void main() {
     expect(acupressure?.description, contains('d6 | Effetto'));
     expect(acupressure?.description, contains('+10 PF temporanei'));
 
-    expect(unlocalized?.name, 'Sludge Wave');
-    expect(unlocalized?.technicalName, 'Sludge Wave');
+    expect(syrupBombByItalianName?.id, 'syrup-bomb');
+    expect(syrupBombByItalianName?.technicalName, 'Syrup Bomb');
+    expect(zingZapByEnglishName?.name, 'Elettropizzico');
+    expect(zingZapByEnglishName?.technicalName, 'Zing Zap');
   });
 }
 
@@ -242,13 +254,29 @@ Map<String, int> _mechanicalTokenCounts(
   String value, {
   bool includeHealthPhrases = false,
 }) {
+  var normalizedValue = value;
+  for (final pattern in <RegExp>[
+    RegExp(r'\bCD della mossa\b', caseSensitive: false),
+    RegExp(r'\bMovimento CD\b', caseSensitive: false),
+    RegExp(r'\bMove DC\b', caseSensitive: false),
+  ]) {
+    normalizedValue = normalizedValue.replaceAll(pattern, 'MOVE DC');
+  }
+  for (final pattern in <RegExp>[
+    RegExp(r'\bvalore CD per questa mossa\b', caseSensitive: false),
+    RegExp(r'\bCD di questa mossa\b', caseSensitive: false),
+    RegExp(r'\bCD per questa mossa\b', caseSensitive: false),
+  ]) {
+    normalizedValue = normalizedValue.replaceAll(pattern, 'DC');
+  }
+
   final expression = RegExp(
     includeHealthPhrases
-        ? r'\b\d+d\d+\b|\bd\d+\b|[+\-]\s*\d+|\b\d+[sx]\b|\b\d+(?:ft|\s*(?:feet|foot|piedi|piede))?\b|\b(?:hit points?|Hit Points?|punti ferita|Punti ferita)\b|\b(?:HP|PF|STR|FOR|DEX|DES|CON|COS|WIS|SAG|CHA|CAR|INT|AC|CA|STAB|DC|CD|MOVE|PP|SR|FLINCHED)\b|\b(?:flinch|flinches|flinched)\b'
+        ? r'\b\d+d\d+\b|\bd\d+\b|[+\-]\s*\d+|\b\d+[sx]\b|\b\d+(?:ft|\s*(?:feet|foot|piedi|piede))?\b|\b(?:hitpoints?|hit points?|Hit Points?|punti ferita|Punti ferita)\b|\b(?:HP|PF|STR|FOR|DEX|DES|CON|COS|WIS|SAG|CHA|CAR|INT|AC|CA|STAB|DC|CD|MOVE|PP|SR|FLINCHED)\b|\b(?:flinch|flinches|flinched)\b'
         : r'\b\d+d\d+\b|\bd\d+\b|[+\-]\s*\d+|\b\d+(?:ft|\s*(?:feet|foot|piedi|piede))?\b|\b(?:HP|PF|STR|FOR|DEX|DES|CON|COS|WIS|SAG|CHA|CAR|INT|AC|CA|STAB|DC|CD|MOVE|PP|SR|FLINCHED|flinch(?:es|ed)?)\b',
   );
   final result = <String, int>{};
-  for (final match in expression.allMatches(value)) {
+  for (final match in expression.allMatches(normalizedValue)) {
     final token = _canonicalToken(match.group(0)!);
     result[token] = (result[token] ?? 0) + 1;
   }

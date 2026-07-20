@@ -1,0 +1,287 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/moves.json",
+  "nameSources": [
+    "https://wiki.pokemoncentral.it/Elenco_delle_mosse_in_altre_lingue",
+    "https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/move_names.csv"
+  ],
+  "type": "move",
+  "range": {
+    "start": 801,
+    "end": 830
+  },
+  "localizedCount": 30,
+  "items": {
+    "water-gun": {
+      "sourceName": "Water Gun",
+      "name": "Pistolacqua",
+      "description": [
+        "Lanci un rapido getto d'acqua contro una creatura a gittata. Effettua un attacco a distanza, infliggendo 1d6 + MOVE danni di tipo Acqua se colpisci."
+      ],
+      "higherLevels": "Il dado di danno per questa mossa diventa 1d12 al livello 5, 2d8 al livello 10 e 4d6 al livello 17."
+    },
+    "water-pledge": {
+      "sourceName": "Water Pledge",
+      "name": "Acquapatto",
+      "description": [
+        "Invii una colonna d'acqua verso una creatura. Effettua un attacco a distanza, infliggendo 2d6 + MOVE danni di tipo Acqua se colpisci. Dopo aver messo a segno un colpo, qualsiasi alleato che utilizza un'altra mossa Impegno nello stesso round colpisce automaticamente."
+      ],
+      "higherLevels": "Il dado di danno per questa mossa diventa 2d8 al livello 5, 4d6 al livello 10 e 6d6 al livello 17."
+    },
+    "water-pulse": {
+      "sourceName": "Water Pulse",
+      "name": "Idropulsar",
+      "description": [
+        "Invii un'onda di energia acquatica ultrasonica a una creatura a gittata. Effettua un attacco a distanza, infliggendo 1d10 + MOVE danni di tipo Acqua se colpisci. Con un tiro per colpire naturale di 17 o superiore, il bersaglio è confuso."
+      ],
+      "higherLevels": "Il dado di danno per questa mossa diventa 2d8 al livello 5, 5d4 al livello 10 e 4d8 al livello 17."
+    },
+    "water-shuriken": {
+      "sourceName": "Water Shuriken",
+      "name": "Acqualame",
+      "description": [
+        "Lanci una raffica di shuriken affilati contro un bersaglio. Effettua un attacco a distanza, infliggendo 1d4 + MOVE danni di tipo Acqua se colpisci. Dopo aver colpito con successo un bersaglio, lancia un d4. Con un risultato di 3 o 4, un altro shuriken colpisce il bersaglio infliggendo un ulteriore danni di tipo Acqua 1d4. Continua questo processo finché non fallisci nel lanciare 3 o 4 sul tiro d4, fino a un massimo di quattro colpi aggiuntivi."
+      ],
+      "higherLevels": "Il dado di danno per questa mossa diventa 1d6 al livello 5, 1d8 al livello 10 e 2d6 al livello 17."
+    },
+    "water-sport": {
+      "sourceName": "Water Sport",
+      "name": "Docciascudo",
+      "description": [
+        "Immergi te stesso e tutti gli alleati nell'acqua, riducendo la quantità di danni di tipo Fuoco subiti da chiunque sia colpito. Per tutta la durata, tu e qualsiasi alleato a gittata (quando hai attivato inizialmente questa mossa) avete resistenza agli attacchi di tipo fuoco. Se eri già resistente, ora sei immune. Se eri vulnerabile, ora subisci danni normali. Se sei già immune alle mosse di tipo fuoco, non succede nulla."
+      ],
+      "higherLevels": null
+    },
+    "water-spout": {
+      "sourceName": "Water Spout",
+      "name": "Zampillo",
+      "description": [
+        "Lanci un getto d'acqua contro una creatura che aumenta di potere quanto più sei sano. Effettua un attacco a distanza contro una creatura, infliggendo 3d8 + MOVE danni di tipo Acqua se colpisci se hai pari o superiore al 50% della tua salute. Se sei inferiore a 50%, dimezza il danno totale inflitto."
+      ],
+      "higherLevels": "Il dado di danno per questa mossa diventa 5d6 al livello 5, 4d12 al livello 10 e 8d8 al livello 17."
+    },
+    "waterfall": {
+      "sourceName": "Waterfall",
+      "name": "Cascata",
+      "description": [
+        "Crei un'intensa cascata che si abbatte sulle creature in un raggio 10 piedi, centrata su un punto entro la gittata. Le creature nell'area devono effettuare un tiro salvezza su FOR contro la tua CD della mossa o subire 2d6 + MOVE danni di tipo Acqua e cadere proni se lo fallisce, o la metà dei danni in caso di tiro salvezza."
+      ],
+      "higherLevels": "Il dado di danno per questa mossa diventa 2d8 al livello 5, 4d6 al livello 10 e 6d6 al livello 17."
+    },
+    "wave-crash": {
+      "sourceName": "Wave Crash",
+      "name": "Ondaschianto",
+      "description": [
+        "Ti avvolgi nell'acqua e colpisci il bersaglio con tutto il corpo. Effettua un attacco in mischia. Se colpisci, infliggi 3d8 + MOVE danni di tipo Acqua, subendo metà del danno totale (arrotondato per difetto) con un rinculo senza tipo."
+      ],
+      "higherLevels": "Il dado di danno per questa mossa diventa 3d10 al livello 5, 5d8 al livello 10 e 7d8 al livello 17."
+    },
+    "weather-ball": {
+      "sourceName": "Weather Ball",
+      "name": "Palla Clima",
+      "description": [
+        "Scagli una sfera di energia che cambia tipo in base al tempo atmosferico. Effettua un attacco a distanza, infliggendo 1d8 + MOVE danni di tipo Normale se colpisci. Se è attiva una delle condizioni indicate nella tabella, raddoppia il dado di danno e usa il tipo corrispondente.",
+        {
+          "type": "table",
+          "headers": [
+            "Tempo atmosferico",
+            "Tipo"
+          ],
+          "rows": [
+            [
+              "Luce Solare Intensa",
+              "Fuoco"
+            ],
+            [
+              "Pioggia",
+              "Acqua"
+            ],
+            [
+              "Tempesta di Sabbia",
+              "Roccia"
+            ],
+            [
+              "Grandine o Neve",
+              "Ghiaccio"
+            ],
+            [
+              "Nebbia o Nuvoloso",
+              "Normale"
+            ]
+          ]
+        }
+      ],
+      "higherLevels": "Il dado di danno per questa mossa diventa 2d6 al livello 5, 4d4 al livello 10 e 3d10 al livello 17."
+    },
+    "whirlpool": {
+      "sourceName": "Whirlpool",
+      "name": "Mulinello",
+      "description": [
+        "Crei un'onda d'acqua che turbina attorno a una creatura a gittata. Effettua un attacco a distanza. Se colpisci, il bersaglio subisce 1d6 + MOVE danni di tipo Acqua ed è trattenuto. All'inizio di ogni suo turno, può tentare di scappare con un tiro salvezza su FOR contro la tua CD della mossa. Ad ogni turno successivo, se la creatura è ancora trattenuta, puoi usare nuovamente questa mossa (come azione) e colpire automaticamente."
+      ],
+      "higherLevels": "Il dado di danno per questa mossa diventa 1d10 al livello 5, 2d8 al livello 10 e 5d4 al livello 17."
+    },
+    "whirlwind": {
+      "sourceName": "Whirlwind",
+      "name": "Turbine",
+      "description": [
+        "Crei un vortice d'aria rotante intorno a te, aumentando la tua CA di +2 fino all'inizio del tuo turno successivo. Quando attivi questa mossa, qualsiasi creatura entro 5 piedi da te deve riuscire un tiro salvezza su FOR contro la tua CD della mossa o cadere prona. Nelle battaglie tra creature selvagge, questa mossa può essere attivata per contare automaticamente come un singolo successo in una prova di gruppo DES per scappare."
+      ],
+      "higherLevels": null
+    },
+    "wicked-blow": {
+      "sourceName": "Wicked Blow",
+      "name": "Pugnotenebra",
+      "description": [
+        "Colpisci il bersaglio con un unico, feroce colpo. Effettua un attacco in mischia. Se colpisci, infliggi 1d12 + 10 + MOVE danni di tipo Buio."
+      ],
+      "higherLevels": "Il dado di danno per questa mossa diventa 2d8 al livello 5, 2d12 al livello 10 e 6d6 al livello 17."
+    },
+    "wide-guard": {
+      "sourceName": "Wide Guard",
+      "name": "Bodyguard",
+      "description": [
+        "Hai la capacità di proteggere i tuoi alleati dalle mosse ad area d'effetto. Come reazione, quando una creatura attiva una mossa dannosa che danneggia più alleati a gittata, puoi dimezzare il danno inflitto. In casi futuri di questa reazione nello stesso combattimento, devi ottenere un risultato superiore a 15 su un tiro d20 o rinunciare alla reazione senza alcun effetto"
+      ],
+      "higherLevels": null
+    },
+    "wildbolt-storm": {
+      "sourceName": "Wildbolt Storm",
+      "name": "Tempesta Tonante",
+      "description": [
+        "Crei una tempesta fragorosa che attacca selvaggiamente con fulmini e vento delle dimensioni di un cubo di 40 piede-cubico centrato su un punto a gittata. Ogni creatura nemica nell'area effettua un tiro salvezza su DES contro la tua CD della mossa. Se fallisce il tiro salvezza, subisce danni di tipo Elettro 4d4 + MOVE e diventa paralizzato. Se il tiro salvezza riesce, subisce la metà dei danni e non diventa paralizzato.",
+        "Una creatura effettua quel tiro salvezza anche se entra nell'area o termina il suo turno lì. Una creatura effettua quel tiro salvezza solo una volta per turno.",
+        "Se usate durante la pioggia, le creature hanno svantaggio al tiro salvezza."
+      ],
+      "higherLevels": "Il dado di danno per questa mossa diventa 2d12 al livello 5, 4d8 al livello 10 e 8d6 al livello 17."
+    },
+    "wild-charge": {
+      "sourceName": "Wild Charge",
+      "name": "Sprizzalampo",
+      "description": [
+        "Ti avvolgi di elettricità e carichi una creatura. Effettua un attacco in mischia, infliggendo 2d8 + MOVE danni di tipo Elettro se colpisci, ma subendo 1/4 del danno (arrotondato per difetto) in un rinculo senza tipo."
+      ],
+      "higherLevels": "Il dado di danno per questa mossa diventa 2d10 al livello 5, 3d10 al livello 10 e 4d12 al livello 17."
+    },
+    "will-o-wisp": {
+      "sourceName": "Will-O-Wisp",
+      "name": "Fuocofatuo",
+      "description": [
+        "Invii una sinistra fiamma incandescente a una creatura che tenta di infliggere una bruciatura. Effettua un attacco a distanza contro un bersaglio, provocando bruciatura se colpisci."
+      ],
+      "higherLevels": null
+    },
+    "wing-attack": {
+      "sourceName": "Wing Attack",
+      "name": "Attacco d’Ala",
+      "description": [
+        "Colpisci una creatura bersaglio con le tue ali. Effettua un attacco in mischia, infliggendo 1d10 + MOVE danni di tipo Volante se colpisci."
+      ],
+      "higherLevels": "Il dado di danno per questa mossa diventa 2d8 al livello 5, 5d4 al livello 10 e 4d8 al livello 17."
+    },
+    "wish": {
+      "sourceName": "Wish",
+      "name": "Desiderio",
+      "description": [
+        "Invii un desiderio di guarigione che richiede tempo per realizzarsi. Alla fine del tuo turno successivo, come azione gratuita, cura un bersaglio a gittata di 3d8 + MOVE PF."
+      ],
+      "higherLevels": "Il dado di cura per questa mossa diventa 5d6 al livello 5, 4d12 al livello 10 e 8d8 al livello 17."
+    },
+    "withdraw": {
+      "sourceName": "Withdraw",
+      "name": "Ritirata",
+      "description": [
+        "Quando sei soggetto a un attacco in mischia o a distanza, puoi spendere la tua reazione per aumentare la tua CA di +2 se ciò farebbe fallire l'attacco."
+      ],
+      "higherLevels": "Aumenta la tua CA di +3 al livello 10 e superiore."
+    },
+    "wonder-room": {
+      "sourceName": "Wonder Room",
+      "name": "Mirabilzona",
+      "description": [
+        "Crei un'atmosfera bizzarra nell'aria in un cerchio del raggio di 50 piede, centrato su di te. Per tutta la durata, tutti i salvataggi SAG diventano salvataggi COS e tutti i salvataggi COS diventano salvataggi SAG."
+      ],
+      "higherLevels": null
+    },
+    "wood-hammer": {
+      "sourceName": "Wood Hammer",
+      "name": "Mazzuolegno",
+      "description": [
+        "Sbatti il ​​tuo corpo ruvido contro una creatura, subendo gravi danni da contraccolpo. Effettua un tiro per colpire contro un bersaglio, infliggendo 2d10 + MOVE danni di tipo Erba se colpisci. Se colpisci, subisci anche un quarto del danno inflitto come danno da rinculo senza tipo."
+      ],
+      "higherLevels": "Il dado di danno per questa mossa diventa 3d8 al livello 5, 4d10 al livello 10 e 7d8 al livello 17."
+    },
+    "work-up": {
+      "sourceName": "Work Up",
+      "name": "Cuordileone",
+      "description": [
+        "Ti sale l'adrenalina e vai in delirio. Mentre sei agitato, aggiungi +2 a tutti i tiri per colpire. Il tuo stato agitato termina se diventi inabile o se non hai attaccato un bersaglio ostile dal tuo ultimo turno, né hai subito danni da allora."
+      ],
+      "higherLevels": null
+    },
+    "worry-seed": {
+      "sourceName": "Worry Seed",
+      "name": "Affannoseme",
+      "description": [
+        "Spari a un seme bizzarro che impianta la preoccupazione in un'altra creatura. Il bersaglio deve superare un tiro salvezza su COS contro la tua CD della mossa o sostituire l'abilità scelta dall'utilizzatore con Insonnia, impedendo il sonno per tutta la durata."
+      ],
+      "higherLevels": null
+    },
+    "wrap": {
+      "sourceName": "Wrap",
+      "name": "Avvolgibotta",
+      "description": [
+        "Tenti di sottomettere un bersaglio in lotta. Effettua un attacco in mischia. Se viene colpito, il bersaglio subisce 1d4 + MOVE danni normali ed è afferrato. All'inizio di ogni suo turno, può tentare di scappare con un tiro salvezza su FOR contro la tua CD della mossa. Finché il bersaglio è afferrato nei tuoi turni successivi, questa mossa può essere attivata nuovamente come azione bonus con un colpo automatico, infliggendo 1d4 danni normali."
+      ],
+      "higherLevels": "I dadi di danno per questa mossa diventano 1d6 al livello 5, 1d8 al livello 10 e 2d6 al livello 17."
+    },
+    "wring-out": {
+      "sourceName": "Wring Out",
+      "name": "Strizzata",
+      "description": [
+        "Avvolgi le mani attorno al bersaglio e stringi forte. Effettua un attacco in mischia contro una creatura, infliggendo 3d8 + MOVE danni normali se colpisci. Se il bersaglio ha 50% o più del suo massimo PF, raddoppia il tuo modificatore di movimento per il tiro per i danni."
+      ],
+      "higherLevels": "Il dado di danno per questa mossa diventa 5d6 al livello 5, 4d12 al livello 10 e 8d8 al livello 17."
+    },
+    "x-scissor": {
+      "sourceName": "X-Scissor",
+      "name": "Forbice X",
+      "description": [
+        "Incroci gli artigli per un attacco tagliente simile a una forbice. Effettua un attacco in mischia contro una creatura, infliggendo 2d6 + MOVE danni di tipo Coleottero se colpisci."
+      ],
+      "higherLevels": "Il dado di danno per questa mossa diventa 2d8 al livello 5, 4d6 al livello 10 e 6d6 al livello 17."
+    },
+    "yawn": {
+      "sourceName": "Yawn",
+      "name": "Sbadiglio",
+      "description": [
+        "Rilasci un grande sbadiglio che fa sì che una creatura diventi molto sonnolenta. Scegli un bersaglio a gittata. Se quel bersaglio è ancora in battaglia dopo la fine del suo turno successivo, si addormenta."
+      ],
+      "higherLevels": null
+    },
+    "zap-cannon": {
+      "sourceName": "Zap Cannon",
+      "name": "Falcecannone",
+      "description": [
+        "Si lancia un'esplosione estrema di pura energia elettrica contro una creatura. Effettua un attacco a distanza contro un bersaglio a gittata, infliggendo 2d10 + MOVE danni di tipo Elettro. Se il tiro per colpire naturale è 15 o superiore, il bersaglio è paralizzato."
+      ],
+      "higherLevels": "Il dado di danno per questa mossa diventa 3d8 al livello 5, 4d10 al livello 10 e 7d8 al livello 17."
+    },
+    "zen-headbutt": {
+      "sourceName": "Zen Headbutt",
+      "name": "Cozzata Zen",
+      "description": [
+        "Concentri energia psichica nella testa e colpisci il bersaglio. Effettua un attacco in mischia, infliggendo 2d6 + MOVE danni di tipo Psico se colpisci. Con un tiro per colpire naturale di 17 o più, il bersaglio diventa FLINCHED."
+      ],
+      "higherLevels": "Il dado di danno per questa mossa diventa 2d8 al livello 5, 4d6 al livello 10 e 6d6 al livello 17."
+    },
+    "zing-zap": {
+      "sourceName": "Zing Zap",
+      "name": "Elettropizzico",
+      "description": [
+        "Scateni una forte scarica elettrica contro due bersagli diversi a gittata. Effettua due attacchi a distanza, ciascuno dei quali infligge 2d6 + MOVE danni di tipo Elettro se colpisce. Con un tiro per colpire naturale di 18 o più, il bersaglio diventa FLINCHED."
+      ],
+      "higherLevels": "Il dado di danno per questa mossa diventa 2d8 al livello 5, 4d6 al livello 10 e 6d6 al livello 17."
+    }
+  }
+}

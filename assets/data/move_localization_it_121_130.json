@@ -1,0 +1,23 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/moves.json",
+  "nameSources": [
+    "https://wiki.pokemoncentral.it/Elenco_delle_mosse_in_altre_lingue",
+    "https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/move_names.csv"
+  ],
+  "type": "move",
+  "range": {"start": 121, "end": 130},
+  "localizedCount": 10,
+  "items": {
+    "copycat": {"sourceName": "Copycat", "name": "Copione", "description": ["Imiti un bersaglio a gittata che puoi vedere. Quando attivi questa mossa, scegli un bersaglio a gittata ed esegui interamente la mossa usata più di recente dalla creatura, impiegando i tuoi punteggi di caratteristica, il tuo livello e il tuo tipo per la CD dei tiri salvezza, gli attacchi e i danni."], "higherLevels": null},
+    "core-enforcer": {"sourceName": "Core Enforcer", "name": "Nucleocastigo", "description": ["Scagli un laser concentrato che incide sul bersaglio un motivo a forma di 'Z'. Effettua un attacco a distanza, infliggendo 4d4 + MOVE danni di tipo Drago se colpisci. Se colpisci, costringi il bersaglio a effettuare un tiro salvezza su COS contro la tua CD della mossa: se lo fallisce, perde tutti gli effetti delle proprie abilità finché non viene sostituito."], "higherLevels": "Il dado di danno di questa mossa diventa 2d12 al livello 5, 4d8 al livello 10 e 8d6 al livello 17."},
+    "corrosive-gas": {"sourceName": "Corrosive Gas", "name": "Gas Corrosivo", "description": ["Avvolgi te stesso e tutto ciò che si trova entro un raggio di 20 piedi in un gas fortemente acido. Il gas permane per la durata o finché un vento forte, come quello generato da Raffica, non lo disperde. L'area è pesantemente oscurata.", "Tutte le bacche impugnate nell'area si sciolgono immediatamente. Ogni creatura che non sia di tipo Veleno e inizi il proprio turno nella sfera deve superare un tiro salvezza su COS contro la tua CD della mossa. Se lo fallisce, fino alla fine del turno attuale ha svantaggio ai tiri per colpire e alle prove di caratteristica; inoltre, se il suo SR è inferiore a 15, non può beneficiare degli strumenti impugnati."], "higherLevels": null},
+    "comeuppance": {"sourceName": "Comeuppance", "name": "Ritorsione", "description": ["Quando vieni colpito da un attacco in mischia, puoi usare la tua reazione per effettuare un attacco in mischia contro la creatura, infliggendo 1d4 + MOVE danni di tipo Buio se colpisci."], "higherLevels": "Il dado di danno di questa mossa diventa 1d6 al livello 5, 1d8 al livello 10 e 2d6 al livello 17."},
+    "cosmic-power": {"sourceName": "Cosmic Power", "name": "Cosmoforza", "description": ["Invochi una forza mistica affinché venga in tuo aiuto. Per la durata, hai vantaggio a tutti i tiri salvezza."], "higherLevels": null},
+    "cotton-guard": {"sourceName": "Cotton Guard", "name": "Cotonscudo", "description": ["Ti proteggi avvolgendo il corpo in uno spesso e soffice strato di cotone. Per la durata, aumenta la tua CA di +2."], "higherLevels": null},
+    "cotton-spore": {"sourceName": "Cotton Spore", "name": "Cottonspora", "description": ["Rilasci spore di cotone spesso che ricoprono il bersaglio. Una creatura a gittata deve effettuare un tiro salvezza su COS contro la tua CD della mossa. Se lo fallisce, la sua velocità è ridotta di 10 per la durata. Se questa riduzione porta la velocità a 0, il bersaglio è trattenuto per la durata."], "higherLevels": null},
+    "counter": {"sourceName": "Counter", "name": "Contrattacco", "description": ["Quando vieni colpito da un attacco in mischia, puoi usare la tua reazione per effettuare un attacco in mischia contro la creatura, infliggendo 1d4 + MOVE danni di tipo Lotta se colpisci."], "higherLevels": "Il dado di danno di questa mossa diventa 1d6 al livello 5, 1d8 al livello 10 e 2d6 al livello 17."},
+    "court-change": {"sourceName": "Court Change", "name": "Cambiocampo", "description": ["Quando un'altra creatura a gittata che puoi vedere esegue una mossa che non infligge danni e richiede uno o più bersagli, eventualmente includendo se stessa, puoi costringerla a effettuare un tiro salvezza su CAR. Se lo fallisce, scegli tu i bersagli della mossa."], "higherLevels": null},
+    "covet": {"sourceName": "Covet", "name": "Supplica", "description": ["Colpisci rapidamente con mani appiccicose. Effettua un attacco in mischia contro una creatura, infliggendo 1d10 + MOVE danni di tipo Normale se colpisci. Se l'attacco va a segno e non impugni già uno strumento, rubi lo strumento impugnato dalla creatura."], "higherLevels": "Il dado di danno di questa mossa diventa 2d8 al livello 5, 5d4 al livello 10 e 4d8 al livello 17."}
+  }
+}

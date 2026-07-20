@@ -1,0 +1,292 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/items.json",
+  "nameSources": [
+    "https://wiki.pokemoncentral.it/Elenco_degli_strumenti_in_altre_lingue",
+    "https://wiki.pokemoncentral.it/Strumenti_evolutivi",
+    "https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/item_names.csv"
+  ],
+  "type": "evolution",
+  "range": {
+    "start": 116,
+    "end": 154
+  },
+  "localizedCount": 39,
+  "items": {
+    "sun-stone": {
+      "sourceName": "Sun Stone",
+      "name": "Pietrasolare",
+      "description": [
+        "Alcuni Pokémon possono consumare il potere di questa pietra per evolversi."
+      ]
+    },
+    "moon-stone": {
+      "sourceName": "Moon Stone",
+      "name": "Pietralunare",
+      "description": [
+        "Alcuni Pokémon possono consumare il potere di questa pietra per evolversi."
+      ]
+    },
+    "fire-stone": {
+      "sourceName": "Fire Stone",
+      "name": "Pietrafocaia",
+      "description": [
+        "Alcuni Pokémon possono consumare il potere di questa pietra per evolversi."
+      ]
+    },
+    "thunder-stone": {
+      "sourceName": "Thunder Stone",
+      "name": "Pietratuono",
+      "description": [
+        "Alcuni Pokémon possono consumare il potere di questa pietra per evolversi."
+      ]
+    },
+    "water-stone": {
+      "sourceName": "Water Stone",
+      "name": "Pietraidrica",
+      "description": [
+        "Alcuni Pokémon possono consumare il potere di questa pietra per evolversi."
+      ]
+    },
+    "leaf-stone": {
+      "sourceName": "Leaf Stone",
+      "name": "Pietrafoglia",
+      "description": [
+        "Alcuni Pokémon possono consumare il potere di questa pietra per evolversi."
+      ]
+    },
+    "shiny-stone": {
+      "sourceName": "Shiny Stone",
+      "name": "Pietrabrillo",
+      "description": [
+        "Alcuni Pokémon possono consumare il potere di questa pietra per evolversi."
+      ]
+    },
+    "dusk-stone": {
+      "sourceName": "Dusk Stone",
+      "name": "Neropietra",
+      "description": [
+        "Alcuni Pokémon possono consumare il potere di questa pietra per evolversi."
+      ]
+    },
+    "dawn-stone": {
+      "sourceName": "Dawn Stone",
+      "name": "Pietralbore",
+      "description": [
+        "Alcuni Pokémon possono consumare il potere di questa pietra per evolversi."
+      ]
+    },
+    "ice-stone": {
+      "sourceName": "Ice Stone",
+      "name": "Pietragelo",
+      "description": [
+        "Alcuni Pokémon possono consumare il potere di questa pietra per evolversi."
+      ]
+    },
+    "oval-stone": {
+      "sourceName": "Oval Stone",
+      "name": "Pietraovale",
+      "description": [
+        "Alcuni Pokémon possono consumare il potere di questa pietra per evolversi."
+      ]
+    },
+    "alola-stone": {
+      "sourceName": "Alola Stone",
+      "name": "Alola Stone",
+      "description": [
+        "Alcuni Pokémon possono consumare il potere di questa pietra per evolversi."
+      ]
+    },
+    "kings-rock": {
+      "sourceName": "King's Rock",
+      "name": "Roccia di re",
+      "description": [
+        "Quando un bersaglio viene colpito da un attacco in mischia effettuato dal possessore, se il tiro per colpire è stato un 19 o 20 naturale, il bersaglio subisce lo status FLINCHED."
+      ]
+    },
+    "razor-claw": {
+      "sourceName": "Razor Claw",
+      "name": "Affilartigli",
+      "description": [
+        "L'intervallo di colpo critico del possessore aumenta di uno.",
+        "Nella maggior parte dei casi, questo significa che gli attacchi possono infliggere un colpo critico con un 19 o 20 naturale. Per una mossa come Slash, che amplia già l'intervallo di colpo critico, i critici possono verificarsi con un 18, 19 o 20 naturale."
+      ]
+    },
+    "razor-fang": {
+      "sourceName": "Razor Fang",
+      "name": "Affilodente",
+      "description": [
+        "Quando un bersaglio viene colpito da un attacco in mischia effettuato dal possessore, se il tiro per colpire è stato un 19 o 20 naturale, il bersaglio subisce lo status FLINCHED."
+      ]
+    },
+    "metal-coat": {
+      "sourceName": "Metal Coat",
+      "name": "Metalcoperta",
+      "description": [
+        "Il possessore aggiunge il proprio bonus di competenza ai danni di tipo Acciaio che infligge (una volta per mossa)."
+      ]
+    },
+    "deep-sea-scale": {
+      "sourceName": "Deep Sea Scale",
+      "name": "Squamabissi",
+      "description": [
+        "Quando è tenuta da un Clamperl, la sua AC aumenta di 1."
+      ]
+    },
+    "deep-sea-tooth": {
+      "sourceName": "Deep Sea Tooth",
+      "name": "Dente Abissi",
+      "description": [
+        "Quando è tenuto da un Clamperl, il suo STAB aumenta di 1."
+      ]
+    },
+    "dragon-scale": {
+      "sourceName": "Dragon Scale",
+      "name": "Squama Drago",
+      "description": [
+        "Alcuni Pokémon possono consumare il potere di questo strumento per evolversi."
+      ]
+    },
+    "up-grade": {
+      "sourceName": "Upgrade",
+      "name": "Upgrade",
+      "description": [
+        "Alcuni Pokémon possono consumare il potere di questo strumento per evolversi."
+      ]
+    },
+    "protector": {
+      "sourceName": "Protector",
+      "name": "Copertura",
+      "description": [
+        "Alcuni Pokémon possono consumare il potere di questo strumento per evolversi."
+      ]
+    },
+    "electirizer": {
+      "sourceName": "Electirizer",
+      "name": "Elettritore",
+      "description": [
+        "Alcuni Pokémon possono consumare il potere di questo strumento per evolversi."
+      ]
+    },
+    "magmarizer": {
+      "sourceName": "Magmarizer",
+      "name": "Magmatore",
+      "description": [
+        "Alcuni Pokémon possono consumare il potere di questo strumento per evolversi."
+      ]
+    },
+    "dubious-disc": {
+      "sourceName": "Dubious Disc",
+      "name": "Dubbiodisco",
+      "description": [
+        "Alcuni Pokémon possono consumare il potere di questo strumento per evolversi."
+      ]
+    },
+    "reaper-cloth": {
+      "sourceName": "Reaper Cloth",
+      "name": "Terrorpanno",
+      "description": [
+        "Alcuni Pokémon possono consumare il potere di questo strumento per evolversi."
+      ]
+    },
+    "prism-scale": {
+      "sourceName": "Prism Scale",
+      "name": "Squama Bella",
+      "description": [
+        "Alcuni Pokémon possono consumare il potere di questo strumento per evolversi."
+      ]
+    },
+    "whipped-dream": {
+      "sourceName": "Whipped Dream",
+      "name": "Dolcespuma",
+      "description": [
+        "Alcuni Pokémon possono consumare il potere di questo strumento per evolversi."
+      ]
+    },
+    "sachet": {
+      "sourceName": "Sachet",
+      "name": "Bustina Aromi",
+      "description": [
+        "Alcuni Pokémon possono consumare il potere di questo strumento per evolversi."
+      ]
+    },
+    "sweet": {
+      "sourceName": "Sweet",
+      "name": "Bonbon",
+      "description": [
+        "Alcuni Pokémon possono consumare il potere di questo strumento per evolversi.",
+        "Esiste in diversi tipi: Bonbonfragola, Bonboncuore, Bonbonbosco, Bonbonfoglio, Bonbonfiore, Bonbonstella e Bonbonfiocco."
+      ]
+    },
+    "cracked-pot": {
+      "sourceName": "Cracked Pot",
+      "name": "Teiera rotta",
+      "description": [
+        "Alcuni Pokémon possono consumare il potere di questo strumento per evolversi."
+      ]
+    },
+    "chipped-pot": {
+      "sourceName": "Chipped Pot",
+      "name": "Teiera crepata",
+      "description": [
+        "Alcuni Pokémon possono consumare il potere di questo strumento per evolversi."
+      ]
+    },
+    "unremarkable-teacup": {
+      "sourceName": "Unremarkable Teacup",
+      "name": "Tazza dozzinale",
+      "description": [
+        "Alcuni Pokémon possono consumare il potere di questo strumento per evolversi."
+      ]
+    },
+    "masterpiece-teacup": {
+      "sourceName": "Masterpiece Teacup",
+      "name": "Tazza eccezionale",
+      "description": [
+        "Alcuni Pokémon possono consumare il potere di questo strumento per evolversi."
+      ]
+    },
+    "galarica-wreath": {
+      "sourceName": "Galarica Wreath",
+      "name": "Corona Galarnoce",
+      "description": [
+        "Alcuni Pokémon possono consumare il potere di questo strumento per evolversi."
+      ]
+    },
+    "black-augurite": {
+      "sourceName": "Black Augurite",
+      "name": "Augite nera",
+      "description": [
+        "Alcuni Pokémon possono consumare il potere di questo strumento per evolversi."
+      ]
+    },
+    "peat-block": {
+      "sourceName": "Peat Block",
+      "name": "Blocco di torba",
+      "description": [
+        "Alcuni Pokémon possono consumare il potere di questo strumento per evolversi."
+      ]
+    },
+    "auspicious-armor": {
+      "sourceName": "Auspicious Armor",
+      "name": "Armatura fausta",
+      "description": [
+        "Alcuni Pokémon possono consumare il potere di questo strumento per evolversi."
+      ]
+    },
+    "malicious-armor": {
+      "sourceName": "Malicious Armor",
+      "name": "Armatura infausta",
+      "description": [
+        "Alcuni Pokémon possono consumare il potere di questo strumento per evolversi."
+      ]
+    },
+    "gimmighoul-coin": {
+      "sourceName": "Gimmighoul Coin",
+      "name": "Moneta di Gimmighoul",
+      "description": [
+        "I Gimmighoul selvatici in Forma Ambulante portano con sé 1d4 Monete di Gimmighoul. I Gimmighoul selvatici in Forma Scrigno portano con sé 1d20 + 10 Monete di Gimmighoul."
+      ]
+    }
+  }
+}

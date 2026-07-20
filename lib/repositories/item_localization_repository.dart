@@ -20,11 +20,12 @@ class ItemLocalizationRepository {
     'assets/data/item_localization_it_medicine_025_055.json',
     'assets/data/item_localization_it_medicine_056_087.json',
     'assets/data/item_localization_it_berry_088_115.json',
+    'assets/data/item_localization_it_evolution_116_154.json',
   ];
 
   static const String sourceAssetPath = 'assets/data_webapp/items.json';
   static const int catalogCount = 366;
-  static const int localizedCount = 115;
+  static const int localizedCount = 154;
 
   static Map<String, ItemLocalization>? _cache;
 
@@ -100,7 +101,7 @@ class ItemLocalizationRepository {
       throw FormatException('$path dichiara una sorgente non valida.');
     }
     final type = document['type']?.toString();
-    if (!const {'pokeball', 'medicine', 'berry'}.contains(type)) {
+    if (!const {'pokeball', 'medicine', 'berry', 'evolution'}.contains(type)) {
       throw FormatException('$path dichiara un tipo non valido.');
     }
     if (_readInt(document['localizedCount']) <= 0) {

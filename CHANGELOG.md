@@ -25,7 +25,7 @@ Tutte le modifiche rilevanti al progetto vengono documentate in questo file.
 - tradotti in italiano genere e descrizione Pokédex dei 120 Pokémon di nona generazione, dal #906 al #1025, usando il catalogo webapp e le categorie italiane verificate;
 - tradotte in italiano le descrizioni delle 330 abilità, preservando nomi, ID, flag di deprecazione e valori meccanici originali;
 - assegnati i nomi italiani ufficiali a 308 abilità confrontate con Pokémon Central, mantenendo invariati nomi tecnici, ID e dati salvati; le 22 voci personalizzate o deprecate conservano il nome originale;
-- localizzati con nomi italiani verificati e descrizioni 5e tradotte i 24 tipi di Poké Ball, i 63 oggetti di tipo medicina e le 28 bacche, conservando ID, costi, asset e nomi tecnici;
+- localizzati con nomi italiani verificati e descrizioni 5e tradotte i 24 tipi di Poké Ball, i 63 oggetti di tipo medicina, le 28 bacche e i 39 oggetti evolutivi, conservando ID, costi, asset e nomi tecnici;
 - corrette 198 categorie Pokémon delle prime cinque generazioni confrontandole con il riferimento italiano, tra cui Emboar da `Pokémon Granfuocomaiale` a `Pokémon Suincendio`.
 
 ## [1.0.0]

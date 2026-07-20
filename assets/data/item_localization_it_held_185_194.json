@@ -1,0 +1,74 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/items.json",
+  "nameSources": [
+    "https://wiki.pokemoncentral.it/Elenco_degli_strumenti_in_altre_lingue",
+    "https://wiki.pokemoncentral.it/Strumenti_tenuti",
+    "https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/item_names.csv"
+  ],
+  "type": "held item",
+  "range": {
+    "start": 185,
+    "end": 194
+  },
+  "localizedCount": 10,
+  "items": {
+    "muscle-band": {
+      "sourceName": "Muscle Band",
+      "name": "Muscolbanda",
+      "description": [
+        "Il possessore aggiunge il proprio bonus di competenza ai danni che infligge con gli attacchi in mischia, una volta per mossa."
+      ]
+    },
+    "protective-pads": {
+      "sourceName": "Protective Pads",
+      "name": "Smorzaurti",
+      "description": []
+    },
+    "punching-glove": {
+      "sourceName": "Punching Glove",
+      "name": "Guantone",
+      "description": []
+    },
+    "quick-claw": {
+      "sourceName": "Quick Claw",
+      "name": "Rapidartigli",
+      "description": [
+        "Il possessore aggiunge +3 ai propri tiri di iniziativa."
+      ]
+    },
+    "red-card": {
+      "sourceName": "Red Card",
+      "name": "Cartelrosso",
+      "description": []
+    },
+    "ring-target": {
+      "sourceName": "Ring Target",
+      "name": "Facilsaglio",
+      "description": []
+    },
+    "rocky-helmet": {
+      "sourceName": "Rocky Helmet",
+      "name": "Bitorzolelmo",
+      "description": []
+    },
+    "room-service": {
+      "sourceName": "Room Service",
+      "name": "Distorservizio",
+      "description": []
+    },
+    "safety-goggles": {
+      "sourceName": "Safety Goggles",
+      "name": "Visierantisabbia",
+      "description": []
+    },
+    "scope-lens": {
+      "sourceName": "Scope Lens",
+      "name": "Mirino",
+      "description": [
+        "L'intervallo di colpo critico del possessore aumenta di uno.",
+        "Nella maggior parte dei casi, ciò significa che gli attacchi possono infliggere un colpo critico con un 19 o 20 naturale. Per una mossa come Slash, che amplia già l'intervallo di colpo critico, i critici possono verificarsi con un 18, 19 o 20 naturale."
+      ]
+    }
+  }
+}

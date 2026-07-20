@@ -56,11 +56,11 @@ class MoveData {
       name: name,
       type: json['Type']?.toString() ?? 'Typeless',
       pp: json['PP']?.toString() ?? '-',
-      range: json['Range']?.toString() ?? '-',
-      duration: json['Duration']?.toString() ?? '-',
-      moveTime: json['Move Time']?.toString() ?? '-',
-      description: json['Description']?.toString() ?? '',
-      scaling: json['Scaling']?.toString(),
+      range: _localizeMetadata(json['Range']?.toString() ?? '-'),
+      duration: _localizeMetadata(json['Duration']?.toString() ?? '-'),
+      moveTime: _localizeMetadata(json['Move Time']?.toString() ?? '-'),
+      description: _localizeVisibleText(json['Description']?.toString() ?? ''),
+      scaling: _localizeNullableText(json['Scaling']?.toString()),
       damageByLevel: damageJson.map(
         (key, value) => MapEntry(
           int.parse(key),
@@ -69,7 +69,7 @@ class MoveData {
       ),
       movePowers: _normalizePowers(json['Move Power']),
       isAttack: json['atk'] == true,
-      save: json['Save']?.toString(),
+      save: _localizeSave(json['Save']?.toString()),
     );
   }
 
@@ -85,7 +85,9 @@ class MoveData {
     final saveMap = save is Map ? Map<String, dynamic>.from(save) : null;
     final tm = json['tm'];
     final tmMap = tm is Map ? Map<String, dynamic>.from(tm) : null;
-    final higherLevels = json['higherLevels']?.toString();
+    final higherLevels = _localizeNullableText(
+      json['higherLevels']?.toString(),
+    );
     final name = json['name']?.toString() ?? 'Mossa sconosciuta';
 
     return MoveData(
@@ -94,9 +96,9 @@ class MoveData {
       sourceName: json['sourceName']?.toString(),
       type: _titleCase(json['type']?.toString() ?? 'Typeless'),
       pp: json['pp']?.toString() ?? '-',
-      range: json['range']?.toString() ?? '-',
-      duration: json['duration']?.toString() ?? '-',
-      moveTime: json['time']?.toString() ?? '-',
+      range: _localizeMetadata(json['range']?.toString() ?? '-'),
+      duration: _localizeMetadata(json['duration']?.toString() ?? '-'),
+      moveTime: _localizeMetadata(json['time']?.toString() ?? '-'),
       description: _readDescription(
         json['description'],
         higherLevels: higherLevels,
@@ -149,7 +151,7 @@ class MoveData {
   static List<String> _normalizePowers(dynamic value) {
     return _readStringList(value)
         .where((power) => power.toLowerCase() != 'none')
-        .map((power) => power.toUpperCase())
+        .map((power) => _localizeAbilityAbbreviation(power.toUpperCase()))
         .toList(growable: false);
   }
 
@@ -172,7 +174,7 @@ class MoveData {
     final parts = <String>[];
 
     if (value is String && value.trim().isNotEmpty) {
-      parts.add(value.trim());
+      parts.add(_localizeVisibleText(value.trim()));
     } else if (value is List) {
       parts.addAll(
         value
@@ -189,7 +191,7 @@ class MoveData {
   }
 
   static String _descriptionBlockToText(dynamic block) {
-    if (block is String) return block;
+    if (block is String) return _localizeVisibleText(block);
 
     if (block is Map) {
       final map = Map<String, dynamic>.from(block);
@@ -199,33 +201,135 @@ class MoveData {
         final lines = <String>[];
 
         if (headers.isNotEmpty) {
-          lines.add(headers.join(' | '));
+          lines.add(headers.map(_localizeVisibleText).join(' | '));
         }
 
         if (rows is List) {
           for (final row in rows) {
-            lines.add(_readStringList(row).join(' | '));
+            lines.add(
+              _readStringList(row).map(_localizeVisibleText).join(' | '),
+            );
           }
         }
 
         return lines.join('\n');
       }
 
-      return map.values.map((value) => value.toString()).join(' ');
+      return map.values
+          .map((value) => _localizeVisibleText(value.toString()))
+          .join(' ');
     }
 
-    return block?.toString() ?? '';
+    return _localizeVisibleText(block?.toString() ?? '');
   }
 
   static String? _readSave(Map<String, dynamic>? saveMap) {
     if (saveMap == null) return null;
 
     final attributes = _readStringList(saveMap['attribute'])
-        .map((attribute) => attribute.toUpperCase())
+        .map((attribute) => _localizeAbilityAbbreviation(attribute.toUpperCase()))
         .toList(growable: false);
-    if (attributes.isEmpty) return 'SAVE';
+    if (attributes.isEmpty) return 'TIRO SALVEZZA';
 
     return attributes.join('/');
+  }
+
+  static String? _localizeSave(String? value) {
+    final normalized = value?.trim();
+    if (normalized == null || normalized.isEmpty) return null;
+
+    return normalized
+        .split('/')
+        .map((part) => _localizeAbilityAbbreviation(part.trim().toUpperCase()))
+        .join('/');
+  }
+
+  static String _localizeAbilityAbbreviation(String value) {
+    return const <String, String>{
+          'STR': 'FOR',
+          'DEX': 'DES',
+          'CON': 'COS',
+          'INT': 'INT',
+          'WIS': 'SAG',
+          'CHA': 'CAR',
+          'AC': 'CA',
+          'HP': 'PF',
+          'DC': 'CD',
+          'SAVE': 'TIRO SALVEZZA',
+        }[value] ??
+        value;
+  }
+
+  static String _localizeMetadata(String value) {
+    var result = value.trim();
+    if (result.isEmpty || result == '-') return '-';
+
+    result = result.replaceAllMapped(
+      RegExp(r'^self\s*\((\d+)\s*ft\s+radius\)$', caseSensitive: false),
+      (match) => 'personale (raggio di ${match.group(1)} piedi)',
+    );
+    result = result.replaceAllMapped(
+      RegExp(r'^self\s*\((\d+)\s*ft\s+cone\)$', caseSensitive: false),
+      (match) => 'personale (cono di ${match.group(1)} piedi)',
+    );
+
+    return _localizeVisibleText(result)
+        .replaceAll(RegExp(r'\bself\b', caseSensitive: false), 'personale')
+        .replaceAll(RegExp(r'\bmelee\b', caseSensitive: false), 'mischia')
+        .replaceAll(RegExp(r'\btouch\b', caseSensitive: false), 'contatto')
+        .replaceAll(RegExp(r'\bvaries\b', caseSensitive: false), 'variabile')
+        .replaceAll(RegExp(r'\bspecial\b', caseSensitive: false), 'speciale')
+        .replaceAll(RegExp(r'\bminutes\b', caseSensitive: false), 'minuti')
+        .replaceAll(RegExp(r'\bminute\b', caseSensitive: false), 'minuto')
+        .replaceAll(RegExp(r'\bhours\b', caseSensitive: false), 'ore')
+        .replaceAll(RegExp(r'\bhour\b', caseSensitive: false), 'ora');
+  }
+
+  static String? _localizeNullableText(String? value) {
+    final normalized = value?.trim();
+    if (normalized == null || normalized.isEmpty) return null;
+    return _localizeVisibleText(normalized);
+  }
+
+  static String _localizeVisibleText(String value) {
+    var result = value;
+
+    for (final replacement in <MapEntry<RegExp, String>>[
+      MapEntry(RegExp(r'\bMove\s+DC\b', caseSensitive: false), 'CD della mossa'),
+      MapEntry(RegExp(r'\bfree action\b', caseSensitive: false), 'azione gratuita'),
+      MapEntry(RegExp(r'\bbonus action\b', caseSensitive: false), 'azione bonus'),
+      MapEntry(RegExp(r'\breaction\b', caseSensitive: false), 'reazione'),
+      MapEntry(RegExp(r'\baction\b', caseSensitive: false), 'azione'),
+      MapEntry(RegExp(r'\bsaving throws\b', caseSensitive: false), 'tiri salvezza'),
+      MapEntry(RegExp(r'\bsaving throw\b', caseSensitive: false), 'tiro salvezza'),
+      MapEntry(RegExp(r'\bhit points\b', caseSensitive: false), 'punti ferita'),
+      MapEntry(RegExp(r'\bArmor Class\b', caseSensitive: false), 'Classe Armatura'),
+      MapEntry(RegExp(r'\bproficiency bonus\b', caseSensitive: false), 'bonus di competenza'),
+      MapEntry(RegExp(r'\binstantaneous\b', caseSensitive: false), 'istantanea'),
+      MapEntry(RegExp(r'\bconcentration\b', caseSensitive: false), 'concentrazione'),
+    ]) {
+      result = result.replaceAll(replacement.key, replacement.value);
+    }
+
+    result = result.replaceAllMapped(
+      RegExp(r'\b(\d+)\s*(?:ft|feet|foot)\b', caseSensitive: false),
+      (match) => '${match.group(1)} piedi',
+    );
+
+    for (final entry in const <String, String>{
+      'STR': 'FOR',
+      'DEX': 'DES',
+      'CON': 'COS',
+      'WIS': 'SAG',
+      'CHA': 'CAR',
+      'AC': 'CA',
+      'HP': 'PF',
+      'DC': 'CD',
+    }.entries) {
+      result = result.replaceAll(RegExp('\\b${entry.key}\\b'), entry.value);
+    }
+
+    return result;
   }
 
   static int? _readInt(dynamic value) {

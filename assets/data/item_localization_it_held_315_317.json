@@ -1,0 +1,38 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/items.json",
+  "nameSources": [
+    "https://wiki.pokemoncentral.it/Elenco_degli_strumenti_in_altre_lingue",
+    "https://wiki.pokemoncentral.it/Strumenti_tenuti",
+    "https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/item_names.csv"
+  ],
+  "type": "held item",
+  "range": {
+    "start": 315,
+    "end": 317
+  },
+  "localizedCount": 3,
+  "items": {
+    "water-memory-disc": {
+      "sourceName": "Water Memory Disc",
+      "name": "ROM Acqua",
+      "description": [
+        "Quando è tenuta da un Pokémon con l'abilità RKS System, cambia il tipo del possessore in Acqua."
+      ]
+    },
+    "blue-orb": {
+      "sourceName": "Blue Orb",
+      "name": "Gemma blu",
+      "description": [
+        "Quando è tenuta da Kyogre, gli permette di tornare alla propria Forma Primordiale come azione gratuita."
+      ]
+    },
+    "red-orb": {
+      "sourceName": "Red Orb",
+      "name": "Gemma rossa",
+      "description": [
+        "Quando è tenuta da Groudon, gli permette di tornare alla propria Forma Primordiale come azione gratuita."
+      ]
+    }
+  }
+}

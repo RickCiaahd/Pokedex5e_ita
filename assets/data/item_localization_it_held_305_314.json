@@ -1,0 +1,87 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/items.json",
+  "nameSources": [
+    "https://wiki.pokemoncentral.it/Elenco_degli_strumenti_in_altre_lingue",
+    "https://wiki.pokemoncentral.it/Strumenti_tenuti",
+    "https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/item_names.csv"
+  ],
+  "type": "held item",
+  "range": {
+    "start": 305,
+    "end": 314
+  },
+  "localizedCount": 10,
+  "items": {
+    "fire-memory-disc": {
+      "sourceName": "Fire Memory Disc",
+      "name": "ROM Fuoco",
+      "description": [
+        "Quando è tenuta da un Pokémon con l'abilità RKS System, cambia il tipo del possessore in Fuoco."
+      ]
+    },
+    "flying-memory-disc": {
+      "sourceName": "Flying Memory Disc",
+      "name": "ROM Volante",
+      "description": [
+        "Quando è tenuta da un Pokémon con l'abilità RKS System, cambia il tipo del possessore in Volante."
+      ]
+    },
+    "ghost-memory-disc": {
+      "sourceName": "Ghost Memory Disc",
+      "name": "ROM Spettro",
+      "description": [
+        "Quando è tenuta da un Pokémon con l'abilità RKS System, cambia il tipo del possessore in Spettro."
+      ]
+    },
+    "grass-memory-disc": {
+      "sourceName": "Grass Memory Disc",
+      "name": "ROM Erba",
+      "description": [
+        "Quando è tenuta da un Pokémon con l'abilità RKS System, cambia il tipo del possessore in Erba."
+      ]
+    },
+    "ground-memory-disc": {
+      "sourceName": "Ground Memory Disc",
+      "name": "ROM Terra",
+      "description": [
+        "Quando è tenuta da un Pokémon con l'abilità RKS System, cambia il tipo del possessore in Terra."
+      ]
+    },
+    "ice-memory-disc": {
+      "sourceName": "Ice Memory Disc",
+      "name": "ROM Ghiaccio",
+      "description": [
+        "Quando è tenuta da un Pokémon con l'abilità RKS System, cambia il tipo del possessore in Ghiaccio."
+      ]
+    },
+    "poison-memory-disc": {
+      "sourceName": "Poison Memory Disc",
+      "name": "ROM Veleno",
+      "description": [
+        "Quando è tenuta da un Pokémon con l'abilità RKS System, cambia il tipo del possessore in Veleno."
+      ]
+    },
+    "psychic-memory-disc": {
+      "sourceName": "Psychic Memory Disc",
+      "name": "ROM Psico",
+      "description": [
+        "Quando è tenuta da un Pokémon con l'abilità RKS System, cambia il tipo del possessore in Psico."
+      ]
+    },
+    "rock-memory-disc": {
+      "sourceName": "Rock Memory Disc",
+      "name": "ROM Roccia",
+      "description": [
+        "Quando è tenuta da un Pokémon con l'abilità RKS System, cambia il tipo del possessore in Roccia."
+      ]
+    },
+    "steel-memory-disc": {
+      "sourceName": "Steel Memory Disc",
+      "name": "ROM Acciaio",
+      "description": [
+        "Quando è tenuta da un Pokémon con l'abilità RKS System, cambia il tipo del possessore in Acciaio."
+      ]
+    }
+  }
+}

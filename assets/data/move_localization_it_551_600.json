@@ -1,0 +1,446 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/moves.json",
+  "nameSources": [
+    "https://wiki.pokemoncentral.it/Elenco_delle_mosse_in_altre_lingue",
+    "https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/move_names.csv"
+  ],
+  "type": "move",
+  "range": {
+    "start": 551,
+    "end": 600
+  },
+  "localizedCount": 50,
+  "items": {
+    "quick-attack": {
+      "sourceName": "Quick Attack",
+      "name": "Attacco Rapido",
+      "description": [
+        "Ti scagli con un rapido colpo senz'armi contro una creatura nel raggio d'azione. Come azione bonus, puoi spostarti immediatamente fino a 10ft ed effettuare un attacco in mischia contro una creatura nel raggio d'azione senza effettuare un attacco di opportunità, infliggendo 1d4 danno normale in caso di colpo."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 1d6 al livello 5, 1d8 al livello 10 e 1d10 al livello 17."
+    },
+    "quick-guard": {
+      "sourceName": "Quick Guard",
+      "name": "Anticipo",
+      "description": [
+        "Hai la capacità di correre in aiuto di un alleato all'inizio del combattimento. Se un alleato nel raggio d'azione (o te) viene attaccato nel primo turno del primo round di combattimento, puoi usare la tua reazione per negare qualsiasi danno inflitto."
+      ],
+      "higherLevels": null
+    },
+    "quiver-dance": {
+      "sourceName": "Quiver Dance",
+      "name": "Eledanza",
+      "description": [
+        "Esegui con leggerezza una danza mistica. Per la durata, aggiungi +1 al tuo CA, tiri per colpire e danni."
+      ],
+      "higherLevels": "Aggiungi +2 al tuo CA al livello 10 e superiore"
+    },
+    "rage": {
+      "sourceName": "Rage",
+      "name": "Ira",
+      "description": [
+        "Vai in un impeto di rabbia, attaccando con furia implacabile. Mentre sei in ira, guadagni +1 su tutti i tiri per i danni (solo una volta per movimento), hai resistenza ai danni normali e hai vantaggio su tutti i controlli di Forza. La tua rabbia termina se perdi la concentrazione o se il tuo turno termina e non hai attaccato un bersaglio ostile dal tuo ultimo turno, né hai subito danni da allora."
+      ],
+      "higherLevels": "Per i danni in stato di ira, il bonus cambia in +2 al livello 5, +4 al livello 10 e +6 al livello 17."
+    },
+    "rage-fist": {
+      "sourceName": "Rage Fist",
+      "name": "Pugno Furibondo",
+      "description": [
+        "Converti la tua rabbia in energia per attaccare. Effettui un attacco in mischia contro una creatura nel raggio d'azione, infliggendo 1d8 + MOVE danni da fantasma in caso di colpo. Questa mossa infligge 1 danni aggiuntivi per ogni 10 punti di PF che hai al di sotto del tuo massimo PF."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d6 al livello 5, 4d4 al livello 10 e 3d10 al livello 17."
+    },
+    "rage-powder": {
+      "sourceName": "Rage Powder",
+      "name": "Polverabbia",
+      "description": [
+        "Spargi una nuvola di polvere irritante, attirando attacchi su di te. Qualsiasi creatura in un cono 15 foot deve effettuare un tiro salvezza di SAG contro il tuo Movimento CD. In caso di fallimento, le creature possono usare solo mosse dannose che ti prendono di mira per la durata. Qualsiasi creatura influenzata può ripetere il tiro salvezza alla fine di ciascuno dei suoi turni per scrollarsi di dosso l'effetto."
+      ],
+      "higherLevels": null
+    },
+    "raging-bull": {
+      "sourceName": "Raging Bull",
+      "name": "Scatenatoro",
+      "description": [
+        "Affronti come un toro infuriato. Effettua un tiro per colpire in mischia, infliggendo 1d12 + MOVE danni in caso di colpo. Questa mossa ignora gli effetti delle mosse che ne ridurrebbero il danno (Indurimento, Riflessione, ecc.).",
+        "Il tipo di danno inflitto da questa mossa dipende dalla razza di chi la usa.",
+        {
+          "type": "table",
+          "headers": [
+            "Razza",
+            "Tipo di danno"
+          ],
+          "rows": [
+            [
+              "Non specificato",
+              "Normale"
+            ],
+            [
+              "Razza da combattimento",
+              "Battagliero"
+            ],
+            [
+              "Razza Blaze",
+              "Fuoco"
+            ],
+            [
+              "Razza Acquatica",
+              "Acqua"
+            ]
+          ]
+        }
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d8 al livello 5, 2d12 al livello 10 e 6d6 al livello 17."
+    },
+    "raging-fury": {
+      "sourceName": "Raging Fury",
+      "name": "Ira Furente",
+      "description": [
+        "Vai su tutte le furie, sputando fiamme per tre round. Per un massimo di tre round mentre ti concentri, effettua un attacco a distanza contro una creatura, infliggendo 2d10 + MOVE danni da fuoco in caso di colpo. La concentrazione termina alla fine del terzo round dopo aver attivato questa mossa, quando la manchi o non riesci a usare questa mossa; non puoi perdere la concentrazione su Furia Furiosa a causa dei danni subiti e non puoi abbandonare volontariamente la concentrazione. Mentre ti concentri, puoi attaccare solo con Furia Furiosa.",
+        "Quando la concentrazione finisce, diventi confuso."
+      ],
+      "higherLevels": "Il dado utilizzato per questa mossa cambia in un 3d8 al livello 5, un 4d10 al livello 10 e un 7d8 al livello 17."
+    },
+    "rain-dance": {
+      "sourceName": "Rain Dance",
+      "name": "Pioggiadanza",
+      "description": [
+        "Evochi una forte pioggia che copre il campo di battaglia per 5 round."
+      ],
+      "higherLevels": null
+    },
+    "rapid-spin": {
+      "sourceName": "Rapid Spin",
+      "name": "Rapigiro",
+      "description": [
+        "Colpisci con una mossa rotante incredibilmente veloce. Tutte le creature nel raggio di mischia devono effettuare un DES tiro salvezza contro il tuo Movimento CD, subendo 1d4 + MOVE danno normale in caso di fallimento, o la metà in caso di successo. Inoltre, questa mossa libera automaticamente l'utilizzatore da Parassiseme o da qualsiasi cosa che lo costringa a essere afferrato o trattenuto. Viene rimosso da questi stati prima che venga effettuato il tiro salvezza."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d4 al livello 5, 1d12 al livello 10 e 4d4 al livello 17."
+    },
+    "razor-leaf": {
+      "sourceName": "Razor Leaf",
+      "name": "Foglielama",
+      "description": [
+        "Mandi una foglia affilata come un rasoio contro una creatura nel raggio d'azione a una velocità incredibile. Effettua un tiro di attacco a distanza, infliggendo 1d8 + MOVE danni da erba in caso di colpo. Razor Leaf provoca un colpo critico su 19 e 20"
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d6 al livello 5, 4d4 al livello 10 e 3d10 al livello 17."
+    },
+    "razor-shell": {
+      "sourceName": "Razor Shell",
+      "name": "Conchilama",
+      "description": [
+        "Colpisci una creatura con un guscio affilato come un rasoio. Effettua un attacco in mischia su una creatura, infliggendo 1d12 + MOVE danni acqua in caso di colpo. Con tiri per colpire naturali pari a 18 o superiore, abbassa le creature CA di 1. Questa diminuzione può essere cumulata, fino a un massimo di -5 a CA."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d8 al livello 5, 2d12 al livello 10 e 6d6 al livello 17."
+    },
+    "razor-wind": {
+      "sourceName": "Razor Wind",
+      "name": "Ventagliente",
+      "description": [
+        "Quando usi questa mossa, forti venti iniziano a circondarti, donando +2 a CA. Nel tuo turno successivo, se mantieni la concentrazione, rilasci quei venti come azione in un raggio 20 foot, centrato su di te. Ogni creatura nell'area deve effettuare un DES tiro salvezza contro il tuo Movimento CD, subendo 2d6 + MOVE danno normale in caso di fallimento, o metà di quel danno in caso di successo."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d8 al livello 5, 4d6 al livello 10 e 6d6 al livello 17."
+    },
+    "recover": {
+      "sourceName": "Recover",
+      "name": "Ripresa",
+      "description": [
+        "Estendi un'energia curativa per recuperare i tuoi PF o quelli di una creatura nel raggio d'azione. Il bersaglio recupera 1d6 + MOVE PF."
+      ],
+      "higherLevels": "Il tiro di dado per la guarigione aumenta a 2d6 al livello 5, 4d6 al livello 10 e 6d6 al livello 17."
+    },
+    "recycle": {
+      "sourceName": "Recycle",
+      "name": "Riciclo",
+      "description": [
+        "Richiami nelle tue mani un oggetto precedentemente scartato. Se hai utilizzato un oggetto consumabile tenuto in qualsiasi momento negli ultimi 5 turni, puoi attivare questa mossa per sfruttare lo stesso effetto un'ultima volta. Questa mossa non può essere utilizzata nello stesso round in cui è stato utilizzato l'oggetto tenuto."
+      ],
+      "higherLevels": null
+    },
+    "reflect": {
+      "sourceName": "Reflect",
+      "name": "Riflesso",
+      "description": [
+        "Quando sei soggetto a un attacco in mischia, usa la tua reazione per subire metà del danno inflitto adesso e su qualsiasi attacco in mischia che ti prende di mira fino all'inizio del tuo turno successivo."
+      ],
+      "higherLevels": null
+    },
+    "reflect-type": {
+      "sourceName": "Reflect Type",
+      "name": "Riflettipo",
+      "description": [
+        "Il tuo corpo si riflette in uno specchio solo per un momento. Quando ritorna alla normalità, assumi il tipo di una creatura nel raggio d'azione."
+      ],
+      "higherLevels": null
+    },
+    "refresh": {
+      "sourceName": "Refresh",
+      "name": "Rinfrescata",
+      "description": [
+        "Un'ondata di energia curativa ti travolge, curando veleno, paralisi e ustioni."
+      ],
+      "higherLevels": null
+    },
+    "relic-song": {
+      "sourceName": "Relic Song",
+      "name": "Cantoantico",
+      "description": [
+        "Canti un'antica canzone che danneggia le creature nel raggio d'azione con la possibilità di addormentarle. Qualsiasi creatura entro 20 feet da te deve effettuare un COS tiro salvezza contro il tuo Movimento CD, subendo 1d12 + MOVE danno normale in caso di fallimento, o metà di quel danno in caso di successo. Qualsiasi creatura che fallisce il tiro salvezza di 5 o più viene addormentata."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d8 al livello 5, 2d12 al livello 10 e 6d6 al livello 17."
+    },
+    "rest": {
+      "sourceName": "Rest",
+      "name": "Riposo",
+      "description": [
+        "Quando attivi questa mossa, ti addormenti alla fine del tuo turno, ma recuperi 4d6 + MOVE PF nel processo. Non riacquisti la salute se non ti addormenti."
+      ],
+      "higherLevels": "Il tiro di dado per la guarigione aumenta a 6d6 al livello 5, 8d6 al livello 10 e 8d10 al livello 17."
+    },
+    "retaliate": {
+      "sourceName": "Retaliate",
+      "name": "Nemesi",
+      "description": [
+        "Ti precipiti a vendicare un alleato caduto. Quando una creatura fa svenire un alleato, puoi muoverti alla tua velocità per correre immediatamente in avanti ed effettuare un tiro di attacco in mischia sul bersaglio, infliggendo 1d12 + MOVE danno normale in caso di colpo."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d8 al livello 5, 2d12 al livello 10 e 6d6 al livello 17."
+    },
+    "return": {
+      "sourceName": "Return",
+      "name": "Ritorno",
+      "description": [
+        "Ti scagli contro una creatura, nella speranza che piaccia al tuo allenatore. Effettua un tiro per colpire in mischia contro una creatura, infliggendo 1d6 + MOVE danno normale in caso di colpo. Quando effettui questo attacco, aggiungi un ulteriore bonus al colpo e al danno pari al numero di livelli sopra lo zero sulla Tabella della Lealtà."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 1d12 al livello 5, 2d8 al livello 10 e 4d6 al livello 17."
+    },
+    "revelation-dance": {
+      "sourceName": "Revelation Dance",
+      "name": "Mutadanza",
+      "description": [
+        "Colpisci un bersaglio con una danza aggressiva. Effettua un attacco in mischia, infliggendo 2d8 + MOVE danni in caso di colpo. Il tipo di questa mossa e il suo danno corrispondono all'attuale Tipo Primario dell'utente, ricevendo STAB di conseguenza. Se il Tipo Primario viene perso (ad esempio, a causa di Incendio), allora viene utilizzato il Tipo Secondario, se ne ha uno, o senza tipo (senza bonus STAB se non lo ha).",
+        "Se l'utente viene terastallizzato con un tipo non stellare, il tipo e il danno di questa mossa diventano invece quelli del tipo Tera dell'utente."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d10 al livello 5, 3d10 al livello 10 e 4d12 al livello 17."
+    },
+    "revenge": {
+      "sourceName": "Revenge",
+      "name": "Vendetta",
+      "description": [
+        "Invochi una lotta interiore per vendicarti di una creatura che ti danneggia. Come reazione, quando vieni colpito da un attacco in mischia che infligge danni, effettua un tiro per colpire in mischia contro il tuo attaccante, con svantaggio. In caso di colpo, infliggi la stessa quantità di danni di tipo combattimento al tuo aggressore (massimo 5 volte il tuo livello attuale)."
+      ],
+      "higherLevels": null
+    },
+    "reversal": {
+      "sourceName": "Reversal",
+      "name": "Contropiede",
+      "description": [
+        "Scatena un attacco totale che è più forte quanto meno PF hai. Effettua un tiro per colpire in mischia contro una creatura, infliggendo 1d6 + MOVE danno da combattimento in caso di colpo. Se hai meno del 50% della tua salute massima, raddoppia il danno. Se la tua salute massima è pari o inferiore al 10%, triplica invece il danno. Il moltiplicatore per questo attacco viene prima del moltiplicatore per le resistenze o le vulnerabilità."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 1d12 al livello 5, 2d8 al livello 10 e 4d6 al livello 17."
+    },
+    "revival-blessing": {
+      "sourceName": "Revival Blessing",
+      "name": "Preghiera Vitale",
+      "description": [
+        "Concedi una benedizione amorevole a un Pokémon bersaglio della finta. La metà della PF del bersaglio viene ripristinata."
+      ],
+      "higherLevels": null
+    },
+    "rising-voltage": {
+      "sourceName": "Rising Voltage",
+      "name": "Elettroimpennata",
+      "description": [
+        "Attacchi con la tensione elettrica che sale da terra. La creatura bersaglio deve effettuare un DES tiro salvezza contro il tuo Movimento CD, subendo 1d12 + MOVE danno elettrico in caso di fallimento o la metà in caso di successo.",
+        "Se ti trovi su un terreno elettrico, tutte le altre creature sullo stesso terreno elettrico diventano bersagli di questo movimento, fino a 60ft da te."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d8 al livello 5, 2d12 al livello 10 e 6d6 al livello 17."
+    },
+    "roar": {
+      "sourceName": "Roar",
+      "name": "Boato",
+      "description": [
+        "Rilasci un ruggito intimidatorio contro tutti gli avversari entro 15 feet da te. Gli avversari che possono sentirti devono effettuare un SAG salvataggio contro il tuo Movimento CD. In caso di fallimento, la creatura è spaventata ed è costretta a muoversi immediatamente alla sua velocità in linea retta lontano da te, o finché non incontra una forza che la ostacola (non provoca attacchi di opportunità). Una creatura spaventata in questo modo deve effettuare un tiro salvezza su SAG contro il tuo Movimento CD alla fine di ciascuno dei suoi turni per rimuovere l'effetto."
+      ],
+      "higherLevels": null
+    },
+    "roar-of-time": {
+      "sourceName": "Roar of Time",
+      "name": "Fragortempo",
+      "description": [
+        "Scatena un ruggito che ha il potere di distorcere il tempo. Tutte le creature all'interno di 40 feet da te devono effettuare un SAG tiro salvezza contro il tuo Movimento CD, subendo 5d6 + MOVE danni del drago in caso di fallimento, o la metà in caso di successo. Per qualsiasi creatura che ha fallito il tiro salvezza di 5 o più, puoi immediatamente intraprendere un'altra azione contro di essa. Il Ruggito del Tempo non può essere utilizzato come una delle azioni aggiuntive. Questa mossa ti prosciuga energia e non puoi effettuare alcun attacco fino alla fine del tuo turno successivo."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 4d10 al livello 5, 6d10 al livello 10 e 8d12 al livello 17."
+    },
+    "rock-blast": {
+      "sourceName": "Rock Blast",
+      "name": "Cadutamassi",
+      "description": [
+        "Evochi una serie di rocce che si aprono la strada verso una creatura. Effettua un tiro per colpire a distanza, infliggendo 1d4 + MOVE danno da roccia in caso di colpo. Dopo aver colpito con successo un bersaglio, lancia un d4. Con un risultato di 3 o 4, puoi immediatamente colpire di nuovo per un ulteriore 1d4 danno da roccia. Continua questo processo finché non fallisci nel lanciare un 3 o un 4 sul tiro d4, fino a un massimo di quattro colpi aggiuntivi."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d4 al livello 5, 1d12 al livello 10 e 4d4 al livello 17."
+    },
+    "rock-climb": {
+      "sourceName": "Rock Climb",
+      "name": "Scalaroccia",
+      "description": [
+        "Carichi contro un bersaglio con un attacco che tenta di confondere. Effettua un attacco in mischia, infliggendo 2d8 + MOVE danni normali in caso di colpo. Con tiri per colpire naturali pari a 17 o superiore, il bersaglio diventa confuso."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d10 al livello 5, 3d10 al livello 10 e 4d12 al livello 17."
+    },
+    "rock-polish": {
+      "sourceName": "Rock Polish",
+      "name": "Lucidatura",
+      "description": [
+        "Lucidi il tuo corpo fino a renderlo brillante per ridurre l'attrito. Quando attivi questa mossa, aumenta la tua CA di 2 e la tua velocità di 20 feet per tre round."
+      ],
+      "higherLevels": null
+    },
+    "rock-slide": {
+      "sourceName": "Rock Slide",
+      "name": "Frana",
+      "description": [
+        "Grandi massi appaiono sopra una creatura bersaglio a gittata, crollando su di essi. Il bersaglio deve effettuare un FOR tiro salvezza contro il tuo Movimento CD, subendo 1d12 + MOVE danno da roccia e cadendo prono in caso di tiro salvezza fallito, e la metà di quel danno senza cadere prono in caso di successo."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d8 al livello 5, 2d12 al livello 10 e 6d6 al livello 17."
+    },
+    "rock-smash": {
+      "sourceName": "Rock Smash",
+      "name": "Spaccaroccia",
+      "description": [
+        "Colpisci con un attacco schiacciarocce che potrebbe abbassare la difesa di un utente. Effettua un tiro per colpire in mischia contro una creatura, infliggendo 1d6 + MOVE danno da combattimento in caso di colpo. Se il tiro per colpire naturale è 19 o 20, il CA del bersaglio diminuisce di 1 mentre rimane in battaglia."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 1d12 al livello 5, 2d8 al livello 10 e 4d6 al livello 17."
+    },
+    "rock-throw": {
+      "sourceName": "Rock Throw",
+      "name": "Sassata",
+      "description": [
+        "Lanci una roccia contro un bersaglio a gittata. Effettua un tiro per colpire a distanza, infliggendo 1d8 + MOVE danno da roccia in caso di colpo."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d6 al livello 5, 4d4 al livello 10 e 3d10 al livello 17."
+    },
+    "rock-tomb": {
+      "sourceName": "Rock Tomb",
+      "name": "Rocciotomba",
+      "description": [
+        "Evochi un insieme di massi che tentano di circondare un bersaglio. Obbliga una creatura nel raggio d'azione a effettuare un tiro salvezza di FOR contro il tuo Movimento CD, subendo 1d10 + MOVE danni da roccia e diventando trattenuto in caso di fallimento, o la metà di tale danno senza essere trattenuto in caso di successo. Se fallisce, all'inizio di ciascuno dei suoi turni, può tentare di scappare con un FOR tiro salvezza contro il tuo Movimento CD. Mentre una creatura è trattenuta, puoi continuare questo movimento, come azione, per infliggere un danno automatico da roccia 1d10 + MOVE."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d8 al livello 5, 5d4 al livello 10 e 4d8 al livello 17."
+    },
+    "rock-wrecker": {
+      "sourceName": "Rock Wrecker",
+      "name": "Devastomasso",
+      "description": [
+        "Evochi un enorme masso e lo lanci contro un bersaglio a portata. Effettua un attacco a distanza, infliggendo 3d10 + MOVE danni da roccia in caso di colpo. Questa mossa ti prosciuga l'energia e potrebbe non attivarla di nuovo fino alla fine del tuo turno successivo."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 6d6 al livello 5, 8d6 al livello 10 e 7d12 al livello 17."
+    },
+    "role-play": {
+      "sourceName": "Role Play",
+      "name": "Giocodiruolo",
+      "description": [
+        "Tenti di copiare le abilità di una creatura per la durata. Seleziona un bersaglio nel raggio d'azione e costringilo a effettuare un tiro salvezza su SAG contro il tuo Movimento CD. In caso di fallimento, sostituisci una delle tue abilità attuali con una delle loro."
+      ],
+      "higherLevels": null
+    },
+    "rolling-kick": {
+      "sourceName": "Rolling Kick",
+      "name": "Calciorullo",
+      "description": [
+        "Fai oscillare i piedi descrivendo un ampio arco per colpire un bersaglio. Effettua un tiro per colpire in mischia, infliggendo 1d10 + MOVE danno da combattimento in caso di colpo. Se il tiro per colpire naturale è 18 o più, il bersaglio sussulta."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d8 al livello 5, 5d4 al livello 10 e 4d8 al livello 17."
+    },
+    "rollout": {
+      "sourceName": "Rollout",
+      "name": "Rotolamento",
+      "description": [
+        "Rotoli contro un bersaglio, effettuando ripetutamente attacchi con forza crescente. Effettua un attacco in mischia su una creatura, infliggendo 1d6 + MOVE danni da roccia in caso di colpo. Se usi questa mossa nel tuo turno in round consecutivi, raddoppia i dadi su ogni attacco riuscito per un massimo di 5 attacchi, nel qual caso il danno verrà azzerato. Es: 1d6 al primo colpo, 2d6 al secondo, 4d6, 8d6, 16d6. Il danno si azzera se uno qualsiasi degli attacchi non riesce a danneggiare una creatura, se la tua velocità viene ridotta a 0 o se sei inabile."
+      ],
+      "higherLevels": "I dadi di danno cambiano in un d8 al livello 5, un d10 al livello 10 e un d12 al livello 17."
+    },
+    "roost": {
+      "sourceName": "Roost",
+      "name": "Trespolo",
+      "description": [
+        "Atterri a terra per riposare il corpo. Quando attivato, la tua velocità di volo diminuisce a zero e perdi il tuo tipo di volo finché rimani a terra. All'inizio del tuo turno successivo, se non ti sei alzato da terra, recupera 2d6 + MOVE PF"
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 3d6 al livello 5, 5d6 al livello 10 e 8d6 al livello 17."
+    },
+    "rototiller": {
+      "sourceName": "Rototiller",
+      "name": "Aracampo",
+      "description": [
+        "Infondi il terreno intorno a te con uno strato mistico di energia naturale, come coltivare il terreno fresco. Per tre round, le creature di tipo erba raddoppiano il loro STAB bonus quando attivano una mossa di tipo erba all'interno dell'area interessata."
+      ],
+      "higherLevels": null
+    },
+    "round": {
+      "sourceName": "Round",
+      "name": "Coro",
+      "description": [
+        "Attacchi la mente di una creatura con una canzone aspra. Seleziona un bersaglio nel raggio d'azione e costringilo a effettuare un SAG salvataggio contro il tuo Movimento CD. In caso di fallimento, il bersaglio subisce 1d10 + MOVE danno normale. Se anche un alleato nel raggio d'azione conosce questa mossa, può unirsi alla canzone come reazione per aggiungere un ulteriore dado di danno."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d10 al livello 5, 3d10 al livello 10 e 4d10 al livello 17."
+    },
+    "ruination": {
+      "sourceName": "Ruination",
+      "name": "Catastrofe",
+      "description": [
+        "Evochi un disastro rovinoso su una creatura che puoi vedere a portata. Il bersaglio deve effettuare un COS salvataggio contro il tuo Movimento CD. In caso di tiro salvezza fallito, perde metà dei suoi attuali PF e i suoi PF massimi vengono ridotti dell'importo di PF persi."
+      ],
+      "higherLevels": null
+    },
+    "sacred-fire": {
+      "sourceName": "Sacred Fire",
+      "name": "Magifuoco",
+      "description": [
+        "Scagli un'esplosione di fiamme devastante e concentrata contro un singolo bersaglio a gittata. Effettua un tiro per colpire a distanza, infliggendo 5d6 + MOVE danni da fuoco in caso di colpo. Se il tiro per colpire naturale è 10 o più, il bersaglio viene bruciato."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 4d10 al livello 5, 6d10 al livello 10 e 8d12 al livello 17."
+    },
+    "sacred-sword": {
+      "sourceName": "Sacred Sword",
+      "name": "Spadasolenne",
+      "description": [
+        "Tenti di perforare una creatura con una delle tue appendici affilate. Effettua un attacco in mischia, infliggendo 2d8 + MOVE danno da combattimento in caso di colpo. Questa mossa ignora qualsiasi potenziamento che influenza la CA del bersaglio."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d10 al livello 5, 3d10 al livello 10 e 4d12 al livello 17."
+    },
+    "safeguard": {
+      "sourceName": "Safeguard",
+      "name": "Salvaguardia",
+      "description": [
+        "Tu e tutti gli alleati nel raggio d'azione potenziate la loro difesa. Per tutta la durata, chiunque sia interessato è protetto da qualsiasi nuova condizione di stato negativo."
+      ],
+      "higherLevels": null
+    },
+    "salt-cure": {
+      "sourceName": "Salt Cure",
+      "name": "Sotto Sale",
+      "description": [
+        "Cura il bersaglio con il sale, infliggendo danni nel tempo. Scegli un bersaglio nel raggio d'azione. Il bersaglio deve effettuare un DES salvataggio contro il tuo Movimento CD. In caso di fallimento, il bersaglio subisce 1d4 + MOVE danno da roccia e subisce 1d4 danno da roccia all'inizio di ciascuno dei suoi turni finché non viene restituito a una Pokéball o riceve cure.",
+        "I Pokémon di tipo Acqua e Acciaio sono vulnerabili ai danni inflitti da questa mossa."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d4 al livello 5, 1d12 al livello 10 e 4d4 al livello 17."
+    },
+    "sand-attack": {
+      "sourceName": "Sand Attack",
+      "name": "Turbosabbia",
+      "description": [
+        "Sollevi una nuvola di sabbia nel tentativo di accecare un bersaglio a portata. Il bersaglio deve effettuare un COS salvataggio contro il tuo Movimento CD. In caso di fallimento, per il resto dell'incontro, aggiungono -1 a tutti i loro tiri per colpire. Questa mossa può essere accumulata per un massimo di -5 tiri per colpire."
+      ],
+      "higherLevels": null
+    },
+    "sand-tomb": {
+      "sourceName": "Sand Tomb",
+      "name": "Sabbiotomba",
+      "description": [
+        "Tenti di evocare un'ondata di sabbia che circonda il bersaglio. Obbliga una creatura nel raggio d'azione a effettuare un tiro salvezza di FOR contro il tuo Movimento CD, subendo 1d10 + MOVE danni al suolo e diventando trattenuto in caso di fallimento, o la metà di tale danno senza essere trattenuto in caso di successo. Se fallisce, all'inizio di ciascuno dei suoi turni, può tentare di scappare con un FOR tiro salvezza contro il tuo Movimento CD. Mentre una creatura è trattenuta, puoi continuare questo movimento, come azione, per infliggere 1d10 + MOVE danni al suolo automatici."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d8 al livello 5, 5d4 al livello 10 e 4d8 al livello 17."
+    }
+  }
+}

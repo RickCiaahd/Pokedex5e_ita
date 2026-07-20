@@ -1,0 +1,558 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/moves.json",
+  "nameSources": [
+    "https://wiki.pokemoncentral.it/Elenco_delle_mosse_in_altre_lingue",
+    "https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/move_names.csv"
+  ],
+  "type": "move",
+  "range": {
+    "start": 451,
+    "end": 500
+  },
+  "localizedCount": 50,
+  "items": {
+    "mist-ball": {
+      "sourceName": "Mist Ball",
+      "name": "Foschisfera",
+      "description": [
+        "Lanci una palla esplosiva di nebbia dannosa contro una creatura a gittata. Effettua un attacco a distanza contro un bersaglio, infliggendo 5d6 + MOVE danni psichici in caso di colpo. Se il tiro per colpire naturale è superiore a 10, il bersaglio ha svantaggio su qualsiasi attacco che effettua prima della fine del suo turno successivo."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 4d10 al livello 5, 6d10 al livello 10 e 8d12 al livello 17."
+    },
+    "misty-explosion": {
+      "sourceName": "Misty Explosion",
+      "name": "Nebbioscoppio",
+      "description": [
+        "Rilasci una massiccia esplosione nel raggio di 30 foot, svenendo immediatamente prima che il danno venga inflitto. Le creature nell'area devono effettuare un DES tiro salvezza contro il tuo Movimento CD. Se la tua creatura ha almeno la metà dei suoi PF rimasti o questa mossa è stata usata su Terreno Nebbioso, chiunque si trovi nel raggio d'azione subisce 5d6 + MOVE danni da fata in caso di fallimento, o la metà in caso di successo. Se la tua creatura ha meno della metà dei suoi PF rimasti e non si trovava su un Terreno Nebbioso, il danno viene dimezzato in caso di tiro salvezza fallito e diviso in quattro in caso di successo."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 4d10 al livello 5, 6d10 al livello 10 e 8d12 al livello 17."
+    },
+    "misty-terrain": {
+      "sourceName": "Misty Terrain",
+      "name": "Campo Nebbioso",
+      "description": [
+        "Copri il terreno con una sottile nebbia curativa che circonda un cerchio del raggio di 60 piedi, centrato su di te. Per 3 turni, nessuna creatura a terra all'interno della nebbia può soffrire di nuove condizioni di stato. Le creature a terra sono quelle che non hanno velocità di volo, levitazione, aumento del magnete o abilità simili. Inoltre, le creature a terra sul terreno sono resistenti ai danni di tipo drago o, se erano vulnerabili ai danni di tipo drago, subiscono invece danni normali."
+      ],
+      "higherLevels": null
+    },
+    "moonblast": {
+      "sourceName": "Moonblast",
+      "name": "Forza Lunare",
+      "description": [
+        "Evochi un potente raggio lunare che colpisce una creatura. Effettua un attacco a distanza su un bersaglio nel raggio d'azione, infliggendo 2d8 + MOVE danni da fata in caso di colpo. Con un tiro per colpire naturale di 15 o più, il bersaglio ha svantaggio al suo attacco successivo."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d10 al livello 5, 3d10 al livello 10 e 4d12 al livello 17."
+    },
+    "moongeist-beam": {
+      "sourceName": "Moongeist Beam",
+      "name": "Raggio d’Ombra",
+      "description": [
+        "Emetti un raggio sinistro che esplode da te in una linea 100 foot larga 5 feet. Tutte le creature coinvolte nell'esplosione devono effettuare un DES tiro salvezza contro il tuo Movimento CD, subendo 5d6 + MOVE danno fantasma in caso di fallimento o la metà in caso di successo. Questo attacco ignora qualsiasi abilità della creatura che influenzerebbe la capacità dell'utilizzatore di colpire o infliggere danno completo."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 4d10 al livello 5, 6d10 al livello 10 e 8d12 al livello 17."
+    },
+    "moonlight": {
+      "sourceName": "Moonlight",
+      "name": "Lucelunare",
+      "description": [
+        "Un raggio di luna splende su di te, crogiolandoti nella luce curativa. L'utilizzatore guadagna 2d12 + MOVE PF. Se questa mossa viene attivata durante il giorno, dimezza la guarigione totale."
+      ],
+      "higherLevels": "Il tiro di dado per la guarigione cambia in 3d10 al livello 5, 7d6 al livello 10 e 8d8 al livello 17."
+    },
+    "morning-sun": {
+      "sourceName": "Morning Sun",
+      "name": "Mattindoro",
+      "description": [
+        "Un raggio di sole splende su di te, crogiolandoti in una luce curativa. L'utilizzatore guadagna 2d12 + MOVE PF. Se questa mossa viene attivata di notte, dimezza la guarigione totale."
+      ],
+      "higherLevels": "Il lancio dei dadi curativi per questa mossa cambia in 3d10 al livello 5, 7d6 al livello 10 e 8d8 al livello 17."
+    },
+    "mortal-spin": {
+      "sourceName": "Mortal Spin",
+      "name": "Glitturbine",
+      "description": [
+        "Colpisci con una mossa rotante incredibilmente veloce. Tutte le creature nel raggio di mischia devono effettuare un DES tiro salvezza contro il tuo Movimento CD, subendo 1d4 + MOVE danni da veleno in caso di fallimento, o la metà di questi danni in caso di successo. Anche le creature che falliscono il tiro salvezza vengono avvelenate.",
+        "Inoltre, questa mossa libera automaticamente l'utilizzatore da Parassiseme o da qualsiasi cosa che lo costringa a essere afferrato o trattenuto. Viene rimosso da questi stati prima che venga effettuato il tiro salvezza."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d4 al livello 5, 1d12 al livello 10 e 4d4 al livello 17."
+    },
+    "mountain-gale": {
+      "sourceName": "Mountain Gale",
+      "name": "Soffio d’Iceberg",
+      "description": [
+        "Lanci giganteschi pezzi di ghiaccio contro il bersaglio. Effettua un attacco a distanza, infliggendo 4d4 + MOVE danni da ghiaccio in caso di colpo. In caso di colpo, il bersaglio deve superare un COS tiro salvezza contro il tuo Movimento CD o sussultare."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d12 al livello 5, 4d8 al livello 10 e 8d6 al livello 17."
+    },
+    "mud-bomb": {
+      "sourceName": "Mud Bomb",
+      "name": "Pantanobomba",
+      "description": [
+        "Lanci una palla di fango compatta contro una creatura. Effettua un attacco a distanza, infliggendo 1d10 + MOVE danni a terra in caso di colpo. In caso di colpo, il bersaglio deve effettuare un COS tiro salvezza contro il tuo Movimento CD. In caso di fallimento, il bersaglio subisce svantaggio al suo successivo tiro per colpire. Se si attiva una mossa che richiede un tiro salvezza, i bersagli hanno un vantaggio."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d8 al livello 5, 5d4 al livello 10 e 4d8 al livello 17."
+    },
+    "mud-shot": {
+      "sourceName": "Mud Shot",
+      "name": "Colpodifango",
+      "description": [
+        "Lanci un globo di fango contro una creatura, infliggendo danni con la possibilità di ostacolare il movimento del bersaglio. Effettua un attacco a distanza contro una creatura nel raggio d'azione, infliggendo 1d8 + MOVE danni a terra in caso di colpo. Se il tiro per colpire naturale è superiore a 15, la velocità del bersaglio diventa 0 fino alla fine del suo turno successivo."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d6 al livello 5, 4d4 al livello 10 e 3d10 al livello 17."
+    },
+    "mud-sport": {
+      "sourceName": "Mud Sport",
+      "name": "Fangata",
+      "description": [
+        "Copri te stesso e tutti gli alleati intorno a te con uno spesso fango, riducendo la quantità di danni elettrici subiti da chiunque sia colpito. Per tutta la durata, tu e qualsiasi alleato nel raggio d'azione (quando hai attivato inizialmente questa mossa) avete resistenza agli attacchi di tipo elettrico. Se eri già resistente, ora sei immune. Se eri vulnerabile, ora subisci danni regolari. Se sei già immune alle mosse di tipo elettrico, non succede nulla."
+      ],
+      "higherLevels": null
+    },
+    "mud-slap": {
+      "sourceName": "Mud-Slap",
+      "name": "Fangosberla",
+      "description": [
+        "Scagli fango contro un bersaglio a gittata. Effettua un tiro di attacco a distanza, infliggendo 1d4 + MOVE danni a terra in caso di colpo. In caso di colpo, il bersaglio aggiunge -1 ai suoi tiri per colpire per il resto dell'incontro. Questa diminuzione può essere cumulativa, fino a un massimo di -5 da colpire. Il bersaglio può compiere un'azione per rimuovere tutto il fango dalla sua faccia, ripristinando l'effetto."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d4 al livello 5, 1d12 al livello 10 e 4d4 al livello 17."
+    },
+    "muddy-water": {
+      "sourceName": "Muddy Water",
+      "name": "Fanghiglia",
+      "description": [
+        "Spara un flusso di acqua fangosa contro una creatura a gittata. Effettua un attacco a distanza contro una creatura, infliggendo 2d8 + MOVE danni acqua. Se il tiro per colpire naturale è 15 o superiore, il bersaglio ha svantaggio al suo attacco successivo."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d10 al livello 5, 3d10 al livello 10 e 4d12 al livello 17."
+    },
+    "multi-attack": {
+      "sourceName": "Multi-Attack",
+      "name": "Multiattacco",
+      "description": [
+        "Colpisci con potere interiore, a seconda del tuo tipo. Effettua un attacco in mischia su un bersaglio, infliggendo 2d8 + MOVE danni del tuo tipo attuale."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d10 al livello 5, 3d10 al livello 10 e 4d12 al livello 17."
+    },
+    "mystical-fire": {
+      "sourceName": "Mystical Fire",
+      "name": "Magifiamma",
+      "description": [
+        "Evochi una coppia di fiamme mistiche che danzano attorno a un bersaglio, infliggendo danni. Effettua un tiro per colpire a distanza contro un bersaglio, infliggendo 1d12 + MOVE danni da fuoco in caso di colpo. Se il bersaglio viene colpito da questo attacco, qualsiasi tiro per colpire effettuato prima della fine del suo turno successivo subisce uno svantaggio."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d8 al livello 5, 2d12 al livello 10 e 6d6 al livello 17."
+    },
+    "mystical-power": {
+      "sourceName": "Mystical Power",
+      "name": "Forza Mistica",
+      "description": [
+        "Attacchi emettendo potere mistico. Effettua un attacco a distanza, infliggendo 1d12 + MOVE danni psichici in caso di colpo. Se l'attacco va a segno, guadagni +1 a tutti i tiri per colpire effettuati con SAG come potere di movimento fino alla fine dell'incontro o finché non viene sostituito. Se l'attacco fallisce, guadagni +1 CA fino alla fine dell'incontro o fino alla sostituzione. La somma di questi bonus ammonta a +5 totale."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d8 al livello 5, 2d12 al livello 10 e 6d6 al livello 17."
+    },
+    "nasty-plot": {
+      "sourceName": "Nasty Plot",
+      "name": "Congiura",
+      "description": [
+        "Stimoli il tuo cervello con pensieri cattivi. Per tutta la durata, hai vantaggio su qualsiasi attacco con il potere di movimento Saggezza, Intelligenza o Carisma. Se l'attacco richiede un tiro salvezza su Saggezza, Intelligenza o Carisma, il bersaglio subisce uno svantaggio."
+      ],
+      "higherLevels": null
+    },
+    "natural-gift": {
+      "sourceName": "Natural Gift",
+      "name": "Dononaturale",
+      "description": [
+        "Attingi potere dalla bacca che tieni, rilasciandola in un attacco a distanza. Effettua un attacco a distanza, infliggendo 1d12 + MOVE danni in caso di colpo. Il tipo dipende da quale bacca hai in mano, secondo la tabella seguente:",
+        {
+          "type": "table",
+          "headers": [
+            "Tipo",
+            "Bacca",
+            "Tipo",
+            "Bacca"
+          ],
+          "rows": [
+            [
+              "Normale",
+              "Cileno",
+              "Volare",
+              "Lamù, Coba"
+            ],
+            [
+              "Fuoco",
+              "Cherri, Occa",
+              "Psichico",
+              "Sitrus, Payapa"
+            ],
+            [
+              "Acqua",
+              "Chesto, Passho",
+              "Insetto",
+              "Tanga"
+            ],
+            [
+              "Elettrico",
+              "Pecha, Waccan",
+              "Roccia",
+              "Carta"
+            ],
+            [
+              "Erba",
+              "Rawst, Rindo",
+              "Fantasma",
+              "Kasib"
+            ],
+            [
+              "Ghiaccio",
+              "Aspear, Yache",
+              "Drago",
+              "Haban"
+            ],
+            [
+              "Battagliero",
+              "Leppa, Chople",
+              "Buio",
+              "Colbur"
+            ],
+            [
+              "Veleno",
+              "Orano, Kebia",
+              "Acciaio",
+              "Babiri, Razz"
+            ],
+            [
+              "Terra",
+              "Persim, Shucca",
+              "Fata",
+              "Roseli"
+            ]
+          ]
+        }
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d8 al livello 5, 2d12 al livello 10 e 6d6 al livello 17."
+    },
+    "nature-power": {
+      "sourceName": "Nature Power",
+      "name": "Naturforza",
+      "description": [
+        "Invochi i poteri della natura nelle vicinanze e attivi una mossa in base al terreno. Il DM ha l'ultima parola su quale mossa attivare, ma ecco alcuni esempi di tipi di terreno:",
+        {
+          "type": "table",
+          "headers": [
+            "Terreno",
+            "Mossa"
+          ],
+          "rows": [
+            [
+              "Città, strade ed edifici",
+              "Comete"
+            ],
+            [
+              "Zone sabbiose",
+              "Terremoto"
+            ],
+            [
+              "Vulcani e zone laviche",
+              "Fuocobomba"
+            ],
+            [
+              "Grotte e zone buie",
+              "Palla Ombra"
+            ],
+            [
+              "Terreni rocciosi e montagne",
+              "Frana"
+            ],
+            [
+              "Campi e pianure",
+              "Paralizzante"
+            ],
+            [
+              "Foreste ed erba alta",
+              "Foglielama"
+            ],
+            [
+              "Stagni e paludi",
+              "Bollaraggio"
+            ],
+            [
+              "In mare",
+              "Surf"
+            ],
+            [
+              "Sott’acqua",
+              "Idropompa"
+            ],
+            [
+              "Zone innevate",
+              "Bora"
+            ]
+          ]
+        }
+      ],
+      "higherLevels": null
+    },
+    "natures-madness": {
+      "sourceName": "Nature's Madness",
+      "name": "Ira della Natura",
+      "description": [
+        "Sfrutti tutto il potere della natura e lo invii contro una creatura nel raggio d'azione. Il bersaglio deve effettuare un COS salvataggio contro il tuo Movimento CD. Se il tiro salvezza fallisce, il bersaglio perde metà del suo attuale PF (minimo 1 danno)."
+      ],
+      "higherLevels": null
+    },
+    "needle-arm": {
+      "sourceName": "Needle Arm",
+      "name": "Pugnospine",
+      "description": [
+        "Le tue braccia si trasformano in aghi spinosi e frastagliati mentre colpisci una creatura. Effettua un attacco in mischia su una creatura, infliggendo 1d10 + MOVE danni da erba in caso di colpo. Se il tiro per colpire naturale è un 15 o più, il bersaglio sussulta."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d8 al livello 5, 5d4 al livello 10 e 4d8 al livello 17."
+    },
+    "night-daze": {
+      "sourceName": "Night Daze",
+      "name": "Urtoscuro",
+      "description": [
+        "Un'onda d'urto nera come la pece di energia oscura si precipita verso un bersaglio. Effettua un tiro per colpire a distanza, infliggendo 2d6 + MOVE danni oscuri in caso di colpo. Se il tiro per colpire naturale è 13 o più, il bersaglio lancia il suo attacco successivo con svantaggio. Se attiva una mossa che richiede un tiro salvezza, i bersagli hanno vantaggio al tiro."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d8 al livello 5, 4d6 al livello 10 e 6d6 al livello 17."
+    },
+    "night-shade": {
+      "sourceName": "Night Shade",
+      "name": "Ombra Notturna",
+      "description": [
+        "Colpisci un bersaglio con un'onda necrotica di energia oscura. Effettua un attacco a distanza contro un bersaglio. In caso di colpo, infliggi un ammontare di danni fantasma pari a 1d6 + il livello dell'utente."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d4+Livello al livello 5, 1d12+Livello al livello 10 e 4d4+Livello al livello 17."
+    },
+    "night-slash": {
+      "sourceName": "Night Slash",
+      "name": "Nottesferza",
+      "description": [
+        "Colpisci una creatura dotata di potere oscuro. Effettua un attacco in mischia, infliggendo 1d12 + MOVE danni oscuri in caso di colpo. Questo attacco mette a segno un colpo critico sui tiri per colpire naturali di 19 o 20."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d8 al livello 5, 2d12 al livello 10 e 6d6 al livello 17."
+    },
+    "nightmare": {
+      "sourceName": "Nightmare",
+      "name": "Incubo",
+      "description": [
+        "Crei un orribile incubo nella mente di qualsiasi creatura addormentata in un cerchio del raggio di 60 piedi intorno a te, infliggendo automaticamente 3d6 + MOVE danni da fantasma. Questa mossa non sveglia una creatura addormentata."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 4d6 al livello 5, 5d6 al livello 10 e 6d6 al livello 17."
+    },
+    "no-retreat": {
+      "sourceName": "No Retreat",
+      "name": "Spalle al Muro",
+      "description": [
+        "Per tutta la durata, hai vantaggio ai tiri per colpire e ai tiri salvezza. Non puoi cambiare o fuggire."
+      ],
+      "higherLevels": null
+    },
+    "noble-roar": {
+      "sourceName": "Noble Roar",
+      "name": "Urlo",
+      "description": [
+        "Emetti un ruggito sbalorditivo che intimidisce un bersaglio. Quando sei preso di mira da un attacco, usa questa reazione per imporre uno svantaggio al tiro per colpire."
+      ],
+      "higherLevels": null
+    },
+    "nuzzle": {
+      "sourceName": "Nuzzle",
+      "name": "Elettrococcola",
+      "description": [
+        "Tocchi una creatura con le tue guance elettrizzate, inviando elettricità che scorre nelle sue vene. Effettua un tiro per colpire in mischia contro una creatura. In caso di colpo, il bersaglio subisce 1d4 + MOVE danno elettrico ed è costretto a effettuare un COS tiro salvezza contro il tuo Movimento CD, rimanendo paralizzato in caso di fallimento."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d4 al livello 5, 1d12 al livello 10 e 4d4 al livello 17."
+    },
+    "oblivion-wing": {
+      "sourceName": "Oblivion Wing",
+      "name": "Ali del Fato",
+      "description": [
+        "Estendi le tue ali e usi un raggio oscuro di energia per assorbire la forza vitale del bersaglio. Effettua un attacco a distanza contro una creatura, infliggendo 3d8 + MOVE danni volanti in caso di colpo, recuperando i tuoi PF per l'importo del danno inflitto."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 5d6 al livello 5, 4d12 al livello 10 e 8d8 al livello 17."
+    },
+    "obstruct": {
+      "sourceName": "Obstruct",
+      "name": "Sbarramento",
+      "description": [
+        "Percepisci il pericolo in arrivo e sei in grado di evitarlo rapidamente. Quando sei il destinatario del danno e/o degli effetti di una mossa, puoi evitare automaticamente il danno/gli effetti nel primo momento di questa reazione. Nelle istanze future di questa mossa nello stesso combattimento, devi ottenere un risultato superiore a un 15 su un tiro di d20 affinché la reazione abbia successo. Questa reazione non può essere utilizzata per proteggersi dai danni/effetti che risultano da un tiro di attacco naturale di 20.",
+        "Se l'attacco era un attacco corpo a corpo, l'attaccante deve effettuare un tiro salvezza di COS, sussultando in caso di fallimento. Questo sussulto dura per il resto del turno e per tutto il turno successivo dell'attaccante."
+      ],
+      "higherLevels": null
+    },
+    "octazooka": {
+      "sourceName": "Octazooka",
+      "name": "Octazooka",
+      "description": [
+        "Invii un'esplosione di inchiostro verso le tue creature. Effettua un tiro per colpire a distanza, infliggendo 1d10 + MOVE danni da acqua in caso di colpo. Se il tiro per colpire naturale è 18 o più, il bersaglio deve aggiungere -1 ai tiri per colpire per il resto di questo combattimento."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d8 al livello 5, 5d4 al livello 10 e 4d8 al livello 17."
+    },
+    "octolock": {
+      "sourceName": "Octolock",
+      "name": "Tentacolock",
+      "description": [
+        "Effettua una prova di lotta contro il bersaglio. Quando hai successo, la CA del bersaglio viene ridotta di 1. All'inizio di ogni tuo turno, puoi utilizzare un'azione gratuita per ridurre la CA di un bersaglio in lotta con questa mossa di 1. Questo può accumularsi fino a 5 volte, per una riduzione totale di -5 CA.",
+        "La riduzione di CA del bersaglio si ripristina a 0 una volta che il rampino viene rilasciato o rotto."
+      ],
+      "higherLevels": null
+    },
+    "odor-sleuth": {
+      "sourceName": "Odor Sleuth",
+      "name": "Segugio",
+      "description": [
+        "Quando attivi questa mossa, scegli un bersaglio nel raggio d'azione. Per tutta la durata, il bersaglio non può attivare alcuna mossa che aumenterebbe la sua CA. Se ha già attivato una mossa del genere, l'effetto termina immediatamente. Inoltre, per tutta la durata, nessuna creatura nel raggio d'azione ha l'immunità alle tue mosse di tipo Spettro, Normale o Lotta."
+      ],
+      "higherLevels": null
+    },
+    "ominous-wind": {
+      "sourceName": "Ominous Wind",
+      "name": "Funestovento",
+      "description": [
+        "Si suscita una folata di vento ripugnante che colpisce una creatura a gittata. Effettua un attacco a distanza, infliggendo 1d10 + MOVE danni da fantasma in caso di colpo. Con un tiro di attacco naturale di 19 o 20, aumenta tutti i tuoi punteggi di abilità di +1 mentre rimani in battaglia."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d8 al livello 5, 5d4 al livello 10 e 4d8 al livello 17."
+    },
+    "order-up": {
+      "sourceName": "Order Up",
+      "name": "Alta Cucina",
+      "description": [
+        "Effettua un attacco a distanza, infliggendo 2d6 + MOVE danni del drago in caso di colpo. Se hai un Tatsugiri in bocca, si verifica un effetto a seconda della forma del Tatsugiri:",
+        {
+          "type": "table",
+          "headers": [
+            "Modulo",
+            "Effetto"
+          ],
+          "rows": [
+            [
+              "Riccio (arancione)",
+              "Questo attacco infligge danni extra pari al tuo modificatore FOR."
+            ],
+            [
+              "Droopy (rosa)",
+              "Ottieni +3 CA fino all'inizio del tuo prossimo turno."
+            ],
+            [
+              "Elastico (giallo)",
+              "Hai vantaggio su DES salvataggi fino all'inizio del tuo prossimo turno."
+            ]
+          ]
+        }
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d8 al livello 5, 4d6 al livello 10 e 6d6 al livello 17."
+    },
+    "origin-pulse": {
+      "sourceName": "Origin Pulse",
+      "name": "Primopulsar",
+      "description": [
+        "Il tuo corpo brilla di un blu brillante e brillante, inviando tre raggi di luce focalizzata su qualsiasi creatura nel raggio d'azione. Effettua un attacco a distanza per ogni raggio, infliggendo 1d10 + MOVE danni da acqua per ogni colpo andato a segno."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d8 al livello 5, 5d4 al livello 10 e 4d8 al livello 17."
+    },
+    "outrage": {
+      "sourceName": "Outrage",
+      "name": "Oltraggio",
+      "description": [
+        "Vai su tutte le furie, eseguendo diversi attacchi senza controllo per tre round. Questa mossa colpisce automaticamente per 1d6 + MOVE danno del drago nel primo round, 2d6 + MOVE danno del drago nel secondo round e 4d6 + MOVE danno del drago nel terzo round. Quando questa mossa termina, dopo il terzo round o per aver interrotto la concentrazione, diventi confuso. Questo attacco si interrompe se la concentrazione viene interrotta o l'utilizzatore diventa incapace."
+      ],
+      "higherLevels": "Il dado utilizzato per questa mossa cambia in un d8 al livello 5, un d10 al livello 10 e un d12 al livello 17."
+    },
+    "overdrive": {
+      "sourceName": "Overdrive",
+      "name": "Overdrive",
+      "description": [
+        "Crei un suono assordante ed esplosivo che danneggia tutte le creature all'interno di 20 feet da te. Obbliga qualsiasi creatura nel raggio d'azione a effettuare un COS tiro salvezza contro il tuo Movimento CD, subendo 2d12 + MOVE danni elettrici in caso di fallimento, o la metà in caso di successo."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 3d10 al livello 5, 5d8 al livello 10 e 8d8 al livello 17."
+    },
+    "overheat": {
+      "sourceName": "Overheat",
+      "name": "Vampata",
+      "description": [
+        "Con un ruggito, le fiamme esplodono dal tuo corpo in un cerchio del raggio di 15 piedi, centrato su di te. Qualsiasi creatura nel raggio d'azione deve effettuare un tiro salvezza di DES contro il tuo Movimento CD, subendo 5d4 + MOVE danni da fuoco in caso di fallimento, o la metà di tali danni in caso di successo. La potenza della mossa ti esaurisce e il tuo prossimo attacco viene effettuato in svantaggio. Se il tuo prossimo attacco richiede un tiro salvezza delle creature, queste hanno vantaggio."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 3d10 al livello 5, 5d8 al livello 10 e 8d8 al livello 17."
+    },
+    "pain-split": {
+      "sourceName": "Pain Split",
+      "name": "Malcomune",
+      "description": [
+        "Dividi il dolore derivante dalle ferite con il tuo aggressore. Prendi di mira una creatura nel raggio d'azione, costringendola a effettuare un COS tiro salvezza contro il tuo Movimento CD. In caso di fallimento, sia tu che il tuo aggressore modificherete i vostri attuali punti salute sulla media dei due. Se questo fa sì che una delle creature superi la salute massima, prenderà invece la salute massima."
+      ],
+      "higherLevels": null
+    },
+    "parabolic-charge": {
+      "sourceName": "Parabolic Charge",
+      "name": "Caricaparabola",
+      "description": [
+        "Una travolgente carica elettrica si forma attorno a te, rubando parte dell'energia del bersaglio. Obbliga tutte le creature all'interno di 30 feet a effettuare un COS tiro salvezza contro il tuo Movimento CD, subendo 1d10 + MOVE danni elettrici in caso di fallimento. Recupera PF pari alla metà del danno totale inflitto, ma non più di 5 volte il tuo livello."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d8 al livello 5, 5d4 al livello 10 e 4d8 al livello 17."
+    },
+    "parting-shot": {
+      "sourceName": "Parting Shot",
+      "name": "Monito",
+      "description": [
+        "Lanci una brutale minaccia di addio appena prima di uscire. Obbliga una creatura nel raggio d'azione a effettuare un tiro salvezza su SAG contro il tuo Movimento CD, quindi cambia immediatamente. In caso di fallimento, il bersaglio infligge la metà dei danni nel turno successivo se utilizza una mossa dannosa."
+      ],
+      "higherLevels": null
+    },
+    "pay-day": {
+      "sourceName": "Pay Day",
+      "name": "Giornopaga",
+      "description": [
+        "Colpisci un bersaglio, facendogli scuotere la borsa. Effettua un attacco in mischia, infliggendo 1d6 + MOVE danno normale in caso di colpo. Inoltre, fino alla fine del combattimento, sul pavimento vengono sparsi contanti pari a 10 volte il livello dell'utente. Questo rilascio di fondi può avvenire solo una volta per bersaglio per combattimento."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 1d12 al livello 5, 2d8 al livello 10 e 4d6 al livello 17."
+    },
+    "payback": {
+      "sourceName": "Payback",
+      "name": "Rivincita",
+      "description": [
+        "Colpisci forte per rappresaglia. Effettua un attacco in mischia, infliggendo 1d8 + MOVE danni oscuri in caso di colpo. Se il bersaglio ti ha danneggiato nel turno immediatamente precedente al tuo, raddoppia il tiro di dado per il danno di questo attacco."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d6 al livello 5, 4d4 al livello 10 e 3d10 al livello 17."
+    },
+    "peck": {
+      "sourceName": "Peck",
+      "name": "Beccata",
+      "description": [
+        "Colpisci un bersaglio con un attacco a beccata. Effettua un tiro per colpire in mischia su un bersaglio, infliggendo 1d6 + MOVE danni volanti in caso di colpo andato a segno."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 1d10 al livello 5, 2d8 al livello 10 e 5d4 al livello 17."
+    },
+    "perish-song": {
+      "sourceName": "Perish Song",
+      "name": "Ultimocanto",
+      "description": [
+        "Esegui una canzone con conseguenze devastanti per le creature che la ascoltano. Tutte le creature nel raggio d'azione (incluso te) devono effettuare un tiro salvezza su COS contro il tuo Movimento CD. Coloro che falliscono, svengono in 3 round, nel loro turno, a meno che non fuggano o vengano scambiati dal loro allenatore prima della fine dei tre round."
+      ],
+      "higherLevels": null
+    },
+    "petal-blizzard": {
+      "sourceName": "Petal Blizzard",
+      "name": "Fiortempesta",
+      "description": [
+        "Sollevi una tormenta di petali affilati che vorticano intorno a te. Qualsiasi creatura entro 30 feet da te deve effettuare un DES tiro salvezza contro il tuo Movimento CD, subendo 2d8 + MOVE danni erba in caso di fallimento, o la metà di quel danno in caso di successo."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d10 al livello 5, 3d10 al livello 10 e 4d12 al livello 17."
+    },
+    "petal-dance": {
+      "sourceName": "Petal Dance",
+      "name": "Petalodanza",
+      "description": [
+        "Danzi in giro, lanciando una raffica di attacchi di foglie affilate contro una creatura nel raggio d'azione. Effettua un tiro di attacco a distanza, infliggendo 1d10 + MOVE danni da erba in caso di colpo. Nel turno successivo, puoi scegliere di utilizzare nuovamente questa azione per colpire automaticamente, ma se lo fai, diventi confuso alla fine del tuo turno."
+      ],
+      "higherLevels": "I dadi di danno lanciati per questa mossa cambiano in 2d6 al livello 5, 3d6 al livello 10 e 4d6 al livello 17."
+    },
+    "phantom-force": {
+      "sourceName": "Phantom Force",
+      "name": "Spettrotuffo",
+      "description": [
+        "Scompari dalla vista e ti prepari a sorprendere il tuo bersaglio con un attacco. Quando attivi questa mossa, diventi invisibile e immune a qualsiasi attacco di opportunità. Non puoi essere preso di mira dagli attacchi mentre sei invisibile. Nel tuo turno successivo, usi la tua azione per riapparire in un punto nel raggio d'azione ed effettuare un attacco in mischia contro una creatura, con vantaggio, infliggendo 2d8 + MOVE danno fantasma in caso di colpo andato a segno. Le reazioni di Protezione e Individuazione non possono essere utilizzate quando si viene colpiti da questo attacco."
+      ],
+      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d10 al livello 5, 3d10 al livello 10 e 4d12 al livello 17."
+    }
+  }
+}

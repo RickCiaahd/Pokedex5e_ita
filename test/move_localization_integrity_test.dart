@@ -182,7 +182,7 @@ String _flattenText(dynamic value) {
 
 Map<String, int> _mechanicalTokenCounts(String value) {
   final expression = RegExp(
-    r'\b\d+d\d+\b|\bd\d+\b|[+\-]\s*\d+|\b\d+(?:ft|\s*(?:feet|foot|piedi|piede))?\b|\b(?:HP|PF|STR|FOR|DEX|DES|CON|COS|WIS|SAG|CHA|CAR|INT|AC|CA|STAB|DC|CD|MOVE|PP|SR|FLINCHED)\b',
+    r'\b\d+d\d+\b|\bd\d+\b|[+\-]\s*\d+|\b\d+(?:ft|\s*(?:feet|foot|piedi|piede))?\b|\b(?:HP|PF|STR|FOR|DEX|DES|CON|COS|WIS|SAG|CHA|CAR|INT|AC|CA|STAB|DC|CD|MOVE|PP|SR|FLINCHED|flinch(?:es|ed)?)\b',
   );
   final result = <String, int>{};
   for (final match in expression.allMatches(value)) {
@@ -204,6 +204,8 @@ String _canonicalToken(String value) {
     'CAR': 'CHA',
     'CA': 'AC',
     'CD': 'DC',
+    'FLINCH': 'FLINCHED',
+    'FLINCHES': 'FLINCHED',
   };
   return aliases[token] ?? token;
 }

@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: flutter-ci-${{ github.workflow }}-${{ github.ref }}
@@ -18,31 +18,11 @@ jobs:
   quality:
     name: Analyze, test and build Android
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 45
 
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.head_ref || github.ref_name }}
-          fetch-depth: 0
-
-      - name: Polish and integrate move localization 451-650
-        if: github.head_ref == 'translation/moves-451-650'
-        shell: bash
-        run: |
-          python tools/run_polish_move_localization_451_650.py
-          git fetch origin main
-          git checkout origin/main -- .github/workflows/flutter-ci.yml
-          rm -f tools/run_polish_move_localization_451_650.py
-          rm -f tools/polish_move_localization_451_650.py
-          rm -f docs/translation/move-451-650-polish-diagnostic.txt
-          rm -f docs/translation/move-451-650-polish-diagnostic-v2.txt
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -A
-          git commit -m 'Revisiona e integra le mosse 451-650'
-          git push origin HEAD:translation/moves-451-650
 
       - name: Set up Java
         uses: actions/setup-java@v4

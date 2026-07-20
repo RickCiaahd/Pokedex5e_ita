@@ -25,6 +25,8 @@ I 200 nomi visualizzati sono stati verificati tramite il riferimento italiano de
 
 Per ogni mossa sono stati conservati numero e ordine dei blocchi, presenza di `higherLevels`, dadi, numeri, formule, distanze, livelli, durate e riferimenti tecnici. Le tabelle di Dononaturale, Naturforza, Alta Cucina, Scatenatoro e Forzasegreta sono state ricostruite con intestazioni e valori italiani controllati.
 
+Dopo la prima generazione degli overlay è stata eseguita una rifinitura terminologica dedicata, correggendo costruzioni letterali, nomi delle caratteristiche, tipi di danno, tiri salvezza, portate e condizioni come `FLINCHED`, senza modificare gli effetti delle mosse.
+
 ID, slug, nome tecnico inglese, tipo, PP, potenza, TM, tiri salvezza, attacchi e dati di danno restano nei file sorgente originali.
 
 ## Compatibilità

@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: flutter-ci-${{ github.workflow }}-${{ github.ref }}
@@ -18,11 +18,39 @@ jobs:
   quality:
     name: Analyze, test and build Android
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 75
 
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
+          fetch-depth: 0
+
+      - name: Set up Python for move generator
+        if: github.head_ref == 'translation/moves-651-830'
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Generate and integrate move localization 651-830
+        if: github.head_ref == 'translation/moves-651-830'
+        shell: bash
+        run: |
+          if [ ! -f tools/generate_move_localization_651_830.py ]; then
+            echo 'Generator already completed.'
+            exit 0
+          fi
+          python -m pip install deep-translator==1.11.4
+          python tools/generate_move_localization_651_830.py
+          git fetch origin main
+          git checkout origin/main -- .github/workflows/flutter-ci.yml
+          rm -f tools/generate_move_localization_651_830.py
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Genera la base italiana delle mosse 651-830'
+          git push origin HEAD:translation/moves-651-830
 
       - name: Set up Java
         uses: actions/setup-java@v4

@@ -1,0 +1,129 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/moves.json",
+  "nameSources": [
+    "https://wiki.pokemoncentral.it/Elenco_delle_mosse_in_altre_lingue",
+    "https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/move_names.csv"
+  ],
+  "type": "move",
+  "range": {
+    "start": 1,
+    "end": 10
+  },
+  "localizedCount": 10,
+  "items": {
+    "absorb": {
+      "sourceName": "Absorb",
+      "name": "Assorbimento",
+      "description": [
+        "Provi ad assorbire parte della salute del bersaglio. Effettua un attacco in mischia. Se colpisci, la creatura subisce 1d4 + MOVE danni di tipo Erba. L'utilizzatore recupera metà dei danni inflitti."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d4 al livello 5, 1d12 al livello 10 e 4d4 al livello 17."
+    },
+    "accelerock": {
+      "sourceName": "Accelerock",
+      "name": "Rocciarapida",
+      "description": [
+        "Ti scagli contro un bersaglio ad alta velocità. Come azione bonus, puoi muoverti immediatamente fino a 10 piedi ed effettuare un attacco in mischia contro una creatura a portata senza provocare attacchi di opportunità, infliggendo 1d4 danni di tipo Roccia se colpisci."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 1d6 al livello 5, 1d10 al livello 10 e 1d12 al livello 17."
+    },
+    "acid": {
+      "sourceName": "Acid",
+      "name": "Acido",
+      "description": [
+        "Crei un getto di acido bollente in un cono di 30 piedi centrato su di te. Le creature nel cono devono effettuare un tiro salvezza su DES: se falliscono subiscono 1d6 + MOVE danni di tipo Veleno, dimezzati in caso di successo."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 1d12 al livello 5, 2d8 al livello 10 e 4d6 al livello 17."
+    },
+    "acid-armor": {
+      "sourceName": "Acid Armor",
+      "name": "Scudo Acido",
+      "description": [
+        "Per la durata sei circondato da uno scudo di acido denso. Durante questo periodo la tua CA aumenta di 2 e ogni creatura che ti colpisce con un attacco in mischia deve superare un tiro salvezza su COS o subire 1d6 danni di tipo Veleno."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d6 al livello 10."
+    },
+    "acid-spray": {
+      "sourceName": "Acid Spray",
+      "name": "Acidobomba",
+      "description": [
+        "Spruzzi un fluido acido che corrode le difese di una creatura. Effettua un attacco a distanza contro un bersaglio, infliggendo 1d6 + MOVE danni di tipo Veleno se colpisci. In caso di colpo, il bersaglio deve effettuare un tiro salvezza su COS contro la tua CD della mossa. Se fallisce, la sua CA è ridotta di 1 per la durata. Questa riduzione può cumularsi sulla stessa creatura fino a un massimo di -3 alla sua CA."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 1d12 al livello 5, 2d8 al livello 10 e 4d6 al livello 17."
+    },
+    "acrobatics": {
+      "sourceName": "Acrobatics",
+      "name": "Acrobazia",
+      "description": [
+        "Attacchi agilmente un bersaglio con grande abilità acrobatica. Effettua un attacco in mischia, infliggendo 3d6 + MOVE danni di tipo Volante se colpisci. Se impugni uno strumento quando attivi questa mossa, i danni sono dimezzati."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 3d8 al livello 5, 6d6 al livello 10 e 7d8 al livello 17."
+    },
+    "acupressure": {
+      "sourceName": "Acupressure",
+      "name": "Acupressione",
+      "description": [
+        "Eserciti pressione su diversi punti del corpo, potenziando casualmente una caratteristica per la durata. Quando attivi questa mossa, tira un d6 e ottieni il bonus indicato dal risultato. Se la attivi nuovamente in un turno successivo, qualsiasi effetto precedente termina.",
+        {
+          "type": "table",
+          "headers": [
+            "d6",
+            "Effetto"
+          ],
+          "rows": [
+            [
+              "1",
+              "+1 ai tiri per colpire"
+            ],
+            [
+              "2",
+              "+2 ai tiri per i danni"
+            ],
+            [
+              "3",
+              "+10 PF temporanei"
+            ],
+            [
+              "4",
+              "+1 ai tiri salvezza"
+            ],
+            [
+              "5",
+              "Intervallo di colpo critico +1"
+            ],
+            [
+              "6",
+              "+1 alla Classe Armatura"
+            ]
+          ]
+        }
+      ],
+      "higherLevels": null
+    },
+    "aerial-ace": {
+      "sourceName": "Aerial Ace",
+      "name": "Aeroassalto",
+      "description": [
+        "Ti lanci in picchiata contro una creatura a una velocità tale da rendere impossibile evitarla. Questa mossa colpisce automaticamente e infligge 1d6 + MOVE danni di tipo Volante, tranne quando il bersaglio si trova nella fase invulnerabile di mosse come Volo, Fossa, Rimbalzo, Sub e simili."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 1d10 al livello 5, 2d8 al livello 10 e 5d4 al livello 17."
+    },
+    "aeroblast": {
+      "sourceName": "Aeroblast",
+      "name": "Aerocolpo",
+      "description": [
+        "Scagli un potente vortice d'aria che lacera le creature. Ogni creatura in una linea lunga 50 piedi e larga 5 piedi deve effettuare un tiro salvezza su DES contro la tua CD della mossa, subendo 3d10 + MOVE danni di tipo Volante se lo fallisce, o la metà se lo supera."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 6d6 al livello 5, 8d6 al livello 10 e 7d12 al livello 17."
+    },
+    "after-you": {
+      "sourceName": "After You",
+      "name": "Cortesia",
+      "description": [
+        "Come azione bonus, scegli una creatura a gittata che non abbia ancora svolto il proprio turno nel round attuale. Il bersaglio deve svolgere immediatamente il proprio turno e torna al normale ordine di iniziativa nel round successivo."
+      ],
+      "higherLevels": null
+    }
+  }
+}

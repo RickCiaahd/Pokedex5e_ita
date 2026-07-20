@@ -1,0 +1,97 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/moves.json",
+  "nameSources": [
+    "https://wiki.pokemoncentral.it/Elenco_delle_mosse_in_altre_lingue",
+    "https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/move_names.csv"
+  ],
+  "type": "move",
+  "range": {
+    "start": 31,
+    "end": 40
+  },
+  "localizedCount": 10,
+  "items": {
+    "astonish": {
+      "sourceName": "Astonish",
+      "name": "Sgomento",
+      "description": [
+        "Spaventi una creatura con un grido improvviso. Effettua un tiro per colpire a distanza contro una creatura, infliggendo 1d6 + MOVE danni di tipo Spettro se colpisci. Con un risultato naturale di 15 o superiore al tiro per colpire, il bersaglio subisce lo status FLINCHED."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 1d10 al livello 5, 2d8 al livello 10 e 5d4 al livello 17."
+    },
+    "astral-barrage": {
+      "sourceName": "Astral Barrage",
+      "name": "Schegge Astrali",
+      "description": [
+        "Scagli una terrificante quantità di piccoli spettri verso un punto a gittata. Ogni creatura in una sfera con raggio di 10 piedi centrata su quel punto deve effettuare un tiro salvezza su SAG contro la tua CD della mossa, subendo 3d6 + MOVE danni di tipo Spettro se lo fallisce, o la metà se lo supera."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 3d8 al livello 5, 6d6 al livello 10 e 7d8 al livello 17."
+    },
+    "attack-order": {
+      "sourceName": "Attack Order",
+      "name": "Comandourto",
+      "description": [
+        "Ordini ai tuoi sottoposti di attaccare un bersaglio. Effettua un attacco a distanza contro una creatura, infliggendo 2d8 + MOVE danni di tipo Coleottero se colpisci. Questa mossa mette a segno un colpo critico con 19 o 20."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d10 al livello 5, 3d10 al livello 10 e 4d12 al livello 17."
+    },
+    "attract": {
+      "sourceName": "Attract",
+      "name": "Attrazione",
+      "description": [
+        "Come reazione, quando subisci danni da un attacco, puoi costringere l'attaccante a effettuare un tiro salvezza su CAR contro la tua CD della mossa. Se fallisce, la creatura deve ripetere il tiro per i danni e usare il risultato più basso."
+      ],
+      "higherLevels": null
+    },
+    "aura-sphere": {
+      "sourceName": "Aura Sphere",
+      "name": "Forzasfera",
+      "description": [
+        "Concentri la tua aura in un'esplosione che colpisce una creatura a gittata. Questa mossa colpisce automaticamente e infligge 1d6 + MOVE danni di tipo Lotta, tranne quando il bersaglio si trova nella fase invulnerabile di mosse come Volo, Fossa, Rimbalzo e simili."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 1d10 al livello 5, 2d8 al livello 10 e 5d4 al livello 17."
+    },
+    "aura-wheel": {
+      "sourceName": "Aura Wheel",
+      "name": "Ruota d’Aura",
+      "description": [
+        "Crei una ruota di energia intorno a te e carichi una creatura a gittata. Puoi muoverti immediatamente fino a 5 piedi ed effettuare un attacco in mischia contro una creatura a portata, infliggendo 1d8 + MOVE danni di tipo Elettro se colpisci. Se l'attacco colpisce, la volta successiva che usi Ruota d'Aura puoi muoverti di ulteriori 5 piedi. Questo effetto si cumula fino a un bonus totale di movimento di 20 piedi.",
+        "Il tipo di danno di questa mossa è Elettro quando l'utilizzatore si trova nel Motivo Panciapiena e Buio quando si trova nel Motivo Panciavuota."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d6 al livello 5, 2d12 al livello 10 e 4d8 al livello 17."
+    },
+    "aurora-beam": {
+      "sourceName": "Aurora Beam",
+      "name": "Raggiaurora",
+      "description": [
+        "Scagli un raggio concentrato di ghiaccio gelido contro una singola creatura a gittata. Effettua un tiro per colpire a distanza, infliggendo 1d10 + MOVE danni di tipo Ghiaccio se colpisci. Con un risultato naturale di 15 o superiore al tiro per colpire, il bersaglio ha svantaggio a ogni attacco che effettua nel proprio turno successivo."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d8 al livello 5, 5d4 al livello 10 e 4d8 al livello 17."
+    },
+    "aurora-veil": {
+      "sourceName": "Aurora Veil",
+      "name": "Velaurora",
+      "description": [
+        "Sfrutti l'ambiente per creare uno scudo di ghiaccio intorno al tuo corpo. Questa mossa può essere attivata soltanto mentre grandina e può essere usata come azione bonus per dimezzare tutti i danni che subisci per tre round."
+      ],
+      "higherLevels": null
+    },
+    "autotomize": {
+      "sourceName": "Autotomize",
+      "name": "Sganciapesi",
+      "description": [
+        "Elimini una parte del tuo corpo per diventare più leggero e aumentare la velocità. Per la durata, la tua velocità aumenta di 10 piedi. Questa mossa può cumularsi fino a un aumento massimo di 30 piedi."
+      ],
+      "higherLevels": null
+    },
+    "avalanche": {
+      "sourceName": "Avalanche",
+      "name": "Slavina",
+      "description": [
+        "Scagli una massa di neve potente per travolgere una creatura. Effettua un attacco a distanza contro un bersaglio, infliggendo 1d10 + MOVE danni di tipo Ghiaccio se colpisci. Se il bersaglio ti ha inflitto danni dopo la fine del tuo ultimo turno, raddoppia i danni che infliggi."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d8 al livello 5, 5d4 al livello 10 e 4d8 al livello 17."
+    }
+  }
+}

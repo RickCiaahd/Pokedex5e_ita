@@ -725,9 +725,9 @@ class _CustomPokemonEditorScreenState extends State<CustomPokemonEditorScreen> {
     final values = _csv(controller.text);
     if (!values.any(
       (value) =>
-          MoveData.referenceKey(value) == MoveData.referenceKey(move.name),
+          MoveData.referenceKey(value) == MoveData.referenceKey(move.technicalName),
     )) {
-      values.add(move.name);
+      values.add(move.technicalName);
       controller.text = values.join(', ');
     }
   }

@@ -19,10 +19,12 @@ class MoveData {
     this.attackScope,
     this.tmNumber,
     this.tmCost,
+    this.sourceName,
   });
 
   final String id;
   final String name;
+  final String? sourceName;
   final String type;
   final String pp;
   final String range;
@@ -40,6 +42,11 @@ class MoveData {
   final String? attackScope;
   final int? tmNumber;
   final int? tmCost;
+
+  String get technicalName {
+    final value = sourceName?.trim();
+    return value == null || value.isEmpty ? name : value;
+  }
 
   factory MoveData.fromJson(String name, Map<String, dynamic> json) {
     final damageJson = Map<String, dynamic>.from(json['Damage'] ?? {});
@@ -84,6 +91,7 @@ class MoveData {
     return MoveData(
       id: json['id']?.toString() ?? referenceKey(name),
       name: name,
+      sourceName: json['sourceName']?.toString(),
       type: _titleCase(json['type']?.toString() ?? 'Typeless'),
       pp: json['pp']?.toString() ?? '-',
       range: json['range']?.toString() ?? '-',

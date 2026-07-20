@@ -1,0 +1,96 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/moves.json",
+  "nameSources": [
+    "https://wiki.pokemoncentral.it/Elenco_delle_mosse_in_altre_lingue",
+    "https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/move_names.csv"
+  ],
+  "type": "move",
+  "range": {
+    "start": 11,
+    "end": 20
+  },
+  "localizedCount": 10,
+  "items": {
+    "agility": {
+      "sourceName": "Agility",
+      "name": "Agilità",
+      "description": [
+        "Affini le tue capacità e senti un'ondata di velocità attraversarti. La tua velocità di movimento aumenta di 20 piedi per la durata. L'aumento si applica a qualsiasi tipo di movimento posseduto dalla creatura."
+      ],
+      "higherLevels": null
+    },
+    "air-cutter": {
+      "sourceName": "Air Cutter",
+      "name": "Aerasoio",
+      "description": [
+        "Crei una raffica di vento affilato come un rasoio per colpire una creatura. Effettua un attacco a distanza contro una creatura, infliggendo 1d10 + MOVE danni di tipo Volante se colpisci. Questa mossa mette a segno un colpo critico con 19 o 20."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d8 al livello 5, 5d4 al livello 10 e 4d8 al livello 17."
+    },
+    "air-slash": {
+      "sourceName": "Air Slash",
+      "name": "Eterelama",
+      "description": [
+        "Colpisci una creatura con una lama d'aria affilata. Effettua un attacco a distanza contro una creatura, infliggendo 1d12 + MOVE danni di tipo Volante se colpisci. Con un risultato naturale di 15 o superiore al tiro per colpire, il bersaglio subisce lo status FLINCHED."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d8 al livello 5, 2d12 al livello 10 e 6d6 al livello 17."
+    },
+    "alluring-voice": {
+      "sourceName": "Alluring Voice",
+      "name": "Ammaliavoce",
+      "description": [
+        "Usi la tua voce angelica per confondere un bersaglio. Effettua un attacco a distanza contro un bersaglio, infliggendo 2d6 + MOVE danni di tipo Folletto. Se colpisci, il bersaglio deve superare un tiro salvezza su CAR contro la tua CD della mossa o diventare confuso."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d8 al livello 5, 4d6 al livello 10 e 6d6 al livello 17."
+    },
+    "ally-switch": {
+      "sourceName": "Ally Switch",
+      "name": "Cambiaposto",
+      "description": [
+        "Usi uno strano potere psichico per teletrasportare te stesso e una creatura consenziente a gittata, scambiando le vostre posizioni sul campo di battaglia."
+      ],
+      "higherLevels": null
+    },
+    "amnesia": {
+      "sourceName": "Amnesia",
+      "name": "Amnesia",
+      "description": [
+        "La tua mente raggiunge un nuovo livello di concentrazione. Per la durata aggiungi +2 a ogni tiro salvezza che effettui, ma scegli una delle tue mosse diversa da Amnesia: dimentichi quella mossa e non puoi usarla per la durata."
+      ],
+      "higherLevels": null
+    },
+    "anchor-shot": {
+      "sourceName": "Anchor Shot",
+      "name": "Colpo d’Ancora",
+      "description": [
+        "Provi a intrappolare un bersaglio con la catena della tua ancora mentre attacchi. Scegli un bersaglio a gittata ed effettua un attacco a distanza contro di esso, infliggendo 2d6 + MOVE danni di tipo Acciaio se colpisci. In caso di colpo, il bersaglio diventa trattenuto e non può fuggire né essere sostituito. All'inizio di ciascun proprio turno, il bersaglio può effettuare un tiro salvezza su FOR contro la tua CD della mossa per tentare di liberarsi dalla catena."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d8 al livello 5, 4d6 al livello 10 e 6d6 al livello 17."
+    },
+    "ancient-power": {
+      "sourceName": "Ancient Power",
+      "name": "Forzantica",
+      "description": [
+        "Scateni uno sconosciuto potere interiore. Effettua un tiro per colpire in mischia contro una creatura, infliggendo 1d10 + MOVE danni di tipo Roccia se colpisci. Con un risultato naturale di 19 o 20 al tiro per colpire, tutte le tue caratteristiche aumentano di 1 finché rimani in lotta. Questa mossa può cumularsi fino a un massimo di +5 a tutte le caratteristiche."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d8 al livello 5, 5d4 al livello 10 e 4d8 al livello 17."
+    },
+    "apple-acid": {
+      "sourceName": "Apple Acid",
+      "name": "Acido Malico",
+      "description": [
+        "Inondi l'area con l'acido di mele aspre. I bersagli nell'area devono effettuare un tiro salvezza su DES. Una creatura subisce 1d10 + MOVE danni di tipo Erba se fallisce, o la metà se lo supera. Ogni creatura che fallisce subisce inoltre -2 ai tiri salvezza su DES e COS fino alla fine dell'incontro o finché non viene ritirata. Questo effetto può cumularsi fino a tre volte sulla stessa creatura."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d8 al livello 5, 5d4 al livello 10 e 4d8 al livello 17."
+    },
+    "aqua-cutter": {
+      "sourceName": "Aqua Cutter",
+      "name": "Idrotaglio",
+      "description": [
+        "Espelli acqua pressurizzata che taglia il bersaglio come una lama. Effettua un attacco in mischia, infliggendo 1d12 + MOVE danni di tipo Acqua se colpisci. Questo attacco mette a segno un colpo critico con un risultato naturale di 19 o 20 al tiro per colpire."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d8 al livello 5, 2d12 al livello 10 e 6d6 al livello 17."
+    }
+  }
+}

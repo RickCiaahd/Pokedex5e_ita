@@ -1,0 +1,97 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/moves.json",
+  "nameSources": [
+    "https://wiki.pokemoncentral.it/Elenco_delle_mosse_in_altre_lingue",
+    "https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/move_names.csv"
+  ],
+  "type": "move",
+  "range": {
+    "start": 41,
+    "end": 50
+  },
+  "localizedCount": 10,
+  "items": {
+    "axe-kick": {
+      "sourceName": "Axe Kick",
+      "name": "Calcio ad Ascia",
+      "description": [
+        "Salti in aria per abbattere il tallone sul bersaglio. Effettua un attacco in mischia, infliggendo 2d6 + MOVE danni di tipo Lotta se colpisci. Se manchi, subisci 1 danno.",
+        "Se colpisci, il bersaglio deve superare un tiro salvezza su COS contro la tua CD della mossa o diventare confuso."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d8 al livello 5, 4d6 al livello 10 e 5d8 al livello 17."
+    },
+    "baby-doll-eyes": {
+      "sourceName": "Baby-Doll Eyes",
+      "name": "Occhioni Teneri",
+      "description": [
+        "Spalanchi rapidamente gli occhi per ammaliare una creatura e ridurne la volontà di combattere. Quando tu o un alleato a gittata siete bersagliati da una mossa che richiede un tiro per colpire, puoi usare una reazione per imporre svantaggio al tiro."
+      ],
+      "higherLevels": null
+    },
+    "baneful-bunker": {
+      "sourceName": "Baneful Bunker",
+      "name": "Fortino",
+      "description": [
+        "Percepisci il pericolo in arrivo e crei rapidamente una barriera per evitarlo. Quando sei bersagliato da un attacco, la prima volta che usi questa reazione puoi evitare automaticamente di subire danni. Se Fortino ha evitato con successo un attacco in mischia, l'attaccante diventa avvelenato. Per gli utilizzi successivi della mossa nello stesso combattimento, devi ottenere un risultato superiore a 15 con un tiro di d20 affinché la reazione abbia successo."
+      ],
+      "higherLevels": null
+    },
+    "barb-barrage": {
+      "sourceName": "Barb Barrage",
+      "name": "Mille Fielespine",
+      "description": [
+        "Scagli innumerevoli spine tossiche in tutte le direzioni. Ogni creatura a gittata deve effettuare un tiro salvezza su DES contro la tua CD della mossa, subendo 1d6 + MOVE danni di tipo Veleno e diventando avvelenata se lo fallisce. Se il bersaglio è già avvelenato, raddoppia il tuo modificatore MOVE quando aggiungi i danni."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 1d10 al livello 5, 2d8 al livello 10 e 5d4 al livello 17."
+    },
+    "barrage": {
+      "sourceName": "Barrage",
+      "name": "Attacco Pioggia",
+      "description": [
+        "Effettua un attacco a distanza contro una creatura e, se colpisci, tira 1d4. La bersagli con una raffica di colpi a distanza pari al risultato ottenuto. Ogni proiettile infligge 1d4 danni di tipo Normale."
+      ],
+      "higherLevels": "Ogni proiettile che colpisce infligge 1d6 al livello 5, 2d4 al livello 10 e 2d6 al livello 17."
+    },
+    "barrier": {
+      "sourceName": "Barrier",
+      "name": "Barriera",
+      "description": [
+        "Crei uno scudo trasparente di energia psichica. Finché è attiva, la barriera conferisce +2 alla CA tua e di ogni compagno entro 5 piedi da te per la durata."
+      ],
+      "higherLevels": null
+    },
+    "baton-pass": {
+      "sourceName": "Baton Pass",
+      "name": "Staffetta",
+      "description": [
+        "Come azione bonus, puoi essere sostituito trasferendo alla nuova creatura tutti gli effetti di stato negativi e le modifiche alle statistiche. Ciò include gli effetti di lotta già attivi di mosse come Sostituto, Danzaspada, Radicamento, Acquanello e simili. Possono essere trasferiti anche gli effetti delle mosse che richiedono concentrazione; la nuova creatura diventa responsabile di mantenerla."
+      ],
+      "higherLevels": null
+    },
+    "beak-blast": {
+      "sourceName": "Beak Blast",
+      "name": "Cannonbecco",
+      "description": [
+        "Riscaldi il becco e colpisci un bersaglio. Quando attivi questa mossa, usi la tua azione per caricare il becco. Se vieni colpito da un attacco in mischia prima dell'azione del tuo turno successivo, l'attaccante diventa scottato. Nel tuo turno successivo, usa un'azione per effettuare un attacco in mischia contro una creatura, infliggendo 3d8 + MOVE danni di tipo Volante se colpisci."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 5d6 al livello 5, 4d12 al livello 10 e 8d8 al livello 17."
+    },
+    "beat-up": {
+      "sourceName": "Beat Up",
+      "name": "Picchiaduro",
+      "description": [
+        "Sfrutti la forza del gruppo per attaccare una creatura. Effettua un attacco in mischia contro una creatura e un attacco aggiuntivo per ogni altra creatura cosciente attualmente trasportata dal tuo Allenatore, infliggendo 2d6 danni di tipo Buio per ogni colpo."
+      ],
+      "higherLevels": null
+    },
+    "behemoth-bash": {
+      "sourceName": "Behemoth Bash",
+      "name": "Colpo Maestoso",
+      "description": [
+        "Colpisci con il tuo gigantesco scudo. Effettua un attacco in mischia contro una creatura, infliggendo 4d4 + MOVE danni di tipo Acciaio se colpisci. Se il bersaglio è dynamaxizzato, raddoppia i danni complessivi."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d12 al livello 5, 4d8 al livello 10 e 8d6 al livello 17."
+    }
+  }
+}

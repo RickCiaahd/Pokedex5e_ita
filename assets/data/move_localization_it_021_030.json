@@ -1,0 +1,96 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/moves.json",
+  "nameSources": [
+    "https://wiki.pokemoncentral.it/Elenco_delle_mosse_in_altre_lingue",
+    "https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/move_names.csv"
+  ],
+  "type": "move",
+  "range": {
+    "start": 21,
+    "end": 30
+  },
+  "localizedCount": 10,
+  "items": {
+    "aqua-jet": {
+      "sourceName": "Aqua Jet",
+      "name": "Acquagetto",
+      "description": [
+        "Ti scagli contro una creatura a velocità incredibile. Scegli un bersaglio entro 10 piedi da te. Un getto d'acqua ti spinge verso la creatura senza provocare attacchi di opportunità. Effettua un attacco in mischia contro di essa, infliggendo 1d4 danni di tipo Acqua se colpisci."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 1d6 al livello 5, 1d10 al livello 10 e 1d12 al livello 17."
+    },
+    "aqua-ring": {
+      "sourceName": "Aqua Ring",
+      "name": "Acquanello",
+      "description": [
+        "Ti circondi con un velo d'acqua curativa. Alla fine di ciascun tuo turno, finché mantieni la concentrazione, recuperi un numero di punti ferita pari al tuo bonus di competenza."
+      ],
+      "higherLevels": null
+    },
+    "aqua-step": {
+      "sourceName": "Aqua Step",
+      "name": "Idroballetto",
+      "description": [
+        "Carichi il bersaglio con fluidi passi di danza. Effettua un attacco in mischia, infliggendo 2d6 + MOVE danni di tipo Acqua se colpisci. Alla fine del tuo turno, indipendentemente dall'esito dell'attacco, la tua velocità di movimento aumenta di 10 piedi fino alla fine del tuo turno successivo."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d8 al livello 5, 4d6 al livello 10 e 6d6 al livello 17."
+    },
+    "aqua-tail": {
+      "sourceName": "Aqua Tail",
+      "name": "Idrondata",
+      "description": [
+        "Colpisci una creatura con un potente movimento della coda. Effettua un attacco in mischia, infliggendo 2d8 + MOVE danni di tipo Acqua se colpisci."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d10 al livello 5, 3d10 al livello 10 e 4d12 al livello 17."
+    },
+    "arm-thrust": {
+      "sourceName": "Arm Thrust",
+      "name": "Sberletese",
+      "description": [
+        "Scateni una raffica di pugni contro una creatura. Effettua un tiro per colpire in mischia, infliggendo 1d4 + MOVE danni di tipo Lotta se colpisci. Dopo aver colpito un bersaglio, tira un d4. Con un risultato di 3 o 4, puoi colpire immediatamente di nuovo, infliggendo ulteriori 1d4 danni di tipo Lotta. Continua finché non ottieni un risultato diverso da 3 o 4 sul d4, fino a un massimo di quattro colpi aggiuntivi."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 1d6 al livello 5, 1d8 al livello 10 e 2d6 al livello 17."
+    },
+    "armor-cannon": {
+      "sourceName": "Armor Cannon",
+      "name": "Corazza Cannone",
+      "description": [
+        "Scagli la tua stessa corazza come una raffica di proiettili incandescenti. Effettua un attacco a distanza contro un bersaglio a gittata, infliggendo 2d10 + MOVE danni di tipo Fuoco se colpisci. Fino alla fine del tuo turno successivo, tutti gli attacchi contro di te hanno vantaggio e tu hai svantaggio a tutti i tiri salvezza su COS."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 3d8 al livello 5, 4d10 al livello 10 e 7d8 al livello 17."
+    },
+    "aromatherapy": {
+      "sourceName": "Aromatherapy",
+      "name": "Aromaterapia",
+      "description": [
+        "Sprigioni un aroma piacevole che rinvigorisce i tuoi alleati. Tutti gli alleati entro 10 piedi da te vengono liberati da tutte le condizioni di stato negative."
+      ],
+      "higherLevels": null
+    },
+    "aromatic-mist": {
+      "sourceName": "Aromatic Mist",
+      "name": "Nebularoma",
+      "description": [
+        "Sprigioni un aroma che ispira i tuoi alleati. Quando attivi questa mossa, tu e ogni alleato entro 5 piedi da te potete aggiungere un d4 a qualsiasi tiro salvezza effettuato per la durata."
+      ],
+      "higherLevels": "Il dado bonus di questa mossa diventa 1d6 al livello 10."
+    },
+    "assist": {
+      "sourceName": "Assist",
+      "name": "Assistente",
+      "description": [
+        "Richiami l'aiuto di un'altra creatura attiva del tuo gruppo. Quando attivi questa mossa, un'altra creatura può effettuare immediatamente un'azione al posto della tua, purché tu non abbia già effettuato un'azione in questo turno."
+      ],
+      "higherLevels": null
+    },
+    "assurance": {
+      "sourceName": "Assurance",
+      "name": "Garanzia",
+      "description": [
+        "Colpisci una creatura proprio dove è già ferita. Effettua un attacco in mischia contro una creatura, infliggendo 1d10 + MOVE danni di tipo Buio se colpisci. Se il bersaglio ha già subito danni nello stesso round, raddoppia i dadi di danno."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d8 al livello 5, 5d4 al livello 10 e 4d8 al livello 17."
+    }
+  }
+}

@@ -1,0 +1,96 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/moves.json",
+  "nameSources": [
+    "https://wiki.pokemoncentral.it/Elenco_delle_mosse_in_altre_lingue",
+    "https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/move_names.csv"
+  ],
+  "type": "move",
+  "range": {
+    "start": 81,
+    "end": 90
+  },
+  "localizedCount": 10,
+  "items": {
+    "brutal-swing": {
+      "sourceName": "Brutal Swing",
+      "name": "Vorticolpo",
+      "description": [
+        "Fai roteare violentemente le braccia, attaccando tutto ciò che si trova entro 5 piedi da te. Tutte le creature a gittata devono effettuare un tiro salvezza su DES contro la tua CD della mossa, subendo 1d10 + MOVE danni di tipo Buio se lo falliscono, o la metà dei danni se lo superano."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d8 al livello 5, 5d4 al livello 10 e 4d8 al livello 17."
+    },
+    "bubble": {
+      "sourceName": "Bubble",
+      "name": "Bolla",
+      "description": [
+        "Scagli contro un bersaglio una rapida sequenza di bolle. Effettua tre attacchi a distanza, infliggendo 1d4 danni di tipo Acqua per ogni attacco che colpisce."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 1d8 al livello 5, 2d6 al livello 10 e 3d6 al livello 17."
+    },
+    "bubble-beam": {
+      "sourceName": "Bubble Beam",
+      "name": "Bollaraggio",
+      "description": [
+        "Scagli un flusso concentrato di bolle contro una singola creatura a gittata. Effettua un attacco a distanza, infliggendo 1d10 + MOVE danni di tipo Acqua se colpisci. Con un risultato naturale di 19 o 20 al tiro per colpire, la velocità del bersaglio è dimezzata fino alla fine del suo turno successivo."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d8 al livello 5, 5d4 al livello 10 e 4d8 al livello 17."
+    },
+    "bug-bite": {
+      "sourceName": "Bug Bite",
+      "name": "Coleomorso",
+      "description": [
+        "Ti avventi sul bersaglio e lo mordi. Effettua un attacco in mischia contro una creatura, infliggendo 1d10 + MOVE danni di tipo Coleottero se colpisci. Se il bersaglio impugna una bacca quando viene colpito, la mangi immediatamente e ne ottieni l'effetto."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d8 al livello 5, 5d4 al livello 10 e 4d8 al livello 17."
+    },
+    "bug-buzz": {
+      "sourceName": "Bug Buzz",
+      "name": "Ronzio",
+      "description": [
+        "Fai vibrare le ali, producendo un suono stridente che danneggia ogni creatura a gittata. Tutte le creature entro 20 piedi da te devono effettuare un tiro salvezza su COS contro la tua CD della mossa, subendo 2d8 + MOVE danni di tipo Coleottero se lo falliscono. Una creatura che fallisce il tiro salvezza di 5 o più ha svantaggio al suo prossimo attacco."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d10 al livello 5, 3d10 al livello 10 e 4d12 al livello 17."
+    },
+    "bulk-up": {
+      "sourceName": "Bulk Up",
+      "name": "Granfisico",
+      "description": [
+        "Ti carichi di energia, aumentando l'adrenalina. Per il minuto successivo, scegli se ottenere +1 ai tiri per colpire oppure +1 alla CA. Gli effetti di questa mossa sono cumulabili fino a un massimo di +5 per la caratteristica scelta."
+      ],
+      "higherLevels": null
+    },
+    "bulldoze": {
+      "sourceName": "Bulldoze",
+      "name": "Battiterra",
+      "description": [
+        "Colpisci il terreno con tale forza da generare onde in un cerchio con raggio di 15 piedi centrato su di te. Ogni creatura nell'area deve effettuare un tiro salvezza su DES contro la tua CD della mossa, subendo 1d10 + MOVE danni di tipo Terra se lo fallisce, o la metà dei danni se lo supera. Le creature sollevate sono immuni agli effetti e ai danni di questa mossa."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d8 al livello 5, 5d4 al livello 10 e 4d8 al livello 17."
+    },
+    "bullet-punch": {
+      "sourceName": "Bullet Punch",
+      "name": "Pugnoscarica",
+      "description": [
+        "Sferri un pugno rapido come un proiettile. Scegli un bersaglio entro 10 piedi da te. Ti scagli in avanti per colpirlo con il pugno senza provocare attacchi di opportunità. Effettua un attacco in mischia contro quella creatura, infliggendo 1d4 danni di tipo Acciaio se colpisci."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 1d6 al livello 5, 1d10 al livello 10 e 1d12 al livello 17."
+    },
+    "bullet-seed": {
+      "sourceName": "Bullet Seed",
+      "name": "Semitraglia",
+      "description": [
+        "Scagli contro una creatura una raffica di semi ad alta velocità. Effettua un attacco a distanza, infliggendo 1d4 + MOVE danni di tipo Erba se colpisci. Dopo aver colpito, tira un d4. Con un risultato di 3 o 4 puoi colpire immediatamente di nuovo, infliggendo altri 1d4 danni di tipo Erba. Continua finché non ottieni un risultato diverso da 3 o 4 sul d4, fino a un massimo di quattro colpi aggiuntivi."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d4 al livello 5, 1d12 al livello 10 e 4d4 al livello 17."
+    },
+    "burn-up": {
+      "sourceName": "Burn Up",
+      "name": "Ultima Fiamma",
+      "description": [
+        "Consumi tutta l'energia di tipo Fuoco che possiedi per infliggere danni devastanti entro un raggio di 15 piedi centrato su di te. Le creature nell'area devono effettuare un tiro salvezza su DES contro la tua CD della mossa. Se lo falliscono, subiscono 5d4 + MOVE danni di tipo Fuoco e diventano scottate; se lo superano, subiscono la metà dei danni e non diventano scottate. Dopo aver usato questa mossa esaurisci la tua fiamma e perdi il tipo Fuoco per il resto del combattimento. I Pokémon di doppio tipo Fuoco conservano soltanto l'altro tipo, mentre quelli di solo tipo Fuoco diventano senza tipo, perdendo STAB e tutte le vulnerabilità, resistenze e immunità."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 3d10 al livello 5, 5d8 al livello 10 e 8d8 al livello 17."
+    }
+  }
+}

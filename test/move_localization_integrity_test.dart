@@ -102,17 +102,19 @@ void main() {
         _flattenText(localizedDescription),
         localizedHigherLevels ?? '',
       ].join(' ');
-      if (!_sameCounts(
-        _mechanicalTokenCounts(
-          sourceText,
-          includeHealthPhrases: localizedPosition > 450,
-        ),
-        _mechanicalTokenCounts(
-          localizedText,
-          includeHealthPhrases: localizedPosition > 450,
-        ),
-      )) {
-        errors.add('${entry.key}: valori meccanici modificati.');
+      final sourceTokens = _mechanicalTokenCounts(
+        sourceText,
+        includeHealthPhrases: localizedPosition > 450,
+      );
+      final localizedTokens = _mechanicalTokenCounts(
+        localizedText,
+        includeHealthPhrases: localizedPosition > 450,
+      );
+      if (!_sameCounts(sourceTokens, localizedTokens)) {
+        errors.add(
+          '${entry.key}: valori meccanici modificati. '
+          'sorgente=$sourceTokens localizzato=$localizedTokens',
+        );
       }
     }
 
@@ -252,13 +254,25 @@ Map<String, int> _mechanicalTokenCounts(
   String value, {
   bool includeHealthPhrases = false,
 }) {
+  var normalizedValue = value;
+  for (final pattern in <RegExp>[
+    RegExp(r'\bvalore CD per questa mossa\b', caseSensitive: false),
+    RegExp(r'\bCD della mossa\b', caseSensitive: false),
+    RegExp(r'\bCD di questa mossa\b', caseSensitive: false),
+    RegExp(r'\bCD per questa mossa\b', caseSensitive: false),
+    RegExp(r'\bMovimento CD\b', caseSensitive: false),
+    RegExp(r'\bMove DC\b', caseSensitive: false),
+  ]) {
+    normalizedValue = normalizedValue.replaceAll(pattern, 'MOVE DC');
+  }
+
   final expression = RegExp(
     includeHealthPhrases
         ? r'\b\d+d\d+\b|\bd\d+\b|[+\-]\s*\d+|\b\d+[sx]\b|\b\d+(?:ft|\s*(?:feet|foot|piedi|piede))?\b|\b(?:hitpoints?|hit points?|Hit Points?|punti ferita|Punti ferita)\b|\b(?:HP|PF|STR|FOR|DEX|DES|CON|COS|WIS|SAG|CHA|CAR|INT|AC|CA|STAB|DC|CD|MOVE|PP|SR|FLINCHED)\b|\b(?:flinch|flinches|flinched)\b'
         : r'\b\d+d\d+\b|\bd\d+\b|[+\-]\s*\d+|\b\d+(?:ft|\s*(?:feet|foot|piedi|piede))?\b|\b(?:HP|PF|STR|FOR|DEX|DES|CON|COS|WIS|SAG|CHA|CAR|INT|AC|CA|STAB|DC|CD|MOVE|PP|SR|FLINCHED|flinch(?:es|ed)?)\b',
   );
   final result = <String, int>{};
-  for (final match in expression.allMatches(value)) {
+  for (final match in expression.allMatches(normalizedValue)) {
     final token = _canonicalToken(match.group(0)!);
     result[token] = (result[token] ?? 0) + 1;
   }

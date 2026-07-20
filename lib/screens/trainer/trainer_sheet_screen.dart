@@ -7,6 +7,7 @@ import '../../models/team_slot.dart';
 import '../../models/trainer_manual_content.dart';
 import '../../models/trainer_manual_options.dart';
 import '../../models/trainer_progression.dart';
+import '../../models/trainer_ui_localization.dart';
 import '../../models/user_profile.dart';
 import '../../repositories/evolution_repository.dart';
 import '../../repositories/pokemon_repository.dart';
@@ -162,8 +163,7 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
       final isFirstStage = evolution == null || evolution.currentStage <= 1;
 
       return pokemon.sr <= 0.5 && isFirstStage;
-    }).toList()
-      ..sort((a, b) => a.id.compareTo(b.id));
+    }).toList()..sort((a, b) => a.id.compareTo(b.id));
 
     return candidates;
   }
@@ -219,8 +219,7 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
     final previousRace = _raceController.text.trim();
     final nextBonusSource = _originAbilityBonuses(race).isNotEmpty ? race : '';
 
-    if (previousRace == race &&
-        _originAbilityBonusSource == nextBonusSource) {
+    if (previousRace == race && _originAbilityBonusSource == nextBonusSource) {
       return;
     }
 
@@ -244,11 +243,12 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
 
     return {
       for (final entry in UserProfile.defaultAbilityScores.entries)
-        entry.key: ((_abilityScores[entry.key] ?? entry.value) -
-                (previousBonuses[entry.key] ?? 0) +
-                (nextBonuses[entry.key] ?? 0))
-            .clamp(1, 30)
-            .toInt(),
+        entry.key:
+            ((_abilityScores[entry.key] ?? entry.value) -
+                    (previousBonuses[entry.key] ?? 0) +
+                    (nextBonuses[entry.key] ?? 0))
+                .clamp(1, 30)
+                .toInt(),
     };
   }
 
@@ -268,14 +268,17 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
 
   Map<String, String> get _originDescriptions {
     return {
-      for (final origin in _trainerOrigins) origin.name: origin.description,
+      for (final origin in _trainerOrigins)
+        origin.name: TrainerUiLocalization.visibleText(origin.description),
     };
   }
 
   Map<String, String> get _trainerPathDescriptions {
     return {
       for (final path in _trainerPaths)
-        path.name: path.featureForLevel(2)?.description ?? '',
+        path.name: TrainerUiLocalization.visibleText(
+          path.featureForLevel(2)?.description ?? '',
+        ),
     };
   }
 
@@ -417,8 +420,7 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
   }
 
   Future<void> _applyTrainerPathTeamPassives(UserProfile profile) async {
-    final loyaltyFloor =
-        TrainerPathPassiveService.starterLoyaltyFloor(profile);
+    final loyaltyFloor = TrainerPathPassiveService.starterLoyaltyFloor(profile);
     final starterName = profile.starterPokemon.trim();
     if (loyaltyFloor == null || starterName.isEmpty) return;
 
@@ -569,6 +571,7 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
         title: 'Pack iniziale',
         options: TrainerManualOptions.startingPacks,
         selected: _startingPack,
+        displayNames: TrainerUiLocalization.startingPackLabels,
       ),
     );
 
@@ -582,10 +585,11 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
       context: context,
       showDragHandle: true,
       builder: (_) => _StringPickerSheet(
-        title: 'Trainer Path',
+        title: 'Percorso Allenatore',
         options: [for (final path in _trainerPaths) path.name],
         selected: _trainerPath,
         descriptions: _trainerPathDescriptions,
+        displayNames: TrainerUiLocalization.trainerPathLabels,
       ),
     );
 
@@ -596,9 +600,9 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
       final confirmed = await showDialog<bool>(
         context: context,
         builder: (_) => AlertDialog(
-          title: const Text('Cambiare Trainer Path?'),
+          title: const Text('Cambiare Percorso Allenatore?'),
           content: Text(
-            'Passerai da $savedPath a $selected. Le risorse consumate e le scelte specifiche del vecchio path verranno azzerate.',
+            'Passerai da ${TrainerUiLocalization.trainerPathName(savedPath)} a ${TrainerUiLocalization.trainerPathName(selected)}. Le risorse consumate e le scelte specifiche del vecchio percorso verranno azzerate.',
           ),
           actions: [
             TextButton(
@@ -607,7 +611,7 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
             ),
             FilledButton(
               onPressed: () => Navigator.of(context).pop(true),
-              child: const Text('CAMBIA TRAINER PATH'),
+              child: const Text('CAMBIA PERCORSO'),
             ),
           ],
         ),
@@ -633,7 +637,11 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
         title: 'Specializzazione',
         options: options,
         selected: current,
-        descriptions: TrainerManualOptions.specializationNotes,
+        descriptions: {
+          for (final entry in TrainerManualOptions.specializationNotes.entries)
+            entry.key: TrainerUiLocalization.visibleText(entry.value),
+        },
+        displayNames: TrainerUiLocalization.specializationLabels,
       ),
     );
 
@@ -647,13 +655,14 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
     final starter = _selectedStarter;
     if (profile == null || starter == null) return;
 
-    final emptySlots = _team
-        .where(
-          (slot) =>
-              slot.slotIndex < _unlockedPokeslots && slot.pokemonId == null,
-        )
-        .toList()
-      ..sort((a, b) => a.slotIndex.compareTo(b.slotIndex));
+    final emptySlots =
+        _team
+            .where(
+              (slot) =>
+                  slot.slotIndex < _unlockedPokeslots && slot.pokemonId == null,
+            )
+            .toList()
+          ..sort((a, b) => a.slotIndex.compareTo(b.slotIndex));
     if (emptySlots.isEmpty) return;
 
     await _profileRepository.saveProfile(
@@ -703,7 +712,7 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
                 race: _raceController.text.trim(),
                 raceDescription:
                     _originByName(_raceController.text.trim())?.description ??
-                        '',
+                    '',
                 selectedStarter: _selectedStarter,
                 startingPack: _startingPack,
                 trainerLevel: _trainerLevel,
@@ -717,7 +726,8 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
                 skillProficiencies: _skillProficiencies,
                 savingThrowProficiencies: _savingThrowProficiencies,
                 specializations: _specializations,
-                canAddStarterToTeam: _selectedStarter != null &&
+                canAddStarterToTeam:
+                    _selectedStarter != null &&
                     !_starterAlreadyInTeam &&
                     _hasEmptyTeamSlot,
                 starterAlreadyInTeam: _starterAlreadyInTeam,
@@ -1078,8 +1088,8 @@ class _TrainerSheetMainColumn extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         _SheetSectionTitle(
-          title: 'TRAINER',
-          trailing: 'LEVEL $trainerLevel',
+          title: 'ALLENATORE',
+          trailing: 'LIVELLO $trainerLevel',
         ),
         const SizedBox(height: 8),
         Wrap(
@@ -1122,7 +1132,7 @@ class _TrainerSheetMainColumn extends StatelessWidget {
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             ),
             _SheetInfoBox(
-              label: 'Prof',
+              label: 'Bonus competenza',
               value: _signed(_trainerProficiencyBonus(trainerLevel)),
               width: 92,
             ),
@@ -1147,7 +1157,7 @@ class _TrainerSheetMainColumn extends StatelessWidget {
           children: [
             for (final entry in UserProfile.defaultAbilityScores.entries)
               _AbilityScoreTile(
-                label: entry.key,
+                label: TrainerUiLocalization.abilityAbbreviation(entry.key),
                 score: abilityScores[entry.key] ?? entry.value,
                 onDecrease: () => onAbilityScoreChanged(entry.key, -1),
                 onIncrease: () => onAbilityScoreChanged(entry.key, 1),
@@ -1203,8 +1213,8 @@ class _TrainerSheetMainColumn extends StatelessWidget {
               onIncrease: () => onMaxHpChanged(1),
             ),
             _SheetCounterBox(
-              label: 'Velocita',
-              value: '$speed ft',
+              label: 'Velocità',
+              value: '$speed piedi',
               onDecrease: () => onSpeedChanged(-5),
               onIncrease: () => onSpeedChanged(5),
             ),
@@ -1219,7 +1229,9 @@ class _TrainerSheetMainColumn extends StatelessWidget {
               children: [
                 _SheetChoiceBox(
                   label: 'Pack iniziale',
-                  value: startingPack.isEmpty ? 'Scegli' : startingPack,
+                  value: startingPack.isEmpty
+                      ? 'Scegli'
+                      : TrainerUiLocalization.startingPackName(startingPack),
                   detail: 'Equipaggiamento rapido. Lo zaino lo separiamo dopo.',
                   onTap: onStartingPackTap,
                 ),
@@ -1330,14 +1342,15 @@ class _AbilityChecksPanel extends StatelessWidget {
     };
 
     return _SheetPanel(
-      title: 'ABILITIES',
+      title: 'ABILITÀ',
       child: Wrap(
         spacing: 10,
         runSpacing: 4,
         children: [
           for (final skill in TrainerManualOptions.skills)
             _CheckValueRow(
-              title: '${skill.name} (${skill.ability})',
+              title:
+                  '${TrainerUiLocalization.skillName(skill.name)} (${TrainerUiLocalization.abilityAbbreviation(skill.ability)})',
               value: _signed(
                 _abilityCheckTotal(
                   abilityScores: abilityScores,
@@ -1380,14 +1393,14 @@ class _SavingThrowsPanel extends StatelessWidget {
     };
 
     return _SheetPanel(
-      title: 'SAVING THROWS',
+      title: 'TIRI SALVEZZA',
       child: Wrap(
         spacing: 10,
         runSpacing: 4,
         children: [
           for (final ability in TrainerManualOptions.savingThrows)
             _CheckValueRow(
-              title: ability,
+              title: TrainerUiLocalization.abilityAbbreviation(ability),
               value: _signed(
                 _abilityCheckTotal(
                   abilityScores: abilityScores,
@@ -1432,13 +1445,13 @@ class _SelectedProficienciesBox extends StatelessWidget {
         children: [
           Text(
             'Competenze selezionate',
-            style: Theme.of(context).textTheme.labelLarge?.copyWith(
-              fontWeight: FontWeight.w900,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w900),
           ),
           const SizedBox(height: 8),
           if (selected.isEmpty)
-            const Text('Spunta le competenze nella sezione Abilities.')
+            const Text('Spunta le competenze nella sezione Abilità.')
           else
             for (final skill in selected) ...[
               _SelectedSkillDescription(
@@ -1473,17 +1486,17 @@ class _SelectedSkillDescription extends StatelessWidget {
           children: [
             Expanded(
               child: Text(
-                '${skill.name} (${skill.ability})',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w900,
-                ),
+                '${TrainerUiLocalization.skillName(skill.name)} (${TrainerUiLocalization.abilityAbbreviation(skill.ability)})',
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w900),
               ),
             ),
             Text(
               _signed(total),
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w900,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w900),
             ),
           ],
         ),
@@ -1520,10 +1533,7 @@ class _SheetPanel extends StatelessWidget {
             ),
           ),
           const Divider(height: 1),
-          Padding(
-            padding: const EdgeInsets.all(8),
-            child: child,
-          ),
+          Padding(padding: const EdgeInsets.all(8), child: child),
         ],
       ),
     );
@@ -1567,8 +1577,9 @@ class _CheckValueRow extends StatelessWidget {
                 width: 34,
                 child: DecoratedBox(
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primaryContainer
-                        .withValues(alpha: 0.45),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.primaryContainer.withValues(alpha: 0.45),
                     borderRadius: BorderRadius.circular(3),
                   ),
                   child: Padding(
@@ -1588,9 +1599,9 @@ class _CheckValueRow extends StatelessWidget {
                 child: Text(
                   title,
                   overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w700),
                 ),
               ),
             ],
@@ -1622,11 +1633,11 @@ class _TrainerProgressionColumn extends StatelessWidget {
   Widget build(BuildContext context) {
     final slots = <Widget>[
       _ProgressionChoiceBox(
-        title: 'Specialization',
+        title: 'Specializzazione',
         level: 1,
         value: _specializationAt(0).isEmpty
             ? 'Scegli specializzazione'
-            : _specializationAt(0),
+            : TrainerUiLocalization.specializationName(_specializationAt(0)),
         detail: _specializationDetail(0),
         onTap: () => onSpecializationTap(0),
       ),
@@ -1635,12 +1646,16 @@ class _TrainerProgressionColumn extends StatelessWidget {
     if (trainerLevel >= 2) {
       slots.add(
         _ProgressionChoiceBox(
-          title: 'Trainer Path',
+          title: 'Percorso Allenatore',
           level: 2,
-          value: trainerPath.isEmpty ? 'Scegli trainer path' : trainerPath,
+          value: trainerPath.isEmpty
+              ? 'Scegli percorso'
+              : TrainerUiLocalization.trainerPathName(trainerPath),
           detail: trainerPath.isEmpty
-              ? 'Tocca per scegliere dal pool dei path.'
-              : _trainerPathFeatureFor(2)?.description ?? '',
+              ? 'Tocca per scegliere tra i percorsi disponibili.'
+              : TrainerUiLocalization.visibleText(
+                  _trainerPathFeatureFor(2)?.description ?? '',
+                ),
           onTap: onTrainerPathTap,
         ),
       );
@@ -1653,12 +1668,14 @@ class _TrainerProgressionColumn extends StatelessWidget {
           _ProgressionChoiceBox(
             title: 'Privilegio del Path',
             level: level,
-            value: feature?.title ??
-                (trainerPath.isEmpty
-                    ? 'Path non scelto'
-                    : 'Feature non trovata'),
-            detail: feature?.description ??
-                'Scegli il path al livello 2 per vedere la feature automatica.',
+            value: feature == null
+                ? (trainerPath.isEmpty
+                      ? 'Percorso non scelto'
+                      : 'Privilegio non trovato')
+                : TrainerUiLocalization.featureName(feature.title),
+            detail: feature == null
+                ? 'Scegli il percorso al livello 2 per vedere il privilegio automatico.'
+                : TrainerUiLocalization.visibleText(feature.description),
           ),
         );
       }
@@ -1667,11 +1684,11 @@ class _TrainerProgressionColumn extends StatelessWidget {
     if (trainerLevel >= 7) {
       slots.add(
         _ProgressionChoiceBox(
-          title: 'Specialization',
+          title: 'Specializzazione',
           level: 7,
           value: _specializationAt(1).isEmpty
               ? 'Scegli specializzazione'
-              : _specializationAt(1),
+              : TrainerUiLocalization.specializationName(_specializationAt(1)),
           detail: _specializationDetail(1),
           onTap: () => onSpecializationTap(1),
         ),
@@ -1681,11 +1698,11 @@ class _TrainerProgressionColumn extends StatelessWidget {
     if (trainerLevel >= 18) {
       slots.add(
         _ProgressionChoiceBox(
-          title: 'Specialization',
+          title: 'Specializzazione',
           level: 18,
           value: _specializationAt(2).isEmpty
               ? 'Scegli specializzazione'
-              : _specializationAt(2),
+              : TrainerUiLocalization.specializationName(_specializationAt(2)),
           detail: _specializationDetail(2),
           onTap: () => onSpecializationTap(2),
         ),
@@ -1703,13 +1720,10 @@ class _TrainerProgressionColumn extends StatelessWidget {
       children: [
         _SheetSectionTitle(
           title: 'AVANZAMENTO',
-          trailing: 'LEVEL $trainerLevel',
+          trailing: 'LIVELLO $trainerLevel',
         ),
         const SizedBox(height: 8),
-        for (final slot in slots) ...[
-          slot,
-          const SizedBox(height: 8),
-        ],
+        for (final slot in slots) ...[slot, const SizedBox(height: 8)],
       ],
     );
   }
@@ -1724,7 +1738,9 @@ class _TrainerProgressionColumn extends StatelessWidget {
       return 'Tocca il box e scegli dal pool disponibile.';
     }
 
-    return TrainerManualOptions.specializationNotes[specialization] ?? '';
+    return TrainerUiLocalization.visibleText(
+      TrainerManualOptions.specializationNotes[specialization] ?? '',
+    );
   }
 
   TrainerPathFeature? _trainerPathFeatureFor(int level) {
@@ -1768,9 +1784,9 @@ class _SheetSectionTitle extends StatelessWidget {
             if (trailing != null)
               Text(
                 trailing!,
-                style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                  fontWeight: FontWeight.w900,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w900),
               ),
           ],
         ),
@@ -1810,9 +1826,9 @@ class _SheetTextBox extends StatelessWidget {
           isDense: true,
           border: InputBorder.none,
         ),
-        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-          fontWeight: FontWeight.w800,
-        ),
+        style: Theme.of(
+          context,
+        ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
       ),
     );
   }
@@ -1951,10 +1967,7 @@ class _SheetCounterBox extends StatelessWidget {
 }
 
 class _SheetBoxFrame extends StatelessWidget {
-  const _SheetBoxFrame({
-    required this.child,
-    this.width,
-  });
+  const _SheetBoxFrame({required this.child, this.width});
 
   final Widget child;
   final double? width;
@@ -2000,9 +2013,9 @@ class _SheetBoxText extends StatelessWidget {
         const SizedBox(height: 3),
         Text(
           value,
-          style: Theme.of(context).textTheme.titleSmall?.copyWith(
-            fontWeight: FontWeight.w900,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900),
         ),
         if (detail != null && detail!.isNotEmpty) ...[
           const SizedBox(height: 3),
@@ -2110,10 +2123,7 @@ class _ProgressionChoiceBox extends StatelessWidget {
       decoration: BoxDecoration(
         border: Border.all(color: Theme.of(context).colorScheme.outline),
         boxShadow: const [
-          BoxShadow(
-            color: Color(0x18000000),
-            offset: Offset(3, 3),
-          ),
+          BoxShadow(color: Color(0x18000000), offset: Offset(3, 3)),
         ],
         color: Theme.of(context).colorScheme.surface,
       ),
@@ -2145,8 +2155,9 @@ class _ProgressionChoiceBox extends StatelessWidget {
               const SizedBox(height: 8),
               DecoratedBox(
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primaryContainer
-                      .withValues(alpha: 0.45),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.primaryContainer.withValues(alpha: 0.45),
                   borderRadius: BorderRadius.circular(3),
                 ),
                 child: SizedBox(
@@ -2324,7 +2335,9 @@ class _StarterPickerSheetState extends State<_StarterPickerSheet> {
                     ),
                   ),
                   const SizedBox(height: 4),
-                  const Text('Mostro solo Pokémon primo stadio con SR 1/2 o meno.'),
+                  const Text(
+                    'Mostro solo Pokémon primo stadio con SR 1/2 o meno.',
+                  ),
                   const SizedBox(height: 12),
                   TextField(
                     controller: _searchController,
@@ -2383,12 +2396,14 @@ class _StringPickerSheet extends StatelessWidget {
     required this.options,
     required this.selected,
     this.descriptions = const {},
+    this.displayNames = const {},
   });
 
   final String title;
   final List<String> options;
   final String selected;
   final Map<String, String> descriptions;
+  final Map<String, String> displayNames;
 
   @override
   Widget build(BuildContext context) {
@@ -2405,9 +2420,9 @@ class _StringPickerSheet extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
               child: Text(
                 title,
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w900,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
               ),
             ),
             Flexible(
@@ -2421,8 +2436,8 @@ class _StringPickerSheet extends StatelessWidget {
                   final description = descriptions[option] ?? '';
 
                   return _PickerOptionTile(
-                    title: option,
-                    subtitle: description,
+                    title: displayNames[option] ?? option,
+                    subtitle: TrainerUiLocalization.visibleText(description),
                     isSelected: option == selected,
                     onTap: () => Navigator.of(context).pop(option),
                   );
@@ -2456,10 +2471,7 @@ class _PickerOptionTile extends StatelessWidget {
     return Card(
       child: ListTile(
         enabled: isEnabled,
-        title: Text(
-          title,
-          style: const TextStyle(fontWeight: FontWeight.w800),
-        ),
+        title: Text(title, style: const TextStyle(fontWeight: FontWeight.w800)),
         subtitle: subtitle.isEmpty ? null : Text(subtitle),
         trailing: Icon(
           isSelected ? Icons.check_circle : Icons.radio_button_unchecked,

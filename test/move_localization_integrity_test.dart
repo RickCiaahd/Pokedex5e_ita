@@ -6,18 +6,23 @@ import 'package:pokedex_5e_ita/repositories/move_localization_repository.dart';
 import 'package:pokedex_5e_ita/repositories/move_repository.dart';
 
 import 'fixtures/move_names_it_001_050.dart';
+import 'fixtures/move_names_it_051_250.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   setUp(MoveLocalizationRepository.clearCache);
 
-  test('i cataloghi italiani coprono le prime 50 mosse in ordine', () async {
+  test('i cataloghi italiani coprono le prime 250 mosse in ordine', () async {
     final sourceMoves = await _sourceMoves();
     final sourceById = {
       for (final move in sourceMoves) move['id'].toString(): move,
     };
     final localizedMoves = <String, Map<String, dynamic>>{};
+    final expectedNames = <String, String>{
+      ...moveNames1To50,
+      ...moveNames51To250,
+    };
     var declaredCount = 0;
 
     for (final path in MoveLocalizationRepository.assetPaths) {
@@ -49,7 +54,7 @@ void main() {
     expect(sourceMoves.length, MoveLocalizationRepository.catalogCount);
     expect(declaredCount, MoveLocalizationRepository.localizedCount);
     expect(localizedMoves.length, MoveLocalizationRepository.localizedCount);
-    expect(localizedMoves.keys.toList(), moveNames1To50.keys.toList());
+    expect(localizedMoves.keys.toList(), expectedNames.keys.toList());
 
     final errors = <String>[];
     for (final entry in localizedMoves.entries) {
@@ -100,8 +105,12 @@ void main() {
     expect(errors, isEmpty, reason: errors.join('\n'));
   });
 
-  test('le prime 50 mosse usano i nomi italiani verificati', () async {
+  test('le prime 250 mosse usano i nomi italiani verificati', () async {
     final names = <String, String>{};
+    final expectedNames = <String, String>{
+      ...moveNames1To50,
+      ...moveNames51To250,
+    };
 
     for (final path in MoveLocalizationRepository.assetPaths) {
       final document = await _loadDocument(path);
@@ -114,11 +123,15 @@ void main() {
       });
     }
 
-    expect(names, moveNames1To50);
+    expect(names, expectedNames);
     expect(names['absorb'], 'Assorbimento');
     expect(names['aerial-ace'], 'Aeroassalto');
     expect(names['aura-wheel'], 'Ruota d’Aura');
     expect(names['behemoth-bash'], 'Colpo Maestoso');
+    expect(names['behemoth-blade'], 'Taglio Maestoso');
+    expect(names['blood-moon'], 'Luna Rossa');
+    expect(names['draco-power'], 'Draco Power');
+    expect(names['flash'], 'Flash');
   });
 
   test('il repository mostra l’italiano e conserva i riferimenti inglesi', () async {
@@ -126,8 +139,10 @@ void main() {
     final absorbById = await repository.getMove('absorb');
     final absorbByEnglishName = await repository.getMove('Absorb');
     final absorbByItalianName = await repository.getMove('Assorbimento');
+    final bloodMoonByEnglishName = await repository.getMove('Blood Moon');
+    final bloodMoonByItalianName = await repository.getMove('Luna Rossa');
     final acupressure = await repository.getMove('Acupressure');
-    final unlocalized = await repository.getMove('chatter');
+    final unlocalized = await repository.getMove('zing-zap');
 
     expect(absorbById, isNotNull);
     expect(absorbById?.name, 'Assorbimento');
@@ -137,13 +152,18 @@ void main() {
     expect(absorbById?.description, contains('1d4 + MOVE'));
     expect(absorbById?.description, contains('Livelli superiori:'));
 
+    expect(bloodMoonByEnglishName?.id, 'blood-moon');
+    expect(bloodMoonByItalianName?.id, 'blood-moon');
+    expect(bloodMoonByItalianName?.name, 'Luna Rossa');
+    expect(bloodMoonByItalianName?.technicalName, 'Blood Moon');
+
     expect(acupressure?.name, 'Acupressione');
     expect(acupressure?.technicalName, 'Acupressure');
     expect(acupressure?.description, contains('d6 | Effetto'));
     expect(acupressure?.description, contains('+10 PF temporanei'));
 
-    expect(unlocalized?.name, 'Chatter');
-    expect(unlocalized?.technicalName, 'Chatter');
+    expect(unlocalized?.name, 'Zing Zap');
+    expect(unlocalized?.technicalName, 'Zing Zap');
   });
 }
 

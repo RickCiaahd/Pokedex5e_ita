@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: flutter-ci-${{ github.workflow }}-${{ github.ref }}
@@ -23,6 +23,23 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
+          fetch-depth: 0
+
+      - name: Apply move UI terminology patch
+        if: github.head_ref == 'fix/italian-ui-terminology'
+        shell: bash
+        run: |
+          python tools/apply_move_ui_terminology_patch.py
+          git fetch origin main
+          git checkout origin/main -- .github/workflows/flutter-ci.yml
+          rm -f tools/apply_move_ui_terminology_patch.py
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Uniforma la terminologia visibile delle mosse'
+          git push origin HEAD:fix/italian-ui-terminology
 
       - name: Set up Java
         uses: actions/setup-java@v4

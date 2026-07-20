@@ -26,7 +26,7 @@ Tutte le modifiche rilevanti al progetto vengono documentate in questo file.
 - tradotte in italiano le descrizioni delle 330 abilità, preservando nomi, ID, flag di deprecazione e valori meccanici originali;
 - assegnati i nomi italiani ufficiali a 308 abilità confrontate con Pokémon Central, mantenendo invariati nomi tecnici, ID e dati salvati; le 22 voci personalizzate o deprecate conservano il nome originale;
 - localizzato l’intero catalogo dei 366 oggetti con nomi italiani verificati e descrizioni 5e tradotte: 24 tipi di Poké Ball, 63 medicine, 28 bacche, 39 oggetti evolutivi, 163 strumenti da tenere e 49 strumenti dell’Allenatore, conservando ID, costi, asset e nomi tecnici;
-- localizzate con nomi italiani verificati e descrizioni 5e tradotte le prime 250 delle 830 mosse del catalogo, da Assorbimento ad Adulazione, conservando riferimenti inglesi e valori meccanici;
+- localizzate con nomi italiani verificati e descrizioni 5e tradotte le prime 450 delle 830 mosse del catalogo, da Assorbimento a Nebbia, conservando riferimenti inglesi e valori meccanici;
 - corrette 198 categorie Pokémon delle prime cinque generazioni confrontandole con il riferimento italiano, tra cui Emboar da `Pokémon Granfuocomaiale` a `Pokémon Suincendio`.
 
 ## [1.0.0]

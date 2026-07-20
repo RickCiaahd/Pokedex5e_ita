@@ -43,11 +43,16 @@ class MoveLocalizationRepository {
     'assets/data/move_localization_it_221_230.json',
     'assets/data/move_localization_it_231_240.json',
     'assets/data/move_localization_it_241_250.json',
+    'assets/data/move_localization_it_251_260.json',
+    'assets/data/move_localization_it_261_310.json',
+    'assets/data/move_localization_it_311_360.json',
+    'assets/data/move_localization_it_361_410.json',
+    'assets/data/move_localization_it_411_450.json',
   ];
 
   static const String sourceAssetPath = 'assets/data_webapp/moves.json';
   static const int catalogCount = 830;
-  static const int localizedCount = 250;
+  static const int localizedCount = 450;
 
   static Map<String, MoveLocalization>? _cache;
 

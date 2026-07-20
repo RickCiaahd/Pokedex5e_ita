@@ -1,0 +1,487 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/moves.json",
+  "nameSources": [
+    "https://wiki.pokemoncentral.it/Elenco_delle_mosse_in_altre_lingue",
+    "https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/move_names.csv"
+  ],
+  "type": "move",
+  "range": {
+    "start": 311,
+    "end": 360
+  },
+  "localizedCount": 50,
+  "items": {
+    "harden": {
+      "sourceName": "Harden",
+      "name": "Rafforzatore",
+      "description": [
+        "Aumenti le tue difese per ridurre i danni in arrivo. Dopo aver attivato questa mossa, riduci di 1d4 + MOVE ogni danno che ti viene inflitto fino all'inizio del tuo prossimo turno."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 1d8 al livello 5, 1d10 al livello 10 e 1d12 al livello 17."
+    },
+    "haze": {
+      "sourceName": "Haze",
+      "name": "Nube",
+      "description": [
+        "Crei una foschia di neve leggera che investe le creature in un cerchio del raggio di 30 piedi centrato su di te. Vengono rimossi tutti i cambiamenti alle statistiche, gli effetti di stato, gli scudi e le altre forze esterne che influenzano le creature a gittata. Questo comprende effetti come Parassiseme, Focalenergia, Sostituto, Ferroscudo, Inibitore e simili."
+      ],
+      "higherLevels": null
+    },
+    "head-charge": {
+      "sourceName": "Head Charge",
+      "name": "Ricciolata",
+      "description": [
+        "Abbassi la testa e carichi una creatura. Effettua un attacco in mischia. Se colpisci, infliggi 2d10 + MOVE danni di tipo Normale e subisci come contraccolpo senza tipo un quarto dei danni complessivi, arrotondato per difetto."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 3d8 al livello 5, 4d10 al livello 10 e 7d8 al livello 17."
+    },
+    "head-smash": {
+      "sourceName": "Head Smash",
+      "name": "Zuccata",
+      "description": [
+        "Abbassi la testa per sferrare una pericolosa testata. Effettua un attacco in mischia, infliggendo 3d8 + MOVE danni di tipo Roccia se colpisci. Se colpisci, l'utilizzatore subisce come contraccolpo senza tipo 1/2 dei danni inflitti."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 5d6 al livello 5, 4d12 al livello 10 e 8d8 al livello 17."
+    },
+    "headbutt": {
+      "sourceName": "Headbutt",
+      "name": "Bottintesta",
+      "description": [
+        "Sai davvero come usare la testa. Effettua un tiro per colpire in mischia, infliggendo 1d12 + MOVE danni di tipo Normale se colpisci. Se il risultato naturale del tiro per colpire è 18 o superiore, il bersaglio cade prono."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d8 al livello 5, 2d12 al livello 10 e 6d6 al livello 17."
+    },
+    "headlong-rush": {
+      "sourceName": "Headlong Rush",
+      "name": "Scontro Frontale",
+      "description": [
+        "Ti schianti contro un bersaglio con tutto il corpo, sacrificando le tue difese. Effettua un attacco in mischia contro una creatura, infliggendo 2d10 + MOVE danni di tipo Terra se colpisci. Dopo aver attivato questa mossa, il bersaglio ha vantaggio a ogni attacco che effettua contro di te prima dell'inizio del tuo prossimo turno."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 3d8 al livello 5, 4d10 al livello 10 e 7d8 al livello 17."
+    },
+    "heal-bell": {
+      "sourceName": "Heal Bell",
+      "name": "Rintoccasana",
+      "description": [
+        "Suoni una campana il cui splendido rintocco attraversa il campo di battaglia. Tutte le creature alleate attive entro 60 piedi da te vengono liberate dai propri effetti di stato negativi."
+      ],
+      "higherLevels": null
+    },
+    "heal-block": {
+      "sourceName": "Heal Block",
+      "name": "Anticura",
+      "description": [
+        "Quando una creatura a gittata tenta di usare una mossa, uno strumento o un'abilità che recupera PF, puoi usare la tua reazione per inviare onde psichiche nella mente del bersaglio e impedirgli di recuperare salute."
+      ],
+      "higherLevels": null
+    },
+    "heal-order": {
+      "sourceName": "Heal Order",
+      "name": "Comandocura",
+      "description": [
+        "Richiami i tuoi sottoposti perché curino le tue ferite. Recuperi 4d4 + MOVE punti ferita."
+      ],
+      "higherLevels": "Il dado di guarigione di questa mossa diventa 3d6 al livello 5, 5d6 al livello 10 e 8d6 al livello 17."
+    },
+    "heal-pulse": {
+      "sourceName": "Heal Pulse",
+      "name": "Ondasana",
+      "description": [
+        "Emetti un impulso curativo che ripristina i PF di un bersaglio. Scegli un bersaglio a gittata, che non può essere te stesso. Il bersaglio recupera 4d4 + MOVE punti ferita."
+      ],
+      "higherLevels": "Il dado di guarigione di questa mossa diventa 2d12 al livello 5, 4d8 al livello 10 e 8d6 al livello 17."
+    },
+    "healing-wish": {
+      "sourceName": "Healing Wish",
+      "name": "Curardore",
+      "description": [
+        "Ti sacrifichi per un altro Pokémon del tuo Allenatore. Quando attivi questa mossa, l'utilizzatore sviene, ma la prossima creatura cosciente mandata in campo dal suo Allenatore viene liberata da tutti gli effetti di stato e recupera una quantità di PF pari a quella persa dall'utilizzatore quando è svenuto."
+      ],
+      "higherLevels": null
+    },
+    "heart-stamp": {
+      "sourceName": "Heart Stamp",
+      "name": "Cuorestampo",
+      "description": [
+        "Dopo esserti mostrato adorabile, scateni un colpo feroce. Effettua un attacco in mischia contro una creatura, infliggendo 1d10 + MOVE danni di tipo Psico se colpisci."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d8 al livello 5, 5d4 al livello 10 e 4d8 al livello 17."
+    },
+    "heart-swap": {
+      "sourceName": "Heart Swap",
+      "name": "Cuorbaratto",
+      "description": [
+        "Costringi una creatura a gittata a effettuare un tiro salvezza su CAR contro la tua CD della mossa. Se lo fallisce, usi il tuo potere psichico per scambiare tutti i cambiamenti attualmente attivi su di te o sul bersaglio, inclusi modificatori di caratteristica, CA, modifiche agli attacchi, bonus ai danni e simili."
+      ],
+      "higherLevels": null
+    },
+    "heat-crash": {
+      "sourceName": "Heat Crash",
+      "name": "Marchiafuoco",
+      "description": [
+        "Ti schianti contro una creatura con il corpo avvolto dalle fiamme. Effettua un attacco in mischia contro un bersaglio, infliggendo almeno 1d8 + MOVE danni di tipo Fuoco se colpisci. Aggiungi ai danni un bonus ulteriore pari al tuo modificatore MOVE per ogni categoria di taglia di cui superi la creatura. Le taglie, in ordine, sono: Minuscola, Piccola, Media, Grande, Enorme e Mastodontica."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d6 al livello 5, 4d4 al livello 10 e 3d10 al livello 17."
+    },
+    "heat-wave": {
+      "sourceName": "Heat Wave",
+      "name": "Ondacalda",
+      "description": [
+        "Espiri un'ondata di aria rovente in un cerchio del raggio di 15 piedi centrato su di te. Le creature nell'area devono effettuare un tiro salvezza su DES contro la tua CD della mossa, subendo 2d8 + MOVE danni di tipo Fuoco se lo falliscono, o la metà dei danni se lo superano. Una creatura che fallisce il tiro salvezza di 5 o più diventa scottata."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d10 al livello 5, 3d10 al livello 10 e 4d12 al livello 17."
+    },
+    "heavy-slam": {
+      "sourceName": "Heavy Slam",
+      "name": "Pesobomba",
+      "description": [
+        "Ti schianti contro una creatura con il tuo corpo pesante. Effettua un attacco in mischia contro un bersaglio, infliggendo almeno 1d8 + MOVE danni di tipo Acciaio se colpisci. Aggiungi ai danni un bonus ulteriore pari al tuo modificatore MOVE per ogni categoria di taglia di cui superi la creatura. Le taglie, in ordine, sono: Minuscola, Piccola, Media, Grande, Enorme e Mastodontica."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d6 al livello 5, 4d4 al livello 10 e 3d10 al livello 17."
+    },
+    "helping-hand": {
+      "sourceName": "Helping Hand",
+      "name": "Altruismo",
+      "description": [
+        "Nel tuo turno puoi usare un'azione bonus per scegliere un alleato diverso da te entro 60 piedi che sia in grado di sentirti. L'alleato può aggiungere un d6 a una prova di caratteristica, un tiro per colpire o un tiro salvezza effettuato entro i successivi 10 minuti, prima che il DM dichiari il risultato del tiro. Un alleato aiutato può avere a disposizione un solo d6 alla volta."
+      ],
+      "higherLevels": "Il dado di aiuto di questa mossa diventa d8 al livello 5, d10 al livello 10 e d12 al livello 17."
+    },
+    "hex": {
+      "sourceName": "Hex",
+      "name": "Sciagura",
+      "description": [
+        "Scagli energia spettrale contro una creatura, infliggendo danni maggiori a chi è affetto da condizioni di stato. Effettua un attacco a distanza, infliggendo 1d10 + MOVE danni di tipo Spettro se colpisci. Se il bersaglio è affetto da una condizione di stato, raddoppia il tuo modificatore MOVE quando aggiungi i danni."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d8 al livello 5, 5d4 al livello 10 e 4d8 al livello 17."
+    },
+    "hidden-power": {
+      "sourceName": "Hidden Power",
+      "name": "Introforza",
+      "description": [
+        "Scateni contro una creatura a gittata un'onda di forza dal potere sconosciuto. Effettua un attacco a distanza contro una creatura, infliggendo 1d10 + MOVE danni di un tipo casuale se colpisci. Tira un d20 per determinare il tipo di danno inflitto.",
+        {
+          "type": "table",
+          "headers": [
+            "d20",
+            "Tipo",
+            "d20",
+            "Tipo"
+          ],
+          "rows": [
+            [
+              "1",
+              "Normale",
+              "11",
+              "Psico"
+            ],
+            [
+              "2",
+              "Fuoco",
+              "12",
+              "Coleottero"
+            ],
+            [
+              "3",
+              "Acqua",
+              "13",
+              "Roccia"
+            ],
+            [
+              "4",
+              "Elettro",
+              "14",
+              "Spettro"
+            ],
+            [
+              "5",
+              "Erba",
+              "15",
+              "Drago"
+            ],
+            [
+              "6",
+              "Ghiaccio",
+              "16",
+              "Buio"
+            ],
+            [
+              "7",
+              "Lotta",
+              "17",
+              "Acciaio"
+            ],
+            [
+              "8",
+              "Veleno",
+              "18",
+              "Folletto"
+            ],
+            [
+              "9",
+              "Terra",
+              "19",
+              "Senza tipo"
+            ],
+            [
+              "10",
+              "Volante",
+              "20",
+              "A tua scelta"
+            ]
+          ]
+        }
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d8 al livello 5, 5d4 al livello 10 e 4d8 al livello 17."
+    },
+    "high-horsepower": {
+      "sourceName": "High Horsepower",
+      "name": "Forza Equina",
+      "description": [
+        "Attacchi ferocemente il bersaglio usando tutto il corpo. Effettua un attacco in mischia, infliggendo 2d8 + MOVE danni di tipo Terra se colpisci."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d10 al livello 5, 3d10 al livello 10 e 4d12 al livello 17."
+    },
+    "high-jump-kick": {
+      "sourceName": "High Jump Kick",
+      "name": "Calcinvolo",
+      "description": [
+        "Balzi in aria per sferrare un potente calcio al bersaglio. Effettua un attacco in mischia, infliggendo 2d8 + MOVE danni di tipo Lotta se colpisci. Se manchi, subisci 1 danno."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d10 al livello 5, 3d10 al livello 10 e 4d12 al livello 17."
+    },
+    "hold-back": {
+      "sourceName": "Hold Back",
+      "name": "Riguardo",
+      "description": [
+        "Ti scagli con forza, ma trattieni il colpo trasformandolo in un attacco di striscio che lascia cosciente la creatura. Effettua un attacco in mischia contro un bersaglio, infliggendo 1d6 + MOVE danni di tipo Normale se colpisci. Se l'attacco farebbe altrimenti svenire il bersaglio, lo lascia sempre con 1 punto ferita."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 1d12 al livello 5, 2d8 al livello 10 e 4d6 al livello 17."
+    },
+    "hold-hands": {
+      "sourceName": "Hold Hands",
+      "name": "Mano nella Mano",
+      "description": [
+        "Se ti trovi entro la portata in mischia di un alleato, gli stringi la mano per diffondere felicità. Usa questa reazione quando un alleato attacca per aggiungere +1 ai suoi tiri per colpire, oppure quando è bersagliato da un attacco per aggiungere +1 alla sua CA. Puoi usare questa reazione soltanto prima che venga dichiarato il risultato di uno dei due tiri per colpire, effettuato dall'alleato o dalla creatura."
+      ],
+      "higherLevels": null
+    },
+    "hone-claws": {
+      "sourceName": "Hone Claws",
+      "name": "Unghiaguzze",
+      "description": [
+        "Affili gli artigli per aumentare la potenza dei tuoi attacchi. Per la durata, aggiungi un ulteriore +1 ai tuoi tiri per colpire e per i danni. Questa mossa può accumularsi fino a un massimo di +3 ai tiri per colpire e per i danni."
+      ],
+      "higherLevels": null
+    },
+    "howl": {
+      "sourceName": "Howl",
+      "name": "Gridodilotta",
+      "description": [
+        "Squarci l'aria con un ululato intimidatorio. Fino alla fine del tuo prossimo turno, tu e gli alleati avete vantaggio a tutti i tiri per colpire in mischia effettuati contro una creatura entro 5 piedi da te."
+      ],
+      "higherLevels": null
+    },
+    "horn-attack": {
+      "sourceName": "Horn Attack",
+      "name": "Incornata",
+      "description": [
+        "Colpisci un bersaglio con il corno. Effettua un attacco in mischia, infliggendo 1d10 + MOVE danni di tipo Normale se colpisci. Se immediatamente prima di attivare questa mossa ti sei mosso di almeno 20 piedi in linea retta verso il bersaglio, costringilo a effettuare un tiro salvezza su FOR contro la tua CD della mossa o a cadere prono."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d8 al livello 5, 5d4 al livello 10 e 4d8 al livello 17."
+    },
+    "horn-drill": {
+      "sourceName": "Horn Drill",
+      "name": "Perforcorno",
+      "description": [
+        "Tenti di perforare una creatura bersaglio con il corno usando una forza spaventosa. Tira un d20. Con un risultato di 20, la creatura viene trafitta e sviene immediatamente. Con qualsiasi altro risultato manchi il bersaglio e la mossa fallisce. Se il livello del bersaglio supera il tuo di 10 o più, la mossa fallisce automaticamente."
+      ],
+      "higherLevels": null
+    },
+    "horn-leech": {
+      "sourceName": "Horn Leech",
+      "name": "Legnicorno",
+      "description": [
+        "Affondi le corna in una creatura, prosciugandone parte dell'energia. Effettua un attacco in mischia, infliggendo 1d12 + MOVE danni di tipo Erba se colpisci. L'utilizzatore recupera la metà dei danni inflitti, arrotondata per difetto."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d8 al livello 5, 2d12 al livello 10 e 6d6 al livello 17."
+    },
+    "hurricane": {
+      "sourceName": "Hurricane",
+      "name": "Tifone",
+      "description": [
+        "Scateni un vortice di venti violenti. Ogni creatura in un raggio di 30 piedi, centrato su un punto a gittata, deve effettuare un tiro salvezza su FOR contro la tua CD della mossa, subendo 3d6 + MOVE danni di tipo Volante e cadendo prona se lo fallisce, oppure la metà dei danni senza cadere prona se lo supera. I bersagli che falliscono il tiro salvezza di 5 o più diventano confusi. Se l'attacco viene attivato durante la pioggia, i bersagli effettuano i tiri salvezza con svantaggio. Se viene usato durante la luce solare intensa, li effettuano con vantaggio."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 3d8 al livello 5, 6d6 al livello 10 e 7d8 al livello 17."
+    },
+    "hydro-cannon": {
+      "sourceName": "Hydro Cannon",
+      "name": "Idrocannone",
+      "description": [
+        "Scagli un potente getto d'acqua ad alta velocità lungo una linea di 80 piedi e larga 5 piedi. Ogni creatura coinvolta deve effettuare un tiro salvezza su FOR contro la tua CD della mossa, subendo 3d8 + MOVE danni di tipo Acqua se lo fallisce, o la metà dei danni se lo supera. Le creature che falliscono il tiro salvezza vengono inoltre spinte indietro di 10 piedi e cadono prone. Questa mossa prosciuga le tue energie e non puoi attivarla di nuovo prima della fine del tuo prossimo turno."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 5d6 al livello 5, 4d12 al livello 10 e 8d8 al livello 17."
+    },
+    "hydro-pump": {
+      "sourceName": "Hydro Pump",
+      "name": "Idropompa",
+      "description": [
+        "Scagli un'ondata d'acqua potentissima lungo una linea di 80 piedi e larga 5 piedi. Le creature coinvolte devono superare un tiro salvezza su DES contro la tua CD della mossa, subendo 3d6 + MOVE danni di tipo Acqua se lo falliscono, o la metà dei danni se lo superano."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 3d8 al livello 5, 6d6 al livello 10 e 7d8 al livello 17."
+    },
+    "hydro-steam": {
+      "sourceName": "Hydro Steam",
+      "name": "Idrovapore",
+      "description": [
+        "Investi il bersaglio con acqua bollente. Effettua un attacco a distanza, infliggendo 2d6 + MOVE danni di tipo Acqua se colpisci. I danni di questa mossa non subiscono svantaggio sotto la Luce Solare Intensa. Se ti trovi sotto la Luce Solare Intensa, effettui l'attacco con vantaggio."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d8 al livello 5, 4d6 al livello 10 e 6d6 al livello 17."
+    },
+    "hyper-beam": {
+      "sourceName": "Hyper Beam",
+      "name": "Iper Raggio",
+      "description": [
+        "Scateni un raggio concentrato di pura energia lungo una linea di 80 piedi e larga 5 piedi. Ogni creatura coinvolta deve superare un tiro salvezza su DES oppure subire 3d8 + MOVE danni di tipo Normale se lo fallisce, o la metà dei danni se lo supera. La stessa creatura non può usare questa mossa in turni consecutivi."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 5d6 al livello 5, 4d12 al livello 10 e 8d8 al livello 17."
+    },
+    "hyper-drill": {
+      "sourceName": "Hyper Drill",
+      "name": "Ipertrapano",
+      "description": [
+        "Ti schianti contro una creatura facendo ruotare il corpo come un trapano. Effettua un attacco in mischia, infliggendo 2d8 + MOVE danni di tipo Normale se colpisci. Questo attacco attraversa mosse difensive come Protezione o Individua e ignora i bonus alla CA conferiti da incantesimi come Scudo."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d10 al livello 5, 3d10 al livello 10 e 4d12 al livello 17."
+    },
+    "hyper-fang": {
+      "sourceName": "Hyper Fang",
+      "name": "Iperzanna",
+      "description": [
+        "Ti scagli contro una creatura con un rapido morso. Effettua un tiro per colpire in mischia, infliggendo 2d6 + MOVE danni di tipo Normale se colpisci. Iperzanna mette a segno un colpo critico con 19 o 20. Se il risultato naturale del tiro per colpire è 18 o superiore, il bersaglio diventa FLINCHED."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d8 al livello 5, 4d6 al livello 10 e 6d6 al livello 17."
+    },
+    "hyper-voice": {
+      "sourceName": "Hyper Voice",
+      "name": "Granvoce",
+      "description": [
+        "Emetti un suono acuto, assordante e sorprendente che soltanto una creatura può udire. Effettua un tiro per colpire a distanza contro una creatura a gittata, infliggendo 2d8 + MOVE danni di tipo Normale se colpisci."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d10 al livello 5, 3d10 al livello 10 e 4d12 al livello 17."
+    },
+    "hyperspace-fury": {
+      "sourceName": "Hyperspace Fury",
+      "name": "Urtodimensionale",
+      "description": [
+        "Usando le tue numerose braccia, scagli una raffica di tre sfere di energia furiosa contro qualsiasi creatura a gittata. Ogni sfera infligge automaticamente 1d6 danni di tipo Buio a una creatura a tua scelta. Non possono essere usate reazioni che annullano i danni, come Protezione o Individua. Dopo aver attivato questa mossa, tutti gli attacchi contro di te vengono effettuati con vantaggio fino all'inizio del tuo prossimo turno."
+      ],
+      "higherLevels": "Puoi scagliare 4 proiettili al livello 5, 5 proiettili al livello 10 e 6 proiettili al livello 17."
+    },
+    "hyperspace-hole": {
+      "sourceName": "Hyperspace Hole",
+      "name": "Forodimensionale",
+      "description": [
+        "Crei un portale iperspaziale che ti permette di teletrasportarti istantaneamente accanto a una creatura a gittata e colpirla con un attacco in mischia. Questa mossa colpisce automaticamente e infligge 2d6 + MOVE danni di tipo Psico. Non possono essere usate reazioni che annullano i danni, come Protezione o Individua."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d8 al livello 5, 4d6 al livello 10 e 6d6 al livello 17."
+    },
+    "hypnosis": {
+      "sourceName": "Hypnosis",
+      "name": "Ipnosi",
+      "description": [
+        "Tenti di far addormentare il bersaglio. Il bersaglio deve effettuare un tiro salvezza su SAG contro la tua CD della mossa, addormentandosi se lo fallisce."
+      ],
+      "higherLevels": null
+    },
+    "ice-ball": {
+      "sourceName": "Ice Ball",
+      "name": "Palla Gelo",
+      "description": [
+        "Ti avvolgi in una sfera di ghiaccio dura come la roccia e continui a travolgere una creatura. Quando attivi questa mossa, effettua un attacco in mischia contro un bersaglio a gittata, infliggendo 1d6 + MOVE danni di tipo Ghiaccio se colpisci. Se usi questa mossa nel tuo turno in round consecutivi, raddoppia ogni volta il risultato dei dadi di danno quando colpisci. Il moltiplicatore può arrivare fino a otto volte il danno originale. I danni si azzerano se uno degli attacchi manca oppure se diventi incapacitato."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 1d8 al livello 5, 1d10 al livello 10 e 1d12 al livello 17."
+    },
+    "ice-beam": {
+      "sourceName": "Ice Beam",
+      "name": "Geloraggio",
+      "description": [
+        "Crei una linea di ghiaccio gelido lunga 80 piedi e larga 5 piedi. Ogni creatura coinvolta deve superare un tiro salvezza su DES contro la tua CD della mossa oppure subire 2d8 + MOVE danni di tipo Ghiaccio se lo fallisce, o la metà dei danni se lo supera. Le creature che falliscono il tiro salvezza di 5 o più diventano congelate."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d10 al livello 5, 3d10 al livello 10 e 4d12 al livello 17."
+    },
+    "ice-burn": {
+      "sourceName": "Ice Burn",
+      "name": "Vampagelida",
+      "description": [
+        "Quando usi questa mossa, accumuli un'intensa potenza nel tuo corpo. Nel tuo turno successivo, se mantieni la concentrazione, usi la tua azione per scatenare un vento ultrafreddo e congelante in un cerchio del raggio di 30 piedi intorno a te. Ogni creatura coinvolta deve effettuare un tiro salvezza su DES contro la tua CD della mossa, subendo 2d12 + MOVE danni di tipo Ghiaccio se lo fallisce, o la metà dei danni se lo supera. Una creatura che fallisce il tiro salvezza di 5 o più diventa scottata."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 3d10 al livello 5, 7d6 al livello 10 e 8d8 al livello 17."
+    },
+    "ice-fang": {
+      "sourceName": "Ice Fang",
+      "name": "Gelodenti",
+      "description": [
+        "Tenti di trafiggere una creatura con zanne intrise di ghiaccio. Effettua un attacco in mischia, infliggendo 1d10 + MOVE danni di tipo Ghiaccio se colpisci. Con un risultato naturale di 19 o 20 al tiro per colpire, il bersaglio diventa congelato e FLINCHED."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d8 al livello 5, 5d4 al livello 10 e 4d8 al livello 17."
+    },
+    "ice-hammer": {
+      "sourceName": "Ice Hammer",
+      "name": "Martelgelo",
+      "description": [
+        "Oscilli e colpisci con il tuo pugno forte e pesante. Effettua un attacco in mischia, infliggendo 4d4 + MOVE danni di tipo Ghiaccio. Fino all'inizio del tuo prossimo turno, hai svantaggio a tutti i tiri salvezza su DES e la tua velocità è dimezzata."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d12 al livello 5, 4d8 al livello 10 e 8d6 al livello 17."
+    },
+    "ice-punch": {
+      "sourceName": "Ice Punch",
+      "name": "Gelopugno",
+      "description": [
+        "Colpisci con pugni intrisi di ghiaccio. Effettua un tiro per colpire in mischia, infliggendo 1d12 + MOVE danni di tipo Ghiaccio se colpisci. Con un risultato naturale di 19 o 20 al tiro per colpire, il bersaglio diventa congelato."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d8 al livello 5, 2d12 al livello 10 e 6d6 al livello 17."
+    },
+    "ice-shard": {
+      "sourceName": "Ice Shard",
+      "name": "Geloscheggia",
+      "description": [
+        "Congeli istantaneamente frammenti di ghiaccio e li scagli rapidamente contro una creatura. Come azione bonus, scagli una scheggia di ghiaccio contro una creatura a gittata. Effettua un tiro per colpire a distanza, infliggendo 1d4 danni di tipo Ghiaccio se colpisci."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 1d6 al livello 5, 1d10 al livello 10 e 1d12 al livello 17."
+    },
+    "ice-spinner": {
+      "sourceName": "Ice Spinner",
+      "name": "Vortighiaccio",
+      "description": [
+        "Ricopri i piedi di ghiaccio sottile e inizi a volteggiare. Tutte le creature entro la portata in mischia devono effettuare un tiro salvezza su DES contro la tua CD della mossa, subendo 2d6 + MOVE danni di tipo Ghiaccio se lo falliscono, o la metà dei danni se lo superano. Inoltre, qualsiasi terreno attivo in cui ti trovi viene rimosso."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d8 al livello 5, 4d6 al livello 10 e 6d6 al livello 17."
+    },
+    "icicle-crash": {
+      "sourceName": "Icicle Crash",
+      "name": "Scagliagelo",
+      "description": [
+        "Generi una fila di ghiaccioli che precipita su una creatura a gittata. Effettua un attacco a distanza, infliggendo 2d6 + MOVE danni di tipo Ghiaccio se colpisci. Se il risultato naturale del tiro per colpire è 15 o superiore, il bersaglio diventa FLINCHED."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d8 al livello 5, 4d6 al livello 10 e 6d6 al livello 17."
+    },
+    "icicle-spear": {
+      "sourceName": "Icicle Spear",
+      "name": "Gelolancia",
+      "description": [
+        "Tempesti una creatura a gittata con numerose schegge di ghiaccio affilate. Effettua un tiro per colpire a distanza, infliggendo 1d4 + MOVE danni di tipo Ghiaccio se colpisci. Dopo aver colpito con successo un bersaglio, tira un d4. Con un risultato di 3 o 4, puoi colpire immediatamente di nuovo, infliggendo 1d4 danni aggiuntivi di tipo Ghiaccio. Ripeti il procedimento finché non ottieni un risultato diverso da 3 o 4 sul d4, fino a un massimo di quattro colpi aggiuntivi."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d4 al livello 5, 1d12 al livello 10 e 4d4 al livello 17."
+    },
+    "icy-wind": {
+      "sourceName": "Icy Wind",
+      "name": "Ventogelato",
+      "description": [
+        "Crei un vento gelido che soffia verso una creatura a gittata. Effettua un attacco a distanza contro una creatura, infliggendo 1d8 + MOVE danni di tipo Ghiaccio se colpisci. Con un risultato naturale di 18 o superiore al tiro per colpire, il bersaglio cade prono."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d6 al livello 5, 4d4 al livello 10 e 3d10 al livello 17."
+    }
+  }
+}

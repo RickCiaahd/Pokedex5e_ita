@@ -7,13 +7,14 @@ import 'package:pokedex_5e_ita/repositories/move_repository.dart';
 
 import 'fixtures/move_names_it_001_050.dart';
 import 'fixtures/move_names_it_051_250.dart';
+import 'fixtures/move_names_it_251_450.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   setUp(MoveLocalizationRepository.clearCache);
 
-  test('i cataloghi italiani coprono le prime 250 mosse in ordine', () async {
+  test('i cataloghi italiani coprono le prime 450 mosse in ordine', () async {
     final sourceMoves = await _sourceMoves();
     final sourceById = {
       for (final move in sourceMoves) move['id'].toString(): move,
@@ -22,6 +23,7 @@ void main() {
     final expectedNames = <String, String>{
       ...moveNames1To50,
       ...moveNames51To250,
+      ...moveNames251To450,
     };
     var declaredCount = 0;
 
@@ -105,11 +107,12 @@ void main() {
     expect(errors, isEmpty, reason: errors.join('\n'));
   });
 
-  test('le prime 250 mosse usano i nomi italiani verificati', () async {
+  test('le prime 450 mosse usano i nomi italiani verificati', () async {
     final names = <String, String>{};
     final expectedNames = <String, String>{
       ...moveNames1To50,
       ...moveNames51To250,
+      ...moveNames251To450,
     };
 
     for (final path in MoveLocalizationRepository.assetPaths) {
@@ -132,6 +135,10 @@ void main() {
     expect(names['blood-moon'], 'Luna Rossa');
     expect(names['draco-power'], 'Draco Power');
     expect(names['flash'], 'Flash');
+    expect(names['halo-song'], 'Halo Song');
+    expect(names['ivy-cudgel'], 'Clava di Liane');
+    expect(names['matcha-gotcha'], 'Spruzzatè');
+    expect(names['mist'], 'Nebbia');
   });
 
   test('il repository mostra l’italiano e conserva i riferimenti inglesi', () async {
@@ -141,6 +148,9 @@ void main() {
     final absorbByItalianName = await repository.getMove('Assorbimento');
     final bloodMoonByEnglishName = await repository.getMove('Blood Moon');
     final bloodMoonByItalianName = await repository.getMove('Luna Rossa');
+    final ivyCudgelByEnglishName = await repository.getMove('Ivy Cudgel');
+    final ivyCudgelByItalianName = await repository.getMove('Clava di Liane');
+    final matchaByItalianName = await repository.getMove('Spruzzatè');
     final acupressure = await repository.getMove('Acupressure');
     final unlocalized = await repository.getMove('zing-zap');
 
@@ -156,6 +166,12 @@ void main() {
     expect(bloodMoonByItalianName?.id, 'blood-moon');
     expect(bloodMoonByItalianName?.name, 'Luna Rossa');
     expect(bloodMoonByItalianName?.technicalName, 'Blood Moon');
+
+    expect(ivyCudgelByEnglishName?.id, 'ivy-cudgel');
+    expect(ivyCudgelByItalianName?.id, 'ivy-cudgel');
+    expect(ivyCudgelByItalianName?.technicalName, 'Ivy Cudgel');
+    expect(matchaByItalianName?.id, 'matcha-gotcha');
+    expect(matchaByItalianName?.technicalName, 'Matcha Gotcha');
 
     expect(acupressure?.name, 'Acupressione');
     expect(acupressure?.technicalName, 'Acupressure');

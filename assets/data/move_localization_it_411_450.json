@@ -1,0 +1,373 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/moves.json",
+  "nameSources": [
+    "https://wiki.pokemoncentral.it/Elenco_delle_mosse_in_altre_lingue",
+    "https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/move_names.csv"
+  ],
+  "type": "move",
+  "range": {
+    "start": 411,
+    "end": 450
+  },
+  "localizedCount": 40,
+  "items": {
+    "mach-punch": {
+      "sourceName": "Mach Punch",
+      "name": "Pugnorapido",
+      "description": [
+        "Scatti in avanti per colpire con un pugno a velocità incredibile. Scegli un bersaglio entro 10 piedi da te. Ti precipiti verso la creatura e la colpisci con un pugno, evitando tutti gli attacchi di opportunità. Effettua un attacco in mischia contro quella creatura, infliggendo 1d4 danni di tipo Lotta se colpisci."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 1d6 al livello 5, 1d10 al livello 10 e 1d12 al livello 17."
+    },
+    "magic-coat": {
+      "sourceName": "Magic Coat",
+      "name": "Magivelo",
+      "description": [
+        "Un lampo di energia magica si forma tra te e una creatura, riflettendo l'energia negativa contro un attaccante a gittata. Quando l'attacco di una creatura ti infligge una condizione di stato negativa, anche l'attaccante viene affetto dalla stessa condizione."
+      ],
+      "higherLevels": null
+    },
+    "magic-powder": {
+      "sourceName": "Magic Powder",
+      "name": "Magipolvere",
+      "description": [
+        "Spargi una nube di polvere magica contro un avversario. Una creatura bersaglio entro 30 piedi deve effettuare un tiro salvezza su CAR contro la tua CD della mossa. Se lo fallisce, il suo tipo diventa Psico per la durata."
+      ],
+      "higherLevels": null
+    },
+    "magic-room": {
+      "sourceName": "Magic Room",
+      "name": "Magicozona",
+      "description": [
+        "Usi il tuo potere psichico per sopprimere l'effetto di tutti gli strumenti tenuti entro 50 piedi da te."
+      ],
+      "higherLevels": null
+    },
+    "magical-leaf": {
+      "sourceName": "Magical Leaf",
+      "name": "Fogliamagica",
+      "description": [
+        "Richiami una foglia magica e affilata che colpisce una creatura. Questa mossa colpisce automaticamente e infligge 1d6 + MOVE danni di tipo Erba, salvo che il bersaglio si trovi nella fase invulnerabile di mosse come Volo, Fossa, Rimbalzo, Sub e simili."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 1d10 al livello 5, 2d8 al livello 10 e 5d4 al livello 17."
+    },
+    "magma-storm": {
+      "sourceName": "Magma Storm",
+      "name": "Magmaclisma",
+      "description": [
+        "Scateni un vortice di fuoco in un cerchio del raggio di 40 piedi, centrato su un punto a gittata, che continua a infuriare finché mantieni la concentrazione. Ogni creatura che entra nell'area per la prima volta nel proprio turno o vi inizia il proprio turno deve effettuare un tiro salvezza su COS contro la tua CD della mossa, subendo 3d8 + MOVE danni di tipo Fuoco se lo fallisce, o la metà dei danni se lo supera."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 5d6 al livello 5, 4d12 al livello 10 e 8d8 al livello 17."
+    },
+    "magnet-bomb": {
+      "sourceName": "Magnet Bomb",
+      "name": "Bombagnete",
+      "description": [
+        "Scagli una sfera d'acciaio che insegue una creatura a gittata senza mai mancarla. Questa mossa colpisce automaticamente e infligge 1d6 + MOVE danni di tipo Acciaio, salvo che il bersaglio si trovi nella fase invulnerabile di mosse come Volo, Fossa, Rimbalzo, Sub e simili."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 1d10 al livello 5, 2d8 al livello 10 e 5d4 al livello 17."
+    },
+    "magnet-rise": {
+      "sourceName": "Magnet Rise",
+      "name": "Magnetascesa",
+      "description": [
+        "Usi il potere magnetico dentro di te per sollevarti da terra, diventando immune alle mosse di tipo Terra per la durata."
+      ],
+      "higherLevels": null
+    },
+    "magnetic-flux": {
+      "sourceName": "Magnetic Flux",
+      "name": "Controllo Polare",
+      "description": [
+        "Usi la tua energia elettrica per manipolare i campi magnetici. Fino all'inizio del tuo prossimo turno, ogni creatura a gittata dotata dell'abilità Più o Meno ottiene alla CA un bonus pari al tuo modificatore di competenza ed effettua con vantaggio qualsiasi tiro salvezza a cui viene costretta."
+      ],
+      "higherLevels": null
+    },
+    "magnitude": {
+      "sourceName": "Magnitude",
+      "name": "Magnitudo",
+      "description": [
+        "Scuoti il terreno con un sisma devastante. Tutte le creature a gittata devono effettuare un tiro salvezza su DES contro la tua CD della mossa, subendo la metà dei danni se lo superano e tutti i danni se lo falliscono. Le creature a gittata che si trovano sottoterra o nella fase invulnerabile di Fossa subiscono danni doppi dalla mossa. Tira un d100 sulla tabella seguente per determinare i danni. Le creature sollevate sono immuni agli effetti e ai danni della mossa.",
+        {
+          "type": "table",
+          "headers": [
+            "d100",
+            "Danni"
+          ],
+          "rows": [
+            [
+              "1-5",
+              "1d4 + MOVE"
+            ],
+            [
+              "6-15",
+              "1d8 + MOVE"
+            ],
+            [
+              "16-35",
+              "1d10 + MOVE"
+            ],
+            [
+              "36-65",
+              "1d12 + MOVE"
+            ],
+            [
+              "66-85",
+              "2d6 + MOVE"
+            ],
+            [
+              "86-95",
+              "2d8 + MOVE"
+            ],
+            [
+              "96-100",
+              "2d12 + MOVE"
+            ]
+          ]
+        }
+      ],
+      "higherLevels": "Per i tiri dei danni, usa due volte i dadi al livello 5, tre volte i dadi al livello 10 e quattro volte i dadi al livello 17."
+    },
+    "make-it-rain": {
+      "sourceName": "Make it Rain",
+      "name": "Corsa all’Oro",
+      "description": [
+        "Scagli una massa di monete. Ogni creatura a gittata deve effettuare un tiro salvezza su DES contro la tua CD della mossa, subendo 2d10 + MOVE danni di tipo Acciaio se lo fallisce, o la metà dei danni se lo supera. Ottieni 1d10 ₽ per ogni creatura che fallisce il tiro salvezza e 2d10 ₽ per ogni creatura che lo supera."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 3d8 al livello 5, 4d10 al livello 10 e 7d8 al livello 17."
+    },
+    "malignant-chain": {
+      "sourceName": "Malignant Chain",
+      "name": "Intossicatena",
+      "description": [
+        "Avvolgi il bersaglio in una catena tossica e corrosiva, riversando le tossine nel suo corpo. Effettua un attacco a distanza, infliggendo 4d4 + MOVE danni di tipo Veleno se colpisci. Una creatura colpita deve superare un tiro salvezza su COS contro la tua CD della mossa o diventare gravemente avvelenata."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d12 al livello 5, 4d8 al livello 10 e 8d6 al livello 17."
+    },
+    "mat-block": {
+      "sourceName": "Mat Block",
+      "name": "Ribaltappeto",
+      "description": [
+        "Materializzi un tappeto etereo e protettivo per difendere te e i tuoi alleati. Fino alla fine del tuo prossimo turno, ogni creatura alleata entro 15 piedi da te, compreso te stesso, è immune ai danni delle mosse che infliggono danni. Le mosse che provocano condizioni di stato possono comunque influenzare i propri bersagli."
+      ],
+      "higherLevels": null
+    },
+    "matcha-gotcha": {
+      "sourceName": "Matcha Gotcha",
+      "name": "Spruzzatè",
+      "description": [
+        "Spruzzi una violenta raffica del tè che hai preparato. Le creature a gittata devono effettuare un tiro salvezza su DES contro la tua CD della mossa, subendo 2d6 + MOVE danni di tipo Erba se lo falliscono, o la metà dei danni se lo superano. Per ogni creatura che fallisce il tiro salvezza, recuperi 1d6 PF."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d8 al livello 5, 4d6 al livello 10 e 6d6 al livello 17."
+    },
+    "me-first": {
+      "sourceName": "Me First",
+      "name": "Precedenza",
+      "description": [
+        "Quando sei bersagliato da una mossa a bersaglio singolo o costretto a effettuare un tiro salvezza contro di essa, puoi usare la tua reazione per copiare la mossa della creatura e rivolgergliela contro dopo l'attivazione ma prima dei suoi effetti. Se la mossa richiede un tiro per colpire, effettui l'attacco con svantaggio. Se richiede un tiro salvezza, il bersaglio ha vantaggio al tiro. Se infligge danni, raddoppia i dadi di danno. Il grado dei danni o dell'effetto della mossa dipende dal tuo livello, non da quello del bersaglio."
+      ],
+      "higherLevels": null
+    },
+    "mean-look": {
+      "sourceName": "Mean Look",
+      "name": "Malosguardo",
+      "description": [
+        "Rivolgi al bersaglio uno sguardo intimidatorio nel tentativo di paralizzarlo dalla paura. Costringi un bersaglio a gittata a effettuare un tiro salvezza su SAG contro la tua CD della mossa. Se lo fallisce, il bersaglio non può fuggire né essere sostituito per 3 round."
+      ],
+      "higherLevels": null
+    },
+    "meditate": {
+      "sourceName": "Meditate",
+      "name": "Meditazione",
+      "description": [
+        "Diventi tutt'uno con il tuo io interiore. Per la durata, ottieni +1 ai tiri per colpire e ai tiri salvezza."
+      ],
+      "higherLevels": "Il bonus diventa +2 al livello 5, +3 al livello 10 e +4 al livello 17."
+    },
+    "mega-drain": {
+      "sourceName": "Mega Drain",
+      "name": "Megassorbimento",
+      "description": [
+        "Tenti di prosciugare la forza vitale di un bersaglio. Effettua un attacco a distanza, infliggendo 1d6 + MOVE danni di tipo Erba se colpisci. L'utilizzatore recupera una quantità pari alla metà dei danni inflitti."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 1d12 al livello 5, 2d8 al livello 10 e 4d6 al livello 17."
+    },
+    "mega-kick": {
+      "sourceName": "Mega Kick",
+      "name": "Megacalcio",
+      "description": [
+        "Effettua un attacco in mischia contro un bersaglio, infliggendo 2d10 + MOVE danni di tipo Normale se colpisci."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 3d8 al livello 5, 4d10 al livello 10 e 7d8 al livello 17."
+    },
+    "mega-punch": {
+      "sourceName": "Mega Punch",
+      "name": "Megapugno",
+      "description": [
+        "Sferri un pugno potentissimo. Effettua un attacco in mischia contro un bersaglio, infliggendo 2d6 + MOVE danni di tipo Normale se colpisci."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d8 al livello 5, 4d6 al livello 10 e 6d6 al livello 17."
+    },
+    "megahorn": {
+      "sourceName": "Megahorn",
+      "name": "Megacorno",
+      "description": [
+        "Carichi una creatura per sferrare un devastante attacco con il corno. Effettua un tiro per colpire in mischia, infliggendo 2d10 + MOVE danni di tipo Coleottero se colpisci. Se immediatamente prima di attivare questa mossa ti sei mosso di almeno 20 piedi in linea retta verso il bersaglio, costringilo a effettuare un tiro salvezza su FOR contro la tua CD della mossa o a cadere prono."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 3d8 al livello 5, 4d10 al livello 10 e 7d8 al livello 17."
+    },
+    "memento": {
+      "sourceName": "Memento",
+      "name": "Memento",
+      "description": [
+        "Sacrifichi la tua forza vitale per lasciare un segno duraturo su un bersaglio. Quando attivi questa mossa, tocchi una creatura e scendi a 0 punti ferita. Il bersaglio diventa quindi incapacitato per 2 round. Tutti gli attacchi contro di lui hanno vantaggio, fallisce automaticamente e con il peggior risultato possibile tutti i tiri salvezza su FOR e DES e non può attaccare, muoversi, fuggire né essere sostituito."
+      ],
+      "higherLevels": null
+    },
+    "metal-burst": {
+      "sourceName": "Metal Burst",
+      "name": "Metalscoppio",
+      "description": [
+        "Reagisci scagliando una raffica di taglienti schegge metalliche. Come reazione, quando vieni colpito da un attacco in mischia che infligge danni, effettua con svantaggio un tiro per colpire in mischia contro l'attaccante. Se colpisci, restituisci all'attaccante la stessa quantità di danni di tipo Acciaio, fino a un massimo pari a cinque volte il tuo livello attuale."
+      ],
+      "higherLevels": null
+    },
+    "metal-claw": {
+      "sourceName": "Metal Claw",
+      "name": "Ferrartigli",
+      "description": [
+        "Colpisci con artigli affilati. Effettua un tiro per colpire in mischia contro una creatura, infliggendo 1d8 + MOVE danni di tipo Acciaio se colpisci. Se il risultato naturale del tiro per colpire è 19 o 20, il tuo prossimo attacco ottiene un ulteriore +1 al tiro per colpire."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d6 al livello 5, 4d4 al livello 10 e 3d10 al livello 17."
+    },
+    "metal-sound": {
+      "sourceName": "Metal Sound",
+      "name": "Ferrostrido",
+      "description": [
+        "Emetti un suono acuto e assordante che soltanto il bersaglio può udire, lasciandolo indifeso. Quando attivi questa mossa, un bersaglio deve effettuare un tiro salvezza su COS contro la tua CD della mossa. Se lo fallisce, tutti i tiri per colpire contro il bersaglio ottengono un bonus di +5 fino alla fine del tuo prossimo turno."
+      ],
+      "higherLevels": null
+    },
+    "meteor-assault": {
+      "sourceName": "Meteor Assault",
+      "name": "Sfolgorassalto",
+      "description": [
+        "L'utilizzatore attacca selvaggiamente con il suo spesso porro. Effettua un attacco in mischia, infliggendo 3d8 + MOVE danni di tipo Lotta se colpisci. La stessa creatura non può usare questa mossa in turni consecutivi."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 5d6 al livello 5, 4d12 al livello 10 e 8d8 al livello 17."
+    },
+    "meteor-beam": {
+      "sourceName": "Meteor Beam",
+      "name": "Raggiometeora",
+      "description": [
+        "Quando usi questa mossa, assorbi energia cosmica e ti prepari a scatenare un raggio devastante. Nel tuo turno successivo, se mantieni la concentrazione, usa un'azione per creare una linea di energia solare lunga 80 piedi e larga 5 piedi. Ogni creatura coinvolta deve superare un tiro salvezza su DES oppure subire 3d8 + MOVE danni di tipo Roccia se lo fallisce, o la metà dei danni se lo supera."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 5d6 al livello 5, 4d12 al livello 10 e 8d8 al livello 17."
+    },
+    "meteor-mash": {
+      "sourceName": "Meteor Mash",
+      "name": "Meteorpugno",
+      "description": [
+        "Colpisci una creatura con un pugno rapido come una meteora. Effettua un attacco in mischia contro una creatura, infliggendo 2d8 + MOVE danni di tipo Acciaio se colpisci. Se il risultato naturale del tiro per colpire è 18 o superiore, il tuo prossimo attacco ha vantaggio."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d10 al livello 5, 3d10 al livello 10 e 4d12 al livello 17."
+    },
+    "metronome": {
+      "sourceName": "Metronome",
+      "name": "Metronomo",
+      "description": [
+        "Richiami casualmente una mossa da usare contro una creatura. Quando usi questa mossa, tira un d100. Il numero ottenuto corrisponde al numero della MT della mossa che esegui. Se la mossa non può essere completata per ragioni di posizione, gittata o simili, Metronomo fallisce."
+      ],
+      "higherLevels": null
+    },
+    "mighty-cleave": {
+      "sourceName": "Mighty Cleave",
+      "name": "Taglio Poderoso",
+      "description": [
+        "Brandisci la luce accumulata sopra la tua testa per fendere il bersaglio. Effettua un attacco in mischia, infliggendo 2d8 + MOVE danni di tipo Roccia se colpisci. Questa mossa colpisce e infligge danni anche attraverso mosse o abilità che normalmente li annullerebbero, come Protezione, Agodifesa e simili."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d10 al livello 5, 3d10 al livello 10 e 4d12 al livello 17."
+    },
+    "milk-drink": {
+      "sourceName": "Milk Drink",
+      "name": "Buonlatte",
+      "description": [
+        "Crei una bevanda gustosa che cura le ferite tue o di un alleato. Chi la riceve recupera 2d6 + MOVE punti ferita."
+      ],
+      "higherLevels": "Il dado di questa mossa diventa 3d6 al livello 5, 5d6 al livello 10 e 8d6 al livello 17."
+    },
+    "mimic": {
+      "sourceName": "Mimic",
+      "name": "Mimica",
+      "description": [
+        "Copi i movimenti di un'altra creatura, apprendendone il modo di combattere. Quando la usi, questa mossa viene temporaneamente sostituita da una mossa del bersaglio a tua scelta. Il bersaglio può essere un alleato. Dopo aver sottratto un PP per usare questa mossa, la mossa sostitutiva conserva i PP rimanenti di Mimica. Per la durata, l'utilizzatore può scegliere qualsiasi mossa del bersaglio da copiare."
+      ],
+      "higherLevels": null
+    },
+    "mind-blown": {
+      "sourceName": "Mind Blown",
+      "name": "Sbalorditesta",
+      "description": [
+        "Riempi la testa di fuoco rovente, facendola esplodere intorno a te. Costringi tutte le creature entro 15 piedi da te a effettuare un tiro salvezza su DES contro la tua CD della mossa, subendo 4d6 + MOVE danni di tipo Fuoco se lo falliscono, o la metà dei danni se lo superano. Dopo aver attivato questa mossa, subisci una quantità di danni senza tipo pari ai danni completi che avresti subito fallendo il tiro salvezza."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 5d6 al livello 5, 6d8 al livello 10 e 6d12 al livello 17."
+    },
+    "mind-reader": {
+      "sourceName": "Mind Reader",
+      "name": "Leggimente",
+      "description": [
+        "Percepisci le intenzioni e i movimenti di una creatura intorno a te. Quando attivi questa mossa, un singolo tiro per colpire effettuato nel tuo turno successivo colpisce automaticamente. Puoi comunque tirare per verificare un colpo critico o un effetto dovuto a un risultato elevato. La mossa non influenza tecniche a colpo singolo come Abisso, Ghigliottina e simili."
+      ],
+      "higherLevels": null
+    },
+    "minimize": {
+      "sourceName": "Minimize",
+      "name": "Minimizzato",
+      "description": [
+        "Appari più piccolo alle altre creature, aumentando la tua capacità di schivare. Per la durata, ottieni un ulteriore +2 alla CA."
+      ],
+      "higherLevels": null
+    },
+    "miracle-eye": {
+      "sourceName": "Miracle Eye",
+      "name": "Miracolvista",
+      "description": [
+        "Lampi con gli occhi contro il bersaglio, stordendolo brevemente e riducendone le difese. Quando attivi questa mossa, scegli un bersaglio a gittata e costringilo a effettuare un tiro salvezza su SAG contro la tua CD della mossa. Se lo fallisce, tutti i modificatori alla sua CA vengono azzerati e, se è di tipo Buio o Spettro, perde le proprie immunità per la durata. Se, una volta persa l'immunità, il tipo secondario del bersaglio gli conferisce vulnerabilità o resistenza a un attacco di quel tipo, applica l'effetto del tipo secondario."
+      ],
+      "higherLevels": null
+    },
+    "mirror-coat": {
+      "sourceName": "Mirror Coat",
+      "name": "Specchiovelo",
+      "description": [
+        "Quando sei soggetto a un attacco a distanza, puoi tentare di ridurne i danni e rimandarne una parte all'attaccante a gittata. Usando questa reazione, riduci i danni di 1d6 + MOVE. Se la riduzione porta i danni sotto zero, l'attacco viene deviato e puoi effettuare un tiro per colpire a distanza per rispedirlo all'attaccante, infliggendo 1d6 + MOVE danni di tipo Psico."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 1d12 al livello 5, 2d8 al livello 10 e 4d6 al livello 17."
+    },
+    "mirror-move": {
+      "sourceName": "Mirror Move",
+      "name": "Speculmossa",
+      "description": [
+        "Imiti un bersaglio a gittata che puoi vedere. Quando attivi questa mossa, scegli un bersaglio a gittata ed esegui completamente la mossa usata più di recente dalla creatura, impiegando i tuoi punteggi di caratteristica, il tuo livello e i tuoi tipi per la CD del tiro salvezza, il tiro per colpire e i danni."
+      ],
+      "higherLevels": null
+    },
+    "mirror-shot": {
+      "sourceName": "Mirror Shot",
+      "name": "Cristalcolpo",
+      "description": [
+        "Proietti dal tuo corpo lucido un lampo di luce dannoso. Effettua un attacco a distanza contro una creatura, infliggendo 1d10 + MOVE danni di tipo Acciaio se colpisci. Se colpisci, il bersaglio deve effettuare un tiro salvezza su COS contro la tua CD della mossa. Se lo fallisce, ha svantaggio al prossimo tiro per colpire."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d8 al livello 5, 5d4 al livello 10 e 4d8 al livello 17."
+    },
+    "mist": {
+      "sourceName": "Mist",
+      "name": "Nebbia",
+      "description": [
+        "Una nebbia leggera avvolge un bersaglio, formando una barriera protettiva. Il bersaglio è immune ai cambiamenti negativi alle statistiche per la durata, ma gli effetti già attivi restano in vigore."
+      ],
+      "higherLevels": null
+    }
+  }
+}

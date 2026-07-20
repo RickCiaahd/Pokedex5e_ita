@@ -185,7 +185,8 @@ class PokemonAssetPaths {
       final canonicalName = _canonicalFormLabel(pokemon, choice.name);
       if (canonicalName.isEmpty ||
           _isBaseSpriteLabel(canonicalName) ||
-          _isGenderOnlyLabel(canonicalName)) {
+          _isGenderOnlyLabel(canonicalName) ||
+          _isDefaultFormChoice(pokemon, canonicalName)) {
         return;
       }
 
@@ -1086,6 +1087,30 @@ class PokemonAssetPaths {
     }
 
     return aliases;
+  }
+
+  static bool _isDefaultFormChoice(Pokemon pokemon, String label) {
+    final normalized = _webSlug(
+      _stripGenericFormWords(_removePokemonName(label, pokemon.name)),
+    );
+    const defaultForms = <String, Set<String>>{
+      'Deoxys': {'normal'},
+      'Castform': {'normal'},
+      'Cherrim': {'overcast'},
+      'Darmanitan': {'standard'},
+      'Meloetta': {'aria'},
+      'Aegislash': {'blade'},
+      'Wishiwashi': {'solo'},
+      'Minior': {'meteor'},
+      'Mimikyu': {'disguised'},
+      'Eiscue': {'ice-face'},
+      'Morpeko': {'full-belly'},
+      'Palafin': {'zero'},
+      'Zygarde': {'50'},
+      'Ogerpon': {'teal-mask'},
+      'Terapagos': {'normal'},
+    };
+    return defaultForms[pokemon.name]?.contains(normalized) ?? false;
   }
 
   static bool _isBaseSpriteLabel(String label) {

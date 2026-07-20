@@ -94,6 +94,7 @@ class BattlePokemonState {
     required this.identityKey,
     required this.remainingPp,
     required this.volatileStatuses,
+    this.battleFormName,
   });
 
   final int slotIndex;
@@ -101,6 +102,7 @@ class BattlePokemonState {
   final String identityKey;
   final Map<String, int> remainingPp;
   final Set<String> volatileStatuses;
+  final String? battleFormName;
 
   bool matches(TeamSlot slot) {
     return slot.slotIndex == slotIndex &&
@@ -115,6 +117,7 @@ class BattlePokemonState {
       'identityKey': identityKey,
       'remainingPp': remainingPp,
       'volatileStatuses': volatileStatuses.toList(growable: false),
+      'battleFormName': battleFormName,
     };
   }
 
@@ -134,6 +137,7 @@ class BattlePokemonState {
           json['volatileStatuses'] ?? const [],
         ).map((value) => value.toString()),
       ),
+      battleFormName: json['battleFormName']?.toString(),
     );
   }
 

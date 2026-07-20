@@ -20,6 +20,7 @@ import '../../repositories/pokemon_repository.dart';
 import '../../repositories/profile_repository.dart';
 import '../../repositories/team_repository.dart';
 import '../../services/battle_environment_service.dart';
+import '../../services/battle_form_change_service.dart';
 import '../../services/battle_quick_item_service.dart';
 import '../../services/battle_status_rules.dart';
 import '../../services/trainer_path_passive_service.dart';
@@ -53,6 +54,7 @@ class _BattleScreenState extends State<BattleScreen> {
   late Future<_BattleData> _future;
   final Map<int, Map<String, int>> _remainingPpBySlot = {};
   final Map<int, Set<String>> _volatileStatusesBySlot = {};
+  final Map<int, String> _battleFormBySlot = {};
   final List<BattleInitiativeEntry> _initiativeEntries = [];
 
   BattleStatusMoment _statusMoment = BattleStatusMoment.turnStart;
@@ -88,9 +90,14 @@ class _BattleScreenState extends State<BattleScreen> {
       if (pokemonId == null) continue;
       final pokemon = pokemonById[pokemonId];
       if (pokemon == null) continue;
-      referencesByPokemon
-          .putIfAbsent(pokemonId, () => <String>{'Struggle'})
-          .addAll(_movesForSlot(slot, pokemon));
+      final references = referencesByPokemon.putIfAbsent(
+        pokemonId,
+        () => <String>{'Struggle'},
+      );
+      references.addAll(_movesForSlot(slot, pokemon));
+      for (final definition in pokemon.formDefinitions) {
+        references.addAll(_movesForSlot(slot, definition.pokemon));
+      }
     }
     final moves = await _moveRepository.getMovesByPokemon(referencesByPokemon);
 
@@ -120,6 +127,7 @@ class _BattleScreenState extends State<BattleScreen> {
 
     _remainingPpBySlot.clear();
     _volatileStatusesBySlot.clear();
+    _battleFormBySlot.clear();
     _initiativeEntries.clear();
     _round = 1;
     _turnIndex = 0;
@@ -145,6 +153,10 @@ class _BattleScreenState extends State<BattleScreen> {
         _volatileStatusesBySlot[matchingSlot.slotIndex] = {
           ...state.volatileStatuses,
         };
+        final battleFormName = state.battleFormName;
+        if (battleFormName != null && battleFormName.trim().isNotEmpty) {
+          _battleFormBySlot[matchingSlot.slotIndex] = battleFormName;
+        }
       }
 
       final savedActiveSlot = session.activeSlotIndex;
@@ -177,6 +189,7 @@ class _BattleScreenState extends State<BattleScreen> {
         identityKey: BattlePokemonState.identityKeyFor(slot),
         remainingPp: {...?_remainingPpBySlot[slot.slotIndex]},
         volatileStatuses: {...?_volatileStatusesBySlot[slot.slotIndex]},
+        battleFormName: _battleFormBySlot[slot.slotIndex],
       );
     }
 
@@ -206,13 +219,62 @@ class _BattleScreenState extends State<BattleScreen> {
     return data.occupiedSlots.first;
   }
 
+  String? _effectiveFormName(TeamSlot slot) {
+    if (_battleFormBySlot.containsKey(slot.slotIndex)) {
+      return _battleFormBySlot[slot.slotIndex];
+    }
+    return slot.formName;
+  }
+
   Pokemon? _pokemonForSlot(_BattleData data, TeamSlot slot) {
     final pokemonId = slot.pokemonId;
     if (pokemonId == null) return null;
     return data.pokemonById[pokemonId]?.resolveVariant(
-      formName: slot.formName,
+      formName: _effectiveFormName(slot),
       gender: slot.gender,
     );
+  }
+
+  Future<void> _openBattleFormPicker(_BattleData data, TeamSlot slot) async {
+    final pokemonId = slot.pokemonId;
+    if (pokemonId == null) return;
+    final basePokemon = data.pokemonById[pokemonId];
+    if (basePokemon == null || !BattleFormChangeService.supports(basePokemon)) {
+      return;
+    }
+
+    final allChoices = await PokemonAssetPaths.formChoices(basePokemon);
+    final choices = allChoices
+        .where(
+          (choice) => BattleFormChangeService.isAllowedChoice(
+            pokemon: basePokemon,
+            slot: slot,
+            formName: choice.name,
+          ),
+        )
+        .toList(growable: false);
+    if (!mounted || choices.length <= 1) return;
+
+    final selected = await showModalBottomSheet<String>(
+      context: context,
+      useSafeArea: true,
+      showDragHandle: true,
+      isScrollControlled: true,
+      builder: (_) => _BattleFormPickerSheet(
+        pokemon: basePokemon,
+        slot: slot,
+        currentFormName: _effectiveFormName(slot),
+        choices: choices,
+      ),
+    );
+    if (!mounted || selected == null) return;
+
+    setState(() {
+      _battleFormBySlot[slot.slotIndex] = selected;
+      _message =
+          '${_displayName(slot, basePokemon)} assume la ${BattleFormChangeService.formLabel(basePokemon, selected)}.';
+    });
+    await _saveSession(data);
   }
 
   List<String> _movesForSlot(TeamSlot slot, Pokemon pokemon) {
@@ -934,6 +996,7 @@ class _BattleScreenState extends State<BattleScreen> {
     await _battleSessionRepository.deleteSession(data.profile.id);
     _remainingPpBySlot.clear();
     _volatileStatusesBySlot.clear();
+    _battleFormBySlot.clear();
     _initiativeEntries.clear();
     if (!mounted) return;
     Navigator.of(context).pop();
@@ -976,7 +1039,12 @@ class _BattleScreenState extends State<BattleScreen> {
     return modifiers.isEmpty ? 0 : modifiers.last;
   }
 
-  String _moveStats(MoveData move, Pokemon pokemon, TeamSlot slot) {
+  String _moveStats(
+    MoveData move,
+    Pokemon pokemon,
+    TeamSlot slot,
+    String? formName,
+  ) {
     final level = _levelForSlot(slot);
     final moveModifier = _bestMoveModifier(move, pokemon, slot);
     final proficiency = _proficiency(level);
@@ -1008,6 +1076,10 @@ class _BattleScreenState extends State<BattleScreen> {
       move,
       _environment,
     );
+    final formAttackBonus = BattleFormChangeService.attackRollBonus(
+      pokemon,
+      formName,
+    );
     final stab = TrainerPathPassiveService.stabEffect(
       profile: _activeProfile,
       pokemon: pokemon,
@@ -1020,7 +1092,11 @@ class _BattleScreenState extends State<BattleScreen> {
 
     if (move.isAttack) {
       final attackBonus =
-          moveModifier + proficiency + attackPathBonus + terrainAttackBonus;
+          moveModifier +
+          proficiency +
+          attackPathBonus +
+          terrainAttackBonus +
+          formAttackBonus;
       parts.add('AB ${attackBonus >= 0 ? '+' : ''}$attackBonus');
     }
     if (move.save != null) parts.add('CD ${8 + proficiency + moveModifier}');
@@ -1097,7 +1173,10 @@ class _BattleScreenState extends State<BattleScreen> {
             }
 
             final activeSlot = _activeSlotFor(data)!;
+            final basePokemon = data.pokemonById[activeSlot.pokemonId!]!;
+            final effectiveFormName = _effectiveFormName(activeSlot);
             final pokemon = _pokemonForSlot(data, activeSlot)!;
+            final canChangeForm = BattleFormChangeService.supports(basePokemon);
             final moveReferences = _movesForSlot(activeSlot, pokemon);
             final noPpLeft = _hasNoPpLeft(
               activeSlot,
@@ -1120,8 +1199,14 @@ class _BattleScreenState extends State<BattleScreen> {
               pokemon,
               activeSlot,
             );
-            final effectiveArmorClass =
+            final formArmorClass =
                 baseArmorClass +
+                BattleFormChangeService.armorClassBonus(
+                  basePokemon,
+                  effectiveFormName,
+                );
+            final effectiveArmorClass =
+                formArmorClass +
                 BattleEnvironmentService.armorClassBonus(
                   pokemon: pokemon,
                   slot: activeSlot,
@@ -1146,6 +1231,7 @@ class _BattleScreenState extends State<BattleScreen> {
                     slots: data.occupiedSlots,
                     activeSlot: activeSlot,
                     pokemonForSlot: (slot) => _pokemonForSlot(data, slot),
+                    formNameForSlot: _effectiveFormName,
                     onSelected: (slotIndex) {
                       setState(() {
                         _activeSlotIndex = slotIndex;
@@ -1198,10 +1284,23 @@ class _BattleScreenState extends State<BattleScreen> {
                   _ActivePokemonCard(
                     pokemon: pokemon,
                     slot: activeSlot,
+                    formName: effectiveFormName,
+                    formLabel: canChangeForm
+                        ? BattleFormChangeService.formLabel(
+                            basePokemon,
+                            effectiveFormName,
+                          )
+                        : null,
+                    formNote: canChangeForm
+                        ? BattleFormChangeService.effectNote(
+                            basePokemon,
+                            effectiveFormName,
+                          )
+                        : null,
                     heldItem: heldItem,
                     displayName: _displayName(activeSlot, pokemon),
                     level: _levelForSlot(activeSlot),
-                    baseArmorClass: baseArmorClass,
+                    baseArmorClass: formArmorClass,
                     effectiveArmorClass: effectiveArmorClass,
                     currentHp: _currentHpFor(activeSlot, pokemon),
                     maxHp: _maxHpFor(pokemon, activeSlot),
@@ -1219,6 +1318,9 @@ class _BattleScreenState extends State<BattleScreen> {
                         ? () => _useHeldBerry(data, activeSlot)
                         : null,
                     onOpenBag: () => _openQuickBag(data, activeSlot),
+                    onChangeForm: canChangeForm
+                        ? () => _openBattleFormPicker(data, activeSlot)
+                        : null,
                   ),
                   if (passiveNotes.isNotEmpty) ...[
                     const SizedBox(height: 12),
@@ -1268,6 +1370,7 @@ class _BattleScreenState extends State<BattleScreen> {
                               moveForActive(reference)!,
                               pokemon,
                               activeSlot,
+                              effectiveFormName,
                             ),
                       onUse: () => _changePp(
                         data,
@@ -1586,12 +1689,14 @@ class _PartyBar extends StatelessWidget {
     required this.slots,
     required this.activeSlot,
     required this.pokemonForSlot,
+    required this.formNameForSlot,
     required this.onSelected,
   });
 
   final List<TeamSlot> slots;
   final TeamSlot activeSlot;
   final Pokemon? Function(TeamSlot slot) pokemonForSlot;
+  final String? Function(TeamSlot slot) formNameForSlot;
   final ValueChanged<int> onSelected;
 
   @override
@@ -1617,6 +1722,7 @@ class _PartyBar extends StatelessWidget {
                       _PartyPokemonButton(
                         slot: slot,
                         pokemon: pokemonForSlot(slot),
+                        formName: formNameForSlot(slot),
                         selected: slot.slotIndex == activeSlot.slotIndex,
                         onTap: () => onSelected(slot.slotIndex),
                       ),
@@ -1635,12 +1741,14 @@ class _PartyPokemonButton extends StatelessWidget {
   const _PartyPokemonButton({
     required this.slot,
     required this.pokemon,
+    required this.formName,
     required this.selected,
     required this.onTap,
   });
 
   final TeamSlot slot;
   final Pokemon? pokemon;
+  final String? formName;
   final bool selected;
   final VoidCallback onTap;
 
@@ -1679,7 +1787,7 @@ class _PartyPokemonButton extends StatelessWidget {
                 PokemonAssetImage(
                   pokemon: pokemon,
                   size: 40,
-                  formName: slot.formName,
+                  formName: formName,
                   gender: slot.gender,
                   isShiny: slot.isShiny,
                 ),
@@ -1929,10 +2037,83 @@ class _InitiativeEntryDialogState extends State<_InitiativeEntryDialog> {
   }
 }
 
+class _BattleFormPickerSheet extends StatelessWidget {
+  const _BattleFormPickerSheet({
+    required this.pokemon,
+    required this.slot,
+    required this.currentFormName,
+    required this.choices,
+  });
+
+  final Pokemon pokemon;
+  final TeamSlot slot;
+  final String? currentFormName;
+  final List<PokemonFormChoice> choices;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: MediaQuery.sizeOf(context).height * 0.78,
+      child: ListView(
+        padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
+        children: [
+          Text(
+            'Cambia forma in battaglia',
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
+          ),
+          const SizedBox(height: 6),
+          Text(BattleFormChangeService.changeHint(pokemon)),
+          const SizedBox(height: 12),
+          for (final choice in choices)
+            Card(
+              child: ListTile(
+                leading: PokemonAssetImage(
+                  pokemon: pokemon,
+                  formName: choice.name,
+                  gender: slot.gender,
+                  isShiny: slot.isShiny,
+                  size: 54,
+                ),
+                title: Text(
+                  BattleFormChangeService.formLabel(pokemon, choice.name),
+                  style: const TextStyle(fontWeight: FontWeight.w800),
+                ),
+                subtitle:
+                    BattleFormChangeService.effectNote(pokemon, choice.name) ==
+                        null
+                    ? null
+                    : Text(
+                        BattleFormChangeService.effectNote(
+                          pokemon,
+                          choice.name,
+                        )!,
+                      ),
+                trailing:
+                    BattleFormChangeService.sameForm(
+                      pokemon,
+                      currentFormName,
+                      choice.name,
+                    )
+                    ? const Icon(Icons.check_circle)
+                    : const Icon(Icons.radio_button_unchecked),
+                onTap: () => Navigator.of(context).pop(choice.name),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
 class _ActivePokemonCard extends StatelessWidget {
   const _ActivePokemonCard({
     required this.pokemon,
     required this.slot,
+    required this.formName,
+    required this.formLabel,
+    required this.formNote,
     required this.heldItem,
     required this.displayName,
     required this.level,
@@ -1952,10 +2133,14 @@ class _ActivePokemonCard extends StatelessWidget {
     required this.onStatus,
     required this.onUseHeldBerry,
     required this.onOpenBag,
+    required this.onChangeForm,
   });
 
   final Pokemon pokemon;
   final TeamSlot slot;
+  final String? formName;
+  final String? formLabel;
+  final String? formNote;
   final BagItem? heldItem;
   final String displayName;
   final int level;
@@ -1975,6 +2160,7 @@ class _ActivePokemonCard extends StatelessWidget {
   final VoidCallback onStatus;
   final VoidCallback? onUseHeldBerry;
   final VoidCallback onOpenBag;
+  final VoidCallback? onChangeForm;
 
   @override
   Widget build(BuildContext context) {
@@ -1994,7 +2180,7 @@ class _ActivePokemonCard extends StatelessWidget {
                   pokemon: pokemon,
                   useLargeArtwork: true,
                   size: 96,
-                  formName: slot.formName,
+                  formName: formName,
                   gender: slot.gender,
                   isShiny: slot.isShiny,
                 ),
@@ -2039,6 +2225,29 @@ class _ActivePokemonCard extends StatelessWidget {
                 ),
               ],
             ),
+            if (onChangeForm != null) ...[
+              const SizedBox(height: 10),
+              Wrap(
+                spacing: 8,
+                runSpacing: 6,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  Chip(
+                    avatar: const Icon(Icons.change_circle_outlined, size: 18),
+                    label: Text(formLabel ?? 'Forma'),
+                  ),
+                  OutlinedButton.icon(
+                    onPressed: onChangeForm,
+                    icon: const Icon(Icons.swap_horiz),
+                    label: const Text('CAMBIA FORMA'),
+                  ),
+                ],
+              ),
+              if (formNote != null) ...[
+                const SizedBox(height: 6),
+                Text(formNote!, style: Theme.of(context).textTheme.bodySmall),
+              ],
+            ],
             const SizedBox(height: 12),
             InkWell(
               onTap: onEditHp,

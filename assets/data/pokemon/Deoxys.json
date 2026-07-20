@@ -106,5 +106,28 @@
     "Dexterity",
     "Constitution"
   ],
-  "size": "Medium"
+  "size": "Medium",
+  "variant_data": {
+    "create_mode": "default",
+    "default": "Normal Forme",
+    "permanent": false,
+    "variants": {
+      "Normal Forme": {
+        "display": "Deoxys Normal Forme",
+        "original_species": "Deoxys Normal Forme"
+      },
+      "Attack Forme": {
+        "display": "Deoxys Attack Forme",
+        "original_species": "Deoxys Attack Forme"
+      },
+      "Defense Forme": {
+        "display": "Deoxys Defense Forme",
+        "original_species": "Deoxys Defense Forme"
+      },
+      "Speed Forme": {
+        "display": "Deoxys Speed Forme",
+        "original_species": "Deoxys Speed Forme"
+      }
+    }
+  }
 }

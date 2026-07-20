@@ -1,0 +1,75 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/items.json",
+  "nameSources": [
+    "https://wiki.pokemoncentral.it/Elenco_degli_strumenti_in_altre_lingue",
+    "https://wiki.pokemoncentral.it/Strumenti_tenuti",
+    "https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/item_names.csv"
+  ],
+  "type": "held item",
+  "range": {
+    "start": 195,
+    "end": 204
+  },
+  "localizedCount": 10,
+  "items": {
+    "shed-shell": {
+      "sourceName": "Shed Shell",
+      "name": "Disfoguscio",
+      "description": []
+    },
+    "shell-bell": {
+      "sourceName": "Shell Bell",
+      "name": "Conchinella",
+      "description": [
+        "Quando il possessore usa una mossa che infligge danni ad almeno una creatura, recupera HP pari al proprio bonus di competenza."
+      ]
+    },
+    "smoke-ball": {
+      "sourceName": "Smoke Ball",
+      "name": "Palla Fumo",
+      "description": [
+        "Garantisce il successo di un tentativo di fuga da una lotta contro Pokémon selvatici."
+      ]
+    },
+    "snowball": {
+      "sourceName": "Snowball",
+      "name": "Palla di neve",
+      "description": []
+    },
+    "sticky-barb": {
+      "sourceName": "Sticky Barb",
+      "name": "Vischiopunta",
+      "description": []
+    },
+    "throat-spray": {
+      "sourceName": "Throat Spray",
+      "name": "Spray gola",
+      "description": []
+    },
+    "utility-umbrella": {
+      "sourceName": "Utility Umbrella",
+      "name": "Superombrello",
+      "description": []
+    },
+    "weakness-policy": {
+      "sourceName": "Weakness Policy",
+      "name": "Vulneropolizza",
+      "description": []
+    },
+    "wide-lens": {
+      "sourceName": "Wide Lens",
+      "name": "Grandelente",
+      "description": [
+        "Il possessore ottiene +1 ai tiri per colpire."
+      ]
+    },
+    "wise-glasses": {
+      "sourceName": "Wise Glasses",
+      "name": "Saviocchiali",
+      "description": [
+        "Il possessore aggiunge il proprio bonus di competenza ai danni che infligge con gli attacchi a distanza, una volta per mossa."
+      ]
+    }
+  }
+}

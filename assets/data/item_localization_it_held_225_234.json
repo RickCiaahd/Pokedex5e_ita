@@ -1,0 +1,82 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/items.json",
+  "nameSources": [
+    "https://wiki.pokemoncentral.it/Elenco_degli_strumenti_in_altre_lingue",
+    "https://wiki.pokemoncentral.it/Strumenti_tenuti",
+    "https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/item_names.csv"
+  ],
+  "type": "held item",
+  "range": {
+    "start": 225,
+    "end": 234
+  },
+  "localizedCount": 10,
+  "items": {
+    "mental-herb": {
+      "sourceName": "Mental Herb",
+      "name": "Mentalerba",
+      "description": []
+    },
+    "mirror-herb": {
+      "sourceName": "Mirror Herb",
+      "name": "Foglia carbone",
+      "description": [
+        "Durante un combattimento, come reazione quando vede un altro Pokémon aumentare uno qualsiasi dei propri punteggi di caratteristica, il modificatore del tiro per colpire, l'AC o il modificatore dei tiri salvezza, il Pokémon che tiene questa foglia può consumarla per copiare su di sé l'effetto. Gli attributi aumentati tornano normali alla fine del combattimento o quando il Pokémon viene sostituito.",
+        "Durante un riposo lungo, due Pokémon possono condividere e consumare una Foglia carbone. Se il primo Pokémon conosce una mossa che il secondo può imparare come Mossa Uovo, il secondo può sostituire una delle proprie mosse con quella Mossa Uovo, anche se non condividono un Gruppo Uova o hanno lo stesso sesso."
+      ]
+    },
+    "power-herb": {
+      "sourceName": "Power Herb",
+      "name": "Vigorerba",
+      "description": []
+    },
+    "white-herb": {
+      "sourceName": "White Herb",
+      "name": "Erbachiara",
+      "description": []
+    },
+    "choice-band": {
+      "sourceName": "Choice Band",
+      "name": "Bendascelta",
+      "description": [
+        "Raddoppia il modificatore MOVE del possessore ai tiri per i danni. Quando il possessore usa una mossa, fino alla fine del proprio turno successivo non può attivare una mossa diversa da quella appena usata."
+      ]
+    },
+    "choice-scarf": {
+      "sourceName": "Choice Scarf",
+      "name": "Stolascelta",
+      "description": [
+        "Dopo aver eseguito una mossa, fino alla fine del proprio turno successivo il possessore ottiene 10ft di velocità e gli attacchi di opportunità contro di lui hanno svantaggio. Fino alla fine del proprio turno successivo non può attivare una mossa diversa da quella appena usata."
+      ]
+    },
+    "choice-specs": {
+      "sourceName": "Choice Specs",
+      "name": "Lentiscelta",
+      "description": [
+        "Raddoppia il modificatore Move Power del possessore ai tiri per colpire e ai Save DCs. Quando il possessore usa una mossa, fino alla fine del proprio turno successivo non può attivare una mossa diversa da quella appena usata."
+      ]
+    },
+    "black-belt": {
+      "sourceName": "Black Belt",
+      "name": "Cinturanera",
+      "description": [
+        "Il possessore aggiunge il proprio bonus di competenza ai danni di tipo Lotta che infligge, una volta per mossa."
+      ]
+    },
+    "black-glasses": {
+      "sourceName": "Black Glasses",
+      "name": "Occhialineri",
+      "description": [
+        "Il possessore aggiunge il proprio bonus di competenza ai danni di tipo Buio che infligge, una volta per mossa."
+      ]
+    },
+    "charcoal": {
+      "sourceName": "Charcoal",
+      "name": "Carbonella",
+      "description": [
+        "Il possessore aggiunge il proprio bonus di competenza ai danni di tipo Fuoco che infligge, una volta per mossa."
+      ]
+    }
+  }
+}

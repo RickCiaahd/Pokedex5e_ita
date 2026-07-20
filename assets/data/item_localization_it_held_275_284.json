@@ -1,0 +1,87 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/items.json",
+  "nameSources": [
+    "https://wiki.pokemoncentral.it/Elenco_degli_strumenti_in_altre_lingue",
+    "https://wiki.pokemoncentral.it/Strumenti_tenuti",
+    "https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/item_names.csv"
+  ],
+  "type": "held item",
+  "range": {
+    "start": 275,
+    "end": 284
+  },
+  "localizedCount": 10,
+  "items": {
+    "icicle-plate": {
+      "sourceName": "Icicle Plate",
+      "name": "Lastragelo",
+      "description": [
+        "Permette ad Arceus di cambiare a volontà il proprio tipo e il tipo della mossa Judgment in Ghiaccio."
+      ]
+    },
+    "insect-plate": {
+      "sourceName": "Insect Plate",
+      "name": "Lastrabaco",
+      "description": [
+        "Permette ad Arceus di cambiare a volontà il proprio tipo e il tipo della mossa Judgment in Coleottero."
+      ]
+    },
+    "iron-plate": {
+      "sourceName": "Iron Plate",
+      "name": "Lastraferro",
+      "description": [
+        "Permette ad Arceus di cambiare a volontà il proprio tipo e il tipo della mossa Judgment in Acciaio."
+      ]
+    },
+    "meadow-plate": {
+      "sourceName": "Meadow Plate",
+      "name": "Lastraprato",
+      "description": [
+        "Permette ad Arceus di cambiare a volontà il proprio tipo e il tipo della mossa Judgment in Erba."
+      ]
+    },
+    "mind-plate": {
+      "sourceName": "Mind Plate",
+      "name": "Lastramente",
+      "description": [
+        "Permette ad Arceus di cambiare a volontà il proprio tipo e il tipo della mossa Judgment in Psico."
+      ]
+    },
+    "pixie-plate": {
+      "sourceName": "Pixie Plate",
+      "name": "Lastraspiritello",
+      "description": [
+        "Permette ad Arceus di cambiare a volontà il proprio tipo e il tipo della mossa Judgment in Folletto."
+      ]
+    },
+    "sky-plate": {
+      "sourceName": "Sky Plate",
+      "name": "Lastracielo",
+      "description": [
+        "Permette ad Arceus di cambiare a volontà il proprio tipo e il tipo della mossa Judgment in Volante."
+      ]
+    },
+    "splash-plate": {
+      "sourceName": "Splash Plate",
+      "name": "Lastraidro",
+      "description": [
+        "Permette ad Arceus di cambiare a volontà il proprio tipo e il tipo della mossa Judgment in Acqua."
+      ]
+    },
+    "spooky-plate": {
+      "sourceName": "Spooky Plate",
+      "name": "Lastratetra",
+      "description": [
+        "Permette ad Arceus di cambiare a volontà il proprio tipo e il tipo della mossa Judgment in Spettro."
+      ]
+    },
+    "stone-plate": {
+      "sourceName": "Stone Plate",
+      "name": "Lastrapietra",
+      "description": [
+        "Permette ad Arceus di cambiare a volontà il proprio tipo e il tipo della mossa Judgment in Roccia."
+      ]
+    }
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/items.json",
+  "nameSources": [
+    "https://wiki.pokemoncentral.it/Elenco_degli_strumenti_in_altre_lingue",
+    "https://wiki.pokemoncentral.it/Strumenti_tenuti",
+    "https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/item_names.csv"
+  ],
+  "type": "held item",
+  "range": {
+    "start": 155,
+    "end": 164
+  },
+  "localizedCount": 10,
+  "items": {
+    "ability-shield": {
+      "sourceName": "Ability Shield",
+      "name": "Scudo abilità",
+      "description": []
+    },
+    "absorb-bulb": {
+      "sourceName": "Absorb Bulb",
+      "name": "Bulbo",
+      "description": []
+    },
+    "air-balloon": {
+      "sourceName": "Air Balloon",
+      "name": "Palloncino",
+      "description": [
+        "Il possessore è immune ai danni di tipo Terra. Quando il possessore subisce danni, lo strumento scoppia e non conferisce più il suo beneficio.",
+        "Il Palloncino può essere riparato gratuitamente durante un riposo breve."
+      ]
+    },
+    "assault-vest": {
+      "sourceName": "Assault Vest",
+      "name": "Corpetto Assalto",
+      "description": [
+        "Il possessore ottiene +1 alla propria AC, ma può usare soltanto mosse che infliggono danni."
+      ]
+    },
+    "big-root": {
+      "sourceName": "Big Root",
+      "name": "Granradice",
+      "description": [
+        "Le mosse che infliggono contemporaneamente danni a un bersaglio e curano il possessore gli fanno recuperare 1d12 HP aggiuntivi."
+      ]
+    },
+    "binding-band": {
+      "sourceName": "Binding Band",
+      "name": "Legafascia",
+      "description": []
+    },
+    "black-sludge": {
+      "sourceName": "Black Sludge",
+      "name": "Fangopece",
+      "description": [
+        "Questo strumento possiede 10 cariche. Se il possessore è un Pokémon di tipo Veleno, può usare un'azione bonus per consumare una carica e recuperare HP pari al proprio bonus di competenza. Lo strumento recupera tutte le cariche ogni giorno all'alba.",
+        "Se il possessore non è un Pokémon di tipo Veleno, subisce 1d6 danni da veleno alla fine di ciascun proprio turno."
+      ]
+    },
+    "blunder-policy": {
+      "sourceName": "Blunder Policy",
+      "name": "Fiascopolizza",
+      "description": []
+    },
+    "booster-energy": {
+      "sourceName": "Booster Energy",
+      "name": "Capsula energetica",
+      "description": []
+    },
+    "bright-powder": {
+      "sourceName": "Bright Powder",
+      "name": "Luminpolvere",
+      "description": []
+    }
+  }
+}

@@ -6,11 +6,24 @@ import 'package:pokedex_5e_ita/models/bag_item.dart';
 import 'package:pokedex_5e_ita/repositories/item_localization_repository.dart';
 import 'package:pokedex_5e_ita/repositories/item_repository.dart';
 
+import 'fixtures/item_held_names_it_155_194.dart';
+import 'fixtures/item_held_names_it_195_234.dart';
+import 'fixtures/item_held_names_it_235_274.dart';
+import 'fixtures/item_held_names_it_275_317.dart';
+
 const _allowedTypes = {
   'pokeball',
   'medicine',
   'berry',
   'evolution',
+  'held item',
+};
+
+const _expectedHeldItemNames = <String, String>{
+  ...heldItemNames155To194,
+  ...heldItemNames195To234,
+  ...heldItemNames235To274,
+  ...heldItemNames275To317,
 };
 
 const _expectedEvolutionNames = <String, String>{
@@ -60,7 +73,7 @@ void main() {
 
   setUp(ItemLocalizationRepository.clearCache);
 
-  test('i cataloghi italiani coprono i quattro blocchi completati', () async {
+  test('i cataloghi italiani coprono i cinque blocchi completati', () async {
     final sourceItems = await _sourceItems();
     final sourceById = {
       for (final item in sourceItems) item['id'].toString(): item,
@@ -133,30 +146,48 @@ void main() {
   });
 
   test('i 39 oggetti evolutivi usano i nomi verificati', () async {
-    final document = Map<String, dynamic>.from(
-      jsonDecode(
-        await rootBundle.loadString(
-          'assets/data/item_localization_it_evolution_116_154.json',
-        ),
-      ),
+    final document = await _loadLocalizationDocument(
+      'assets/data/item_localization_it_evolution_116_154.json',
     );
-    final items = Map<String, dynamic>.from(document['items'] as Map);
-    final names = <String, String>{
-      for (final entry in items.entries)
-        entry.key: Map<String, dynamic>.from(entry.value as Map)['name']
-            .toString(),
-    };
+    final names = _localizedNames(document);
 
     expect(document['type'], 'evolution');
     expect(document['localizedCount'], 39);
     expect(names, _expectedEvolutionNames);
     expect(names['sun-stone'], 'Pietrasolare');
     expect(names['alola-stone'], 'Alola Stone');
-    expect(names['kings-rock'], 'Roccia di re');
     expect(names['metal-coat'], 'Metalcoperta');
     expect(names['sweet'], 'Bonbon');
-    expect(names['unremarkable-teacup'], 'Tazza dozzinale');
     expect(names['gimmighoul-coin'], 'Moneta di Gimmighoul');
+  });
+
+  test('i 163 strumenti da tenere usano i nomi verificati', () async {
+    final names = <String, String>{};
+    var declaredCount = 0;
+
+    for (final path in ItemLocalizationRepository.assetPaths.where(
+      (path) => path.contains('_held_'),
+    )) {
+      final document = await _loadLocalizationDocument(path);
+      expect(document['type'], 'held item', reason: path);
+      declaredCount += document['localizedCount'] as int;
+      names.addAll(_localizedNames(document));
+    }
+
+    expect(declaredCount, 163);
+    expect(names.length, 163);
+    expect(names, _expectedHeldItemNames);
+    expect(names['ability-shield'], 'Scudo abilità');
+    expect(names['assault-vest'], 'Corpetto Assalto');
+    expect(names['normalium-z'], 'Normium Z');
+    expect(names['mirror-herb'], 'Foglia carbone');
+    expect(names['fairy-feather'], 'Piuma fatata');
+    expect(names['Fist-plate'], 'Lastrapugno');
+    expect(names['gracidea-flower'], 'Gracidea');
+    expect(names['leek'], 'Porro');
+    expect(names['bug-memory-disc'], 'ROM Coleottero');
+    expect(names['blue-orb'], 'Gemma blu');
+    expect(names['megalite-stone'], 'Megalite Stone');
   });
 
   test('il repository localizza la UI e conserva i dati tecnici', () async {
@@ -185,14 +216,33 @@ void main() {
     expect(byId['potion']?.name, 'Pozione');
     expect(byId['cheri-berry']?.name, 'Baccaliegia');
     expect(byId['sun-stone']?.name, 'Pietrasolare');
-    expect(byId['sun-stone']?.technicalName, 'Sun Stone');
-    expect(byId['alola-stone']?.name, 'Alola Stone');
-    expect(byId['alola-stone']?.technicalName, 'Alola Stone');
-    expect(byId['gimmighoul-coin']?.name, 'Moneta di Gimmighoul');
-    expect(byId['gimmighoul-coin']?.technicalName, 'Gimmighoul Coin');
+    expect(byId['ability-shield']?.name, 'Scudo abilità');
+    expect(byId['ability-shield']?.technicalName, 'Ability Shield');
+    expect(byId['mirror-herb']?.name, 'Foglia carbone');
+    expect(byId['mirror-herb']?.technicalName, 'Mirror Herb');
+    expect(byId['bug-memory-disc']?.name, 'ROM Coleottero');
+    expect(byId['bug-memory-disc']?.technicalName, 'Bug Memory Disc');
+    expect(byId['blue-orb']?.name, 'Gemma blu');
+    expect(byId['blue-orb']?.technicalName, 'Blue Orb');
+    expect(byId['megalite-stone']?.name, 'Megalite Stone');
     expect(byId['backpack']?.name, 'Backpack');
     expect(byId['backpack']?.technicalName, 'Backpack');
   });
+}
+
+Future<Map<String, dynamic>> _loadLocalizationDocument(String path) async {
+  return Map<String, dynamic>.from(
+    jsonDecode(await rootBundle.loadString(path)),
+  );
+}
+
+Map<String, String> _localizedNames(Map<String, dynamic> document) {
+  final items = Map<String, dynamic>.from(document['items'] as Map);
+  return <String, String>{
+    for (final entry in items.entries)
+      entry.key:
+          Map<String, dynamic>.from(entry.value as Map)['name'].toString(),
+  };
 }
 
 Future<List<Map<String, dynamic>>> _sourceItems() async {

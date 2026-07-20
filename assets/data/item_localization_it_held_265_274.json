@@ -1,0 +1,77 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/items.json",
+  "nameSources": [
+    "https://wiki.pokemoncentral.it/Elenco_degli_strumenti_in_altre_lingue",
+    "https://wiki.pokemoncentral.it/Strumenti_tenuti",
+    "https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/item_names.csv"
+  ],
+  "type": "held item",
+  "range": {
+    "start": 265,
+    "end": 274
+  },
+  "localizedCount": 10,
+  "items": {
+    "terrain-extender": {
+      "sourceName": "Terrain Extender",
+      "name": "Fissacampo",
+      "description": []
+    },
+    "electric-seed": {
+      "sourceName": "Electric Seed",
+      "name": "Elettroseme",
+      "description": []
+    },
+    "grassy-seed": {
+      "sourceName": "Grassy Seed",
+      "name": "Erbaseme",
+      "description": []
+    },
+    "misty-seed": {
+      "sourceName": "Misty Seed",
+      "name": "Nebbiaseme",
+      "description": []
+    },
+    "psychic-seed": {
+      "sourceName": "Psychic Seed",
+      "name": "Psicoseme",
+      "description": []
+    },
+    "draco-plate": {
+      "sourceName": "Draco Plate",
+      "name": "Lastradrakon",
+      "description": [
+        "Permette ad Arceus di cambiare a volontà il proprio tipo e il tipo della mossa Judgment in Drago."
+      ]
+    },
+    "dread-plate": {
+      "sourceName": "Dread Plate",
+      "name": "Lastratimore",
+      "description": [
+        "Permette ad Arceus di cambiare a volontà il proprio tipo e il tipo della mossa Judgment in Buio."
+      ]
+    },
+    "earth-plate": {
+      "sourceName": "Earth Plate",
+      "name": "Lastrageo",
+      "description": [
+        "Permette ad Arceus di cambiare a volontà il proprio tipo e il tipo della mossa Judgment in Terra."
+      ]
+    },
+    "Fist-plate": {
+      "sourceName": "Fist Plate",
+      "name": "Lastrapugno",
+      "description": [
+        "Permette ad Arceus di cambiare a volontà il proprio tipo e il tipo della mossa Judgment in Lotta."
+      ]
+    },
+    "flame-plate": {
+      "sourceName": "Flame Plate",
+      "name": "Lastrarogo",
+      "description": [
+        "Permette ad Arceus di cambiare a volontà il proprio tipo e il tipo della mossa Judgment in Fuoco."
+      ]
+    }
+  }
+}

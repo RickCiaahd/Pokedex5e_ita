@@ -1,0 +1,87 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/items.json",
+  "nameSources": [
+    "https://wiki.pokemoncentral.it/Elenco_degli_strumenti_in_altre_lingue",
+    "https://wiki.pokemoncentral.it/Strumenti_tenuti",
+    "https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/item_names.csv"
+  ],
+  "type": "held item",
+  "range": {
+    "start": 215,
+    "end": 224
+  },
+  "localizedCount": 10,
+  "items": {
+    "Steelium-z": {
+      "sourceName": "Steelium Z",
+      "name": "Metallium Z",
+      "description": [
+        "Permette al Pokémon che tiene questo strumento di usare una Mossa Z di tipo Acciaio. Possiede una carica e la recupera ogni giorno all'alba."
+      ]
+    },
+    "firium-z": {
+      "sourceName": "Firium Z",
+      "name": "Pirium Z",
+      "description": [
+        "Permette al Pokémon che tiene questo strumento di usare una Mossa Z di tipo Fuoco. Possiede una carica e la recupera ogni giorno all'alba."
+      ]
+    },
+    "waterium-z": {
+      "sourceName": "Waterium Z",
+      "name": "Idrium Z",
+      "description": [
+        "Permette al Pokémon che tiene questo strumento di usare una Mossa Z di tipo Acqua. Possiede una carica e la recupera ogni giorno all'alba."
+      ]
+    },
+    "grassium-z": {
+      "sourceName": "Grassium Z",
+      "name": "Herbium Z",
+      "description": [
+        "Permette al Pokémon che tiene questo strumento di usare una Mossa Z di tipo Erba. Possiede una carica e la recupera ogni giorno all'alba."
+      ]
+    },
+    "electrium-z": {
+      "sourceName": "Electrium Z",
+      "name": "Electrium Z",
+      "description": [
+        "Permette al Pokémon che tiene questo strumento di usare una Mossa Z di tipo Elettro. Possiede una carica e la recupera ogni giorno all'alba."
+      ]
+    },
+    "psychium-z": {
+      "sourceName": "Psychium Z",
+      "name": "Psichium Z",
+      "description": [
+        "Permette al Pokémon che tiene questo strumento di usare una Mossa Z di tipo Psico. Possiede una carica e la recupera ogni giorno all'alba."
+      ]
+    },
+    "icium-z": {
+      "sourceName": "Icium Z",
+      "name": "Glacium Z",
+      "description": [
+        "Permette al Pokémon che tiene questo strumento di usare una Mossa Z di tipo Ghiaccio. Possiede una carica e la recupera ogni giorno all'alba."
+      ]
+    },
+    "dragonium-z": {
+      "sourceName": "Draconium Z",
+      "name": "Draconium Z",
+      "description": [
+        "Permette al Pokémon che tiene questo strumento di usare una Mossa Z di tipo Drago. Possiede una carica e la recupera ogni giorno all'alba."
+      ]
+    },
+    "darkinium-z": {
+      "sourceName": "Darkinium Z",
+      "name": "Obscurium Z",
+      "description": [
+        "Permette al Pokémon che tiene questo strumento di usare una Mossa Z di tipo Buio. Possiede una carica e la recupera ogni giorno all'alba."
+      ]
+    },
+    "fairium-z": {
+      "sourceName": "Fairium Z",
+      "name": "Follectium Z",
+      "description": [
+        "Permette al Pokémon che tiene questo strumento di usare una Mossa Z di tipo Folletto. Possiede una carica e la recupera ogni giorno all'alba."
+      ]
+    }
+  }
+}

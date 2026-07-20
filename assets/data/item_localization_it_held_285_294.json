@@ -1,0 +1,89 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/items.json",
+  "nameSources": [
+    "https://wiki.pokemoncentral.it/Elenco_degli_strumenti_in_altre_lingue",
+    "https://wiki.pokemoncentral.it/Strumenti_tenuti",
+    "https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/item_names.csv"
+  ],
+  "type": "held item",
+  "range": {
+    "start": 285,
+    "end": 294
+  },
+  "localizedCount": 10,
+  "items": {
+    "toxic-plate": {
+      "sourceName": "Toxic Plate",
+      "name": "Lastrafiele",
+      "description": [
+        "Permette ad Arceus di cambiare a volontà il proprio tipo e il tipo della mossa Judgment in Veleno."
+      ]
+    },
+    "zap-plate": {
+      "sourceName": "Zap Plate",
+      "name": "Lastrasaetta",
+      "description": [
+        "Permette ad Arceus di cambiare a volontà il proprio tipo e il tipo della mossa Judgment in Elettro."
+      ]
+    },
+    "gracidea-flower": {
+      "sourceName": "Gracidea Flower",
+      "name": "Gracidea",
+      "description": [
+        "Quando è tenuta da Shaymin, Shaymin può usare la propria azione per passare dalla Forma Terra alla Forma Cielo e viceversa."
+      ]
+    },
+    "griseous-orb": {
+      "sourceName": "Griseous Orb",
+      "name": "Grigiosfera",
+      "description": [
+        "Quando è tenuta da Giratina, Giratina può usare la propria azione per passare dalla Forma Alterata alla Forma Originale e viceversa. Le sue mosse di tipo Drago e Spettro hanno STAB doppio."
+      ]
+    },
+    "leek": {
+      "sourceName": "Leek",
+      "name": "Porro",
+      "description": [
+        "Quando è tenuto da Farfetch'd o Sirfetch'd, l'intervallo di colpo critico del possessore aumenta di due.",
+        "Nella maggior parte dei casi, ciò significa che gli attacchi possono infliggere un colpo critico con un 18, 19 o 20 naturale. Per una mossa come Slash, che amplia già l'intervallo di colpo critico, i critici possono verificarsi con un 17, 18, 19 o 20 naturale."
+      ]
+    },
+    "light-ball": {
+      "sourceName": "Light Ball",
+      "name": "Elettropalla",
+      "description": [
+        "Quando è tenuta da Pikachu, aumenta di +1 il suo modificatore di potenza MOVE."
+      ]
+    },
+    "lucky-punch": {
+      "sourceName": "Lucky Punch",
+      "name": "Fortunpugno",
+      "description": [
+        "Quando è tenuto da Chansey, l'intervallo di colpo critico aumenta di uno.",
+        "Nella maggior parte dei casi, ciò significa che gli attacchi possono infliggere un colpo critico con un 19 o 20 naturale. Per una mossa come Slash, che amplia già l'intervallo di colpo critico, i critici possono verificarsi con un 18, 19 o 20 naturale."
+      ]
+    },
+    "metal-powder": {
+      "sourceName": "Metal Powder",
+      "name": "Metalpolvere",
+      "description": [
+        "Quando è tenuta da Ditto, il suo punteggio di CON aumenta di +3."
+      ]
+    },
+    "reveal-glass": {
+      "sourceName": "Reveal Glass",
+      "name": "Verispecchio",
+      "description": [
+        "Quando è tenuto da Thundurus, Landorus, Tornadus o Enamorus, il possessore può usare la propria azione per passare dalla Forma Incarnazione alla Forma Totem e viceversa."
+      ]
+    },
+    "thick-club": {
+      "sourceName": "Thick Club",
+      "name": "Ossospesso",
+      "description": [
+        "Quando è tenuto da Cubone, Marowak o Marowak di Alola, lo STAB del possessore è raddoppiato."
+      ]
+    }
+  }
+}

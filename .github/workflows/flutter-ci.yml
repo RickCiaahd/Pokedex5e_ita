@@ -32,7 +32,6 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-          cache: pip
 
       - name: Generate move localization 451-650
         if: github.head_ref == 'translation/moves-451-650'

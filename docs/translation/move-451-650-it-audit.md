@@ -4,7 +4,7 @@
 
 Questo blocco localizza le mosse dalla posizione **451** alla **650** del catalogo unificato restituito da `MoveRepository.getAllMoves()`, da `Mist Ball` a `Sludge Bomb`.
 
-Sono state aggiunte **200 localizzazioni**, suddivise in quattro overlay da 50 elementi.
+Sono state aggiunte **200 localizzazioni**, suddivise in quattro overlay da 50 elementi. La copertura complessiva dell’app raggiunge così **650 mosse su 830**.
 
 ## Nomi italiani
 

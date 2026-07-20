@@ -21,11 +21,28 @@ class ItemLocalizationRepository {
     'assets/data/item_localization_it_medicine_056_087.json',
     'assets/data/item_localization_it_berry_088_115.json',
     'assets/data/item_localization_it_evolution_116_154.json',
+    'assets/data/item_localization_it_held_155_164.json',
+    'assets/data/item_localization_it_held_165_174.json',
+    'assets/data/item_localization_it_held_175_184.json',
+    'assets/data/item_localization_it_held_185_194.json',
+    'assets/data/item_localization_it_held_195_204.json',
+    'assets/data/item_localization_it_held_205_214.json',
+    'assets/data/item_localization_it_held_215_224.json',
+    'assets/data/item_localization_it_held_225_234.json',
+    'assets/data/item_localization_it_held_235_244.json',
+    'assets/data/item_localization_it_held_245_254.json',
+    'assets/data/item_localization_it_held_255_264.json',
+    'assets/data/item_localization_it_held_265_274.json',
+    'assets/data/item_localization_it_held_275_284.json',
+    'assets/data/item_localization_it_held_285_294.json',
+    'assets/data/item_localization_it_held_295_304.json',
+    'assets/data/item_localization_it_held_305_314.json',
+    'assets/data/item_localization_it_held_315_317.json',
   ];
 
   static const String sourceAssetPath = 'assets/data_webapp/items.json';
   static const int catalogCount = 366;
-  static const int localizedCount = 154;
+  static const int localizedCount = 317;
 
   static Map<String, ItemLocalization>? _cache;
 
@@ -101,7 +118,13 @@ class ItemLocalizationRepository {
       throw FormatException('$path dichiara una sorgente non valida.');
     }
     final type = document['type']?.toString();
-    if (!const {'pokeball', 'medicine', 'berry', 'evolution'}.contains(type)) {
+    if (!const {
+      'pokeball',
+      'medicine',
+      'berry',
+      'evolution',
+      'held item',
+    }.contains(type)) {
       throw FormatException('$path dichiara un tipo non valido.');
     }
     if (_readInt(document['localizedCount']) <= 0) {

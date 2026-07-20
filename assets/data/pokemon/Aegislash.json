@@ -82,5 +82,26 @@
     "Wisdom",
     "Constitution"
   ],
-  "size": "Medium"
+  "size": "Medium",
+  "variant_data": {
+    "create_mode": "default",
+    "default": "Blade Forme",
+    "permanent": false,
+    "variants": {
+      "Blade Forme": {
+        "display": "Aegislash Blade Forme",
+        "original_species": "Aegislash Blade Forme"
+      },
+      "Shield Forme": {
+        "diff": {
+          "AC": 20,
+          "attributes": {
+            "DEX": 15
+          }
+        },
+        "display": "Aegislash Shield Forme",
+        "original_species": "Aegislash Shield Forme"
+      }
+    }
+  }
 }

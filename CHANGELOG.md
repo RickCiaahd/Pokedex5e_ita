@@ -6,6 +6,9 @@ Tutte le modifiche rilevanti al progetto vengono documentate in questo file.
 
 ### Aggiunto
 
+- cambio forma temporaneo nel Battle Companion per i Pokémon che si trasformano durante la lotta, con stato separato dalla forma salvata nella squadra;
+- forme Attacco, Difesa e Velocità di Deoxys con asset dedicati e regole 5e di Mutante;
+
 - glossario italiano e audit delle sorgenti visualizzate per guidare i prossimi blocchi di traduzione;
 - catalogo separato e validato per i testi italiani dei Pokémon, senza modificare ID, statistiche o file sorgente;
 - test automatico di copertura e integrità delle localizzazioni Pokémon;
@@ -13,6 +16,8 @@ Tutte le modifiche rilevanti al progetto vengono documentate in questo file.
 - cataloghi separati e test di integrità per le descrizioni italiane delle 330 abilità del catalogo webapp.
 
 ### Modificato
+
+- eliminato il duplicato tra forma Base e forma predefinita nei selettori, incluso Deoxys Forma Normale;
 
 - tradotti in italiano genere e descrizione Pokédex dei 151 Pokémon di prima generazione, mantenendo invariati altezza, peso e dati meccanici;
 - tradotti in italiano genere e descrizione Pokédex dei 100 Pokémon di seconda generazione, dal #152 al #251, usando lo stesso livello di localizzazione separato dai dati originali;

@@ -276,6 +276,9 @@ flutter:
     - assets/textures/textures_webapp/pokemon/delibird/
     - assets/textures/textures_webapp/pokemon/delphox/
     - assets/textures/textures_webapp/pokemon/deoxys/
+    - assets/textures/textures_webapp/pokemon/deoxys-attack/
+    - assets/textures/textures_webapp/pokemon/deoxys-defense/
+    - assets/textures/textures_webapp/pokemon/deoxys-speed/
     - assets/textures/textures_webapp/pokemon/dewgong/
     - assets/textures/textures_webapp/pokemon/dewott/
     - assets/textures/textures_webapp/pokemon/dewpider/

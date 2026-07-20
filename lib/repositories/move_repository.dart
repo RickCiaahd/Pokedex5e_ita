@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 
 import '../models/move_data.dart';
 import '../services/custom_pokemon_runtime_registry.dart';
+import 'move_localization_repository.dart';
 
 class MoveRepository {
   final Map<String, MoveData?> _cache = {};
@@ -114,18 +115,46 @@ class MoveRepository {
     );
     final json = Map<String, dynamic>.from(jsonDecode(jsonString));
     final movesJson = List<dynamic>.from(json['moves'] ?? const []);
+    final localizations = await MoveLocalizationRepository().getEntries();
     final moves = <String, MoveData>{};
 
     for (final value in movesJson) {
-      final move = MoveData.fromWebJson(Map<String, dynamic>.from(value));
+      final sourceJson = Map<String, dynamic>.from(value);
+      final moveId = sourceJson['id']?.toString() ?? '';
+      final move = MoveData.fromWebJson(
+        _localizedMoveJson(sourceJson, localizations[moveId]),
+      );
       if (move.name.trim().isEmpty) continue;
 
       _registerMoveKey(moves, move.id, move);
       _registerMoveKey(moves, move.name, move);
+      _registerMoveKey(moves, move.technicalName, move);
     }
 
     _webMoveCache = moves;
     return _webMoveCache!;
+  }
+
+  Map<String, dynamic> _localizedMoveJson(
+    Map<String, dynamic> source,
+    MoveLocalization? localization,
+  ) {
+    if (localization == null) return source;
+
+    final sourceName = source['name']?.toString() ?? '';
+    if (localization.sourceName != sourceName) {
+      throw FormatException(
+        'Il nome tecnico di ${source['id']} non coincide con la localizzazione.',
+      );
+    }
+
+    return <String, dynamic>{
+      ...source,
+      'sourceName': sourceName,
+      'name': localization.name,
+      'description': localization.description,
+      'higherLevels': localization.higherLevels,
+    };
   }
 
   void _registerMoveKey(

@@ -1,0 +1,96 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/moves.json",
+  "nameSources": [
+    "https://wiki.pokemoncentral.it/Elenco_delle_mosse_in_altre_lingue",
+    "https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/move_names.csv"
+  ],
+  "type": "move",
+  "range": {
+    "start": 101,
+    "end": 110
+  },
+  "localizedCount": 10,
+  "items": {
+    "chilling-water": {
+      "sourceName": "Chilling Water",
+      "name": "Doccia Fredda",
+      "description": [
+        "Investi una creatura con acqua tanto gelida da indebolirne la forza. Effettua un attacco a distanza, infliggendo 1d10 + MOVE danni di tipo Acqua se colpisci. Se colpisci, il bersaglio deve superare un tiro salvezza su SAG contro la tua CD della mossa, altrimenti ha svantaggio a ogni attacco che effettua nel suo turno successivo."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d8 al livello 5, 5d4 al livello 10 e 4d8 al livello 17."
+    },
+    "chilly-reception": {
+      "sourceName": "Chilly Reception",
+      "name": "Freddura",
+      "description": [
+        "Racconti una battuta terribilmente fredda. Il tempo atmosferico diventa Neve per 5 round. Dopo l'attivazione della mossa, l'Allenatore deve sostituire l'utilizzatore come azione gratuita, prima che venga sommerso dai fischi."
+      ],
+      "higherLevels": null
+    },
+    "chip-away": {
+      "sourceName": "Chip Away",
+      "name": "Insidia",
+      "description": [
+        "Attendi un'apertura e colpisci rapidamente al momento giusto. Ignorando ogni bonus alla CA del bersaglio, effettua un attacco in mischia, infliggendo 1d12 + MOVE danni di tipo Normale se colpisci."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d8 al livello 5, 2d12 al livello 10 e 6d6 al livello 17."
+    },
+    "chloroblast": {
+      "sourceName": "Chloroblast",
+      "name": "Clorofillaser",
+      "description": [
+        "Proietti la clorofilla accumulata in un cono di 30 piedi davanti a te. Subisci danni senza tipo pari alla metà dei tuoi PF massimi. Le creature nell'area devono effettuare un tiro salvezza su DES contro la tua CD della mossa. Se lo falliscono, subiscono 3d8 + MOVE danni di tipo Erba; se lo superano, subiscono la metà dei danni."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 5d6 al livello 5, 4d12 al livello 10 e 8d8 al livello 17."
+    },
+    "circle-throw": {
+      "sourceName": "Circle Throw",
+      "name": "Ribaltiro",
+      "description": [
+        "Fai roteare il bersaglio e lo scagli con tutta la forza lontano dal campo di battaglia. Effettua un attacco in mischia, infliggendo 1d10 + MOVE danni di tipo Lotta se colpisci. Nelle lotte contro Pokémon selvatici, il bersaglio subisce i danni e fugge se il suo livello è inferiore a quello dell'utilizzatore. Nelle lotte tra Allenatori, il bersaglio subisce i danni e deve essere sostituito immediatamente con un'altra creatura della squadra, se disponibile."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d8 al livello 5, 5d4 al livello 10 e 4d8 al livello 17."
+    },
+    "clamp": {
+      "sourceName": "Clamp",
+      "name": "Tenaglia",
+      "description": [
+        "Stringi il bersaglio in una morsa per danneggiarlo e trattenerlo. Effettua un attacco in mischia. Se colpisci, il bersaglio subisce 1d6 + MOVE danni di tipo Acqua ed è afferrato. All'inizio di ciascun suo turno può tentare di liberarsi superando un tiro salvezza su FOR contro la tua CD della mossa. Finché il bersaglio rimane afferrato nei tuoi turni successivi, puoi attivare nuovamente questa mossa come azione bonus: colpisce automaticamente e infligge 1d6 danni di tipo Acqua."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 1d10 al livello 5, 2d8 al livello 10 e 5d4 al livello 17."
+    },
+    "clanging-scales": {
+      "sourceName": "Clanging Scales",
+      "name": "Clamorsquame",
+      "description": [
+        "Batti violentemente tra loro le mani ricoperte di scaglie, generando davanti a te un'intensa onda d'urto sonora in un cono di 30 piedi. Ogni creatura investita deve effettuare un tiro salvezza su COS contro la tua CD della mossa, subendo 3d6 + MOVE danni di tipo Drago se lo fallisce, o la metà dei danni se lo supera. Le creature che falliscono il tiro salvezza di 5 o più riducono la propria CA di 1 per il resto del combattimento."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 3d8 al livello 5, 6d6 al livello 10 e 7d8 al livello 17."
+    },
+    "clangorous-soul": {
+      "sourceName": "Clangorous Soul",
+      "name": "Dracofonia",
+      "description": [
+        "Batti tra loro le mani ricoperte di scaglie per rafforzarti. Subisci 3d6 danni senza tipo e, in cambio, ottieni +1 ai tiri per colpire, +1 alla CA e +1 ai tiri per i danni per il resto dell'incontro o finché non vieni sostituito. L'effetto può accumularsi fino a cinque volte, per un bonus complessivo di +5 a ciascun valore."
+      ],
+      "higherLevels": null
+    },
+    "clear-smog": {
+      "sourceName": "Clear Smog",
+      "name": "Pulifumo",
+      "description": [
+        "Scagli una massa di fango speciale capace di annullare ogni modifica alle statistiche del bersaglio. Effettua un attacco a distanza, infliggendo 1d8 + MOVE danni di tipo Veleno se colpisci. Se l'attacco va a segno, tutte le modifiche alle statistiche che influenzano il bersaglio dall'inizio della lotta vengono azzerate."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d6 al livello 5, 4d4 al livello 10 e 3d10 al livello 17."
+    },
+    "close-combat": {
+      "sourceName": "Close Combat",
+      "name": "Zuffa",
+      "description": [
+        "Ti avvicini per sferrare un colpo devastante, sacrificando le tue difese. Effettua un attacco in mischia contro una creatura, infliggendo 2d10 + MOVE danni di tipo Lotta se colpisci. Dopo aver attivato questa mossa, il bersaglio ha vantaggio a ogni attacco che effettua contro di te prima dell'inizio del tuo turno successivo."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 3d8 al livello 5, 4d10 al livello 10 e 7d8 al livello 17."
+    }
+  }
+}

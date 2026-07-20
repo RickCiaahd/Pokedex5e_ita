@@ -1,0 +1,96 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/moves.json",
+  "nameSources": [
+    "https://wiki.pokemoncentral.it/Elenco_delle_mosse_in_altre_lingue",
+    "https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/move_names.csv"
+  ],
+  "type": "move",
+  "range": {
+    "start": 71,
+    "end": 80
+  },
+  "localizedCount": 10,
+  "items": {
+    "bone-club": {
+      "sourceName": "Bone Club",
+      "name": "Ossoclava",
+      "description": [
+        "Colpisci una creatura con una clava d'osso, infliggendo 1d10 + MOVE danni di tipo Terra se l'attacco va a segno. Con un risultato naturale di 18 o più al tiro per colpire, il bersaglio diventa FLINCHED."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d8 al livello 5, 5d4 al livello 10 e 4d8 al livello 17."
+    },
+    "bone-rush": {
+      "sourceName": "Bone Rush",
+      "name": "Ossoraffica",
+      "description": [
+        "Ti slanci in avanti per assestare una serie di colpi poderosi a un bersaglio. Effettua un attacco in mischia, infliggendo 1d4 + MOVE danni di tipo Terra se colpisci. Dopo aver colpito, tira un d4. Con un risultato di 3 o 4 puoi colpire immediatamente di nuovo, infliggendo altri 1d4 danni di tipo Terra. Continua finché non ottieni un risultato diverso da 3 o 4 sul d4, fino a un massimo di quattro colpi aggiuntivi."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d4 al livello 5, 1d12 al livello 10 e 4d4 al livello 17."
+    },
+    "bonemerang": {
+      "sourceName": "Bonemerang",
+      "name": "Ossomerang",
+      "description": [
+        "Lanci un osso come un boomerang ed effettui due attacchi a distanza contro un bersaglio. Ogni attacco che colpisce infligge 1d4 + MOVE danni di tipo Terra."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 1d6 al livello 5, 2d4 al livello 10 e 3d4 al livello 17."
+    },
+    "boomburst": {
+      "sourceName": "Boomburst",
+      "name": "Ondaboato",
+      "description": [
+        "Produci un suono assordante ed esplosivo che danneggia tutte le creature entro 20 piedi da te. Ogni creatura a gittata deve effettuare un tiro salvezza su COS contro la tua CD della mossa, subendo 2d12 + MOVE danni di tipo Normale se lo fallisce, o la metà dei danni se lo supera."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 3d10 al livello 5, 7d6 al livello 10 e 8d8 al livello 17."
+    },
+    "bounce": {
+      "sourceName": "Bounce",
+      "name": "Rimbalzo",
+      "description": [
+        "Quando attivi questa mossa, consumi 10 piedi del tuo movimento per balzare verso l'alto e scomparire, rimanendo invulnerabile fino al tuo turno successivo. Durante questo periodo sei immune ai danni e agli effetti di ogni mossa. Se non ti rimane movimento oppure sei afferrato o trattenuto prima di attivare la mossa, questa fallisce. Nel turno successivo, come azione, riappari e tenti di schiantarti su una creatura. Effettua con vantaggio un attacco in mischia contro una creatura a gittata, infliggendo 2d8 + MOVE danni di tipo Volante se colpisci. Con un risultato naturale di 15 o più al tiro per colpire, il bersaglio diventa paralizzato."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d10 al livello 5, 3d10 al livello 10 e 4d12 al livello 17."
+    },
+    "branch-poke": {
+      "sourceName": "Branch Poke",
+      "name": "Ramostoccata",
+      "description": [
+        "Pungi una creatura con un ramo dalla punta affilata. Effettua un attacco in mischia, infliggendo 1d6 + MOVE danni di tipo Erba se colpisci."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 1d12 al livello 5, 2d8 al livello 10 e 4d6 al livello 17."
+    },
+    "brave-bird": {
+      "sourceName": "Brave Bird",
+      "name": "Baldeali",
+      "description": [
+        "Raccogli le ali e ti lanci in picchiata contro una creatura. Effettua un attacco in mischia, infliggendo 2d10 + MOVE danni di tipo Volante se colpisci. Se l'attacco va a segno, subisci anche danni da contraccolpo senza tipo pari a un quarto del totale, arrotondato per difetto."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 3d8 al livello 5, 4d10 al livello 10 e 7d8 al livello 17."
+    },
+    "breaking-swipe": {
+      "sourceName": "Breaking Swipe",
+      "name": "Vastoimpatto",
+      "description": [
+        "Fai roteare furiosamente la coda attorno a te. Tutte le creature entro 5 piedi devono effettuare un tiro salvezza su DES contro la tua CD della mossa, subendo 1d10 + MOVE danni di tipo Drago se lo falliscono, o la metà dei danni se lo superano. Le creature che falliscono il tiro salvezza hanno inoltre svantaggio a tutti i loro attacchi fino alla fine del loro turno successivo."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d8 al livello 5, 5d4 al livello 10 e 4d8 al livello 17."
+    },
+    "brick-break": {
+      "sourceName": "Brick Break",
+      "name": "Breccia",
+      "description": [
+        "Sferri un pugno potente e preciso. Effettua un attacco in mischia contro una creatura, infliggendo 1d12 + MOVE danni di tipo Lotta se colpisci. Questa mossa ignora gli effetti delle mosse che ne ridurrebbero i danni, come Rafforzatore, Riflesso e simili."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d8 al livello 5, 2d12 al livello 10 e 6d6 al livello 17."
+    },
+    "brine": {
+      "sourceName": "Brine",
+      "name": "Acquadisale",
+      "description": [
+        "Scagli contro una creatura un violento getto d'acqua salata. Effettua un attacco a distanza contro una creatura, infliggendo 1d10 + MOVE danni di tipo Acqua se colpisci. Se il bersaglio possiede meno del 50% dei suoi PF massimi, raddoppia i danni inflitti."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d8 al livello 5, 5d4 al livello 10 e 4d8 al livello 17."
+    }
+  }
+}

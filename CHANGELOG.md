@@ -25,7 +25,7 @@ Tutte le modifiche rilevanti al progetto vengono documentate in questo file.
 - tradotti in italiano genere e descrizione Pokédex dei 120 Pokémon di nona generazione, dal #906 al #1025, usando il catalogo webapp e le categorie italiane verificate;
 - tradotte in italiano le descrizioni delle 330 abilità, preservando nomi, ID, flag di deprecazione e valori meccanici originali;
 - assegnati i nomi italiani ufficiali a 308 abilità confrontate con Pokémon Central, mantenendo invariati nomi tecnici, ID e dati salvati; le 22 voci personalizzate o deprecate conservano il nome originale;
-- localizzati con nomi italiani verificati e descrizioni 5e tradotte i 24 tipi di Poké Ball e i 63 oggetti di tipo medicina, conservando ID, costi, asset e nomi tecnici;
+- localizzati con nomi italiani verificati e descrizioni 5e tradotte i 24 tipi di Poké Ball, i 63 oggetti di tipo medicina e le 28 bacche, conservando ID, costi, asset e nomi tecnici;
 - corrette 198 categorie Pokémon delle prime cinque generazioni confrontandole con il riferimento italiano, tra cui Emboar da `Pokémon Granfuocomaiale` a `Pokémon Suincendio`.
 
 ## [1.0.0]
@@ -37,7 +37,7 @@ Tutte le modifiche rilevanti al progetto vengono documentate in questo file.
 - test automatico di integrità per cataloghi Pokémon, mosse, abilità, forme e asset;
 - documentazione iniziale del progetto, delle piattaforme supportate e dei controlli locali;
 - avvio diretto degli incontri generati o salvati nel Fight del Master, senza creare Allenatori PNG nella libreria;
-- accesso diretto dalla Home e dagli Strumenti al Fight del Master ancora in corso;
+- accesso diretto dalla Home e dagli Strumenti del Master al Fight del Master ancora in corso;
 - pannello condiviso di assistenza agli status per Battle Companion e Fight del Master, con promemoria distinti per inizio turno, azione, mossa subita e fine turno;
 - gestione automatica delle risorse numeriche del Trainer Path, con contatori persistenti e recupero da riposo breve o lungo;
 - selettori persistenti per le scelte specifiche di Researcher, Ace Trainer, Hobbyist, Type Master e Ranger;

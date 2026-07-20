@@ -1,0 +1,81 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/items.json",
+  "nameSources": [
+    "https://wiki.pokemoncentral.it/Elenco_degli_strumenti_in_altre_lingue",
+    "https://wiki.pokemoncentral.it/Strumenti_tenuti",
+    "https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/item_names.csv"
+  ],
+  "type": "held item",
+  "range": {
+    "start": 255,
+    "end": 264
+  },
+  "localizedCount": 10,
+  "items": {
+    "wave-incense": {
+      "sourceName": "Wave Incense",
+      "name": "Ondaroma",
+      "description": []
+    },
+    "adrenaline-orb": {
+      "sourceName": "Adrenaline Orb",
+      "name": "Fifasfera",
+      "description": []
+    },
+    "flame-orb": {
+      "sourceName": "Flame Orb",
+      "name": "Fiammosfera",
+      "description": [
+        "Alla fine del turno del possessore, il possessore subisce lo status BURNED."
+      ]
+    },
+    "iron-ball": {
+      "sourceName": "Iron Ball",
+      "name": "Ferropalla",
+      "description": []
+    },
+    "life-orb": {
+      "sourceName": "Life Orb",
+      "name": "Assorbisfera",
+      "description": [
+        "Il possessore aggiunge il proprio bonus di competenza ai danni che infligge, ma ogni volta subisce la stessa quantità di danni senza tipo."
+      ]
+    },
+    "toxic-orb": {
+      "sourceName": "Toxic Orb",
+      "name": "Tossicsfera",
+      "description": [
+        "Alla fine del turno del possessore, il possessore subisce lo status BADLY POISONED."
+      ]
+    },
+    "damp-rock": {
+      "sourceName": "Damp Rock",
+      "name": "Rocciaumida",
+      "description": [
+        "Il possessore aumenta di 3 round la durata dei propri effetti di Rain."
+      ]
+    },
+    "heat-rock": {
+      "sourceName": "Heat Rock",
+      "name": "Rocciacalda",
+      "description": [
+        "Il possessore aumenta di 3 round la durata dei propri effetti di Harsh Sunlight."
+      ]
+    },
+    "icy-rock": {
+      "sourceName": "Icy Rock",
+      "name": "Rocciafredda",
+      "description": [
+        "Il possessore aumenta di 3 round la durata dei propri effetti di Hail e Snow."
+      ]
+    },
+    "smooth-rock": {
+      "sourceName": "Smooth Rock",
+      "name": "Roccialiscia",
+      "description": [
+        "Il possessore aumenta di 3 round la durata dei propri effetti di Sandstorm."
+      ]
+    }
+  }
+}

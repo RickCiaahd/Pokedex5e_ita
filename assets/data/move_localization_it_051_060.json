@@ -1,0 +1,96 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/moves.json",
+  "nameSources": [
+    "https://wiki.pokemoncentral.it/Elenco_delle_mosse_in_altre_lingue",
+    "https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/move_names.csv"
+  ],
+  "type": "move",
+  "range": {
+    "start": 51,
+    "end": 60
+  },
+  "localizedCount": 10,
+  "items": {
+    "behemoth-blade": {
+      "sourceName": "Behemoth Blade",
+      "name": "Taglio Maestoso",
+      "description": [
+        "Colpisci con la tua gigantesca spada. Effettua un attacco in mischia contro una creatura, infliggendo 4d4 + MOVE danni di tipo Acciaio se colpisci. Se il bersaglio è dynamaxizzato, raddoppia i danni complessivi."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d12 al livello 5, 4d8 al livello 10 e 8d6 al livello 17."
+    },
+    "belch": {
+      "sourceName": "Belch",
+      "name": "Rutto",
+      "description": [
+        "Emetti un rutto nocivo contro una creatura a gittata. La creatura deve effettuare un tiro salvezza su COS contro la tua CD della mossa, subendo 2d10 + MOVE danni di tipo Veleno se lo fallisce, o la metà dei danni se lo supera. Se impugni una bacca quando attivi questa mossa, puoi consumarla per far fallire automaticamente il tiro salvezza al bersaglio."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 3d8 al livello 5, 4d10 al livello 10 e 7d8 al livello 17."
+    },
+    "belly-drum": {
+      "sourceName": "Belly Drum",
+      "name": "Panciamburo",
+      "description": [
+        "Sacrifichi salute per aumentare la potenza d'attacco. Quando usi questa mossa, riduci i tuoi PF attuali della metà del massimo, ma aumenti di 10 il tuo punteggio di Forza finché rimani in combattimento. L'effetto termina se i tuoi PF attuali superano la metà del massimo."
+      ],
+      "higherLevels": null
+    },
+    "bestow": {
+      "sourceName": "Bestow",
+      "name": "Cediregalo",
+      "description": [
+        "Come azione bonus, puoi cedere lo strumento che impugni a una creatura consenziente a gittata, purché il bersaglio non stia già impugnando uno strumento."
+      ],
+      "higherLevels": null
+    },
+    "bide": {
+      "sourceName": "Bide",
+      "name": "Pazienza",
+      "description": [
+        "Accogli i danni subiti in attesa del momento giusto per contrattaccare. Usa la tua azione di attacco per attivare questa mossa e tieni traccia di tutti i danni che subisci prima del tuo turno successivo. Nel turno seguente, usi la tua azione per scagliarti contro un bersaglio con un attacco a distanza di tipo Normale; se colpisci, gli infliggi danni senza tipo pari al doppio dei danni che hai subito. Ai livelli superiori puoi scegliere di mantenere Pazienza per un secondo turno, con la possibilità di aggiungere ulteriori danni all'attacco."
+      ],
+      "higherLevels": "Dal livello 10 puoi continuare ad accumulare danni per 2 turni."
+    },
+    "bind": {
+      "sourceName": "Bind",
+      "name": "Legatutto",
+      "description": [
+        "Tenti di afferrare un bersaglio e costringerlo alla resa. Effettua un attacco in mischia. Se colpisci, il bersaglio subisce 1d4 + MOVE danni di tipo Normale ed è afferrato. All'inizio di ciascun suo turno può tentare di liberarsi superando un tiro salvezza su FOR contro la tua CD della mossa. Finché una creatura è afferrata, puoi proseguire la mossa come azione bonus e infliggerle automaticamente 1d4 danni di tipo Normale senza effettuare un tiro per colpire."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 1d6 al livello 5, 1d8 al livello 10 e 2d6 al livello 17."
+    },
+    "bite": {
+      "sourceName": "Bite",
+      "name": "Morso",
+      "description": [
+        "Affondi i denti in una creatura bersaglio. Effettua un attacco in mischia, infliggendo 1d10 + MOVE danni di tipo Buio se colpisci. Con un risultato naturale di 19 o 20 al tiro per colpire, il bersaglio diventa FLINCHED."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d8 al livello 5, 5d4 al livello 10 e 4d8 al livello 17."
+    },
+    "bitter-blade": {
+      "sourceName": "Bitter Blade",
+      "name": "Lama del Rimorso",
+      "description": [
+        "Concentri il tuo rancore verso il mondo dei vivi in un attacco tagliente. Effettua un attacco in mischia, infliggendo 2d6 + MOVE danni di tipo Fuoco se colpisci. Recuperi salute pari alla metà dei danni inflitti."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d8 al livello 5, 2d12 al livello 10 e 6d6 al livello 17."
+    },
+    "bitter-malice": {
+      "sourceName": "Bitter Malice",
+      "name": "Livore",
+      "description": [
+        "Attacchi con un risentimento agghiacciante. Effettua un attacco a distanza, infliggendo 1d10 + MOVE danni di tipo Spettro se colpisci. Se colpisci, il bersaglio deve superare un tiro salvezza su SAG contro la tua CD della mossa, altrimenti ha svantaggio a ogni attacco che effettua nel suo turno successivo."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d8 al livello 5, 5d4 al livello 10 e 4d8 al livello 17."
+    },
+    "blast-burn": {
+      "sourceName": "Blast Burn",
+      "name": "Incendio",
+      "description": [
+        "Proiettili esplosivi piovono sulle creature entro un raggio di 10 piedi centrato su un punto a gittata. Ogni creatura coinvolta nell'esplosione deve effettuare un tiro salvezza su DES contro la tua CD della mossa, subendo 3d8 + MOVE danni di tipo Fuoco se lo fallisce, o la metà dei danni se lo supera. Questa mossa prosciuga le tue energie e non puoi attivarla nuovamente prima della fine del tuo turno successivo."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 5d6 al livello 5, 4d12 al livello 10 e 8d8 al livello 17."
+    }
+  }
+}

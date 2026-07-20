@@ -1,0 +1,99 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/moves.json",
+  "nameSources": [
+    "https://wiki.pokemoncentral.it/Elenco_delle_mosse_in_altre_lingue",
+    "https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/move_names.csv"
+  ],
+  "type": "move",
+  "range": {
+    "start": 91,
+    "end": 100
+  },
+  "localizedCount": 10,
+  "items": {
+    "burning-bulwark": {
+      "sourceName": "Burning Bulwark",
+      "name": "Egida Ignea",
+      "description": [
+        "La tua pelliccia rovente ustiona ogni aggressore che entra in contatto diretto con te. Per la durata, le fiamme avvolgono il tuo corpo ed emanano luce intensa entro un raggio di 10 piedi e luce fioca per altri 10 piedi.",
+        "Ogni volta che una creatura ti colpisce con un attacco in mischia, l'egida erompe in una fiammata. L'attaccante subisce 1d8 + MOVE danni di tipo Fuoco."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d8 al livello 5, 3d8 al livello 10 e 4d8 al livello 17."
+    },
+    "burning-jealousy": {
+      "sourceName": "Burning Jealousy",
+      "name": "Fiamminvidia",
+      "description": [
+        "Attacchi tutte le creature in un cono di 30 piedi con l'energia della gelosia. Ogni creatura nell'area deve effettuare un tiro salvezza su DES contro la tua CD della mossa, subendo 1d12 + MOVE danni di tipo Fuoco e diventando scottata se lo fallisce, oppure soltanto la metà dei danni se lo supera.",
+        "Le creature che beneficiano attualmente di un aumento alla CA, FOR, DES, COS, INT, SAG o CAR hanno svantaggio al tiro salvezza."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d8 al livello 5, 2d12 al livello 10 e 6d6 al livello 17."
+    },
+    "calm-mind": {
+      "sourceName": "Calm Mind",
+      "name": "Calmamente",
+      "description": [
+        "Sgomberi la mente da ogni distrazione. Per la durata, raddoppia il tuo bonus STAB quando infliggi danni del tuo tipo."
+      ],
+      "higherLevels": null
+    },
+    "camouflage": {
+      "sourceName": "Camouflage",
+      "name": "Camuffamento",
+      "description": [
+        "Ti confondi con l'ambiente circostante, assumendo un nuovo tipo ai fini di resistenze, vulnerabilità e immunità. Il tipo dipende dal terreno ed è a discrezione del DM. Per esempio: foresta = Erba, spiaggia = Acqua, deserto = Terra/Fuoco, montagna = Roccia e così via."
+      ],
+      "higherLevels": null
+    },
+    "captivate": {
+      "sourceName": "Captivate",
+      "name": "Incanto",
+      "description": [
+        "Tenti di ammaliare una creatura affinché trattenga i propri colpi. Quando vieni colpito da un attacco di una creatura del sesso opposto, puoi usare una reazione per costringerla a effettuare un tiro salvezza su CAR contro la tua CD della mossa. Se lo fallisce, l'attacco non colpisce."
+      ],
+      "higherLevels": null
+    },
+    "ceaseless-edge": {
+      "sourceName": "Ceaseless Edge",
+      "name": "Lama Milleflutti",
+      "description": [
+        "Colpisci con la lama del tuo guscio, spargendo schegge sul campo. Effettua un attacco in mischia contro una creatura, infliggendo 1d10 + MOVE danni di tipo Buio se colpisci.",
+        "Se l'attacco va a segno, il terreno in un quadrato con lato di 10 piedi centrato sul bersaglio si ricopre di spuntoni e diventa terreno difficile per 1 minuto. Quando compaiono, ogni creatura nell'area, esclusa quella che usa questa mossa, deve superare un tiro salvezza su DES contro la tua CD della mossa o subire 1d10 danni di tipo Buio. Anche una creatura che entra nell'area o vi termina il turno deve superare il tiro salvezza o subire i danni."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d8 al livello 5, 5d4 al livello 10 e 4d8 al livello 17."
+    },
+    "charge": {
+      "sourceName": "Charge",
+      "name": "Sottocarica",
+      "description": [
+        "L'elettricità attraversa il tuo corpo, preparandoti al prossimo attacco. Fino al tuo turno successivo, aumenta la tua CA di 2. Nel turno successivo, raddoppia il tuo bonus STAB quando infliggi danni del tuo tipo."
+      ],
+      "higherLevels": null
+    },
+    "charge-beam": {
+      "sourceName": "Charge Beam",
+      "name": "Raggioscossa",
+      "description": [
+        "Scagli contro una creatura un raggio di energia elettrica che può potenziarti. Effettua un attacco a distanza, infliggendo 1d8 + MOVE danni di tipo Elettro se colpisci. Se il risultato naturale del tiro per colpire è 10 o superiore e l'attacco va a segno, raddoppia il tuo modificatore MOVE per i danni di questa mossa e di ogni altra mossa che attivi prima della fine del tuo turno successivo."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d6 al livello 5, 4d4 al livello 10 e 3d10 al livello 17."
+    },
+    "charm": {
+      "sourceName": "Charm",
+      "name": "Fascino",
+      "description": [
+        "Tenti di ammaliare una creatura, riducendone drasticamente l'efficacia offensiva. Un bersaglio a gittata scelto da te deve effettuare un tiro salvezza su SAG contro la tua CD della mossa. Se lo fallisce, applica -2 a tutti i tiri per colpire contro di te per la durata."
+      ],
+      "higherLevels": "Il bersaglio applica -3 al livello 5, -4 al livello 10 e -5 al livello 17."
+    },
+    "chatter": {
+      "sourceName": "Chatter",
+      "name": "Schiamazzo",
+      "description": [
+        "Gridi una sequenza di parole disorientanti contro una creatura, confondendone i sensi. Effettua un attacco a distanza. Se colpisci, infliggi 1d10 + MOVE danni di tipo Volante e il bersaglio diventa confuso."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d8 al livello 5, 5d4 al livello 10 e 4d8 al livello 17."
+    }
+  }
+}

@@ -1,0 +1,98 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/moves.json",
+  "nameSources": [
+    "https://wiki.pokemoncentral.it/Elenco_delle_mosse_in_altre_lingue",
+    "https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/move_names.csv"
+  ],
+  "type": "move",
+  "range": {
+    "start": 61,
+    "end": 70
+  },
+  "localizedCount": 10,
+  "items": {
+    "blaze-kick": {
+      "sourceName": "Blaze Kick",
+      "name": "Calciardente",
+      "description": [
+        "Le fiamme erompono dai tuoi piedi mentre sferri un calcio potente. Effettua un attacco in mischia contro una creatura, infliggendo 2d6 + MOVE danni di tipo Fuoco se colpisci. Con un risultato naturale di 18 o più al tiro per colpire, il bersaglio diventa scottato. Questa mossa mette a segno un colpo critico con risultati naturali di 19s e 20s."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d8 al livello 5, 4d6 al livello 10 e 6d6 al livello 17."
+    },
+    "bleakwind-storm": {
+      "sourceName": "Bleakwind Storm",
+      "name": "Tempesta Boreale",
+      "description": [
+        "Crei una tempesta di venti ferocemente gelidi che fanno tremare corpo e spirito, occupando un cubo con lato di 40 piedi centrato su un punto a gittata. Ogni creatura nemica nell'area effettua un tiro salvezza su COS contro la tua CD della mossa. Se lo fallisce, subisce 4d4 + MOVE danni di tipo Volante; se lo supera, subisce la metà dei danni. L'area è considerata terreno difficile per le creature nemiche.",
+        "Una creatura effettua questo tiro salvezza anche quando entra nell'area o termina lì il proprio turno. Può effettuare il tiro salvezza soltanto una volta per turno.",
+        "Quando la mossa viene usata sotto la pioggia, le creature hanno svantaggio al tiro salvezza."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d12 al livello 5, 4d8 al livello 10 e 8d6 al livello 17."
+    },
+    "blizzard": {
+      "sourceName": "Blizzard",
+      "name": "Bora",
+      "description": [
+        "Nubi gelide si formano in cielo e tempestano il terreno di grandine e neve, centrate su un punto a gittata scelto da te. Ogni creatura entro un raggio di 30 piedi centrato su quel punto deve effettuare un tiro salvezza su DES contro la tua CD della mossa, subendo 3d6 + MOVE danni di tipo Ghiaccio se lo fallisce, o la metà dei danni se lo supera. I bersagli che falliscono il tiro salvezza di 5 o più diventano congelati."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 3d8 al livello 5, 6d6 al livello 10 e 7d8 al livello 17."
+    },
+    "block": {
+      "sourceName": "Block",
+      "name": "Blocco",
+      "description": [
+        "Se una creatura a gittata tenta di fuggire o di essere sostituita, puoi usare la tua reazione per fermarla sul posto e impedire che ciò avvenga."
+      ],
+      "higherLevels": null
+    },
+    "blood-moon": {
+      "sourceName": "Blood Moon",
+      "name": "Luna Rossa",
+      "description": [
+        "Scateni tutta la potenza del tuo spirito attraverso una luna piena rossa come il sangue. Scegli una creatura a gittata, che deve effettuare un tiro salvezza su DES contro la tua CD della mossa. Se lo fallisce, subisce 3d8 + MOVE danni di tipo Normale; se lo supera, subisce la metà dei danni. La stessa creatura non può usare questa mossa in turni consecutivi."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 5d6 al livello 5, 4d12 al livello 10 e 8d8 al livello 17."
+    },
+    "blue-flare": {
+      "sourceName": "Blue Flare",
+      "name": "Fuocoblu",
+      "description": [
+        "Scateni un'intensa e splendida linea di fiamme blu lunga 50 piedi e larga 5 piedi. Ogni creatura investita dalla linea deve effettuare un tiro salvezza su DES contro la tua CD della mossa, subendo 5d4 + MOVE danni di tipo Fuoco se lo fallisce, o la metà dei danni se lo supera. Una creatura che fallisce il tiro salvezza di 5 o più diventa scottata."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 3d10 al livello 5, 5d8 al livello 10 e 8d8 al livello 17."
+    },
+    "body-press": {
+      "sourceName": "Body Press",
+      "name": "Schiacciacorpo",
+      "description": [
+        "Ti scagli contro il bersaglio con tutto il corpo. Effettua un attacco in mischia contro un bersaglio, infliggendo 2d6 + MOVE danni di tipo Lotta se colpisci. Se la tua taglia supera quella del bersaglio di almeno una categoria, infliggi MOVE danni aggiuntivi di tipo Lotta."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d8 al livello 5, 4d6 al livello 10 e 6d6 al livello 17."
+    },
+    "body-slam": {
+      "sourceName": "Body Slam",
+      "name": "Corposcontro",
+      "description": [
+        "Ti proietti contro una creatura per schiacciarla con la tua mole. Effettua un attacco in mischia contro un bersaglio. Se colpisci, il bersaglio subisce 2d6 + MOVE danni di tipo Normale e deve superare un tiro salvezza su FOR contro la tua CD della mossa, altrimenti cade prono."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d8 al livello 5, 4d6 al livello 10 e 6d6 al livello 17."
+    },
+    "bolt-beak": {
+      "sourceName": "Bolt Beak",
+      "name": "Beccoshock",
+      "description": [
+        "Trafiggi il bersaglio con un becco elettrificato. Effettua un attacco in mischia, infliggendo 2d6 + MOVE danni di tipo Elettro se colpisci. Se nel suo ultimo turno il bersaglio non ha usato una mossa d'attacco, raddoppia i danni derivanti da MOVE."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d8 al livello 5, 4d6 al livello 10 e 6d6 al livello 17."
+    },
+    "bolt-strike": {
+      "sourceName": "Bolt Strike",
+      "name": "Lucesiluro",
+      "description": [
+        "Richiami dal cielo un potente fulmine che avvolge una parte del campo di battaglia in un'ondata di elettricità. Ogni creatura entro un raggio di 20 piedi centrato su un punto a gittata deve effettuare un tiro salvezza su DES contro la tua CD della mossa, subendo 5d4 + MOVE danni di tipo Elettro se lo fallisce, o la metà dei danni se lo supera. Una creatura che fallisce il tiro salvezza di 5 o più diventa paralizzata."
+      ],
+      "higherLevels": "Il dado di danno di questa mossa diventa 3d10 al livello 5, 5d8 al livello 10 e 8d8 al livello 17."
+    }
+  }
+}

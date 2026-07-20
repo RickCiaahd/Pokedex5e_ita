@@ -16,31 +16,31 @@
       "sourceName": "Photon Geyser",
       "name": "Geyser Fotonico",
       "description": [
-        "Un pilastro di luce erutta dal terreno in un raggio 20ft, cilindro alto 80ft centrato su un punto a gittata. Qualsiasi creatura coinvolta nell'esplosione deve effettuare un DES tiro salvezza contro il tuo Movimento CD, subendo 5d6 + MOVE danno psichico se fallisce il tiro salvezza, o la metà di quel danno psichico se lo supera. Questa mossa ignora qualsiasi abilità della creatura che influenzerebbe la capacità dell'utilizzatore di colpire o infliggere danno completo."
+        "Un pilastro di luce erutta dal terreno in un raggio 20 piedi, cilindro alto 80 piedi centrato su un punto a gittata. Qualsiasi creatura coinvolta nell'esplosione deve effettuare un tiro salvezza su DES contro il CD della mossa, subendo 5d6 + MOVE danni di tipo Psico se fallisce il tiro salvezza, o la metà di quel danni di tipo Psico se lo supera. Questa mossa ignora qualsiasi abilità della creatura che influenzerebbe la capacità dell'utilizzatore di colpire o infliggere danni completi."
       ],
-      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 4d10 al livello 5, 6d10 al livello 10 e 8d12 al livello 17."
+      "higherLevels": "Il dado di danno di questa mossa diventa 4d10 al livello 5, 6d10 al livello 10 e 8d12 al livello 17."
     },
     "pin-missile": {
       "sourceName": "Pin Missile",
       "name": "Missilspillo",
       "description": [
-        "Colpisci una creatura con proiettili affilati in rapida successione. Effettua un tiro di attacco a distanza, infliggendo 1d4 + MOVE danno da Coleottero in caso di colpo. Dopo aver colpito con successo un bersaglio, lancia un d4. Con un risultato di 3 o 4, un altro proiettile colpisce di nuovo per un ulteriore 1d4 danno da Coleottero. Continua questo processo finché non fallisci nel lanciare un 3 o un 4 sul tiro d4, fino a un massimo di quattro colpi aggiuntivi."
+        "Colpisci una creatura con proiettili affilati in rapida successione. Effettua un attacco a distanza, infliggendo 1d4 + MOVE danni di tipo Coleottero se colpisci. Dopo aver colpito con successo un bersaglio, lancia un d4. Con un risultato di 3 o 4, un altro proiettile colpisce di nuovo per un ulteriore 1d4 danni di tipo Coleottero. Continua questo processo finché non fallisci nel lanciare un 3 o un 4 sul tiro d4, fino a un massimo di quattro colpi aggiuntivi."
       ],
-      "higherLevels": "I dadi di danno lanciati per questa mossa cambiano in 2d4 al livello 5, 1d12 al livello 10 e 4d4 al livello 17."
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d4 al livello 5, 1d12 al livello 10 e 4d4 al livello 17."
     },
     "plasma-fists": {
       "sourceName": "Plasma Fists",
       "name": "Pugni Plasma",
       "description": [
-        "Carichi i tuoi primi con l'elettricità e ti scagli contro un bersaglio. Effettua un attacco in mischia, infliggendo 4d4 + MOVE danni elettrici in caso di colpo. In caso di colpo, sia tu che le mosse di tipo normale del tuo bersaglio diventerete di tipo elettrico fino alla fine del tuo turno successivo."
+        "Carichi i tuoi pugni con l'elettricità e ti scagli contro un bersaglio. Effettua un attacco in mischia, infliggendo 4d4 + MOVE danni di tipo Elettro se colpisci. In caso di colpo, sia tu che le mosse di tipo normale del tuo bersaglio diventerete di tipo elettrico fino alla fine del tuo turno successivo."
       ],
-      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d12 al livello 5, 4d8 al livello 10 e 8d6 al livello 17."
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d12 al livello 5, 4d8 al livello 10 e 8d6 al livello 17."
     },
     "play-nice": {
       "sourceName": "Play Nice",
       "name": "Simpatia",
       "description": [
-        "Convinci una creatura che non intendi farle del male. Obbliga una creatura a effettuare un tiro salvezza di CAR contro il tuo Movimento CD. In caso di fallimento, qualsiasi attacco effettuato dal bersaglio nel turno successivo subisce uno svantaggio. Se il bersaglio attiva una mossa che richiede un tiro salvezza, hai vantaggio sul tiro."
+        "Convinci una creatura che non intendi farle del male. Obbliga una creatura a effettuare un tiro salvezza su CAR contro il CD della mossa. In caso di fallimento, qualsiasi attacco effettuato dal bersaglio nel turno successivo ha svantaggio. Se il bersaglio attiva una mossa che richiede un tiro salvezza, hai vantaggio sul tiro."
       ],
       "higherLevels": null
     },
@@ -48,47 +48,47 @@
       "sourceName": "Play Rough",
       "name": "Carineria",
       "description": [
-        "Si finge una creatura con un attacco giocoso che diventa rapidamente troppo duro. Effettua un attacco in mischia contro una creatura, infliggendo 2d8 + MOVE danni da fata in caso di colpo. Con tiri per colpire naturali di 19 o 20, il bersaglio aggiunge -1 a qualsiasi attacco effettuato per il resto del combattimento. Questo effetto può essere accumulato fino a un massimo di -5 per colpire."
+        "Attacchi una creatura fingendo di giocare, ma il colpo diventa rapidamente molto violento. Effettua un attacco in mischia contro una creatura, infliggendo 2d8 + MOVE danni di tipo Folletto se colpisci. Con tiri per colpire naturali di 19 o 20, il bersaglio aggiunge -1 a qualsiasi attacco effettuato per il resto del combattimento. Questo effetto può essere accumulato fino a un massimo di -5 per colpire."
       ],
-      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d10 al livello 5, 3d10 al livello 10 e 4d12 al livello 17."
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d10 al livello 5, 3d10 al livello 10 e 4d12 al livello 17."
     },
     "pluck": {
       "sourceName": "Pluck",
       "name": "Spennata",
       "description": [
-        "Becchi un bersaglio, tentando di afferrare la bacca che tiene. Effettua un attacco in mischia su una creatura, infliggendo 1d10 + MOVE danni volanti in caso di colpo. In caso di colpo, se il bersaglio ha in mano una bacca, la inghiotti immediatamente e ottieni il suo effetto."
+        "Becchi un bersaglio, tentando di afferrare la bacca che tiene. Effettua un attacco in mischia contro una creatura, infliggendo 1d10 + MOVE danni di tipo Volante se colpisci. In caso di colpo, se il bersaglio ha in mano una bacca, la inghiotti immediatamente e ottieni il suo effetto."
       ],
-      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d8 al livello 5, 5d4 al livello 10 e 4d8 al livello 17."
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d8 al livello 5, 5d4 al livello 10 e 4d8 al livello 17."
     },
     "poison-fang": {
       "sourceName": "Poison Fang",
       "name": "Velenodenti",
       "description": [
-        "Ti scagli in avanti con veleno velenoso. Effettua un tiro per colpire in mischia contro una creatura, infliggendo 1d8 + MOVE danni da veleno in caso di colpo, costringendo il bersaglio a effettuare un COS tiro salvezza contro il tuo Movimento CD. In caso di fallimento, la creatura viene gravemente avvelenata."
+        "Ti scagli in avanti con zanne intrise di veleno. Effettua un attacco in mischia contro una creatura, infliggendo 1d8 + MOVE danni di tipo Veleno se colpisci, costringendo il bersaglio a effettuare un tiro salvezza su COS contro il CD della mossa. In caso di fallimento, la creatura diventa gravemente avvelenata."
       ],
-      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d6 al livello 5, 4d4 al livello 10 e 3d10 al livello 17."
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d6 al livello 5, 4d4 al livello 10 e 3d10 al livello 17."
     },
     "poison-gas": {
       "sourceName": "Poison Gas",
       "name": "Velenogas",
       "description": [
-        "Crei una nebbia di gas velenoso in un raggio di 15 foot, centrata su un punto entro la gittata. Le creature che iniziano il loro turno nell'area subiscono 1d4 + MOVE danni da veleno e devono superare un COS tiro salvezza contro il tuo Movimento CD o diventano avvelenati. La nube di gas si dissipa all'inizio del tuo prossimo turno."
+        "Crei una nebbia di gas velenoso in un raggio di 15 piedi, centrata su un punto entro la gittata. Le creature che iniziano il loro turno nell'area subiscono 1d4 + MOVE danni di tipo Veleno e devono superare un tiro salvezza su COS contro il CD della mossa o diventano avvelenate. La nube di gas si dissipa all'inizio del tuo prossimo turno."
       ],
-      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 1d6 al livello 5, 1d8 al livello 10 e 2d6 al livello 17."
+      "higherLevels": "Il dado di danno di questa mossa diventa 1d6 al livello 5, 1d8 al livello 10 e 2d6 al livello 17."
     },
     "poison-jab": {
       "sourceName": "Poison Jab",
       "name": "Velenpuntura",
       "description": [
-        "Pugni una creatura con un'appendice imbevuta di veleno. Effettua un attacco in mischia su una creatura, infliggendo 2d6 + MOVE danni da veleno in caso di colpo. Con un tiro per colpire naturale di 16 o superiore, il bersaglio viene avvelenato."
+        "Pugni una creatura con un'appendice imbevuta di veleno. Effettua un attacco in mischia contro una creatura, infliggendo 2d6 + MOVE danni di tipo Veleno se colpisci. Con un tiro per colpire naturale di 16 o superiore, il bersaglio viene avvelenato."
       ],
-      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d8 al livello 5, 4d6 al livello 10 e 6d6 al livello 17."
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d8 al livello 5, 4d6 al livello 10 e 6d6 al livello 17."
     },
     "poison-powder": {
       "sourceName": "Poison Powder",
       "name": "Velenpolvere",
       "description": [
-        "Rilasci un ammasso di spore velenose che esplodono nell'aria sopra un bersaglio. La creatura deve riuscire in un tiro salvezza di COS contro il tuo Movimento CD, diventando avvelenata in caso di fallimento."
+        "Rilasci un ammasso di spore velenose che esplodono nell'aria sopra un bersaglio. La creatura deve riuscire in un tiro salvezza su COS contro il CD della mossa, diventando avvelenata se lo fallisce."
       ],
       "higherLevels": null
     },
@@ -96,41 +96,41 @@
       "sourceName": "Poison Sting",
       "name": "Velenospina",
       "description": [
-        "Colpisci una creatura con una puntura velenosa. Effettua un tiro per colpire in mischia contro un bersaglio, infliggendo 1d4 + MOVE danni da veleno in caso di colpo. Se il tiro per colpire naturale è 18 o più, la creatura è avvelenata."
+        "Colpisci una creatura con una puntura velenosa. Effettua un attacco in mischia contro un bersaglio, infliggendo 1d4 + MOVE danni di tipo Veleno se colpisci. Se il tiro per colpire naturale è 18 o più, la creatura è avvelenata."
       ],
-      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 1d6 al livello 5, 1d8 al livello 10 e 2d6 al livello 17."
+      "higherLevels": "Il dado di danno di questa mossa diventa 1d6 al livello 5, 1d8 al livello 10 e 2d6 al livello 17."
     },
     "poison-tail": {
       "sourceName": "Poison Tail",
       "name": "Velenocoda",
       "description": [
-        "Uncini velenosi spuntano dalla tua coda mentre la fai oscillare verso una creatura. Effettua un attacco in mischia contro una creatura, infliggendo 1d8 + MOVE danni da veleno in caso di colpo. Se il tiro per colpire naturale è un 19 o 20, la mossa mette a segno un colpo critico e il bersaglio viene avvelenato."
+        "Uncini velenosi spuntano dalla tua coda mentre la fai oscillare verso una creatura. Effettua un attacco in mischia contro una creatura, infliggendo 1d8 + MOVE danni di tipo Veleno se colpisci. Se il tiro per colpire naturale è un 19 o 20, la mossa mette a segno un colpo critico e il bersaglio viene avvelenato."
       ],
-      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d6 al livello 5, 4d4 al livello 10 e 3d10 al livello 17."
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d6 al livello 5, 4d4 al livello 10 e 3d10 al livello 17."
     },
     "pollen-puff": {
       "sourceName": "Pollen Puff",
       "name": "Sferapolline",
       "description": [
-        "Invii una raffica di polline contro un bersaglio a portata. Effettua un tiro per colpire a distanza, infliggendo 2d8 + MOVE danni da Coleottero in caso di colpo. Se il bersaglio è un alleato, questa mossa colpisce e cura automaticamente invece l'ammontare del danno."
+        "Invii una raffica di polline contro un bersaglio a gittata. Effettua un attacco a distanza, infliggendo 2d8 + MOVE danni di tipo Coleottero se colpisci. Se il bersaglio è un alleato, questa mossa colpisce e cura automaticamente invece l'ammontare del danno."
       ],
-      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d10 al livello 5, 3d10 al livello 10 e 4d12 al livello 17."
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d10 al livello 5, 3d10 al livello 10 e 4d12 al livello 17."
     },
     "poltergeist": {
       "sourceName": "Poltergeist",
       "name": "Poltergeist",
       "description": [
-        "Attacchi controllando l'oggetto del bersaglio. Il bersaglio deve effettuare un tiro salvezza di CAR contro il tuo Movimento CD o perdere il controllo del suo oggetto. Se il tiro salvezza fallisce, puoi immediatamente effettuare un attacco in mischia contro una creatura entro 5 feet dall'oggetto. In caso di colpo, il bersaglio subisce 1d8 + MOVE danni da fantasma.",
-        "Come azione bonus nei tuoi turni successivi, puoi ripetere l'attacco contro una creatura entro 5 feet dall'oggetto.",
-        "L'oggetto segue entro 5 feet dal suo proprietario, rimanendo sospeso nelle vicinanze. La creatura non può beneficiare dell'oggetto mentre lo controlli. Il proprietario dell'oggetto può utilizzare un'azione nel suo turno per provare a riprendere il controllo dell'oggetto ripetendo il salvataggio CAR, terminando la concentrazione della mossa se il salvataggio riesce."
+        "Attacchi controllando l'oggetto del bersaglio. Il bersaglio deve effettuare un tiro salvezza su CAR contro il CD della mossa o perdere il controllo del suo oggetto. Se il tiro salvezza fallisce, puoi immediatamente effettuare un attacco in mischia contro una creatura entro 5 piedi dall'oggetto. In caso di colpo, il bersaglio subisce 1d8 + MOVE danni di tipo Spettro.",
+        "Come azione bonus nei tuoi turni successivi, puoi ripetere l'attacco contro una creatura entro 5 piedi dall'oggetto.",
+        "L'oggetto segue entro 5 piedi dal suo proprietario, rimanendo sospeso nelle vicinanze. La creatura non può beneficiare dell'oggetto mentre lo controlli. Il proprietario dell'oggetto può utilizzare un'azione nel suo turno per provare a riprendere il controllo dell'oggetto ripetendo il salvataggio CAR, terminando la concentrazione della mossa se il salvataggio riesce."
       ],
-      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d6 al livello 5, 4d4 al livello 10 e 3d10 al livello 17."
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d6 al livello 5, 4d4 al livello 10 e 3d10 al livello 17."
     },
     "population-bomb": {
       "sourceName": "Population Bomb",
       "name": "Infestazione",
       "description": [
-        "I tuoi compagni si riuniscono in massa per eseguire un attacco combinato. Effettua 10 tiri per colpire in mischia contro un bersaglio, infliggendo 1 + MOVE danni normali a ogni colpo."
+        "I tuoi compagni si riuniscono in massa per eseguire un attacco combinato. Effettua 10 tiri per colpire in mischia contro un bersaglio, infliggendo 1 + MOVE danni di tipo Normale a ogni colpo."
       ],
       "higherLevels": null
     },
@@ -138,41 +138,41 @@
       "sourceName": "Pounce",
       "name": "Balzo",
       "description": [
-        "Ti avventi sul bersaglio e salti via. Effettua un tiro per colpire in mischia contro un bersaglio, infliggendo 1d8 + MOVE danno da insetto al colpo. Se colpisci, puoi muovere un'ulteriore 10ft senza invocare un attacco di opportunità."
+        "Ti avventi sul bersaglio e salti via. Effettua un attacco in mischia contro un bersaglio, infliggendo 1d8 + MOVE danni di tipo Coleottero se colpisci. Se colpisci, puoi muovere un'ulteriore 10 piedi senza invocare un attacco di opportunità."
       ],
-      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d6 al livello 5, 4d4 al livello 10 e 3d10 al livello 17."
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d6 al livello 5, 4d4 al livello 10 e 3d10 al livello 17."
     },
     "pound": {
       "sourceName": "Pound",
       "name": "Botta",
       "description": [
-        "Schiaccia una creatura con un attacco con libbra. Effettua un tiro per colpire in mischia contro un bersaglio, infliggendo 1d6 + MOVE danno normale in caso di colpo."
+        "Schiaccia una creatura con un colpo poderoso. Effettua un attacco in mischia contro un bersaglio, infliggendo 1d6 + MOVE danni di tipo Normale se colpisci."
       ],
-      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 1d12 al livello 5, 2d8 al livello 10 e 4d6 al livello 17."
+      "higherLevels": "Il dado di danno di questa mossa diventa 1d12 al livello 5, 2d8 al livello 10 e 4d6 al livello 17."
     },
     "powder": {
       "sourceName": "Powder",
       "name": "Pulviscoppio",
       "description": [
-        "Ricopri rapidamente una creatura con una polvere esplosiva. Quando una creatura nel raggio d'azione attiva una mossa di tipo fuoco, puoi usare la tua reazione per rilasciare uno spruzzo di polvere infiammabile che esplode e infligge automaticamente 2d8 + MOVE danno senza tipo al bersaglio."
+        "Ricopri rapidamente una creatura con una polvere esplosiva. Quando una creatura a gittata attiva una mossa di tipo fuoco, puoi usare la tua reazione per rilasciare uno spruzzo di polvere infiammabile che esplode e infligge automaticamente 2d8 + MOVE danni senza tipo al bersaglio."
       ],
-      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d10 al livello 5, 3d10 al livello 10 e 4d12 al livello 17."
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d10 al livello 5, 3d10 al livello 10 e 4d12 al livello 17."
     },
     "powder-snow": {
       "sourceName": "Powder Snow",
       "name": "Polneve",
       "description": [
-        "Mandi un'esplosione di neve fredda contro una creatura. Effettua un tiro per colpire a distanza su una creatura, infliggendo 1d6 + MOVE danni da ghiaccio in caso di colpo. Se il tiro per colpire naturale è 18 o superiore, il bersaglio viene congelato."
+        "Mandi un'esplosione di neve fredda contro una creatura. Effettua un attacco a distanza contro una creatura, infliggendo 1d6 + MOVE danni di tipo Ghiaccio se colpisci. Se il tiro per colpire naturale è 18 o superiore, il bersaglio viene congelato."
       ],
-      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 1d12 al livello 5, 2d8 al livello 10 e 4d6 al livello 17."
+      "higherLevels": "Il dado di danno di questa mossa diventa 1d12 al livello 5, 2d8 al livello 10 e 4d6 al livello 17."
     },
     "power-gem": {
       "sourceName": "Power Gem",
       "name": "Gemmoforza",
       "description": [
-        "Un raggio di luce esce dalla tua pietra preziosa, danneggiando una creatura nel suo raggio d'azione. Effettua un attacco a distanza, infliggendo 2d6 + MOVE danni da roccia in caso di colpo."
+        "Un raggio di luce esce dalla tua pietra preziosa, danneggiando una creatura nel suo raggio d'azione. Effettua un attacco a distanza, infliggendo 2d6 + MOVE danni di tipo Roccia se colpisci."
       ],
-      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d8 al livello 5, 4d6 al livello 10 e 6d6 al livello 17."
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d8 al livello 5, 4d6 al livello 10 e 6d6 al livello 17."
     },
     "power-shift": {
       "sourceName": "Power Shift",
@@ -186,7 +186,7 @@
       "sourceName": "Power Split",
       "name": "Pariattacco",
       "description": [
-        "Usi il tuo potere psichico per modificare il tuo attacco e adattarlo al meglio a quello del bersaglio. Obbliga una creatura nel raggio d'azione a effettuare un CAR tiro salvezza contro il tuo Movimento CD. In caso di guasto, scegli il tuo FOR, DES o SAG. Per la durata, sostituisci il punteggio di caratteristica scelto con la media del tuo punteggio attuale e del punteggio del bersaglio."
+        "Usi il tuo potere psichico per modificare il tuo attacco e adattarlo al meglio a quello del bersaglio. Obbliga una creatura a gittata a effettuare un tiro salvezza su CAR contro il CD della mossa. In caso di guasto, scegli il tuo FOR, DES o SAG. Per la durata, sostituisci il punteggio di caratteristica scelto con la media del tuo punteggio attuale e del punteggio del bersaglio."
       ],
       "higherLevels": null
     },
@@ -194,7 +194,7 @@
       "sourceName": "Power Swap",
       "name": "Barattoforza",
       "description": [
-        "Come azione bonus, costringi una creatura nel raggio d'azione a effettuare un SAG tiro salvezza contro il tuo Movimento CD. In caso di fallimento, utilizzi il tuo potere psichico per scambiare un singolo punteggio di caratteristica con una creatura fino alla fine del suo turno successivo, ai fini dei tiri per colpire e per i danni."
+        "Come azione bonus, costringi una creatura a gittata a effettuare un tiro salvezza su SAG contro il CD della mossa. In caso di fallimento, utilizzi il tuo potere psichico per scambiare un singolo punteggio di caratteristica con una creatura fino alla fine del suo turno successivo, ai fini dei tiri per colpire e per i danni."
       ],
       "higherLevels": null
     },
@@ -210,49 +210,49 @@
       "sourceName": "Power Trip",
       "name": "Tracotanza",
       "description": [
-        "Ti vanti della tua forza e attacchi un bersaglio. Effettua un attacco in mischia, infliggendo 1d4 + MOVE danno oscuro in caso di colpo. Per ogni modifica unica alle statistiche che colpisce l'utente, aggiungi un dado danno aggiuntivo."
+        "Ti vanti della tua forza e attacchi un bersaglio. Effettua un attacco in mischia, infliggendo 1d4 + MOVE danni di tipo Buio se colpisci. Per ogni modifica unica alle statistiche che colpisce l'utente, aggiungi un dado danno aggiuntivo."
       ],
-      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 1d6 al livello 5, 1d8 al livello 10 e 1d10 al livello 17."
+      "higherLevels": "Il dado di danno di questa mossa diventa 1d6 al livello 5, 1d8 al livello 10 e 1d10 al livello 17."
     },
     "power-whip": {
       "sourceName": "Power Whip",
       "name": "Vigorcolpo",
       "description": [
-        "Fai ruotare violentemente i tuoi tentacoli o i tuoi rampicanti verso un bersaglio. Effettua un attacco in mischia contro una creatura, infliggendo 2d10 + MOVE danni da erba in caso di colpo"
+        "Fai ruotare violentemente i tuoi tentacoli o i tuoi rampicanti verso un bersaglio. Effettua un attacco in mischia contro una creatura, infliggendo 2d10 + MOVE danni di tipo Erba se colpisci"
       ],
-      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 3d8 al livello 5, 4d10 al livello 10 e 7d8 al livello 17."
+      "higherLevels": "Il dado di danno di questa mossa diventa 3d8 al livello 5, 4d10 al livello 10 e 7d8 al livello 17."
     },
     "power-up-punch": {
       "sourceName": "Power-Up Punch",
       "name": "Crescipugno",
       "description": [
-        "Colpisci con un pugno potente che aumenta di forza quanto più colpisci. Effettua un attacco in mischia su un bersaglio, infliggendo 1d6 + MOVE danni da combattimento in caso di colpo andato a segno contro la stessa creatura. Per ogni colpo andato a segno, aggiungi un dado di danno aggiuntivo, con un numero massimo di dadi di danno pari al doppio dell'importo originale. Il danno si azzera se manchi o prendi di mira una creatura diversa."
+        "Colpisci con un pugno potente che aumenta di forza quanto più colpisci. Effettua un attacco in mischia contro un bersaglio, infliggendo 1d6 + MOVE danni di tipo Lotta se colpisci andato a segno contro la stessa creatura. Per ogni colpo andato a segno, aggiungi un dado di danno aggiuntivo, con un numero massimo di dadi di danno pari al doppio dell'importo originale. Il danno si azzera se manchi o prendi di mira una creatura diversa."
       ],
-      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d6 al livello 5, 3d6 al livello 10 e 4d6 al livello 17."
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d6 al livello 5, 3d6 al livello 10 e 4d6 al livello 17."
     },
     "precipice-blades": {
       "sourceName": "Precipice Blades",
       "name": "Spade Telluriche",
       "description": [
-        "Raccogli l'energia naturale della terra intorno a te e manifesti tutto il potere in temibili lame di pietra. Effettua tre tiri per colpire a distanza contro qualsiasi creatura nel raggio d'azione, infliggendo 1d10 + MOVE danni al suolo per ogni colpo andato a segno."
+        "Raccogli l'energia naturale della terra intorno a te e manifesti tutto il potere in temibili lame di pietra. Effettua tre tiri per colpire a distanza contro qualsiasi creatura a gittata, infliggendo 1d10 + MOVE danni al suolo per ogni colpo andato a segno."
       ],
-      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d8 al livello 5, 5d4 al livello 10 e 4d8 al livello 17."
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d8 al livello 5, 5d4 al livello 10 e 4d8 al livello 17."
     },
     "present": {
       "sourceName": "Present",
       "name": "Regalino",
       "description": [
-        "Invii un regalo con una trappola esplosiva a una creatura. Effettua un attacco a distanza su una creatura a portata. In caso di colpo, il regalo esplode, infliggendo 1d6 + MOVE danno normale. Se il tiro per colpire naturale è 2 o inferiore, tuttavia, indipendentemente dal fatto che vada a segno, il regalo fornisce invece al bersaglio 1d6 + MOVE PF."
+        "Invii un regalo con una trappola esplosiva a una creatura. Effettua un attacco a distanza contro una creatura a gittata. In caso di colpo, il regalo esplode, infliggendo 1d6 + MOVE danni di tipo Normale. Se il tiro per colpire naturale è 2 o inferiore, tuttavia, indipendentemente dal fatto che vada a segno, il regalo fornisce invece al bersaglio 1d6 + MOVE PF."
       ],
-      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d4 al livello 5, 1d12 al livello 10 e 4d4 al livello 17."
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d4 al livello 5, 1d12 al livello 10 e 4d4 al livello 17."
     },
     "prismatic-laser": {
       "sourceName": "Prismatic Laser",
       "name": "Prismalaser",
       "description": [
-        "Utilizzi il potere di un prisma per sparare una raccolta di laser pericolosi in una linea 60 foot larga 5ft. Qualsiasi creatura intrappolata nella linea deve superare un DES tiro salvezza o subire 4d6 + MOVE danno psichico in caso di fallimento e la metà in caso di tiro salvezza. Questa mossa non può essere utilizzata in turni consecutivi dalla stessa creatura."
+        "Utilizzi il potere di un prisma per sparare una raccolta di laser pericolosi in una linea 60 piedi larga 5 piedi. Qualsiasi creatura intrappolata nella linea deve superare un tiro salvezza su DES o subire 4d6 + MOVE danni di tipo Psico se lo fallisce e la metà in caso di tiro salvezza. Questa mossa non può essere utilizzata in turni consecutivi dalla stessa creatura."
       ],
-      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 5d6 al livello 5, 6d8 al livello 10 e 6d12 al livello 17."
+      "higherLevels": "Il dado di danno di questa mossa diventa 5d6 al livello 5, 6d8 al livello 10 e 6d12 al livello 17."
     },
     "protect": {
       "sourceName": "Protect",
@@ -266,17 +266,17 @@
       "sourceName": "Psybeam",
       "name": "Psicoraggio",
       "description": [
-        "Invii un raggio di energia psichica invisibile a un bersaglio a gittata. Il bersaglio deve effettuare un tiro salvezza di SAG contro il tuo Movimento CD, subendo 2d6 + MOVE danni psichici in caso di fallimento, o la metà di quel danno in caso di successo. Le creature che falliscono il tiro salvezza di 5 o più diventano confuse."
+        "Invii un raggio di energia psichica invisibile a un bersaglio a gittata. Il bersaglio deve effettuare un tiro salvezza su SAG contro il CD della mossa, subendo 2d6 + MOVE danni di tipo Psico se lo fallisce, o la metà di quel danno se lo supera. Le creature che falliscono il tiro salvezza di 5 o più diventano confuse."
       ],
-      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d8 al livello 5, 4d6 al livello 10 e 6d6 al livello 17."
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d8 al livello 5, 4d6 al livello 10 e 6d6 al livello 17."
     },
     "psyblade": {
       "sourceName": "Psyblade",
       "name": "Psicolama",
       "description": [
-        "Squarci il bersaglio con una lama eterea. Effettua un attacco in mischia, infliggendo 2d6 + MOVE danni psichici in caso di colpo. Se ti trovi su un terreno elettrico, effettui l'attacco con vantaggio."
+        "Squarci il bersaglio con una lama eterea. Effettua un attacco in mischia, infliggendo 2d6 + MOVE danni di tipo Psico se colpisci. Se ti trovi su un terreno elettrico, effettui l'attacco con vantaggio."
       ],
-      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d8 al livello 5, 4d6 al livello 10 e 6d6 al livello 17."
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d8 al livello 5, 4d6 al livello 10 e 6d6 al livello 17."
     },
     "psych-up": {
       "sourceName": "Psych Up",
@@ -290,25 +290,25 @@
       "sourceName": "Psychic",
       "name": "Psichico",
       "description": [
-        "Attingi alla mente di un bersaglio, danneggiando la sua volontà di combattere. Effettua un attacco a distanza su una creatura nel raggio d'azione, infliggendo 2d8 + MOVE danni psichici in caso di colpo. Se il tiro per colpire naturale è 18 o superiore, il bersaglio diventa confuso."
+        "Attingi alla mente di un bersaglio, danneggiando la sua volontà di combattere. Effettua un attacco a distanza contro una creatura a gittata, infliggendo 2d8 + MOVE danni di tipo Psico se colpisci. Se il tiro per colpire naturale è 18 o superiore, il bersaglio diventa confuso."
       ],
-      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d10 al livello 5, 3d10 al livello 10 e 4d12 al livello 17."
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d10 al livello 5, 3d10 al livello 10 e 4d12 al livello 17."
     },
     "psychic-fangs": {
       "sourceName": "Psychic Fangs",
       "name": "Psicozanna",
       "description": [
-        "L'incantatore materializza una serie di grandi zanne che mordono una creatura dotata di energia psichica. Effettua un attacco a distanza, infliggendo 2d6 + MOVE danni psichici in caso di colpo. In caso di colpo, questa mossa bypassa e termina Aurora Veil e non è influenzata da Light Screen e Reflect."
+        "L'incantatore materializza una serie di grandi zanne che mordono una creatura dotata di energia psichica. Effettua un attacco a distanza, infliggendo 2d6 + MOVE danni di tipo Psico se colpisci. In caso di colpo, questa mossa bypassa e termina Aurora Veil e non è influenzata da Light Screen e Reflect."
       ],
-      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d8 al livello 5, 4d6 al livello 10 e 6d6 al livello 17."
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d8 al livello 5, 4d6 al livello 10 e 6d6 al livello 17."
     },
     "psychic-noise": {
       "sourceName": "Psychic Noise",
       "name": "Psicorumore",
       "description": [
-        "Attacchi il bersaglio con onde sonore spiacevoli. Il bersaglio deve effettuare un SAG salvataggio contro il tuo Movimento CD. In caso di fallimento, il bersaglio subisce 1d12 + MOVE danni psichici e non può recuperare PF fino alla fine del tuo turno successivo."
+        "Attacchi il bersaglio con onde sonore spiacevoli. Il bersaglio deve effettuare un tiro salvezza su SAG contro il CD della mossa. In caso di fallimento, il bersaglio subisce 1d12 + MOVE danni di tipo Psico e non può recuperare PF fino alla fine del tuo turno successivo."
       ],
-      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d8 al livello 5, 2d12 al livello 10 e 6d6 al livello 17."
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d8 al livello 5, 2d12 al livello 10 e 6d6 al livello 17."
     },
     "psychic-terrain": {
       "sourceName": "Psychic Terrain",
@@ -322,23 +322,23 @@
       "sourceName": "Psycho Boost",
       "name": "Psicoslancio",
       "description": [
-        "Invii un'ondata estremamente potente di energia psichica alle creature in un cono 60 foot. Le creature nell'onda devono effettuare un SAG tiro salvezza contro il tuo Movimento CD, subendo 5d6 + MOVE danno psichico in caso di fallimento, o la metà di quel danno in caso di successo. La potenza della mossa ti esaurisce e il tuo prossimo attacco viene effettuato in svantaggio. Se il tuo prossimo attacco richiede un tiro salvezza delle creature, queste hanno vantaggio."
+        "Invii un'ondata estremamente potente di energia psichica alle creature in un cono 60 piedi. Le creature nell'onda devono effettuare un tiro salvezza su SAG contro il CD della mossa, subendo 5d6 + MOVE danni di tipo Psico se lo fallisce, o la metà di quel danno se lo supera. La potenza della mossa ti esaurisce e il tuo prossimo attacco viene effettuato in svantaggio. Se il tuo prossimo attacco richiede un tiro salvezza delle creature, queste hanno vantaggio."
       ],
-      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 4d10 al livello 5, 6d10 al livello 10 e 8d12 al livello 17."
+      "higherLevels": "Il dado di danno di questa mossa diventa 4d10 al livello 5, 6d10 al livello 10 e 8d12 al livello 17."
     },
     "psycho-cut": {
       "sourceName": "Psycho Cut",
       "name": "Psicotaglio",
       "description": [
-        "Affronti un bersaglio con lame formate dal potere psichico. Effettua un attacco a distanza su una creatura, infliggendo 1d12 + MOVE danni psichici in caso di colpo. Questa mossa mette a segno un colpo critico sui tiri naturali di 19 o 20."
+        "Affronti un bersaglio con lame formate dal potere psichico. Effettua un attacco a distanza contro una creatura, infliggendo 1d12 + MOVE danni di tipo Psico se colpisci. Questa mossa mette a segno un colpo critico sui tiri naturali di 19 o 20."
       ],
-      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d8 al livello 5, 2d12 al livello 10 e 6d6 al livello 17."
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d8 al livello 5, 2d12 al livello 10 e 6d6 al livello 17."
     },
     "psycho-shift": {
       "sourceName": "Psycho Shift",
       "name": "Psicotransfer",
       "description": [
-        "Utilizzi il tuo potere psichico per trasferire una condizione di status a qualcun altro. Scegli un alleato consenziente (o te stesso) e una creatura nel raggio d'azione. Forza il bersaglio a effettuare un SAG salvataggio contro il tuo Movimento CD. in caso di fallimento, uno stato che influenza l'alleato (o te) viene invece trasferito al bersaglio."
+        "Utilizzi il tuo potere psichico per trasferire una condizione di status a qualcun altro. Scegli un alleato consenziente (o te stesso) e una creatura a gittata. Forza il bersaglio a effettuare un tiro salvezza su SAG contro il CD della mossa. se lo fallisce, uno stato che influenza l'alleato (o te) viene invece trasferito al bersaglio."
       ],
       "higherLevels": null
     },
@@ -346,31 +346,31 @@
       "sourceName": "Psyshield Bash",
       "name": "Barrierassalto",
       "description": [
-        "Ti avvolgi di energia psichica prima di colpire il bersaglio. Effettua un attacco in mischia su una creatura, infliggendo 1d12 + MOVE danni psichici in caso di colpo. Il tuo CA aumenta di 1 fino alla fine del tuo prossimo turno."
+        "Ti avvolgi di energia psichica prima di colpire il bersaglio. Effettua un attacco in mischia contro una creatura, infliggendo 1d12 + MOVE danni di tipo Psico se colpisci. Il tuo CA aumenta di 1 fino alla fine del tuo prossimo turno."
       ],
-      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d8 al livello 5, 2d12 al livello 10 e 6d6 al livello 17."
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d8 al livello 5, 2d12 al livello 10 e 6d6 al livello 17."
     },
     "psyshock": {
       "sourceName": "Psyshock",
       "name": "Psicoshock",
       "description": [
-        "Materializzi un'onda psichica che sciocca una creatura. Effettua un attacco a distanza, infliggendo 2d6 + MOVE danni psichici in caso di colpo."
+        "Materializzi un'onda psichica che sciocca una creatura. Effettua un attacco a distanza, infliggendo 2d6 + MOVE danni di tipo Psico se colpisci."
       ],
-      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d8 al livello 5, 4d6 al livello 10 e 6d6 al livello 17."
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d8 al livello 5, 4d6 al livello 10 e 6d6 al livello 17."
     },
     "psystrike": {
       "sourceName": "Psystrike",
       "name": "Psicobotta",
       "description": [
-        "Materializzi un'onda psichica che sciocca una creatura. Effettua un attacco a distanza, infliggendo 2d6 + MOVE danni psichici in caso di colpo."
+        "Materializzi un'onda psichica che sciocca una creatura. Effettua un attacco a distanza, infliggendo 2d6 + MOVE danni di tipo Psico se colpisci."
       ],
-      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d12 al livello 5, 4d8 al livello 10 e 8d6 al livello 17."
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d12 al livello 5, 4d8 al livello 10 e 8d6 al livello 17."
     },
     "psywave": {
       "sourceName": "Psywave",
       "name": "Psiconda",
       "description": [
-        "Emetti un'onda di energia psichica in una linea 40 foot larga 5 feet. Ogni creatura catturata nell'onda deve effettuare un SAG tiro salvezza contro il tuo Movimento CD, diventando confusa in caso di fallimento."
+        "Emetti un'onda di energia psichica in una linea 40 piedi larga 5 piedi. Ogni creatura catturata nell'onda deve effettuare un tiro salvezza su SAG contro il CD della mossa, diventando confusa se lo fallisce."
       ],
       "higherLevels": null
     },
@@ -378,9 +378,9 @@
       "sourceName": "Punishment",
       "name": "Punizione",
       "description": [
-        "Invii energia oscura per punire una creatura. Effettua un attacco a distanza contro una creatura, infliggendo 1d10 + MOVE danni oscuri in caso di colpo. Se il bersaglio è attualmente sotto l'influenza di una mossa o abilità che ne potenzia l'attacco, il danno o CA, aumenta il danno di un dado danno per ogni effetto."
+        "Invii energia oscura per punire una creatura. Effettua un attacco a distanza contro una creatura, infliggendo 1d10 + MOVE danni di tipo Buio se colpisci. Se il bersaglio è attualmente sotto l'influenza di una mossa o abilità che ne potenzia l'attacco, il danno o CA, aumenta il danno di un dado danno per ogni effetto."
       ],
-      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d10 al livello 5, 3d10 al livello 10 e 4d10 al livello 17."
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d10 al livello 5, 3d10 al livello 10 e 4d10 al livello 17."
     },
     "purify": {
       "sourceName": "Purify",
@@ -394,23 +394,23 @@
       "sourceName": "Pursuit",
       "name": "Inseguimento",
       "description": [
-        "Come reazione, quando una creatura fugge o viene scambiata dal suo allenatore, puoi effettuare un tiro di attacco a distanza contro di essa, infliggendo 1d6 + MOVE danno oscuro in caso di colpo."
+        "Come reazione, quando una creatura fugge o viene scambiata dal suo allenatore, puoi effettuare un tiro di attacco a distanza contro di essa, infliggendo 1d6 + MOVE danni di tipo Buio se colpisci."
       ],
-      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 1d12 al livello 5, 2d8 al livello 10 e 4d6 al livello 17."
+      "higherLevels": "Il dado di danno di questa mossa diventa 1d12 al livello 5, 2d8 al livello 10 e 4d6 al livello 17."
     },
     "pyro-ball": {
       "sourceName": "Pyro Ball",
       "name": "Palla Infuocata",
       "description": [
-        "L'utilizzatore attacca accendendo una piccola pietra e lanciandola come una palla infuocata contro il bersaglio. Effettua un attacco a distanza contro una creatura, infliggendo 2d8 + MOVE danni da fuoco al colpo. Quando viene colpito, il bersaglio deve effettuare un tiro salvezza di DES, venendo bruciato in caso di fallimento."
+        "L'utilizzatore attacca accendendo una piccola pietra e lanciandola come una palla infuocata contro il bersaglio. Effettua un attacco a distanza contro una creatura, infliggendo 2d8 + MOVE danni di tipo Fuoco se colpisci. Quando viene colpito, il bersaglio deve effettuare un tiro salvezza su DES, venendo bruciato se lo fallisce."
       ],
-      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d10 al livello 5, 3d8 al livello 10 e 4d10 al livello 17."
+      "higherLevels": "Il dado di danno di questa mossa diventa 2d10 al livello 5, 3d8 al livello 10 e 4d10 al livello 17."
     },
     "quash": {
       "sourceName": "Quash",
       "name": "Spintone",
       "description": [
-        "Invii energia oscura a una creatura nel raggio d'azione, riducendo la sua volontà di combattere. Il bersaglio deve effettuare un SAG salvataggio contro il tuo Movimento CD. In caso di fallimento, deve spostarsi in fondo all’ordine di iniziativa solo per questo round. I bersagli che hanno già effettuato il loro turno in questo round non vengono influenzati."
+        "Invii energia oscura a una creatura a gittata, riducendo la sua volontà di combattere. Il bersaglio deve effettuare un tiro salvezza su SAG contro il CD della mossa. In caso di fallimento, deve spostarsi in fondo all’ordine di iniziativa solo per questo round. I bersagli che hanno già effettuato il loro turno in questo round non vengono influenzati."
       ],
       "higherLevels": null
     }

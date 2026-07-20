@@ -1,0 +1,85 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/items.json",
+  "nameSources": [
+    "https://wiki.pokemoncentral.it/Elenco_degli_strumenti_in_altre_lingue",
+    "https://wiki.pokemoncentral.it/Strumenti_tenuti",
+    "https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/item_names.csv"
+  ],
+  "type": "held item",
+  "range": {
+    "start": 205,
+    "end": 214
+  },
+  "localizedCount": 10,
+  "items": {
+    "zoom-lens": {
+      "sourceName": "Zoom Lens",
+      "name": "Zoomlente",
+      "description": []
+    },
+    "megalite-stone": {
+      "sourceName": "Megalite Stone",
+      "name": "Megalite Stone",
+      "description": [
+        "Permette al Pokémon che tiene questo strumento di effettuare la Megaevoluzione. Possiede una carica e la recupera ogni giorno all'alba."
+      ]
+    },
+    "normalium-z": {
+      "sourceName": "Normalium Z",
+      "name": "Normium Z",
+      "description": [
+        "Permette al Pokémon che tiene questo strumento di usare una Mossa Z di tipo Normale. Possiede una carica e la recupera ogni giorno all'alba."
+      ]
+    },
+    "fightinium-z": {
+      "sourceName": "Fightinium Z",
+      "name": "Luctium Z",
+      "description": [
+        "Permette al Pokémon che tiene questo strumento di usare una Mossa Z di tipo Lotta. Possiede una carica e la recupera ogni giorno all'alba."
+      ]
+    },
+    "flyinium-z": {
+      "sourceName": "Flyinium Z",
+      "name": "Volantium Z",
+      "description": [
+        "Permette al Pokémon che tiene questo strumento di usare una Mossa Z di tipo Volante. Possiede una carica e la recupera ogni giorno all'alba."
+      ]
+    },
+    "poisonium-z": {
+      "sourceName": "Poisonium Z",
+      "name": "Venenium Z",
+      "description": [
+        "Permette al Pokémon che tiene questo strumento di usare una Mossa Z di tipo Veleno. Possiede una carica e la recupera ogni giorno all'alba."
+      ]
+    },
+    "groundium-z": {
+      "sourceName": "Groundium Z",
+      "name": "Terrium Z",
+      "description": [
+        "Permette al Pokémon che tiene questo strumento di usare una Mossa Z di tipo Terra. Possiede una carica e la recupera ogni giorno all'alba."
+      ]
+    },
+    "rockium-z": {
+      "sourceName": "Rockium Z",
+      "name": "Petrium Z",
+      "description": [
+        "Permette al Pokémon che tiene questo strumento di usare una Mossa Z di tipo Roccia. Possiede una carica e la recupera ogni giorno all'alba."
+      ]
+    },
+    "buginium-z": {
+      "sourceName": "Buginium Z",
+      "name": "Insectium Z",
+      "description": [
+        "Permette al Pokémon che tiene questo strumento di usare una Mossa Z di tipo Coleottero. Possiede una carica e la recupera ogni giorno all'alba."
+      ]
+    },
+    "ghostium-z": {
+      "sourceName": "Ghostium Z",
+      "name": "Spectrium Z",
+      "description": [
+        "Permette al Pokémon che tiene questo strumento di usare una Mossa Z di tipo Spettro. Possiede una carica e la recupera ogni giorno all'alba."
+      ]
+    }
+  }
+}

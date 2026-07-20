@@ -16,7 +16,7 @@ void main() {
 
   setUp(MoveLocalizationRepository.clearCache);
 
-  test('i cataloghi italiani coprono le tutte le 830 mosse in ordine', () async {
+  test('i cataloghi italiani coprono tutte le 830 mosse in ordine', () async {
     final sourceMoves = await _sourceMoves();
     final sourceById = {
       for (final move in sourceMoves) move['id'].toString(): move,
@@ -119,7 +119,7 @@ void main() {
     expect(errors, isEmpty, reason: errors.join('\n'));
   });
 
-  test('le tutte le 830 mosse usano i nomi italiani verificati', () async {
+  test('tutte le 830 mosse usano i nomi italiani verificati', () async {
     final names = <String, String>{};
     final expectedNames = <String, String>{
       ...moveNames1To50,
@@ -254,7 +254,7 @@ Map<String, int> _mechanicalTokenCounts(
 }) {
   final expression = RegExp(
     includeHealthPhrases
-        ? r'\b\d+d\d+\b|\bd\d+\b|[+\-]\s*\d+|\b\d+[sx]\b|\b\d+(?:ft|\s*(?:feet|foot|piedi|piede))?\b|\b(?:hit points?|Hit Points?|punti ferita|Punti ferita)\b|\b(?:HP|PF|STR|FOR|DEX|DES|CON|COS|WIS|SAG|CHA|CAR|INT|AC|CA|STAB|DC|CD|MOVE|PP|SR|FLINCHED)\b|\b(?:flinch|flinches|flinched)\b'
+        ? r'\b\d+d\d+\b|\bd\d+\b|[+\-]\s*\d+|\b\d+[sx]\b|\b\d+(?:ft|\s*(?:feet|foot|piedi|piede))?\b|\b(?:hitpoints?|hit points?|Hit Points?|punti ferita|Punti ferita)\b|\b(?:HP|PF|STR|FOR|DEX|DES|CON|COS|WIS|SAG|CHA|CAR|INT|AC|CA|STAB|DC|CD|MOVE|PP|SR|FLINCHED)\b|\b(?:flinch|flinches|flinched)\b'
         : r'\b\d+d\d+\b|\bd\d+\b|[+\-]\s*\d+|\b\d+(?:ft|\s*(?:feet|foot|piedi|piede))?\b|\b(?:HP|PF|STR|FOR|DEX|DES|CON|COS|WIS|SAG|CHA|CAR|INT|AC|CA|STAB|DC|CD|MOVE|PP|SR|FLINCHED|flinch(?:es|ed)?)\b',
   );
   final result = <String, int>{};

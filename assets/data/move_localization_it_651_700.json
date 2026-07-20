@@ -16,17 +16,17 @@
       "sourceName": "Sludge Wave",
       "name": "Fangonda",
       "description": [
-        "Evochi un'ondata di melma velenosa che si abbatte sulle creature in un cono 30 foot. Qualsiasi creatura coinvolta nell'esplosione deve effettuare un tiro salvezza su COS contro il tuo Movimento CD, subendo 2d8 + MOVE danni da veleno in caso di fallimento, o la metà di questi danni in caso di successo. Se una creatura fallisce il tiro salvezza di 5 o più, diventa avvelenata."
+        "Evochi un'ondata di melma velenosa che si abbatte sulle creature in un cono 30 piedi. Qualsiasi creatura coinvolta nell'esplosione deve effettuare un tiro salvezza su COS contro la tua CD della mossa, subendo 2d8 + MOVE danni di tipo Veleno se lo fallisce, o la metà dei danni se lo supera. Se una creatura fallisce il tiro salvezza di 5 o più, diventa avvelenata."
       ],
-      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d10 al livello 5, 3d10 al livello 10 e 4d12 al livello 17."
+      "higherLevels": "Il dado di danno per questa mossa diventa 2d10 al livello 5, 3d10 al livello 10 e 4d12 al livello 17."
     },
     "smack-down": {
       "sourceName": "Smack Down",
       "name": "Abbattimento",
       "description": [
-        "Lanci un solido pezzo di pietra contro una creatura nel tentativo di portarla a terra. Effettua un attacco a distanza, infliggendo 1d8 + MOVE danni da roccia in caso di colpo. In caso di colpo, qualsiasi creatura \"sollevata\" cade prona e perde la velocità di volo e l'immunità alle mosse di tipo terra finché non può muoversi di nuovo. Questa mossa può prendere di mira le creature nella fase invulnerabile di Volo o Rimbalzo."
+        "Lanci un solido pezzo di pietra contro una creatura nel tentativo di portarla a terra. Effettua un attacco a distanza, infliggendo 1d8 + MOVE danni di tipo Roccia se colpisci. Se colpisci, qualsiasi creatura \"sollevata\" cade prona e perde la velocità di volo e l'immunità alle mosse di tipo terra finché non può muoversi di nuovo. Questa mossa può prendere di mira le creature nella fase invulnerabile di Volo o Rimbalzo."
       ],
-      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d6 al livello 5, 4d4 al livello 10 e 3d10 al livello 17."
+      "higherLevels": "Il dado di danno per questa mossa diventa 2d6 al livello 5, 4d4 al livello 10 e 3d10 al livello 17."
     },
     "smart-strike": {
       "sourceName": "Smart Strike",
@@ -34,29 +34,29 @@
       "description": [
         "Si individua il punto perfetto per colpire una creatura con un corno forte come l'acciaio. Questa mossa infligge sicuramente danni all'acciaio 1d6 + MOVE, a meno che durante la fase di invulnerabilità delle mosse Vola, Scava, Rimbalza, Tuffati, ecc."
       ],
-      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 1d10 al livello 5, 2d8 al livello 10 e 5d4 al livello 17."
+      "higherLevels": "Il dado di danno per questa mossa diventa 1d10 al livello 5, 2d8 al livello 10 e 5d4 al livello 17."
     },
     "smelling-salts": {
       "sourceName": "Smelling Salts",
       "name": "Maniereforti",
       "description": [
-        "Procurati una manciata di sale dall'odore forte, danneggiando i sensi di una creatura. Effettua un attacco a distanza contro un bersaglio, infliggendo 1d8 + MOVE danni normali in caso di colpo. Se il bersaglio è paralizzato, raddoppia il tiro di dado per il danno."
+        "Procurati una manciata di sale dall'odore forte, danneggiando i sensi di una creatura. Effettua un attacco a distanza contro un bersaglio, infliggendo 1d8 + MOVE danni normali se colpisci. Se il bersaglio è paralizzato, raddoppia il tiro di dado per il danno."
       ],
-      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d6 al livello 5, 2d12 al livello 10 e 3d10 al livello 17."
+      "higherLevels": "Il dado di danno per questa mossa diventa 2d6 al livello 5, 2d12 al livello 10 e 3d10 al livello 17."
     },
     "smog": {
       "sourceName": "Smog",
       "name": "Smog",
       "description": [
-        "Rilasci una nube tossica di smog velenoso in un raggio 10 foot, centrata su un punto entro la gittata. Qualsiasi creatura che inizia il proprio turno in quest'area deve superare un tiro salvezza su COS contro il tuo Movimento CD, subendo 1d6 + MOVE danni da veleno in caso di fallimento, o la metà di questi danni in caso di successo. Le creature che falliscono questo tiro salvezza di 5 o più diventano avvelenate."
+        "Rilasci una nube tossica di smog velenoso in un raggio 10 piedi, centrata su un punto entro la gittata. Qualsiasi creatura che inizia il proprio turno in quest'area deve superare un tiro salvezza su COS contro la tua CD della mossa, subendo 1d6 + MOVE danni di tipo Veleno se lo fallisce, o la metà dei danni se lo supera. Le creature che falliscono questo tiro salvezza di 5 o più diventano avvelenate."
       ],
-      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d4 al livello 5, 1d12 al livello 10 e 4d4 al livello 17."
+      "higherLevels": "Il dado di danno per questa mossa diventa 2d4 al livello 5, 1d12 al livello 10 e 4d4 al livello 17."
     },
     "smokescreen": {
       "sourceName": "Smokescreen",
       "name": "Muro di Fumo",
       "description": [
-        "Evochi una linea di fumo sul campo di battaglia, lunga 60 feet e spessa 5 feet, che si estende in qualsiasi direzione da un punto entro la gittata. L'area su entrambi i lati è oscurata e impone uno svantaggio a qualsiasi attacco a distanza effettuato da una creatura che ne prende di mira un'altra sul lato opposto. Qualsiasi creatura all'interno del muro di fumo, quando viene evocata, deve effettuare un tiro salvezza su COS contro il tuo Movimento CD o rimanere accecata per la durata. Una creatura accecata può ripetere il tiro salvezza all'inizio del suo turno per rimuovere l'effetto in caso di successo."
+        "Evochi una linea di fumo sul campo di battaglia, lunga 60 piedi e spessa 5 piedi, che si estende in qualsiasi direzione da un punto entro la gittata. L'area su entrambi i lati è oscurata e impone uno svantaggio a qualsiasi attacco a distanza effettuato da una creatura che ne prende di mira un'altra sul lato opposto. Qualsiasi creatura all'interno del muro di fumo, quando viene evocata, deve effettuare un tiro salvezza su COS contro la tua CD della mossa o diventare accecata per la durata. Una creatura accecata può ripetere il tiro salvezza all'inizio del suo turno per rimuovere l'effetto se lo supera."
       ],
       "higherLevels": null
     },
@@ -64,24 +64,24 @@
       "sourceName": "Snap Trap",
       "name": "Tagliola",
       "description": [
-        "Tenti di intrappolare il bersaglio in una trappola a scatto. Una creatura a portata di mischia deve effettuare un tiro salvezza su DES contro il tuo Movimento CD. In caso di fallimento, il bersaglio subisce 1d6 + MOVE danni da erba e viene afferrato da te.",
+        "Tenti di intrappolare il bersaglio in una trappola a scatto. Una creatura a portata di mischia deve effettuare un tiro salvezza su DES contro la tua CD della mossa. Se lo fallisce, il bersaglio subisce 1d6 + MOVE danni di tipo Erba e viene afferrato da te.",
         "Quando questa mossa viene utilizzata come attacco di opportunità contro una creatura che si muove fuori dalla tua portata, il bersaglio effettua il tiro salvezza con svantaggio."
       ],
-      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 1d10 al livello 5, 2d8 al livello 10 e 5d4 al livello 17."
+      "higherLevels": "Il dado di danno per questa mossa diventa 1d10 al livello 5, 2d8 al livello 10 e 5d4 al livello 17."
     },
     "snarl": {
       "sourceName": "Snarl",
       "name": "Urlorabbia",
       "description": [
-        "Rilasci un aspro ringhio contro una creatura, danneggiandone la forza di volontà. Obbliga una creatura a effettuare un tiro salvezza su SAG contro il tuo Movimento CD. In caso di fallimento, il bersaglio subisce 1d8 + MOVE danni oscuri. Se sei il bersaglio del suo prossimo attacco, il tiro per l'attacco viene effettuato con uno svantaggio."
+        "Rilasci un aspro ringhio contro una creatura, danneggiandone la forza di volontà. Obbliga una creatura a effettuare un tiro salvezza su SAG contro la tua CD della mossa. Se lo fallisce, il bersaglio subisce 1d8 + MOVE danni di tipo Buio. Se sei il bersaglio del suo prossimo attacco, il tiro per l'attacco viene effettuato con svantaggio."
       ],
-      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d6 al livello 5, 4d4 al livello 10 e 3d10 al livello 17."
+      "higherLevels": "Il dado di danno per questa mossa diventa 2d6 al livello 5, 4d4 al livello 10 e 3d10 al livello 17."
     },
     "snatch": {
       "sourceName": "Snatch",
       "name": "Scippo",
       "description": [
-        "Invochi l'energia oscura per rubare un effetto a una creatura. Quando una creatura nel raggio d'azione attiva una mossa con un effetto positivo su se stessa (cura gli effetti di stato negativi, aumento delle statistiche, guarigione, ecc.), costringila a effettuare un salvataggio SAG contro il tuo movimento CD. In caso di fallimento, ottieni l'effetto positivo e il movimento del bersaglio fallisce."
+        "Invochi l'energia oscura per rubare un effetto a una creatura. Quando una creatura a gittata attiva una mossa con un effetto positivo su se stessa (cura gli effetti di stato negativi, aumento delle statistiche, guarigione, ecc.), costringila a effettuare un tiro salvezza su SAG contro la tua CD della mossa. Se lo fallisce, ottieni l'effetto positivo e il mossa del bersaglio fallisce."
       ],
       "higherLevels": null
     },
@@ -89,31 +89,31 @@
       "sourceName": "Snipe Shot",
       "name": "Tiromirato",
       "description": [
-        "Colpisci il nemico con un getto d'acqua ad alta velocità. Effettua un attacco a distanza, infliggendo 2d6 + MOVE danni da acqua al colpo. Se l'attacco è stato effettuato con vantaggio, raddoppia i dadi di danno."
+        "Colpisci il nemico con un getto d'acqua ad alta velocità. Effettua un attacco a distanza, infliggendo 2d6 + MOVE danni di tipo Acqua al colpo. Se l'attacco è stato effettuato con vantaggio, raddoppia i dadi di danno."
       ],
-      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d8 al livello 5, 4d6 al livello 10 e 6d6 al livello 17."
+      "higherLevels": "Il dado di danno per questa mossa diventa 2d8 al livello 5, 4d6 al livello 10 e 6d6 al livello 17."
     },
     "snore": {
       "sourceName": "Snore",
       "name": "Russare",
       "description": [
-        "Mentre dormi, puoi attivare questa mossa per creare un forte rumore che danneggia tutte le creature nel raggio d'azione, infliggendo 1d8 + MOVE danni normali."
+        "Mentre dormi, puoi attivare questa mossa per creare un forte rumore che danneggia tutte le creature a gittata, infliggendo 1d8 + MOVE danni normali."
       ],
-      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d6 al livello 5, 4d4 al livello 10 e 3d10 al livello 17."
+      "higherLevels": "Il dado di danno per questa mossa diventa 2d6 al livello 5, 4d4 al livello 10 e 3d10 al livello 17."
     },
     "snowscape": {
       "sourceName": "Snowscape",
       "name": "Vista Innevata",
       "description": [
-        "Copri il campo di battaglia durante una tempesta di neve. Mentre si concentrano, le creature di tipo Ghiaccio nel raggio d'azione hanno da +1 a CA."
+        "Copri il campo di battaglia durante una tempesta di neve. Mentre si concentrano, le creature di tipo Ghiaccio a gittata hanno +1 alla CA."
       ],
-      "higherLevels": "Il bonus CA per questa mossa cambia in +2 al livello 5, +3 al livello 10 e +4 al livello 17."
+      "higherLevels": "Il bonus alla CA per questa mossa diventa +2 al livello 5, +3 al livello 10 e +4 al livello 17."
     },
     "soak": {
       "sourceName": "Soak",
       "name": "Inondazione",
       "description": [
-        "Spara un torrente d'acqua contro una creatura che lascia effetti duraturi. Forza un bersaglio nel raggio d'azione a effettuare un salvataggio COS contro il tuo Movimento CD. In caso di fallimento, il suo tipo cambia in acqua durante i successivi tre turni completi di battaglia."
+        "Spara un torrente d'acqua contro una creatura che lascia effetti duraturi. Forza un bersaglio a gittata a effettuare un tiro salvezza su COS contro la tua CD della mossa. Se lo fallisce, il suo tipo diventa acqua durante i successivi tre turni completi di battaglia."
       ],
       "higherLevels": null
     },
@@ -121,31 +121,31 @@
       "sourceName": "Soft-Boiled",
       "name": "Covauova",
       "description": [
-        "Cura una creatura nel raggio d'azione per 2d6 + MOVE PF."
+        "Curi una creatura a gittata, facendole recuperare 2d6 + MOVE punti ferita."
       ],
-      "higherLevels": "Il lancio del dado per la guarigione cambia in 4d6 al livello 5, 6d6 al livello 10 e 8d6 al livello 17."
+      "higherLevels": "Il dado di cura diventa 4d6 al livello 5, 6d6 al livello 10 e 8d6 al livello 17."
     },
     "solar-beam": {
       "sourceName": "Solar Beam",
       "name": "Solarraggio",
       "description": [
-        "Quando usi questa mossa, immergiti nell'energia solare e preparati a scatenare un raggio devastante. Nel tuo turno successivo, se mantieni la concentrazione, usa un'azione per creare una linea di energia solare 80 foot, larga 5 feet. Qualsiasi creatura intrappolata nella linea deve riuscire in un tiro salvezza su DES o subire 3d8 + MOVE danni da erba in caso di fallimento e metà dei danni in caso di tiro salvezza. Se questa mossa viene utilizzata in condizioni di forte luce solare, raddoppia il tuo modificatore MOVE per i danni e può essere utilizzata nel turno in cui viene attivata, senza concentrazione."
+        "Quando usi questa mossa, immergiti nell'energia solare e preparati a scatenare un raggio devastante. Nel tuo turno successivo, se mantieni la concentrazione, usa un'azione per creare una linea di energia solare 80 piedi, larga 5 piedi. Qualsiasi creatura intrappolata nella linea deve riuscire in un tiro salvezza su DES o subire 3d8 + MOVE danni di tipo Erba se lo fallisce e metà dei danni in caso di tiro salvezza. Se questa mossa viene utilizzata in condizioni di forte luce solare, raddoppia il tuo modificatore MOVE per i danni e può essere utilizzata nel turno in cui viene attivata, senza concentrazione."
       ],
-      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 5d6 al livello 5, 4d12 al livello 10 e 8d8 al livello 17."
+      "higherLevels": "Il dado di danno per questa mossa diventa 5d6 al livello 5, 4d12 al livello 10 e 8d8 al livello 17."
     },
     "solar-blade": {
       "sourceName": "Solar Blade",
       "name": "Lama Solare",
       "description": [
-        "Quando attivi questa mossa, usi la tua azione raccogliendo energia solare per prepararti a colpire con le lame. Nel tuo turno successivo, se mantieni la concentrazione, usa un'azione per effettuare un attacco in mischia, infliggendo 3d8 + MOVE danni da erba in caso di colpo. Se questa mossa viene utilizzata in condizioni di forte luce solare, raddoppia il tuo modificatore MOVE per i danni e può essere utilizzata nel turno in cui viene attivata, senza concentrazione."
+        "Quando attivi questa mossa, usi la tua azione raccogliendo energia solare per prepararti a colpire con le lame. Nel tuo turno successivo, se mantieni la concentrazione, usa un'azione per effettuare un attacco in mischia, infliggendo 3d8 + MOVE danni di tipo Erba se colpisci. Se questa mossa viene utilizzata in condizioni di forte luce solare, raddoppia il tuo modificatore MOVE per i danni e può essere utilizzata nel turno in cui viene attivata, senza concentrazione."
       ],
-      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 5d6 al livello 5, 4d12 al livello 10 e 8d8 al livello 17."
+      "higherLevels": "Il dado di danno per questa mossa diventa 5d6 al livello 5, 4d12 al livello 10 e 8d8 al livello 17."
     },
     "sonic-boom": {
       "sourceName": "Sonic Boom",
       "name": "Sonicboom",
       "description": [
-        "Rilasci un suono assordante che ferisce le creature in un cerchio del raggio di 20 piede, centrato su di te. Le creature nel raggio d'azione devono effettuare un tiro salvezza su COS contro il tuo Movimento CD, subendo 16 danni normali in caso di fallimento, o la metà in caso di successo. Il danno inflitto da questa mossa non può essere modificato in alcun modo, ad esempio tramite resistenza, danno bonus o riduzione del danno (ma può essere prevenuto dall'immunità)."
+        "Rilasci un suono assordante che ferisce le creature in un cerchio del raggio di 20 piede, centrato su di te. Le creature a gittata devono effettuare un tiro salvezza su COS contro la tua CD della mossa, subendo 16 danni normali se lo fallisce, o la metà se lo supera. Il danno inflitto da questa mossa non può essere modificato in alcun modo, ad esempio tramite resistenza, danno bonus o riduzione del danno (ma può essere prevenuto dall'immunità)."
       ],
       "higherLevels": null
     },
@@ -153,39 +153,39 @@
       "sourceName": "Spacial Rend",
       "name": "Fendispazio",
       "description": [
-        "Rilasci una potente onda d'urto che squarcia le creature e lo spazio attorno a loro. Tutte le creature entro 30 feet da te devono effettuare un tiro salvezza su COS contro il tuo Movimento CD, subendo 5d6 + MOVE danno del drago in caso di fallimento, o la metà di quel danno in caso di successo. Le creature che falliscono questo Tiro Salvezza di 5 o più diventano incontrollabili e vengono risucchiate nel Piano Etereo fino all'inizio del tuo turno successivo, apparendo nella stessa posizione quando ritornano."
+        "Rilasci una potente onda d'urto che squarcia le creature e lo spazio attorno a loro. Tutte le creature entro 30 piedi da te devono effettuare un tiro salvezza su COS contro la tua CD della mossa, subendo 5d6 + MOVE danni di tipo Drago se lo fallisce, o la metà dei danni se lo supera. Le creature che falliscono questo tiro salvezza di 5 o più diventano incontrollabili e vengono risucchiate nel Piano Etereo fino all'inizio del tuo turno successivo, apparendo nella stessa posizione quando ritornano."
       ],
-      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 4d10 al livello 5, 6d10 al livello 10 e 8d12 al livello 17."
+      "higherLevels": "Il dado di danno per questa mossa diventa 4d10 al livello 5, 6d10 al livello 10 e 8d12 al livello 17."
     },
     "spark": {
       "sourceName": "Spark",
       "name": "Scintilla",
       "description": [
-        "Colpisci con un contrasto elettrizzato con la possibilità di paralizzare un bersaglio. Effettua un tiro per colpire in mischia contro una creatura, infliggendo 1d10 + MOVE danni elettrici in caso di colpo. Se il tiro per colpire naturale è 18 o superiore, il bersaglio è paralizzato."
+        "Colpisci con un contrasto elettrizzato con la possibilità di paralizzare un bersaglio. Effettua un attacco in mischia contro una creatura, infliggendo 1d10 + MOVE danni di tipo Elettro se colpisci. Se il tiro per colpire naturale è 18 o superiore, il bersaglio è paralizzato."
       ],
-      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d8 al livello 5, 5d4 al livello 10 e 4d8 al livello 17."
+      "higherLevels": "Il dado di danno per questa mossa diventa 2d8 al livello 5, 5d4 al livello 10 e 4d8 al livello 17."
     },
     "sparkling-aria": {
       "sourceName": "Sparkling Aria",
       "name": "Canto Effimero",
       "description": [
-        "Esplodi in una canzone, scatenando una raffica di bolle in un cerchio del raggio di 10 piede, centrato su di te. Tutte le creature nel raggio d'azione devono effettuare un tiro salvezza su DES o subire 2d8 + MOVE danni da acqua in caso di fallimento e metà dei danni in caso di tiro salvezza. Qualsiasi creatura affetta dalla condizione bruciata verrà curata toccando le bolle."
+        "Esplodi in una canzone, scatenando una raffica di bolle in un cerchio del raggio di 10 piede, centrato su di te. Tutte le creature a gittata devono effettuare un tiro salvezza su DES o subire 2d8 + MOVE danni di tipo Acqua se lo fallisce e metà dei danni in caso di tiro salvezza. Qualsiasi creatura affetta dalla condizione bruciata verrà curata toccando le bolle."
       ],
-      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d10 al livello 5, 3d10 al livello 10 e 4d12 al livello 17."
+      "higherLevels": "Il dado di danno per questa mossa diventa 2d10 al livello 5, 3d10 al livello 10 e 4d12 al livello 17."
     },
     "spectral-thief": {
       "sourceName": "Spectral Thief",
       "name": "Ombrafurto",
       "description": [
-        "Soccombi all'oscurità e ti trasporti nell'ombra di una creatura. Teletrasportati immediatamente in un punto a portata ed effettua un attacco in mischia su una creatura. Quando colpisci, rubi tutte le modifiche positive alle statistiche che influenzano la creatura e infliggi 4d6 + MOVE danni da fantasma."
+        "Soccombi all'oscurità e ti trasporti nell'ombra di una creatura. Teletrasportati immediatamente in un punto a portata ed effettua un attacco in mischia su una creatura. Quando colpisci, rubi tutte le modifiche positive alle statistiche che influenzano la creatura e infliggi 4d6 + MOVE danni di tipo Spettro."
       ],
-      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 5d6 al livello 5, 6d8 al livello 10 e 6d12 al livello 17."
+      "higherLevels": "Il dado di danno per questa mossa diventa 5d6 al livello 5, 6d8 al livello 10 e 6d12 al livello 17."
     },
     "speed-swap": {
       "sourceName": "Speed Swap",
       "name": "Velociscambio",
       "description": [
-        "Usi il tuo potere psichico per scambiare velocità con una creatura. Obbliga una creatura nel raggio d'azione a effettuare un tiro salvezza su CAR contro il tuo Movimento CD. In caso di fallimento, cambia la velocità con quella del bersaglio per la durata."
+        "Usi il tuo potere psichico per scambiare velocità con una creatura. Obbliga una creatura a gittata a effettuare un tiro salvezza su CAR contro la tua CD della mossa. Se lo fallisce, cambia la velocità con quella del bersaglio per la durata."
       ],
       "higherLevels": null
     },
@@ -193,7 +193,7 @@
       "sourceName": "Spicy Extract",
       "name": "Essenza Piccante",
       "description": [
-        "Emetti un estratto incredibilmente piccante. Tutte le creature nel raggio d'azione devono effettuare un tiro salvezza su CAR contro il tuo Movimento CD. Le creature che falliscono il Tiro Salvezza, per la durata, effettuano tutti gli attacchi con vantaggio, e tutti gli attacchi contro di loro vengono effettuati con vantaggio."
+        "Emetti un estratto incredibilmente piccante. Tutte le creature a gittata devono effettuare un tiro salvezza su CAR contro la tua CD della mossa. Le creature che falliscono il tiro salvezza, per la durata, effettuano tutti gli attacchi con vantaggio, e tutti gli attacchi contro di loro vengono effettuati con vantaggio."
       ],
       "higherLevels": null
     },
@@ -201,7 +201,7 @@
       "sourceName": "Spider Web",
       "name": "Ragnatela",
       "description": [
-        "Lanci una ragnatela appiccicosa che tenta di trattenere una creatura. Effettua un tiro per colpire a distanza su un bersaglio a gittata. In caso di colpo, il bersaglio viene ricoperto di ragnatela. Mentre è coperto, è trattenuto e non può fuggire o essere scambiato, tranne che tramite oggetto, Movimento o abilità. Il bersaglio può usare un'azione nel suo turno per scappare con un tiro salvezza su FOR contro il tuo Movimento CD."
+        "Lanci una ragnatela appiccicosa che tenta di trattenere una creatura. Effettua un attacco a distanza contro un bersaglio a gittata. Se colpisci, il bersaglio viene ricoperto di ragnatela. Mentre è coperto, è trattenuto e non può fuggire o essere scambiato, tranne che tramite oggetto, Movimento o abilità. Il bersaglio può usare un'azione nel suo turno per scappare con un tiro salvezza su FOR contro la tua CD della mossa."
       ],
       "higherLevels": null
     },
@@ -209,23 +209,23 @@
       "sourceName": "Spike Cannon",
       "name": "Sparalance",
       "description": [
-        "Lanci una serie di punte acuminate contro una creatura nel raggio d'azione. Effettua un tiro per colpire a distanza, infliggendo 1d4 + MOVE danni normali in caso di colpo. Dopo aver colpito con successo un bersaglio, lancia uno d4. Con un risultato di 3 o 4, puoi immediatamente colpire di nuovo per un ulteriore danno normale 1d4. Continua questo processo finché non fallisci nel lanciare uno 3 o 4 sul tiro d4, fino a un massimo di quattro colpi aggiuntivi."
+        "Lanci una serie di punte acuminate contro una creatura a gittata. Effettua un attacco a distanza, infliggendo 1d4 + MOVE danni normali se colpisci. Dopo aver colpito con successo un bersaglio, lancia un d4. Con un risultato di 3 o 4, puoi immediatamente colpire di nuovo per un ulteriore danni di tipo Normale 1d4. Continua questo processo finché non fallisci nel lanciare 3 o 4 sul tiro d4, fino a un massimo di quattro colpi aggiuntivi."
       ],
-      "higherLevels": "I dadi di danno lanciati per questa mossa cambiano in 2d4 al livello 5, 1d12 al livello 10 e 4d4 al livello 17."
+      "higherLevels": "I dadi di danno per questa mossa diventano 2d4 al livello 5, 1d12 al livello 10 e 4d4 al livello 17."
     },
     "spikes": {
       "sourceName": "Spikes",
       "name": "Punte",
       "description": [
-        "Metti una trappola di punte che ferisce le creature che entrano in battaglia. Se un addestratore è nel raggio d'azione e scambia una creatura, puoi spendere una reazione per effettuare un attacco a distanza sulla creatura in arrivo con punte che escono dal terreno, infliggendo 1d6 + MOVE danni da terra in caso di colpo."
+        "Metti una trappola di punte che ferisce le creature che entrano in battaglia. Se un Allenatore è a gittata e scambia una creatura, puoi spendere una reazione per effettuare un attacco a distanza sulla creatura in arrivo con punte che escono dal terreno, infliggendo 1d6 + MOVE danni di tipo Terra se colpisci."
       ],
-      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 1d10 al livello 5, 2d8 al livello 10 e 5d4 al livello 17."
+      "higherLevels": "Il dado di danno per questa mossa diventa 1d10 al livello 5, 2d8 al livello 10 e 5d4 al livello 17."
     },
     "spiky-shield": {
       "sourceName": "Spiky Shield",
       "name": "Agodifesa",
       "description": [
-        "Alzi rapidamente uno scudo chiodato per proteggerti dai danni. Quando vieni colpito da un attacco in mischia, usa la tua reazione per ignorare i danni, infliggendo invece danni da erba pari al tuo modificatore di competenza all'attaccante. In casi futuri di questa reazione nello stesso combattimento, devi ottenere un risultato superiore a 15 su un tiro d20 affinché la reazione abbia successo."
+        "Alzi rapidamente uno scudo chiodato per proteggerti dai danni. Quando vieni colpito da un attacco in mischia, usa la tua reazione per ignorare i danni, infliggendo invece danni di tipo Erba pari al tuo modificatore di competenza all'attaccante. In casi futuri di questa reazione nello stesso combattimento, devi ottenere un risultato superiore a 15 su un tiro d20 affinché la reazione abbia successo."
       ],
       "higherLevels": null
     },
@@ -233,39 +233,39 @@
       "sourceName": "Spin Out",
       "name": "Slittaruote",
       "description": [
-        "Giri furiosamente sforzando le gambe. Effettua un attacco in mischia, infliggendo 4d4 + MOVE danni acciaio in caso di colpo. Fino all'inizio del tuo prossimo turno, hai svantaggio su tutti i salvataggi DES e la tua velocità è dimezzata."
+        "Giri furiosamente sforzando le gambe. Effettua un attacco in mischia, infliggendo 4d4 + MOVE danni di tipo Acciaio se colpisci. Fino all'inizio del tuo prossimo turno, hai svantaggio su tutti i tiri salvezza su DES e la tua velocità è dimezzata."
       ],
-      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d12 al livello 5, 4d8 al livello 10 e 8d6 al livello 17."
+      "higherLevels": "Il dado di danno per questa mossa diventa 2d12 al livello 5, 4d8 al livello 10 e 8d6 al livello 17."
     },
     "spirit-break": {
       "sourceName": "Spirit Break",
       "name": "Frantumanima",
       "description": [
-        "Attacchi con così tanta forza da spezzare lo spirito del bersaglio. Effettua un attacco in mischia contro un bersaglio, infliggendo 2d8 + MOVE danni da fata in caso di colpo. Il bersaglio ha svantaggio al suo prossimo attacco."
+        "Attacchi con così tanta forza da spezzare lo spirito del bersaglio. Effettua un attacco in mischia contro un bersaglio, infliggendo 2d8 + MOVE danni di tipo Folletto se colpisci. Il bersaglio ha svantaggio al suo prossimo attacco."
       ],
-      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d10 al livello 5, 3d10 al livello 10 e 4d12 al livello 17."
+      "higherLevels": "Il dado di danno per questa mossa diventa 2d10 al livello 5, 3d10 al livello 10 e 4d12 al livello 17."
     },
     "spirit-shackle": {
       "sourceName": "Spirit Shackle",
       "name": "Cucitura d’Ombra",
       "description": [
-        "Impieghi l'energia oscura per cucire l'ombra di una creatura al terreno. Effettua un attacco a distanza, infliggendo 2d6 + MOVE danni da fantasma in caso di colpo. Quando viene colpito, il bersaglio non può fuggire o cambiare direzione mentre l'utilizzatore rimane in battaglia."
+        "Impieghi l'energia oscura per cucire l'ombra di una creatura al terreno. Effettua un attacco a distanza, infliggendo 2d6 + MOVE danni di tipo Spettro se colpisci. Quando viene colpito, il bersaglio non può fuggire o cambiare direzione mentre l'utilizzatore rimane in battaglia."
       ],
-      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d8 al livello 5, 4d6 al livello 10 e 6d6 al livello 17."
+      "higherLevels": "Il dado di danno per questa mossa diventa 2d8 al livello 5, 4d6 al livello 10 e 6d6 al livello 17."
     },
     "spit-up": {
       "sourceName": "Spit Up",
       "name": "Sfoghenergia",
       "description": [
-        "Il potere dell'energia immagazzinata da Stockpile viene rilasciato contro un bersaglio. Effettua un attacco a distanza contro una creatura, infliggendo un danno base 1d6 + movimento normale in caso di colpo. Il lancio del dado viene raddoppiato se vengono accumulati due turni di energia. Il lancio del dado viene triplicato se vengono accumulati tre turni di energia."
+        "Il potere dell'energia immagazzinata da Stockpile viene rilasciato contro un bersaglio. Effettua un attacco a distanza contro una creatura, infliggendo un danno base 1d6 + movimento normale se colpisci. Il lancio del dado viene raddoppiato se vengono accumulati due turni di energia. Il lancio del dado viene triplicato se vengono accumulati tre turni di energia."
       ],
-      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 1d12 al livello 5, 2d8 al livello 10 e 4d6 al livello 17."
+      "higherLevels": "Il dado di danno per questa mossa diventa 1d12 al livello 5, 2d8 al livello 10 e 4d6 al livello 17."
     },
     "spite": {
       "sourceName": "Spite",
       "name": "Dispetto",
       "description": [
-        "Quando vieni colpito da un attacco, puoi spendere una reazione per tentare di prosciugare lo PP dell'attaccante, se si trova nel raggio d'azione. Obbliga l'attaccante a effettuare un salvataggio SAG contro il tuo Movimento CD. In caso di fallimento, tira uno d4. Lo PP della mossa che ti ha attaccato viene diminuito di quel numero."
+        "Quando vieni colpito da un attacco, puoi spendere una reazione per tentare di prosciugare lo PP dell'attaccante, se si trova a gittata. Obbliga l'attaccante a effettuare un tiro salvezza su SAG contro la tua CD della mossa. Se lo fallisce, tira un d4. Lo PP della mossa che ti ha attaccato viene diminuito di quel numero."
       ],
       "higherLevels": "PP viene scaricato da 1d6 al livello 5, 1d8 al livello 10 e 1d10 al livello 17."
     },
@@ -273,7 +273,7 @@
       "sourceName": "Splash",
       "name": "Splash",
       "description": [
-        "Ti agiti a terra, senza fare danni e con un aspetto ridicolo, ma puoi saltare in aria fino a 50 feet."
+        "Ti agiti a terra, senza fare danni e con un aspetto ridicolo, ma puoi saltare in aria fino a 50 piedi."
       ],
       "higherLevels": null
     },
@@ -281,7 +281,7 @@
       "sourceName": "Spore",
       "name": "Spora",
       "description": [
-        "Quando vieni preso di mira da un attacco in mischia, puoi usare la tua reazione per rilasciare una spora che tenta di addormentare il tuo aggressore. La creatura deve effettuare un tiro salvezza su COS contro il tuo Movimento CD, addormentandosi in caso di fallimento."
+        "Quando vieni preso di mira da un attacco in mischia, puoi usare la tua reazione per rilasciare una spora che tenta di addormentare il tuo aggressore. La creatura deve effettuare un tiro salvezza su COS contro la tua CD della mossa, addormentandosi se lo fallisce."
       ],
       "higherLevels": null
     },
@@ -289,7 +289,7 @@
       "sourceName": "Spotlight",
       "name": "Riflettore",
       "description": [
-        "Fai brillare una luce brillante su una creatura nel raggio d'azione che la segue sul campo di battaglia. Il bersaglio deve effettuare un tiro salvezza su DES contro il tuo Movimento CD. In caso di fallimento, gli attacchi contro quella creatura hanno vantaggio per la durata."
+        "Fai brillare una luce brillante su una creatura a gittata che la segue sul campo di battaglia. Il bersaglio deve effettuare un tiro salvezza su DES contro la tua CD della mossa. Se lo fallisce, gli attacchi contro quella creatura hanno vantaggio per la durata."
       ],
       "higherLevels": null
     },
@@ -297,65 +297,65 @@
       "sourceName": "Springtide Storm",
       "name": "Tempesta Zefirea",
       "description": [
-        "Crei una tempesta piena di amore e odio con le dimensioni di un cubo di 40 piede centrato su un punto nel raggio d'azione. Ogni creatura nemica nell'area effettua un tiro salvezza su CAR contro il tuo Movimento CD. Se fallisce il tiro salvezza, subisce 4d4 + MOVE danni da fata e ha svantaggio su tutti i tiri per colpire che effettua fino alla fine del suo turno successivo. Se il tiro salvezza riesce, subisce la metà dei danni e non subisce svantaggio.",
+        "Crei una tempesta piena di amore e odio con le dimensioni di un cubo di 40 piede centrato su un punto a gittata. Ogni creatura nemica nell'area effettua un tiro salvezza su CAR contro la tua CD della mossa. Se fallisce il tiro salvezza, subisce 4d4 + MOVE danni di tipo Folletto e ha svantaggio su tutti i tiri per colpire che effettua fino alla fine del suo turno successivo. Se il tiro salvezza riesce, subisce la metà dei danni e non subisce svantaggio.",
         "Una creatura effettua quel tiro salvezza anche se entra nell'area o termina il suo turno lì. Una creatura effettua quel tiro salvezza solo una volta per turno."
       ],
-      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d12 al livello 5, 4d8 al livello 10 e 8d6 al livello 17."
+      "higherLevels": "Il dado di danno per questa mossa diventa 2d12 al livello 5, 4d8 al livello 10 e 8d6 al livello 17."
     },
     "stealth-rock": {
       "sourceName": "Stealth Rock",
       "name": "Levitoroccia",
       "description": [
-        "Evochi rapidamente una trappola di rocce taglienti che ferisce una creatura che entra in battaglia. Quando una creatura viene messa in battaglia, puoi usare la tua reazione per effettuare un attacco a distanza, infliggendo 1d8 + MOVE danni da roccia alla creatura in arrivo se colpisce."
+        "Evochi rapidamente una trappola di rocce taglienti che ferisce una creatura che entra in battaglia. Quando una creatura viene messa in battaglia, puoi usare la tua reazione per effettuare un attacco a distanza, infliggendo 1d8 + MOVE danni di tipo Roccia alla creatura in arrivo se colpisce."
       ],
-      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 1d12 al livello 5, 2d8 al livello 10 e 4d6 al livello 17."
+      "higherLevels": "Il dado di danno per questa mossa diventa 1d12 al livello 5, 2d8 al livello 10 e 4d6 al livello 17."
     },
     "steam-eruption": {
       "sourceName": "Steam Eruption",
       "name": "Vaporscoppio",
       "description": [
-        "Spara un cono di vapore intensamente caldo dal tuo corpo, immergendo le creature a portata. Qualsiasi creatura nell'area deve effettuare un tiro salvezza su DES contro il tuo Movimento CD, subendo 3d6 + MOVE danni da acqua in caso di fallimento, o la metà di questi danni in caso di successo. Se un bersaglio fallisce il tiro salvezza di 5 o più, viene bruciato."
+        "Spara un cono di vapore intensamente caldo dal tuo corpo, immergendo le creature a portata. Qualsiasi creatura nell'area deve effettuare un tiro salvezza su DES contro la tua CD della mossa, subendo 3d6 + MOVE danni di tipo Acqua se lo fallisce, o la metà dei danni se lo supera. Se un bersaglio fallisce il tiro salvezza di 5 o più, viene bruciato."
       ],
-      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 3d8 al livello 5, 6d6 al livello 10 e 7d8 al livello 17."
+      "higherLevels": "Il dado di danno per questa mossa diventa 3d8 al livello 5, 6d6 al livello 10 e 7d8 al livello 17."
     },
     "steamroller": {
       "sourceName": "Steamroller",
       "name": "Rulloduro",
       "description": [
-        "Arrotoli il tuo corpo e rotoli sopra una creatura. Effettua un tiro per colpire in mischia, infliggendo 1d10 + MOVE danni da Coleottero in caso di colpo. Se il tuo tiro per colpire naturale è 15 o superiore, il bersaglio sussulta."
+        "Arrotoli il corpo e travolgi una creatura. Effettua un attacco in mischia, infliggendo 1d10 + MOVE danni di tipo Coleottero se colpisci. Con un tiro per colpire naturale di 15 o più, il bersaglio diventa FLINCHED."
       ],
-      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d8 al livello 5, 5d4 al livello 10 e 4d8 al livello 17."
+      "higherLevels": "Il dado di danno per questa mossa diventa 2d8 al livello 5, 5d4 al livello 10 e 4d8 al livello 17."
     },
     "steel-beam": {
       "sourceName": "Steel Beam",
       "name": "Raggio d’Acciaio",
       "description": [
-        "Spari un raggio d'acciaio che viene raccolto da tutto il tuo corpo in una linea di 80 piedi, larga 5 feet. Qualsiasi creatura intrappolata nella linea deve riuscire in un tiro salvezza su DES o subire 3d8 + MOVE danni acciaio in caso di fallimento e metà dei danni in caso di tiro salvezza.",
-        "Il rinculo derivante dall'utilizzo di questa mossa ti manda indietro 10 feet nella direzione opposta alla direzione in cui era mirato il raggio e cadi prono. Se sei rimasto a terra mentre usi questa mossa, subisci 2d6 danno senza tipo. Se stavi volando o stando sospeso, calcola di conseguenza il danno da caduta."
+        "Spari un raggio d'acciaio che viene raccolto da tutto il tuo corpo in una linea di 80 piedi, larga 5 piedi. Qualsiasi creatura intrappolata nella linea deve riuscire in un tiro salvezza su DES o subire 3d8 + MOVE danni di tipo Acciaio se lo fallisce e metà dei danni in caso di tiro salvezza.",
+        "Il rinculo derivante dall'utilizzo di questa mossa ti manda indietro 10 piedi nella direzione opposta alla direzione in cui era mirato il raggio e cadi prono. Se sei rimasto a terra mentre usi questa mossa, subisci 2d6 danno senza tipo. Se stavi volando o stando sospeso, calcola di conseguenza il danno da caduta."
       ],
-      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 5d6 al livello 5, 4d12 al livello 10 e 8d8 al livello 17."
+      "higherLevels": "Il dado di danno per questa mossa diventa 5d6 al livello 5, 4d12 al livello 10 e 8d8 al livello 17."
     },
     "steel-roller": {
       "sourceName": "Steel Roller",
       "name": "Ferrorullo",
       "description": [
-        "Attacchi mentre distruggi il terreno. Questa mossa può essere utilizzata solo se è presente terreno attivo (ad esempio terreno elettrico, terreno psichico, ecc.). Usa 30ft del tuo movimento. Ogni creatura che arriva entro 5ft da te durante il tuo movimento deve effettuare un tiro salvezza su DES contro il tuo Movimento CD. In caso di fallimento, la creatura subisce 5d4 + MOVE danni da acciaio, la metà in caso di successo. Inoltre, il terreno attivo viene rimosso."
+        "Attacchi mentre distruggi il terreno. Questa mossa può essere utilizzata solo se è presente terreno attivo (ad esempio terreno elettrico, terreno psichico, ecc.). Usa 30 piedi del tuo movimento. Ogni creatura che arriva entro 5 piedi da te durante il tuo movimento deve effettuare un tiro salvezza su DES contro la tua CD della mossa. Se lo fallisce, la creatura subisce 5d4 + MOVE danni di tipo Acciaio, la metà se lo supera. Inoltre, il terreno attivo viene rimosso."
       ],
-      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 3d10 al livello 5, 5d8 al livello 10 e 8d8 al livello 17."
+      "higherLevels": "Il dado di danno per questa mossa diventa 3d10 al livello 5, 5d8 al livello 10 e 8d8 al livello 17."
     },
     "steel-wing": {
       "sourceName": "Steel Wing",
       "name": "Alacciaio",
       "description": [
-        "Colpisci duramente un bersaglio con le ali spiegate. Effettua un attacco in mischia su una creatura, infliggendo 1d12 + MOVE danni acciaio in caso di colpo. Se il tiro per colpire naturale è 19 o 20, il tuo CA viene aumentato di 1 fino alla fine del tuo turno successivo."
+        "Colpisci duramente un bersaglio con le ali spiegate. Effettua un attacco in mischia contro una creatura, infliggendo 1d12 + MOVE danni di tipo Acciaio se colpisci. Se il tiro per colpire naturale è 19 o 20, la tua CA viene aumentato di 1 fino alla fine del tuo turno successivo."
       ],
-      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d8 al livello 5, 2d12 al livello 10 e 6d6 al livello 17."
+      "higherLevels": "Il dado di danno per questa mossa diventa 2d8 al livello 5, 2d12 al livello 10 e 6d6 al livello 17."
     },
     "sticky-web": {
       "sourceName": "Sticky Web",
       "name": "Rete Vischiosa",
       "description": [
-        "Lanci rapidamente una ragnatela appiccicosa contro una creatura che entra in battaglia. Quando una creatura viene messa in battaglia, puoi usare la tua reazione per effettuare un attacco a distanza contro quella creatura. In caso di colpo, il bersaglio è trattenuto. La creatura può effettuare un tiro salvezza su FOR contro il tuo Movimento CD all'inizio di ogni suo turno per sfuggire alla rete."
+        "Lanci rapidamente una ragnatela appiccicosa contro una creatura che entra in battaglia. Quando una creatura viene messa in battaglia, puoi usare la tua reazione per effettuare un attacco a distanza contro quella creatura. Se colpisci, il bersaglio è trattenuto. La creatura può effettuare un tiro salvezza su FOR contro la tua CD della mossa all'inizio di ogni suo turno per sfuggire alla rete."
       ],
       "higherLevels": null
     },
@@ -363,7 +363,7 @@
       "sourceName": "Stockpile",
       "name": "Accumulo",
       "description": [
-        "Usi la tua azione per immagazzinare energia per una mossa Sputa o Deglutisci, aumentando la tua difesa. Alza il tuo CA di 1 finché non usi una di queste due mosse. Questa mossa può essere accumulata un massimo di 3 volte prima che l'energia venga utilizzata."
+        "Usi la tua azione per immagazzinare energia per una mossa Sputa o Deglutisci, aumentando la tua difesa. Alza la tua CA di 1 finché non usi una di queste due mosse. Questa mossa può essere accumulata un massimo di 3 volte prima che l'energia venga utilizzata."
       ],
       "higherLevels": null
     },
@@ -371,50 +371,50 @@
       "sourceName": "Stomp",
       "name": "Pestone",
       "description": [
-        "Alzi i piedi per un attacco con stomp. Effettua un tiro per colpire in mischia contro un bersaglio, infliggendo 1d10 + MOVE danni normali in caso di colpo. Se il tiro per colpire naturale è 18 o più, il bersaglio sussulta."
+        "Calpesti con forza il bersaglio. Effettua un attacco in mischia, infliggendo 1d10 + MOVE danni di tipo Normale se colpisci. Con un tiro per colpire naturale di 18 o più, il bersaglio diventa FLINCHED."
       ],
-      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d8 al livello 5, 5d4 al livello 10 e 4d8 al livello 17."
+      "higherLevels": "Il dado di danno per questa mossa diventa 2d8 al livello 5, 5d4 al livello 10 e 4d8 al livello 17."
     },
     "stomping-tantrum": {
       "sourceName": "Stomping Tantrum",
       "name": "Battipiedi",
       "description": [
-        "Spinto dalla frustrazione, attacchi in modo aggressivo. Effettua un attacco in mischia, infliggendo 1d12 + MOVE danni da terra in caso di colpo. Se il tuo ultimo attacco è andato a vuoto, raddoppia il tiro di dado per i danni."
+        "Spinto dalla frustrazione, attacchi in modo aggressivo. Effettua un attacco in mischia, infliggendo 1d12 + MOVE danni di tipo Terra se colpisci. Se il tuo ultimo attacco è andato a vuoto, raddoppia il dado di danno."
       ],
-      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d8 al livello 5, 2d12 al livello 10 e 6d6 al livello 17."
+      "higherLevels": "Il dado di danno per questa mossa diventa 2d8 al livello 5, 2d12 al livello 10 e 6d6 al livello 17."
     },
     "stone-axe": {
       "sourceName": "Stone Axe",
       "name": "Rocciascure",
       "description": [
-        "Fai oscillare le tue asce di pietra verso il bersaglio. Effettua un attacco in mischia contro una creatura, infliggendo 1d10 + MOVE danni da roccia in caso di colpo.",
-        "In caso di colpo andato a segno, gli spuntoni coprono il terreno in un quadrato di 10 piedi centrato sul bersaglio, trasformandolo in un terreno difficile per 1 minuto. Quando compaiono gli spuntoni, ogni creatura presente nell'area, tranne quella che usa questa mossa, deve superare un tiro salvezza su DES contro il tuo Movimento CD o subire danni da roccia 1d10. Anche una creatura che entra nell'area o termina lì il suo turno deve avere successo o subire il danno."
+        "Fai oscillare le tue asce di pietra verso il bersaglio. Effettua un attacco in mischia contro una creatura, infliggendo 1d10 + MOVE danni di tipo Roccia se colpisci.",
+        "Se colpisci andato a segno, gli spuntoni coprono il terreno in un quadrato di 10 piedi centrato sul bersaglio, trasformandolo in un terreno difficile per 1 minuto. Quando compaiono gli spuntoni, ogni creatura presente nell'area, tranne quella che usa questa mossa, deve superare un tiro salvezza su DES contro la tua CD della mossa o subire danni di tipo Roccia 1d10. Anche una creatura che entra nell'area o termina lì il suo turno deve avere successo o subire il danno."
       ],
-      "higherLevels": "I tiri di dado per i danni per questa mossa cambiano in 2d8 al livello 5, 5d4 al livello 10 e 4d8 al livello 17."
+      "higherLevels": "I tiri di dado per i danni per questa mossa diventano 2d8 al livello 5, 5d4 al livello 10 e 4d8 al livello 17."
     },
     "stone-edge": {
       "sourceName": "Stone Edge",
       "name": "Pietrataglio",
       "description": [
-        "La terra si muove sotto i piedi di un bersaglio mentre pietre affilate perforano il terreno sotto di lui. Le creature in un raggio 10 foot centrato su un punto da te scelto nel raggio d'azione devono effettuare un tiro salvezza su DES contro il tuo MOVE CD, subendo 4d4 + MOVE danno da roccia in caso di fallimento, o la metà di quel danno in caso di tiro salvezza."
+        "La terra si muove sotto i piedi di un bersaglio mentre pietre affilate perforano il terreno sotto di lui. Le creature in un raggio 10 piedi centrato su un punto da te scelto a gittata devono effettuare un tiro salvezza su DES contro la tua CD della mossa, subendo 4d4 + MOVE danni di tipo Roccia se lo fallisce, o la metà dei danni in caso di tiro salvezza."
       ],
-      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d12 al livello 5, 4d8 al livello 10 e 8d6 al livello 17."
+      "higherLevels": "Il dado di danno per questa mossa diventa 2d12 al livello 5, 4d8 al livello 10 e 8d6 al livello 17."
     },
     "stored-power": {
       "sourceName": "Stored Power",
       "name": "Veicolaforza",
       "description": [
-        "Usi la tua energia psichica per attaccare con il potere immagazzinato. Effettua un attacco a distanza, infliggendo 1d6 + MOVE danni psichici in caso di colpo. Aggiungi un ulteriore dado di danno per ogni effetto di modifica delle statistiche attualmente applicato all'utente. (Ad esempio, se tu o un alleato avete attivato una o più mosse che stanno attualmente potenziando CA, velocità e STAB dell'utente, aggiungi tre dadi di danno aggiuntivi. Una mossa che influenza più punteggi di caratteristica è considerata \"un\" effetto per questo potenziamento)"
+        "Usi la tua energia psichica per attaccare con il potere immagazzinato. Effettua un attacco a distanza, infliggendo 1d6 + MOVE danni di tipo Psico se colpisci. Aggiungi un ulteriore dado di danno per ogni effetto di modifica delle statistiche attualmente applicato all'utente. (Ad esempio, se tu o un alleato avete attivato una o più mosse che stanno attualmente potenziando CA, velocità e STAB dell'utente, aggiungi tre dadi di danno aggiuntivi. Una mossa che influenza più punteggi di caratteristica è considerata \"un\" effetto per questo potenziamento)"
       ],
-      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 2d6 al livello 5, 3d6 al livello 10 e 4d6 al livello 17."
+      "higherLevels": "Il dado di danno per questa mossa diventa 2d6 al livello 5, 3d6 al livello 10 e 4d6 al livello 17."
     },
     "storm-throw": {
       "sourceName": "Storm Throw",
       "name": "Tempestretta",
       "description": [
-        "Colpisci un bersaglio con un colpo feroce. Effettua un attacco in mischia su una creatura, infliggendo 2d10 + MOVE danno da combattimento in caso di colpo. Se un bersaglio è immune ai danni dei colpi critici, dimezza il danno inflitto da questo attacco."
+        "Colpisci un bersaglio con un colpo feroce. Effettua un attacco in mischia contro una creatura, infliggendo 2d10 + MOVE danni di tipo Lotta se colpisci. Se un bersaglio è immune ai danni dei colpi critici, dimezza il danno inflitto da questo attacco."
       ],
-      "higherLevels": "Il tiro di dado per i danni per questa mossa cambia in 3d8 al livello 5, 4d10 al livello 10 e 7d8 al livello 17."
+      "higherLevels": "Il dado di danno per questa mossa diventa 3d8 al livello 5, 4d10 al livello 10 e 7d8 al livello 17."
     }
   }
 }

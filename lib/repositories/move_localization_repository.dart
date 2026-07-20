@@ -23,11 +23,31 @@ class MoveLocalizationRepository {
     'assets/data/move_localization_it_021_030.json',
     'assets/data/move_localization_it_031_040.json',
     'assets/data/move_localization_it_041_050.json',
+    'assets/data/move_localization_it_051_060.json',
+    'assets/data/move_localization_it_061_070.json',
+    'assets/data/move_localization_it_071_080.json',
+    'assets/data/move_localization_it_081_090.json',
+    'assets/data/move_localization_it_091_100.json',
+    'assets/data/move_localization_it_101_110.json',
+    'assets/data/move_localization_it_111_120.json',
+    'assets/data/move_localization_it_121_130.json',
+    'assets/data/move_localization_it_131_140.json',
+    'assets/data/move_localization_it_141_150.json',
+    'assets/data/move_localization_it_151_160.json',
+    'assets/data/move_localization_it_161_170.json',
+    'assets/data/move_localization_it_171_180.json',
+    'assets/data/move_localization_it_181_190.json',
+    'assets/data/move_localization_it_191_200.json',
+    'assets/data/move_localization_it_201_210.json',
+    'assets/data/move_localization_it_211_220.json',
+    'assets/data/move_localization_it_221_230.json',
+    'assets/data/move_localization_it_231_240.json',
+    'assets/data/move_localization_it_241_250.json',
   ];
 
   static const String sourceAssetPath = 'assets/data_webapp/moves.json';
   static const int catalogCount = 830;
-  static const int localizedCount = 50;
+  static const int localizedCount = 250;
 
   static Map<String, MoveLocalization>? _cache;
 

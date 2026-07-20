@@ -1,0 +1,74 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/items.json",
+  "nameSources": [
+    "https://wiki.pokemoncentral.it/Elenco_degli_strumenti_in_altre_lingue",
+    "https://wiki.pokemoncentral.it/Strumenti_tenuti",
+    "https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/item_names.csv"
+  ],
+  "type": "held item",
+  "range": {
+    "start": 175,
+    "end": 184
+  },
+  "localizedCount": 10,
+  "items": {
+    "focus-band": {
+      "sourceName": "Focus Band",
+      "name": "Bandana",
+      "description": [
+        "Quando il possessore dovrebbe subire lo status FLINCHED, tira un d20. Con un risultato di 10 o superiore, non subisce FLINCHED."
+      ]
+    },
+    "focus-sash": {
+      "sourceName": "Focus Sash",
+      "name": "Focalnastro",
+      "description": [
+        "Questo strumento possiede 1 carica. Se dei danni porterebbero il possessore sotto 1 HP, lo portano invece a 1 HP, consumando la carica.",
+        "Il Focalnastro recupera la propria carica ogni giorno all'alba."
+      ]
+    },
+    "grip-claw": {
+      "sourceName": "Grip Claw",
+      "name": "Presartigli",
+      "description": []
+    },
+    "heavy-duty-boots": {
+      "sourceName": "Heavy-Duty Boots",
+      "name": "Scarponi robusti",
+      "description": []
+    },
+    "leftovers": {
+      "sourceName": "Leftovers",
+      "name": "Avanzi",
+      "description": [
+        "Questo strumento possiede 10 cariche. Il possessore può usare un'azione bonus per consumare una carica e recuperare HP pari al proprio bonus di competenza. Lo strumento recupera tutte le cariche ogni giorno all'alba."
+      ]
+    },
+    "luminous-moss": {
+      "sourceName": "Luminous Moss",
+      "name": "Muschioluce",
+      "description": []
+    },
+    "lagging-tail": {
+      "sourceName": "Lagging Tail",
+      "name": "Rallentocoda",
+      "description": []
+    },
+    "light-clay": {
+      "sourceName": "Light Clay",
+      "name": "Creta Luce",
+      "description": []
+    },
+    "loaded-dice": {
+      "sourceName": "Loaded Dice",
+      "name": "Dado truccato",
+      "description": []
+    },
+    "metronome": {
+      "sourceName": "Metronome",
+      "name": "Plessimetro",
+      "description": []
+    }
+  }
+}

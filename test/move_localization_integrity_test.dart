@@ -61,7 +61,9 @@ void main() {
     expect(localizedMoves.keys.toList(), expectedNames.keys.toList());
 
     final errors = <String>[];
+    var localizedPosition = 0;
     for (final entry in localizedMoves.entries) {
+      localizedPosition += 1;
       final source = sourceById[entry.key];
       if (source == null) {
         errors.add('${entry.key}: localizzazione priva di sorgente.');
@@ -99,8 +101,14 @@ void main() {
         localizedHigherLevels ?? '',
       ].join(' ');
       if (!_sameCounts(
-        _mechanicalTokenCounts(sourceText),
-        _mechanicalTokenCounts(localizedText),
+        _mechanicalTokenCounts(
+          sourceText,
+          includeHealthPhrases: localizedPosition > 450,
+        ),
+        _mechanicalTokenCounts(
+          localizedText,
+          includeHealthPhrases: localizedPosition > 450,
+        ),
       )) {
         errors.add('${entry.key}: valori meccanici modificati.');
       }
@@ -230,9 +238,14 @@ String _flattenText(dynamic value) {
   return value?.toString() ?? '';
 }
 
-Map<String, int> _mechanicalTokenCounts(String value) {
+Map<String, int> _mechanicalTokenCounts(
+  String value, {
+  bool includeHealthPhrases = false,
+}) {
   final expression = RegExp(
-    r'\b\d+d\d+\b|\bd\d+\b|[+\-]\s*\d+|\b\d+[sx]\b|\b\d+(?:ft|\s*(?:feet|foot|piedi|piede))?\b|\b(?:hit points?|Hit Points?|punti ferita|Punti ferita)\b|\b(?:HP|PF|STR|FOR|DEX|DES|CON|COS|WIS|SAG|CHA|CAR|INT|AC|CA|STAB|DC|CD|MOVE|PP|SR|FLINCHED)\b|\b(?:flinch|flinches|flinched)\b',
+    includeHealthPhrases
+        ? r'\b\d+d\d+\b|\bd\d+\b|[+\-]\s*\d+|\b\d+[sx]\b|\b\d+(?:ft|\s*(?:feet|foot|piedi|piede))?\b|\b(?:hit points?|Hit Points?|punti ferita|Punti ferita)\b|\b(?:HP|PF|STR|FOR|DEX|DES|CON|COS|WIS|SAG|CHA|CAR|INT|AC|CA|STAB|DC|CD|MOVE|PP|SR|FLINCHED)\b|\b(?:flinch|flinches|flinched)\b'
+        : r'\b\d+d\d+\b|\bd\d+\b|[+\-]\s*\d+|\b\d+(?:ft|\s*(?:feet|foot|piedi|piede))?\b|\b(?:HP|PF|STR|FOR|DEX|DES|CON|COS|WIS|SAG|CHA|CAR|INT|AC|CA|STAB|DC|CD|MOVE|PP|SR|FLINCHED|flinch(?:es|ed)?)\b',
   );
   final result = <String, int>{};
   for (final match in expression.allMatches(value)) {

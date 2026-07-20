@@ -1023,7 +1023,7 @@ class _BattleScreenState extends State<BattleScreen> {
           moveModifier + proficiency + attackPathBonus + terrainAttackBonus;
       parts.add('AB ${attackBonus >= 0 ? '+' : ''}$attackBonus');
     }
-    if (move.save != null) parts.add('DC ${8 + proficiency + moveModifier}');
+    if (move.save != null) parts.add('CD ${8 + proficiency + moveModifier}');
 
     final damage = move.damageForLevel(level);
     if (damage != null) {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../models/trainer_ui_localization.dart';
 import '../../services/trainer_path_automation_service.dart';
 
 class TrainerPathAutomationPanel extends StatelessWidget {
@@ -53,17 +54,16 @@ class TrainerPathAutomationPanel extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'GESTIONE TRAINER PATH',
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.w900,
-                            ),
+                        'GESTIONE PERCORSO ALLENATORE',
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(fontWeight: FontWeight.w900),
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        trainerPath,
+                        TrainerUiLocalization.trainerPathName(trainerPath),
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                              fontWeight: FontWeight.w800,
-                            ),
+                          fontWeight: FontWeight.w800,
+                        ),
                       ),
                     ],
                   ),
@@ -78,9 +78,9 @@ class TrainerPathAutomationPanel extends StatelessWidget {
               const SizedBox(height: 16),
               Text(
                 'SCELTE DEI PRIVILEGI',
-                style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                      fontWeight: FontWeight.w900,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w900),
               ),
               const SizedBox(height: 8),
               for (final choice in choices) ...[
@@ -93,7 +93,7 @@ class TrainerPathAutomationPanel extends StatelessWidget {
               ],
               if (missingChoices.isNotEmpty)
                 Text(
-                  'Completa ${missingChoices.length == 1 ? 'la scelta richiesta' : 'le ${missingChoices.length} scelte richieste'} prima di considerare il path configurato.',
+                  'Completa ${missingChoices.length == 1 ? 'la scelta richiesta' : 'le ${missingChoices.length} scelte richieste'} prima di considerare il percorso configurato.',
                   style: TextStyle(
                     color: colors.error,
                     fontWeight: FontWeight.w700,
@@ -104,9 +104,9 @@ class TrainerPathAutomationPanel extends StatelessWidget {
               const SizedBox(height: 16),
               Text(
                 'RISORSE DISPONIBILI',
-                style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                      fontWeight: FontWeight.w900,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w900),
               ),
               const SizedBox(height: 8),
               for (final resource in resources) ...[
@@ -140,7 +140,7 @@ class TrainerPathAutomationPanel extends StatelessWidget {
             ] else ...[
               const SizedBox(height: 14),
               const Text(
-                'A questo livello il path non ha ancora risorse numeriche da consumare.',
+                'A questo livello il percorso non ha ancora risorse numeriche da consumare.',
                 style: TextStyle(fontStyle: FontStyle.italic),
               ),
             ],
@@ -176,19 +176,24 @@ class _PathChoiceField extends StatelessWidget {
           isExpanded: true,
           decoration: InputDecoration(
             labelText:
-                'Lv ${definition.featureLevel} · ${definition.featureTitle}',
-            helperText: definition.description,
+                'Liv. ${definition.featureLevel} · ${TrainerUiLocalization.featureName(definition.featureTitle)}',
+            helperText: TrainerUiLocalization.visibleText(
+              definition.description,
+            ),
             helperMaxLines: 3,
             border: const OutlineInputBorder(),
           ),
           hint: Text(
             options.isEmpty
                 ? 'Nessuna opzione disponibile'
-                : definition.label,
+                : TrainerUiLocalization.visibleText(definition.label),
           ),
           items: [
             for (final option in options)
-              DropdownMenuItem(value: option, child: Text(option)),
+              DropdownMenuItem(
+                value: option,
+                child: Text(TrainerUiLocalization.optionLabel(option)),
+              ),
           ],
           onChanged: options.isEmpty
               ? null
@@ -229,12 +234,12 @@ class _PathResourceRow extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    definition.label,
+                    TrainerUiLocalization.visibleText(definition.label),
                     style: const TextStyle(fontWeight: FontWeight.w900),
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    'Lv ${definition.featureLevel} · ${definition.featureTitle} · ${definition.resetLabel}',
+                    'Liv. ${definition.featureLevel} · ${TrainerUiLocalization.featureName(definition.featureTitle)} · ${definition.resetLabel}',
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
                 ],
@@ -250,9 +255,9 @@ class _PathResourceRow extends StatelessWidget {
               child: Text(
                 '$current/${definition.maxUses} ${definition.unitLabel}',
                 textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w900,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
               ),
             ),
             IconButton(

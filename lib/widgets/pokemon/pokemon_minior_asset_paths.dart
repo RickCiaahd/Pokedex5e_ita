@@ -80,7 +80,10 @@ class PokemonMiniorAssetPaths {
   }
 
   static bool _isMeteor(String raw) {
-    return raw == 'base' || raw == 'meteor' || raw == 'meteor-form';
+    return raw == 'base' ||
+        raw == 'meteor' ||
+        raw == 'meteor-form' ||
+        raw == 'forma-meteora';
   }
 
   static String? _coreColor(String raw) {

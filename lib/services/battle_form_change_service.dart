@@ -1,10 +1,12 @@
+import 'dart:math' as math;
+
 import '../models/pokemon.dart';
 import '../models/team_slot.dart';
 
 class BattleFormChangeService {
   const BattleFormChangeService._();
 
-  static const Set<String> supportedSpecies = {
+  static const Set<String> _supportedSpecies = {
     'Deoxys',
     'Castform',
     'Cherrim',
@@ -25,7 +27,154 @@ class BattleFormChangeService {
   };
 
   static bool supports(Pokemon pokemon) {
-    return supportedSpecies.contains(pokemon.name);
+    return _supportedSpecies.contains(pokemon.name);
+  }
+
+  static String canonicalFormKey(Pokemon pokemon, String? formName) {
+    final raw = Pokemon.formReferenceKey(
+      formName?.trim().isNotEmpty == true ? formName! : 'Base',
+      pokemon.name,
+    );
+
+    switch (pokemon.name) {
+      case 'Deoxys':
+        if (raw == 'base' || raw == 'normal') return 'normal';
+        return raw;
+      case 'Castform':
+        if (raw == 'base' || raw == 'normal') return 'normal';
+        return raw;
+      case 'Cherrim':
+        if (raw == 'base' || raw == 'overcast') return 'overcast';
+        return raw;
+      case 'Darmanitan':
+        if (raw.contains('galar')) {
+          return raw.contains('zen')
+              ? 'galarian-zen'
+              : 'galarian-standard';
+        }
+        if (raw == 'base' || raw.contains('standard')) return 'standard';
+        if (raw.contains('zen')) return 'zen';
+        return raw;
+      case 'Meloetta':
+        if (raw == 'base' || raw == 'aria') return 'aria';
+        return raw;
+      case 'Aegislash':
+        if (raw == 'base' || raw == 'blade') return 'blade';
+        return raw;
+      case 'Zygarde':
+        if (raw == 'base' || raw == '50') return '50';
+        return raw;
+      case 'Wishiwashi':
+        if (raw == 'base' || raw == 'solo') return 'solo';
+        return raw;
+      case 'Minior':
+        if (raw == 'base' || raw == 'meteor') return 'meteor';
+        return raw;
+      case 'Mimikyu':
+        if (raw == 'base' || raw == 'disguised') return 'disguised';
+        return raw;
+      case 'Necrozma':
+        if (raw == 'base' || raw == 'normal') return 'normal';
+        return raw;
+      case 'Cramorant':
+        if (raw == 'base' || raw == 'normal') return 'normal';
+        return raw;
+      case 'Eiscue':
+        if (raw == 'base' || raw == 'ice-face') return 'ice-face';
+        return raw;
+      case 'Morpeko':
+        if (raw == 'base' || raw == 'full-belly') return 'full-belly';
+        return raw;
+      case 'Palafin':
+        if (raw == 'base' || raw == 'zero') return 'zero';
+        return raw;
+      case 'Ogerpon':
+        if (raw == 'base' || raw == 'teal-mask') return 'teal-mask';
+        return raw;
+      case 'Terapagos':
+        if (raw == 'base' || raw == 'normal') return 'normal';
+        return raw;
+      default:
+        return raw;
+    }
+  }
+
+  static String normalizedChoiceName(Pokemon pokemon, String? formName) {
+    final key = canonicalFormKey(pokemon, formName);
+    return key == _defaultFormKey(pokemon) ? 'Base' : key;
+  }
+
+  static int formSortWeight(Pokemon pokemon, String? formName) {
+    final key = canonicalFormKey(pokemon, formName);
+    late final List<String> order;
+    switch (pokemon.name) {
+      case 'Deoxys':
+        order = const ['normal', 'attack', 'defense', 'speed'];
+        break;
+      case 'Castform':
+        order = const ['normal', 'sunny', 'rainy', 'snowy'];
+        break;
+      case 'Cherrim':
+        order = const ['overcast', 'sunshine'];
+        break;
+      case 'Darmanitan':
+        order = const [
+          'standard',
+          'zen',
+          'galarian-standard',
+          'galarian-zen',
+        ];
+        break;
+      case 'Meloetta':
+        order = const ['aria', 'pirouette'];
+        break;
+      case 'Aegislash':
+        order = const ['blade', 'shield'];
+        break;
+      case 'Zygarde':
+        order = const ['10', '50', 'complete'];
+        break;
+      case 'Wishiwashi':
+        order = const ['solo', 'school'];
+        break;
+      case 'Minior':
+        order = const ['meteor', 'core'];
+        break;
+      case 'Mimikyu':
+        order = const ['disguised', 'busted'];
+        break;
+      case 'Necrozma':
+        order = const ['normal', 'dusk-mane', 'dawn-wings', 'ultra'];
+        break;
+      case 'Cramorant':
+        order = const ['normal', 'gulping', 'gorging'];
+        break;
+      case 'Eiscue':
+        order = const ['ice-face', 'noice-face'];
+        break;
+      case 'Morpeko':
+        order = const ['full-belly', 'hangry'];
+        break;
+      case 'Palafin':
+        order = const ['zero', 'hero'];
+        break;
+      case 'Ogerpon':
+        order = const [
+          'teal-mask',
+          'wellspring-mask',
+          'hearthflame-mask',
+          'cornerstone-mask',
+        ];
+        break;
+      case 'Terapagos':
+        order = const ['normal', 'terastal', 'stellar'];
+        break;
+      default:
+        order = const [];
+        break;
+    }
+    final index = order.indexOf(key);
+    return index < 0 ? 100 : index;
   }
 
   static bool isAllowedChoice({
@@ -33,170 +182,211 @@ class BattleFormChangeService {
     required TeamSlot slot,
     required String formName,
   }) {
-    if (!supports(pokemon)) return false;
-    final key = _key(pokemon, formName);
+    if (pokemon.name != 'Darmanitan') return true;
 
-    if (pokemon.name == 'Darmanitan') {
-      final persistentKey = _key(pokemon, slot.formName);
-      final isGalarian = persistentKey.contains('galar');
-      return isGalarian ? key.contains('galar') : key == 'base' || key == 'zen';
+    final persistentKey = canonicalFormKey(pokemon, slot.formName);
+    final choiceKey = canonicalFormKey(pokemon, formName);
+    final isGalarian = persistentKey.startsWith('galarian-');
+    if (isGalarian) {
+      return choiceKey == 'galarian-standard' ||
+          choiceKey == 'galarian-zen';
     }
-
-    return true;
+    return choiceKey == 'standard' || choiceKey == 'zen';
   }
 
-  static bool sameForm(Pokemon pokemon, String? first, String? second) {
-    return _key(pokemon, first) == _key(pokemon, second);
+  static bool sameForm(
+    Pokemon pokemon,
+    String? current,
+    String candidate,
+  ) {
+    return canonicalFormKey(pokemon, current) ==
+        canonicalFormKey(pokemon, candidate);
   }
 
   static String formLabel(Pokemon pokemon, String? formName) {
-    final key = _key(pokemon, formName);
-    final translated = <String, String>{
-      'Deoxys:base': 'Forma Normale',
-      'Deoxys:attack': 'Forma Attacco',
-      'Deoxys:defense': 'Forma Difesa',
-      'Deoxys:speed': 'Forma Velocità',
-      'Castform:base': 'Forma Normale',
-      'Castform:sunny': 'Forma Sole',
-      'Castform:rainy': 'Forma Pioggia',
-      'Castform:snowy': 'Forma Nuvola di Neve',
-      'Cherrim:base': 'Forma Nuvola',
-      'Cherrim:sunshine': 'Forma Splendore',
-      'Darmanitan:base': 'Stato Normale',
-      'Darmanitan:zen': 'Stato Zen',
-      'Darmanitan:galarian-standard': 'Forma di Galar · Stato Normale',
-      'Darmanitan:galarian-zen': 'Forma di Galar · Stato Zen',
-      'Meloetta:base': 'Forma Canto',
-      'Meloetta:aria': 'Forma Canto',
-      'Meloetta:pirouette': 'Forma Danza',
-      'Aegislash:base': 'Forma Spada',
-      'Aegislash:blade': 'Forma Spada',
-      'Aegislash:shield': 'Forma Scudo',
-      'Zygarde:10': 'Forma 10%',
-      'Zygarde:base': 'Forma 50%',
-      'Zygarde:50': 'Forma 50%',
-      'Zygarde:complete': 'Forma Perfetta',
-      'Wishiwashi:base': 'Forma Individuale',
-      'Wishiwashi:solo': 'Forma Individuale',
-      'Wishiwashi:school': 'Forma Banco',
-      'Minior:base': 'Forma Meteora',
-      'Minior:meteor': 'Forma Meteora',
-      'Minior:core': 'Forma Nucleo',
-      'Mimikyu:base': 'Forma Mascherata',
-      'Mimikyu:disguised': 'Forma Mascherata',
-      'Mimikyu:busted': 'Forma Smascherata',
-      'Necrozma:base': 'Forma Normale',
-      'Necrozma:dusk-mane': 'Criniera del Vespro',
-      'Necrozma:dawn-wings': 'Ali dell’Aurora',
-      'Necrozma:ultra': 'UltraNecrozma',
-      'Cramorant:base': 'Forma Normale',
-      'Cramorant:gulping': 'Forma Inghiottitutto',
-      'Cramorant:gorging': 'Forma Inghiottipikachu',
-      'Eiscue:base': 'Facciagelo',
-      'Eiscue:ice-face': 'Facciagelo',
-      'Eiscue:noice-face': 'Facciavuota',
-      'Morpeko:base': 'Modalità Panciapiena',
-      'Morpeko:full-belly': 'Modalità Panciapiena',
-      'Morpeko:hangry': 'Modalità Panciavuota',
-      'Palafin:base': 'Forma Ingenua',
-      'Palafin:zero': 'Forma Ingenua',
-      'Palafin:hero': 'Forma Possente',
-      'Ogerpon:base': 'Maschera Turchese',
-      'Ogerpon:teal-mask': 'Maschera Turchese',
-      'Ogerpon:wellspring-mask': 'Maschera Pozzo',
-      'Ogerpon:hearthflame-mask': 'Maschera Focolare',
-      'Ogerpon:cornerstone-mask': 'Maschera Fondamenta',
-      'Terapagos:base': 'Forma Normale',
-      'Terapagos:normal': 'Forma Normale',
-      'Terapagos:terastal': 'Forma Teracristal',
-      'Terapagos:stellar': 'Forma Astrale',
-    }['${pokemon.name}:$key'];
-    if (translated != null) return translated;
-    if (key == 'base') return 'Forma base';
-    return _titleCase(key.replaceAll('-', ' '));
+    final key = canonicalFormKey(pokemon, formName);
+    switch (pokemon.name) {
+      case 'Deoxys':
+        return switch (key) {
+          'attack' => 'Forma Attacco',
+          'defense' => 'Forma Difesa',
+          'speed' => 'Forma Velocità',
+          _ => 'Forma Normale',
+        };
+      case 'Castform':
+        return switch (key) {
+          'sunny' => 'Forma Sole',
+          'rainy' => 'Forma Pioggia',
+          'snowy' => 'Forma Neve',
+          _ => 'Forma Normale',
+        };
+      case 'Cherrim':
+        return key == 'sunshine' ? 'Forma Splendore' : 'Forma Nuvola';
+      case 'Darmanitan':
+        return switch (key) {
+          'zen' => 'Stato Zen',
+          'galarian-standard' => 'Forma di Galar · Stato Normale',
+          'galarian-zen' => 'Forma di Galar · Stato Zen',
+          _ => 'Stato Normale',
+        };
+      case 'Meloetta':
+        return key == 'pirouette' ? 'Forma Danza' : 'Forma Canto';
+      case 'Aegislash':
+        return key == 'shield' ? 'Forma Scudo' : 'Forma Spada';
+      case 'Zygarde':
+        return switch (key) {
+          '10' => 'Forma 10%',
+          'complete' => 'Forma Perfetta',
+          _ => 'Forma 50%',
+        };
+      case 'Wishiwashi':
+        return key == 'school' ? 'Forma Banco' : 'Forma Individuale';
+      case 'Minior':
+        return key == 'core' ? 'Forma Nucleo' : 'Forma Meteora';
+      case 'Mimikyu':
+        return key == 'busted'
+            ? 'Forma Smascherata'
+            : 'Forma Mascherata';
+      case 'Necrozma':
+        return switch (key) {
+          'dusk-mane' => 'Criniera del Vespro',
+          'dawn-wings' => 'Ali dell’Aurora',
+          'ultra' => 'UltraNecrozma',
+          _ => 'Forma Normale',
+        };
+      case 'Cramorant':
+        return switch (key) {
+          'gulping' => 'Forma Inghiottitutto',
+          'gorging' => 'Forma Ingozzata',
+          _ => 'Forma Normale',
+        };
+      case 'Eiscue':
+        return key == 'noice-face' ? 'Faccia Liquida' : 'Faccia Gelata';
+      case 'Morpeko':
+        return key == 'hangry'
+            ? 'Motivo Pancia Vuota'
+            : 'Motivo Panciapiena';
+      case 'Palafin':
+        return key == 'hero' ? 'Forma Possente' : 'Forma Ingenua';
+      case 'Ogerpon':
+        return switch (key) {
+          'wellspring-mask' => 'Maschera Pozzo',
+          'hearthflame-mask' => 'Maschera Focolare',
+          'cornerstone-mask' => 'Maschera Fondamenta',
+          _ => 'Maschera Turchese',
+        };
+      case 'Terapagos':
+        return switch (key) {
+          'terastal' => 'Forma Teracristal',
+          'stellar' => 'Forma Astrale',
+          _ => 'Forma Normale',
+        };
+      default:
+        return formName?.trim().isNotEmpty == true ? formName! : 'Forma';
+    }
   }
 
   static String changeHint(Pokemon pokemon) {
-    return const <String, String>{
-          'Deoxys': 'Può cambiare forma come azione bonus grazie a Mutante.',
-          'Castform': 'Adegua la forma al meteo presente sul campo.',
-          'Cherrim': 'Usa la Forma Splendore sotto la luce solare intensa.',
-          'Darmanitan':
-              'Passa allo Stato Zen sotto metà dei PF se possiede Stato Zen.',
-          'Meloetta': 'Cantoantico alterna Forma Canto e Forma Danza.',
-          'Aegislash':
-              'Le mosse offensive e Scudo Reale alternano le due forme.',
-          'Zygarde':
-              'Cambia forma quando si attivano le sue capacità di aggregazione.',
-          'Wishiwashi':
-              'Alterna Forma Individuale e Forma Banco secondo Banco.',
-          'Minior': 'Scudosoglia espone il nucleo quando i PF scendono.',
-          'Mimikyu': 'Il travestimento si rompe quando viene consumato.',
-          'Necrozma': 'Gestisci fusioni e Ultraesplosione durante la lotta.',
-          'Cramorant': 'Cambia forma dopo Surf o Sub.',
-          'Eiscue':
-              'Alterna Facciagelo e Facciavuota quando il ghiaccio si rompe o si riforma.',
-          'Morpeko':
-              'Alterna modalità alla fine di ogni turno con Pancialterna.',
-          'Palafin':
-              'Supercambio attiva la Forma Possente quando lascia il campo.',
-          'Ogerpon': 'La maschera determina forma e tipo durante la lotta.',
-          'Terapagos':
-              'Gestisci Forma Teracristal e Forma Astrale durante la lotta.',
-        }[pokemon.name] ??
-        'Cambia manualmente la forma quando si verifica la relativa condizione.';
-  }
-
-  static String? effectNote(Pokemon pokemon, String? formName) {
-    final key = _key(pokemon, formName);
-    return <String, String>{
-      'Deoxys:attack':
-          'Mutante: +5 ai tiri per colpire; gli attacchi contro Deoxys hanno vantaggio.',
-      'Deoxys:defense':
-          'Mutante: CA +3; i suoi attacchi hanno svantaggio e i bersagli hanno vantaggio ai tiri salvezza.',
-      'Deoxys:speed':
-          'Mutante: ottiene un’azione di attacco aggiuntiva, effettuata con svantaggio; i bersagli hanno vantaggio ai tiri salvezza.',
-      'Castform:base':
-          'Tipo Normale in assenza di sole intenso, pioggia o neve.',
-      'Castform:sunny': 'Tipo Fuoco durante la luce solare intensa.',
-      'Castform:rainy': 'Tipo Acqua durante la pioggia.',
-      'Castform:snowy': 'Tipo Ghiaccio in condizioni fredde o nevose.',
-      'Darmanitan:zen':
-          'Sotto metà PF: Fuoco/Psico, CA +4 e FOR/SAG scambiate.',
-      'Aegislash:shield':
-          'Scudo Reale: CA e DES vengono scambiate rispetto alla Forma Spada.',
-      'Aegislash:base':
-          'Una mossa che infligge danni riporta Aegislash alla Forma Spada.',
-      'Aegislash:blade':
-          'Una mossa che infligge danni riporta Aegislash alla Forma Spada.',
-      'Meloetta:pirouette':
-          'Cantoantico attiva la Forma Danza; tornando in panchina riassume la Forma Canto.',
-      'Palafin:hero':
-          'Supercambio mantiene la Forma Possente fino al termine della lotta.',
-    }['${pokemon.name}:$key'];
+    switch (pokemon.name) {
+      case 'Darmanitan':
+        return 'Lo Stato Zen si attiva sotto la metà dei PF se il Pokémon possiede l’abilità Modalità Zen.';
+      case 'Aegislash':
+        return 'Accendilotta alterna Forma Spada e Forma Scudo in base alla mossa usata.';
+      case 'Zygarde':
+        return 'La Forma 50% è quella predefinita; usa le altre forme quando la situazione di gioco lo richiede.';
+      case 'Mimikyu':
+        return 'Fantasmanto mantiene la Forma Mascherata finché i suoi PF temporanei non vengono esauriti.';
+      case 'Palafin':
+        return 'Supercambio consente di assumere la Forma Possente; al termine della lotta torna alla Forma Ingenua.';
+      default:
+        return 'Il cambio forma vale soltanto per la battaglia corrente.';
+    }
   }
 
   static int armorClassBonus(Pokemon pokemon, String? formName) {
-    return pokemon.name == 'Deoxys' && _key(pokemon, formName) == 'defense'
-        ? 3
-        : 0;
+    final key = canonicalFormKey(pokemon, formName);
+    if (pokemon.name == 'Deoxys' && key == 'defense') return 3;
+    if (pokemon.name == 'Palafin' && key == 'hero') return 4;
+    return 0;
   }
 
   static int attackRollBonus(Pokemon pokemon, String? formName) {
-    return pokemon.name == 'Deoxys' && _key(pokemon, formName) == 'attack'
-        ? 5
-        : 0;
+    final key = canonicalFormKey(pokemon, formName);
+    if (pokemon.name == 'Deoxys' && key == 'attack') return 5;
+    return 0;
   }
 
-  static String _key(Pokemon pokemon, String? formName) {
-    return Pokemon.formReferenceKey(formName ?? '', pokemon.name);
+  static Map<String, int> applyAttributeScoreModifiers(
+    Pokemon pokemon,
+    String? formName,
+    Map<String, int> scores,
+  ) {
+    final result = Map<String, int>.from(scores);
+    final key = canonicalFormKey(pokemon, formName);
+    if (pokemon.name == 'Palafin' && key == 'hero') {
+      result['STR'] = math.min(22, (result['STR'] ?? 10) + 4);
+      result['DEX'] = math.min(22, (result['DEX'] ?? 10) + 4);
+    }
+    return result;
   }
 
-  static String _titleCase(String value) {
-    return value
-        .split(' ')
-        .where((part) => part.isNotEmpty)
-        .map((part) => '${part[0].toUpperCase()}${part.substring(1)}')
-        .join(' ');
+  static String? effectNote(Pokemon pokemon, String? formName) {
+    final key = canonicalFormKey(pokemon, formName);
+    if (pokemon.name == 'Deoxys') {
+      return switch (key) {
+        'attack' => 'Mutante: +5 ai tiri per colpire.',
+        'defense' => 'Mutante: +3 alla CA.',
+        'speed' => 'Mutante: velocità raddoppiata.',
+        _ => 'Forma equilibrata, senza bonus di Mutante.',
+      };
+    }
+    if (pokemon.name == 'Aegislash' && key == 'shield') {
+      return 'Accendilotta: CA 20 e DES 15 al posto dei valori della Forma Spada.';
+    }
+    if (pokemon.name == 'Zygarde') {
+      return switch (key) {
+        '10' => 'CA 16; FOR 16, DES 19, COS 15, INT 14, SAG 14, CAR 14.',
+        'complete' =>
+          'CA 20; FOR 19, DES 17, COS 30, INT 18, SAG 18, CAR 18.',
+        _ => 'CA 18; FOR 19, DES 18, COS 20, INT 16, SAG 16, CAR 16.',
+      };
+    }
+    if (pokemon.name == 'Darmanitan') {
+      return switch (key) {
+        'zen' => 'Tipo Fuoco/Psico, CA 18; FOR e SAG vengono scambiate.',
+        'galarian-zen' => 'Tipo Ghiaccio/Fuoco; FOR e DES aumentano di 2.',
+        _ => null,
+      };
+    }
+    if (pokemon.name == 'Mimikyu' && key == 'busted') {
+      return 'Fantasmanto è spezzato e non concede più PF temporanei.';
+    }
+    if (pokemon.name == 'Palafin' && key == 'hero') {
+      return 'Supercambio: +4 CA, +4 FOR e +4 DES (massimo 22) fino alla fine della lotta.';
+    }
+    return null;
+  }
+
+  static String _defaultFormKey(Pokemon pokemon) {
+    return switch (pokemon.name) {
+      'Deoxys' => 'normal',
+      'Castform' => 'normal',
+      'Cherrim' => 'overcast',
+      'Darmanitan' => 'standard',
+      'Meloetta' => 'aria',
+      'Aegislash' => 'blade',
+      'Zygarde' => '50',
+      'Wishiwashi' => 'solo',
+      'Minior' => 'meteor',
+      'Mimikyu' => 'disguised',
+      'Necrozma' => 'normal',
+      'Cramorant' => 'normal',
+      'Eiscue' => 'ice-face',
+      'Morpeko' => 'full-belly',
+      'Palafin' => 'zero',
+      'Ogerpon' => 'teal-mask',
+      'Terapagos' => 'normal',
+      _ => 'base',
+    };
   }
 }

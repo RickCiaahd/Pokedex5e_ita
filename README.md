@@ -1,6 +1,7 @@
 # Pokédex 5e ITA
 
 [![Flutter CI](https://github.com/RickCiaahd/Pokedex5e_ita/actions/workflows/flutter-ci.yml/badge.svg)](https://github.com/RickCiaahd/Pokedex5e_ita/actions/workflows/flutter-ci.yml)
+[![Windows release](https://github.com/RickCiaahd/Pokedex5e_ita/actions/workflows/windows-release.yml/badge.svg)](https://github.com/RickCiaahd/Pokedex5e_ita/actions/workflows/windows-release.yml)
 
 Companion non ufficiale in italiano per campagne Pokémon 5e, sviluppato con Flutter per Web, Windows e Android.
 
@@ -25,9 +26,10 @@ flutter analyze
 flutter test test/data_integrity_test.dart
 flutter test
 flutter build apk --debug
+flutter build windows --release
 ```
 
-Il test di integrità verifica i file sorgente del catalogo, gli identificatori, le statistiche minime, le forme e la presenza di almeno un'immagine utilizzabile per ogni specie. La CI verifica inoltre che il progetto continui a compilare come applicazione Android.
+Il test di integrità verifica i file sorgente del catalogo, gli identificatori, le statistiche minime, le forme e la presenza di almeno un'immagine utilizzabile per ogni specie. Le pipeline verificano inoltre che il progetto continui a compilare come applicazione Android e Windows.
 
 ## Requisiti
 
@@ -61,6 +63,12 @@ flutter test
 flutter build apk --debug
 ```
 
+Su un computer Windows con Visual Studio e il workload desktop C++ configurato:
+
+```powershell
+flutter build windows --release
+```
+
 Quando vengono aggiunti Pokémon, forme, mosse, abilità o asset, il test di integrità deve continuare a essere superato.
 
 ## Release Android
@@ -69,7 +77,15 @@ L'app Android usa il nome `Pokédex 5e ITA` e l'Application ID definitivo `io.gi
 
 La guida completa per creare il keystore, configurare i secret GitHub e generare APK/AAB firmati è disponibile in [`docs/android-release.md`](docs/android-release.md).
 
-Il workflow `Android release` può essere avviato manualmente dopo la configurazione dei secret. Il tag `v1.0.1` genera la GitHub Release con APK, AAB e checksum SHA-256.
+Il workflow `Android release` può essere avviato manualmente dopo la configurazione dei secret. Un tag `v*` genera APK, AAB e checksum SHA-256 e li allega alla GitHub Release.
+
+## Release Windows
+
+L'app Windows usa il titolo `Pokédex 5e ITA` e l'eseguibile `Pokedex5eITA.exe`. Viene distribuita inizialmente come archivio ZIP portatile x64 contenente l'intera cartella necessaria all'avvio.
+
+La guida di compilazione e distribuzione è disponibile in [`docs/windows-release.md`](docs/windows-release.md).
+
+Il workflow `Windows release` esegue analisi, test e build su Windows, crea lo ZIP portatile e il checksum SHA-256 e, sui tag `v*`, li allega alla stessa GitHub Release delle build Android.
 
 ## Dati e salvataggi
 

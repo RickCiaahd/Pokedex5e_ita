@@ -95,6 +95,9 @@ class BattlePokemonState {
     required this.remainingPp,
     required this.volatileStatuses,
     this.battleFormName,
+    this.temporaryHp = 0,
+    this.temporaryHpEnabled = false,
+    this.temporaryHpInitialized = false,
   });
 
   final int slotIndex;
@@ -103,6 +106,9 @@ class BattlePokemonState {
   final Map<String, int> remainingPp;
   final Set<String> volatileStatuses;
   final String? battleFormName;
+  final int temporaryHp;
+  final bool temporaryHpEnabled;
+  final bool temporaryHpInitialized;
 
   bool matches(TeamSlot slot) {
     return slot.slotIndex == slotIndex &&
@@ -118,6 +124,9 @@ class BattlePokemonState {
       'remainingPp': remainingPp,
       'volatileStatuses': volatileStatuses.toList(growable: false),
       'battleFormName': battleFormName,
+      'temporaryHp': temporaryHp,
+      'temporaryHpEnabled': temporaryHpEnabled,
+      'temporaryHpInitialized': temporaryHpInitialized,
     };
   }
 
@@ -138,6 +147,9 @@ class BattlePokemonState {
         ).map((value) => value.toString()),
       ),
       battleFormName: json['battleFormName']?.toString(),
+      temporaryHp: _readInt(json['temporaryHp']).clamp(0, 9999).toInt(),
+      temporaryHpEnabled: json['temporaryHpEnabled'] == true,
+      temporaryHpInitialized: json['temporaryHpInitialized'] == true,
     );
   }
 

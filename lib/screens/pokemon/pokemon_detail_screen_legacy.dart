@@ -1269,6 +1269,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
                           ),
                           _TraitsView(
                             pokemon: pokemon,
+                            basePokemon: _basePokemon,
                             slot: _teamSlot,
                             attributes: attributes,
                             modifierBuilder: _modifier,
@@ -1332,6 +1333,7 @@ class _PokemonDetailTabBarDelegate extends SliverPersistentHeaderDelegate {
 class _Header extends StatelessWidget {
   const _Header({
     required this.pokemon,
+    required this.imagePokemon,
     required this.slot,
     required this.level,
     required this.armorClass,
@@ -1362,6 +1364,7 @@ class _Header extends StatelessWidget {
   });
 
   final Pokemon pokemon;
+  final Pokemon imagePokemon;
   final TeamSlot? slot;
   final int level;
   final int armorClass;
@@ -1422,7 +1425,7 @@ class _Header extends StatelessWidget {
                       children: [
                         Expanded(
                           child: PokemonAssetImage(
-                            pokemon: pokemon,
+                            pokemon: imagePokemon,
                             formName: slot?.formName,
                             gender: slot?.gender,
                             isShiny: slot?.isShiny,
@@ -2440,6 +2443,16 @@ class _FeaturesView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String? lookup(Map<String, String> values, String reference) {
+      final direct = values[reference];
+      if (direct != null) return direct;
+      final key = _itemReferenceKey(reference);
+      for (final entry in values.entries) {
+        if (_itemReferenceKey(entry.key) == key) return entry.value;
+      }
+      return null;
+    }
+
     final feats = slot?.feats ?? const <String>[];
     final abilities = slot?.abilities.isNotEmpty == true
         ? slot!.abilities
@@ -2455,9 +2468,10 @@ class _FeaturesView extends StatelessWidget {
       children: [
         for (final ability in abilities)
           _InfoCard(
-            title: abilityDisplayNames[ability] ?? ability,
+            title: lookup(abilityDisplayNames, ability) ?? ability,
             child: Text(
-              abilityDescriptions[ability] ?? 'Descrizione non disponibile.',
+              lookup(abilityDescriptions, ability) ??
+                  'Descrizione non disponibile.',
             ),
           ),
         for (final feat in feats)
@@ -2480,6 +2494,7 @@ class _FeaturesView extends StatelessWidget {
 class _TraitsView extends StatelessWidget {
   const _TraitsView({
     required this.pokemon,
+    required this.basePokemon,
     required this.slot,
     required this.attributes,
     required this.modifierBuilder,
@@ -2489,6 +2504,7 @@ class _TraitsView extends StatelessWidget {
   });
 
   final Pokemon pokemon;
+  final Pokemon basePokemon;
   final TeamSlot? slot;
   final Map<String, int> attributes;
   final int Function(int score) modifierBuilder;
@@ -2558,7 +2574,17 @@ class _TraitsView extends StatelessWidget {
                   slot?.nature ?? 'No Nature',
                 ),
               ),
-              _InfoRow(label: 'Forma', value: slot?.formName ?? '-'),
+              _InfoRow(
+                label: 'Forma',
+                value: slot == null
+                    ? '-'
+                    : BattleFormChangeService.supports(basePokemon)
+                    ? BattleFormChangeService.formLabel(
+                        basePokemon,
+                        slot?.formName,
+                      )
+                    : slot?.formName ?? '-',
+              ),
               _InfoRow(
                 label: 'Cromatico',
                 value: slot?.isShiny == true ? 'Sì' : 'No',

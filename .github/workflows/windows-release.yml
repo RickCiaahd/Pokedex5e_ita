@@ -1,0 +1,143 @@
+name: Windows release
+
+on:
+  pull_request:
+    paths:
+      - 'windows/**'
+      - 'lib/**'
+      - 'assets/**'
+      - 'test/**'
+      - 'pubspec.yaml'
+      - 'pubspec.lock'
+      - '.github/workflows/windows-release.yml'
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: windows-release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build portable Windows x64
+    runs-on: windows-latest
+    timeout-minutes: 90
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Enable Windows desktop
+        shell: pwsh
+        run: flutter config --enable-windows-desktop
+
+      - name: Show Flutter and Windows toolchain
+        shell: pwsh
+        run: |
+          flutter --version
+          flutter doctor -v
+
+      - name: Install dependencies
+        shell: pwsh
+        run: flutter pub get
+
+      - name: Analyze source
+        shell: pwsh
+        run: flutter analyze
+
+      - name: Validate application data
+        shell: pwsh
+        run: flutter test test/data_integrity_test.dart --reporter expanded
+
+      - name: Run complete test suite
+        shell: pwsh
+        run: flutter test --reporter expanded
+
+      - name: Build Windows release
+        shell: pwsh
+        run: flutter build windows --release
+
+      - name: Read and validate application version
+        id: version
+        shell: pwsh
+        run: |
+          $match = Select-String -Path 'pubspec.yaml' -Pattern '^version:\s+(.+)$'
+          if (-not $match) {
+            throw 'Versione non trovata in pubspec.yaml'
+          }
+
+          $fullVersion = $match.Matches[0].Groups[1].Value.Trim()
+          $version = $fullVersion.Split('+')[0]
+          "name=$version" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+
+          if ($env:GITHUB_REF -like 'refs/tags/v*') {
+            $tagVersion = $env:GITHUB_REF_NAME.TrimStart('v')
+            if ($tagVersion -ne $version) {
+              throw "Il tag $tagVersion non coincide con la versione $version"
+            }
+          }
+
+      - name: Prepare portable package
+        shell: pwsh
+        run: |
+          $version = '${{ steps.version.outputs.name }}'
+          $source = 'build\windows\x64\runner\Release'
+          $dist = 'dist'
+          $packageName = "Pokedex5eITA-$version-Windows-x64"
+          $staging = Join-Path $dist $packageName
+          $zip = Join-Path $dist "$packageName.zip"
+          $checksum = Join-Path $dist "$packageName-SHA256.txt"
+
+          if (-not (Test-Path (Join-Path $source 'Pokedex5eITA.exe'))) {
+            throw 'Pokedex5eITA.exe non trovato nella build release'
+          }
+
+          New-Item -ItemType Directory -Force -Path $staging | Out-Null
+          Copy-Item -Path (Join-Path $source '*') -Destination $staging -Recurse -Force
+
+          @"
+          Pokédex 5e ITA $version — Windows x64
+
+          1. Estrarre interamente questa cartella.
+          2. Avviare Pokedex5eITA.exe.
+          3. Non spostare il solo file EXE: la cartella data e le DLL devono restare accanto all'eseguibile.
+
+          Se Windows segnala l'assenza di VCRUNTIME o MSVCP, installare Microsoft Visual C++ Redistributable 2015-2022 x64 dal sito Microsoft.
+
+          Progetto amatoriale e non ufficiale.
+          "@ | Set-Content -Path (Join-Path $staging 'LEGGIMI-WINDOWS.txt') -Encoding utf8
+
+          Compress-Archive -Path $staging -DestinationPath $zip -CompressionLevel Optimal -Force
+          $hash = (Get-FileHash -Path $zip -Algorithm SHA256).Hash.ToLowerInvariant()
+          "$hash  $packageName.zip" | Set-Content -Path $checksum -Encoding ascii
+
+      - name: Upload Windows artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Pokedex5eITA-Windows-${{ steps.version.outputs.name }}
+          path: |
+            dist/*.zip
+            dist/*-SHA256.txt
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Publish files in GitHub release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Pokédex 5e ITA ${{ steps.version.outputs.name }}
+          generate_release_notes: true
+          files: |
+            dist/*.zip
+            dist/*-SHA256.txt

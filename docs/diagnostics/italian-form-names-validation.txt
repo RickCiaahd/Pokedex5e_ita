@@ -1,6 +1,0 @@
-Darmanitan test anchor missing
-/home/runner/work/_temp/b3e27689-9e42-400b-8f1d-d7a8959dee81.sh: line 106: dart: command not found
-/home/runner/work/_temp/b3e27689-9e42-400b-8f1d-d7a8959dee81.sh: line 109: flutter: command not found
-/home/runner/work/_temp/b3e27689-9e42-400b-8f1d-d7a8959dee81.sh: line 110: flutter: command not found
-/home/runner/work/_temp/b3e27689-9e42-400b-8f1d-d7a8959dee81.sh: line 111: flutter: command not found
-/home/runner/work/_temp/b3e27689-9e42-400b-8f1d-d7a8959dee81.sh: line 112: flutter: command not found

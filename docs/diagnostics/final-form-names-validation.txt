@@ -1,0 +1,177 @@
+Warning: Package resolution error when reading "analysis_options.yaml" file:
+Failed to resolve package URI "package:flutter_lints/flutter.yaml" in include at "/home/runner/work/Pokedex5e_ita/Pokedex5e_ita/analysis_options.yaml".
+Formatted lib/services/battle_form_change_service.dart
+Warning: Package resolution error when reading "analysis_options.yaml" file:
+Failed to resolve package URI "package:flutter_lints/flutter.yaml" in include at "/home/runner/work/Pokedex5e_ita/Pokedex5e_ita/analysis_options.yaml".
+Formatted 2 files (1 changed) in 0.01 seconds.
+Resolving dependencies...
+Downloading packages...
+  file_picker 10.3.10 (11.0.2 available)
+  hooks 2.0.2 (2.1.0 available)
+  matcher 0.12.19 (0.12.20 available)
+  meta 1.18.0 (1.19.0 available)
+  package_config 2.2.0 (3.0.0 available)
+  record_use 0.6.0 (1.0.0 available)
+  share_plus 12.0.2 (13.2.1 available)
+  share_plus_platform_interface 6.1.0 (7.1.0 available)
+  test_api 0.7.11 (0.7.13 available)
+  uuid 4.5.3 (4.6.0 available)
+  vector_math 2.2.0 (2.4.0 available)
+  win32 5.15.0 (6.3.0 available)
+  xml 6.6.1 (7.0.1 available)
+Got dependencies!
+13 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.
+Resolving dependencies...
+Downloading packages...
+  file_picker 10.3.10 (11.0.2 available)
+  hooks 2.0.2 (2.1.0 available)
+  matcher 0.12.19 (0.12.20 available)
+  meta 1.18.0 (1.19.0 available)
+  package_config 2.2.0 (3.0.0 available)
+  record_use 0.6.0 (1.0.0 available)
+  share_plus 12.0.2 (13.2.1 available)
+  share_plus_platform_interface 6.1.0 (7.1.0 available)
+  test_api 0.7.11 (0.7.13 available)
+  uuid 4.5.3 (4.6.0 available)
+  vector_math 2.2.0 (2.4.0 available)
+  win32 5.15.0 (6.3.0 available)
+  xml 6.6.1 (7.0.1 available)
+Got dependencies!
+13 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.
+Analyzing Pokedex5e_ita...                                      
+
+  error • The argument type 'Object' can't be assigned to the parameter type 'Widget?'.  • lib/screens/pokemon/pokemon_edit_screen.dart:882:29 • argument_type_not_assignable
+  error • The operator '[]' isn't defined for the type 'PokemonAttributes'. Try defining the operator '[]' • test/battle_form_change_service_test.dart:127:28 • undefined_operator
+  error • The operator '[]' isn't defined for the type 'PokemonAttributes'. Try defining the operator '[]' • test/battle_form_change_service_test.dart:129:30 • undefined_operator
+  error • The operator '[]' isn't defined for the type 'PokemonAttributes'. Try defining the operator '[]' • test/battle_form_change_service_test.dart:131:33 • undefined_operator
+
+4 issues found. (ran in 14.1s)
+Resolving dependencies...
+Downloading packages...
+  file_picker 10.3.10 (11.0.2 available)
+  hooks 2.0.2 (2.1.0 available)
+  matcher 0.12.19 (0.12.20 available)
+  meta 1.18.0 (1.19.0 available)
+  package_config 2.2.0 (3.0.0 available)
+  record_use 0.6.0 (1.0.0 available)
+  share_plus 12.0.2 (13.2.1 available)
+  share_plus_platform_interface 6.1.0 (7.1.0 available)
+  test_api 0.7.11 (0.7.13 available)
+  uuid 4.5.3 (4.6.0 available)
+  vector_math 2.2.0 (2.4.0 available)
+  win32 5.15.0 (6.3.0 available)
+  xml 6.6.1 (7.0.1 available)
+Got dependencies!
+13 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.
+00:00 +0: loading /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/battle_form_change_service_test.dart
+test/battle_form_change_service_test.dart:127:28: Error: The operator '[]' isn't defined for the type 'PokemonAttributes'.
+ - 'PokemonAttributes' is from 'package:pokedex_5e_ita/models/pokemon_attributes.dart' ('lib/models/pokemon_attributes.dart').
+Try correcting the operator to an existing operator, or defining a '[]' operator.
+      expect(ten.attributes['DEX'], 19);
+                           ^
+test/battle_form_change_service_test.dart:129:30: Error: The operator '[]' isn't defined for the type 'PokemonAttributes'.
+ - 'PokemonAttributes' is from 'package:pokedex_5e_ita/models/pokemon_attributes.dart' ('lib/models/pokemon_attributes.dart').
+Try correcting the operator to an existing operator, or defining a '[]' operator.
+      expect(fifty.attributes['CON'], 20);
+                             ^
+test/battle_form_change_service_test.dart:131:33: Error: The operator '[]' isn't defined for the type 'PokemonAttributes'.
+ - 'PokemonAttributes' is from 'package:pokedex_5e_ita/models/pokemon_attributes.dart' ('lib/models/pokemon_attributes.dart').
+Try correcting the operator to an existing operator, or defining a '[]' operator.
+      expect(complete.attributes['CON'], 30);
+                                ^
+00:00 +0 -1: loading /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/battle_form_change_service_test.dart [E]
+  Failed to load "/home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/battle_form_change_service_test.dart":
+  Compilation failed for testPath=/home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/battle_form_change_service_test.dart: test/battle_form_change_service_test.dart:127:28: Error: The operator '[]' isn't defined for the type 'PokemonAttributes'.
+   - 'PokemonAttributes' is from 'package:pokedex_5e_ita/models/pokemon_attributes.dart' ('lib/models/pokemon_attributes.dart').
+  Try correcting the operator to an existing operator, or defining a '[]' operator.
+        expect(ten.attributes['DEX'], 19);
+                             ^
+  test/battle_form_change_service_test.dart:129:30: Error: The operator '[]' isn't defined for the type 'PokemonAttributes'.
+   - 'PokemonAttributes' is from 'package:pokedex_5e_ita/models/pokemon_attributes.dart' ('lib/models/pokemon_attributes.dart').
+  Try correcting the operator to an existing operator, or defining a '[]' operator.
+        expect(fifty.attributes['CON'], 20);
+                               ^
+  test/battle_form_change_service_test.dart:131:33: Error: The operator '[]' isn't defined for the type 'PokemonAttributes'.
+   - 'PokemonAttributes' is from 'package:pokedex_5e_ita/models/pokemon_attributes.dart' ('lib/models/pokemon_attributes.dart').
+  Try correcting the operator to an existing operator, or defining a '[]' operator.
+        expect(complete.attributes['CON'], 30);
+                                  ^
+  .
+00:00 +0 -1: Some tests failed.
+
+Failing tests:
+  /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/battle_form_change_service_test.dart: loading /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/battle_form_change_service_test.dart
+Resolving dependencies...
+Downloading packages...
+  file_picker 10.3.10 (11.0.2 available)
+  hooks 2.0.2 (2.1.0 available)
+  matcher 0.12.19 (0.12.20 available)
+  meta 1.18.0 (1.19.0 available)
+  package_config 2.2.0 (3.0.0 available)
+  record_use 0.6.0 (1.0.0 available)
+  share_plus 12.0.2 (13.2.1 available)
+  share_plus_platform_interface 6.1.0 (7.1.0 available)
+  test_api 0.7.11 (0.7.13 available)
+  uuid 4.5.3 (4.6.0 available)
+  vector_math 2.2.0 (2.4.0 available)
+  win32 5.15.0 (6.3.0 available)
+  xml 6.6.1 (7.0.1 available)
+Got dependencies!
+13 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.
+00:00 +0: loading /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/battle_temporary_hp_service_test.dart
+00:00 +0: Fantasmanto exposes an extensible temporary HP rule
+00:00 +1: a Pokemon without a matching ability has no temporary HP rule
+00:00 +2: All tests passed!
+Resolving dependencies...
+Downloading packages...
+  file_picker 10.3.10 (11.0.2 available)
+  hooks 2.0.2 (2.1.0 available)
+  matcher 0.12.19 (0.12.20 available)
+  meta 1.18.0 (1.19.0 available)
+  package_config 2.2.0 (3.0.0 available)
+  record_use 0.6.0 (1.0.0 available)
+  share_plus 12.0.2 (13.2.1 available)
+  share_plus_platform_interface 6.1.0 (7.1.0 available)
+  test_api 0.7.11 (0.7.13 available)
+  uuid 4.5.3 (4.6.0 available)
+  vector_math 2.2.0 (2.4.0 available)
+  win32 5.15.0 (6.3.0 available)
+  xml 6.6.1 (7.0.1 available)
+Got dependencies!
+13 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.
+00:00 +0: loading /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/ability_localization_integrity_test.dart
+00:00 +0: le traduzioni coprono una sola volta tutte le abilità sorgente
+00:00 +1: numeri, dadi e percentuali restano invariati
+00:00 +1 -1: numeri, dadi e percentuali restano invariati [E]
+  Expected: empty
+    Actual: [
+              'zen-mode-galarian: token sorgente [+2, 50%], token tradotti [2, 50%].',
+              'zero-to-hero: token sorgente [22, 4, 4], token tradotti [+4, 22, 4].'
+            ]
+  zen-mode-galarian: token sorgente [+2, 50%], token tradotti [2, 50%].
+  zero-to-hero: token sorgente [22, 4, 4], token tradotti [+4, 22, 4].
+  
+  package:matcher                                      expect
+  package:flutter_test/src/widget_tester.dart 473:18   expect
+  test/ability_localization_integrity_test.dart 112:5  main.<fn>
+  
+00:00 +1 -1: il repository applica 330 descrizioni senza cambiare i metadati
+00:00 +1 -2: il repository applica 330 descrizioni senza cambiare i metadati [E]
+  Expected: contains 'Hero Form'
+    Actual: 'Supercambio consente a Palafin di assumere la Forma Possente. Nelle regole dell’app, durante la lotta la Forma Possente è di taglia Media, ottiene +4 alla CA e aumenta FOR e DES di 4, fino a un massimo di 22. Al termine della lotta Palafin torna automaticamente alla Forma Ingenua.'
+     Which: does not contain 'Hero Form'
+  
+  package:matcher                                      expect
+  package:flutter_test/src/widget_tester.dart 473:18   expect
+  test/ability_localization_integrity_test.dart 144:5  main.<fn>
+  
+00:00 +1 -2: Some tests failed.
+
+Failing tests:
+  /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/ability_localization_integrity_test.dart: il repository applica 330 descrizioni senza cambiare i metadati
+  /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/ability_localization_integrity_test.dart: numeri, dadi e percentuali restano invariati

@@ -98,16 +98,16 @@ class BattleFormChangeService {
   }
 
   static String normalizedChoiceName(Pokemon pokemon, String? formName) {
-  final key = canonicalFormKey(pokemon, formName);
-  if (key == _defaultFormKey(pokemon)) return 'Base';
-  if (pokemon.name == 'Darmanitan') {
-    if (key == 'galarian-standard') return 'galar-standard';
-    if (key == 'galarian-zen') return 'galar-zen';
+    final key = canonicalFormKey(pokemon, formName);
+    if (key == _defaultFormKey(pokemon)) return 'Base';
+    if (pokemon.name == 'Darmanitan') {
+      if (key == 'galarian-standard') return 'galar-standard';
+      if (key == 'galarian-zen') return 'galar-zen';
+    }
+    return key;
   }
-  return key;
-}
 
-static int formSortWeight(Pokemon pokemon, String? formName) {
+  static int formSortWeight(Pokemon pokemon, String? formName) {
     final key = canonicalFormKey(pokemon, formName);
     late final List<String> order;
     switch (pokemon.name) {

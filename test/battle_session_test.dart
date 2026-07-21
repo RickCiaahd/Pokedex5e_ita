@@ -18,6 +18,7 @@ void main() {
       identityKey: BattlePokemonState.identityKeyFor(slot),
       remainingPp: const {'bite': 3},
       volatileStatuses: const {'Confused'},
+      battleFormName: 'Attack',
     );
     final session = BattleSession(
       profileId: 'profile-1',
@@ -50,6 +51,7 @@ void main() {
     expect(restored.activeSlotIndex, 2);
     expect(restored.pokemonStates[2]?.remainingPp['bite'], 3);
     expect(restored.pokemonStates[2]?.volatileStatuses, {'Confused'});
+    expect(restored.pokemonStates[2]?.battleFormName, 'Attack');
     expect(restored.initiativeEntries.last.name, 'Boss');
   });
 

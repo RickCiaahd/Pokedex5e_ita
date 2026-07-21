@@ -102,5 +102,31 @@
     "Constitution",
     "Wisdom"
   ],
-  "size": "Medium"
+  "size": "Medium",
+  "variant_data": {
+    "create_mode": "default",
+    "default": "Standard Mode",
+    "permanent": false,
+    "variants": {
+      "Standard Mode": {
+        "display": "Darmanitan Standard Mode",
+        "original_species": "Darmanitan Standard Mode"
+      },
+      "Zen Mode": {
+        "diff": {
+          "AC": 18,
+          "Type": [
+            "Fire",
+            "Psychic"
+          ],
+          "attributes": {
+            "STR": 12,
+            "WIS": 17
+          }
+        },
+        "display": "Darmanitan Zen Mode",
+        "original_species": "Darmanitan Zen Mode"
+      }
+    }
+  }
 }

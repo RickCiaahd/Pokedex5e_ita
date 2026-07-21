@@ -21,11 +21,11 @@ jobs:
           fetch-depth: 0
           token: ${{ github.token }}
 
-      - name: Stop when the patch was already applied
+      - name: Detect pending patch
         id: patch
         shell: bash
         run: |
-          if test -f .github/workflows/apply-detail-form-fixes.yml; then
+          if test -f tool/apply_detail_form_fixes.py; then
             echo 'pending=true' >> "$GITHUB_OUTPUT"
           else
             echo 'pending=false' >> "$GITHUB_OUTPUT"
@@ -38,24 +38,12 @@ jobs:
           channel: stable
           cache: true
 
-      - name: Extract and run targeted patch
+      - name: Apply targeted patch
         if: steps.patch.outputs.pending == 'true'
         shell: bash
         run: |
-          python - <<'PY'
-          from pathlib import Path
-          workflow = Path('.github/workflows/apply-detail-form-fixes.yml').read_text(encoding='utf-8')
-          start_marker = "          python - <<'PY'\n"
-          end_marker = "\n          PY\n"
-          start = workflow.index(start_marker) + len(start_marker)
-          end = workflow.index(end_marker, start)
-          lines = workflow[start:end].splitlines()
-          code = '\n'.join(line[10:] if line.startswith('          ') else line for line in lines) + '\n'
-          Path('/tmp/apply_detail_form_fixes.py').write_text(code, encoding='utf-8')
-          PY
-
           set +e
-          python /tmp/apply_detail_form_fixes.py 2>&1 | tee /tmp/detail-form-fix-error.log
+          python tool/apply_detail_form_fixes.py 2>&1 | tee /tmp/detail-form-fix-error.log
           status=${PIPESTATUS[0]}
           set -e
           if [ "$status" -ne 0 ]; then
@@ -68,8 +56,11 @@ jobs:
             git push origin HEAD:fix/evolution-form-detail-sync
             exit "$status"
           fi
-
-          rm -f .github/workflows/retry-detail-form-fixes.yml
+          rm -f \
+            tool/apply_detail_form_fixes.py \
+            .github/workflows/apply-detail-form-fixes.yml \
+            .github/workflows/retry-detail-form-fixes.yml \
+            docs/detail-form-fix-error.log
 
       - name: Format changed Dart files
         if: steps.patch.outputs.pending == 'true'

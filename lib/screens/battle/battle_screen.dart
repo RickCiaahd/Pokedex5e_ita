@@ -2339,6 +2339,9 @@ class _ActivePokemonCard extends StatelessWidget {
     required this.effectiveArmorClass,
     required this.currentHp,
     required this.maxHp,
+    required this.temporaryHp,
+    required this.temporaryHpRule,
+    required this.temporaryHpEnabled,
     required this.nonVolatileStatus,
     required this.volatileStatuses,
     required this.message,
@@ -2351,10 +2354,12 @@ class _ActivePokemonCard extends StatelessWidget {
     required this.onStatus,
     required this.onUseHeldBerry,
     required this.onOpenBag,
+    required this.onToggleTemporaryHp,
     required this.onChangeForm,
   });
 
   final Pokemon pokemon;
+  final Pokemon imagePokemon;
   final TeamSlot slot;
   final String? formName;
   final String? formLabel;
@@ -2366,6 +2371,9 @@ class _ActivePokemonCard extends StatelessWidget {
   final int effectiveArmorClass;
   final int currentHp;
   final int maxHp;
+  final int temporaryHp;
+  final BattleTemporaryHpRule? temporaryHpRule;
+  final bool temporaryHpEnabled;
   final String? nonVolatileStatus;
   final Set<String> volatileStatuses;
   final String? message;
@@ -2378,6 +2386,7 @@ class _ActivePokemonCard extends StatelessWidget {
   final VoidCallback onStatus;
   final VoidCallback? onUseHeldBerry;
   final VoidCallback onOpenBag;
+  final ValueChanged<bool>? onToggleTemporaryHp;
   final VoidCallback? onChangeForm;
 
   @override
@@ -2395,7 +2404,7 @@ class _ActivePokemonCard extends StatelessWidget {
             Row(
               children: [
                 PokemonAssetImage(
-                  pokemon: pokemon,
+                  pokemon: imagePokemon,
                   useLargeArtwork: true,
                   size: 96,
                   formName: formName,
@@ -2475,7 +2484,9 @@ class _ActivePokemonCard extends StatelessWidget {
                 child: Row(
                   children: [
                     Text(
-                      'HP $currentHp/$maxHp',
+                      temporaryHp > 0
+                          ? 'HP $currentHp/$maxHp  +$temporaryHp TEMP'
+                          : 'HP $currentHp/$maxHp',
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w900,
                       ),
@@ -2516,6 +2527,15 @@ class _ActivePokemonCard extends StatelessWidget {
                 ),
               ],
             ),
+            if (temporaryHpRule != null) ...[
+              const SizedBox(height: 10),
+              _TemporaryHpPanel(
+                rule: temporaryHpRule!,
+                currentHp: temporaryHp,
+                enabled: temporaryHpEnabled,
+                onChanged: onToggleTemporaryHp,
+              ),
+            ],
             const SizedBox(height: 10),
             _StatusPanel(
               nonVolatileStatus: nonVolatileStatus,
@@ -2532,6 +2552,55 @@ class _ActivePokemonCard extends StatelessWidget {
               const SizedBox(height: 10),
               _InlineBattleMessage(message: message!),
             ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _TemporaryHpPanel extends StatelessWidget {
+  const _TemporaryHpPanel({
+    required this.rule,
+    required this.currentHp,
+    required this.enabled,
+    required this.onChanged,
+  });
+
+  final BattleTemporaryHpRule rule;
+  final int currentHp;
+  final bool enabled;
+  final ValueChanged<bool>? onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.secondaryContainer,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        child: Row(
+          children: [
+            const Icon(Icons.shield_moon_outlined),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '${rule.label}: $currentHp PF temporanei',
+                    style: const TextStyle(fontWeight: FontWeight.w800),
+                  ),
+                  Text(
+                    rule.description,
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ],
+              ),
+            ),
+            Switch(value: enabled, onChanged: onChanged),
           ],
         ),
       ),

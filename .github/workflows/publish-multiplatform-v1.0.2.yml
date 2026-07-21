@@ -1,0 +1,286 @@
+name: Publish multiplatform v1.0.2
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/publish-multiplatform-v1.0.2.yml'
+
+permissions:
+  contents: write
+
+env:
+  RELEASE_TAG: v1.0.2
+  RELEASE_VERSION: 1.0.2
+
+jobs:
+  android:
+    name: Build signed Android 1.0.2
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+      ANDROID_STORE_PASSWORD: ${{ secrets.ANDROID_STORE_PASSWORD }}
+      ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+      ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+
+    steps:
+      - name: Check out release tag
+        uses: actions/checkout@v4
+        with:
+          ref: v1.0.2
+          fetch-depth: 0
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Validate release and signing prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -qx 'version: 1.0.2+3' pubspec.yaml
+          test -n "$ANDROID_KEYSTORE_BASE64"
+          test -n "$ANDROID_STORE_PASSWORD"
+          test -n "$ANDROID_KEY_PASSWORD"
+          test -n "$ANDROID_KEY_ALIAS"
+
+      - name: Configure Android signing
+        shell: bash
+        run: |
+          printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > android/upload-keystore.jks
+          cat > android/key.properties <<EOF
+          storePassword=$ANDROID_STORE_PASSWORD
+          keyPassword=$ANDROID_KEY_PASSWORD
+          keyAlias=$ANDROID_KEY_ALIAS
+          storeFile=../upload-keystore.jks
+          EOF
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze source
+        run: flutter analyze
+
+      - name: Validate application data
+        run: flutter test test/data_integrity_test.dart --reporter expanded
+
+      - name: Run complete test suite
+        run: flutter test --reporter expanded
+
+      - name: Build signed APK and AAB
+        shell: bash
+        run: |
+          flutter build apk --release
+          flutter build appbundle --release
+
+      - name: Prepare Android artifacts
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p release-android
+          cp build/app/outputs/flutter-apk/app-release.apk release-android/Pokedex5eITA-1.0.2.apk
+          cp build/app/outputs/bundle/release/app-release.aab release-android/Pokedex5eITA-1.0.2.aab
+          cd release-android
+          sha256sum Pokedex5eITA-1.0.2.apk Pokedex5eITA-1.0.2.aab > SHA256SUMS.txt
+
+      - name: Upload Android release artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-android-v1.0.2
+          path: release-android/
+          if-no-files-found: error
+          retention-days: 30
+
+  windows:
+    name: Build portable Windows x64 1.0.2
+    runs-on: windows-latest
+    timeout-minutes: 90
+
+    steps:
+      - name: Check out release tag
+        uses: actions/checkout@v4
+        with:
+          ref: v1.0.2
+          fetch-depth: 0
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Enable Windows desktop
+        shell: pwsh
+        run: flutter config --enable-windows-desktop
+
+      - name: Validate release version
+        shell: pwsh
+        run: |
+          $version = (Select-String -Path 'pubspec.yaml' -Pattern '^version:\s+(.+)$').Matches[0].Groups[1].Value.Trim()
+          if ($version -ne '1.0.2+3') {
+            throw "Versione inattesa: $version"
+          }
+
+      - name: Install dependencies
+        shell: pwsh
+        run: flutter pub get
+
+      - name: Analyze source
+        shell: pwsh
+        run: flutter analyze
+
+      - name: Validate application data
+        shell: pwsh
+        run: flutter test test/data_integrity_test.dart --reporter expanded
+
+      - name: Run complete test suite
+        shell: pwsh
+        run: flutter test --reporter expanded
+
+      - name: Build Windows release
+        shell: pwsh
+        run: flutter build windows --release
+
+      - name: Prepare Windows artifacts
+        shell: pwsh
+        run: |
+          $source = 'build\windows\x64\runner\Release'
+          $packageName = 'Pokedex5eITA-1.0.2-Windows-x64'
+          $staging = Join-Path 'release-windows' $packageName
+          $zip = Join-Path 'release-windows' "$packageName.zip"
+          $checksum = Join-Path 'release-windows' "$packageName-SHA256.txt"
+
+          if (-not (Test-Path (Join-Path $source 'Pokedex5eITA.exe'))) {
+            throw 'Pokedex5eITA.exe non trovato'
+          }
+
+          New-Item -ItemType Directory -Force -Path $staging | Out-Null
+          Copy-Item -Path (Join-Path $source '*') -Destination $staging -Recurse -Force
+
+          @"
+          Pokédex 5e ITA 1.0.2 — Windows x64
+
+          1. Estrarre interamente questa cartella.
+          2. Avviare Pokedex5eITA.exe.
+          3. Non spostare il solo EXE: la cartella data e le DLL devono restare accanto all'eseguibile.
+
+          Se Windows segnala l'assenza di VCRUNTIME o MSVCP, installare Microsoft Visual C++ Redistributable 2015-2022 x64.
+          "@ | Set-Content -Path (Join-Path $staging 'LEGGIMI-WINDOWS.txt') -Encoding utf8
+
+          Compress-Archive -Path $staging -DestinationPath $zip -CompressionLevel Optimal -Force
+          $hash = (Get-FileHash -Path $zip -Algorithm SHA256).Hash.ToLowerInvariant()
+          "$hash  $packageName.zip" | Set-Content -Path $checksum -Encoding ascii
+
+      - name: Upload Windows release artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-windows-v1.0.2
+          path: release-windows/
+          if-no-files-found: error
+          retention-days: 30
+
+  publish:
+    name: Publish and verify GitHub Release 1.0.2
+    needs:
+      - android
+      - windows
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      GH_TOKEN: ${{ github.token }}
+
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Download release artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: release-*-v1.0.2
+          path: release-dist
+          merge-multiple: true
+
+      - name: Validate artifact set
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f release-dist/Pokedex5eITA-1.0.2.apk
+          test -f release-dist/Pokedex5eITA-1.0.2.aab
+          test -f release-dist/SHA256SUMS.txt
+          test -f release-dist/Pokedex5eITA-1.0.2-Windows-x64.zip
+          test -f release-dist/Pokedex5eITA-1.0.2-Windows-x64-SHA256.txt
+          cat release-dist/SHA256SUMS.txt
+          cat release-dist/Pokedex5eITA-1.0.2-Windows-x64-SHA256.txt
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.0.2
+          name: Pokédex 5e ITA 1.0.2
+          generate_release_notes: true
+          files: release-dist/*
+
+      - name: Verify published assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh release view v1.0.2 --repo "$GITHUB_REPOSITORY" --json name,tagName,url,assets > release.json
+          jq -e '.tagName == "v1.0.2"' release.json >/dev/null
+          jq -e '[.assets[].name] | any(. == "Pokedex5eITA-1.0.2-Windows-x64.zip")' release.json >/dev/null
+          jq -e '[.assets[].name] | any(. == "Pokedex5eITA-1.0.2-Windows-x64-SHA256.txt")' release.json >/dev/null
+          jq -e '[.assets[].name] | any(. == "Pokedex5eITA-1.0.2.apk")' release.json >/dev/null
+          jq -e '[.assets[].name] | any(. == "Pokedex5eITA-1.0.2.aab")' release.json >/dev/null
+          jq -e '[.assets[].name] | any(. == "SHA256SUMS.txt")' release.json >/dev/null
+
+      - name: Record verification and remove temporary files
+        shell: bash
+        run: |
+          set -euo pipefail
+          git pull --ff-only origin main
+          release_url=$(jq -r '.url' release.json)
+          asset_count=$(jq '.assets | length' release.json)
+          run_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+
+          cat > docs/release-v1.0.2-verification.md <<EOF
+          # Verifica release 1.0.2
+
+          Verifica automatica completata con successo il $(date -u +'%Y-%m-%d %H:%M UTC').
+
+          - Tag: \`v1.0.2\`
+          - Versione applicativa: \`1.0.2+3\`
+          - Build Android firmata: completata
+          - Build Windows x64 portatile: completata
+          - Analisi, integrità dati e suite completa: superate su entrambe le piattaforme
+          - Asset pubblicati: **$asset_count**
+          - Release: $release_url
+          - Esecuzione di pubblicazione: $run_url
+
+          Asset obbligatori verificati:
+
+          - \`Pokedex5eITA-1.0.2.apk\`
+          - \`Pokedex5eITA-1.0.2.aab\`
+          - \`SHA256SUMS.txt\`
+          - \`Pokedex5eITA-1.0.2-Windows-x64.zip\`
+          - \`Pokedex5eITA-1.0.2-Windows-x64-SHA256.txt\`
+          EOF
+
+          rm -f docs/release-v1.0.2-current-status.md
+          git rm .github/workflows/publish-multiplatform-v1.0.2.yml
+          git add docs/release-v1.0.2-verification.md docs/release-v1.0.2-current-status.md
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Registra la release multipiattaforma 1.0.2 verificata'
+          git push origin HEAD:main

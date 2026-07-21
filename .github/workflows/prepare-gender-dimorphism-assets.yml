@@ -1,0 +1,450 @@
+name: Prepare gender dimorphism assets
+
+on:
+  push:
+    paths:
+      - '.github/workflows/prepare-gender-dimorphism-assets.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  prepare:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Add generic gender-aware asset support
+        shell: bash
+        run: |
+          set -euo pipefail
+          python <<'PY'
+          from pathlib import Path
+
+          def replace_once(path: str, old: str, new: str) -> None:
+              file = Path(path)
+              text = file.read_text(encoding='utf-8')
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f'{path}: expected one match, found {count}')
+              file.write_text(text.replace(old, new, 1), encoding='utf-8')
+
+          appearance = Path('lib/models/pokemon_gender_appearance.dart')
+          appearance.write_text("""import 'pokemon.dart';
+
+/// Catalogo delle specie che presentano differenze visive tra maschio e femmina.
+///
+/// Le differenze di aspetto non vengono trattate come forme del Pokédex: il
+/// sesso resta una proprietà del singolo Pokémon catturato. L'elenco serve
+/// soltanto a mostrare l'anteprima dedicata nell'editor; il risolutore delle
+/// immagini rimane generico e accetta file maschio/femmina per qualunque specie.
+class PokemonGenderAppearance {
+  const PokemonGenderAppearance._();
+
+  static const Set<int> visuallyDimorphicIds = {
+    // Generazione I
+    3, 12, 19, 20, 25, 26, 41, 42, 44, 45, 64, 65, 84, 85, 97, 111,
+    112, 118, 119, 123, 129, 130, 133,
+    // Generazione II
+    154, 165, 166, 178, 185, 186, 190, 194, 195, 198, 202, 203, 207,
+    208, 212, 214, 215, 217, 221, 224, 229, 232,
+    // Generazione III
+    255, 256, 257, 267, 269, 272, 274, 275, 307, 308, 315, 316, 317,
+    322, 323, 332, 350, 369,
+    // Generazione IV
+    396, 397, 398, 399, 400, 401, 402, 403, 404, 405, 407, 415, 417,
+    418, 419, 424, 443, 444, 445, 449, 450, 453, 454, 456, 457, 459,
+    460, 461, 464, 465, 473,
+    // Generazione V
+    521, 592, 593,
+    // Generazione VI
+    668, 678,
+    // Generazione VIII
+    876, 902,
+    // Generazione IX
+    916,
+  };
+
+  static bool hasVisibleDifference(Pokemon pokemon) {
+    return visuallyDimorphicIds.contains(pokemon.id);
+  }
+
+  static bool isMale(String? gender) {
+    final value = gender?.trim().toLowerCase();
+    return value == 'male' || value == 'm' || value == 'maschio';
+  }
+
+  static bool isFemale(String? gender) {
+    final value = gender?.trim().toLowerCase();
+    return value == 'female' || value == 'f' || value == 'femmina';
+  }
+
+  static String label(String? gender) {
+    if (isFemale(gender)) return 'Aspetto femmina';
+    if (isMale(gender)) return 'Aspetto maschio';
+    return 'Aspetto non specificato';
+  }
+}
+""", encoding='utf-8')
+
+          asset_file = 'lib/widgets/pokemon/pokemon_asset_image_legacy.dart'
+          old_asset_block = """    final paths = <String>[];
+    for (final folder in folders) {
+      if (isShiny) {
+        paths.addAll([
+          '$folder/$primary-shiny.png',
+          '$folder/$secondary-shiny.png',
+          '$folder/${primary}_shiny.png',
+          '$folder/${secondary}_shiny.png',
+          '$folder/shiny-$primary.png',
+          '$folder/shiny-$secondary.png',
+          '$folder/shiny.png',
+        ]);
+      }
+      paths.addAll([
+        '$folder/$primary.png',
+        '$folder/$secondary.png',
+        '$folder/main.png',
+        '$folder/sprite.png',
+        '$folder/${primary}_default.png',
+        '$folder/${secondary}_default.png',
+      ]);
+    }
+"""
+          new_asset_block = """    final genderSlugs = _genderSlugs(gender);
+    final paths = <String>[];
+
+    void addGenderSpecificPaths(String folder) {
+      for (final genderSlug in genderSlugs) {
+        if (isShiny) {
+          paths.addAll([
+            '$folder/$primary-shiny-$genderSlug.png',
+            '$folder/$secondary-shiny-$genderSlug.png',
+            '$folder/$primary-$genderSlug-shiny.png',
+            '$folder/$secondary-$genderSlug-shiny.png',
+            '$folder/${primary}_shiny_$genderSlug.png',
+            '$folder/${secondary}_shiny_$genderSlug.png',
+            '$folder/${primary}_${genderSlug}_shiny.png',
+            '$folder/${secondary}_${genderSlug}_shiny.png',
+          ]);
+        }
+        paths.addAll([
+          '$folder/$primary-$genderSlug.png',
+          '$folder/$secondary-$genderSlug.png',
+          '$folder/${primary}_$genderSlug.png',
+          '$folder/${secondary}_$genderSlug.png',
+        ]);
+      }
+    }
+
+    for (final folder in folders) {
+      // First prefer the exact sex-specific image. If the shiny variant is not
+      // available, the normal image of the correct sex is preferred over an
+      // image with the wrong silhouette. Existing folders such as indeedee-f,
+      // meowstic-m and pyroar-f remain fully supported.
+      addGenderSpecificPaths(folder);
+      if (isShiny) {
+        paths.addAll([
+          '$folder/$primary-shiny.png',
+          '$folder/$secondary-shiny.png',
+          '$folder/${primary}_shiny.png',
+          '$folder/${secondary}_shiny.png',
+          '$folder/shiny-$primary.png',
+          '$folder/shiny-$secondary.png',
+          '$folder/shiny.png',
+        ]);
+      }
+      paths.addAll([
+        '$folder/$primary.png',
+        '$folder/$secondary.png',
+        '$folder/main.png',
+        '$folder/sprite.png',
+        '$folder/${primary}_default.png',
+        '$folder/${secondary}_default.png',
+      ]);
+    }
+"""
+          replace_once(asset_file, old_asset_block, new_asset_block)
+
+          edit_file = 'lib/screens/pokemon/pokemon_edit_screen.dart'
+          replace_once(
+              edit_file,
+              "import '../../models/pokemon.dart';\n",
+              "import '../../models/pokemon.dart';\nimport '../../models/pokemon_gender_appearance.dart';\n",
+          )
+          shiny_block = """                SwitchListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: const Text('Shiny'),
+                  value: _isShiny,
+                  onChanged: (value) => setState(() => _isShiny = value),
+                ),
+"""
+          preview_block = shiny_block + """                if (PokemonGenderAppearance.hasVisibleDifference(
+                      widget.pokemon,
+                    ) &&
+                    (PokemonGenderAppearance.isMale(_gender) ||
+                        PokemonGenderAppearance.isFemale(_gender)))
+                  Card(
+                    child: ListTile(
+                      leading: PokemonAssetImage(
+                        pokemon: widget.pokemon,
+                        formName: _formName,
+                        gender: _gender,
+                        isShiny: _isShiny,
+                        useLargeArtwork: true,
+                        size: 64,
+                      ),
+                      title: Text(
+                        PokemonGenderAppearance.label(_gender).toUpperCase(),
+                      ),
+                      subtitle: const Text(
+                        'L’immagine segue il sesso selezionato. Eventuali '
+                        'differenze di statistiche, mosse o abilità restano '
+                        'gestite dai dati della specie.',
+                      ),
+                    ),
+                  ),
+"""
+          replace_once(edit_file, shiny_block, preview_block)
+
+          test_file = Path('test/pokemon_asset_paths_test.dart')
+          test_text = test_file.read_text(encoding='utf-8')
+          if "female Pikachu files inside the base folder" not in test_text:
+              addition = r'''
+
+  test('female Pikachu files inside the base folder precede generic assets', () {
+    final candidates = PokemonAssetPaths.imageCandidates(
+      pokemon: _pokemon(25, 'Pikachu'),
+      useLargeArtwork: true,
+      gender: 'female',
+    );
+
+    const female =
+        'assets/textures/textures_webapp/pokemon/pikachu/main-f.png';
+    const generic =
+        'assets/textures/textures_webapp/pokemon/pikachu/main.png';
+
+    expect(candidates, contains(female));
+    expect(candidates, contains(generic));
+    expect(candidates.indexOf(female), lessThan(candidates.indexOf(generic)));
+  });
+
+  test('female shiny Wobbuffet supports canonical suffixed file names', () {
+    final candidates = PokemonAssetPaths.imageCandidates(
+      pokemon: _pokemon(202, 'Wobbuffet'),
+      useLargeArtwork: false,
+      gender: 'Femmina',
+      isShiny: true,
+    );
+
+    const shinyFemale =
+        'assets/textures/textures_webapp/pokemon/wobbuffet/sprite-shiny-f.png';
+    const normalFemale =
+        'assets/textures/textures_webapp/pokemon/wobbuffet/sprite-f.png';
+    const genericShiny =
+        'assets/textures/textures_webapp/pokemon/wobbuffet/sprite-shiny.png';
+
+    expect(candidates, contains(shinyFemale));
+    expect(candidates, contains(normalFemale));
+    expect(candidates, contains(genericShiny));
+    expect(
+      candidates.indexOf(shinyFemale),
+      lessThan(candidates.indexOf(normalFemale)),
+    );
+    expect(
+      candidates.indexOf(normalFemale),
+      lessThan(candidates.indexOf(genericShiny)),
+    );
+  });
+
+  test('existing Meowstic gender folders remain preferred', () {
+    final candidates = PokemonAssetPaths.imageCandidates(
+      pokemon: _pokemon(678, 'Meowstic'),
+      useLargeArtwork: true,
+      gender: 'female',
+    );
+
+    const existingFolder =
+        'assets/textures/textures_webapp/pokemon/meowstic-f/main.png';
+    const suffixedFallback =
+        'assets/textures/textures_webapp/pokemon/meowstic/main-f.png';
+
+    expect(candidates, contains(existingFolder));
+    expect(candidates, contains(suffixedFallback));
+    expect(
+      candidates.indexOf(existingFolder),
+      lessThan(candidates.indexOf(suffixedFallback)),
+    );
+  });
+'''
+              head, tail = test_text.rsplit('\n}', 1)
+              test_file.write_text(head + addition + '\n}\n' + tail, encoding='utf-8')
+
+          Path('test/pokemon_gender_appearance_test.dart').write_text("""import 'package:flutter_test/flutter_test.dart';
+import 'package:pokedex_5e_ita/models/pokemon.dart';
+import 'package:pokedex_5e_ita/models/pokemon_attributes.dart';
+import 'package:pokedex_5e_ita/models/pokemon_gender_appearance.dart';
+import 'package:pokedex_5e_ita/models/pokemon_moves.dart';
+
+Pokemon pokemon(int id, String name) {
+  return Pokemon(
+    id: id,
+    name: name,
+    types: const [],
+    armorClass: 0,
+    hitPoints: 0,
+    size: 'Unknown',
+    speed: 0,
+    attributes: const PokemonAttributes(
+      strength: 0,
+      dexterity: 0,
+      constitution: 0,
+      intelligence: 0,
+      wisdom: 0,
+      charisma: 0,
+    ),
+    abilities: const [],
+    hiddenAbility: null,
+    skills: const [],
+    savingThrows: const [],
+    moves: const PokemonMoves(startingMoves: [], levelMoves: {}, tmMoves: []),
+    hitDice: 0,
+    sr: 0,
+    minLevelFound: 0,
+  );
+}
+
+void main() {
+  test('catalog contains all 102 visually dimorphic species', () {
+    expect(PokemonGenderAppearance.visuallyDimorphicIds, hasLength(102));
+  });
+
+  test('well-known visual differences are recognized', () {
+    for (final entry in const {
+      25: 'Pikachu',
+      202: 'Wobbuffet',
+      449: 'Hippopotas',
+      450: 'Hippowdon',
+      668: 'Pyroar',
+      678: 'Meowstic',
+      876: 'Indeedee',
+    }.entries) {
+      expect(
+        PokemonGenderAppearance.hasVisibleDifference(
+          pokemon(entry.key, entry.value),
+        ),
+        isTrue,
+        reason: entry.value,
+      );
+    }
+  });
+
+  test('localized gender aliases produce the expected labels', () {
+    expect(PokemonGenderAppearance.isMale('Maschio'), isTrue);
+    expect(PokemonGenderAppearance.isFemale('Femmina'), isTrue);
+    expect(PokemonGenderAppearance.label('female'), 'Aspetto femmina');
+  });
+}
+""", encoding='utf-8')
+
+          Path('docs/gender-dimorphism-assets.md').write_text("""# Texture maschio e femmina
+
+Il risolutore supporta le differenze estetiche tra maschio e femmina senza
+trasformarle in forme separate del Pokédex. Il sesso continua a essere salvato
+nel singolo Pokémon della squadra o del PC.
+
+## File da caricare
+
+Non servono nuove cartelle né modifiche al `pubspec.yaml`: aggiungi i file nella
+cartella della specie già esistente, per esempio `pokemon/pikachu/`.
+
+| Aspetto | Artwork grande | Sprite | Artwork shiny | Sprite shiny |
+|---|---|---|---|---|
+| Maschio | `main-m.png` | `sprite-m.png` | `main-shiny-m.png` | `sprite-shiny-m.png` |
+| Femmina | `main-f.png` | `sprite-f.png` | `main-shiny-f.png` | `sprite-shiny-f.png` |
+
+Sono accettati anche i nomi estesi `male` e `female`, le varianti con underscore
+e le cartelle già esistenti del tipo `indeedee-m/`, `indeedee-f/`,
+`meowstic-m/`, `meowstic-f/`, `pyroar-m/` e `pyroar-f/`.
+
+Quando manca una texture shiny del sesso selezionato, l'app preferisce la
+texture normale dello stesso sesso rispetto a una silhouette shiny errata.
+
+## Specie predisposte nell'anteprima dell'editor
+
+### Generazione I
+Venusaur, Butterfree, Rattata, Raticate, Pikachu, Raichu, Zubat, Golbat,
+Gloom, Vileplume, Kadabra, Alakazam, Doduo, Dodrio, Hypno, Rhyhorn, Rhydon,
+Goldeen, Seaking, Scyther, Magikarp, Gyarados, Eevee.
+
+### Generazione II
+Meganium, Ledyba, Ledian, Xatu, Sudowoodo, Politoed, Aipom, Wooper,
+Quagsire, Murkrow, Wobbuffet, Girafarig, Gligar, Steelix, Scizor, Heracross,
+Sneasel, Ursaring, Piloswine, Octillery, Houndoom, Donphan.
+
+La differenza si applica anche alla forma di Hisui di Sneasel: in quel caso i
+file possono essere inseriti nella cartella della forma regionale.
+
+### Generazione III
+Torchic, Combusken, Blaziken, Beautifly, Dustox, Ludicolo, Nuzleaf, Shiftry,
+Meditite, Medicham, Roselia, Gulpin, Swalot, Numel, Camerupt, Cacturne,
+Milotic, Relicanth.
+
+### Generazione IV
+Starly, Staravia, Staraptor, Bidoof, Bibarel, Kricketot, Kricketune, Shinx,
+Luxio, Luxray, Roserade, Combee, Pachirisu, Buizel, Floatzel, Ambipom, Gible,
+Gabite, Garchomp, Hippopotas, Hippowdon, Croagunk, Toxicroak, Finneon,
+Lumineon, Snover, Abomasnow, Weavile, Rhyperior, Tangrowth, Mamoswine.
+
+### Generazione V
+Unfezant, Frillish, Jellicent.
+
+### Generazione VI
+Pyroar, Meowstic.
+
+### Generazione VIII
+Indeedee, Basculegion.
+
+### Generazione IX
+Oinkologne.
+""", encoding='utf-8')
+          PY
+
+      - name: Format and validate
+        shell: bash
+        run: |
+          set -euo pipefail
+          dart format \
+            lib/models/pokemon_gender_appearance.dart \
+            lib/widgets/pokemon/pokemon_asset_image_legacy.dart \
+            lib/screens/pokemon/pokemon_edit_screen.dart \
+            test/pokemon_asset_paths_test.dart \
+            test/pokemon_gender_appearance_test.dart
+          flutter pub get
+          flutter analyze
+          flutter test test/pokemon_asset_paths_test.dart --reporter expanded
+          flutter test test/pokemon_gender_appearance_test.dart --reporter expanded
+          flutter test test/data_integrity_test.dart --reporter expanded
+
+      - name: Commit validated changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f .github/workflows/prepare-gender-dimorphism-assets.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Predispone le texture maschio e femmina per tutte le specie'
+          git push origin HEAD:main

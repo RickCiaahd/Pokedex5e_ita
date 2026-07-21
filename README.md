@@ -1,6 +1,7 @@
 # Pokédex 5e ITA
 
 [![Flutter CI](https://github.com/RickCiaahd/Pokedex5e_ita/actions/workflows/flutter-ci.yml/badge.svg)](https://github.com/RickCiaahd/Pokedex5e_ita/actions/workflows/flutter-ci.yml)
+[![Windows release](https://github.com/RickCiaahd/Pokedex5e_ita/actions/workflows/windows-release.yml/badge.svg)](https://github.com/RickCiaahd/Pokedex5e_ita/actions/workflows/windows-release.yml)
 
 Companion non ufficiale in italiano per campagne Pokémon 5e, sviluppato con Flutter per Web, Windows e Android.
 

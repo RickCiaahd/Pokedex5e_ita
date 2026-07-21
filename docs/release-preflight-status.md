@@ -1,7 +1,7 @@
 # Stato preflight release 1.0.0
 
-La pubblicazione automatica è stata bloccata perché mancano o non sono validi questi prerequisiti:
+Prerequisiti mancanti o non validi:
 
+- il tag v1.0.0 esiste già
 
-
-Configurare i secret indicati seguendo , quindi rimuovere questo file prima di riprovare.
+Configurare gli eventuali secret indicati seguendo docs/android-release.md.

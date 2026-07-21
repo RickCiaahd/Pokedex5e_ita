@@ -1,0 +1,144 @@
+name: Retry final form validation
+
+on:
+  push:
+    paths:
+      - '.github/workflows/retry-final-form-validation.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  fix-and-validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Fix and validate
+        id: checks
+        shell: bash
+        run: |
+          set +e
+          log='retry-final-form-validation.txt'
+          : > "$log"
+          (
+            set -e
+            python <<'PY'
+          import re
+          from pathlib import Path
+
+          edit = Path('lib/screens/pokemon/pokemon_edit_screen.dart')
+          text = edit.read_text(encoding='utf-8')
+          pattern = re.compile(
+              r"trailing:\s*BattleFormChangeService\.supports\(pokemon\)\s*"
+              r"\?\s*BattleFormChangeService\.sameForm\(\s*pokemon,\s*"
+              r"currentFormName,\s*choice\.name,\s*\)\s*"
+              r":\s*choice\.name\s*==\s*currentFormName\s*"
+              r"\?\s*const Icon\(Icons\.check_circle\)\s*"
+              r":\s*const Icon\(Icons\.radio_button_unchecked\),",
+              re.DOTALL,
+          )
+          replacement = """trailing: (BattleFormChangeService.supports(pokemon)
+                          ? BattleFormChangeService.sameForm(
+                              pokemon,
+                              currentFormName,
+                              choice.name,
+                            )
+                          : choice.name == currentFormName)
+                      ? const Icon(Icons.check_circle)
+                      : const Icon(Icons.radio_button_unchecked),"""
+          text, count = pattern.subn(replacement, text, count=1)
+          if count != 1:
+              raise SystemExit(f'Form selector trailing replacements: {count}')
+          edit.write_text(text, encoding='utf-8')
+
+          test = Path('test/battle_form_change_service_test.dart')
+          test_text = test.read_text(encoding='utf-8')
+          replacements = {
+              "ten.attributes['DEX']": 'ten.attributes.dexterity',
+              "fifty.attributes['CON']": 'fifty.attributes.constitution',
+              "complete.attributes['CON']": 'complete.attributes.constitution',
+          }
+          for old_value, new_value in replacements.items():
+              if old_value not in test_text:
+                  raise SystemExit(f'Missing test expression: {old_value}')
+              test_text = test_text.replace(old_value, new_value, 1)
+          test.write_text(test_text, encoding='utf-8')
+
+          abilities = Path('assets/data/ability_localization_it_321_330.json')
+          ability_text = abilities.read_text(encoding='utf-8')
+          old_galar = (
+              'Quando Darmanitan di Galar scende al 50% o meno dei propri PF massimi, '
+              'l’abilità Stato Zen gli fa assumere lo Stato Zen di Galar. In questa '
+              'forma diventa di tipo Ghiaccio/Fuoco e i suoi punteggi di FOR e DES '
+              'aumentano entrambi di 2.'
+          )
+          new_galar = old_galar.replace('aumentano entrambi di 2.', 'aumentano entrambi di +2.')
+          if old_galar not in ability_text:
+              raise SystemExit('Galarian Zen localization not found')
+          ability_text = ability_text.replace(old_galar, new_galar, 1)
+
+          old_palafin = (
+              'Supercambio consente a Palafin di assumere la Forma Possente. Nelle '
+              'regole dell’app, durante la lotta la Forma Possente è di taglia Media, '
+              'ottiene +4 alla CA e aumenta FOR e DES di 4, fino a un massimo di 22. '
+              'Al termine della lotta Palafin torna automaticamente alla Forma Ingenua.'
+          )
+          new_palafin = (
+              'Supercambio consente a Palafin di assumere la Forma Possente (Hero Form). '
+              'Nelle regole dell’app, durante la lotta la Forma Possente è di taglia '
+              'Media, aumenta la CA di 4 e aumenta FOR e DES di 4, fino a un massimo '
+              'di 22. Al termine della lotta Palafin torna automaticamente alla Forma '
+              'Ingenua.'
+          )
+          if old_palafin not in ability_text:
+              raise SystemExit('Palafin localization not found')
+          ability_text = ability_text.replace(old_palafin, new_palafin, 1)
+          abilities.write_text(ability_text, encoding='utf-8')
+          PY
+
+            dart format \
+              lib/screens/pokemon/pokemon_edit_screen.dart \
+              lib/services/battle_form_change_service.dart \
+              test/battle_form_change_service_test.dart
+            flutter pub get
+            flutter analyze
+            flutter test test/battle_form_change_service_test.dart --reporter expanded
+            flutter test test/battle_temporary_hp_service_test.dart --reporter expanded
+            flutter test test/ability_localization_integrity_test.dart --reporter expanded
+            flutter test test/data_integrity_test.dart --reporter expanded
+          ) >> "$log" 2>&1
+          status=$?
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Commit result
+        shell: bash
+        run: |
+          set -euo pipefail
+          status='${{ steps.checks.outputs.status }}'
+          rm -f .github/workflows/retry-final-form-validation.yml
+          rm -f docs/diagnostics/final-form-validation-fix.txt
+          rmdir docs/diagnostics 2>/dev/null || true
+          if [ "$status" = '0' ]; then
+            rm -f retry-final-form-validation.txt
+          else
+            mkdir -p docs/diagnostics
+            mv retry-final-form-validation.txt docs/diagnostics/retry-final-form-validation.txt
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m "Risolvi e valida forme finali (stato $status)"
+          git push origin HEAD:main

@@ -1,0 +1,558 @@
+name: Apply evolution and form fixes
+
+on:
+  push:
+    branches:
+      - fix/evolution-form-detail-sync
+    paths:
+      - '.github/workflows/apply-detail-form-fixes.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+
+    steps:
+      - name: Check out fix branch
+        uses: actions/checkout@v4
+        with:
+          ref: fix/evolution-form-detail-sync
+          fetch-depth: 0
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Apply targeted fixes
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          def replace_once(path: str, old: str, new: str) -> None:
+              file = Path(path)
+              source = file.read_text(encoding='utf-8')
+              count = source.count(old)
+              if count != 1:
+                  raise SystemExit(f'{path}: expected one match, found {count}')
+              file.write_text(source.replace(old, new, 1), encoding='utf-8')
+
+          wrapper = 'lib/screens/pokemon/pokemon_detail_screen.dart'
+          replace_once(
+              wrapper,
+              '''  void _handleSlotChanged(TeamSlot updatedSlot) {
+            final alias = _aliasCatalog.bySyntheticId[updatedSlot.pokemonId];
+            if (alias == null) {
+              final previousSlot = _slot;
+              final visualIdentityChanged =
+                  previousSlot?.pokemonId != updatedSlot.pokemonId ||
+                  previousSlot?.formName != updatedSlot.formName ||
+                  previousSlot?.gender != updatedSlot.gender ||
+                  previousSlot?.isShiny != updatedSlot.isShiny;
+
+              _slot = updatedSlot;
+              _replaceTeamSlot(updatedSlot);
+
+              if (visualIdentityChanged) {
+                setState(() {
+                  _aliasCatalog = _buildAliasCatalog();
+                  _detailGeneration += 1;
+                });
+              }
+
+              widget.onTeamSlotChanged?.call(updatedSlot);
+              return;
+            }
+
+            final normalizedSlot = updatedSlot.copyWith(
+              pokemonId: alias.basePokemon.id,
+              formName: alias.formName,
+            );
+
+            setState(() {
+              _slot = normalizedSlot;
+              _basePokemon = alias.basePokemon;
+              _replaceTeamSlot(normalizedSlot);
+              _aliasCatalog = _buildAliasCatalog();
+              _detailGeneration += 1;
+            });
+
+            widget.onTeamSlotChanged?.call(normalizedSlot);
+          }
+          ''',
+              '''  void _handleSlotChanged(TeamSlot updatedSlot) {
+            final alias = _aliasCatalog.bySyntheticId[updatedSlot.pokemonId];
+            final normalizedSlot = alias == null
+                ? updatedSlot
+                : updatedSlot.copyWith(
+                    pokemonId: alias.basePokemon.id,
+                    formName: alias.formName,
+                  );
+            final nextBasePokemon =
+                alias?.basePokemon ??
+                _catalogPokemonById(normalizedSlot.pokemonId) ??
+                _basePokemon;
+            final previousSlot = _slot;
+            final visualIdentityChanged =
+                _basePokemon.id != nextBasePokemon.id ||
+                previousSlot?.pokemonId != normalizedSlot.pokemonId ||
+                previousSlot?.formName != normalizedSlot.formName ||
+                previousSlot?.gender != normalizedSlot.gender ||
+                previousSlot?.isShiny != normalizedSlot.isShiny;
+
+            if (visualIdentityChanged) {
+              setState(() {
+                _slot = normalizedSlot;
+                _basePokemon = nextBasePokemon;
+                _replaceTeamSlot(normalizedSlot);
+                _aliasCatalog = _buildAliasCatalog();
+                _detailGeneration += 1;
+              });
+            } else {
+              _slot = normalizedSlot;
+              _replaceTeamSlot(normalizedSlot);
+            }
+
+            widget.onTeamSlotChanged?.call(normalizedSlot);
+          }
+
+          void _handleActiveTeamSlotChanged(TeamSlot activeSlot) {
+            final nextBasePokemon = _catalogPokemonById(activeSlot.pokemonId);
+            if (nextBasePokemon == null) return;
+
+            setState(() {
+              _slot = activeSlot;
+              _basePokemon = nextBasePokemon;
+              _replaceTeamSlot(activeSlot);
+              _aliasCatalog = _buildAliasCatalog();
+              _detailGeneration += 1;
+            });
+          }
+          ''',
+          )
+          replace_once(
+              wrapper,
+              '''  void _replaceTeamSlot(TeamSlot updatedSlot) {
+            final index = _team.indexWhere(
+              (slot) => slot.slotIndex == updatedSlot.slotIndex,
+            );
+            if (index == -1) {
+              _team = [..._team, updatedSlot];
+              return;
+            }
+            _team = [..._team]..[index] = updatedSlot;
+          }
+
+          EvolutionFormAliasCatalog _buildAliasCatalog() {
+          ''',
+              '''  void _replaceTeamSlot(TeamSlot updatedSlot) {
+            final index = _team.indexWhere(
+              (slot) => slot.slotIndex == updatedSlot.slotIndex,
+            );
+            if (index == -1) {
+              _team = [..._team, updatedSlot];
+              return;
+            }
+            _team = [..._team]..[index] = updatedSlot;
+          }
+
+          Pokemon? _catalogPokemonById(int? pokemonId) {
+            if (pokemonId == null) return null;
+            if (_basePokemon.id == pokemonId) return _basePokemon;
+            for (final pokemon in widget.allPokemon) {
+              if (pokemon.id == pokemonId) return pokemon;
+            }
+            return null;
+          }
+
+          EvolutionFormAliasCatalog _buildAliasCatalog() {
+          ''',
+          )
+          replace_once(
+              wrapper,
+              '''      onTeamSlotChanged: _handleSlotChanged,
+            );
+          ''',
+              '''      onTeamSlotChanged: _handleSlotChanged,
+              onActiveTeamSlotChanged: _handleActiveTeamSlotChanged,
+            );
+          ''',
+          )
+
+          legacy = 'lib/screens/pokemon/pokemon_detail_screen_legacy.dart'
+          replace_once(
+              legacy,
+              '''    this.onTeamSlotChanged,
+            });
+          ''',
+              '''    this.onTeamSlotChanged,
+              this.onActiveTeamSlotChanged,
+            });
+          ''',
+          )
+          replace_once(
+              legacy,
+              '''  final ValueChanged<TeamSlot>? onTeamSlotChanged;
+
+            @override
+          ''',
+              '''  final ValueChanged<TeamSlot>? onTeamSlotChanged;
+            final ValueChanged<TeamSlot>? onActiveTeamSlotChanged;
+
+            @override
+          ''',
+          )
+          replace_once(
+              legacy,
+              '''  Future<void> _switchPartySlot(TeamSlot slot) async {
+            final pokemon = _pokemonById(slot.pokemonId);
+            if (pokemon == null) return;
+
+            setState(() {
+          ''',
+              '''  Future<void> _switchPartySlot(TeamSlot slot) async {
+            final pokemon = _pokemonById(slot.pokemonId);
+            if (pokemon == null) return;
+
+            final onActiveTeamSlotChanged = widget.onActiveTeamSlotChanged;
+            if (onActiveTeamSlotChanged != null) {
+              onActiveTeamSlotChanged(slot);
+              return;
+            }
+
+            setState(() {
+          ''',
+          )
+          replace_once(
+              legacy,
+              '''                : PokemonAssetImage(pokemon: pokemon, size: 30),
+          ''',
+              '''                : PokemonAssetImage(
+                    pokemon: pokemon,
+                    formName: slot.formName,
+                    gender: slot.gender,
+                    isShiny: slot.isShiny,
+                    size: 30,
+                  ),
+          ''',
+          )
+
+          evolution_repository = 'lib/repositories/evolution_repository.dart'
+          replace_once(
+              evolution_repository,
+              '''    for (final item in items) {
+              if (item is! Map) continue;
+
+              final option = EvolutionOption.fromWebJson(
+                Map<String, dynamic>.from(item),
+                displayNameBuilder: _displayNameFromKey,
+              );
+          ''',
+              '''    for (final item in items) {
+              if (item is! Map) continue;
+              final itemJson = Map<String, dynamic>.from(item);
+              if (itemJson['nonCanon'] == true) continue;
+
+              final option = EvolutionOption.fromWebJson(
+                itemJson,
+                displayNameBuilder: _displayNameFromKey,
+              );
+          ''',
+          )
+          replace_once(
+              evolution_repository,
+              '''    return value
+                .split('-')
+                .where((part) => part.isNotEmpty)
+                .map((part) => '${part[0].toUpperCase()}${part.substring(1)}')
+                .join(' ');
+          ''',
+              '''    final parts = value
+                .split('-')
+                .where((part) => part.isNotEmpty)
+                .toList(growable: false);
+            const regionalLabels = <String, String>{
+              'alola': 'Alolan',
+              'alolan': 'Alolan',
+              'galar': 'Galarian',
+              'galarian': 'Galarian',
+              'hisui': 'Hisuian',
+              'hisuian': 'Hisuian',
+              'paldea': 'Paldean',
+              'paldean': 'Paldean',
+            };
+            if (parts.length > 1) {
+              final leadingRegion = regionalLabels[parts.first];
+              if (leadingRegion != null) {
+                return '$leadingRegion ${_titleCase(parts.skip(1))}';
+              }
+              final trailingRegion = regionalLabels[parts.last];
+              if (trailingRegion != null) {
+                return '$trailingRegion ${_titleCase(parts.take(parts.length - 1))}';
+              }
+            }
+
+            return _titleCase(parts);
+          }
+
+          String _titleCase(Iterable<String> parts) {
+            return parts
+                .where((part) => part.isNotEmpty)
+                .map((part) => '${part[0].toUpperCase()}${part.substring(1)}')
+                .join(' ');
+          ''',
+          )
+
+          aliases = 'lib/services/evolution_form_alias_service.dart'
+          replace_once(
+              aliases,
+              '''        final syntheticId = _syntheticId(basePokemon.id, index);
+                bySyntheticId[syntheticId] = PokemonEvolutionAlias(
+                  basePokemon: basePokemon,
+                  formName: formName,
+                );
+
+                final variant = definition.pokemon.copyWith(
+                  id: syntheticId,
+                  name: _explicitEvolutionName(basePokemon, definition),
+                  formDefinitions: basePokemon.formDefinitions,
+                );
+                explicitAliases.add(variant);
+
+                if (currentRegionalKey != null && formKey == currentRegionalKey) {
+                  preferredRegionalAliases.add(
+                    variant.copyWith(name: basePokemon.name),
+                  );
+                }
+          ''',
+              '''        final aliasNames = _explicitEvolutionNames(
+                  basePokemon,
+                  definition,
+                );
+                for (var aliasIndex = 0;
+                    aliasIndex < aliasNames.length;
+                    aliasIndex += 1) {
+                  final syntheticId = _syntheticId(
+                    basePokemon.id,
+                    index,
+                    aliasIndex,
+                  );
+                  bySyntheticId[syntheticId] = PokemonEvolutionAlias(
+                    basePokemon: basePokemon,
+                    formName: formName,
+                  );
+
+                  final variant = definition.pokemon.copyWith(
+                    id: syntheticId,
+                    name: aliasNames[aliasIndex],
+                    formDefinitions: basePokemon.formDefinitions,
+                  );
+                  explicitAliases.add(variant);
+
+                  if (aliasIndex == 0 &&
+                      currentRegionalKey != null &&
+                      formKey == currentRegionalKey) {
+                    preferredRegionalAliases.add(
+                      variant.copyWith(name: basePokemon.name),
+                    );
+                  }
+                }
+          ''',
+          )
+          replace_once(
+              aliases,
+              '''  int _syntheticId(int pokemonId, int formIndex) {
+              return -((pokemonId * 1000) + formIndex + 1);
+            }
+          ''',
+              '''  List<String> _explicitEvolutionNames(
+              Pokemon pokemon,
+              PokemonFormDefinition definition,
+            ) {
+              final names = <String>{_explicitEvolutionName(pokemon, definition)};
+              final formName = definition.displayName.trim().isEmpty
+                  ? definition.key.trim()
+                  : definition.displayName.trim();
+
+              void add(String value) {
+                final normalized = value.trim();
+                if (normalized.isNotEmpty) names.add(normalized);
+              }
+
+              final formKey = Pokemon.formReferenceKey(formName, pokemon.name);
+              switch (formKey) {
+                case 'alolan':
+                  add('Alolan ${pokemon.name}');
+                  add('${pokemon.name} Alola');
+                  break;
+                case 'galarian':
+                  add('Galarian ${pokemon.name}');
+                  add('${pokemon.name} Galar');
+                  break;
+                case 'hisuian':
+                  add('Hisuian ${pokemon.name}');
+                  add('${pokemon.name} Hisui');
+                  break;
+                case 'paldean':
+                  add('Paldean ${pokemon.name}');
+                  add('${pokemon.name} Paldea');
+                  break;
+              }
+
+              final rawKey = definition.key.trim();
+              if (rawKey.isNotEmpty) {
+                add('$rawKey ${pokemon.name}');
+                add('${pokemon.name} $rawKey');
+              }
+              if (formName.isNotEmpty) {
+                add('$formName ${pokemon.name}');
+                add('${pokemon.name} $formName');
+              }
+              return names.toList(growable: false);
+            }
+
+            int _syntheticId(int pokemonId, int formIndex, int aliasIndex) {
+              return -((pokemonId * 10000) + (formIndex * 10) + aliasIndex + 1);
+            }
+          ''',
+          )
+
+          alias_test = Path('test/evolution_form_alias_service_test.dart')
+          alias_source = alias_test.read_text(encoding='utf-8')
+          marker = "  test('temporary battle transformations are not evolution aliases', () async {"
+          if marker not in alias_source:
+              raise SystemExit('alias test insertion marker missing')
+          alias_source = alias_source.replace(
+              marker,
+              '''  test('Hisui starter evolution target is available by suffix name', () async {
+                final catalog = await PokemonRepository().getAllPokemon();
+                final dartrix = catalog.firstWhere((pokemon) => pokemon.id == 723);
+                final result = service.build(
+                  currentBasePokemon: dartrix,
+                  slot: TeamSlot(slotIndex: 0, pokemonId: 723),
+                  catalog: catalog,
+                );
+
+                final aliasPokemon = result.pokemon.firstWhere(
+                  (pokemon) =>
+                      pokemon.id < 0 &&
+                      pokemon.name.toLowerCase() == 'decidueye hisui',
+                );
+                final alias = result.bySyntheticId[aliasPokemon.id];
+
+                expect(alias, isNotNull);
+                expect(alias!.basePokemon.id, 724);
+                expect(
+                  Pokemon.formReferenceKey(alias.formName, alias.basePokemon.name),
+                  'hisuian',
+                );
+              });
+
+            $marker''',
+              1,
+          )
+          alias_test.write_text(alias_source, encoding='utf-8')
+
+          Path('test/evolution_repository_non_canon_test.dart').write_text(
+              '''import 'package:flutter_test/flutter_test.dart';
+            import 'package:pokedex_5e_ita/repositories/evolution_repository.dart';
+
+            void main() {
+              TestWidgetsFlutterBinding.ensureInitialized();
+
+              test('Eevee exposes only canonical evolutions', () async {
+                final evolutions = await EvolutionRepository().getEvolutionData();
+                final eevee = evolutions['eevee'] ?? evolutions['Eevee'];
+
+                expect(eevee, isNotNull);
+                final names = eevee!.options
+                    .map((option) => option.toName.toLowerCase())
+                    .toSet();
+                expect(
+                  names,
+                  containsAll(<String>{
+                    'vaporeon',
+                    'jolteon',
+                    'flareon',
+                    'espeon',
+                    'umbreon',
+                    'leafeon',
+                    'glaceon',
+                    'sylveon',
+                  }),
+                );
+                expect(
+                  names.intersection(<String>{
+                    'droideon',
+                    'brawleon',
+                    'specteon',
+                    'toxeon',
+                    'minereon',
+                    'aereon',
+                    'pesteon',
+                    'terreon',
+                    'drakeon',
+                  }),
+                  isEmpty,
+                );
+              });
+            }
+            ''',
+              encoding='utf-8',
+          )
+
+          changelog = Path('CHANGELOG.md')
+          changelog_source = changelog.read_text(encoding='utf-8')
+          changelog_source = changelog_source.replace(
+              '## [Non rilasciato]\n\nNessuna modifica successiva alla release 1.0.2.',
+              '''## [Non rilasciato]
+
+            ### Corretto
+
+            - aggiornamento immediato della scheda dopo un’evoluzione;
+            - sincronizzazione del Pokémon attivo quando si cambia membro dalla barra della squadra;
+            - disponibilità delle evoluzioni regionali con nomi in forma prefissa o suffissa, compresi gli starter di Hisui;
+            - sprite della barra squadra coerenti con forma, sesso e variante cromatica dell’esemplare;
+            - esclusione delle evoluzioni non canoniche di Eevee dal selettore.''',
+              1,
+          )
+          changelog.write_text(changelog_source, encoding='utf-8')
+
+          Path('.github/workflows/apply-detail-form-fixes.yml').unlink()
+          PY
+
+      - name: Format changed Dart files
+        run: |
+          dart format \
+            lib/screens/pokemon/pokemon_detail_screen.dart \
+            lib/screens/pokemon/pokemon_detail_screen_legacy.dart \
+            lib/repositories/evolution_repository.dart \
+            lib/services/evolution_form_alias_service.dart \
+            test/evolution_form_alias_service_test.dart \
+            test/evolution_repository_non_canon_test.dart
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze source
+        run: flutter analyze
+
+      - name: Run focused regression tests
+        run: |
+          flutter test test/evolution_form_alias_service_test.dart --reporter expanded
+          flutter test test/evolution_repository_non_canon_test.dart --reporter expanded
+
+      - name: Commit fixes
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Corregge evoluzioni, forme regionali e sprite squadra'
+          git push origin HEAD:fix/evolution-form-detail-sync

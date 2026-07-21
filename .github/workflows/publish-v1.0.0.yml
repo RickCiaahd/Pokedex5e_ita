@@ -26,24 +26,35 @@ jobs:
           ref: main
           fetch-depth: 0
 
-      - name: Validate release prerequisites
+      - name: Check release prerequisites
+        id: preflight
         shell: bash
         run: |
+          missing=()
           VERSION=$(awk '/^version:/{print $2}' pubspec.yaml | cut -d+ -f1)
-          test "$VERSION" = "1.0.0" || (echo "Versione pubspec inattesa: $VERSION" && exit 1)
-          test -n "$ANDROID_KEYSTORE_BASE64" || (echo "ANDROID_KEYSTORE_BASE64 non configurato" && exit 1)
-          test -n "$ANDROID_STORE_PASSWORD" || (echo "ANDROID_STORE_PASSWORD non configurato" && exit 1)
-          test -n "$ANDROID_KEY_PASSWORD" || (echo "ANDROID_KEY_PASSWORD non configurato" && exit 1)
-          test -n "$ANDROID_KEY_ALIAS" || (echo "ANDROID_KEY_ALIAS non configurato" && exit 1)
+          [ "$VERSION" = "1.0.0" ] || missing+=("pubspec-version-$VERSION")
+          [ -n "$ANDROID_KEYSTORE_BASE64" ] || missing+=("ANDROID_KEYSTORE_BASE64")
+          [ -n "$ANDROID_STORE_PASSWORD" ] || missing+=("ANDROID_STORE_PASSWORD")
+          [ -n "$ANDROID_KEY_PASSWORD" ] || missing+=("ANDROID_KEY_PASSWORD")
+          [ -n "$ANDROID_KEY_ALIAS" ] || missing+=("ANDROID_KEY_ALIAS")
           if git rev-parse -q --verify refs/tags/v1.0.0 >/dev/null; then
-            echo "Il tag v1.0.0 esiste già"
-            exit 1
+            missing+=("tag-v1.0.0-already-exists")
+          fi
+          if [ ${#missing[@]} -eq 0 ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+            echo "missing=" >> "$GITHUB_OUTPUT"
+          else
+            printf -v joined '%s, ' "${missing[@]}"
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "missing=${joined%, }" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Remove one-shot workflow and create tag
+      - name: Publish release tag
+        if: steps.preflight.outputs.ready == 'true'
         shell: bash
         run: |
           rm -f .github/workflows/publish-v1.0.0.yml
+          rm -f docs/release-preflight-status.md
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -A
@@ -51,3 +62,23 @@ jobs:
           git tag -a v1.0.0 -m 'Pokédex 5e ITA 1.0.0'
           git push origin HEAD:main
           git push origin v1.0.0
+
+      - name: Record blocked release
+        if: steps.preflight.outputs.ready != 'true'
+        shell: bash
+        run: |
+          rm -f .github/workflows/publish-v1.0.0.yml
+          cat > docs/release-preflight-status.md <<EOF
+          # Stato preflight release 1.0.0
+
+          La pubblicazione automatica è stata bloccata perché mancano o non sono validi questi prerequisiti:
+
+          `${{ steps.preflight.outputs.missing }}`
+
+          Configurare i secret indicati seguendo `docs/android-release.md`, quindi rimuovere questo file prima di riprovare.
+          EOF
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Registra il blocco della release GitHub 1.0.0'
+          git push origin HEAD:main

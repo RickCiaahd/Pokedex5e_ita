@@ -23,6 +23,7 @@ import '../../services/battle_environment_service.dart';
 import '../../services/battle_form_change_service.dart';
 import '../../services/battle_quick_item_service.dart';
 import '../../services/battle_temporary_hp_service.dart';
+import '../../services/battle_temporary_hp_service.dart';
 import '../../services/battle_status_rules.dart';
 import '../../services/trainer_path_passive_service.dart';
 import '../../widgets/battle/battle_environment_card.dart';
@@ -132,6 +133,9 @@ class _BattleScreenState extends State<BattleScreen> {
     _remainingPpBySlot.clear();
     _volatileStatusesBySlot.clear();
     _battleFormBySlot.clear();
+    _temporaryHpBySlot.clear();
+    _temporaryHpEnabledBySlot.clear();
+    _temporaryHpInitializedSlots.clear();
     _initiativeEntries.clear();
     _round = 1;
     _turnIndex = 0;
@@ -161,6 +165,12 @@ class _BattleScreenState extends State<BattleScreen> {
         if (battleFormName != null && battleFormName.trim().isNotEmpty) {
           _battleFormBySlot[matchingSlot.slotIndex] = battleFormName;
         }
+        _temporaryHpBySlot[matchingSlot.slotIndex] = state.temporaryHp;
+        _temporaryHpEnabledBySlot[matchingSlot.slotIndex] =
+            state.temporaryHpEnabled;
+        if (state.temporaryHpInitialized) {
+          _temporaryHpInitializedSlots.add(matchingSlot.slotIndex);
+        }
       }
 
       final savedActiveSlot = session.activeSlotIndex;
@@ -171,6 +181,23 @@ class _BattleScreenState extends State<BattleScreen> {
       _turnIndex = _initiativeEntries.isEmpty
           ? 0
           : session.turnIndex.clamp(0, _initiativeEntries.length - 1).toInt();
+    }
+
+    for (final slot in data.occupiedSlots) {
+      if (_temporaryHpInitializedSlots.contains(slot.slotIndex)) continue;
+      final pokemonId = slot.pokemonId;
+      if (pokemonId == null) continue;
+      final basePokemon = data.pokemonById[pokemonId];
+      if (basePokemon == null) continue;
+      final rule = BattleTemporaryHpService.ruleFor(basePokemon, slot);
+      _temporaryHpInitializedSlots.add(slot.slotIndex);
+      if (rule == null) continue;
+      _temporaryHpEnabledBySlot[slot.slotIndex] = true;
+      _temporaryHpBySlot[slot.slotIndex] =
+          rule.maximumForLevel(_levelForSlot(slot));
+      if (basePokemon.name == 'Mimikyu') {
+        _battleFormBySlot[slot.slotIndex] = 'Base';
+      }
     }
 
     final activeSlot = _activeSlotFor(data);
@@ -194,6 +221,12 @@ class _BattleScreenState extends State<BattleScreen> {
         remainingPp: {...?_remainingPpBySlot[slot.slotIndex]},
         volatileStatuses: {...?_volatileStatusesBySlot[slot.slotIndex]},
         battleFormName: _battleFormBySlot[slot.slotIndex],
+        temporaryHp: _temporaryHpBySlot[slot.slotIndex] ?? 0,
+        temporaryHpEnabled:
+            _temporaryHpEnabledBySlot[slot.slotIndex] ?? false,
+        temporaryHpInitialized: _temporaryHpInitializedSlots.contains(
+          slot.slotIndex,
+        ),
       );
     }
 
@@ -233,10 +266,59 @@ class _BattleScreenState extends State<BattleScreen> {
   Pokemon? _pokemonForSlot(_BattleData data, TeamSlot slot) {
     final pokemonId = slot.pokemonId;
     if (pokemonId == null) return null;
-    return data.pokemonById[pokemonId]?.resolveVariant(
-      formName: _effectiveFormName(slot),
+    final basePokemon = data.pokemonById[pokemonId];
+    if (basePokemon == null) return null;
+    final formName = _effectiveFormName(slot);
+    if (basePokemon.name == 'Palafin' &&
+        BattleFormChangeService.canonicalFormKey(basePokemon, formName) ==
+            'hero') {
+      return basePokemon;
+    }
+    return basePokemon.resolveVariant(
+      formName: formName,
       gender: slot.gender,
     );
+  }
+
+  List<PokemonFormChoice> _normalizedBattleFormChoices(
+    Pokemon pokemon,
+    TeamSlot slot,
+    List<PokemonFormChoice> choices,
+  ) {
+    final byKey = <String, PokemonFormChoice>{};
+    for (final choice in choices) {
+      if (!BattleFormChangeService.isAllowedChoice(
+        pokemon: pokemon,
+        slot: slot,
+        formName: choice.name,
+      )) {
+        continue;
+      }
+      final key = BattleFormChangeService.canonicalFormKey(
+        pokemon,
+        choice.name,
+      );
+      byKey.putIfAbsent(
+        key,
+        () => PokemonFormChoice(
+          name: BattleFormChangeService.normalizedChoiceName(
+            pokemon,
+            choice.name,
+          ),
+          assetPath: choice.assetPath,
+        ),
+      );
+    }
+    final result = byKey.values.toList(growable: false)
+      ..sort(
+        (a, b) => BattleFormChangeService.formSortWeight(
+          pokemon,
+          a.name,
+        ).compareTo(
+          BattleFormChangeService.formSortWeight(pokemon, b.name),
+        ),
+      );
+    return result;
   }
 
   Future<void> _openBattleFormPicker(_BattleData data, TeamSlot slot) async {
@@ -248,15 +330,11 @@ class _BattleScreenState extends State<BattleScreen> {
     }
 
     final allChoices = await PokemonAssetPaths.formChoices(basePokemon);
-    final choices = allChoices
-        .where(
-          (choice) => BattleFormChangeService.isAllowedChoice(
-            pokemon: basePokemon,
-            slot: slot,
-            formName: choice.name,
-          ),
-        )
-        .toList(growable: false);
+    final choices = _normalizedBattleFormChoices(
+      basePokemon,
+      slot,
+      allChoices,
+    );
     if (!mounted || choices.length <= 1) return;
 
     final selected = await showModalBottomSheet<String>(
@@ -387,20 +465,85 @@ class _BattleScreenState extends State<BattleScreen> {
     return slot.currentHp.clamp(0, _maxHpFor(pokemon, slot)).toInt();
   }
 
+  BattleTemporaryHpRule? _temporaryHpRule(
+    _BattleData data,
+    TeamSlot slot,
+  ) {
+    final pokemonId = slot.pokemonId;
+    if (pokemonId == null) return null;
+    final basePokemon = data.pokemonById[pokemonId];
+    if (basePokemon == null) return null;
+    return BattleTemporaryHpService.ruleFor(basePokemon, slot);
+  }
+
+  Future<void> _toggleTemporaryHpRule(
+    _BattleData data,
+    TeamSlot slot,
+    bool enabled,
+  ) async {
+    final rule = _temporaryHpRule(data, slot);
+    if (rule == null) return;
+    final basePokemon = data.pokemonById[slot.pokemonId!]!;
+    setState(() {
+      _temporaryHpInitializedSlots.add(slot.slotIndex);
+      _temporaryHpEnabledBySlot[slot.slotIndex] = enabled;
+      _temporaryHpBySlot[slot.slotIndex] = enabled
+          ? rule.maximumForLevel(_levelForSlot(slot))
+          : 0;
+      if (basePokemon.name == 'Mimikyu') {
+        _battleFormBySlot[slot.slotIndex] = enabled
+            ? 'Base'
+            : rule.brokenFormName ?? 'Busted';
+      }
+      _message = enabled
+          ? '${rule.label} attivato: ${_temporaryHpBySlot[slot.slotIndex]} PF temporanei.'
+          : '${rule.label} disattivato.';
+    });
+    await _saveSession(data);
+  }
+
   Future<void> _changeHp(_BattleData data, TeamSlot slot, int delta) async {
     final pokemon = _pokemonForSlot(data, slot);
     if (pokemon == null) return;
 
     final maxHp = _maxHpFor(pokemon, slot);
-    final updatedHp = (_currentHpFor(slot, pokemon) + delta)
+    var hpDelta = delta;
+    var absorbed = 0;
+    final rule = _temporaryHpRule(data, slot);
+    if (delta < 0 &&
+        rule != null &&
+        (_temporaryHpEnabledBySlot[slot.slotIndex] ?? false)) {
+      final currentTemporaryHp = _temporaryHpBySlot[slot.slotIndex] ?? 0;
+      absorbed = min(currentTemporaryHp, -delta);
+      if (absorbed > 0) {
+        final remainingTemporaryHp = currentTemporaryHp - absorbed;
+        _temporaryHpBySlot[slot.slotIndex] = remainingTemporaryHp;
+        hpDelta += absorbed;
+        if (remainingTemporaryHp == 0) {
+          _temporaryHpEnabledBySlot[slot.slotIndex] = false;
+          final basePokemon = data.pokemonById[slot.pokemonId!];
+          if (basePokemon?.name == 'Mimikyu') {
+            _battleFormBySlot[slot.slotIndex] =
+                rule.brokenFormName ?? 'Busted';
+          }
+        }
+      }
+    }
+
+    final updatedHp = (_currentHpFor(slot, pokemon) + hpDelta)
         .clamp(0, maxHp)
         .toInt();
-
     await _teamRepository.updateSlot(
       profileId: data.profile.id,
       updatedSlot: slot.copyWith(currentHp: updatedHp),
     );
-    await _reload();
+    await _saveSession(data);
+    final message = absorbed == 0
+        ? null
+        : (_temporaryHpBySlot[slot.slotIndex] ?? 0) > 0
+        ? '$absorbed danni assorbiti dai PF temporanei.'
+        : '$absorbed danni assorbiti: ${rule?.label ?? 'la protezione'} si spezza.';
+    await _reload(message: message);
   }
 
   Future<void> _editHp(_BattleData data, TeamSlot slot) async {
@@ -437,6 +580,17 @@ class _BattleScreenState extends State<BattleScreen> {
     if (pokemon == null) return;
 
     _volatileStatusesBySlot.remove(slot.slotIndex);
+    final rule = _temporaryHpRule(data, slot);
+    if (rule != null) {
+      _temporaryHpInitializedSlots.add(slot.slotIndex);
+      _temporaryHpEnabledBySlot[slot.slotIndex] = true;
+      _temporaryHpBySlot[slot.slotIndex] =
+          rule.maximumForLevel(_levelForSlot(slot));
+      final basePokemon = data.pokemonById[slot.pokemonId!];
+      if (basePokemon?.name == 'Mimikyu') {
+        _battleFormBySlot[slot.slotIndex] = 'Base';
+      }
+    }
     await _teamRepository.updateSlot(
       profileId: data.profile.id,
       updatedSlot: slot.copyWith(
@@ -981,7 +1135,7 @@ class _BattleScreenState extends State<BattleScreen> {
         scrollable: true,
         title: const Text('Terminare la battaglia?'),
         content: const Text(
-          'Round, iniziativa, PP temporanei e status volatili verranno rimossi. HP, status persistenti e oggetti consumati resteranno salvati.',
+          'Round, iniziativa, PP, PF temporanei, forme di battaglia e status volatili verranno rimossi. HP, status persistenti e oggetti consumati resteranno salvati.',
         ),
         actions: [
           TextButton(
@@ -1001,6 +1155,9 @@ class _BattleScreenState extends State<BattleScreen> {
     _remainingPpBySlot.clear();
     _volatileStatusesBySlot.clear();
     _battleFormBySlot.clear();
+    _temporaryHpBySlot.clear();
+    _temporaryHpEnabledBySlot.clear();
+    _temporaryHpInitializedSlots.clear();
     _initiativeEntries.clear();
     if (!mounted) return;
     Navigator.of(context).pop();
@@ -1015,11 +1172,22 @@ class _BattleScreenState extends State<BattleScreen> {
     );
   }
 
-  Map<String, int> _attributeScores(Pokemon pokemon, TeamSlot slot) {
-    return TrainerPathPassiveService.effectiveAttributeScores(
+  Map<String, int> _attributeScores(
+    Pokemon pokemon,
+    TeamSlot slot, {
+    Pokemon? basePokemon,
+    String? formName,
+  }) {
+    final scores = TrainerPathPassiveService.effectiveAttributeScores(
       profile: _activeProfile,
       pokemon: pokemon,
       slot: slot,
+    );
+    final sourcePokemon = basePokemon ?? pokemon;
+    return BattleFormChangeService.applyAttributeScoreModifiers(
+      sourcePokemon,
+      formName,
+      scores,
     );
   }
 
@@ -1031,8 +1199,19 @@ class _BattleScreenState extends State<BattleScreen> {
     return 2;
   }
 
-  int _bestMoveModifier(MoveData move, Pokemon pokemon, TeamSlot slot) {
-    final attributes = _attributeScores(pokemon, slot);
+  int _bestMoveModifier(
+    MoveData move,
+    Pokemon pokemon,
+    TeamSlot slot, {
+    required Pokemon basePokemon,
+    required String? formName,
+  }) {
+    final attributes = _attributeScores(
+      pokemon,
+      slot,
+      basePokemon: basePokemon,
+      formName: formName,
+    );
     final modifiers =
         move.movePowers
             .where(attributes.containsKey)
@@ -1047,10 +1226,17 @@ class _BattleScreenState extends State<BattleScreen> {
     MoveData move,
     Pokemon pokemon,
     TeamSlot slot,
+    Pokemon basePokemon,
     String? formName,
   ) {
     final level = _levelForSlot(slot);
-    final moveModifier = _bestMoveModifier(move, pokemon, slot);
+    final moveModifier = _bestMoveModifier(
+      move,
+      pokemon,
+      slot,
+      basePokemon: basePokemon,
+      formName: formName,
+    );
     final proficiency = _proficiency(level);
     final attackPathBonus = TrainerPathPassiveService.attackRollBonus(
       profile: _activeProfile,
@@ -1198,7 +1384,16 @@ class _BattleScreenState extends State<BattleScreen> {
               pokemon: pokemon,
               slot: activeSlot,
             );
-            final attributes = _attributeScores(pokemon, activeSlot);
+            final attributes = _attributeScores(
+              pokemon,
+              activeSlot,
+              basePokemon: basePokemon,
+              formName: effectiveFormName,
+            );
+            final temporaryHpRule = _temporaryHpRule(data, activeSlot);
+            final temporaryHp = _temporaryHpBySlot[activeSlot.slotIndex] ?? 0;
+            final temporaryHpEnabled =
+                _temporaryHpEnabledBySlot[activeSlot.slotIndex] ?? false;
             final baseArmorClass = BattleEnvironmentService.baseArmorClass(
               pokemon,
               activeSlot,
@@ -1235,6 +1430,8 @@ class _BattleScreenState extends State<BattleScreen> {
                     slots: data.occupiedSlots,
                     activeSlot: activeSlot,
                     pokemonForSlot: (slot) => _pokemonForSlot(data, slot),
+                    imagePokemonForSlot: (slot) =>
+                        data.pokemonById[slot.pokemonId],
                     formNameForSlot: _effectiveFormName,
                     onSelected: (slotIndex) {
                       setState(() {
@@ -1287,6 +1484,7 @@ class _BattleScreenState extends State<BattleScreen> {
                   const SizedBox(height: 12),
                   _ActivePokemonCard(
                     pokemon: pokemon,
+                    imagePokemon: basePokemon,
                     slot: activeSlot,
                     formName: effectiveFormName,
                     formLabel: canChangeForm
@@ -1308,6 +1506,9 @@ class _BattleScreenState extends State<BattleScreen> {
                     effectiveArmorClass: effectiveArmorClass,
                     currentHp: _currentHpFor(activeSlot, pokemon),
                     maxHp: _maxHpFor(pokemon, activeSlot),
+                    temporaryHp: temporaryHp,
+                    temporaryHpRule: temporaryHpRule,
+                    temporaryHpEnabled: temporaryHpEnabled,
                     nonVolatileStatus: _nonVolatileStatusFor(activeSlot),
                     volatileStatuses: _volatileStatusesFor(activeSlot),
                     message: _message,
@@ -1322,6 +1523,13 @@ class _BattleScreenState extends State<BattleScreen> {
                         ? () => _useHeldBerry(data, activeSlot)
                         : null,
                     onOpenBag: () => _openQuickBag(data, activeSlot),
+                    onToggleTemporaryHp: temporaryHpRule == null
+                        ? null
+                        : (enabled) => _toggleTemporaryHpRule(
+                            data,
+                            activeSlot,
+                            enabled,
+                          ),
                     onChangeForm: canChangeForm
                         ? () => _openBattleFormPicker(data, activeSlot)
                         : null,
@@ -1693,6 +1901,7 @@ class _PartyBar extends StatelessWidget {
     required this.slots,
     required this.activeSlot,
     required this.pokemonForSlot,
+    required this.imagePokemonForSlot,
     required this.formNameForSlot,
     required this.onSelected,
   });
@@ -1700,6 +1909,7 @@ class _PartyBar extends StatelessWidget {
   final List<TeamSlot> slots;
   final TeamSlot activeSlot;
   final Pokemon? Function(TeamSlot slot) pokemonForSlot;
+  final Pokemon? Function(TeamSlot slot) imagePokemonForSlot;
   final String? Function(TeamSlot slot) formNameForSlot;
   final ValueChanged<int> onSelected;
 
@@ -1745,6 +1955,7 @@ class _PartyPokemonButton extends StatelessWidget {
   const _PartyPokemonButton({
     required this.slot,
     required this.pokemon,
+    required this.imagePokemon,
     required this.formName,
     required this.selected,
     required this.onTap,
@@ -1752,6 +1963,7 @@ class _PartyPokemonButton extends StatelessWidget {
 
   final TeamSlot slot;
   final Pokemon? pokemon;
+  final Pokemon? imagePokemon;
   final String? formName;
   final bool selected;
   final VoidCallback onTap;

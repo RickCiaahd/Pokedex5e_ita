@@ -1,1 +1,1 @@
-battle_screen.dart: expected one match, found 2: '    _volatileStatusesBySlot.clear();\n    _battleFormBySlot.clear();\n    _initiativeEntries.clear();'
+battle_screen.dart: expected at most one match, found 2: '                PokemonAssetImage(\n                  pokemon: pokemon,'

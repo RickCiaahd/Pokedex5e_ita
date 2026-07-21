@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - '.github/workflows/publish-v1.0.1.yml'
+      - '.github/release-v1.0.1-trigger'
 
 permissions:
   contents: write

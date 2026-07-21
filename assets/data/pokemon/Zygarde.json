@@ -1,5 +1,5 @@
 {
-  "AC": 16,
+  "AC": 18,
   "Abilities": [
     "Aura Break",
     "Power Construct"
@@ -69,14 +69,14 @@
     "Dragon",
     "Ground"
   ],
-  "WSp": 35,
+  "WSp": 40,
   "attributes": {
-    "CHA": 14,
-    "CON": 15,
-    "DEX": 19,
-    "INT": 14,
-    "STR": 16,
-    "WIS": 14
+    "CHA": 16,
+    "CON": 20,
+    "DEX": 18,
+    "INT": 16,
+    "STR": 19,
+    "WIS": 16
   },
   "index": 718,
   "saving_throws": [
@@ -84,30 +84,30 @@
     "Wisdom",
     "Strength"
   ],
-  "size": "Medium",
+  "size": "Huge",
   "variant_data": {
     "create_mode": "default",
-    "default": "10% Forme",
+    "default": "50% Forme",
     "permanent": false,
     "variants": {
       "10% Forme": {
+        "diff": {
+          "AC": 16,
+          "WSp": 35,
+          "attributes": {
+            "CHA": 14,
+            "CON": 15,
+            "DEX": 19,
+            "INT": 14,
+            "STR": 16,
+            "WIS": 14
+          },
+          "size": "Medium"
+        },
         "display": "Zygarde 10% Forme",
         "original_species": "Zygarde 10% Forme"
       },
       "50% Forme": {
-        "diff": {
-          "AC": 18,
-          "WSp": 40,
-          "attributes": {
-            "CHA": 16,
-            "CON": 20,
-            "DEX": 18,
-            "INT": 16,
-            "STR": 19,
-            "WIS": 16
-          },
-          "size": "Huge"
-        },
         "display": "Zygarde 50% Forme",
         "original_species": "Zygarde 50% Forme"
       },

@@ -1,0 +1,302 @@
+name: Fix form assets and UI
+
+on:
+  push:
+    paths:
+      - '.github/workflows/fix-form-assets-ui.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  fix-form-assets-ui:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Normalize texture folders and Aegislash artwork
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          old_zygarde='assets/textures/textures_webapp/pokemon/zygarde-50-forme'
+          new_zygarde='assets/textures/textures_webapp/pokemon/zygarde'
+          if [ -d "$old_zygarde" ]; then
+            if [ -d "$new_zygarde" ]; then
+              cp -a "$old_zygarde"/. "$new_zygarde"/
+              rm -rf "$old_zygarde"
+            else
+              git mv "$old_zygarde" "$new_zygarde"
+            fi
+          fi
+
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('pubspec.yaml')
+          text = path.read_text(encoding='utf-8')
+          text = text.replace(
+              'assets/textures/textures_webapp/pokemon/zygarde-50-forme/',
+              'assets/textures/textures_webapp/pokemon/zygarde/',
+          )
+          path.write_text(text, encoding='utf-8')
+          PY
+
+          aegislash='assets/textures/textures_webapp/pokemon/aegislash'
+          mkdir -p "$aegislash"
+          curl --fail --location --retry 3 \
+            'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10026.png' \
+            --output "$aegislash/main.png"
+          curl --fail --location --retry 3 \
+            'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/10026.png' \
+            --output "$aegislash/main-shiny.png"
+          curl --fail --location --retry 3 \
+            'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10026.png' \
+            --output "$aegislash/sprite.png"
+          curl --fail --location --retry 3 \
+            'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/10026.png' \
+            --output "$aegislash/sprite-shiny.png"
+
+      - name: Patch asset resolution and localized form selectors
+        shell: python
+        run: |
+          from pathlib import Path
+
+          def replace_once(path, old, new):
+              file = Path(path)
+              text = file.read_text(encoding='utf-8')
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f'{path}: expected one match, found {count}: {old[:80]!r}')
+              file.write_text(text.replace(old, new, 1), encoding='utf-8')
+
+          resolver = 'lib/widgets/pokemon/pokemon_asset_image_legacy.dart'
+          replace_once(
+              resolver,
+              "    add(exactSlug);\n    add(baseSlug);",
+              "    // Prefer the species folder for the default form. Variant-specific\n"
+              "    // folders are then resolved through the explicit form slug.\n"
+              "    add(baseSlug);\n    add(exactSlug);",
+          )
+
+          edit = 'lib/screens/pokemon/pokemon_edit_screen.dart'
+          replace_once(
+              edit,
+              "import '../../services/battle_environment_service.dart';",
+              "import '../../services/battle_environment_service.dart';\n"
+              "import '../../services/battle_form_change_service.dart';",
+          )
+          replace_once(
+              edit,
+              "  Future<void> _loadChoices() async {",
+              "  List<PokemonFormChoice> _normalizedFormChoices(\n"
+              "    List<PokemonFormChoice> choices,\n"
+              "  ) {\n"
+              "    if (!BattleFormChangeService.supports(widget.pokemon)) {\n"
+              "      return choices;\n"
+              "    }\n\n"
+              "    final byKey = <String, PokemonFormChoice>{};\n"
+              "    for (final choice in choices) {\n"
+              "      final key = BattleFormChangeService.canonicalFormKey(\n"
+              "        widget.pokemon,\n"
+              "        choice.name,\n"
+              "      );\n"
+              "      byKey.putIfAbsent(\n"
+              "        key,\n"
+              "        () => PokemonFormChoice(\n"
+              "          name: BattleFormChangeService.normalizedChoiceName(\n"
+              "            widget.pokemon,\n"
+              "            choice.name,\n"
+              "          ),\n"
+              "          assetPath: choice.assetPath,\n"
+              "        ),\n"
+              "      );\n"
+              "    }\n\n"
+              "    final result = byKey.values.toList(growable: false)\n"
+              "      ..sort(\n"
+              "        (a, b) => BattleFormChangeService.formSortWeight(\n"
+              "          widget.pokemon,\n"
+              "          a.name,\n"
+              "        ).compareTo(\n"
+              "          BattleFormChangeService.formSortWeight(\n"
+              "            widget.pokemon,\n"
+              "            b.name,\n"
+              "          ),\n"
+              "        ),\n"
+              "      );\n"
+              "    return result;\n"
+              "  }\n\n"
+              "  Future<void> _loadChoices() async {",
+          )
+          replace_once(
+              edit,
+              "    final formChoices = await formChoicesFuture;",
+              "    final rawFormChoices = await formChoicesFuture;\n"
+              "    final formChoices = _normalizedFormChoices(rawFormChoices);",
+          )
+          replace_once(
+              edit,
+              "class _FormSelector extends StatelessWidget {",
+              "String _localizedFormLabel(Pokemon pokemon, String? formName) {\n"
+              "  if (BattleFormChangeService.supports(pokemon)) {\n"
+              "    return BattleFormChangeService.formLabel(pokemon, formName);\n"
+              "  }\n"
+              "  return formName?.trim().isNotEmpty == true ? formName! : 'Forma base';\n"
+              "}\n\n"
+              "class _FormSelector extends StatelessWidget {",
+          )
+          replace_once(
+              edit,
+              "        title: Text(formName.toUpperCase()),",
+              "        title: Text(\n"
+              "          _localizedFormLabel(pokemon, formName).toUpperCase(),\n"
+              "        ),",
+          )
+          replace_once(
+              edit,
+              "                  title: Text(choice.name.toUpperCase()),\n"
+              "                  trailing: choice.name == currentFormName",
+              "                  title: Text(\n"
+              "                    _localizedFormLabel(pokemon, choice.name).toUpperCase(),\n"
+              "                  ),\n"
+              "                  trailing: BattleFormChangeService.supports(pokemon)\n"
+              "                      ? BattleFormChangeService.sameForm(\n"
+              "                          pokemon,\n"
+              "                          currentFormName,\n"
+              "                          choice.name,\n"
+              "                        )\n"
+              "                      : choice.name == currentFormName",
+          )
+
+          detail = 'lib/screens/pokemon/pokemon_detail_screen_legacy.dart'
+          replace_once(
+              detail,
+              "import '../../services/evolution_service.dart';",
+              "import '../../services/battle_form_change_service.dart';\n"
+              "import '../../services/evolution_service.dart';",
+          )
+          replace_once(
+              detail,
+              "                          child: _Header(\n                            pokemon: pokemon,",
+              "                          child: _Header(\n"
+              "                            pokemon: pokemon,\n"
+              "                            imagePokemon: _basePokemon,",
+          )
+          replace_once(
+              detail,
+              "                           _TraitsView(\n                             pokemon: pokemon,",
+              "                           _TraitsView(\n"
+              "                             pokemon: pokemon,\n"
+              "                             basePokemon: _basePokemon,",
+          )
+          replace_once(
+              detail,
+              "    required this.pokemon,\n    required this.slot,",
+              "    required this.pokemon,\n"
+              "    required this.imagePokemon,\n"
+              "    required this.slot,",
+          )
+          replace_once(
+              detail,
+              "  final Pokemon pokemon;\n  final TeamSlot? slot;",
+              "  final Pokemon pokemon;\n"
+              "  final Pokemon imagePokemon;\n"
+              "  final TeamSlot? slot;",
+          )
+          replace_once(
+              detail,
+              "                            pokemon: pokemon,\n                            formName: slot?.formName,",
+              "                            pokemon: imagePokemon,\n"
+              "                            formName: slot?.formName,",
+          )
+          replace_once(
+              detail,
+              "  Widget build(BuildContext context) {\n    final feats = slot?.feats ?? const <String>[];",
+              "  Widget build(BuildContext context) {\n"
+              "    String? lookup(Map<String, String> values, String reference) {\n"
+              "      final direct = values[reference];\n"
+              "      if (direct != null) return direct;\n"
+              "      final key = _itemReferenceKey(reference);\n"
+              "      for (final entry in values.entries) {\n"
+              "        if (_itemReferenceKey(entry.key) == key) return entry.value;\n"
+              "      }\n"
+              "      return null;\n"
+              "    }\n\n"
+              "    final feats = slot?.feats ?? const <String>[];",
+          )
+          replace_once(
+              detail,
+              "            title: abilityDisplayNames[ability] ?? ability,\n"
+              "            child: Text(\n"
+              "              abilityDescriptions[ability] ?? 'Descrizione non disponibile.',\n"
+              "            ),",
+              "            title: lookup(abilityDisplayNames, ability) ?? ability,\n"
+              "            child: Text(\n"
+              "              lookup(abilityDescriptions, ability) ??\n"
+              "                  'Descrizione non disponibile.',\n"
+              "            ),",
+          )
+          replace_once(
+              detail,
+              "    required this.pokemon,\n    required this.slot,\n    required this.attributes,",
+              "    required this.pokemon,\n"
+              "    required this.basePokemon,\n"
+              "    required this.slot,\n"
+              "    required this.attributes,",
+          )
+          replace_once(
+              detail,
+              "  final Pokemon pokemon;\n  final TeamSlot? slot;\n  final Map<String, int> attributes;",
+              "  final Pokemon pokemon;\n"
+              "  final Pokemon basePokemon;\n"
+              "  final TeamSlot? slot;\n"
+              "  final Map<String, int> attributes;",
+          )
+          replace_once(
+              detail,
+              "              _InfoRow(label: 'Forma', value: slot?.formName ?? '-'),",
+              "              _InfoRow(\n"
+              "                label: 'Forma',\n"
+              "                value: slot == null\n"
+              "                    ? '-'\n"
+              "                    : BattleFormChangeService.supports(basePokemon)\n"
+              "                    ? BattleFormChangeService.formLabel(\n"
+              "                        basePokemon,\n"
+              "                        slot?.formName,\n"
+              "                      )\n"
+              "                    : slot?.formName ?? '-',\n"
+              "              ),",
+          )
+
+      - name: Format and validate
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Run Flutter checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          dart format \
+            lib/widgets/pokemon/pokemon_asset_image_legacy.dart \
+            lib/screens/pokemon/pokemon_edit_screen.dart \
+            lib/screens/pokemon/pokemon_detail_screen_legacy.dart
+          flutter pub get
+          flutter analyze
+          flutter test test/data_integrity_test.dart --reporter expanded
+
+      - name: Commit corrections
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f .github/workflows/fix-form-assets-ui.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Corregge immagini e selettori delle forme alternative'
+          git push origin HEAD:main

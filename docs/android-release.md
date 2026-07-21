@@ -4,7 +4,7 @@
 
 - Nome visibile: `Pokédex 5e ITA`
 - Application ID: `io.github.rickciaahd.pokedex5eita`
-- Versione iniziale: `1.0.0+1`
+- Versione corrente: `1.0.1+2`
 
 L'Application ID è definitivo: cambiarlo dopo la distribuzione farebbe installare Android una seconda applicazione invece di aggiornare quella esistente.
 
@@ -78,7 +78,7 @@ Per creare il contenuto Base64 su PowerShell:
 
 Copiare il contenuto del file nel secret `ANDROID_KEYSTORE_BASE64`, poi eliminare il file testuale locale.
 
-Il workflow può essere eseguito manualmente. Creando un tag come `v1.0.0`, pubblica inoltre una GitHub Release con APK e AAB firmati.
+Il workflow può essere eseguito manualmente. Creando un tag come `v1.0.1`, pubblica inoltre una GitHub Release con APK e AAB firmati.
 
 ## Checklist dispositivo
 

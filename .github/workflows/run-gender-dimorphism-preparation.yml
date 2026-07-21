@@ -70,3 +70,5 @@ jobs:
           git add -A
           git commit -m 'Predispone le texture maschio e femmina per tutte le specie'
           git push origin HEAD:main
+
+# Existing workflow updated to trigger the preparation job.

@@ -1,0 +1,34 @@
+name: Cleanup evolution fix branch
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/cleanup-evolution-fix-branch.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Delete merged branch and remove workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          git push origin --delete fix/evolution-form-detail-sync || true
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm .github/workflows/cleanup-evolution-fix-branch.yml
+          git commit -m 'Rimuove il workflow temporaneo di pulizia evoluzioni'
+          git push origin HEAD:main

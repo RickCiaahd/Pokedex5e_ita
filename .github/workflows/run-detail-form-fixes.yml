@@ -1,0 +1,88 @@
+name: Run detail and form fixes
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/run-detail-form-fixes.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+
+    steps:
+      - name: Check out fix branch
+        uses: actions/checkout@v4
+        with:
+          ref: fix/evolution-form-detail-sync
+          fetch-depth: 0
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Extract and run targeted patch
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          workflow = Path('.github/workflows/apply-detail-form-fixes.yml').read_text(encoding='utf-8')
+          start_marker = "          python - <<'PY'\n"
+          end_marker = "\n          PY\n"
+          start = workflow.index(start_marker) + len(start_marker)
+          end = workflow.index(end_marker, start)
+          lines = workflow[start:end].splitlines()
+          code = '\n'.join(line[10:] if line.startswith('          ') else line for line in lines) + '\n'
+          Path('/tmp/apply_detail_form_fixes.py').write_text(code, encoding='utf-8')
+          PY
+          python /tmp/apply_detail_form_fixes.py
+
+      - name: Format changed Dart files
+        run: |
+          dart format \
+            lib/screens/pokemon/pokemon_detail_screen.dart \
+            lib/screens/pokemon/pokemon_detail_screen_legacy.dart \
+            lib/repositories/evolution_repository.dart \
+            lib/services/evolution_form_alias_service.dart \
+            test/evolution_form_alias_service_test.dart \
+            test/evolution_repository_non_canon_test.dart
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze source
+        run: flutter analyze
+
+      - name: Run focused regression tests
+        run: |
+          flutter test test/evolution_form_alias_service_test.dart --reporter expanded
+          flutter test test/evolution_repository_non_canon_test.dart --reporter expanded
+
+      - name: Commit and push fix branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Corregge evoluzioni, forme regionali e sprite squadra'
+          git push origin HEAD:fix/evolution-form-detail-sync
+
+      - name: Remove one-shot workflow from main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin main
+          git switch --detach origin/main
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm .github/workflows/run-detail-form-fixes.yml
+          git commit -m 'Rimuove il workflow temporaneo delle correzioni forme'
+          git push origin HEAD:main

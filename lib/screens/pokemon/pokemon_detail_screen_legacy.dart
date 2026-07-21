@@ -2811,7 +2811,13 @@ class _PartySlotButton extends StatelessWidget {
           children: [
             pokemon == null
                 ? Icon(Icons.radio_button_unchecked, color: colorScheme.outline)
-                : PokemonAssetImage(pokemon: pokemon, size: 30),
+                : PokemonAssetImage(
+                    pokemon: pokemon,
+                    formName: slot.formName,
+                    gender: slot.gender,
+                    isShiny: slot.isShiny,
+                    size: 30,
+                  ),
             const SizedBox(height: 2),
             Text(
               pokemon == null

@@ -29,9 +29,11 @@ class EvolutionRepository {
 
     for (final item in items) {
       if (item is! Map) continue;
+      final itemJson = Map<String, dynamic>.from(item);
+      if (itemJson['nonCanon'] == true) continue;
 
       final option = EvolutionOption.fromWebJson(
-        Map<String, dynamic>.from(item),
+        itemJson,
         displayNameBuilder: _displayNameFromKey,
       );
       if (option.fromKey.isEmpty || option.toKey.isEmpty) continue;
@@ -101,8 +103,36 @@ class EvolutionRepository {
         return 'Tapu Fini';
     }
 
-    return value
+    final parts = value
         .split('-')
+        .where((part) => part.isNotEmpty)
+        .toList(growable: false);
+    const regionalLabels = <String, String>{
+      'alola': 'Alolan',
+      'alolan': 'Alolan',
+      'galar': 'Galarian',
+      'galarian': 'Galarian',
+      'hisui': 'Hisuian',
+      'hisuian': 'Hisuian',
+      'paldea': 'Paldean',
+      'paldean': 'Paldean',
+    };
+    if (parts.length > 1) {
+      final leadingRegion = regionalLabels[parts.first];
+      if (leadingRegion != null) {
+        return '$leadingRegion ${_titleCase(parts.skip(1))}';
+      }
+      final trailingRegion = regionalLabels[parts.last];
+      if (trailingRegion != null) {
+        return '$trailingRegion ${_titleCase(parts.take(parts.length - 1))}';
+      }
+    }
+
+    return _titleCase(parts);
+  }
+
+  String _titleCase(Iterable<String> parts) {
+    return parts
         .where((part) => part.isNotEmpty)
         .map((part) => '${part[0].toUpperCase()}${part.substring(1)}')
         .join(' ');

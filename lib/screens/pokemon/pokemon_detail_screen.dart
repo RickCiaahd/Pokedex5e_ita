@@ -72,40 +72,36 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
 
   void _handleSlotChanged(TeamSlot updatedSlot) {
     final alias = _aliasCatalog.bySyntheticId[updatedSlot.pokemonId];
-    if (alias == null) {
-      final previousSlot = _slot;
-      final visualIdentityChanged =
-          previousSlot?.pokemonId != updatedSlot.pokemonId ||
-          previousSlot?.formName != updatedSlot.formName ||
-          previousSlot?.gender != updatedSlot.gender ||
-          previousSlot?.isShiny != updatedSlot.isShiny;
+    final normalizedSlot = alias == null
+        ? updatedSlot
+        : updatedSlot.copyWith(
+            pokemonId: alias.basePokemon.id,
+            formName: alias.formName,
+          );
+    final nextBasePokemon =
+        alias?.basePokemon ??
+        _catalogPokemonById(normalizedSlot.pokemonId) ??
+        _basePokemon;
+    final previousSlot = _slot;
+    final visualIdentityChanged =
+        _basePokemon.id != nextBasePokemon.id ||
+        previousSlot?.pokemonId != normalizedSlot.pokemonId ||
+        previousSlot?.formName != normalizedSlot.formName ||
+        previousSlot?.gender != normalizedSlot.gender ||
+        previousSlot?.isShiny != normalizedSlot.isShiny;
 
-      _slot = updatedSlot;
-      _replaceTeamSlot(updatedSlot);
-
-      if (visualIdentityChanged) {
-        setState(() {
-          _aliasCatalog = _buildAliasCatalog();
-          _detailGeneration += 1;
-        });
-      }
-
-      widget.onTeamSlotChanged?.call(updatedSlot);
-      return;
-    }
-
-    final normalizedSlot = updatedSlot.copyWith(
-      pokemonId: alias.basePokemon.id,
-      formName: alias.formName,
-    );
-
-    setState(() {
+    if (visualIdentityChanged) {
+      setState(() {
+        _slot = normalizedSlot;
+        _basePokemon = nextBasePokemon;
+        _replaceTeamSlot(normalizedSlot);
+        _aliasCatalog = _buildAliasCatalog();
+        _detailGeneration += 1;
+      });
+    } else {
       _slot = normalizedSlot;
-      _basePokemon = alias.basePokemon;
       _replaceTeamSlot(normalizedSlot);
-      _aliasCatalog = _buildAliasCatalog();
-      _detailGeneration += 1;
-    });
+    }
 
     widget.onTeamSlotChanged?.call(normalizedSlot);
   }
@@ -119,6 +115,15 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
       return;
     }
     _team = [..._team]..[index] = updatedSlot;
+  }
+
+  Pokemon? _catalogPokemonById(int? pokemonId) {
+    if (pokemonId == null) return null;
+    if (_basePokemon.id == pokemonId) return _basePokemon;
+    for (final pokemon in widget.allPokemon) {
+      if (pokemon.id == pokemonId) return pokemon;
+    }
+    return null;
   }
 
   EvolutionFormAliasCatalog _buildAliasCatalog() {

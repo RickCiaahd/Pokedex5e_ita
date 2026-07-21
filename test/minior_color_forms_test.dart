@@ -104,26 +104,35 @@ void main() {
     }
   });
 
-  test('Pyroar gender changes appearance without changing battle data', () async {
-    final pokemon = await PokemonRepository().getAllPokemon();
-    final pyroar = pokemon.firstWhere((entry) => entry.id == 668);
-    final male = pyroar.resolveVariant(gender: 'male');
-    final female = pyroar.resolveVariant(gender: 'female');
+  test(
+    'Pyroar gender changes appearance without changing battle data',
+    () async {
+      final pokemon = await PokemonRepository().getAllPokemon();
+      final pyroar = pokemon.firstWhere((entry) => entry.id == 668);
+      final male = pyroar.resolveVariant(gender: 'male');
+      final female = pyroar.resolveVariant(gender: 'female');
 
-    _expectSameBattleStats(male, female);
-    expect(male.abilities, female.abilities);
-    expect(male.hiddenAbility, female.hiddenAbility);
-  });
+      _expectSameBattleStats(male, female);
+      expect(male.abilities, female.abilities);
+      expect(male.hiddenAbility, female.hiddenAbility);
+    },
+  );
 
-  test('Meowstic keeps its stats but changes learnset and hidden ability', () async {
-    final pokemon = await PokemonRepository().getAllPokemon();
-    final meowstic = pokemon.firstWhere((entry) => entry.id == 678);
-    final male = meowstic.resolveVariant(gender: 'male');
-    final female = meowstic.resolveVariant(gender: 'female');
+  test(
+    'Meowstic keeps its stats but changes learnset and hidden ability',
+    () async {
+      final pokemon = await PokemonRepository().getAllPokemon();
+      final meowstic = pokemon.firstWhere((entry) => entry.id == 678);
+      final male = meowstic.resolveVariant(gender: 'male');
+      final female = meowstic.resolveVariant(gender: 'female');
 
-    _expectSameBattleStats(male, female);
-    expect(male.hiddenAbility, 'Prankster');
-    expect(female.hiddenAbility, 'Competitive');
-    expect(male.moves.startingMoves, isNot(equals(female.moves.startingMoves)));
-  });
+      _expectSameBattleStats(male, female);
+      expect(male.hiddenAbility, 'Prankster');
+      expect(female.hiddenAbility, 'Competitive');
+      expect(
+        male.moves.startingMoves,
+        isNot(equals(female.moves.startingMoves)),
+      );
+    },
+  );
 }

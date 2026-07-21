@@ -62,8 +62,7 @@ class PokemonAssetPaths {
     if (realChoices.isEmpty) return const [];
 
     return <legacy.PokemonFormChoice>[
-      baseChoice ??
-          const legacy.PokemonFormChoice(name: 'Base', assetPath: ''),
+      baseChoice ?? const legacy.PokemonFormChoice(name: 'Base', assetPath: ''),
       ...realChoices,
     ];
   }
@@ -205,7 +204,8 @@ class PokemonAssetImage extends StatelessWidget {
       fallback: fallback,
     );
 
-    final assetGender = gender ??
+    final assetGender =
+        gender ??
         (PokemonGenderAppearance.hasVisibleDifference(effectivePokemon)
             ? 'male'
             : null);
@@ -261,8 +261,9 @@ class _PreferredAssetImage extends StatelessWidget {
   final double scale;
 
   static Future<Set<String>> _paths() {
-    return _manifestPaths ??= AssetManifest.loadFromAssetBundle(rootBundle)
-        .then((manifest) => manifest.listAssets().toSet());
+    return _manifestPaths ??= AssetManifest.loadFromAssetBundle(
+      rootBundle,
+    ).then((manifest) => manifest.listAssets().toSet());
   }
 
   Future<String?> _resolve() async {
@@ -303,11 +304,7 @@ class _PreferredAssetImage extends StatelessWidget {
   }
 }
 
-Widget _entryState(
-  BuildContext context,
-  Widget image,
-  PokedexEntry? entry,
-) {
+Widget _entryState(BuildContext context, Widget image, PokedexEntry? entry) {
   final seen = entry?.seen ?? true;
   final caught = entry?.caught ?? true;
   if (!seen) {

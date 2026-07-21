@@ -68,9 +68,7 @@ void main() {
 
     expect(
       candidates,
-      contains(
-        'assets/textures/textures_webapp/pokemon/pikachu/main-f.png',
-      ),
+      contains('assets/textures/textures_webapp/pokemon/pikachu/main-f.png'),
     );
     expect(
       candidates,

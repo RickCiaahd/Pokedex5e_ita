@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pokedex_5e_ita/repositories/evolution_repository.dart';
 
+// Copertura mirata delle regressioni su Eevee e sulle evoluzioni regionali.
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 

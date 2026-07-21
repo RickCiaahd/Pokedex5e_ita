@@ -1,0 +1,54 @@
+name: Publish v1.0.2
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/publish-v1.0.2.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publish-v1.0.2
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Create clean v1.0.2 tag
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Validate release prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -qx 'version: 1.0.2+3' pubspec.yaml
+          test -f .github/workflows/android-release.yml
+          test -f .github/workflows/windows-release.yml
+          if git ls-remote --exit-code --tags origin refs/tags/v1.0.2 >/dev/null 2>&1; then
+            echo 'Il tag v1.0.2 esiste già'
+            exit 1
+          fi
+
+      - name: Remove one-shot workflow and create tag
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+
+          git rm .github/workflows/publish-v1.0.2.yml
+          git commit -m 'Rimuove il workflow temporaneo di pubblicazione v1.0.2'
+          git push origin HEAD:main
+
+          git tag -a v1.0.2 -m 'Pokédex 5e ITA 1.0.2'
+          git push origin refs/tags/v1.0.2

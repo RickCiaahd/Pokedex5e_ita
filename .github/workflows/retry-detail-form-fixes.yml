@@ -1,6 +1,6 @@
 name: Retry detail and form fixes
 
-# Synchronization trigger for PR #107.
+# Diagnostic synchronization trigger for PR #107.
 on:
   push:
     branches:

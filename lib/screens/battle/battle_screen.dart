@@ -23,7 +23,6 @@ import '../../services/battle_environment_service.dart';
 import '../../services/battle_form_change_service.dart';
 import '../../services/battle_quick_item_service.dart';
 import '../../services/battle_temporary_hp_service.dart';
-import '../../services/battle_temporary_hp_service.dart';
 import '../../services/battle_status_rules.dart';
 import '../../services/trainer_path_passive_service.dart';
 import '../../widgets/battle/battle_environment_card.dart';
@@ -1582,6 +1581,7 @@ class _BattleScreenState extends State<BattleScreen> {
                               moveForActive(reference)!,
                               pokemon,
                               activeSlot,
+                              basePokemon,
                               effectiveFormName,
                             ),
                       onUse: () => _changePp(
@@ -1936,6 +1936,7 @@ class _PartyBar extends StatelessWidget {
                       _PartyPokemonButton(
                         slot: slot,
                         pokemon: pokemonForSlot(slot),
+                        imagePokemon: imagePokemonForSlot(slot),
                         formName: formNameForSlot(slot),
                         selected: slot.slotIndex == activeSlot.slotIndex,
                         onTap: () => onSelected(slot.slotIndex),
@@ -2001,7 +2002,7 @@ class _PartyPokemonButton extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 PokemonAssetImage(
-                  pokemon: pokemon,
+                  pokemon: imagePokemon ?? pokemon,
                   size: 40,
                   formName: formName,
                   gender: slot.gender,
@@ -2326,6 +2327,7 @@ class _BattleFormPickerSheet extends StatelessWidget {
 class _ActivePokemonCard extends StatelessWidget {
   const _ActivePokemonCard({
     required this.pokemon,
+    required this.imagePokemon,
     required this.slot,
     required this.formName,
     required this.formLabel,

@@ -1,11 +1,6 @@
-name: Branch cleanup audit
+name: Final branch cleanup
 
 on:
-  pull_request:
-    branches:
-      - main
-    paths:
-      - '.github/branch-cleanup-trigger'
   push:
     branches:
       - main
@@ -13,18 +8,18 @@ on:
       - '.github/workflows/branch-cleanup-audit.yml'
 
 permissions:
-  contents: read
+  contents: write
   pull-requests: read
 
 concurrency:
-  group: branch-cleanup-audit
+  group: final-branch-cleanup
   cancel-in-progress: false
 
 jobs:
-  audit:
-    name: Classify remote branches safely
+  cleanup:
+    name: Archive references and remove obsolete branches
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
 
     steps:
       - name: Check out main with all history
@@ -33,7 +28,7 @@ jobs:
           ref: main
           fetch-depth: 0
 
-      - name: Build conservative branch report
+      - name: Archive branch tips and delete obsolete branches
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
@@ -44,90 +39,112 @@ jobs:
           gh api --paginate "repos/${GITHUB_REPOSITORY}/pulls?state=open&per_page=100" \
             --jq '.[].head.ref' | sort -u > open_pr_branches.txt
           gh api --paginate "repos/${GITHUB_REPOSITORY}/pulls?state=closed&per_page=100" \
-            --jq '.[] | select(.merged_at != null) | [.head.ref, .head.sha] | @tsv' \
+            --jq '.[] | select(.merged_at != null) | [.head.ref, .head.sha, .number] | @tsv' \
             | sort -u > merged_pr_heads.txt
 
-          : > delete_candidates.txt
-          : > kept_branches.txt
+          : > deleted_branches.tsv
+          : > skipped_branches.tsv
+          : > failed_branches.tsv
 
           while IFS= read -r branch; do
             [[ -z "$branch" || "$branch" == "HEAD" || "$branch" == "main" ]] && continue
 
+            branch_sha=$(git rev-parse "origin/$branch")
+
             if grep -Fxq "$branch" open_pr_branches.txt; then
-              printf '%s\t%s\n' "$branch" 'PR aperta' >> kept_branches.txt
+              printf '%s\t%s\t%s\n' "$branch" "$branch_sha" 'PR aperta' >> skipped_branches.tsv
               continue
             fi
 
             encoded_branch=$(jq -rn --arg value "$branch" '$value|@uri')
             protected=$(gh api "repos/${GITHUB_REPOSITORY}/branches/${encoded_branch}" --jq '.protected' 2>/dev/null || printf 'unknown')
             if [[ "$protected" != "false" ]]; then
-              printf '%s\t%s\n' "$branch" 'protetto o stato non verificabile' >> kept_branches.txt
+              printf '%s\t%s\t%s\n' "$branch" "$branch_sha" 'protetto o stato non verificabile' >> skipped_branches.tsv
               continue
             fi
 
-            branch_sha=$(git rev-parse "origin/$branch")
-
+            reason='branch obsoleto senza PR aperta; riferimento archiviato'
             if git merge-base --is-ancestor "origin/$branch" origin/main; then
-              printf '%s\t%s\n' "$branch" 'interamente contenuto in main' >> delete_candidates.txt
-              continue
+              reason='interamente contenuto in main'
+            else
+              merged_pr=$(awk -F '\t' -v branch="$branch" -v sha="$branch_sha" '$1 == branch && $2 == sha { print $3; exit }' merged_pr_heads.txt)
+              if [[ -n "$merged_pr" ]]; then
+                reason="testa della PR #$merged_pr già integrata"
+              else
+                cherry_output=$(git cherry origin/main "origin/$branch" || true)
+                if [[ -n "$cherry_output" ]] && ! grep -q '^+' <<<"$cherry_output"; then
+                  reason='commit equivalenti già presenti in main'
+                fi
+              fi
             fi
 
-            if awk -F '\t' -v branch="$branch" -v sha="$branch_sha" '$1 == branch && $2 == sha { found=1 } END { exit !found }' merged_pr_heads.txt; then
-              printf '%s\t%s\n' "$branch" 'testa identica a una PR già integrata' >> delete_candidates.txt
-              continue
+            if git push origin --delete "$branch"; then
+              printf '%s\t%s\t%s\n' "$branch" "$branch_sha" "$reason" >> deleted_branches.tsv
+            else
+              printf '%s\t%s\t%s\n' "$branch" "$branch_sha" 'eliminazione non riuscita' >> failed_branches.tsv
             fi
-
-            cherry_output=$(git cherry origin/main "origin/$branch" || true)
-            if [[ -n "$cherry_output" ]] && ! grep -q '^+' <<<"$cherry_output"; then
-              printf '%s\t%s\n' "$branch" 'commit equivalenti già presenti in main' >> delete_candidates.txt
-              continue
-            fi
-
-            printf '%s\t%s\n' "$branch" 'contiene modifiche non dimostrate come integrate' >> kept_branches.txt
           done < <(git for-each-ref --format='%(refname:strip=3)' refs/remotes/origin | sort)
 
-          delete_count=$(wc -l < delete_candidates.txt | tr -d ' ')
-          keep_count=$(wc -l < kept_branches.txt | tr -d ' ')
-          total_count=$((delete_count + keep_count + 1))
+          git fetch origin '+refs/heads/*:refs/remotes/origin/*' --prune
+          remaining_count=$(git for-each-ref --format='%(refname:strip=3)' refs/remotes/origin | grep -Ev '^(HEAD)?$' | wc -l | tr -d ' ')
+          deleted_count=$(wc -l < deleted_branches.tsv | tr -d ' ')
+          skipped_count=$(wc -l < skipped_branches.tsv | tr -d ' ')
+          failed_count=$(wc -l < failed_branches.tsv | tr -d ' ')
 
           {
-            echo '# Report pulizia branch'
+            echo '# Pulizia dei branch remoti'
             echo
-            echo "- Branch remoti totali rilevati: **$total_count**"
-            echo "- Eliminabili con criterio conservativo: **$delete_count**"
-            echo "- Conservati o da verificare: **$keep_count**"
+            echo "Pulizia eseguita automaticamente il $(date -u +'%Y-%m-%d %H:%M UTC')."
             echo
-            echo '## Eliminabili automaticamente'
-            if [[ -s delete_candidates.txt ]]; then
-              while IFS=$'\t' read -r branch reason; do
-                echo "- \`$branch\` — $reason"
-              done < delete_candidates.txt
+            echo "- Branch eliminati: **$deleted_count**"
+            echo "- Branch conservati: **$skipped_count**"
+            echo "- Eliminazioni non riuscite: **$failed_count**"
+            echo "- Branch remoti rimasti, incluso \`main\`: **$remaining_count**"
+            echo
+            echo 'Ogni branch eliminato è recuperabile dal relativo SHA con:'
+            echo
+            echo '```bash'
+            echo 'git branch nome-recuperato <SHA>'
+            echo 'git push origin nome-recuperato'
+            echo '```'
+            echo
+            echo '## Branch eliminati'
+            if [[ -s deleted_branches.tsv ]]; then
+              while IFS=$'\t' read -r branch sha reason; do
+                echo "- \`$branch\` — \`$sha\` — $reason"
+              done < deleted_branches.tsv
             else
               echo '- Nessuno'
             fi
             echo
-            echo '## Conservati'
-            if [[ -s kept_branches.txt ]]; then
-              while IFS=$'\t' read -r branch reason; do
-                echo "- \`$branch\` — $reason"
-              done < kept_branches.txt
+            echo '## Branch conservati'
+            if [[ -s skipped_branches.tsv ]]; then
+              while IFS=$'\t' read -r branch sha reason; do
+                echo "- \`$branch\` — \`$sha\` — $reason"
+              done < skipped_branches.tsv
             else
-              echo '- Nessuno'
+              echo '- Solo `main`'
             fi
-          } | tee branch-cleanup-report.md
+            echo
+            echo '## Eliminazioni non riuscite'
+            if [[ -s failed_branches.tsv ]]; then
+              while IFS=$'\t' read -r branch sha reason; do
+                echo "- \`$branch\` — \`$sha\` — $reason"
+              done < failed_branches.tsv
+            else
+              echo '- Nessuna'
+            fi
+          } > docs/branch-cleanup-report.md
 
-      - name: Upload audit report
-        uses: actions/upload-artifact@v4
-        with:
-          name: branch-cleanup-audit-v2
-          path: |
-            branch-cleanup-report.md
-            delete_candidates.txt
-            kept_branches.txt
-            merged_pr_heads.txt
-          if-no-files-found: error
-          retention-days: 14
+          cat docs/branch-cleanup-report.md
 
-      - name: Show summary
+      - name: Commit report and remove one-shot workflow
         shell: bash
-        run: cat branch-cleanup-report.md >> "$GITHUB_STEP_SUMMARY"
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          rm -f .github/workflows/branch-cleanup-audit.yml
+          git add docs/branch-cleanup-report.md .github/workflows/branch-cleanup-audit.yml
+          git commit -m 'Completa la pulizia dei branch remoti'
+          git push origin HEAD:main

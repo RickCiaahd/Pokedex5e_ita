@@ -1,0 +1,91 @@
+name: Prepare v1.0.1
+
+on:
+  push:
+    branches:
+      - 'release/v1.0.1'
+    paths:
+      - '.github/workflows/prepare-v1.0.1.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  prepare:
+    name: Update release metadata
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out release branch
+        uses: actions/checkout@v4
+        with:
+          ref: release/v1.0.1
+          fetch-depth: 0
+
+      - name: Update version and release documentation
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          def replace_exact(path: str, old: str, new: str) -> None:
+              file = Path(path)
+              text = file.read_text(encoding='utf-8')
+              if old not in text:
+                  raise SystemExit(f"Testo atteso non trovato in {path}: {old!r}")
+              file.write_text(text.replace(old, new), encoding='utf-8')
+
+          replace_exact('pubspec.yaml', 'version: 1.0.0+1', 'version: 1.0.1+2')
+
+          changelog = Path('CHANGELOG.md')
+          text = changelog.read_text(encoding='utf-8')
+          text = text.replace(
+              'Nessuna modifica successiva alla prima release.',
+              'Nessuna modifica successiva alla release 1.0.1.',
+              1,
+          )
+          old_heading = '## [1.0.0] - 2026-07-21'
+          if old_heading not in text:
+              raise SystemExit('Intestazione 1.0.0 attesa non trovata nel changelog')
+          text = text.replace(old_heading, '## [1.0.1] - 2026-07-21', 1)
+          historical = (
+              '\n\n## [1.0.0]\n\n'
+              'Tag storico creato durante lo sviluppo, precedente al consolidamento '
+              'della localizzazione completa, delle forme e delle correzioni pre-release.\n'
+          )
+          if '\n## [1.0.0]\n' not in text:
+              text = text.rstrip() + historical
+          changelog.write_text(text.rstrip() + '\n', encoding='utf-8')
+
+          replace_exact(
+              'docs/android-release.md',
+              '- Versione iniziale: `1.0.0+1`',
+              '- Versione corrente: `1.0.1+2`',
+          )
+          replace_exact(
+              'docs/android-release.md',
+              'Creando un tag come `v1.0.0`',
+              'Creando un tag come `v1.0.1`',
+          )
+          replace_exact(
+              'README.md',
+              'per esempio `v1.0.0`',
+              'per esempio `v1.0.1`',
+          )
+          replace_exact(
+              'docs/project-cleanup-audit.md',
+              'release Android `1.0.0`',
+              'release Android `1.0.1`',
+          )
+          PY
+
+      - name: Commit prepared release metadata
+        shell: bash
+        run: |
+          rm -f .github/workflows/prepare-v1.0.1.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Prepara i metadati della release 1.0.1'
+          git push origin HEAD:release/v1.0.1

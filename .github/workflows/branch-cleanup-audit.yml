@@ -1,11 +1,6 @@
 name: Branch cleanup audit
 
 on:
-  pull_request:
-    branches:
-      - main
-    paths:
-      - '.github/branch-cleanup-trigger'
   push:
     branches:
       - main
@@ -20,12 +15,9 @@ concurrency:
   group: branch-cleanup
   cancel-in-progress: false
 
-env:
-  CLEANUP_MODE: audit
-
 jobs:
-  cleanup:
-    name: Audit merged and obsolete branches
+  audit:
+    name: Classify remote branches safely
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
@@ -36,8 +28,7 @@ jobs:
           ref: main
           fetch-depth: 0
 
-      - name: Classify branches conservatively
-        id: classify
+      - name: Build conservative branch report
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
@@ -45,19 +36,11 @@ jobs:
           set -euo pipefail
           git fetch origin '+refs/heads/*:refs/remotes/origin/*' --prune
 
-          mapfile -t OPEN_PR_BRANCHES < <(
-            gh api --paginate "repos/${GITHUB_REPOSITORY}/pulls?state=open&per_page=100" \
-              --jq '.[].head.ref' | sort -u
-          )
-
-          is_open_pr_branch() {
-            local candidate="$1"
-            local branch
-            for branch in "${OPEN_PR_BRANCHES[@]:-}"; do
-              [[ "$branch" == "$candidate" ]] && return 0
-            done
-            return 1
-          }
+          gh api --paginate "repos/${GITHUB_REPOSITORY}/pulls?state=open&per_page=100" \
+            --jq '.[].head.ref' | sort -u > open_pr_branches.txt
+          gh api --paginate "repos/${GITHUB_REPOSITORY}/pulls?state=closed&per_page=100" \
+            --jq '.[] | select(.merged_at != null) | [.head.ref, .head.sha] | @tsv' \
+            | sort -u > merged_pr_heads.txt
 
           : > delete_candidates.txt
           : > kept_branches.txt
@@ -65,7 +48,7 @@ jobs:
           while IFS= read -r branch; do
             [[ -z "$branch" || "$branch" == "HEAD" || "$branch" == "main" ]] && continue
 
-            if is_open_pr_branch "$branch"; then
+            if grep -Fxq "$branch" open_pr_branches.txt; then
               printf '%s\t%s\n' "$branch" 'PR aperta' >> kept_branches.txt
               continue
             fi
@@ -77,8 +60,15 @@ jobs:
               continue
             fi
 
+            branch_sha=$(git rev-parse "origin/$branch")
+
             if git merge-base --is-ancestor "origin/$branch" origin/main; then
               printf '%s\t%s\n' "$branch" 'interamente contenuto in main' >> delete_candidates.txt
+              continue
+            fi
+
+            if awk -F '\t' -v branch="$branch" -v sha="$branch_sha" '$1 == branch && $2 == sha { found=1 } END { exit !found }' merged_pr_heads.txt; then
+              printf '%s\t%s\n' "$branch" 'testa identica a una PR già integrata' >> delete_candidates.txt
               continue
             fi
 
@@ -89,50 +79,52 @@ jobs:
             fi
 
             printf '%s\t%s\n' "$branch" 'contiene modifiche non dimostrate come integrate' >> kept_branches.txt
-          done < <(
-            git for-each-ref --format='%(refname:strip=3)' refs/remotes/origin | sort
-          )
+          done < <(git for-each-ref --format='%(refname:strip=3)' refs/remotes/origin | sort)
 
           delete_count=$(wc -l < delete_candidates.txt | tr -d ' ')
           keep_count=$(wc -l < kept_branches.txt | tr -d ' ')
           total_count=$((delete_count + keep_count + 1))
 
           {
-            echo "# Audit branch"
+            echo '# Report pulizia branch'
             echo
-            echo "- Branch remoti totali rilevati: $total_count"
-            echo "- Eliminabili con criterio conservativo: $delete_count"
-            echo "- Da conservare o verificare: $keep_count"
+            echo "Audit eseguito automaticamente il $(date -u +'%Y-%m-%d %H:%M UTC')."
             echo
-            echo "## Eliminabili"
+            echo "- Branch remoti totali rilevati: **$total_count**"
+            echo "- Branch eliminabili con criterio conservativo: **$delete_count**"
+            echo "- Branch conservati o da verificare: **$keep_count**"
+            echo
+            echo '## Eliminabili automaticamente'
             if [[ -s delete_candidates.txt ]]; then
-              sed 's/^/- `/' delete_candidates.txt | sed $'s/\t/` — /'
+              while IFS=$'\t' read -r branch reason; do
+                echo "- \`$branch\` — $reason"
+              done < delete_candidates.txt
             else
               echo '- Nessuno'
             fi
             echo
-            echo "## Conservati"
+            echo '## Conservati'
             if [[ -s kept_branches.txt ]]; then
-              sed 's/^/- `/' kept_branches.txt | sed $'s/\t/` — /'
+              while IFS=$'\t' read -r branch reason; do
+                echo "- \`$branch\` — $reason"
+              done < kept_branches.txt
             else
               echo '- Nessuno'
             fi
-          } | tee branch-cleanup-report.md
+          } > docs/branch-cleanup-report.md
 
-          echo "delete_count=$delete_count" >> "$GITHUB_OUTPUT"
-          echo "keep_count=$keep_count" >> "$GITHUB_OUTPUT"
+          cat docs/branch-cleanup-report.md
 
-      - name: Upload audit report
-        uses: actions/upload-artifact@v4
-        with:
-          name: branch-cleanup-audit
-          path: |
-            branch-cleanup-report.md
-            delete_candidates.txt
-            kept_branches.txt
-          if-no-files-found: error
-          retention-days: 14
-
-      - name: Show summary
+      - name: Commit audit report
         shell: bash
-        run: cat branch-cleanup-report.md >> "$GITHUB_STEP_SUMMARY"
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/branch-cleanup-report.md
+          if git diff --cached --quiet; then
+            echo 'Report invariato'
+            exit 0
+          fi
+          git commit -m 'Registra l audit conservativo dei branch'
+          git push origin HEAD:main

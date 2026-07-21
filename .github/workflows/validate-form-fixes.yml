@@ -1,0 +1,75 @@
+name: Validate form fixes
+
+on:
+  push:
+    paths:
+      - '.github/workflows/validate-form-fixes.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Format and validate
+        id: checks
+        shell: bash
+        run: |
+          set +e
+          log='form-fixes-validation.txt'
+          : > "$log"
+          {
+            dart format \
+              lib/models/battle_session.dart \
+              lib/services/battle_form_change_service.dart \
+              lib/services/battle_temporary_hp_service.dart \
+              lib/screens/battle/battle_screen.dart \
+              lib/screens/pokemon/pokemon_edit_screen.dart \
+              lib/screens/pokemon/pokemon_detail_screen_legacy.dart \
+              lib/widgets/pokemon/pokemon_asset_image_legacy.dart \
+              test/battle_form_change_service_test.dart \
+              test/battle_temporary_hp_service_test.dart
+            flutter pub get
+            flutter analyze
+            flutter test test/battle_form_change_service_test.dart --reporter expanded
+            flutter test test/battle_temporary_hp_service_test.dart --reporter expanded
+            flutter test test/ability_localization_integrity_test.dart --reporter expanded
+            flutter test test/data_integrity_test.dart --reporter expanded
+          } >> "$log" 2>&1
+          status=$?
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Commit validation result
+        shell: bash
+        run: |
+          set -euo pipefail
+          status='${{ steps.checks.outputs.status }}'
+          rm -f .github/workflows/validate-form-fixes.yml
+          if [ "$status" = '0' ]; then
+            rm -f form-fixes-validation.txt
+            rm -f docs/diagnostics/finish-battle-form-card.txt
+            rmdir docs/diagnostics 2>/dev/null || true
+          else
+            mkdir -p docs/diagnostics
+            mv form-fixes-validation.txt docs/diagnostics/form-fixes-validation.txt
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m "Valida correzioni delle forme (stato $status)"
+          git push origin HEAD:main

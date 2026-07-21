@@ -4,7 +4,13 @@ Tutte le modifiche rilevanti al progetto vengono documentate in questo file.
 
 ## [Non rilasciato]
 
-Nessuna modifica successiva alla release 1.0.2.
+### Corretto
+
+- aggiornamento immediato della scheda dopo un’evoluzione;
+- sincronizzazione della specie mostrata dopo la modifica di un altro membro della squadra;
+- disponibilità delle evoluzioni regionali con regione in forma prefissa o suffissa, compresi gli starter di Hisui;
+- sprite della barra squadra coerenti con forma, sesso e variante cromatica dell’esemplare;
+- esclusione delle evoluzioni non canoniche di Eevee dal selettore.
 
 ## [1.0.2] - 2026-07-21
 

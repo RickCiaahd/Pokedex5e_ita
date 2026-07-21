@@ -1,26 +1,33 @@
 # Audit di pulizia del progetto
 
-Audit eseguito prima della release Android `1.0.0`.
+Audit aggiornato in preparazione della prima release GitHub `1.0.0`.
 
 ## Risultato
 
-- analizzati 129 file Dart in `lib/`;
-- individuati tre file non raggiungibili da `lib/main.dart`;
-- rimossi l'inizializzatore Hive duplicato, la vecchia schermata di creazione profilo e il prototipo del calcolatore di cattura con il relativo test;
-- aggiornata la descrizione del pacchetto Flutter, eliminando il testo generico del progetto iniziale;
+- la versione applicativa è coerente con la release prevista: `1.0.0+1`;
+- sono presenti soltanto i due workflow permanenti `Flutter CI` e `Android release`;
+- il workflow temporaneo usato per validare Minior e le variazioni di genere è stato rimosso dopo l'esecuzione;
+- la CI permanente esegue `flutter analyze`, il test di integrità, l'intera suite e una build APK Android di debug;
+- la pipeline release ripete analisi e test, quindi genera APK e AAB firmati con checksum SHA-256;
 - nessun file di build, cache, keystore o configurazione privata risulta versionato;
-- nessun `TODO`, `FIXME`, `HACK` o `XXX` è presente nel codice applicativo e nei test;
-- verificati 8.222 asset per circa 317,6 MiB.
+- eliminati i log informativi ripetitivi dalle operazioni ordinarie di caricamento e salvataggio del Pokédex;
+- mantenuti i log relativi agli errori effettivi di caricamento dati e persistenza;
+- il changelog è stato consolidato nella prima release `1.0.0`, includendo localizzazioni, Minior e differenze di genere;
+- non risultano `TODO`, `FIXME`, `HACK` o `XXX` applicativi da risolvere prima della release.
 
 ## Asset
 
-Sono presenti otto piccoli gruppi di file byte-identici, per circa 315,7 KiB complessivi. Non sono stati eliminati perché i percorsi degli sprite e delle forme vengono spesso costruiti dinamicamente dai cataloghi JSON. Tra i duplicati figurano varianti di Minior, alias di Nidoran e Oricorio e immagini segnaposto: rimuoverli senza normalizzare prima dati, alias e fallback potrebbe introdurre immagini mancanti.
+Il progetto include il catalogo grafico completo e supera i 300 MiB soprattutto per gli sprite. I piccoli gruppi di file byte-identici non vengono rimossi in questa fase perché i percorsi delle forme e i fallback sono costruiti dinamicamente dai cataloghi JSON. Una deduplicazione senza prima normalizzare alias e riferimenti potrebbe introdurre immagini mancanti.
 
-La dimensione dell'APK dipende quindi soprattutto dal catalogo grafico completo, non da file temporanei o copie chiaramente inutili. Un'eventuale riduzione sostanziale richiederà un intervento dedicato di ottimizzazione o distribuzione selettiva degli asset, separato dalla pulizia conservativa del codice.
+La riduzione sostanziale delle dimensioni deve quindi essere trattata come intervento separato, successivo alla release, con test dedicati sugli asset.
+
+## Debito tecnico non bloccante
+
+Il file `lib/repositories/pokedex_repositry.dart` conserva un refuso storico nel nome. La correzione richiederebbe l'aggiornamento coordinato di numerosi import senza modificare alcun comportamento. Per minimizzare il rischio immediatamente prima della release, il rinominamento viene rimandato a una modifica isolata successiva.
 
 ## Regola di manutenzione
 
-Dopo ogni rimozione o riorganizzazione devono continuare a passare:
+Prima di pubblicare o integrare modifiche devono continuare a passare:
 
 ```bash
 flutter analyze
@@ -28,3 +35,5 @@ flutter test test/data_integrity_test.dart --reporter expanded
 flutter test --reporter expanded
 flutter build apk --debug
 ```
+
+Per la release firmata devono inoltre essere configurati i quattro secret Android descritti in `docs/android-release.md`.

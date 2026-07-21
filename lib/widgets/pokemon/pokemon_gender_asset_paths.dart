@@ -61,16 +61,13 @@ class PokemonGenderAssetPaths {
     }..removeWhere((value) => value.isEmpty);
 
     final formKey = Pokemon.formReferenceKey(formName ?? '', pokemon.name);
-    final formSlug = switch (formKey) {
-      '' || 'base' => '',
-      _ => _slug(formKey),
-    };
+    final formSlugs = _formSlugs(formKey);
 
     void addFolder(String value) {
       if (value.isNotEmpty && !folders.contains(value)) folders.add(value);
     }
 
-    if (formSlug.isNotEmpty) {
+    for (final formSlug in formSlugs) {
       for (final speciesSlug in speciesSlugs) {
         addFolder('$_root/$speciesSlug-$formSlug');
         addFolder('$_root/$formSlug-$speciesSlug');
@@ -83,6 +80,28 @@ class PokemonGenderAssetPaths {
     }
 
     return folders;
+  }
+
+  static List<String> _formSlugs(String formKey) {
+    if (formKey.isEmpty || formKey == 'base') return const [];
+
+    final slug = _slug(formKey);
+    final values = <String>[slug];
+
+    void add(String value) {
+      if (value.isNotEmpty && !values.contains(value)) values.add(value);
+    }
+
+    if (slug.contains('hisuian')) add(slug.replaceAll('hisuian', 'hisui'));
+    if (slug.contains('hisui')) add(slug.replaceAll('hisui', 'hisuian'));
+    if (slug.contains('galarian')) add(slug.replaceAll('galarian', 'galar'));
+    if (slug.contains('galar')) add(slug.replaceAll('galar', 'galarian'));
+    if (slug.contains('alolan')) add(slug.replaceAll('alolan', 'alola'));
+    if (slug.contains('alola')) add(slug.replaceAll('alola', 'alolan'));
+    if (slug.contains('paldean')) add(slug.replaceAll('paldean', 'paldea'));
+    if (slug.contains('paldea')) add(slug.replaceAll('paldea', 'paldean'));
+
+    return values;
   }
 
   static List<String> _genderSlugs(String? gender) {

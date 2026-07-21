@@ -1,0 +1,127 @@
+name: Verify v1.0.2
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/verify-v1.0.2.yml'
+
+permissions:
+  actions: read
+  contents: write
+
+concurrency:
+  group: verify-v1.0.2
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    name: Verify Android and Windows release assets
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      GH_TOKEN: ${{ github.token }}
+      RELEASE_TAG: v1.0.2
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Wait for release workflows
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --tags origin
+          TAG_SHA=$(git rev-list -n 1 "$RELEASE_TAG")
+          echo "Tag $RELEASE_TAG: $TAG_SHA"
+
+          for attempt in $(seq 1 120); do
+            windows=$(gh run list \
+              --repo "$GITHUB_REPOSITORY" \
+              --workflow windows-release.yml \
+              --commit "$TAG_SHA" \
+              --limit 1 \
+              --json databaseId,status,conclusion,url)
+            android=$(gh run list \
+              --repo "$GITHUB_REPOSITORY" \
+              --workflow android-release.yml \
+              --commit "$TAG_SHA" \
+              --limit 1 \
+              --json databaseId,status,conclusion,url)
+
+            windows_status=$(jq -r '.[0].status // "missing"' <<<"$windows")
+            android_status=$(jq -r '.[0].status // "missing"' <<<"$android")
+            echo "Tentativo $attempt: Windows=$windows_status Android=$android_status"
+
+            if [[ "$windows_status" == "completed" && "$android_status" == "completed" ]]; then
+              printf '%s' "$windows" > windows-run.json
+              printf '%s' "$android" > android-run.json
+              break
+            fi
+
+            sleep 30
+          done
+
+          test -s windows-run.json || (echo 'Workflow Windows non completato entro il timeout' && exit 1)
+          test -s android-run.json || (echo 'Workflow Android non completato entro il timeout' && exit 1)
+
+          test "$(jq -r '.[0].conclusion' windows-run.json)" = 'success'
+          test "$(jq -r '.[0].conclusion' android-run.json)" = 'success'
+
+      - name: Verify GitHub Release assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh release view "$RELEASE_TAG" \
+            --repo "$GITHUB_REPOSITORY" \
+            --json name,tagName,url,assets > release.json
+
+          jq -e '.tagName == "v1.0.2"' release.json >/dev/null
+          jq -e '[.assets[].name] | any(. == "Pokedex5eITA-1.0.2-Windows-x64.zip")' release.json >/dev/null
+          jq -e '[.assets[].name] | any(. == "Pokedex5eITA-1.0.2-Windows-x64-SHA256.txt")' release.json >/dev/null
+          jq -e '[.assets[].name] | any(. == "Pokedex5eITA-1.0.2.apk")' release.json >/dev/null
+          jq -e '[.assets[].name] | any(. == "Pokedex5eITA-1.0.2.aab")' release.json >/dev/null
+          jq -e '[.assets[].name] | any(. == "SHA256SUMS.txt")' release.json >/dev/null
+
+      - name: Record verification and remove one-shot workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          windows_url=$(jq -r '.[0].url' windows-run.json)
+          android_url=$(jq -r '.[0].url' android-run.json)
+          release_url=$(jq -r '.url' release.json)
+          asset_count=$(jq '.assets | length' release.json)
+
+          cat > docs/release-v1.0.2-verification.md <<EOF
+          # Verifica release 1.0.2
+
+          Verifica automatica completata con successo il $(date -u +'%Y-%m-%d %H:%M UTC').
+
+          - Tag: \`v1.0.2\`
+          - Versione applicativa: \`1.0.2+3\`
+          - Workflow Windows: completato con successo
+          - Workflow Android: completato con successo
+          - Asset pubblicati nella GitHub Release: **$asset_count**
+          - Release: $release_url
+          - Esecuzione Windows: $windows_url
+          - Esecuzione Android: $android_url
+
+          Asset obbligatori verificati:
+
+          - \`Pokedex5eITA-1.0.2-Windows-x64.zip\`
+          - \`Pokedex5eITA-1.0.2-Windows-x64-SHA256.txt\`
+          - \`Pokedex5eITA-1.0.2.apk\`
+          - \`Pokedex5eITA-1.0.2.aab\`
+          - \`SHA256SUMS.txt\`
+          EOF
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm .github/workflows/verify-v1.0.2.yml
+          git add docs/release-v1.0.2-verification.md
+          git commit -m 'Registra la verifica della release multipiattaforma 1.0.2'
+          git push origin HEAD:main

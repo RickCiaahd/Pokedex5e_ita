@@ -1,0 +1,133 @@
+name: Branch cleanup audit
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/branch-cleanup-audit.yml'
+
+permissions:
+  contents: write
+  pull-requests: read
+
+concurrency:
+  group: branch-cleanup
+  cancel-in-progress: false
+
+env:
+  CLEANUP_MODE: audit
+
+jobs:
+  cleanup:
+    name: Audit merged and obsolete branches
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out main with all history
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Classify branches conservatively
+        id: classify
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git fetch origin '+refs/heads/*:refs/remotes/origin/*' --prune
+
+          mapfile -t OPEN_PR_BRANCHES < <(
+            gh api --paginate "repos/${GITHUB_REPOSITORY}/pulls?state=open&per_page=100" \
+              --jq '.[].head.ref' | sort -u
+          )
+
+          is_open_pr_branch() {
+            local candidate="$1"
+            local branch
+            for branch in "${OPEN_PR_BRANCHES[@]:-}"; do
+              [[ "$branch" == "$candidate" ]] && return 0
+            done
+            return 1
+          }
+
+          : > delete_candidates.txt
+          : > kept_branches.txt
+
+          while IFS= read -r branch; do
+            [[ -z "$branch" || "$branch" == "HEAD" || "$branch" == "main" ]] && continue
+
+            if is_open_pr_branch "$branch"; then
+              printf '%s\t%s\n' "$branch" 'PR aperta' >> kept_branches.txt
+              continue
+            fi
+
+            encoded_branch=$(jq -rn --arg value "$branch" '$value|@uri')
+            protected=$(gh api "repos/${GITHUB_REPOSITORY}/branches/${encoded_branch}" --jq '.protected' 2>/dev/null || printf 'unknown')
+            if [[ "$protected" != "false" ]]; then
+              printf '%s\t%s\n' "$branch" 'protetto o stato non verificabile' >> kept_branches.txt
+              continue
+            fi
+
+            if git merge-base --is-ancestor "origin/$branch" origin/main; then
+              printf '%s\t%s\n' "$branch" 'interamente contenuto in main' >> delete_candidates.txt
+              continue
+            fi
+
+            cherry_output=$(git cherry origin/main "origin/$branch" || true)
+            if [[ -n "$cherry_output" ]] && ! grep -q '^+' <<<"$cherry_output"; then
+              printf '%s\t%s\n' "$branch" 'commit equivalenti già presenti in main' >> delete_candidates.txt
+              continue
+            fi
+
+            printf '%s\t%s\n' "$branch" 'contiene modifiche non dimostrate come integrate' >> kept_branches.txt
+          done < <(
+            git for-each-ref --format='%(refname:strip=3)' refs/remotes/origin | sort
+          )
+
+          delete_count=$(wc -l < delete_candidates.txt | tr -d ' ')
+          keep_count=$(wc -l < kept_branches.txt | tr -d ' ')
+          total_count=$((delete_count + keep_count + 1))
+
+          {
+            echo "# Audit branch"
+            echo
+            echo "- Branch remoti totali rilevati: $total_count"
+            echo "- Eliminabili con criterio conservativo: $delete_count"
+            echo "- Da conservare o verificare: $keep_count"
+            echo
+            echo "## Eliminabili"
+            if [[ -s delete_candidates.txt ]]; then
+              sed 's/^/- `/' delete_candidates.txt | sed $'s/\t/` — /'
+            else
+              echo '- Nessuno'
+            fi
+            echo
+            echo "## Conservati"
+            if [[ -s kept_branches.txt ]]; then
+              sed 's/^/- `/' kept_branches.txt | sed $'s/\t/` — /'
+            else
+              echo '- Nessuno'
+            fi
+          } | tee branch-cleanup-report.md
+
+          echo "delete_count=$delete_count" >> "$GITHUB_OUTPUT"
+          echo "keep_count=$keep_count" >> "$GITHUB_OUTPUT"
+
+      - name: Upload audit report
+        uses: actions/upload-artifact@v4
+        with:
+          name: branch-cleanup-audit
+          path: |
+            branch-cleanup-report.md
+            delete_candidates.txt
+            kept_branches.txt
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Show summary
+        shell: bash
+        run: cat branch-cleanup-report.md >> "$GITHUB_STEP_SUMMARY"

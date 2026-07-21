@@ -98,11 +98,16 @@ class BattleFormChangeService {
   }
 
   static String normalizedChoiceName(Pokemon pokemon, String? formName) {
-    final key = canonicalFormKey(pokemon, formName);
-    return key == _defaultFormKey(pokemon) ? 'Base' : key;
+  final key = canonicalFormKey(pokemon, formName);
+  if (key == _defaultFormKey(pokemon)) return 'Base';
+  if (pokemon.name == 'Darmanitan') {
+    if (key == 'galarian-standard') return 'galar-standard';
+    if (key == 'galarian-zen') return 'galar-zen';
   }
+  return key;
+}
 
-  static int formSortWeight(Pokemon pokemon, String? formName) {
+static int formSortWeight(Pokemon pokemon, String? formName) {
     final key = canonicalFormKey(pokemon, formName);
     late final List<String> order;
     switch (pokemon.name) {
@@ -247,9 +252,9 @@ class BattleFormChangeService {
           _ => 'Forma Normale',
         };
       case 'Eiscue':
-        return key == 'noice-face' ? 'Faccia Liquida' : 'Faccia Gelata';
+        return key == 'noice-face' ? 'Forma Liquefaccia' : 'Forma Gelofaccia';
       case 'Morpeko':
-        return key == 'hangry' ? 'Motivo Pancia Vuota' : 'Motivo Panciapiena';
+        return key == 'hangry' ? 'Motivo Panciavuota' : 'Motivo Panciapiena';
       case 'Palafin':
         return key == 'hero' ? 'Forma Possente' : 'Forma Ingenua';
       case 'Ogerpon':
@@ -273,7 +278,7 @@ class BattleFormChangeService {
   static String changeHint(Pokemon pokemon) {
     switch (pokemon.name) {
       case 'Darmanitan':
-        return 'Lo Stato Zen si attiva sotto la metà dei PF se il Pokémon possiede l’abilità Modalità Zen.';
+        return 'Lo Stato Zen si attiva sotto la metà dei PF se il Pokémon possiede l’abilità Stato Zen.';
       case 'Aegislash':
         return 'Accendilotta alterna Forma Spada e Forma Scudo in base alla mossa usata.';
       case 'Zygarde':

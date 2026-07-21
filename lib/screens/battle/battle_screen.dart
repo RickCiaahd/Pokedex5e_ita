@@ -22,6 +22,7 @@ import '../../repositories/team_repository.dart';
 import '../../services/battle_environment_service.dart';
 import '../../services/battle_form_change_service.dart';
 import '../../services/battle_quick_item_service.dart';
+import '../../services/battle_temporary_hp_service.dart';
 import '../../services/battle_status_rules.dart';
 import '../../services/trainer_path_passive_service.dart';
 import '../../widgets/battle/battle_environment_card.dart';
@@ -55,6 +56,9 @@ class _BattleScreenState extends State<BattleScreen> {
   final Map<int, Map<String, int>> _remainingPpBySlot = {};
   final Map<int, Set<String>> _volatileStatusesBySlot = {};
   final Map<int, String> _battleFormBySlot = {};
+  final Map<int, int> _temporaryHpBySlot = {};
+  final Map<int, bool> _temporaryHpEnabledBySlot = {};
+  final Set<int> _temporaryHpInitializedSlots = {};
   final List<BattleInitiativeEntry> _initiativeEntries = [];
 
   BattleStatusMoment _statusMoment = BattleStatusMoment.turnStart;

@@ -69,7 +69,7 @@ L'app Android usa il nome `Pokédex 5e ITA` e l'Application ID definitivo `io.gi
 
 La guida completa per creare il keystore, configurare i secret GitHub e generare APK/AAB firmati è disponibile in [`docs/android-release.md`](docs/android-release.md).
 
-Il workflow `Android release` può essere avviato manualmente dopo la configurazione dei secret. Un tag `v*`, per esempio `v1.0.0`, genera anche una GitHub Release con APK, AAB e checksum SHA-256.
+Il workflow `Android release` può essere avviato manualmente dopo la configurazione dei secret. Il tag `v1.0.1` genera la GitHub Release con APK, AAB e checksum SHA-256.
 
 ## Dati e salvataggi
 

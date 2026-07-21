@@ -4,9 +4,9 @@ Tutte le modifiche rilevanti al progetto vengono documentate in questo file.
 
 ## [Non rilasciato]
 
-Nessuna modifica successiva alla prima release.
+Nessuna modifica successiva alla release 1.0.1.
 
-## [1.0.0] - 2026-07-21
+## [1.0.1] - 2026-07-21
 
 ### Aggiunto
 
@@ -52,3 +52,7 @@ Nessuna modifica successiva alla prima release.
 ### Avvertenza
 
 Il progetto è amatoriale e non ufficiale. Pokémon e i relativi nomi, personaggi e immagini appartengono ai rispettivi titolari. Il progetto non è affiliato, sponsorizzato o approvato da Nintendo, Game Freak, Creatures Inc. o The Pokémon Company.
+
+## [1.0.0]
+
+Tag storico creato durante lo sviluppo, precedente al consolidamento della localizzazione completa, delle forme e delle correzioni pre-release.

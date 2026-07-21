@@ -1,9 +1,22 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pokedex_5e_ita/models/pokemon.dart';
 import 'package:pokedex_5e_ita/repositories/pokemon_repository.dart';
 import 'package:pokedex_5e_ita/services/battle_form_change_service.dart';
 import 'package:pokedex_5e_ita/widgets/pokemon/pokemon_asset_image.dart';
 import 'package:pokedex_5e_ita/widgets/pokemon/pokemon_minior_asset_paths.dart';
+
+void _expectSameBattleStats(Pokemon first, Pokemon second) {
+  expect(first.armorClass, second.armorClass);
+  expect(first.hitPoints, second.hitPoints);
+  expect(first.speed, second.speed);
+  expect(first.attributes.strength, second.attributes.strength);
+  expect(first.attributes.dexterity, second.attributes.dexterity);
+  expect(first.attributes.constitution, second.attributes.constitution);
+  expect(first.attributes.intelligence, second.attributes.intelligence);
+  expect(first.attributes.wisdom, second.attributes.wisdom);
+  expect(first.attributes.charisma, second.attributes.charisma);
+}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -31,6 +44,37 @@ void main() {
     }
   });
 
+  test('Minior uses the dedicated Meteor Form images by default', () async {
+    final pokemon = await PokemonRepository().getAllPokemon();
+    final minior = pokemon.firstWhere((entry) => entry.id == 774);
+
+    final normal = PokemonMiniorAssetPaths.candidates(
+      pokemon: minior,
+      useLargeArtwork: true,
+      formName: 'Base',
+    );
+    final shiny = PokemonMiniorAssetPaths.candidates(
+      pokemon: minior,
+      useLargeArtwork: true,
+      formName: 'Forma Meteora',
+      isShiny: true,
+    );
+
+    expect(
+      normal.first,
+      'assets/textures/textures_webapp/pokemon/minior-meteor-form/main.png',
+    );
+    expect(
+      shiny.first,
+      'assets/textures/textures_webapp/pokemon/minior-meteor-form/main-shiny.png',
+    );
+
+    final manifest = await AssetManifest.loadFromAssetBundle(rootBundle);
+    final assets = manifest.listAssets();
+    expect(assets, contains(normal.first));
+    expect(assets, contains(shiny.first));
+  });
+
   test('Minior colour candidates point to the bundled shared folder', () async {
     final pokemon = await PokemonRepository().getAllPokemon();
     final minior = pokemon.firstWhere((entry) => entry.id == 774);
@@ -47,21 +91,39 @@ void main() {
     );
 
     final manifest = await AssetManifest.loadFromAssetBundle(rootBundle);
-    final assets = manifest.listAssets();
-    expect(assets, contains(paths.first));
-    expect(
-      assets,
-      contains(
-        'assets/textures/textures_webapp/pokemon/minior-meteor-form/main.png',
-      ),
-    );
+    expect(manifest.listAssets(), contains(paths.first));
   });
 
   test('gender-only textures do not create a Forma selector', () async {
     final pokemon = await PokemonRepository().getAllPokemon();
-    final pikachu = pokemon.firstWhere((entry) => entry.id == 25);
-    final choices = await PokemonAssetPaths.formChoices(pikachu);
 
-    expect(choices, isEmpty);
+    for (final id in const [25, 668, 678]) {
+      final species = pokemon.firstWhere((entry) => entry.id == id);
+      final choices = await PokemonAssetPaths.formChoices(species);
+      expect(choices, isEmpty, reason: species.name);
+    }
+  });
+
+  test('Pyroar gender changes appearance without changing battle data', () async {
+    final pokemon = await PokemonRepository().getAllPokemon();
+    final pyroar = pokemon.firstWhere((entry) => entry.id == 668);
+    final male = pyroar.resolveVariant(gender: 'male');
+    final female = pyroar.resolveVariant(gender: 'female');
+
+    _expectSameBattleStats(male, female);
+    expect(male.abilities, female.abilities);
+    expect(male.hiddenAbility, female.hiddenAbility);
+  });
+
+  test('Meowstic keeps its stats but changes learnset and hidden ability', () async {
+    final pokemon = await PokemonRepository().getAllPokemon();
+    final meowstic = pokemon.firstWhere((entry) => entry.id == 678);
+    final male = meowstic.resolveVariant(gender: 'male');
+    final female = meowstic.resolveVariant(gender: 'female');
+
+    _expectSameBattleStats(male, female);
+    expect(male.hiddenAbility, 'Prankster');
+    expect(female.hiddenAbility, 'Competitive');
+    expect(male.moves.startingMoves, isNot(equals(female.moves.startingMoves)));
   });
 }

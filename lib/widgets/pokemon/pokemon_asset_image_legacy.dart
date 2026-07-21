@@ -866,8 +866,10 @@ class PokemonAssetPaths {
       if (value.isNotEmpty && !slugs.contains(value)) slugs.add(value);
     }
 
-    add(exactSlug);
+    // Prefer the species folder for the default form. Variant-specific
+    // folders are then resolved through the explicit form slug.
     add(baseSlug);
+    add(exactSlug);
 
     final suffix = _folderSuffixAfterSpecies(exactSlug, baseSlug);
     if (suffix != null && suffix.isNotEmpty) {

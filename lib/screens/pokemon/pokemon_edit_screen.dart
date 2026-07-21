@@ -12,6 +12,7 @@ import '../../repositories/feat_repository.dart';
 import '../../repositories/move_repository.dart';
 import '../../repositories/tm_repository.dart';
 import '../../services/battle_environment_service.dart';
+import '../../services/battle_form_change_service.dart';
 import '../../widgets/pokemon/pokemon_asset_image.dart';
 
 class PokemonEditResult {
@@ -131,6 +132,46 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
     super.dispose();
   }
 
+  List<PokemonFormChoice> _normalizedFormChoices(
+    List<PokemonFormChoice> choices,
+  ) {
+    if (!BattleFormChangeService.supports(widget.pokemon)) {
+      return choices;
+    }
+
+    final byKey = <String, PokemonFormChoice>{};
+    for (final choice in choices) {
+      final key = BattleFormChangeService.canonicalFormKey(
+        widget.pokemon,
+        choice.name,
+      );
+      byKey.putIfAbsent(
+        key,
+        () => PokemonFormChoice(
+          name: BattleFormChangeService.normalizedChoiceName(
+            widget.pokemon,
+            choice.name,
+          ),
+          assetPath: choice.assetPath,
+        ),
+      );
+    }
+
+    final result = byKey.values.toList(growable: false)
+      ..sort(
+        (a, b) => BattleFormChangeService.formSortWeight(
+          widget.pokemon,
+          a.name,
+        ).compareTo(
+          BattleFormChangeService.formSortWeight(
+            widget.pokemon,
+            b.name,
+          ),
+        ),
+      );
+    return result;
+  }
+
   Future<void> _loadChoices() async {
     final abilityDescriptionsFuture = _abilityRepository.getAbilityDescriptions(
       pokemonId: widget.pokemon.id,
@@ -151,7 +192,8 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
     final abilityDisplayNames = await abilityDisplayNamesFuture;
     final deprecatedAbilities = await deprecatedAbilitiesFuture;
     final featDescriptions = await featDescriptionsFuture;
-    final formChoices = await formChoicesFuture;
+    final rawFormChoices = await formChoicesFuture;
+    final formChoices = _normalizedFormChoices(rawFormChoices);
     final tmMap = await tmMapFuture;
     final catalogMoves = await catalogMovesFuture;
     final tmMoveNames = await _tmMoveNamesFromRepository(tmMap);
@@ -758,6 +800,13 @@ class _TerrainAdeptDialogState extends State<_TerrainAdeptDialog> {
   }
 }
 
+String _localizedFormLabel(Pokemon pokemon, String? formName) {
+  if (BattleFormChangeService.supports(pokemon)) {
+    return BattleFormChangeService.formLabel(pokemon, formName);
+  }
+  return formName?.trim().isNotEmpty == true ? formName! : 'Forma base';
+}
+
 class _FormSelector extends StatelessWidget {
   const _FormSelector({
     required this.pokemon,
@@ -784,7 +833,9 @@ class _FormSelector extends StatelessWidget {
           isShiny: isShiny,
           size: 52,
         ),
-        title: Text(formName.toUpperCase()),
+        title: Text(
+          _localizedFormLabel(pokemon, formName).toUpperCase(),
+        ),
         subtitle: const Text('Tocca per cambiare forma.'),
         trailing: const Icon(Icons.swap_horiz),
         onTap: onTap,
@@ -833,8 +884,16 @@ class _FormPickerSheet extends StatelessWidget {
                     isShiny: isShiny,
                     size: 52,
                   ),
-                  title: Text(choice.name.toUpperCase()),
-                  trailing: choice.name == currentFormName
+                  title: Text(
+                    _localizedFormLabel(pokemon, choice.name).toUpperCase(),
+                  ),
+                  trailing: BattleFormChangeService.supports(pokemon)
+                      ? BattleFormChangeService.sameForm(
+                          pokemon,
+                          currentFormName,
+                          choice.name,
+                        )
+                      : choice.name == currentFormName
                       ? const Icon(Icons.check_circle)
                       : const Icon(Icons.radio_button_unchecked),
                   onTap: () => Navigator.of(context).pop(choice.name),

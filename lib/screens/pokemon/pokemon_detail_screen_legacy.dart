@@ -16,6 +16,7 @@ import '../../repositories/feat_repository.dart';
 import '../../repositories/item_repository.dart';
 import '../../repositories/move_repository.dart';
 import '../../repositories/profile_repository.dart';
+import '../../services/battle_form_change_service.dart';
 import '../../services/evolution_service.dart';
 import '../../services/trainer_path_passive_service.dart';
 import '../../widgets/pokemon/pokemon_asset_image.dart';
@@ -1205,6 +1206,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
                         SliverToBoxAdapter(
                           child: _Header(
                             pokemon: pokemon,
+                            imagePokemon: _basePokemon,
                             slot: _teamSlot,
                             level: _level,
                             armorClass: _armorClass,

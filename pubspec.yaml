@@ -47,6 +47,17 @@ flutter:
     - assets/textures/textures_webapp/items/
     - assets/textures/textures_webapp/pokemon/
     - assets/textures/textures_webapp/pokemon_transforms/
+    - assets/textures/textures_webapp/pokemon/aegislash-shield/
+    - assets/textures/textures_webapp/pokemon/cherrim-sunshine/
+    - assets/textures/textures_webapp/pokemon/cramorant-gorging/
+    - assets/textures/textures_webapp/pokemon/cramorant-gulping/
+    - assets/textures/textures_webapp/pokemon/darmanitan-galar-standard/
+    - assets/textures/textures_webapp/pokemon/darmanitan-galar-zen/
+    - assets/textures/textures_webapp/pokemon/darmanitan-zen/
+    - assets/textures/textures_webapp/pokemon/eiscue-noice-face/
+    - assets/textures/textures_webapp/pokemon/mimikyu-busted/
+    - assets/textures/textures_webapp/pokemon/morpeko-hangry/
+    - assets/textures/textures_webapp/pokemon/palafin-hero/
     - assets/textures/textures_webapp/pokemon/abomasnow/
     - assets/textures/textures_webapp/pokemon/abra/
     - assets/textures/textures_webapp/pokemon/absol/
@@ -664,7 +675,7 @@ flutter:
     - assets/textures/textures_webapp/pokemon/meganium/
     - assets/textures/textures_webapp/pokemon/melmetal/
     - assets/textures/textures_webapp/pokemon/meloetta---aria/
-    - assets/textures/textures_webapp/pokemon/meloetta---pirouette/
+    - assets/textures/textures_webapp/pokemon/meloetta-pirouette/
     - assets/textures/textures_webapp/pokemon/meltan/
     - assets/textures/textures_webapp/pokemon/meowscarada/
     - assets/textures/textures_webapp/pokemon/meowstic-f/
@@ -685,7 +696,7 @@ flutter:
     - assets/textures/textures_webapp/pokemon/mime-jr/
     - assets/textures/textures_webapp/pokemon/mimikyu/
     - assets/textures/textures_webapp/pokemon/minccino/
-    - assets/textures/textures_webapp/pokemon/minior-core-form/
+    - assets/textures/textures_webapp/pokemon/minior-core/
     - assets/textures/textures_webapp/pokemon/minior-meteor-form/
     - assets/textures/textures_webapp/pokemon/minun/
     - assets/textures/textures_webapp/pokemon/miraidon/
@@ -737,7 +748,7 @@ flutter:
     - assets/textures/textures_webapp/pokemon/oddish/
     - assets/textures/textures_webapp/pokemon/ogerpon/
     - assets/textures/textures_webapp/pokemon/ogerpon-cornerstone-mask/
-    - assets/textures/textures_webapp/pokemon/ogerpon-heartflame-mask/
+    - assets/textures/textures_webapp/pokemon/ogerpon-hearthflame-mask/
     - assets/textures/textures_webapp/pokemon/ogerpon-wellspring-mask/
     - assets/textures/textures_webapp/pokemon/oinkologne-female/
     - assets/textures/textures_webapp/pokemon/oinkologne-male/
@@ -1036,8 +1047,8 @@ flutter:
     - assets/textures/textures_webapp/pokemon/tentacruel/
     - assets/textures/textures_webapp/pokemon/tepig/
     - assets/textures/textures_webapp/pokemon/terapagos/
-    - assets/textures/textures_webapp/pokemon/terapagos-stellar-form/
-    - assets/textures/textures_webapp/pokemon/terapagos-terastal-form/
+    - assets/textures/textures_webapp/pokemon/terapagos-stellar/
+    - assets/textures/textures_webapp/pokemon/terapagos-terastal/
     - assets/textures/textures_webapp/pokemon/terrakion/
     - assets/textures/textures_webapp/pokemon/thievul/
     - assets/textures/textures_webapp/pokemon/throh/
@@ -1144,7 +1155,7 @@ flutter:
     - assets/textures/textures_webapp/pokemon/wiglett/
     - assets/textures/textures_webapp/pokemon/wimpod/
     - assets/textures/textures_webapp/pokemon/wingull/
-    - assets/textures/textures_webapp/pokemon/wishiwashi-school-form/
+    - assets/textures/textures_webapp/pokemon/wishiwashi-school/
     - assets/textures/textures_webapp/pokemon/wishiwashi-solo-form/
     - assets/textures/textures_webapp/pokemon/wo-chien/
     - assets/textures/textures_webapp/pokemon/wobbuffet/
@@ -1186,6 +1197,6 @@ flutter:
     - assets/textures/textures_webapp/pokemon/zorua-hisui/
     - assets/textures/textures_webapp/pokemon/zubat/
     - assets/textures/textures_webapp/pokemon/zweilous/
-    - assets/textures/textures_webapp/pokemon/zygarde-10-forme/
+    - assets/textures/textures_webapp/pokemon/zygarde-10/
     - assets/textures/textures_webapp/pokemon/zygarde-50-forme/
-    - assets/textures/textures_webapp/pokemon/zygarde-complete-forme/
+    - assets/textures/textures_webapp/pokemon/zygarde-complete/

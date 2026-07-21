@@ -1,0 +1,47 @@
+name: Finish form assets and UI
+
+on:
+  push:
+    paths:
+      - '.github/workflows/finish-form-assets-ui.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  finish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Apply remaining patches
+        id: patch
+        shell: bash
+        run: |
+          set +e
+          python .github/scripts/fix_form_assets_ui.py > form-fix-output.txt 2>&1
+          status=$?
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Commit result
+        shell: bash
+        run: |
+          set -euo pipefail
+          status='${{ steps.patch.outputs.status }}'
+          rm -f .github/workflows/finish-form-assets-ui.yml
+          if [ "$status" = '0' ]; then
+            rm -f .github/scripts/fix_form_assets_ui.py form-fix-output.txt
+          else
+            mkdir -p docs/diagnostics
+            mv form-fix-output.txt docs/diagnostics/form-assets-ui-fix.txt
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m "Completa schermate forme (stato $status)"
+          git push origin HEAD:main

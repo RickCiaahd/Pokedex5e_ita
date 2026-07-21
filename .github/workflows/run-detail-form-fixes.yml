@@ -69,9 +69,7 @@ jobs:
             lib/screens/pokemon/pokemon_detail_screen.dart \
             lib/screens/pokemon/pokemon_detail_screen_legacy.dart \
             lib/repositories/evolution_repository.dart \
-            lib/services/evolution_form_alias_service.dart \
-            test/evolution_form_alias_service_test.dart \
-            test/evolution_repository_non_canon_test.dart
+            test/evolution_repository_regression_test.dart
 
       - name: Install dependencies
         if: steps.patch.outputs.pending == 'true'
@@ -83,9 +81,7 @@ jobs:
 
       - name: Run focused regression tests
         if: steps.patch.outputs.pending == 'true'
-        run: |
-          flutter test test/evolution_form_alias_service_test.dart --reporter expanded
-          flutter test test/evolution_repository_non_canon_test.dart --reporter expanded
+        run: flutter test test/evolution_repository_regression_test.dart --reporter expanded
 
       - name: Commit and push fixes
         if: steps.patch.outputs.pending == 'true'

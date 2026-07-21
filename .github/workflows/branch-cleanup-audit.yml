@@ -1,6 +1,11 @@
 name: Branch cleanup audit
 
 on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '.github/branch-cleanup-trigger'
   push:
     branches:
       - main
@@ -8,11 +13,11 @@ on:
       - '.github/workflows/branch-cleanup-audit.yml'
 
 permissions:
-  contents: write
+  contents: read
   pull-requests: read
 
 concurrency:
-  group: branch-cleanup
+  group: branch-cleanup-audit
   cancel-in-progress: false
 
 jobs:
@@ -88,11 +93,9 @@ jobs:
           {
             echo '# Report pulizia branch'
             echo
-            echo "Audit eseguito automaticamente il $(date -u +'%Y-%m-%d %H:%M UTC')."
-            echo
             echo "- Branch remoti totali rilevati: **$total_count**"
-            echo "- Branch eliminabili con criterio conservativo: **$delete_count**"
-            echo "- Branch conservati o da verificare: **$keep_count**"
+            echo "- Eliminabili con criterio conservativo: **$delete_count**"
+            echo "- Conservati o da verificare: **$keep_count**"
             echo
             echo '## Eliminabili automaticamente'
             if [[ -s delete_candidates.txt ]]; then
@@ -111,20 +114,20 @@ jobs:
             else
               echo '- Nessuno'
             fi
-          } > docs/branch-cleanup-report.md
+          } | tee branch-cleanup-report.md
 
-          cat docs/branch-cleanup-report.md
+      - name: Upload audit report
+        uses: actions/upload-artifact@v4
+        with:
+          name: branch-cleanup-audit-v2
+          path: |
+            branch-cleanup-report.md
+            delete_candidates.txt
+            kept_branches.txt
+            merged_pr_heads.txt
+          if-no-files-found: error
+          retention-days: 14
 
-      - name: Commit audit report
+      - name: Show summary
         shell: bash
-        run: |
-          set -euo pipefail
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add docs/branch-cleanup-report.md
-          if git diff --cached --quiet; then
-            echo 'Report invariato'
-            exit 0
-          fi
-          git commit -m 'Registra l audit conservativo dei branch'
-          git push origin HEAD:main
+        run: cat branch-cleanup-report.md >> "$GITHUB_STEP_SUMMARY"

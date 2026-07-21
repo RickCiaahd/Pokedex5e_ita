@@ -12,145 +12,41 @@ def replace_once(path: str, old: str, new: str) -> None:
     file.write_text(text.replace(old, new, 1), encoding='utf-8')
 
 
-resolver = 'lib/widgets/pokemon/pokemon_asset_image_legacy.dart'
-replace_once(
-    resolver,
-    "    add(exactSlug);\n    add(baseSlug);",
-    "    // Prefer the species folder for the default form. Variant-specific\n"
-    "    // folders are then resolved through the explicit form slug.\n"
-    "    add(baseSlug);\n    add(exactSlug);",
-)
-
-edit = 'lib/screens/pokemon/pokemon_edit_screen.dart'
-replace_once(
-    edit,
-    "import '../../services/battle_environment_service.dart';",
-    "import '../../services/battle_environment_service.dart';\n"
-    "import '../../services/battle_form_change_service.dart';",
-)
-replace_once(
-    edit,
-    "  Future<void> _loadChoices() async {",
-    "  List<PokemonFormChoice> _normalizedFormChoices(\n"
-    "    List<PokemonFormChoice> choices,\n"
-    "  ) {\n"
-    "    if (!BattleFormChangeService.supports(widget.pokemon)) {\n"
-    "      return choices;\n"
-    "    }\n\n"
-    "    final byKey = <String, PokemonFormChoice>{};\n"
-    "    for (final choice in choices) {\n"
-    "      final key = BattleFormChangeService.canonicalFormKey(\n"
-    "        widget.pokemon,\n"
-    "        choice.name,\n"
-    "      );\n"
-    "      byKey.putIfAbsent(\n"
-    "        key,\n"
-    "        () => PokemonFormChoice(\n"
-    "          name: BattleFormChangeService.normalizedChoiceName(\n"
-    "            widget.pokemon,\n"
-    "            choice.name,\n"
-    "          ),\n"
-    "          assetPath: choice.assetPath,\n"
-    "        ),\n"
-    "      );\n"
-    "    }\n\n"
-    "    final result = byKey.values.toList(growable: false)\n"
-    "      ..sort(\n"
-    "        (a, b) => BattleFormChangeService.formSortWeight(\n"
-    "          widget.pokemon,\n"
-    "          a.name,\n"
-    "        ).compareTo(\n"
-    "          BattleFormChangeService.formSortWeight(\n"
-    "            widget.pokemon,\n"
-    "            b.name,\n"
-    "          ),\n"
-    "        ),\n"
-    "      );\n"
-    "    return result;\n"
-    "  }\n\n"
-    "  Future<void> _loadChoices() async {",
-)
-replace_once(
-    edit,
-    "    final formChoices = await formChoicesFuture;",
-    "    final rawFormChoices = await formChoicesFuture;\n"
-    "    final formChoices = _normalizedFormChoices(rawFormChoices);",
-)
-replace_once(
-    edit,
-    "class _FormSelector extends StatelessWidget {",
-    "String _localizedFormLabel(Pokemon pokemon, String? formName) {\n"
-    "  if (BattleFormChangeService.supports(pokemon)) {\n"
-    "    return BattleFormChangeService.formLabel(pokemon, formName);\n"
-    "  }\n"
-    "  return formName?.trim().isNotEmpty == true ? formName! : 'Forma base';\n"
-    "}\n\n"
-    "class _FormSelector extends StatelessWidget {",
-)
-replace_once(
-    edit,
-    "        title: Text(formName.toUpperCase()),",
-    "        title: Text(\n"
-    "          _localizedFormLabel(pokemon, formName).toUpperCase(),\n"
-    "        ),",
-)
-replace_once(
-    edit,
-    "                  title: Text(choice.name.toUpperCase()),\n"
-    "                  trailing: choice.name == currentFormName",
-    "                  title: Text(\n"
-    "                    _localizedFormLabel(pokemon, choice.name).toUpperCase(),\n"
-    "                  ),\n"
-    "                  trailing: BattleFormChangeService.supports(pokemon)\n"
-    "                      ? BattleFormChangeService.sameForm(\n"
-    "                          pokemon,\n"
-    "                          currentFormName,\n"
-    "                          choice.name,\n"
-    "                        )\n"
-    "                      : choice.name == currentFormName",
-)
-
 detail = 'lib/screens/pokemon/pokemon_detail_screen_legacy.dart'
+
 replace_once(
     detail,
-    "import '../../services/evolution_service.dart';",
-    "import '../../services/battle_form_change_service.dart';\n"
-    "import '../../services/evolution_service.dart';",
-)
-replace_once(
-    detail,
-    "                          child: _Header(\n                            pokemon: pokemon,",
-    "                          child: _Header(\n"
+    "                          _TraitsView(\n                            pokemon: pokemon,",
+    "                          _TraitsView(\n"
     "                            pokemon: pokemon,\n"
-    "                            imagePokemon: _basePokemon,",
+    "                            basePokemon: _basePokemon,",
 )
+
 replace_once(
     detail,
-    "                           _TraitsView(\n                             pokemon: pokemon,",
-    "                           _TraitsView(\n"
-    "                             pokemon: pokemon,\n"
-    "                             basePokemon: _basePokemon,",
-)
-replace_once(
-    detail,
-    "    required this.pokemon,\n    required this.slot,",
+    "  const _Header({\n    required this.pokemon,\n    required this.slot,",
+    "  const _Header({\n"
     "    required this.pokemon,\n"
     "    required this.imagePokemon,\n"
     "    required this.slot,",
 )
+
 replace_once(
     detail,
-    "  final Pokemon pokemon;\n  final TeamSlot? slot;",
+    "  final Pokemon pokemon;\n  final TeamSlot? slot;\n  final int level;",
     "  final Pokemon pokemon;\n"
     "  final Pokemon imagePokemon;\n"
-    "  final TeamSlot? slot;",
+    "  final TeamSlot? slot;\n"
+    "  final int level;",
 )
+
 replace_once(
     detail,
     "                            pokemon: pokemon,\n                            formName: slot?.formName,",
     "                            pokemon: imagePokemon,\n"
     "                            formName: slot?.formName,",
 )
+
 replace_once(
     detail,
     "  Widget build(BuildContext context) {\n    final feats = slot?.feats ?? const <String>[];",
@@ -166,6 +62,7 @@ replace_once(
     "    }\n\n"
     "    final feats = slot?.feats ?? const <String>[];",
 )
+
 replace_once(
     detail,
     "            title: abilityDisplayNames[ability] ?? ability,\n"
@@ -178,14 +75,16 @@ replace_once(
     "                  'Descrizione non disponibile.',\n"
     "            ),",
 )
+
 replace_once(
     detail,
-    "    required this.pokemon,\n    required this.slot,\n    required this.attributes,",
+    "  const _TraitsView({\n    required this.pokemon,\n    required this.slot,",
+    "  const _TraitsView({\n"
     "    required this.pokemon,\n"
     "    required this.basePokemon,\n"
-    "    required this.slot,\n"
-    "    required this.attributes,",
+    "    required this.slot,",
 )
+
 replace_once(
     detail,
     "  final Pokemon pokemon;\n  final TeamSlot? slot;\n  final Map<String, int> attributes;",
@@ -194,6 +93,7 @@ replace_once(
     "  final TeamSlot? slot;\n"
     "  final Map<String, int> attributes;",
 )
+
 replace_once(
     detail,
     "              _InfoRow(label: 'Forma', value: slot?.formName ?? '-'),",

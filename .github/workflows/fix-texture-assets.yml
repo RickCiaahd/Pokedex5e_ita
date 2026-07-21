@@ -1,0 +1,187 @@
+name: Fix texture assets
+
+on:
+  push:
+    paths:
+      - '.github/workflows/fix-texture-assets.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  fix-texture-assets:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Complete and normalize texture folders
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          old_ogerpon='assets/textures/textures_webapp/pokemon/ogerpon-heartflame-mask'
+          new_ogerpon='assets/textures/textures_webapp/pokemon/ogerpon-hearthflame-mask'
+          if [ -d "$old_ogerpon" ]; then
+            if [ -d "$new_ogerpon" ]; then
+              cp -a "$old_ogerpon"/. "$new_ogerpon"/
+              rm -rf "$old_ogerpon"
+            else
+              git mv "$old_ogerpon" "$new_ogerpon"
+            fi
+          fi
+
+          mkdir -p assets/textures/textures_webapp/pokemon/meloetta-pirouette
+          curl --fail --location --retry 3 \
+            'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/10018.png' \
+            --output assets/textures/textures_webapp/pokemon/meloetta-pirouette/sprite-shiny.png
+
+          mkdir -p assets/textures/textures_webapp/pokemon/mimikyu-busted
+          curl --fail --location --retry 3 \
+            'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/10143.png' \
+            --output assets/textures/textures_webapp/pokemon/mimikyu-busted/sprite-shiny.png
+
+      - name: Update pubspec asset registrations
+        shell: python
+        run: |
+          from pathlib import Path
+
+          pubspec = Path('pubspec.yaml')
+          text = pubspec.read_text(encoding='utf-8')
+
+          replacements = {
+              'assets/textures/textures_webapp/pokemon/meloetta---pirouette/':
+                  'assets/textures/textures_webapp/pokemon/meloetta-pirouette/',
+              'assets/textures/textures_webapp/pokemon/minior-core-form/':
+                  'assets/textures/textures_webapp/pokemon/minior-core/',
+              'assets/textures/textures_webapp/pokemon/ogerpon-heartflame-mask/':
+                  'assets/textures/textures_webapp/pokemon/ogerpon-hearthflame-mask/',
+              'assets/textures/textures_webapp/pokemon/terapagos-stellar-form/':
+                  'assets/textures/textures_webapp/pokemon/terapagos-stellar/',
+              'assets/textures/textures_webapp/pokemon/terapagos-terastal-form/':
+                  'assets/textures/textures_webapp/pokemon/terapagos-terastal/',
+              'assets/textures/textures_webapp/pokemon/wishiwashi-school-form/':
+                  'assets/textures/textures_webapp/pokemon/wishiwashi-school/',
+              'assets/textures/textures_webapp/pokemon/zygarde-10-forme/':
+                  'assets/textures/textures_webapp/pokemon/zygarde-10/',
+              'assets/textures/textures_webapp/pokemon/zygarde-complete-forme/':
+                  'assets/textures/textures_webapp/pokemon/zygarde-complete/',
+          }
+          for old, new in replacements.items():
+              text = text.replace(old, new)
+
+          folders = [
+              'aegislash-shield',
+              'cherrim-sunshine',
+              'cramorant-gorging',
+              'cramorant-gulping',
+              'darmanitan-galar-standard',
+              'darmanitan-galar-zen',
+              'darmanitan-zen',
+              'eiscue-noice-face',
+              'meloetta-pirouette',
+              'mimikyu-busted',
+              'minior-core',
+              'morpeko-hangry',
+              'ogerpon-hearthflame-mask',
+              'palafin-hero',
+              'terapagos-stellar',
+              'terapagos-terastal',
+              'wishiwashi-school',
+              'zygarde-10',
+              'zygarde-complete',
+          ]
+          required_lines = [
+              f'    - assets/textures/textures_webapp/pokemon/{folder}/'
+              for folder in folders
+          ]
+
+          lines = text.splitlines()
+          asset_prefix = '    - assets/textures/textures_webapp/pokemon/'
+          seen_asset_lines = set()
+          deduplicated = []
+          for line in lines:
+              if line.startswith(asset_prefix):
+                  if line in seen_asset_lines:
+                      continue
+                  seen_asset_lines.add(line)
+              deduplicated.append(line)
+
+          missing = [line for line in required_lines if line not in seen_asset_lines]
+          if missing:
+              anchor = '    - assets/textures/textures_webapp/pokemon_transforms/'
+              try:
+                  insert_at = deduplicated.index(anchor) + 1
+              except ValueError as exc:
+                  raise SystemExit('Asset anchor not found in pubspec.yaml') from exc
+              deduplicated[insert_at:insert_at] = missing
+
+          pubspec.write_text('\n'.join(deduplicated) + '\n', encoding='utf-8')
+
+      - name: Validate form textures and pubspec
+        shell: python
+        run: |
+          from pathlib import Path
+
+          root = Path('assets/textures/textures_webapp/pokemon')
+          folders = [
+              'deoxys-attack', 'deoxys-defense', 'deoxys-speed',
+              'sunny-castform', 'rainy-castform', 'snowy-castform',
+              'cherrim-sunshine',
+              'darmanitan-zen', 'darmanitan-galar-standard', 'darmanitan-galar-zen',
+              'meloetta-pirouette', 'aegislash-shield',
+              'zygarde-10', 'zygarde-complete', 'wishiwashi-school',
+              'minior-core', 'mimikyu-busted',
+              'dusk-mane-necrozma', 'dawn-wings-necrozma', 'ultra-necrozma',
+              'cramorant-gulping', 'cramorant-gorging',
+              'eiscue-noice-face', 'morpeko-hangry', 'palafin-hero',
+              'ogerpon-wellspring-mask', 'ogerpon-hearthflame-mask',
+              'ogerpon-cornerstone-mask',
+              'terapagos-terastal', 'terapagos-stellar',
+          ]
+          filenames = ('main.png', 'sprite.png', 'main-shiny.png', 'sprite-shiny.png')
+
+          missing = [
+              str(root / folder / filename)
+              for folder in folders
+              for filename in filenames
+              if not (root / folder / filename).is_file()
+          ]
+          if missing:
+              raise SystemExit('Missing form textures:\n' + '\n'.join(missing))
+
+          text = Path('pubspec.yaml').read_text(encoding='utf-8')
+          stale = (
+              'meloetta---pirouette/', 'minior-core-form/',
+              'ogerpon-heartflame-mask/', 'terapagos-stellar-form/',
+              'terapagos-terastal-form/', 'wishiwashi-school-form/',
+              'zygarde-10-forme/', 'zygarde-complete-forme/',
+          )
+          found_stale = [value for value in stale if value in text]
+          if found_stale:
+              raise SystemExit('Stale pubspec paths:\n' + '\n'.join(found_stale))
+
+          for folder in folders:
+              line = f'    - assets/textures/textures_webapp/pokemon/{folder}/'
+              if text.count(line) != 1:
+                  raise SystemExit(f'Invalid pubspec registration for {folder}: {text.count(line)}')
+
+          print(f'Validated {len(folders)} form folders and {len(folders) * len(filenames)} texture files.')
+
+      - name: Commit corrections
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f .github/workflows/fix-texture-assets.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          if git diff --cached --quiet; then
+            echo 'No changes to commit.'
+            exit 0
+          fi
+          git commit -m 'Registra e completa le texture delle forme alternative'
+          git push origin HEAD:main

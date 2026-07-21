@@ -92,14 +92,26 @@ class PokemonGenderAssetPaths {
       if (value.isNotEmpty && !values.contains(value)) values.add(value);
     }
 
-    if (slug.contains('hisuian')) add(slug.replaceAll('hisuian', 'hisui'));
-    if (slug.contains('hisui')) add(slug.replaceAll('hisui', 'hisuian'));
-    if (slug.contains('galarian')) add(slug.replaceAll('galarian', 'galar'));
-    if (slug.contains('galar')) add(slug.replaceAll('galar', 'galarian'));
-    if (slug.contains('alolan')) add(slug.replaceAll('alolan', 'alola'));
-    if (slug.contains('alola')) add(slug.replaceAll('alola', 'alolan'));
-    if (slug.contains('paldean')) add(slug.replaceAll('paldean', 'paldea'));
-    if (slug.contains('paldea')) add(slug.replaceAll('paldea', 'paldean'));
+    if (slug.contains('hisuian')) {
+      add(slug.replaceAll('hisuian', 'hisui'));
+    } else if (slug.contains('hisui')) {
+      add(slug.replaceAll('hisui', 'hisuian'));
+    }
+    if (slug.contains('galarian')) {
+      add(slug.replaceAll('galarian', 'galar'));
+    } else if (slug.contains('galar')) {
+      add(slug.replaceAll('galar', 'galarian'));
+    }
+    if (slug.contains('alolan')) {
+      add(slug.replaceAll('alolan', 'alola'));
+    } else if (slug.contains('alola')) {
+      add(slug.replaceAll('alola', 'alolan'));
+    }
+    if (slug.contains('paldean')) {
+      add(slug.replaceAll('paldean', 'paldea'));
+    } else if (slug.contains('paldea')) {
+      add(slug.replaceAll('paldea', 'paldean'));
+    }
 
     return values;
   }

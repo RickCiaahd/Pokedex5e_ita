@@ -1,0 +1,52 @@
+name: Resume battle form fixes
+
+on:
+  push:
+    paths:
+      - '.github/workflows/resume-battle-form-fixes.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  resume:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Resume patches
+        id: patch
+        shell: bash
+        run: |
+          set +e
+          python .github/scripts/resume_battle_forms.py > battle-form-fix-output.txt 2>&1
+          status=$?
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Commit result
+        shell: bash
+        run: |
+          set -euo pipefail
+          status='${{ steps.patch.outputs.status }}'
+          rm -f .github/workflows/resume-battle-form-fixes.yml
+          rm -f docs/diagnostics/battle-form-fix.txt
+          rmdir docs/diagnostics 2>/dev/null || true
+          if [ "$status" = '0' ]; then
+            rm -f \
+              .github/scripts/fix_battle_forms.py \
+              .github/scripts/resume_battle_forms.py \
+              battle-form-fix-output.txt
+          else
+            mkdir -p docs/diagnostics
+            mv battle-form-fix-output.txt docs/diagnostics/battle-form-fix.txt
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m "Riprende forme e PF temporanei (stato $status)"
+          git push origin HEAD:main

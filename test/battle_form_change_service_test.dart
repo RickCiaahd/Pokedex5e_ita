@@ -17,13 +17,16 @@ void main() {
       'Darmanitan',
       'Meloetta',
       'Aegislash',
+      'Zygarde',
       'Wishiwashi',
       'Minior',
       'Mimikyu',
+      'Necrozma',
       'Cramorant',
       'Eiscue',
       'Morpeko',
       'Palafin',
+      'Ogerpon',
       'Terapagos',
     ]) {
       expect(
@@ -90,5 +93,63 @@ void main() {
       ),
       isTrue,
     );
+    expect(
+      BattleFormChangeService.canonicalFormKey(
+        darmanitan,
+        'Forma di Galar · Stato Zen',
+      ),
+      'galarian-zen',
+    );
+  });
+
+  test('Zygarde uses Forma 50% as base and keeps all three stat profiles', () async {
+    final pokemon = await PokemonRepository().getAllPokemon();
+    final zygarde = pokemon.firstWhere((entry) => entry.id == 718);
+
+    expect(BattleFormChangeService.canonicalFormKey(zygarde, 'Base'), '50');
+    expect(BattleFormChangeService.formLabel(zygarde, 'Base'), 'Forma 50%');
+    expect(BattleFormChangeService.formLabel(zygarde, '10% Forme'), 'Forma 10%');
+    expect(
+      BattleFormChangeService.formLabel(zygarde, 'Complete Forme'),
+      'Forma Perfetta',
+    );
+
+    final ten = zygarde.resolveVariant(formName: '10% Forme');
+    final fifty = zygarde.resolveVariant(formName: '50% Forme');
+    final complete = zygarde.resolveVariant(formName: 'Complete Forme');
+
+    expect(ten.armorClass, 16);
+    expect(ten.attributes['DEX'], 19);
+    expect(fifty.armorClass, 18);
+    expect(fifty.attributes['CON'], 20);
+    expect(complete.armorClass, 20);
+    expect(complete.attributes['CON'], 30);
+  });
+
+  test('Palafin Forma Possente applies battle-only CA, FOR and DES bonuses', () async {
+    final pokemon = await PokemonRepository().getAllPokemon();
+    final palafin = pokemon.firstWhere((entry) => entry.id == 964);
+
+    expect(
+      BattleFormChangeService.formLabel(palafin, 'Hero Form'),
+      'Forma Possente',
+    );
+    expect(BattleFormChangeService.armorClassBonus(palafin, 'Hero Form'), 4);
+
+    final modified = BattleFormChangeService.applyAttributeScoreModifiers(
+      palafin,
+      'Hero Form',
+      const {'STR': 14, 'DEX': 18, 'CON': 16},
+    );
+    expect(modified['STR'], 18);
+    expect(modified['DEX'], 22);
+    expect(modified['CON'], 16);
+
+    final base = BattleFormChangeService.applyAttributeScoreModifiers(
+      palafin,
+      'Base',
+      const {'STR': 14, 'DEX': 18},
+    );
+    expect(base, const {'STR': 14, 'DEX': 18});
   });
 }

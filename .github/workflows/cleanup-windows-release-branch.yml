@@ -1,0 +1,41 @@
+name: Cleanup Windows release branch
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/cleanup-windows-release-branch.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      GH_TOKEN: ${{ github.token }}
+
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Delete merged release branch and remove workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh release view v1.0.2 --repo "$GITHUB_REPOSITORY" >/dev/null
+
+          if git ls-remote --exit-code --heads origin refs/heads/release/windows-v1.0.2 >/dev/null 2>&1; then
+            git push origin --delete release/windows-v1.0.2
+          fi
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm .github/workflows/cleanup-windows-release-branch.yml
+          git commit -m 'Rimuove il workflow temporaneo di pulizia Windows'
+          git push origin HEAD:main

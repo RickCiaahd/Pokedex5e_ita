@@ -48,9 +48,7 @@ class BattleFormChangeService {
         return raw;
       case 'Darmanitan':
         if (raw.contains('galar')) {
-          return raw.contains('zen')
-              ? 'galarian-zen'
-              : 'galarian-standard';
+          return raw.contains('zen') ? 'galarian-zen' : 'galarian-standard';
         }
         if (raw == 'base' || raw.contains('standard')) return 'standard';
         if (raw.contains('zen')) return 'zen';
@@ -118,12 +116,7 @@ class BattleFormChangeService {
         order = const ['overcast', 'sunshine'];
         break;
       case 'Darmanitan':
-        order = const [
-          'standard',
-          'zen',
-          'galarian-standard',
-          'galarian-zen',
-        ];
+        order = const ['standard', 'zen', 'galarian-standard', 'galarian-zen'];
         break;
       case 'Meloetta':
         order = const ['aria', 'pirouette'];
@@ -188,17 +181,12 @@ class BattleFormChangeService {
     final choiceKey = canonicalFormKey(pokemon, formName);
     final isGalarian = persistentKey.startsWith('galarian-');
     if (isGalarian) {
-      return choiceKey == 'galarian-standard' ||
-          choiceKey == 'galarian-zen';
+      return choiceKey == 'galarian-standard' || choiceKey == 'galarian-zen';
     }
     return choiceKey == 'standard' || choiceKey == 'zen';
   }
 
-  static bool sameForm(
-    Pokemon pokemon,
-    String? current,
-    String candidate,
-  ) {
+  static bool sameForm(Pokemon pokemon, String? current, String candidate) {
     return canonicalFormKey(pokemon, current) ==
         canonicalFormKey(pokemon, candidate);
   }
@@ -244,9 +232,7 @@ class BattleFormChangeService {
       case 'Minior':
         return key == 'core' ? 'Forma Nucleo' : 'Forma Meteora';
       case 'Mimikyu':
-        return key == 'busted'
-            ? 'Forma Smascherata'
-            : 'Forma Mascherata';
+        return key == 'busted' ? 'Forma Smascherata' : 'Forma Mascherata';
       case 'Necrozma':
         return switch (key) {
           'dusk-mane' => 'Criniera del Vespro',
@@ -263,9 +249,7 @@ class BattleFormChangeService {
       case 'Eiscue':
         return key == 'noice-face' ? 'Faccia Liquida' : 'Faccia Gelata';
       case 'Morpeko':
-        return key == 'hangry'
-            ? 'Motivo Pancia Vuota'
-            : 'Motivo Panciapiena';
+        return key == 'hangry' ? 'Motivo Pancia Vuota' : 'Motivo Panciapiena';
       case 'Palafin':
         return key == 'hero' ? 'Forma Possente' : 'Forma Ingenua';
       case 'Ogerpon':
@@ -346,8 +330,7 @@ class BattleFormChangeService {
     if (pokemon.name == 'Zygarde') {
       return switch (key) {
         '10' => 'CA 16; FOR 16, DES 19, COS 15, INT 14, SAG 14, CAR 14.',
-        'complete' =>
-          'CA 20; FOR 19, DES 17, COS 30, INT 18, SAG 18, CAR 18.',
+        'complete' => 'CA 20; FOR 19, DES 17, COS 30, INT 18, SAG 18, CAR 18.',
         _ => 'CA 18; FOR 19, DES 18, COS 20, INT 16, SAG 16, CAR 16.',
       };
     }

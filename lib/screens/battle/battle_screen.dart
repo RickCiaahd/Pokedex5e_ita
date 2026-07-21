@@ -192,8 +192,9 @@ class _BattleScreenState extends State<BattleScreen> {
       _temporaryHpInitializedSlots.add(slot.slotIndex);
       if (rule == null) continue;
       _temporaryHpEnabledBySlot[slot.slotIndex] = true;
-      _temporaryHpBySlot[slot.slotIndex] =
-          rule.maximumForLevel(_levelForSlot(slot));
+      _temporaryHpBySlot[slot.slotIndex] = rule.maximumForLevel(
+        _levelForSlot(slot),
+      );
       if (basePokemon.name == 'Mimikyu') {
         _battleFormBySlot[slot.slotIndex] = 'Base';
       }
@@ -221,8 +222,7 @@ class _BattleScreenState extends State<BattleScreen> {
         volatileStatuses: {...?_volatileStatusesBySlot[slot.slotIndex]},
         battleFormName: _battleFormBySlot[slot.slotIndex],
         temporaryHp: _temporaryHpBySlot[slot.slotIndex] ?? 0,
-        temporaryHpEnabled:
-            _temporaryHpEnabledBySlot[slot.slotIndex] ?? false,
+        temporaryHpEnabled: _temporaryHpEnabledBySlot[slot.slotIndex] ?? false,
         temporaryHpInitialized: _temporaryHpInitializedSlots.contains(
           slot.slotIndex,
         ),
@@ -273,10 +273,7 @@ class _BattleScreenState extends State<BattleScreen> {
             'hero') {
       return basePokemon;
     }
-    return basePokemon.resolveVariant(
-      formName: formName,
-      gender: slot.gender,
-    );
+    return basePokemon.resolveVariant(formName: formName, gender: slot.gender);
   }
 
   List<PokemonFormChoice> _normalizedBattleFormChoices(
@@ -313,9 +310,7 @@ class _BattleScreenState extends State<BattleScreen> {
         (a, b) => BattleFormChangeService.formSortWeight(
           pokemon,
           a.name,
-        ).compareTo(
-          BattleFormChangeService.formSortWeight(pokemon, b.name),
-        ),
+        ).compareTo(BattleFormChangeService.formSortWeight(pokemon, b.name)),
       );
     return result;
   }
@@ -329,11 +324,7 @@ class _BattleScreenState extends State<BattleScreen> {
     }
 
     final allChoices = await PokemonAssetPaths.formChoices(basePokemon);
-    final choices = _normalizedBattleFormChoices(
-      basePokemon,
-      slot,
-      allChoices,
-    );
+    final choices = _normalizedBattleFormChoices(basePokemon, slot, allChoices);
     if (!mounted || choices.length <= 1) return;
 
     final selected = await showModalBottomSheet<String>(
@@ -464,10 +455,7 @@ class _BattleScreenState extends State<BattleScreen> {
     return slot.currentHp.clamp(0, _maxHpFor(pokemon, slot)).toInt();
   }
 
-  BattleTemporaryHpRule? _temporaryHpRule(
-    _BattleData data,
-    TeamSlot slot,
-  ) {
+  BattleTemporaryHpRule? _temporaryHpRule(_BattleData data, TeamSlot slot) {
     final pokemonId = slot.pokemonId;
     if (pokemonId == null) return null;
     final basePokemon = data.pokemonById[pokemonId];
@@ -522,8 +510,7 @@ class _BattleScreenState extends State<BattleScreen> {
           _temporaryHpEnabledBySlot[slot.slotIndex] = false;
           final basePokemon = data.pokemonById[slot.pokemonId!];
           if (basePokemon?.name == 'Mimikyu') {
-            _battleFormBySlot[slot.slotIndex] =
-                rule.brokenFormName ?? 'Busted';
+            _battleFormBySlot[slot.slotIndex] = rule.brokenFormName ?? 'Busted';
           }
         }
       }
@@ -583,8 +570,9 @@ class _BattleScreenState extends State<BattleScreen> {
     if (rule != null) {
       _temporaryHpInitializedSlots.add(slot.slotIndex);
       _temporaryHpEnabledBySlot[slot.slotIndex] = true;
-      _temporaryHpBySlot[slot.slotIndex] =
-          rule.maximumForLevel(_levelForSlot(slot));
+      _temporaryHpBySlot[slot.slotIndex] = rule.maximumForLevel(
+        _levelForSlot(slot),
+      );
       final basePokemon = data.pokemonById[slot.pokemonId!];
       if (basePokemon?.name == 'Mimikyu') {
         _battleFormBySlot[slot.slotIndex] = 'Base';
@@ -1524,11 +1512,8 @@ class _BattleScreenState extends State<BattleScreen> {
                     onOpenBag: () => _openQuickBag(data, activeSlot),
                     onToggleTemporaryHp: temporaryHpRule == null
                         ? null
-                        : (enabled) => _toggleTemporaryHpRule(
-                            data,
-                            activeSlot,
-                            enabled,
-                          ),
+                        : (enabled) =>
+                              _toggleTemporaryHpRule(data, activeSlot, enabled),
                     onChangeForm: canChangeForm
                         ? () => _openBattleFormPicker(data, activeSlot)
                         : null,

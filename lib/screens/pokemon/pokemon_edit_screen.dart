@@ -159,15 +159,10 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
 
     final result = byKey.values.toList(growable: false)
       ..sort(
-        (a, b) => BattleFormChangeService.formSortWeight(
-          widget.pokemon,
-          a.name,
-        ).compareTo(
-          BattleFormChangeService.formSortWeight(
-            widget.pokemon,
-            b.name,
-          ),
-        ),
+        (a, b) => BattleFormChangeService.formSortWeight(widget.pokemon, a.name)
+            .compareTo(
+              BattleFormChangeService.formSortWeight(widget.pokemon, b.name),
+            ),
       );
     return result;
   }
@@ -209,8 +204,7 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
     }
     final catalogMoveNames = _unique(
       catalogMoves.map((move) => move.technicalName),
-    )
-      ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+    )..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
 
     if (!mounted) return;
 
@@ -833,9 +827,7 @@ class _FormSelector extends StatelessWidget {
           isShiny: isShiny,
           size: 52,
         ),
-        title: Text(
-          _localizedFormLabel(pokemon, formName).toUpperCase(),
-        ),
+        title: Text(_localizedFormLabel(pokemon, formName).toUpperCase()),
         subtitle: const Text('Tocca per cambiare forma.'),
         trailing: const Icon(Icons.swap_horiz),
         onTap: onTap,
@@ -1480,9 +1472,11 @@ class _ChoicePickerScreenState extends State<_ChoicePickerScreen> {
               );
         })
         .toList()
-      ..sort((a, b) => (widget.labels[a] ?? a).toLowerCase().compareTo(
-        (widget.labels[b] ?? b).toLowerCase(),
-      ));
+      ..sort(
+        (a, b) => (widget.labels[a] ?? a).toLowerCase().compareTo(
+          (widget.labels[b] ?? b).toLowerCase(),
+        ),
+      );
   }
 
   @override

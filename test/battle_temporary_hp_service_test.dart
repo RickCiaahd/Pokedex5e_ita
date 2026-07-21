@@ -22,11 +22,14 @@ void main() {
     expect(rule.brokenFormName, 'Busted');
   });
 
-  test('a Pokemon without a matching ability has no temporary HP rule', () async {
-    final pokemon = await PokemonRepository().getAllPokemon();
-    final pikachu = pokemon.firstWhere((entry) => entry.id == 25);
-    final slot = TeamSlot(slotIndex: 0, pokemonId: 25);
+  test(
+    'a Pokemon without a matching ability has no temporary HP rule',
+    () async {
+      final pokemon = await PokemonRepository().getAllPokemon();
+      final pikachu = pokemon.firstWhere((entry) => entry.id == 25);
+      final slot = TeamSlot(slotIndex: 0, pokemonId: 25);
 
-    expect(BattleTemporaryHpService.ruleFor(pikachu, slot), isNull);
-  });
+      expect(BattleTemporaryHpService.ruleFor(pikachu, slot), isNull);
+    },
+  );
 }

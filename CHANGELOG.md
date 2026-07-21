@@ -4,7 +4,23 @@ Tutte le modifiche rilevanti al progetto vengono documentate in questo file.
 
 ## [Non rilasciato]
 
-Nessuna modifica successiva alla release 1.0.1.
+Nessuna modifica successiva alla release 1.0.2.
+
+## [1.0.2] - 2026-07-21
+
+### Aggiunto
+
+- workflow GitHub Actions dedicato a Windows con analisi, test e build release su `windows-latest`;
+- pacchetto portatile `Pokedex5eITA-1.0.2-Windows-x64.zip` con checksum SHA-256;
+- pubblicazione automatica degli artefatti Windows nella GitHub Release associata ai tag `v*`;
+- documentazione completa per compilazione, distribuzione e verifica manuale della versione Windows.
+
+### Modificato
+
+- nome dell'eseguibile Windows impostato su `Pokedex5eITA.exe`;
+- titolo della finestra e metadati del prodotto uniformati a `Pokédex 5e ITA`;
+- nome autore/editore Windows impostato su `RickCiaahd`;
+- versione applicativa aggiornata a `1.0.2+3` per la release multipiattaforma.
 
 ## [1.0.1] - 2026-07-21
 

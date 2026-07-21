@@ -118,6 +118,12 @@ void main() {
         'assets/textures/textures_webapp/pokemon/hisuian-sneasel/main-f.png',
       ),
     );
+    expect(
+      candidates,
+      contains(
+        'assets/textures/textures_webapp/pokemon/sneasel-hisui/main-f.png',
+      ),
+    );
   });
 
   test('genderless and unspecified Pokémon add no extra candidates', () {

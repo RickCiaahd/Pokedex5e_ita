@@ -98,6 +98,48 @@ void main() {
     expect(candidates.indexOf(shiny), lessThan(candidates.indexOf(normal)));
   });
 
+  test('Meowstic gender symbols resolve dedicated male and female folders', () {
+    final meowstic = pokemon(678, 'Meowstic ♀', assetSlug: 'meowstic-f');
+
+    final male = PokemonGenderAssetPaths.candidates(
+      pokemon: meowstic,
+      useLargeArtwork: true,
+      gender: 'male',
+    );
+    final female = PokemonGenderAssetPaths.candidates(
+      pokemon: meowstic,
+      useLargeArtwork: true,
+      gender: 'female',
+    );
+
+    expect(
+      male.first,
+      'assets/textures/textures_webapp/pokemon/meowstic-m/main.png',
+    );
+    expect(
+      female.first,
+      'assets/textures/textures_webapp/pokemon/meowstic-f/main.png',
+    );
+  });
+
+  test('Pyroar keeps using its existing dedicated gender folders', () {
+    final candidates = PokemonGenderAssetPaths.candidates(
+      pokemon: pokemon(668, 'Pyroar', assetSlug: 'pyroar-female'),
+      useLargeArtwork: false,
+      gender: 'male',
+      isShiny: true,
+    );
+
+    expect(
+      candidates.first,
+      'assets/textures/textures_webapp/pokemon/pyroar-m/sprite-shiny.png',
+    );
+    expect(
+      candidates,
+      contains('assets/textures/textures_webapp/pokemon/pyroar-m/sprite.png'),
+    );
+  });
+
   test('permanent forms may keep gender files in their own folder', () {
     final candidates = PokemonGenderAssetPaths.candidates(
       pokemon: pokemon(215, 'Sneasel'),

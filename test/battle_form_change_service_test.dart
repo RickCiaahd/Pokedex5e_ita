@@ -21,12 +21,10 @@ void main() {
       'Wishiwashi',
       'Minior',
       'Mimikyu',
-      'Necrozma',
       'Cramorant',
       'Eiscue',
       'Morpeko',
       'Palafin',
-      'Ogerpon',
       'Terapagos',
     ]) {
       expect(

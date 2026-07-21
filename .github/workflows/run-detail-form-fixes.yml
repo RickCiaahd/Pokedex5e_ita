@@ -53,7 +53,22 @@ jobs:
           code = '\n'.join(line[10:] if line.startswith('          ') else line for line in lines) + '\n'
           Path('/tmp/apply_detail_form_fixes.py').write_text(code, encoding='utf-8')
           PY
-          python /tmp/apply_detail_form_fixes.py
+
+          set +e
+          python /tmp/apply_detail_form_fixes.py 2>&1 | tee /tmp/detail-form-fix-error.log
+          status=${PIPESTATUS[0]}
+          set -e
+          if [ "$status" -ne 0 ]; then
+            mkdir -p docs
+            cp /tmp/detail-form-fix-error.log docs/detail-form-fix-error.log
+            git config user.name 'github-actions[bot]'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git add docs/detail-form-fix-error.log
+            git commit -m 'Registra errore applicazione correzioni forme'
+            git push origin HEAD:fix/evolution-form-detail-sync
+            exit "$status"
+          fi
+
           rm -f .github/workflows/retry-detail-form-fixes.yml
 
       - name: Format changed Dart files

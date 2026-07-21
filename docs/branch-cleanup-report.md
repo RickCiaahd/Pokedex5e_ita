@@ -1,0 +1,105 @@
+# Report pulizia branch
+
+Audit eseguito automaticamente il 2026-07-21 20:06 UTC.
+
+- Branch remoti totali rilevati: **95**
+- Branch eliminabili con criterio conservativo: **81**
+- Branch conservati o da verificare: **13**
+
+## Eliminabili automaticamente
+- `agent/battle-companion-characteristics` — testa identica a una PR già integrata
+- `agent/breeding-eggs-core` — testa identica a una PR già integrata
+- `agent/data-quality-ci` — testa identica a una PR già integrata
+- `agent/egg-pc-storage-and-layout` — testa identica a una PR già integrata
+- `agent/eggs-in-team-and-daycare` — testa identica a una PR già integrata
+- `agent/encounter-master-fight` — testa identica a una PR già integrata
+- `agent/menu-navigation-polish` — testa identica a una PR già integrata
+- `agent/remove-duplicate-round-control` — testa identica a una PR già integrata
+- `agent/status-assistance` — testa identica a una PR già integrata
+- `agent/trainer-path-automation` — testa identica a una PR già integrata
+- `agent/trainer-path-passives` — testa identica a una PR già integrata
+- `agent/use-egg-sprite` — testa identica a una PR già integrata
+- `chore/project-cleanup` — testa identica a una PR già integrata
+- `chore/release-1.0.0-cleanup` — testa identica a una PR già integrata
+- `feat/encounter-generator` — testa identica a una PR già integrata
+- `feat/form-aware-evolution-wrapper` — testa identica a una PR già integrata
+- `feat/form-aware-pokedex-v2` — testa identica a una PR già integrata
+- `feat/form-mechanics` — testa identica a una PR già integrata
+- `feat/form-pokedex-metadata` — interamente contenuto in main
+- `feat/npc-trainer-generator` — testa identica a una PR già integrata
+- `feat/persistent-battle-session` — interamente contenuto in main
+- `feat/pokemon-generator-multi-select` — interamente contenuto in main
+- `feat/pokemon-generator-tools` — interamente contenuto in main
+- `feat/profile-backup-transfer` — interamente contenuto in main
+- `feat/saved-encounter-library` — testa identica a una PR già integrata
+- `feature/battle-environment` — testa identica a una PR già integrata
+- `feature/battle-form-switching` — testa identica a una PR già integrata
+- `feature/breeder-traits` — testa identica a una PR già integrata
+- `feature/campaign-content-transfer` — interamente contenuto in main
+- `feature/fakemon-backup-safe-delete` — testa identica a una PR già integrata
+- `feature/fakemon-core` — testa identica a una PR già integrata
+- `feature/fakemon-portable-transfers` — testa identica a una PR già integrata
+- `feature/full-move-catalog-fix` — testa identica a una PR già integrata
+- `feature/issue-61-fakemon-phase-7` — testa identica a una PR già integrata
+- `feature/native-content-sharing` — interamente contenuto in main
+- `feature/targeted-pokemon-team-transfer` — testa identica a una PR già integrata
+- `fix/breeding-first-egg` — testa identica a una PR già integrata
+- `fix/breeding-hatch-pc` — testa identica a una PR già integrata
+- `fix/bundle-all-shiny-assets` — testa identica a una PR già integrata
+- `fix/custom-move-web-404` — testa identica a una PR già integrata
+- `fix/encounter-tabs-and-forms` — testa identica a una PR già integrata
+- `fix/fakemon-exclusive-move-visibility` — testa identica a una PR già integrata
+- `fix/generator-result-visibility` — interamente contenuto in main
+- `fix/italian-pokemon-trainer-ui-final` — testa identica a una PR già integrata
+- `fix/italian-ui-terminology` — testa identica a una PR già integrata
+- `fix/master-fight-analyzer-cleanup` — interamente contenuto in main
+- `fix/master-fight-hp-types-v2` — interamente contenuto in main
+- `fix/master-fight-nullable-save-final` — interamente contenuto in main
+- `fix/pokedex-filter-material` — testa identica a una PR già integrata
+- `fix/pokedex-summary-dialog-layout` — interamente contenuto in main
+- `fix/shiny-alternate-forms` — testa identica a una PR già integrata
+- `fix/shiny-detail-artwork` — testa identica a una PR già integrata
+- `fix/visible-share-actions` — interamente contenuto in main
+- `polish/layout-final-battle-master` — testa identica a una PR già integrata
+- `polish/layout-home-pokedex-pc-bag` — interamente contenuto in main
+- `polish/layout-shell-team` — interamente contenuto in main
+- `release/1.1.0` — interamente contenuto in main
+- `release/android-1.0.0` — interamente contenuto in main
+- `release/v1.0.1` — testa identica a una PR già integrata
+- `translation/abilities` — testa identica a una PR già integrata
+- `translation/ability-names` — testa identica a una PR già integrata
+- `translation/category-audit` — testa identica a una PR già integrata
+- `translation/italian-content-audit` — testa identica a una PR già integrata
+- `translation/item-berries` — testa identica a una PR già integrata
+- `translation/item-evolution` — testa identica a una PR già integrata
+- `translation/item-held` — testa identica a una PR già integrata
+- `translation/item-trainer-gear` — testa identica a una PR già integrata
+- `translation/items-audit` — testa identica a una PR già integrata
+- `translation/moves-051-250` — testa identica a una PR già integrata
+- `translation/moves-251-450` — testa identica a una PR già integrata
+- `translation/moves-451-650` — testa identica a una PR già integrata
+- `translation/moves-651-830` — testa identica a una PR già integrata
+- `translation/moves-audit` — testa identica a una PR già integrata
+- `translation/pokemon-gen2` — testa identica a una PR già integrata
+- `translation/pokemon-gen3` — testa identica a una PR già integrata
+- `translation/pokemon-gen4` — testa identica a una PR già integrata
+- `translation/pokemon-gen5` — testa identica a una PR già integrata
+- `translation/pokemon-gen6` — testa identica a una PR già integrata
+- `translation/pokemon-gen7` — testa identica a una PR già integrata
+- `translation/pokemon-gen8` — testa identica a una PR già integrata
+- `translation/pokemon-gen9` — testa identica a una PR già integrata
+
+## Conservati
+- `agent/complete-pokemon-breeder` — contiene modifiche non dimostrate come integrate
+- `chore/branch-cleanup-audit` — contiene modifiche non dimostrate come integrate
+- `feat/form-aware-evolutions` — contiene modifiche non dimostrate come integrate
+- `feat/form-aware-pokedex` — contiene modifiche non dimostrate come integrate
+- `feat/npc-library-master-fight` — contiene modifiche non dimostrate come integrate
+- `feature/full-move-catalog` — contiene modifiche non dimostrate come integrate
+- `feature/full-move-catalog-impl` — contiene modifiche non dimostrate come integrate
+- `fix/battle-ac-badge` — contiene modifiche non dimostrate come integrate
+- `fix/italian-pokemon-trainer-ui` — contiene modifiche non dimostrate come integrate
+- `fix/italian-pokemon-trainer-ui-clean` — contiene modifiche non dimostrate come integrate
+- `fix/master-fight-hp-and-move-types` — contiene modifiche non dimostrate come integrate
+- `release/publish-v1.0.1` — contiene modifiche non dimostrate come integrate
+- `trigger/ac-badge-main` — contiene modifiche non dimostrate come integrate

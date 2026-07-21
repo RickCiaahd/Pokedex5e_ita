@@ -3,8 +3,10 @@ import '../../models/pokemon.dart';
 /// Builds bundled asset candidates for visible male/female differences.
 ///
 /// Gender remains a property of the caught Pokémon and is not exposed as a
-/// Pokédex form. Files live directly inside the already registered species (or
-/// permanent-form) folder, so adding them does not require a pubspec update.
+/// Pokédex form. Both supported layouts are accepted:
+///
+/// - dedicated folders such as `meowstic-m/` and `pyroar-f/`;
+/// - suffixed files such as `pikachu/main-f.png`.
 class PokemonGenderAssetPaths {
   const PokemonGenderAssetPaths._();
 
@@ -29,6 +31,29 @@ class PokemonGenderAssetPaths {
       if (!paths.contains(value)) paths.add(value);
     }
 
+    // Prefer existing dedicated folders. This is the layout already used by
+    // Indeedee, Meowstic and Pyroar.
+    for (final folder in folders) {
+      for (final genderSlug in genderSlugs) {
+        final dedicatedFolders = <String>[
+          '$folder-$genderSlug',
+          '$folder/$genderSlug',
+        ];
+        for (final dedicatedFolder in dedicatedFolders) {
+          if (isShiny) {
+            add('$dedicatedFolder/$primary-shiny.png');
+            add('$dedicatedFolder/$secondary-shiny.png');
+          }
+          add('$dedicatedFolder/$primary.png');
+          add('$dedicatedFolder/$secondary.png');
+          add('$dedicatedFolder/main.png');
+          add('$dedicatedFolder/sprite.png');
+        }
+      }
+    }
+
+    // Then support the newer convention where both sexes live in the same
+    // species folder with `-m` / `-f` suffixes.
     for (final folder in folders) {
       for (final genderSlug in genderSlugs) {
         if (isShiny) {
@@ -54,11 +79,22 @@ class PokemonGenderAssetPaths {
 
   static List<String> _folderCandidates(Pokemon pokemon, String? formName) {
     final folders = <String>[];
-    final speciesSlugs = <String>{
-      _slug(pokemon.name),
-      if (pokemon.assetSlug?.trim().isNotEmpty == true)
-        _slug(pokemon.assetSlug!),
-    }..removeWhere((value) => value.isEmpty);
+    final speciesSlugs = <String>[];
+
+    void addSpeciesSlug(String value) {
+      final slug = _slug(value);
+      if (slug.isEmpty) return;
+
+      final baseSlug = _withoutGenderSuffix(slug);
+      if (baseSlug.isNotEmpty && !speciesSlugs.contains(baseSlug)) {
+        speciesSlugs.add(baseSlug);
+      }
+      if (!speciesSlugs.contains(slug)) speciesSlugs.add(slug);
+    }
+
+    addSpeciesSlug(pokemon.name);
+    final assetSlug = pokemon.assetSlug?.trim();
+    if (assetSlug != null && assetSlug.isNotEmpty) addSpeciesSlug(assetSlug);
 
     final formKey = Pokemon.formReferenceKey(formName ?? '', pokemon.name);
     final formSlugs = _formSlugs(formKey);
@@ -80,6 +116,13 @@ class PokemonGenderAssetPaths {
     }
 
     return folders;
+  }
+
+  static String _withoutGenderSuffix(String slug) {
+    return slug.replaceFirst(
+      RegExp(r'-(?:m|male|f|female)$', caseSensitive: false),
+      '',
+    );
   }
 
   static List<String> _formSlugs(String formKey) {

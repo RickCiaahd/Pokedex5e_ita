@@ -1,6 +1,11 @@
 name: Branch cleanup audit
 
 on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '.github/branch-cleanup-trigger'
   push:
     branches:
       - main

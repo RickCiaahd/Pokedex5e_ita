@@ -31,10 +31,10 @@
       "description": "Quando Darmanitan scende al 50% o meno dei propri PF massimi, l’abilità Stato Zen gli fa assumere lo Stato Zen. In questa forma diventa di tipo Fuoco/Psico, ottiene +4 alla CA e scambia i punteggi di FOR e SAG."
     },
     "zen-mode-galarian": {
-      "description": "Quando Darmanitan di Galar scende al 50% o meno dei propri PF massimi, l’abilità Stato Zen gli fa assumere lo Stato Zen di Galar. In questa forma diventa di tipo Ghiaccio/Fuoco e i suoi punteggi di FOR e DES aumentano entrambi di 2."
+      "description": "Quando Darmanitan di Galar scende al 50% o meno dei propri PF massimi, l’abilità Stato Zen gli fa assumere lo Stato Zen di Galar. In questa forma diventa di tipo Ghiaccio/Fuoco e i suoi punteggi di FOR e DES aumentano entrambi di +2."
     },
     "zero-to-hero": {
-      "description": "Supercambio consente a Palafin di assumere la Forma Possente. Nelle regole dell’app, durante la lotta la Forma Possente è di taglia Media, ottiene +4 alla CA e aumenta FOR e DES di 4, fino a un massimo di 22. Al termine della lotta Palafin torna automaticamente alla Forma Ingenua."
+      "description": "Supercambio consente a Palafin di assumere la Forma Possente (Hero Form). Nelle regole dell’app, durante la lotta la Forma Possente è di taglia Media, aumenta la CA di 4 e aumenta FOR e DES di 4, fino a un massimo di 22. Al termine della lotta Palafin torna automaticamente alla Forma Ingenua."
     }
   }
 }

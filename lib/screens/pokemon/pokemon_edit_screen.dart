@@ -879,13 +879,14 @@ class _FormPickerSheet extends StatelessWidget {
                   title: Text(
                     _localizedFormLabel(pokemon, choice.name).toUpperCase(),
                   ),
-                  trailing: BattleFormChangeService.supports(pokemon)
-                      ? BattleFormChangeService.sameForm(
-                          pokemon,
-                          currentFormName,
-                          choice.name,
-                        )
-                      : choice.name == currentFormName
+                  trailing:
+                      (BattleFormChangeService.supports(pokemon)
+                          ? BattleFormChangeService.sameForm(
+                              pokemon,
+                              currentFormName,
+                              choice.name,
+                            )
+                          : choice.name == currentFormName)
                       ? const Icon(Icons.check_circle)
                       : const Icon(Icons.radio_button_unchecked),
                   onTap: () => Navigator.of(context).pop(choice.name),

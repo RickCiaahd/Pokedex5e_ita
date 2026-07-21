@@ -124,11 +124,11 @@ void main() {
       final complete = zygarde.resolveVariant(formName: 'Complete Forme');
 
       expect(ten.armorClass, 16);
-      expect(ten.attributes['DEX'], 19);
+      expect(ten.attributes.dexterity, 19);
       expect(fifty.armorClass, 18);
-      expect(fifty.attributes['CON'], 20);
+      expect(fifty.attributes.constitution, 20);
       expect(complete.armorClass, 20);
-      expect(complete.attributes['CON'], 30);
+      expect(complete.attributes.constitution, 30);
     },
   );
 

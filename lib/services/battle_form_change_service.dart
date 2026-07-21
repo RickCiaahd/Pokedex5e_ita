@@ -66,7 +66,11 @@ class BattleFormChangeService {
         if (raw == 'base' || raw == 'solo') return 'solo';
         return raw;
       case 'Minior':
-        if (raw == 'base' || raw == 'meteor') return 'meteor';
+        if (raw == 'base' || raw == 'meteor' || raw == 'meteor-form') {
+          return 'meteor';
+        }
+        if (raw == 'core' || raw == 'core-form') return 'core-red';
+        if (raw.startsWith('core-')) return raw;
         return raw;
       case 'Mimikyu':
         if (raw == 'base' || raw == 'disguised') return 'disguised';
@@ -136,7 +140,16 @@ class BattleFormChangeService {
         order = const ['solo', 'school'];
         break;
       case 'Minior':
-        order = const ['meteor', 'core'];
+        order = const [
+          'meteor',
+          'core-red',
+          'core-orange',
+          'core-yellow',
+          'core-green',
+          'core-blue',
+          'core-indigo',
+          'core-violet',
+        ];
         break;
       case 'Mimikyu':
         order = const ['disguised', 'busted'];
@@ -235,7 +248,16 @@ class BattleFormChangeService {
       case 'Wishiwashi':
         return key == 'school' ? 'Forma Banco' : 'Forma Individuale';
       case 'Minior':
-        return key == 'core' ? 'Forma Nucleo' : 'Forma Meteora';
+        return switch (key) {
+          'core-red' => 'Nucleo Rosso',
+          'core-orange' => 'Nucleo Arancione',
+          'core-yellow' => 'Nucleo Giallo',
+          'core-green' => 'Nucleo Verde',
+          'core-blue' => 'Nucleo Azzurro',
+          'core-indigo' => 'Nucleo Indaco',
+          'core-violet' => 'Nucleo Violetto',
+          _ => 'Forma Meteora',
+        };
       case 'Mimikyu':
         return key == 'busted' ? 'Forma Smascherata' : 'Forma Mascherata';
       case 'Necrozma':
@@ -283,6 +305,8 @@ class BattleFormChangeService {
         return 'Accendilotta alterna Forma Spada e Forma Scudo in base alla mossa usata.';
       case 'Zygarde':
         return 'La Forma 50% è quella predefinita; usa le altre forme quando la situazione di gioco lo richiede.';
+      case 'Minior':
+        return 'Scudi Giù alterna la Forma Meteora e il Nucleo; il colore del Nucleo è soltanto estetico.';
       case 'Mimikyu':
         return 'Fantasmanto mantiene la Forma Mascherata finché i suoi PF temporanei non vengono esauriti.';
       case 'Palafin':

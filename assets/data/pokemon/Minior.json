@@ -102,7 +102,7 @@
     "default": "Meteor Form",
     "permanent": false,
     "variants": {
-      "Core Form": {
+      "Core Red": {
         "diff": {
           "AC": 14,
           "Abilities": [],
@@ -110,7 +110,73 @@
             "DEX": 18
           }
         },
-        "display": "Minior Core",
+        "display": "Minior Core Red",
+        "original_species": "Minior Core Form"
+      },
+      "Core Orange": {
+        "diff": {
+          "AC": 14,
+          "Abilities": [],
+          "attributes": {
+            "DEX": 18
+          }
+        },
+        "display": "Minior Core Orange",
+        "original_species": "Minior Core Form"
+      },
+      "Core Yellow": {
+        "diff": {
+          "AC": 14,
+          "Abilities": [],
+          "attributes": {
+            "DEX": 18
+          }
+        },
+        "display": "Minior Core Yellow",
+        "original_species": "Minior Core Form"
+      },
+      "Core Green": {
+        "diff": {
+          "AC": 14,
+          "Abilities": [],
+          "attributes": {
+            "DEX": 18
+          }
+        },
+        "display": "Minior Core Green",
+        "original_species": "Minior Core Form"
+      },
+      "Core Blue": {
+        "diff": {
+          "AC": 14,
+          "Abilities": [],
+          "attributes": {
+            "DEX": 18
+          }
+        },
+        "display": "Minior Core Blue",
+        "original_species": "Minior Core Form"
+      },
+      "Core Indigo": {
+        "diff": {
+          "AC": 14,
+          "Abilities": [],
+          "attributes": {
+            "DEX": 18
+          }
+        },
+        "display": "Minior Core Indigo",
+        "original_species": "Minior Core Form"
+      },
+      "Core Violet": {
+        "diff": {
+          "AC": 14,
+          "Abilities": [],
+          "attributes": {
+            "DEX": 18
+          }
+        },
+        "display": "Minior Core Violet",
         "original_species": "Minior Core Form"
       },
       "Meteor Form": {

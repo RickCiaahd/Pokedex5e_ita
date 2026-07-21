@@ -6,13 +6,12 @@ import 'package:flutter/services.dart';
 import '../../models/pokedex_entry.dart';
 import '../../models/pokemon.dart';
 import '../../models/pokemon_evolution_alias_registry.dart';
+import '../../models/pokemon_gender_appearance.dart';
 import '../../services/custom_pokemon_runtime_registry.dart';
 import 'pokemon_asset_image_legacy.dart' as legacy;
 import 'pokemon_gender_asset_paths.dart';
+import 'pokemon_minior_asset_paths.dart';
 
-/// Resolves temporary evolution aliases, user-provided Fakemon images and
-/// sex-specific bundled textures before delegating to the complete legacy
-/// asset resolver.
 class PokemonAssetImage extends StatelessWidget {
   const PokemonAssetImage({
     super.key,
@@ -41,13 +40,13 @@ class PokemonAssetImage extends StatelessWidget {
   Widget build(BuildContext context) {
     final alias = PokemonEvolutionAliasRegistry.aliasFor(pokemon.id);
     final effectivePokemon = alias?.basePokemon ?? pokemon;
-    final effectiveFormName = formName ?? alias?.formName;
+    final effectiveForm = formName ?? alias?.formName;
     final customBytes = CustomPokemonRuntimeRegistry.imageBytesFor(
       effectivePokemon.id,
     );
 
     if (customBytes != null) {
-      Widget image = Image.memory(
+      final custom = Image.memory(
         customBytes,
         width: size,
         height: size,
@@ -56,132 +55,93 @@ class PokemonAssetImage extends StatelessWidget {
         errorBuilder: (_, _, _) =>
             fallback ?? Icon(Icons.catching_pokemon, size: size * 0.48),
       );
-      final seen = entry?.seen ?? true;
-      final caught = entry?.caught ?? true;
-      if (!seen) {
-        image = ColorFiltered(
-          colorFilter: const ColorFilter.mode(Colors.black, BlendMode.srcATop),
-          child: image,
-        );
-      } else if (!caught) {
-        image = Opacity(
-          opacity: 0.56,
-          child: ColorFiltered(
-            colorFilter: const ColorFilter.matrix(<double>[
-              0.2126,
-              0.7152,
-              0.0722,
-              0,
-              52,
-              0.2126,
-              0.7152,
-              0.0722,
-              0,
-              52,
-              0.2126,
-              0.7152,
-              0.0722,
-              0,
-              52,
-              0,
-              0,
-              0,
-              1,
-              0,
-            ]),
-            child: image,
-          ),
-        );
-      }
-
       return SizedBox(
         key: ValueKey<String>('custom-${effectivePokemon.id}-$size'),
         width: size,
         height: size,
-        child: Center(child: image),
+        child: Center(child: _entryState(context, custom, entry)),
       );
     }
 
     final legacyImage = legacy.PokemonAssetImage(
       key: ValueKey<String>(
-        '${effectivePokemon.id}|${effectiveFormName ?? 'base'}|${gender ?? 'none'}|${isShiny ?? false}|$useLargeArtwork',
+        '${effectivePokemon.id}|${effectiveForm ?? 'base'}|${gender ?? 'none'}|${isShiny ?? false}|$useLargeArtwork',
       ),
       pokemon: effectivePokemon,
       size: size,
       fit: fit,
       useLargeArtwork: useLargeArtwork,
       entry: entry,
-      formName: effectiveFormName,
+      formName: effectiveForm,
       gender: gender,
       isShiny: isShiny,
       fallback: fallback,
     );
 
-    final genderCandidates = PokemonGenderAssetPaths.candidates(
-      pokemon: effectivePokemon,
-      useLargeArtwork: useLargeArtwork,
-      formName: effectiveFormName,
-      gender: gender,
-      isShiny: isShiny ?? false,
-    );
-    if (genderCandidates.isEmpty) return legacyImage;
-
-    return _GenderAwareBundledImage(
-      key: ValueKey<String>(
-        'gender-${effectivePokemon.id}-${effectiveFormName ?? 'base'}-${gender ?? 'none'}-${isShiny ?? false}-$useLargeArtwork',
+    final assetGender = gender ??
+        (PokemonGenderAppearance.hasVisibleDifference(effectivePokemon)
+            ? 'male'
+            : null);
+    final candidates = <String>[
+      ...PokemonMiniorAssetPaths.candidates(
+        pokemon: effectivePokemon,
+        useLargeArtwork: useLargeArtwork,
+        formName: effectiveForm,
+        isShiny: isShiny ?? false,
       ),
-      candidates: genderCandidates,
+      ...PokemonGenderAssetPaths.candidates(
+        pokemon: effectivePokemon,
+        useLargeArtwork: useLargeArtwork,
+        formName: effectiveForm,
+        gender: assetGender,
+        isShiny: isShiny ?? false,
+      ),
+    ];
+    if (candidates.isEmpty) return legacyImage;
+
+    return _PreferredAssetImage(
+      key: ValueKey<String>(
+        'preferred-${effectivePokemon.id}-${effectiveForm ?? 'base'}-${assetGender ?? 'none'}-${isShiny ?? false}-$useLargeArtwork',
+      ),
+      candidates: candidates,
       fallback: legacyImage,
       entry: entry,
       size: size,
       fit: fit,
-      visualScale: useLargeArtwork ? 1.08 : 1.12,
+      scale: useLargeArtwork ? 1.08 : 1.12,
     );
   }
 }
 
-class _GenderAwareBundledImage extends StatefulWidget {
-  const _GenderAwareBundledImage({
+class _PreferredAssetImage extends StatelessWidget {
+  const _PreferredAssetImage({
     super.key,
     required this.candidates,
     required this.fallback,
     required this.entry,
     required this.size,
     required this.fit,
-    required this.visualScale,
+    required this.scale,
   });
+
+  static Future<Set<String>>? _manifestPaths;
 
   final List<String> candidates;
   final Widget fallback;
   final PokedexEntry? entry;
   final double size;
   final BoxFit fit;
-  final double visualScale;
+  final double scale;
 
-  @override
-  State<_GenderAwareBundledImage> createState() =>
-      _GenderAwareBundledImageState();
-}
-
-class _GenderAwareBundledImageState extends State<_GenderAwareBundledImage> {
-  static Future<Set<String>>? _assetPathsFuture;
-  late final Future<String?> _resolvedAssetPath;
-
-  @override
-  void initState() {
-    super.initState();
-    _resolvedAssetPath = _firstExisting(widget.candidates);
-  }
-
-  static Future<Set<String>> _assetPaths() {
-    return _assetPathsFuture ??= AssetManifest.loadFromAssetBundle(rootBundle)
+  static Future<Set<String>> _paths() {
+    return _manifestPaths ??= AssetManifest.loadFromAssetBundle(rootBundle)
         .then((manifest) => manifest.listAssets().toSet());
   }
 
-  static Future<String?> _firstExisting(List<String> candidates) async {
-    final assets = await _assetPaths();
+  Future<String?> _resolve() async {
+    final paths = await _paths();
     for (final candidate in candidates) {
-      if (assets.contains(candidate)) return candidate;
+      if (paths.contains(candidate)) return candidate;
     }
     return null;
   }
@@ -189,69 +149,59 @@ class _GenderAwareBundledImageState extends State<_GenderAwareBundledImage> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<String?>(
-      future: _resolvedAssetPath,
+      future: _resolve(),
       builder: (context, snapshot) {
-        final assetPath = snapshot.data;
-        if (assetPath == null) return widget.fallback;
-
-        Widget image = Image.asset(
-          assetPath,
-          width: widget.size,
-          height: widget.size,
-          fit: widget.fit,
+        final path = snapshot.data;
+        if (path == null) return fallback;
+        final image = Image.asset(
+          path,
+          width: size,
+          height: size,
+          fit: fit,
           filterQuality: FilterQuality.medium,
-          errorBuilder: (_, _, _) => widget.fallback,
+          errorBuilder: (_, _, _) => fallback,
         );
-
-        final seen = widget.entry?.seen ?? true;
-        final caught = widget.entry?.caught ?? true;
-        if (!seen) {
-          image = ColorFiltered(
-            colorFilter: const ColorFilter.mode(
-              Colors.black,
-              BlendMode.srcATop,
-            ),
-            child: image,
-          );
-        } else if (!caught) {
-          image = Opacity(
-            opacity: 0.56,
-            child: ColorFiltered(
-              colorFilter: const ColorFilter.matrix(<double>[
-                0.2126,
-                0.7152,
-                0.0722,
-                0,
-                52,
-                0.2126,
-                0.7152,
-                0.0722,
-                0,
-                52,
-                0.2126,
-                0.7152,
-                0.0722,
-                0,
-                52,
-                0,
-                0,
-                0,
-                1,
-                0,
-              ]),
-              child: image,
-            ),
-          );
-        }
-
         return SizedBox(
-          width: widget.size,
-          height: widget.size,
+          width: size,
+          height: size,
           child: Center(
-            child: Transform.scale(scale: widget.visualScale, child: image),
+            child: Transform.scale(
+              scale: scale,
+              child: _entryState(context, image, entry),
+            ),
           ),
         );
       },
     );
   }
+}
+
+Widget _entryState(
+  BuildContext context,
+  Widget image,
+  PokedexEntry? entry,
+) {
+  final seen = entry?.seen ?? true;
+  final caught = entry?.caught ?? true;
+  if (!seen) {
+    return ColorFiltered(
+      colorFilter: const ColorFilter.mode(Colors.black, BlendMode.srcATop),
+      child: image,
+    );
+  }
+  if (!caught) {
+    return Opacity(
+      opacity: 0.56,
+      child: ColorFiltered(
+        colorFilter: const ColorFilter.matrix(<double>[
+          0.2126, 0.7152, 0.0722, 0, 52,
+          0.2126, 0.7152, 0.0722, 0, 52,
+          0.2126, 0.7152, 0.0722, 0, 52,
+          0, 0, 0, 1, 0,
+        ]),
+        child: image,
+      ),
+    );
+  }
+  return image;
 }

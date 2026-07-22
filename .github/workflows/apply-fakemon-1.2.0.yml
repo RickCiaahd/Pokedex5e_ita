@@ -42,6 +42,16 @@ jobs:
         if: steps.patch.outputs.pending == 'true'
         shell: bash
         run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('tool/apply_fakemon_1_2_0.py')
+          source = path.read_text(encoding='utf-8')
+          source = source.replace(
+              "raise SystemExit(f'{path}: expected one match, found {count}')",
+              "raise SystemExit(f'{path}: expected one match, found {count}; marker={old[:240]!r}')",
+          )
+          path.write_text(source, encoding='utf-8')
+          PY
           set +e
           python tool/apply_fakemon_1_2_0.py 2>&1 | tee /tmp/fakemon-1.2.0-error.log
           status=${PIPESTATUS[0]}
@@ -49,7 +59,11 @@ jobs:
           if [ "$status" -ne 0 ]; then
             exit "$status"
           fi
-          rm -f tool/apply_fakemon_1_2_0.py docs/fakemon-1.2.0-error.log docs/trigger-fakemon-1.2.0-retry.txt
+          rm -f \
+            tool/apply_fakemon_1_2_0.py \
+            docs/fakemon-1.2.0-error.log \
+            docs/trigger-fakemon-1.2.0-retry.txt \
+            docs/trigger-fakemon-1.2.0-diagnostics.txt
 
       - name: Upload patch diagnostics
         if: failure()

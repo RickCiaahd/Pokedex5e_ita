@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
+import '../../models/custom_pokemon_advanced_data.dart';
 import '../../models/custom_pokemon_definition.dart';
 import '../../models/move_data.dart';
 import '../../models/pokemon_attributes.dart';
@@ -12,12 +13,14 @@ import '../../repositories/custom_pokemon_repository.dart';
 import '../../repositories/move_repository.dart';
 import '../../repositories/pokemon_repository.dart';
 import '../../services/custom_pokemon_catalog_service.dart';
+import '../../services/custom_pokemon_discovery_service.dart';
 import '../../services/custom_pokemon_reference_service.dart';
 import '../../services/custom_pokemon_transfer_service.dart';
 import '../../services/native_share_service.dart';
 import '../../widgets/layout/responsive_content.dart';
 import '../../widgets/navigation/home_leading_button.dart';
 import '../../widgets/pokemon/pokemon_asset_image.dart';
+import 'custom_pokemon_advanced_editor_screen.dart';
 
 enum _ImportChoice { update, copy }
 
@@ -39,6 +42,8 @@ class _CustomPokemonLibraryScreenState
       CustomPokemonCatalogService();
   final CustomPokemonReferenceService _referenceService =
       CustomPokemonReferenceService();
+  final CustomPokemonDiscoveryService _discoveryService =
+      CustomPokemonDiscoveryService();
 
   List<CustomPokemonDefinition> _definitions = const [];
   bool _isLoading = true;
@@ -55,9 +60,12 @@ class _CustomPokemonLibraryScreenState
   Future<void> _load() async {
     try {
       final definitions = await _repository.getAll();
+      final visibleDefinitions = await _discoveryService.visibleDefinitions(
+        definitions,
+      );
       if (!mounted) return;
       setState(() {
-        _definitions = definitions;
+        _definitions = visibleDefinitions;
         _isLoading = false;
       });
     } catch (error) {
@@ -266,14 +274,41 @@ class _CustomPokemonLibraryScreenState
 
   Future<void> _export(CustomPokemonDefinition definition) async {
     if (_isBusy) return;
+    var sealed = false;
+    if (definition.advanced.secretUntilDiscovered) {
+      final choice = await showDialog<bool>(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: const Text('Modalità esportazione'),
+          content: const Text(
+            'Il pacchetto segreto non mostra nome, immagine o dati nell’app del giocatore prima della scoperta.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('NORMALE'),
+            ),
+            FilledButton.icon(
+              onPressed: () => Navigator.of(context).pop(true),
+              icon: const Icon(Icons.lock_outline),
+              label: const Text('SEGRETA'),
+            ),
+          ],
+        ),
+      );
+      if (choice == null) return;
+      sealed = choice;
+    }
     setState(() => _isBusy = true);
     try {
-      final encoded = _transferService.encode(definition);
+      final encoded = _transferService.encode(definition, sealed: sealed);
       final result = await FilePicker.platform.saveFile(
-        dialogTitle: 'Esporta ${definition.name}',
-        fileName: _transferService.fileNameFor(definition),
+        dialogTitle: sealed
+            ? 'Esporta contenuto segreto'
+            : 'Esporta ${definition.name}',
+        fileName: _transferService.fileNameFor(definition, sealed: sealed),
         type: FileType.custom,
-        allowedExtensions: const ['p5fakemon'],
+        allowedExtensions: sealed ? const ['p5secret'] : const ['p5fakemon'],
         bytes: Uint8List.fromList(utf8.encode(encoded)),
       );
       _setMessage(
@@ -294,8 +329,14 @@ class _CustomPokemonLibraryScreenState
     try {
       final outcome = await _shareService.shareTextFile(
         context: context,
-        content: _transferService.encode(definition),
-        fileName: _transferService.fileNameFor(definition),
+        content: _transferService.encode(
+          definition,
+          sealed: definition.advanced.secretUntilDiscovered,
+        ),
+        fileName: _transferService.fileNameFor(
+          definition,
+          sealed: definition.advanced.secretUntilDiscovered,
+        ),
         mimeType: 'application/json',
         title: 'Condividi ${definition.name}',
         subject: 'Fakemon ${definition.name}',
@@ -321,7 +362,7 @@ class _CustomPokemonLibraryScreenState
       final result = await FilePicker.platform.pickFiles(
         dialogTitle: 'Importa Fakemon',
         type: FileType.custom,
-        allowedExtensions: const ['p5fakemon', 'json'],
+        allowedExtensions: const ['p5fakemon', 'p5secret', 'json'],
         allowMultiple: false,
         withData: true,
       );
@@ -361,7 +402,9 @@ class _CustomPokemonLibraryScreenState
       PokemonRepository.clearCache();
       await _load();
       _setMessage(
-        imported.updatedExisting
+        bundle.sealed
+            ? 'Contenuto segreto installato. Sarà rivelato al momento della cattura o dell’evoluzione.'
+            : imported.updatedExisting
             ? '${imported.definition.name} aggiornato.'
             : '${imported.definition.name} importato.',
       );
@@ -554,6 +597,7 @@ class _CustomPokemonEditorScreenState extends State<CustomPokemonEditorScreen> {
   String? _imageMimeType;
   List<CustomPokemonMoveDefinition> _localMoves = [];
   List<CustomPokemonAbilityDefinition> _localAbilities = [];
+  CustomPokemonAdvancedData _advanced = const CustomPokemonAdvancedData();
   List<MoveData> _globalMoves = const [];
   Map<String, String> _globalAbilities = const {};
   bool _loadingCatalogs = true;
@@ -635,6 +679,7 @@ class _CustomPokemonEditorScreenState extends State<CustomPokemonEditorScreen> {
     _imageMimeType = definition?.imageMimeType;
     _localMoves = [...?definition?.localMoves];
     _localAbilities = [...?definition?.localAbilities];
+    _advanced = definition?.advanced ?? const CustomPokemonAdvancedData();
     _loadCatalogs();
   }
 
@@ -725,7 +770,8 @@ class _CustomPokemonEditorScreenState extends State<CustomPokemonEditorScreen> {
     final values = _csv(controller.text);
     if (!values.any(
       (value) =>
-          MoveData.referenceKey(value) == MoveData.referenceKey(move.technicalName),
+          MoveData.referenceKey(value) ==
+          MoveData.referenceKey(move.technicalName),
     )) {
       values.add(move.technicalName);
       controller.text = values.join(', ');
@@ -757,6 +803,22 @@ class _CustomPokemonEditorScreenState extends State<CustomPokemonEditorScreen> {
       if (!names.contains(definition.name)) names.add(definition.name);
       _abilities.text = names.join(', ');
     });
+  }
+
+  Future<void> _openAdvancedEditor() async {
+    final result = await Navigator.of(context).push<CustomPokemonAdvancedData>(
+      MaterialPageRoute(
+        builder: (_) => CustomPokemonAdvancedEditorScreen(
+          initial: _advanced,
+          currentName: _name.text.trim().isEmpty
+              ? 'Nuovo Fakemon'
+              : _name.text.trim(),
+          currentPokemonId: widget.definition?.pokemonId,
+        ),
+      ),
+    );
+    if (!mounted || result == null) return;
+    setState(() => _advanced = result);
   }
 
   Future<void> _addLocalMove() async {
@@ -834,6 +896,7 @@ class _CustomPokemonEditorScreenState extends State<CustomPokemonEditorScreen> {
         imageBase64: imageBytes == null ? null : base64Encode(imageBytes),
         localMoves: _localMoves,
         localAbilities: _localAbilities,
+        advanced: _advanced,
       );
       await _repository.save(definition);
       PokemonRepository.clearCache();
@@ -1079,6 +1142,30 @@ class _CustomPokemonEditorScreenState extends State<CustomPokemonEditorScreen> {
                         icon: const Icon(Icons.delete_outline),
                       ),
                     ),
+                ],
+              ),
+              _EditorSection(
+                title: 'Evoluzioni, forme e segreti',
+                children: [
+                  Text(
+                    '${_advanced.evolvesFrom.length} pre-evoluzioni · '
+                    '${_advanced.evolvesTo.length} evoluzioni · '
+                    '${_advanced.forms.length} forme',
+                  ),
+                  if (_advanced.secretUntilDiscovered)
+                    const ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      leading: Icon(Icons.lock_outline),
+                      title: Text('Esportazione segreta disponibile'),
+                      subtitle: Text(
+                        'Il giocatore non vedrà il contenuto prima della scoperta.',
+                      ),
+                    ),
+                  FilledButton.tonalIcon(
+                    onPressed: _openAdvancedEditor,
+                    icon: const Icon(Icons.account_tree_outlined),
+                    label: const Text('APRI EDITOR AVANZATO'),
+                  ),
                 ],
               ),
               _EditorSection(
@@ -1347,6 +1434,14 @@ class _FakemonCard extends StatelessWidget {
                     ),
                   ),
                   Text('di ${definition.author} · ID ${definition.pokemonId}'),
+                  if (definition.advanced.secretUntilDiscovered)
+                    const Padding(
+                      padding: EdgeInsets.only(top: 4),
+                      child: Chip(
+                        avatar: Icon(Icons.lock_outline, size: 18),
+                        label: Text('CONTENUTO SEGRETO'),
+                      ),
+                    ),
                   const SizedBox(height: 6),
                   Wrap(
                     spacing: 6,

@@ -22,8 +22,17 @@ class CustomPokemonTransferService {
 
   final CustomPokemonRepository _repository;
 
-  String encode(CustomPokemonDefinition definition) {
-    final bundle = CustomPokemonTransferBundle.create(definition);
+  String encode(CustomPokemonDefinition definition, {bool sealed = false}) {
+    final exportedDefinition = CustomPokemonDefinition.fromJson({
+      ...definition.toJson(),
+      'advanced': definition.advanced
+          .copyWith(clearSealedForPlayer: true)
+          .toJson(),
+    });
+    final bundle = CustomPokemonTransferBundle.create(
+      exportedDefinition,
+      sealed: sealed,
+    );
     return const JsonEncoder.withIndent('  ').convert(bundle.toJson());
   }
 
@@ -42,12 +51,18 @@ class CustomPokemonTransferService {
     );
   }
 
-  String fileNameFor(CustomPokemonDefinition definition) {
+  String fileNameFor(
+    CustomPokemonDefinition definition, {
+    bool sealed = false,
+  }) {
     final safeName = definition.name
         .trim()
         .toLowerCase()
         .replaceAll(RegExp(r'[^a-z0-9àèéìòù]+'), '-')
         .replaceAll(RegExp(r'^-+|-+$'), '');
+    if (sealed) {
+      return 'contenuto-campagna-${definition.stableId.hashCode.abs()}.p5secret';
+    }
     return '${safeName.isEmpty ? 'fakemon' : safeName}.p5fakemon';
   }
 
@@ -55,7 +70,13 @@ class CustomPokemonTransferService {
     CustomPokemonTransferBundle bundle, {
     bool duplicate = false,
   }) async {
-    final incoming = bundle.definition;
+    final incomingBase = bundle.definition;
+    final incoming = CustomPokemonDefinition.fromJson({
+      ...incomingBase.toJson(),
+      'advanced': incomingBase.advanced
+          .copyWith(sealedForPlayer: bundle.sealed)
+          .toJson(),
+    });
     final existing = await _repository.getByStableId(incoming.stableId);
     final now = DateTime.now().toUtc();
 
@@ -150,6 +171,9 @@ class CustomPokemonTransferService {
       creatorNotes: source.creatorNotes,
       imageMimeType: source.imageMimeType,
       imageBase64: source.imageBase64,
+      shinyImageMimeType: source.shinyImageMimeType,
+      shinyImageBase64: source.shinyImageBase64,
+      advanced: source.advanced,
       localMoves: List<CustomPokemonMoveDefinition>.from(source.localMoves),
       localAbilities: List<CustomPokemonAbilityDefinition>.from(
         source.localAbilities,

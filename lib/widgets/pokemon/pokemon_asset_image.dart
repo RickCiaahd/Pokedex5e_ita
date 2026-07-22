@@ -169,6 +169,8 @@ class PokemonAssetImage extends StatelessWidget {
     final effectiveForm = formName ?? alias?.formName;
     final customBytes = CustomPokemonRuntimeRegistry.imageBytesFor(
       effectivePokemon.id,
+      formName: effectiveForm,
+      shiny: isShiny ?? false,
     );
 
     if (customBytes != null) {
@@ -182,7 +184,9 @@ class PokemonAssetImage extends StatelessWidget {
             fallback ?? Icon(Icons.catching_pokemon, size: size * 0.48),
       );
       return SizedBox(
-        key: ValueKey<String>('custom-${effectivePokemon.id}-$size'),
+        key: ValueKey<String>(
+          'custom-${effectivePokemon.id}-${effectiveForm ?? 'base'}-${isShiny ?? false}-$size',
+        ),
         width: size,
         height: size,
         child: Center(child: _entryState(context, custom, entry)),

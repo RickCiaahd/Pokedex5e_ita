@@ -38,9 +38,9 @@ class EvolutionSelectorSheet extends StatelessWidget {
           children: [
             Text(
               title,
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w900,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
             ),
             const SizedBox(height: 4),
             Text(description),
@@ -86,11 +86,19 @@ class _EvolutionChoiceTile extends StatelessWidget {
     return Card(
       child: ListTile(
         enabled: isAvailable,
-        leading: targetPokemon == null
+        leading: choice.option.isSecret
+            ? const Icon(Icons.lock_outline, size: 36)
+            : targetPokemon == null
             ? const Icon(Icons.catching_pokemon)
-            : PokemonAssetImage(pokemon: targetPokemon, size: 52),
+            : PokemonAssetImage(
+                pokemon: targetPokemon,
+                formName: choice.option.targetFormName,
+                size: 52,
+              ),
         title: Text(
-          choice.option.toName.toUpperCase(),
+          choice.option.isSecret
+              ? 'EVOLUZIONE SCONOSCIUTA'
+              : choice.option.toName.toUpperCase(),
           style: const TextStyle(fontWeight: FontWeight.w900),
         ),
         subtitle: Padding(
@@ -98,6 +106,14 @@ class _EvolutionChoiceTile extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              if (choice.option.isSecret &&
+                  choice.option.secretHint?.trim().isNotEmpty == true) ...[
+                Text(
+                  choice.option.secretHint!,
+                  style: const TextStyle(fontStyle: FontStyle.italic),
+                ),
+                const SizedBox(height: 6),
+              ],
               if (conditionLabels.isNotEmpty)
                 Wrap(
                   spacing: 6,
@@ -168,9 +184,9 @@ class _ConditionChip extends StatelessWidget {
         child: Text(
           label,
           style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                color: foreground,
-                fontWeight: FontWeight.w900,
-              ),
+            color: foreground,
+            fontWeight: FontWeight.w900,
+          ),
         ),
       ),
     );

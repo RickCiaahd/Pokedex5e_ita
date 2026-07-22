@@ -32,13 +32,14 @@ class EvolutionData {
     int currentStage = 1,
     int totalStages = 1,
   }) {
-    final sortedOptions = [...options]..sort((a, b) {
-      final levelCompare = (a.levelCondition ?? 0).compareTo(
-        b.levelCondition ?? 0,
-      );
-      if (levelCompare != 0) return levelCompare;
-      return a.toName.compareTo(b.toName);
-    });
+    final sortedOptions = [...options]
+      ..sort((a, b) {
+        final levelCompare = (a.levelCondition ?? 0).compareTo(
+          b.levelCondition ?? 0,
+        );
+        if (levelCompare != 0) return levelCompare;
+        return a.toName.compareTo(b.toName);
+      });
 
     return EvolutionData(
       evolutions: sortedOptions.map((option) => option.toName).toList(),
@@ -77,6 +78,11 @@ class EvolutionOption {
     required this.toName,
     required this.conditions,
     required this.effects,
+    this.targetPokemonId,
+    this.targetStableId,
+    this.targetFormName,
+    this.isSecret = false,
+    this.secretHint,
   });
 
   final String id;
@@ -85,6 +91,11 @@ class EvolutionOption {
   final String toName;
   final List<EvolutionRule> conditions;
   final List<EvolutionRule> effects;
+  final int? targetPokemonId;
+  final String? targetStableId;
+  final String? targetFormName;
+  final bool isSecret;
+  final String? secretHint;
 
   int? get levelCondition => _intValueFor('level', conditions);
   int? get loyaltyCondition => _intValueFor('loyalty', conditions);
@@ -123,7 +134,9 @@ class EvolutionOption {
 
     return value
         .whereType<Map>()
-        .map((entry) => EvolutionRule.fromJson(Map<String, dynamic>.from(entry)))
+        .map(
+          (entry) => EvolutionRule.fromJson(Map<String, dynamic>.from(entry)),
+        )
         .toList(growable: false);
   }
 

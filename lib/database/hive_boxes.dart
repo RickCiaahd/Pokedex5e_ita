@@ -11,6 +11,7 @@ class HiveBoxes {
   static const masterBattleSessions = 'master_battle_sessions';
   static const breedingEggs = 'breeding_eggs';
   static const customPokemon = 'custom_pokemon';
+  static const customPokemonDiscovery = 'custom_pokemon_discovery';
   static const settings = 'settings';
   static const appState = 'app_state';
 }

@@ -120,16 +120,40 @@ class EmbeddedCustomPokemonTransferService {
     }
 
     for (final definition in installedDefinitions) {
+      final json = definition.toJson();
       final baseSpeciesId = definition.baseSpeciesId;
-      if (baseSpeciesId == null) continue;
-      final resolvedBaseSpeciesId = idMap[baseSpeciesId] ?? baseSpeciesId;
-      if (resolvedBaseSpeciesId == baseSpeciesId) continue;
-      final updatedDefinition = CustomPokemonDefinition.fromJson({
-        ...definition.toJson(),
-        'baseSpeciesId': resolvedBaseSpeciesId,
-        'updatedAt': DateTime.now().toUtc().toIso8601String(),
-      });
-      await _repository.save(updatedDefinition);
+      if (baseSpeciesId != null) {
+        json['baseSpeciesId'] = idMap[baseSpeciesId] ?? baseSpeciesId;
+      }
+      final advanced = Map<String, dynamic>.from(
+        json['advanced'] is Map ? json['advanced'] as Map : const {},
+      );
+      for (final key in ['evolvesFrom', 'evolvesTo']) {
+        final links = advanced[key];
+        if (links is! List) continue;
+        final remappedLinks = <Map<String, dynamic>>[];
+        for (final rawLink in links) {
+          if (rawLink is! Map) continue;
+          final linkJson = Map<String, dynamic>.from(rawLink);
+          final rawPokemon = linkJson['pokemon'];
+          if (rawPokemon is Map) {
+            final pokemonJson = Map<String, dynamic>.from(rawPokemon);
+            final sourcePokemonId = int.tryParse(
+              pokemonJson['pokemonId']?.toString() ?? '',
+            );
+            if (sourcePokemonId != null) {
+              pokemonJson['pokemonId'] =
+                  idMap[sourcePokemonId] ?? sourcePokemonId;
+            }
+            linkJson['pokemon'] = pokemonJson;
+          }
+          remappedLinks.add(linkJson);
+        }
+        advanced[key] = remappedLinks;
+      }
+      if (advanced.isNotEmpty) json['advanced'] = advanced;
+      json['updatedAt'] = DateTime.now().toUtc().toIso8601String();
+      await _repository.save(CustomPokemonDefinition.fromJson(json));
     }
 
     PokemonRepository.clearCache();

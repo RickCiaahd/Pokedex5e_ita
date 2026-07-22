@@ -1,0 +1,62 @@
+name: Verify v1.2.0 release
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/verify-v1.2.0-release.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 100
+    env:
+      GH_TOKEN: ${{ github.token }}
+
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Wait for Android and Windows release assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p docs
+          expected='["Pokedex5eITA-1.2.0-Windows-x64-SHA256.txt","Pokedex5eITA-1.2.0-Windows-x64.zip","Pokedex5eITA-1.2.0.aab","Pokedex5eITA-1.2.0.apk","SHA256SUMS.txt"]'
+          complete=false
+          for attempt in $(seq 1 180); do
+            if gh release view v1.2.0 --json tagName,name,isDraft,isPrerelease,url,assets > /tmp/release-v1.2.0.json 2>/dev/null; then
+              if jq -e --argjson expected "$expected" '
+                .tagName == "v1.2.0" and
+                .isDraft == false and
+                .isPrerelease == false and
+                (([.assets[].name] | sort) == ($expected | sort)) and
+                ([.assets[].size] | all(. > 0))
+              ' /tmp/release-v1.2.0.json >/dev/null; then
+                complete=true
+                break
+              fi
+            fi
+            echo "Asset non ancora completi, tentativo $attempt/180"
+            sleep 30
+          done
+          test "$complete" = true
+          cp /tmp/release-v1.2.0.json docs/release-v1.2.0-assets.json
+
+      - name: Record report and remove workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm .github/workflows/verify-v1.2.0-release.yml
+          git add docs/release-v1.2.0-assets.json
+          git commit -m 'Registra gli asset della release 1.2.0'
+          git push origin HEAD:main

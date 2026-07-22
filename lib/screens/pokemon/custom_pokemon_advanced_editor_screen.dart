@@ -56,7 +56,9 @@ class _CustomPokemonAdvancedEditorScreenState
   }
 
   Future<void> _loadCatalog() async {
-    final catalog = await PokemonRepository().getAllPokemon(includeSealed: true);
+    final catalog = await PokemonRepository().getAllPokemon(
+      includeSealed: true,
+    );
     if (!mounted) return;
     setState(() {
       _catalog = catalog;
@@ -116,9 +118,7 @@ class _CustomPokemonAdvancedEditorScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('FAKEMON AVANZATO · ${widget.currentName}'),
-      ),
+      appBar: AppBar(title: Text('FAKEMON AVANZATO · ${widget.currentName}')),
       body: ResponsiveContent(
         maxWidth: 900,
         child: _loading
@@ -210,8 +210,8 @@ class _CustomPokemonAdvancedEditorScreenState
                               trailing: IconButton(
                                 tooltip: 'Rimuovi',
                                 onPressed: () => setState(
-                                  () => _forms = [..._forms]
-                                    ..removeAt(entry.$1),
+                                  () =>
+                                      _forms = [..._forms]..removeAt(entry.$1),
                                 ),
                                 icon: const Icon(Icons.delete_outline),
                               ),
@@ -326,7 +326,7 @@ class _EvolutionLinkDialogState extends State<_EvolutionLinkDialog> {
   }
 
   Future<void> _pickPokemon() async {
-    final pokemon = await showSearch<Pokemon>(
+    final pokemon = await showSearch<Pokemon?>(
       context: context,
       delegate: _PokemonSearchDelegate(
         widget.catalog
@@ -353,7 +353,9 @@ class _EvolutionLinkDialogState extends State<_EvolutionLinkDialog> {
     void addNumber(String type, TextEditingController controller) {
       final value = int.tryParse(controller.text.trim());
       if (value != null && value > 0) {
-        conditions.add(CustomPokemonEvolutionCondition(type: type, value: value));
+        conditions.add(
+          CustomPokemonEvolutionCondition(type: type, value: value),
+        );
       }
     }
 
@@ -431,7 +433,9 @@ class _EvolutionLinkDialogState extends State<_EvolutionLinkDialog> {
               const SizedBox(height: 10),
               TextField(
                 controller: _item,
-                decoration: const InputDecoration(labelText: 'Oggetto richiesto'),
+                decoration: const InputDecoration(
+                  labelText: 'Oggetto richiesto',
+                ),
               ),
               const SizedBox(height: 10),
               TextField(
@@ -480,26 +484,26 @@ class _EvolutionLinkDialogState extends State<_EvolutionLinkDialog> {
   }
 }
 
-class _PokemonSearchDelegate extends SearchDelegate<Pokemon> {
+class _PokemonSearchDelegate extends SearchDelegate<Pokemon?> {
   _PokemonSearchDelegate(this.catalog);
 
   final List<Pokemon> catalog;
 
   @override
   List<Widget>? buildActions(BuildContext context) => [
-        IconButton(
-          tooltip: 'Pulisci',
-          onPressed: () => query = '',
-          icon: const Icon(Icons.clear),
-        ),
-      ];
+    IconButton(
+      tooltip: 'Pulisci',
+      onPressed: () => query = '',
+      icon: const Icon(Icons.clear),
+    ),
+  ];
 
   @override
   Widget? buildLeading(BuildContext context) => IconButton(
-        tooltip: 'Indietro',
-        onPressed: () => close(context, null),
-        icon: const Icon(Icons.arrow_back),
-      );
+    tooltip: 'Indietro',
+    onPressed: () => close(context, null),
+    icon: const Icon(Icons.arrow_back),
+  );
 
   @override
   Widget buildResults(BuildContext context) => _results();
@@ -594,7 +598,9 @@ class _CustomFormEditorScreenState extends State<_CustomFormEditorScreen> {
     _ac = TextEditingController(text: initial?.armorClass?.toString() ?? '');
     _hp = TextEditingController(text: initial?.hitPoints?.toString() ?? '');
     _speed = TextEditingController(text: initial?.speed?.toString() ?? '');
-    _abilities = TextEditingController(text: initial?.abilities.join(', ') ?? '');
+    _abilities = TextEditingController(
+      text: initial?.abilities.join(', ') ?? '',
+    );
     _hiddenAbility = TextEditingController(text: initial?.hiddenAbility ?? '');
     final attributes = initial?.attributes;
     final values = {
@@ -643,7 +649,9 @@ class _CustomFormEditorScreenState extends State<_CustomFormEditorScreen> {
 
   Future<void> _pickImage({required bool shiny}) async {
     final result = await FilePicker.platform.pickFiles(
-      dialogTitle: shiny ? 'Scegli artwork shiny' : 'Scegli artwork della forma',
+      dialogTitle: shiny
+          ? 'Scegli artwork shiny'
+          : 'Scegli artwork della forma',
       type: FileType.custom,
       allowedExtensions: const ['png', 'jpg', 'jpeg', 'webp'],
       withData: true,
@@ -681,19 +689,26 @@ class _CustomFormEditorScreenState extends State<_CustomFormEditorScreen> {
     if (hasScores && scoreValues.values.any((value) => value == null)) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Compila tutte le caratteristiche oppure lasciale vuote.'),
+          content: Text(
+            'Compila tutte le caratteristiche oppure lasciale vuote.',
+          ),
         ),
       );
       return;
     }
-    final types = <String>[
-      if (_primaryType != null) _primaryType!,
-      if (_secondaryType != null && _secondaryType != _primaryType)
-        _secondaryType!,
-    ];
+    final types = <String>[];
+    final primaryType = _primaryType;
+    if (primaryType != null) {
+      types.add(primaryType);
+    }
+    final secondaryType = _secondaryType;
+    if (secondaryType != null && secondaryType != primaryType) {
+      types.add(secondaryType);
+    }
     Navigator.of(context).pop(
       CustomPokemonForm(
-        id: widget.initial?.id ??
+        id:
+            widget.initial?.id ??
             'form-${DateTime.now().microsecondsSinceEpoch}',
         name: name,
         duration: _duration,
@@ -719,8 +734,9 @@ class _CustomFormEditorScreenState extends State<_CustomFormEditorScreen> {
         description: _nullable(_description.text),
         imageMimeType: _imageBytes == null ? null : _imageMimeType,
         imageBase64: _imageBytes == null ? null : base64Encode(_imageBytes!),
-        shinyImageMimeType:
-            _shinyImageBytes == null ? null : _shinyImageMimeType,
+        shinyImageMimeType: _shinyImageBytes == null
+            ? null
+            : _shinyImageMimeType,
         shinyImageBase64: _shinyImageBytes == null
             ? null
             : base64Encode(_shinyImageBytes!),
@@ -793,7 +809,9 @@ class _CustomFormEditorScreenState extends State<_CustomFormEditorScreen> {
             ),
             TextField(
               controller: _hint,
-              decoration: const InputDecoration(labelText: 'Indizio / attivazione'),
+              decoration: const InputDecoration(
+                labelText: 'Indizio / attivazione',
+              ),
             ),
             const SizedBox(height: 12),
             Row(
@@ -802,8 +820,7 @@ class _CustomFormEditorScreenState extends State<_CustomFormEditorScreen> {
                   child: _typeDropdown(
                     label: 'Tipo principale',
                     value: _primaryType,
-                    onChanged: (value) =>
-                        setState(() => _primaryType = value),
+                    onChanged: (value) => setState(() => _primaryType = value),
                   ),
                 ),
                 const SizedBox(width: 10),
@@ -912,7 +929,9 @@ class _ImagePicker extends StatelessWidget {
         height: 170,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+          border: Border.all(
+            color: Theme.of(context).colorScheme.outlineVariant,
+          ),
         ),
         clipBehavior: Clip.antiAlias,
         child: bytes == null
@@ -947,9 +966,9 @@ class _AdvancedSection extends StatelessWidget {
           children: [
             Text(
               title,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w900,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
             ),
             const SizedBox(height: 10),
             for (final entry in children.indexed) ...[

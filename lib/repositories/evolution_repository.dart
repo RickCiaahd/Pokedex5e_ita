@@ -58,8 +58,11 @@ class EvolutionRepository {
   ) {
     final grouped = <String, List<EvolutionOption>>{};
     for (final entry in base.entries) {
-      grouped.putIfAbsent(_referenceKey(entry.key), () => <EvolutionOption>[])
-        ..addAll(entry.value.options);
+      final options = grouped.putIfAbsent(
+        _referenceKey(entry.key),
+        () => <EvolutionOption>[],
+      );
+      options.addAll(entry.value.options);
     }
 
     for (final definition in CustomPokemonRuntimeRegistry.definitions) {
@@ -121,8 +124,9 @@ class EvolutionRepository {
   }) {
     final sourceKey = _referenceKey(sourceName);
     final targetKey = _referenceKey(targetName);
-    if (sourceKey.isEmpty || targetKey.isEmpty || sourceKey == targetKey)
+    if (sourceKey.isEmpty || targetKey.isEmpty || sourceKey == targetKey) {
       return;
+    }
     final options = grouped.putIfAbsent(sourceKey, () => <EvolutionOption>[]);
     if (options.any((option) => option.id == link.id)) return;
     options.add(

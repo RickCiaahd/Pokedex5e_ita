@@ -31,13 +31,6 @@ jobs:
             echo 'pending=false' >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Set up Flutter
-        if: steps.patch.outputs.pending == 'true'
-        uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-          cache: true
-
       - name: Apply patch
         if: steps.patch.outputs.pending == 'true'
         shell: bash
@@ -49,6 +42,10 @@ jobs:
           source = source.replace(
               "raise SystemExit(f'{path}: expected one match, found {count}')",
               "raise SystemExit(f'{path}: expected one match, found {count}; marker={old[:240]!r}')",
+          )
+          source = source.replace(
+              "        builder: (_) => _EvolutionLinkDialog(",
+              "      builder: (_) => _EvolutionLinkDialog(",
           )
           source = source.replace(
               "          currentPokemonId: widget.currentPokemonId,\n        ),\n",
@@ -68,7 +65,8 @@ jobs:
             docs/fakemon-1.2.0-error.log \
             docs/trigger-fakemon-1.2.0-retry.txt \
             docs/trigger-fakemon-1.2.0-diagnostics.txt \
-            docs/trigger-fakemon-1.2.0-marker.txt
+            docs/trigger-fakemon-1.2.0-marker.txt \
+            docs/trigger-fakemon-1.2.0-marker-2.txt
 
       - name: Upload patch diagnostics
         if: failure()
@@ -78,6 +76,13 @@ jobs:
           path: /tmp/fakemon-1.2.0-error.log
           if-no-files-found: error
           retention-days: 7
+
+      - name: Set up Flutter
+        if: steps.patch.outputs.pending == 'true' && success()
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
 
       - name: Format changed Dart files
         if: steps.patch.outputs.pending == 'true' && success()

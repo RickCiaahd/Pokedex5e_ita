@@ -1,0 +1,45 @@
+name: Dispatch v1.2.0 builds
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/dispatch-v1.2.0-builds.yml'
+
+permissions:
+  actions: write
+  contents: write
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ github.token }}
+
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Dispatch release workflows on tag
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh workflow run android-release.yml --ref v1.2.0
+          gh workflow run windows-release.yml --ref v1.2.0
+
+      - name: Remove temporary dispatcher
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm .github/workflows/dispatch-v1.2.0-builds.yml
+          git commit -m 'Rimuove il dispatcher temporaneo della release 1.2.0'
+          git fetch origin main
+          git rebase origin/main
+          git push origin HEAD:main

@@ -47,9 +47,17 @@ jobs:
               "        builder: (_) => _EvolutionLinkDialog(",
               "      builder: (_) => _EvolutionLinkDialog(",
           )
+          for field in (
+              'title: evolvesFrom',
+              'catalog: _catalog',
+              'itemCatalog: _itemCatalog',
+              'moveCatalog: _moveCatalog',
+              'currentPokemonId: widget.currentPokemonId',
+          ):
+              source = source.replace(f'          {field}', f'        {field}')
           source = source.replace(
-              "          currentPokemonId: widget.currentPokemonId,\n        ),\n",
-              "          currentPokemonId: widget.currentPokemonId,\n      ),\n",
+              "        currentPokemonId: widget.currentPokemonId,\n        ),\n",
+              "        currentPokemonId: widget.currentPokemonId,\n      ),\n",
           )
           path.write_text(source, encoding='utf-8')
           PY
@@ -66,7 +74,8 @@ jobs:
             docs/trigger-fakemon-1.2.0-retry.txt \
             docs/trigger-fakemon-1.2.0-diagnostics.txt \
             docs/trigger-fakemon-1.2.0-marker.txt \
-            docs/trigger-fakemon-1.2.0-marker-2.txt
+            docs/trigger-fakemon-1.2.0-marker-2.txt \
+            docs/trigger-fakemon-1.2.0-marker-3.txt
 
       - name: Upload patch diagnostics
         if: failure()

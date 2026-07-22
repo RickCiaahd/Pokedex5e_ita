@@ -1,0 +1,44 @@
+name: Report v1.1.0 release assets
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/report-v1.1.0-release-assets.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ github.token }}
+
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Read release and save report
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p docs
+          gh release view v1.1.0 --json tagName,name,isDraft,isPrerelease,url,assets > docs/release-v1.1.0-assets.json
+          jq -e '.tagName == "v1.1.0" and .isDraft == false and .isPrerelease == false' docs/release-v1.1.0-assets.json
+
+      - name: Remove workflow and commit report
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm .github/workflows/report-v1.1.0-release-assets.yml
+          git add docs/release-v1.1.0-assets.json
+          git commit -m 'Registra gli asset della release 1.1.0'
+          git push origin HEAD:main

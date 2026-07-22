@@ -1,0 +1,55 @@
+name: Report v1.1.0 build
+
+on:
+  workflow_run:
+    workflows:
+      - 'Build v1.1.0 now'
+    types:
+      - completed
+
+permissions:
+  contents: write
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out latest main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Record result and clean successful workflow
+        shell: bash
+        env:
+          BUILD_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+          BUILD_URL: ${{ github.event.workflow_run.html_url }}
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+
+          if [ "$BUILD_CONCLUSION" = 'success' ]; then
+            git rm \
+              .github/workflows/build-v1.1.0-now.yml \
+              .github/workflows/report-v1.1.0-build.yml
+            git commit -m 'Completa e ripulisce le build della release 1.1.0'
+            git push origin HEAD:main
+            exit 0
+          fi
+
+          mkdir -p docs
+          cat > docs/release-1.1.0-build-failure.md <<EOF
+          # Build release 1.1.0 non completata
+
+          Conclusione: $BUILD_CONCLUSION
+
+          Workflow: $BUILD_URL
+          EOF
+          git add docs/release-1.1.0-build-failure.md
+          git commit -m 'Registra il fallimento delle build release 1.1.0'
+          git push origin HEAD:main
+          exit 1

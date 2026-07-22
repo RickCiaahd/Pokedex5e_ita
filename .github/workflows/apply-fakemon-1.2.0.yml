@@ -50,6 +50,10 @@ jobs:
               "raise SystemExit(f'{path}: expected one match, found {count}')",
               "raise SystemExit(f'{path}: expected one match, found {count}; marker={old[:240]!r}')",
           )
+          source = source.replace(
+              "          currentPokemonId: widget.currentPokemonId,\n        ),\n",
+              "          currentPokemonId: widget.currentPokemonId,\n      ),\n",
+          )
           path.write_text(source, encoding='utf-8')
           PY
           set +e
@@ -63,7 +67,8 @@ jobs:
             tool/apply_fakemon_1_2_0.py \
             docs/fakemon-1.2.0-error.log \
             docs/trigger-fakemon-1.2.0-retry.txt \
-            docs/trigger-fakemon-1.2.0-diagnostics.txt
+            docs/trigger-fakemon-1.2.0-diagnostics.txt \
+            docs/trigger-fakemon-1.2.0-marker.txt
 
       - name: Upload patch diagnostics
         if: failure()

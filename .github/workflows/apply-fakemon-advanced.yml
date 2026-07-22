@@ -1,5 +1,6 @@
 name: Apply Fakemon advanced feature
 
+# Second push: the workflow is now registered and can run.
 on:
   push:
     branches:

@@ -47,26 +47,29 @@ jobs:
         run: python tool/apply_fakemon_advanced_ui.py
 
       - name: Apply gameplay integration
+        id: gameplay
         if: steps.patch.outputs.pending == 'true'
+        continue-on-error: true
         shell: bash
         run: |
-          set +e
-          python tool/run_fakemon_advanced_gameplay.py 2>&1 | tee /tmp/fakemon-advanced-error.log
-          status=${PIPESTATUS[0]}
-          set -e
-          if [ "$status" -ne 0 ]; then
-            mkdir -p docs
-            cp /tmp/fakemon-advanced-error.log docs/fakemon-advanced-error.log
-            git config user.name 'github-actions[bot]'
-            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-            git add docs/fakemon-advanced-error.log
-            git commit -m 'Registra errore integrazione Fakemon avanzati'
-            git push origin HEAD:feature/fakemon-advanced
-            exit "$status"
-          fi
+          python tool/run_fakemon_advanced_gameplay.py 2>&1 | tee fakemon-advanced-error.log
+          exit ${PIPESTATUS[0]}
+
+      - name: Upload integration diagnostic
+        if: always() && steps.patch.outputs.pending == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: fakemon-advanced-diagnostic
+          path: fakemon-advanced-error.log
+          if-no-files-found: warn
+          retention-days: 7
+
+      - name: Fail when gameplay integration failed
+        if: steps.gameplay.outcome == 'failure'
+        run: exit 1
 
       - name: Remove temporary patch scripts
-        if: steps.patch.outputs.pending == 'true'
+        if: steps.patch.outputs.pending == 'true' && steps.gameplay.outcome == 'success'
         run: |
           rm -f \
             tool/apply_fakemon_advanced_core.py \
@@ -74,10 +77,11 @@ jobs:
             tool/apply_fakemon_advanced_ui.py \
             tool/apply_fakemon_advanced_gameplay.py \
             tool/run_fakemon_advanced_gameplay.py \
-            docs/fakemon-advanced-error.log
+            docs/fakemon-advanced-progress.md \
+            fakemon-advanced-error.log
 
       - name: Format changed Dart files
-        if: steps.patch.outputs.pending == 'true'
+        if: steps.patch.outputs.pending == 'true' && steps.gameplay.outcome == 'success'
         shell: bash
         run: |
           mapfile -t dart_files < <(git diff --name-only --diff-filter=ACMRT | grep '\.dart$' || true)
@@ -86,23 +90,23 @@ jobs:
           fi
 
       - name: Install dependencies
-        if: steps.patch.outputs.pending == 'true'
+        if: steps.patch.outputs.pending == 'true' && steps.gameplay.outcome == 'success'
         run: flutter pub get
 
       - name: Analyze source
-        if: steps.patch.outputs.pending == 'true'
+        if: steps.patch.outputs.pending == 'true' && steps.gameplay.outcome == 'success'
         run: flutter analyze
 
       - name: Run focused Fakemon tests
-        if: steps.patch.outputs.pending == 'true'
+        if: steps.patch.outputs.pending == 'true' && steps.gameplay.outcome == 'success'
         run: flutter test test/fakemon_advanced_test.dart --reporter expanded
 
       - name: Run complete test suite
-        if: steps.patch.outputs.pending == 'true'
+        if: steps.patch.outputs.pending == 'true' && steps.gameplay.outcome == 'success'
         run: flutter test --reporter expanded
 
       - name: Commit and push feature
-        if: steps.patch.outputs.pending == 'true'
+        if: steps.patch.outputs.pending == 'true' && steps.gameplay.outcome == 'success'
         shell: bash
         run: |
           set -euo pipefail

@@ -8,6 +8,7 @@ import 'package:pokedex_5e_ita/models/pokemon_attributes.dart';
 import 'package:pokedex_5e_ita/repositories/evolution_repository.dart';
 import 'package:pokedex_5e_ita/services/custom_pokemon_runtime_registry.dart';
 
+// Regressioni principali del formato Fakemon avanzato versione 2.
 CustomPokemonDefinition _definition({
   required String stableId,
   required int pokemonId,

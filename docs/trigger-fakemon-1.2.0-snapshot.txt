@@ -1,1 +1,0 @@
-Rilancio della patch con salvataggio dello snapshot prima delle verifiche.

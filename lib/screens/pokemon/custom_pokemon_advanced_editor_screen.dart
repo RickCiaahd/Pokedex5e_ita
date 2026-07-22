@@ -762,7 +762,7 @@ class _ItemSearchDelegate extends SearchDelegate<BagItem?> {
           leading: const Icon(Icons.backpack_outlined),
           title: Text(item.name),
           subtitle: Text(
-            item.description,
+            item.displayDescription,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),

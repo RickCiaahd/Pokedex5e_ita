@@ -1,18 +1,15 @@
 name: Apply Fakemon advanced feature
 
-# Second push: the workflow is now registered and can run.
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - '.github/workflows/apply-fakemon-advanced.yml'
+  pull_request:
+    types: [opened, synchronize, reopened]
 
 permissions:
   contents: write
 
 jobs:
   apply:
+    if: github.event.pull_request.head.ref == 'feature/fakemon-advanced'
     runs-on: ubuntu-latest
     timeout-minutes: 60
 
@@ -24,22 +21,37 @@ jobs:
           fetch-depth: 0
           token: ${{ github.token }}
 
+      - name: Detect pending integration
+        id: patch
+        shell: bash
+        run: |
+          if test -f tool/run_fakemon_advanced_core.py; then
+            echo 'pending=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'pending=false' >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Set up Flutter
+        if: steps.patch.outputs.pending == 'true'
         uses: subosito/flutter-action@v2
         with:
           channel: stable
           cache: true
 
       - name: Apply core integration
+        if: steps.patch.outputs.pending == 'true'
         run: python tool/run_fakemon_advanced_core.py
 
       - name: Apply editor and transfer integration
+        if: steps.patch.outputs.pending == 'true'
         run: python tool/apply_fakemon_advanced_ui.py
 
       - name: Apply gameplay integration
+        if: steps.patch.outputs.pending == 'true'
         run: python tool/run_fakemon_advanced_gameplay.py
 
       - name: Remove temporary patch scripts
+        if: steps.patch.outputs.pending == 'true'
         run: |
           rm -f \
             tool/apply_fakemon_advanced_core.py \
@@ -49,6 +61,7 @@ jobs:
             tool/run_fakemon_advanced_gameplay.py
 
       - name: Format changed Dart files
+        if: steps.patch.outputs.pending == 'true'
         shell: bash
         run: |
           mapfile -t dart_files < <(git diff --name-only --diff-filter=ACMRT | grep '\.dart$' || true)
@@ -57,18 +70,23 @@ jobs:
           fi
 
       - name: Install dependencies
+        if: steps.patch.outputs.pending == 'true'
         run: flutter pub get
 
       - name: Analyze source
+        if: steps.patch.outputs.pending == 'true'
         run: flutter analyze
 
       - name: Run focused Fakemon tests
+        if: steps.patch.outputs.pending == 'true'
         run: flutter test test/fakemon_advanced_test.dart --reporter expanded
 
       - name: Run complete test suite
+        if: steps.patch.outputs.pending == 'true'
         run: flutter test --reporter expanded
 
       - name: Commit and push feature
+        if: steps.patch.outputs.pending == 'true'
         shell: bash
         run: |
           set -euo pipefail

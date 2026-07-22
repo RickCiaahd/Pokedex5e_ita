@@ -1,0 +1,78 @@
+name: Apply Fakemon advanced feature
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/apply-fakemon-advanced.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Check out feature branch
+        uses: actions/checkout@v4
+        with:
+          ref: feature/fakemon-advanced
+          fetch-depth: 0
+          token: ${{ github.token }}
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Apply core integration
+        run: python tool/run_fakemon_advanced_core.py
+
+      - name: Apply editor and transfer integration
+        run: python tool/apply_fakemon_advanced_ui.py
+
+      - name: Apply gameplay integration
+        run: python tool/run_fakemon_advanced_gameplay.py
+
+      - name: Remove temporary patch scripts
+        run: |
+          rm -f \
+            tool/apply_fakemon_advanced_core.py \
+            tool/run_fakemon_advanced_core.py \
+            tool/apply_fakemon_advanced_ui.py \
+            tool/apply_fakemon_advanced_gameplay.py \
+            tool/run_fakemon_advanced_gameplay.py
+
+      - name: Format changed Dart files
+        shell: bash
+        run: |
+          mapfile -t dart_files < <(git diff --name-only --diff-filter=ACMRT | grep '\.dart$' || true)
+          if [ "${#dart_files[@]}" -gt 0 ]; then
+            dart format "${dart_files[@]}"
+          fi
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze source
+        run: flutter analyze
+
+      - name: Run focused Fakemon tests
+        run: flutter test test/fakemon_advanced_test.dart --reporter expanded
+
+      - name: Run complete test suite
+        run: flutter test --reporter expanded
+
+      - name: Commit and push feature
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Aggiunge evoluzioni, forme e contenuti segreti Fakemon'
+          git push origin HEAD:feature/fakemon-advanced

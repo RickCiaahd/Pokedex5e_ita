@@ -1,0 +1,1 @@
+Rilancio della patch Fakemon 1.2.0 dopo l’allineamento completo del dialogo evolutivo.

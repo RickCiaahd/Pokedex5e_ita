@@ -128,6 +128,18 @@ class EmbeddedCustomPokemonTransferService {
       final advanced = Map<String, dynamic>.from(
         json['advanced'] is Map ? json['advanced'] as Map : const {},
       );
+      final rawAlternateFormOf = advanced['alternateFormOf'];
+      if (rawAlternateFormOf is Map) {
+        final alternateJson = Map<String, dynamic>.from(rawAlternateFormOf);
+        final sourcePokemonId = int.tryParse(
+          alternateJson['pokemonId']?.toString() ?? '',
+        );
+        if (sourcePokemonId != null) {
+          alternateJson['pokemonId'] =
+              idMap[sourcePokemonId] ?? sourcePokemonId;
+        }
+        advanced['alternateFormOf'] = alternateJson;
+      }
       for (final key in ['evolvesFrom', 'evolvesTo']) {
         final links = advanced[key];
         if (links is! List) continue;

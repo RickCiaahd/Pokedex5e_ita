@@ -4,6 +4,22 @@ Tutte le modifiche rilevanti al progetto vengono documentate in questo file.
 
 ## [Non rilasciato]
 
+Nessuna modifica successiva alla release 1.2.0.
+
+## [1.2.0] - 2026-07-22
+
+### Aggiunto
+
+- possibilità di collegare un Fakemon come forma alternativa permanente o momentanea di una specie esistente;
+- selettori ricercabili per oggetti e mosse richiesti dalle evoluzioni personalizzate;
+- artwork shiny facoltativo accanto all’immagine principale nell’editor Fakemon.
+
+### Corretto
+
+- rimozione delle evoluzioni duplicate nel selettore;
+- localizzazione italiana delle nature e di varie etichette residue dell’editor Pokémon;
+- visualizzazione e comportamento delle forme Fakemon collegate a Pokémon ufficiali.
+
 ## [1.1.0] - 2026-07-22
 
 ### Aggiunto

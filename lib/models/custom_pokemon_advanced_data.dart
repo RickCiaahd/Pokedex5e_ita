@@ -28,11 +28,11 @@ class CustomPokemonReference {
   }
 
   Map<String, dynamic> toJson() => {
-        if (pokemonId != null) 'pokemonId': pokemonId,
-        if (stableId != null) 'stableId': stableId,
-        'name': name,
-        if (formName != null) 'formName': formName,
-      };
+    if (pokemonId != null) 'pokemonId': pokemonId,
+    if (stableId != null) 'stableId': stableId,
+    'name': name,
+    if (formName != null) 'formName': formName,
+  };
 
   void validate() {
     if ((pokemonId == null || pokemonId! <= 0) &&
@@ -102,21 +102,21 @@ class CustomPokemonEvolutionLink {
             ? Map<String, dynamic>.from(rawPokemon)
             : const <String, dynamic>{},
       ),
-      conditions: _mapList(json['conditions'])
-          .map(CustomPokemonEvolutionCondition.fromJson)
-          .toList(growable: false),
+      conditions: _mapList(
+        json['conditions'],
+      ).map(CustomPokemonEvolutionCondition.fromJson).toList(growable: false),
       asiPoints: _readInt(json['asiPoints']),
       hint: _nullableText(json['hint']),
     );
   }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'pokemon': pokemon.toJson(),
-        'conditions': conditions.map((condition) => condition.toJson()).toList(),
-        if (asiPoints > 0) 'asiPoints': asiPoints,
-        if (hint != null) 'hint': hint,
-      };
+    'id': id,
+    'pokemon': pokemon.toJson(),
+    'conditions': conditions.map((condition) => condition.toJson()).toList(),
+    if (asiPoints > 0) 'asiPoints': asiPoints,
+    if (hint != null) 'hint': hint,
+  };
 
   void validate() {
     if (id.isEmpty) {
@@ -221,34 +221,33 @@ class CustomPokemonForm {
   }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'name': name,
-        'duration': duration.name,
-        'secretUntilActivated': secretUntilActivated,
-        'trackInPokedex': trackInPokedex,
-        if (activationHint != null) 'activationHint': activationHint,
-        'types': types,
-        if (armorClass != null) 'armorClass': armorClass,
-        if (hitPoints != null) 'hitPoints': hitPoints,
-        if (speed != null) 'speed': speed,
-        if (attributes != null)
-          'attributes': {
-            'STR': attributes!.strength,
-            'DEX': attributes!.dexterity,
-            'CON': attributes!.constitution,
-            'INT': attributes!.intelligence,
-            'WIS': attributes!.wisdom,
-            'CHA': attributes!.charisma,
-          },
-        'abilities': abilities,
-        if (hiddenAbility != null) 'hiddenAbility': hiddenAbility,
-        if (description != null) 'description': description,
-        if (imageMimeType != null) 'imageMimeType': imageMimeType,
-        if (imageBase64 != null) 'imageBase64': imageBase64,
-        if (shinyImageMimeType != null)
-          'shinyImageMimeType': shinyImageMimeType,
-        if (shinyImageBase64 != null) 'shinyImageBase64': shinyImageBase64,
-      };
+    'id': id,
+    'name': name,
+    'duration': duration.name,
+    'secretUntilActivated': secretUntilActivated,
+    'trackInPokedex': trackInPokedex,
+    if (activationHint != null) 'activationHint': activationHint,
+    'types': types,
+    if (armorClass != null) 'armorClass': armorClass,
+    if (hitPoints != null) 'hitPoints': hitPoints,
+    if (speed != null) 'speed': speed,
+    if (attributes != null)
+      'attributes': {
+        'STR': attributes!.strength,
+        'DEX': attributes!.dexterity,
+        'CON': attributes!.constitution,
+        'INT': attributes!.intelligence,
+        'WIS': attributes!.wisdom,
+        'CHA': attributes!.charisma,
+      },
+    'abilities': abilities,
+    if (hiddenAbility != null) 'hiddenAbility': hiddenAbility,
+    if (description != null) 'description': description,
+    if (imageMimeType != null) 'imageMimeType': imageMimeType,
+    if (imageBase64 != null) 'imageBase64': imageBase64,
+    if (shinyImageMimeType != null) 'shinyImageMimeType': shinyImageMimeType,
+    if (shinyImageBase64 != null) 'shinyImageBase64': shinyImageBase64,
+  };
 
   PokemonFormDefinition toPokemonForm(Pokemon basePokemon) {
     final formPokemon = basePokemon.copyWith(
@@ -257,7 +256,9 @@ class CustomPokemonForm {
       hitPoints: hitPoints,
       speed: speed,
       attributes: attributes,
-      abilities: abilities.isEmpty ? null : List<String>.unmodifiable(abilities),
+      abilities: abilities.isEmpty
+          ? null
+          : List<String>.unmodifiable(abilities),
       hiddenAbility: hiddenAbility,
       description: description,
       formDefinitions: const [],
@@ -307,6 +308,11 @@ class CustomPokemonAdvancedData {
     this.secretUntilDiscovered = false,
     this.sealedForPlayer = false,
     this.secretHint,
+    this.alternateFormOf,
+    this.alternateFormDuration = CustomPokemonFormDuration.permanent,
+    this.alternateFormSecretUntilActivated = false,
+    this.alternateFormTrackInPokedex = true,
+    this.alternateFormHint,
     this.evolvesFrom = const [],
     this.evolvesTo = const [],
     this.forms = const [],
@@ -315,6 +321,11 @@ class CustomPokemonAdvancedData {
   final bool secretUntilDiscovered;
   final bool sealedForPlayer;
   final String? secretHint;
+  final CustomPokemonReference? alternateFormOf;
+  final CustomPokemonFormDuration alternateFormDuration;
+  final bool alternateFormSecretUntilActivated;
+  final bool alternateFormTrackInPokedex;
+  final String? alternateFormHint;
   final List<CustomPokemonEvolutionLink> evolvesFrom;
   final List<CustomPokemonEvolutionLink> evolvesTo;
   final List<CustomPokemonForm> forms;
@@ -323,6 +334,7 @@ class CustomPokemonAdvancedData {
       !secretUntilDiscovered &&
       !sealedForPlayer &&
       secretHint == null &&
+      alternateFormOf == null &&
       evolvesFrom.isEmpty &&
       evolvesTo.isEmpty &&
       forms.isEmpty;
@@ -333,6 +345,13 @@ class CustomPokemonAdvancedData {
     bool clearSealedForPlayer = false,
     String? secretHint,
     bool clearSecretHint = false,
+    CustomPokemonReference? alternateFormOf,
+    bool clearAlternateFormOf = false,
+    CustomPokemonFormDuration? alternateFormDuration,
+    bool? alternateFormSecretUntilActivated,
+    bool? alternateFormTrackInPokedex,
+    String? alternateFormHint,
+    bool clearAlternateFormHint = false,
     List<CustomPokemonEvolutionLink>? evolvesFrom,
     List<CustomPokemonEvolutionLink>? evolvesTo,
     List<CustomPokemonForm>? forms,
@@ -340,9 +359,23 @@ class CustomPokemonAdvancedData {
     return CustomPokemonAdvancedData(
       secretUntilDiscovered:
           secretUntilDiscovered ?? this.secretUntilDiscovered,
-      sealedForPlayer:
-          clearSealedForPlayer ? false : sealedForPlayer ?? this.sealedForPlayer,
+      sealedForPlayer: clearSealedForPlayer
+          ? false
+          : sealedForPlayer ?? this.sealedForPlayer,
       secretHint: clearSecretHint ? null : secretHint ?? this.secretHint,
+      alternateFormOf: clearAlternateFormOf
+          ? null
+          : alternateFormOf ?? this.alternateFormOf,
+      alternateFormDuration:
+          alternateFormDuration ?? this.alternateFormDuration,
+      alternateFormSecretUntilActivated:
+          alternateFormSecretUntilActivated ??
+          this.alternateFormSecretUntilActivated,
+      alternateFormTrackInPokedex:
+          alternateFormTrackInPokedex ?? this.alternateFormTrackInPokedex,
+      alternateFormHint: clearAlternateFormHint
+          ? null
+          : alternateFormHint ?? this.alternateFormHint,
       evolvesFrom: evolvesFrom ?? this.evolvesFrom,
       evolvesTo: evolvesTo ?? this.evolvesTo,
       forms: forms ?? this.forms,
@@ -354,26 +387,43 @@ class CustomPokemonAdvancedData {
       secretUntilDiscovered: json['secretUntilDiscovered'] == true,
       sealedForPlayer: json['sealedForPlayer'] == true,
       secretHint: _nullableText(json['secretHint']),
-      evolvesFrom: _mapList(json['evolvesFrom'])
-          .map(CustomPokemonEvolutionLink.fromJson)
-          .toList(growable: false),
-      evolvesTo: _mapList(json['evolvesTo'])
-          .map(CustomPokemonEvolutionLink.fromJson)
-          .toList(growable: false),
-      forms: _mapList(json['forms'])
-          .map(CustomPokemonForm.fromJson)
-          .toList(growable: false),
+      alternateFormOf: json['alternateFormOf'] is Map
+          ? CustomPokemonReference.fromJson(
+              Map<String, dynamic>.from(json['alternateFormOf'] as Map),
+            )
+          : null,
+      alternateFormDuration: CustomPokemonFormDuration.fromJson(
+        json['alternateFormDuration'],
+      ),
+      alternateFormSecretUntilActivated:
+          json['alternateFormSecretUntilActivated'] == true,
+      alternateFormTrackInPokedex: json['alternateFormTrackInPokedex'] != false,
+      alternateFormHint: _nullableText(json['alternateFormHint']),
+      evolvesFrom: _mapList(
+        json['evolvesFrom'],
+      ).map(CustomPokemonEvolutionLink.fromJson).toList(growable: false),
+      evolvesTo: _mapList(
+        json['evolvesTo'],
+      ).map(CustomPokemonEvolutionLink.fromJson).toList(growable: false),
+      forms: _mapList(
+        json['forms'],
+      ).map(CustomPokemonForm.fromJson).toList(growable: false),
     );
   }
 
   Map<String, dynamic> toJson() => {
-        'secretUntilDiscovered': secretUntilDiscovered,
-        'sealedForPlayer': sealedForPlayer,
-        if (secretHint != null) 'secretHint': secretHint,
-        'evolvesFrom': evolvesFrom.map((link) => link.toJson()).toList(),
-        'evolvesTo': evolvesTo.map((link) => link.toJson()).toList(),
-        'forms': forms.map((form) => form.toJson()).toList(),
-      };
+    'secretUntilDiscovered': secretUntilDiscovered,
+    'sealedForPlayer': sealedForPlayer,
+    if (secretHint != null) 'secretHint': secretHint,
+    if (alternateFormOf != null) 'alternateFormOf': alternateFormOf!.toJson(),
+    'alternateFormDuration': alternateFormDuration.name,
+    'alternateFormSecretUntilActivated': alternateFormSecretUntilActivated,
+    'alternateFormTrackInPokedex': alternateFormTrackInPokedex,
+    if (alternateFormHint != null) 'alternateFormHint': alternateFormHint,
+    'evolvesFrom': evolvesFrom.map((link) => link.toJson()).toList(),
+    'evolvesTo': evolvesTo.map((link) => link.toJson()).toList(),
+    'forms': forms.map((form) => form.toJson()).toList(),
+  };
 
   void validate({required int currentPokemonId}) {
     final ids = <String>{};
@@ -385,6 +435,16 @@ class CustomPokemonAdvancedData {
       if (link.pokemon.pokemonId == currentPokemonId) {
         throw const FormatException(
           'Un Fakemon non può essere collegato evolutivamente a se stesso.',
+        );
+      }
+    }
+
+    final alternateParent = alternateFormOf;
+    if (alternateParent != null) {
+      alternateParent.validate();
+      if (alternateParent.pokemonId == currentPokemonId) {
+        throw const FormatException(
+          'Un Fakemon non può essere una forma alternativa di se stesso.',
         );
       }
     }

@@ -46,22 +46,53 @@ class CustomPokemonRuntimeRegistry {
     bool shiny = false,
   }) {
     final definition = _definitions[pokemonId];
-    if (definition == null) return null;
-    final key = Pokemon.formReferenceKey(formName ?? '', definition.name);
-    if (key.isNotEmpty && key != 'base') {
-      for (final form in definition.advanced.forms) {
-        final formKey = Pokemon.formReferenceKey(form.name, definition.name);
-        final idKey = Pokemon.formReferenceKey(form.id, definition.name);
-        if (key == formKey || key == idKey) {
-          return shiny
-              ? form.shinyImageBytes ?? form.imageBytes
-              : form.imageBytes;
+    if (definition != null) {
+      final key = Pokemon.formReferenceKey(formName ?? '', definition.name);
+      if (key.isNotEmpty && key != 'base') {
+        for (final form in definition.advanced.forms) {
+          final formKey = Pokemon.formReferenceKey(form.name, definition.name);
+          final idKey = Pokemon.formReferenceKey(form.id, definition.name);
+          if (key == formKey || key == idKey) {
+            return shiny
+                ? form.shinyImageBytes ?? form.imageBytes
+                : form.imageBytes;
+          }
         }
       }
+      if (key.isEmpty || key == 'base') {
+        return shiny
+            ? definition.shinyImageBytes ?? definition.imageBytes
+            : definition.imageBytes;
+      }
     }
+
+    final alternate = alternateFormDefinitionFor(pokemonId, formName);
+    if (alternate == null) return null;
     return shiny
-        ? definition.shinyImageBytes ?? definition.imageBytes
-        : definition.imageBytes;
+        ? alternate.shinyImageBytes ?? alternate.imageBytes
+        : alternate.imageBytes;
+  }
+
+  static CustomPokemonDefinition? alternateFormDefinitionFor(
+    int parentPokemonId,
+    String? formName,
+  ) {
+    final requested = _referenceKey(formName ?? '');
+    if (requested.isEmpty || requested == 'base') return null;
+    for (final candidate in _definitions.values) {
+      final parent = candidate.advanced.alternateFormOf;
+      if (parent == null) continue;
+      final resolvedParent = resolveReference(parent);
+      final resolvedParentId = resolvedParent?.pokemonId ?? parent.pokemonId;
+      if (resolvedParentId != parentPokemonId) continue;
+      final keys = <String>{
+        _referenceKey(candidate.name),
+        _referenceKey(candidate.stableId),
+        _referenceKey('fakemon-${candidate.stableId}'),
+      };
+      if (keys.contains(requested)) return candidate;
+    }
+    return null;
   }
 
   static CustomPokemonDefinition? definitionByStableId(String? stableId) {
@@ -83,21 +114,41 @@ class CustomPokemonRuntimeRegistry {
 
   static bool isTemporaryForm(int pokemonId, String? formName) {
     final definition = _definitions[pokemonId];
-    if (definition == null) return false;
-    final key = Pokemon.formReferenceKey(formName ?? '', definition.name);
-    return definition.advanced.forms.any(
-      (form) =>
-          form.duration == CustomPokemonFormDuration.battle &&
-          (Pokemon.formReferenceKey(form.name, definition.name) == key ||
-              Pokemon.formReferenceKey(form.id, definition.name) == key),
-    );
+    if (definition != null) {
+      final key = Pokemon.formReferenceKey(formName ?? '', definition.name);
+      if (definition.advanced.forms.any(
+        (form) =>
+            form.duration == CustomPokemonFormDuration.battle &&
+            (Pokemon.formReferenceKey(form.name, definition.name) == key ||
+                Pokemon.formReferenceKey(form.id, definition.name) == key),
+      )) {
+        return true;
+      }
+    }
+    return alternateFormDefinitionFor(
+          pokemonId,
+          formName,
+        )?.advanced.alternateFormDuration ==
+        CustomPokemonFormDuration.battle;
   }
 
   static bool hasTemporaryForms(int pokemonId) {
-    return _definitions[pokemonId]?.advanced.forms.any(
+    if (_definitions[pokemonId]?.advanced.forms.any(
           (form) => form.duration == CustomPokemonFormDuration.battle,
         ) ==
-        true;
+        true) {
+      return true;
+    }
+    return _definitions.values.any((candidate) {
+      final parent = candidate.advanced.alternateFormOf;
+      if (parent == null ||
+          candidate.advanced.alternateFormDuration !=
+              CustomPokemonFormDuration.battle) {
+        return false;
+      }
+      final resolvedParent = resolveReference(parent);
+      return (resolvedParent?.pokemonId ?? parent.pokemonId) == pokemonId;
+    });
   }
 
   static MoveData? moveFor(int pokemonId, String reference) {
@@ -151,6 +202,15 @@ class CustomPokemonRuntimeRegistry {
       for (final entry in damageEntries)
         '${entry.key}:${entry.value.amount}:${entry.value.diceMax}:${entry.value.isMoveDamage}',
     ].join('\u001f');
+  }
+
+  static String _referenceKey(String value) {
+    return value
+        .trim()
+        .toLowerCase()
+        .replaceAll(RegExp(r"[’']"), '')
+        .replaceAll(RegExp(r'[^a-z0-9]+'), '-')
+        .replaceAll(RegExp(r'^-+|-+$'), '');
   }
 
   static Map<String, MoveData> moveCatalogFor(int pokemonId) {

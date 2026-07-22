@@ -84,6 +84,35 @@ void main() {
     expect(pokemon.formDefinitions.single.displayName, 'Forma Tempesta');
   });
 
+  test('un Fakemon può essere collegato come forma di una specie', () {
+    final definition = _definition(
+      stableId: 'storm-eon',
+      pokemonId: 2000000,
+      name: 'Stormeon',
+      advanced: const CustomPokemonAdvancedData(
+        alternateFormOf: CustomPokemonReference(pokemonId: 133, name: 'Eevee'),
+        alternateFormDuration: CustomPokemonFormDuration.battle,
+      ),
+    );
+    final decoded = CustomPokemonDefinition.fromJson(
+      Map<String, dynamic>.from(
+        jsonDecode(jsonEncode(definition.toJson())) as Map,
+      ),
+    );
+
+    expect(decoded.advanced.alternateFormOf?.pokemonId, 133);
+    expect(
+      decoded.advanced.alternateFormDuration,
+      CustomPokemonFormDuration.battle,
+    );
+
+    CustomPokemonRuntimeRegistry.replaceAll([decoded]);
+    expect(
+      CustomPokemonRuntimeRegistry.isTemporaryForm(133, 'Stormeon'),
+      isTrue,
+    );
+  });
+
   test('Eevee riceve una nuova evoluzione Fakemon', () async {
     final definition = _definition(
       stableId: 'storm-eon',
@@ -122,9 +151,7 @@ void main() {
       stableId: 'storm-eon',
       pokemonId: 2000000,
       name: 'Stormeon',
-      advanced: const CustomPokemonAdvancedData(
-        secretUntilDiscovered: true,
-      ),
+      advanced: const CustomPokemonAdvancedData(secretUntilDiscovered: true),
     );
     final bundle = CustomPokemonTransferBundle.create(
       definition,
@@ -133,9 +160,7 @@ void main() {
     );
 
     final decoded = CustomPokemonTransferBundle.fromJson(
-      Map<String, dynamic>.from(
-        jsonDecode(jsonEncode(bundle.toJson())) as Map,
-      ),
+      Map<String, dynamic>.from(jsonDecode(jsonEncode(bundle.toJson())) as Map),
     );
 
     expect(decoded.sealed, isTrue);

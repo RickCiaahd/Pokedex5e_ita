@@ -14,6 +14,7 @@ import '../../repositories/pokemon_pc_repository.dart';
 import '../../repositories/pokemon_repository.dart';
 import '../../repositories/profile_repository.dart';
 import '../../repositories/team_repository.dart';
+import '../../services/custom_pokemon_discovery_service.dart';
 import '../../services/trainer_path_passive_service.dart';
 import '../../widgets/navigation/home_leading_button.dart';
 import '../../widgets/pokemon/pokemon_asset_image.dart';
@@ -33,6 +34,8 @@ class _CapturePokemonScreenState extends State<CapturePokemonScreen> {
   final PokemonPcRepository _pokemonPcRepository = PokemonPcRepository();
   final ItemRepository _itemRepository = ItemRepository();
   final BagInventoryRepository _bagRepository = BagInventoryRepository();
+  final CustomPokemonDiscoveryService _discoveryService =
+      CustomPokemonDiscoveryService();
   final TextEditingController _searchController = TextEditingController();
 
   UserProfile? _profile;
@@ -225,12 +228,15 @@ class _CapturePokemonScreenState extends State<CapturePokemonScreen> {
         pokemon,
         result,
       );
+      final revealed = await _discoveryService.revealByPokemonId(pokemon.id);
+      if (revealed) PokemonRepository.clearCache();
       await _loadData(clearMessages: false);
 
       if (!mounted) return;
       setState(() {
-        _successMessage =
-            '${pokemon.name} registrato come catturato e $destination.';
+        _successMessage = revealed
+            ? '${pokemon.name} scoperto, registrato come catturato e $destination.'
+            : '${pokemon.name} registrato come catturato e $destination.';
       });
     } catch (error) {
       if (!mounted) return;
@@ -250,6 +256,8 @@ class _CapturePokemonScreenState extends State<CapturePokemonScreen> {
       seen: true,
       caught: false,
     );
+    final revealed = await _discoveryService.revealByPokemonId(pokemon.id);
+    if (revealed) PokemonRepository.clearCache();
 
     if (!mounted) return;
     setState(() => _successMessage = '${pokemon.name} registrato come visto.');

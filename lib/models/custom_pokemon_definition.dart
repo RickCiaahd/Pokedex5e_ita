@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'custom_pokemon_advanced_data.dart';
 import 'move_data.dart';
 import 'pokemon.dart';
 import 'pokemon_attributes.dart';
@@ -210,11 +211,14 @@ class CustomPokemonDefinition {
     this.creatorNotes,
     this.imageMimeType,
     this.imageBase64,
+    this.shinyImageMimeType,
+    this.shinyImageBase64,
     this.localMoves = const [],
     this.localAbilities = const [],
+    this.advanced = const CustomPokemonAdvancedData(),
   });
 
-  static const int currentFormatVersion = 1;
+  static const int currentFormatVersion = 2;
   static const int firstCustomPokemonId = 2000000;
   static const int maxImageBytes = 5 * 1024 * 1024;
   static const Set<String> supportedImageMimeTypes = {
@@ -257,20 +261,18 @@ class CustomPokemonDefinition {
   final String? creatorNotes;
   final String? imageMimeType;
   final String? imageBase64;
+  final String? shinyImageMimeType;
+  final String? shinyImageBase64;
   final List<CustomPokemonMoveDefinition> localMoves;
   final List<CustomPokemonAbilityDefinition> localAbilities;
+  final CustomPokemonAdvancedData advanced;
 
   bool get hasImage => imageBase64 != null && imageBase64!.isNotEmpty;
+  bool get hasShinyImage =>
+      shinyImageBase64 != null && shinyImageBase64!.isNotEmpty;
 
-  Uint8List? get imageBytes {
-    final encoded = imageBase64;
-    if (encoded == null || encoded.isEmpty) return null;
-    try {
-      return Uint8List.fromList(base64Decode(encoded));
-    } on FormatException {
-      return null;
-    }
-  }
+  Uint8List? get imageBytes => _decodeImage(imageBase64);
+  Uint8List? get shinyImageBytes => _decodeImage(shinyImageBase64);
 
   Pokemon toPokemon() {
     final referencedMoveKeys = <String>{
@@ -286,7 +288,7 @@ class CustomPokemonDefinition {
       }
     }
 
-    return Pokemon(
+    final basePokemon = Pokemon(
       id: pokemonId,
       name: name,
       types: List<String>.unmodifiable(types),
@@ -317,6 +319,11 @@ class CustomPokemonDefinition {
       genus: genus,
       height: height,
       weight: weight,
+    );
+    return basePokemon.copyWith(
+      formDefinitions: [
+        for (final form in advanced.forms) form.toPokemonForm(basePokemon),
+      ],
     );
   }
 
@@ -394,12 +401,19 @@ class CustomPokemonDefinition {
       creatorNotes: _nullableText(json['creatorNotes']),
       imageMimeType: _nullableText(json['imageMimeType']),
       imageBase64: _nullableText(json['imageBase64']),
+      shinyImageMimeType: _nullableText(json['shinyImageMimeType']),
+      shinyImageBase64: _nullableText(json['shinyImageBase64']),
       localMoves: _mapList(
         json['localMoves'],
       ).map(CustomPokemonMoveDefinition.fromJson).toList(growable: false),
       localAbilities: _mapList(
         json['localAbilities'],
       ).map(CustomPokemonAbilityDefinition.fromJson).toList(growable: false),
+      advanced: json['advanced'] is Map
+          ? CustomPokemonAdvancedData.fromJson(
+              Map<String, dynamic>.from(json['advanced'] as Map),
+            )
+          : const CustomPokemonAdvancedData(),
     );
     definition.validate();
     return definition;
@@ -452,6 +466,9 @@ class CustomPokemonDefinition {
       if (creatorNotes != null) 'creatorNotes': creatorNotes,
       if (imageMimeType != null) 'imageMimeType': imageMimeType,
       if (imageBase64 != null) 'imageBase64': imageBase64,
+      if (shinyImageMimeType != null) 'shinyImageMimeType': shinyImageMimeType,
+      if (shinyImageBase64 != null) 'shinyImageBase64': shinyImageBase64,
+      if (!advanced.isEmpty) 'advanced': advanced.toJson(),
       'localMoves': localMoves.map((move) => move.toJson()).toList(),
       'localAbilities': localAbilities
           .map((ability) => ability.toJson())
@@ -527,6 +544,24 @@ class CustomPokemonDefinition {
         'L’immagine del Fakemon supera il limite di 5 MB.',
       );
     }
+    final shinyBytes = shinyImageBytes;
+    if ((shinyImageMimeType == null) != (shinyBytes == null)) {
+      throw const FormatException(
+        'Immagine shiny Fakemon incompleta o non valida.',
+      );
+    }
+    if (shinyImageMimeType != null &&
+        !supportedImageMimeTypes.contains(shinyImageMimeType)) {
+      throw FormatException(
+        'Formato immagine shiny non supportato: $shinyImageMimeType.',
+      );
+    }
+    if (shinyBytes != null && shinyBytes.length > maxImageBytes) {
+      throw const FormatException(
+        'L’immagine shiny del Fakemon supera il limite di 5 MB.',
+      );
+    }
+    advanced.validate(currentPokemonId: pokemonId);
 
     final moveIds = <String>{};
     final moveNames = <String>{};
@@ -547,6 +582,15 @@ class CustomPokemonDefinition {
         throw FormatException('Abilità esclusiva duplicata: ${ability.name}.');
       }
     }
+  }
+}
+
+Uint8List? _decodeImage(String? encoded) {
+  if (encoded == null || encoded.isEmpty) return null;
+  try {
+    return Uint8List.fromList(base64Decode(encoded));
+  } on FormatException {
+    return null;
   }
 }
 

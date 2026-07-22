@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import '../../models/bag_inventory_entry.dart';
 import '../../models/bag_item.dart';
 import '../../models/battle_environment.dart';
+import '../../models/custom_pokemon_advanced_data.dart';
 import '../../models/battle_session.dart';
 import '../../models/level_progression.dart';
 import '../../models/move_data.dart';
@@ -21,6 +22,7 @@ import '../../repositories/profile_repository.dart';
 import '../../repositories/team_repository.dart';
 import '../../services/battle_environment_service.dart';
 import '../../services/battle_form_change_service.dart';
+import '../../services/custom_pokemon_runtime_registry.dart';
 import '../../services/battle_quick_item_service.dart';
 import '../../services/battle_temporary_hp_service.dart';
 import '../../services/battle_status_rules.dart';
@@ -324,7 +326,18 @@ class _BattleScreenState extends State<BattleScreen> {
     }
 
     final allChoices = await PokemonAssetPaths.formChoices(basePokemon);
-    final choices = _normalizedBattleFormChoices(basePokemon, slot, allChoices);
+    final customDefinition = CustomPokemonRuntimeRegistry.definitionFor(
+      basePokemon.id,
+    );
+    final customTemporaryChoices = [
+      for (final form in customDefinition?.advanced.forms ?? const [])
+        if (form.duration == CustomPokemonFormDuration.battle)
+          PokemonFormChoice(name: form.name, assetPath: ''),
+    ];
+    final choices = _normalizedBattleFormChoices(basePokemon, slot, [
+      ...allChoices,
+      ...customTemporaryChoices,
+    ]);
     if (!mounted || choices.length <= 1) return;
 
     final selected = await showModalBottomSheet<String>(

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../models/pokemon.dart';
 import '../../models/pokemon_evolution_alias_registry.dart';
 import '../../models/team_slot.dart';
+import '../../services/custom_pokemon_runtime_registry.dart';
 import '../../services/evolution_form_alias_service.dart';
 import 'pokemon_detail_screen_legacy.dart' as legacy;
 
@@ -123,7 +124,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
     for (final pokemon in widget.allPokemon) {
       if (pokemon.id == pokemonId) return pokemon;
     }
-    return null;
+    return CustomPokemonRuntimeRegistry.definitionFor(pokemonId)?.toPokemon();
   }
 
   EvolutionFormAliasCatalog _buildAliasCatalog() {

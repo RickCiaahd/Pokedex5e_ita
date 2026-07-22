@@ -13,6 +13,7 @@ import '../../repositories/move_repository.dart';
 import '../../repositories/tm_repository.dart';
 import '../../services/battle_environment_service.dart';
 import '../../services/battle_form_change_service.dart';
+import '../../services/custom_pokemon_runtime_registry.dart';
 import '../../widgets/pokemon/pokemon_asset_image.dart';
 
 class PokemonEditResult {
@@ -188,7 +189,15 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
     final deprecatedAbilities = await deprecatedAbilitiesFuture;
     final featDescriptions = await featDescriptionsFuture;
     final rawFormChoices = await formChoicesFuture;
-    final formChoices = _normalizedFormChoices(rawFormChoices);
+    final persistentFormChoices = rawFormChoices
+        .where(
+          (choice) => !CustomPokemonRuntimeRegistry.isTemporaryForm(
+            widget.pokemon.id,
+            choice.name,
+          ),
+        )
+        .toList(growable: false);
+    final formChoices = _normalizedFormChoices(persistentFormChoices);
     final tmMap = await tmMapFuture;
     final catalogMoves = await catalogMovesFuture;
     final tmMoveNames = await _tmMoveNamesFromRepository(tmMap);

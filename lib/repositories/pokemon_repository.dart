@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 
 import '../models/pokemon.dart';
 import '../models/pokemon_flavor.dart';
+import '../services/custom_pokemon_discovery_service.dart';
 import 'custom_pokemon_repository.dart';
 import 'pokemon_localization_repository.dart';
 
@@ -12,10 +13,10 @@ class PokemonRepository {
   static List<Pokemon>? _cachedAllPokemon;
   static int _cachedCustomRevision = -1;
 
-  Future<List<Pokemon>> getAllPokemon() async {
+  Future<List<Pokemon>> getAllPokemon({bool includeSealed = false}) async {
     final customRevision = CustomPokemonRepository.revision;
     if (_cachedAllPokemon != null && _cachedCustomRevision == customRevision) {
-      return List<Pokemon>.from(_cachedAllPokemon!);
+      return _filterSealed(_cachedAllPokemon!, includeSealed: includeSealed);
     }
 
     final pokemonByNumber = <int, Pokemon>{};
@@ -42,21 +43,48 @@ class PokemonRepository {
 
     final localizedTexts = await PokemonLocalizationRepository()
         .getPokemonTexts();
-    final pokemonList = pokemonByNumber.values
-        .map((pokemon) {
-          final localized = localizedTexts[pokemon.id];
-          if (localized == null) return pokemon;
-          return pokemon.copyWith(
-            genus: localized.genus,
-            description: localized.description,
-          );
-        })
-        .toList(growable: false)
-      ..sort((a, b) => a.id.compareTo(b.id));
+    final pokemonList =
+        pokemonByNumber.values
+            .map((pokemon) {
+              final localized = localizedTexts[pokemon.id];
+              if (localized == null) return pokemon;
+              return pokemon.copyWith(
+                genus: localized.genus,
+                description: localized.description,
+              );
+            })
+            .toList(growable: false)
+          ..sort((a, b) => a.id.compareTo(b.id));
     _cachedAllPokemon = pokemonList;
     _cachedCustomRevision = customRevision;
 
-    return List<Pokemon>.from(pokemonList);
+    return _filterSealed(pokemonList, includeSealed: includeSealed);
+  }
+
+  Future<List<Pokemon>> _filterSealed(
+    List<Pokemon> pokemon, {
+    required bool includeSealed,
+  }) async {
+    if (includeSealed) return List<Pokemon>.from(pokemon);
+    final customDefinitions = await CustomPokemonRepository().getAll();
+    final sealedDefinitions = customDefinitions
+        .where((definition) => definition.advanced.sealedForPlayer)
+        .toList(growable: false);
+    if (sealedDefinitions.isEmpty) return List<Pokemon>.from(pokemon);
+
+    final visible = await CustomPokemonDiscoveryService().visibleDefinitions(
+      sealedDefinitions,
+    );
+    final visibleIds = visible
+        .map((definition) => definition.pokemonId)
+        .toSet();
+    final hiddenIds = sealedDefinitions
+        .map((definition) => definition.pokemonId)
+        .where((pokemonId) => !visibleIds.contains(pokemonId))
+        .toSet();
+    return pokemon
+        .where((entry) => !hiddenIds.contains(entry.id))
+        .toList(growable: false);
   }
 
   static void clearCache() {

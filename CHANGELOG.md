@@ -4,6 +4,20 @@ Tutte le modifiche rilevanti al progetto vengono documentate in questo file.
 
 ## [Non rilasciato]
 
+## [1.1.0] - 2026-07-22
+
+### Aggiunto
+
+- evoluzioni personalizzate tra Pokémon ufficiali e Fakemon, comprese catene ramificate;
+- forme Fakemon permanenti e momentanee di battaglia con artwork e statistiche dedicate;
+- artwork shiny separato per specie e forme;
+- esportazione sigillata e scoperta per profilo dei Fakemon segreti;
+- editor avanzato per condizioni evolutive, indizi e visibilità Pokédex.
+
+### Corretto
+
+- preservazione dei collegamenti avanzati durante importazione, duplicazione e rimappatura degli ID.
+
 ### Corretto
 
 - aggiornamento immediato della scheda dopo un’evoluzione;

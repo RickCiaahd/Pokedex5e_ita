@@ -1,7 +1,9 @@
 import 'dart:typed_data';
 
+import '../models/custom_pokemon_advanced_data.dart';
 import '../models/custom_pokemon_definition.dart';
 import '../models/move_data.dart';
+import '../models/pokemon.dart';
 
 class CustomPokemonRuntimeRegistry {
   CustomPokemonRuntimeRegistry._();
@@ -38,8 +40,64 @@ class CustomPokemonRuntimeRegistry {
     return _definitions.containsKey(pokemonId);
   }
 
-  static Uint8List? imageBytesFor(int pokemonId) {
-    return _definitions[pokemonId]?.imageBytes;
+  static Uint8List? imageBytesFor(
+    int pokemonId, {
+    String? formName,
+    bool shiny = false,
+  }) {
+    final definition = _definitions[pokemonId];
+    if (definition == null) return null;
+    final key = Pokemon.formReferenceKey(formName ?? '', definition.name);
+    if (key.isNotEmpty && key != 'base') {
+      for (final form in definition.advanced.forms) {
+        final formKey = Pokemon.formReferenceKey(form.name, definition.name);
+        final idKey = Pokemon.formReferenceKey(form.id, definition.name);
+        if (key == formKey || key == idKey) {
+          return shiny
+              ? form.shinyImageBytes ?? form.imageBytes
+              : form.imageBytes;
+        }
+      }
+    }
+    return shiny
+        ? definition.shinyImageBytes ?? definition.imageBytes
+        : definition.imageBytes;
+  }
+
+  static CustomPokemonDefinition? definitionByStableId(String? stableId) {
+    if (stableId == null || stableId.isEmpty) return null;
+    for (final definition in _definitions.values) {
+      if (definition.stableId == stableId) return definition;
+    }
+    return null;
+  }
+
+  static CustomPokemonDefinition? resolveReference(
+    CustomPokemonReference reference,
+  ) {
+    final byId = reference.pokemonId == null
+        ? null
+        : _definitions[reference.pokemonId];
+    return byId ?? definitionByStableId(reference.stableId);
+  }
+
+  static bool isTemporaryForm(int pokemonId, String? formName) {
+    final definition = _definitions[pokemonId];
+    if (definition == null) return false;
+    final key = Pokemon.formReferenceKey(formName ?? '', definition.name);
+    return definition.advanced.forms.any(
+      (form) =>
+          form.duration == CustomPokemonFormDuration.battle &&
+          (Pokemon.formReferenceKey(form.name, definition.name) == key ||
+              Pokemon.formReferenceKey(form.id, definition.name) == key),
+    );
+  }
+
+  static bool hasTemporaryForms(int pokemonId) {
+    return _definitions[pokemonId]?.advanced.forms.any(
+          (form) => form.duration == CustomPokemonFormDuration.battle,
+        ) ==
+        true;
   }
 
   static MoveData? moveFor(int pokemonId, String reference) {

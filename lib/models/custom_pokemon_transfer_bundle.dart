@@ -8,20 +8,23 @@ class CustomPokemonTransferBundle {
     required this.exportedAt,
     required this.definition,
     required this.checksum,
+    this.sealed = false,
   });
 
   static const String applicationId = 'pokedex-5e-ita';
   static const String kind = 'fakemon';
-  static const int currentFormatVersion = 1;
+  static const int currentFormatVersion = 2;
 
   final int formatVersion;
   final DateTime exportedAt;
   final CustomPokemonDefinition definition;
   final String checksum;
+  final bool sealed;
 
   factory CustomPokemonTransferBundle.create(
     CustomPokemonDefinition definition, {
     DateTime? exportedAt,
+    bool sealed = false,
   }) {
     definition.validate();
     final effectiveExportedAt = exportedAt ?? DateTime.now().toUtc();
@@ -29,12 +32,14 @@ class CustomPokemonTransferBundle {
       formatVersion: currentFormatVersion,
       exportedAt: effectiveExportedAt,
       definition: definition,
+      sealed: sealed,
     );
     return CustomPokemonTransferBundle(
       formatVersion: currentFormatVersion,
       exportedAt: effectiveExportedAt,
       definition: definition,
       checksum: _checksum(jsonEncode(payload)),
+      sealed: sealed,
     );
   }
 
@@ -61,6 +66,7 @@ class CustomPokemonTransferBundle {
     final definition = CustomPokemonDefinition.fromJson(
       Map<String, dynamic>.from(rawDefinition),
     );
+    final sealed = json['sealed'] == true;
     final checksum = json['checksum']?.toString() ?? '';
     final expected = _checksum(
       jsonEncode(
@@ -68,6 +74,7 @@ class CustomPokemonTransferBundle {
           formatVersion: version,
           exportedAt: exportedAt,
           definition: definition,
+          sealed: sealed,
         ),
       ),
     );
@@ -82,6 +89,7 @@ class CustomPokemonTransferBundle {
       exportedAt: exportedAt,
       definition: definition,
       checksum: checksum,
+      sealed: sealed,
     );
   }
 
@@ -90,6 +98,7 @@ class CustomPokemonTransferBundle {
       formatVersion: formatVersion,
       exportedAt: exportedAt,
       definition: definition,
+      sealed: sealed,
     );
     return {...payload, 'checksum': checksum};
   }
@@ -98,12 +107,14 @@ class CustomPokemonTransferBundle {
     required int formatVersion,
     required DateTime exportedAt,
     required CustomPokemonDefinition definition,
+    required bool sealed,
   }) {
     return {
       'application': applicationId,
       'kind': kind,
       'formatVersion': formatVersion,
       'exportedAt': exportedAt.toUtc().toIso8601String(),
+      'sealed': sealed,
       'definition': definition.toJson(),
     };
   }

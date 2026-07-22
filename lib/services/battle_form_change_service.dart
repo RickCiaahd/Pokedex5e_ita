@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import '../models/pokemon.dart';
 import '../models/team_slot.dart';
+import 'custom_pokemon_runtime_registry.dart';
 
 class BattleFormChangeService {
   const BattleFormChangeService._();
@@ -27,7 +28,8 @@ class BattleFormChangeService {
   };
 
   static bool supports(Pokemon pokemon) {
-    return _supportedSpecies.contains(pokemon.name);
+    return _supportedSpecies.contains(pokemon.name) ||
+        CustomPokemonRuntimeRegistry.hasTemporaryForms(pokemon.id);
   }
 
   static String canonicalFormKey(Pokemon pokemon, String? formName) {

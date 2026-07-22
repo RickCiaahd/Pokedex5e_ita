@@ -16,7 +16,10 @@ import '../../repositories/feat_repository.dart';
 import '../../repositories/item_repository.dart';
 import '../../repositories/move_repository.dart';
 import '../../repositories/profile_repository.dart';
+import '../../repositories/pokemon_repository.dart';
 import '../../services/battle_form_change_service.dart';
+import '../../services/custom_pokemon_discovery_service.dart';
+import '../../services/custom_pokemon_runtime_registry.dart';
 import '../../services/evolution_service.dart';
 import '../../services/trainer_path_passive_service.dart';
 import '../../widgets/pokemon/pokemon_asset_image.dart';
@@ -151,6 +154,8 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
   final ItemRepository _itemRepository = ItemRepository();
   final ProfileRepository _profileRepository = ProfileRepository();
   final EvolutionService _evolutionService = const EvolutionService();
+  final CustomPokemonDiscoveryService _customDiscoveryService =
+      CustomPokemonDiscoveryService();
 
   late Pokemon _basePokemon;
   late Pokemon _pokemon;
@@ -895,14 +900,34 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
 
   Pokemon? _pokemonByName(String name) {
     final targetKey = _referenceKey(name);
-
     for (final pokemon in widget.allPokemon) {
       if (pokemon.name == name || _referenceKey(pokemon.name) == targetKey) {
         return pokemon;
       }
     }
+    for (final definition in CustomPokemonRuntimeRegistry.definitions) {
+      if (definition.name == name ||
+          _referenceKey(definition.name) == targetKey) {
+        return definition.toPokemon();
+      }
+    }
 
     return null;
+  }
+
+  Pokemon? _pokemonForEvolutionOption(EvolutionOption option) {
+    final targetId = option.targetPokemonId;
+    if (targetId != null) {
+      for (final pokemon in widget.allPokemon) {
+        if (pokemon.id == targetId) return pokemon;
+      }
+      final custom = CustomPokemonRuntimeRegistry.definitionFor(targetId);
+      if (custom != null) return custom.toPokemon();
+    }
+    final stable = CustomPokemonRuntimeRegistry.definitionByStableId(
+      option.targetStableId,
+    );
+    return stable?.toPokemon() ?? _pokemonByName(option.toName);
   }
 
   String _referenceKey(String value) {
@@ -1010,7 +1035,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
   ) async {
     if (!selected.isAvailable) return null;
 
-    final evolvedPokemon = _pokemonByName(selected.option.toName);
+    final evolvedPokemon = _pokemonForEvolutionOption(selected.option);
     if (evolvedPokemon == null) {
       _showMessage(
         '${selected.option.toName} non è presente nel catalogo attuale.',
@@ -1040,6 +1065,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
           ? evolvedMaxHp
           : _currentHp.clamp(0, evolvedMaxHp).toInt(),
       selectedMoves: List<String>.from(slot.selectedMoves),
+      formName: selected.option.targetFormName,
     );
 
     if (!mounted) return updatedSlot;
@@ -1054,6 +1080,15 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
     });
 
     widget.onTeamSlotChanged?.call(updatedSlot);
+    final revealed = await _customDiscoveryService.revealByPokemonId(
+      evolvedPokemon.id,
+    );
+    if (revealed) {
+      PokemonRepository.clearCache();
+      _showMessage(
+        '$oldName si è evoluto in ${selected.option.toName}! Nuova specie scoperta.',
+      );
+    }
     await _loadData();
 
     return updatedSlot;

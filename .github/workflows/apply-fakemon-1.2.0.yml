@@ -1,0 +1,107 @@
+name: Apply Fakemon 1.2.0 fixes
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: github.event.pull_request.head.ref == 'release/fakemon-forms-localization-1.2.0'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Check out release branch
+        uses: actions/checkout@v4
+        with:
+          ref: release/fakemon-forms-localization-1.2.0
+          fetch-depth: 0
+          token: ${{ github.token }}
+
+      - name: Detect pending patch
+        id: patch
+        shell: bash
+        run: |
+          if test -f tool/apply_fakemon_1_2_0.py; then
+            echo 'pending=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'pending=false' >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Set up Flutter
+        if: steps.patch.outputs.pending == 'true'
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Apply patch
+        if: steps.patch.outputs.pending == 'true'
+        shell: bash
+        run: |
+          set +e
+          python tool/apply_fakemon_1_2_0.py 2>&1 | tee /tmp/fakemon-1.2.0-error.log
+          status=${PIPESTATUS[0]}
+          set -e
+          if [ "$status" -ne 0 ]; then
+            mkdir -p docs
+            cp /tmp/fakemon-1.2.0-error.log docs/fakemon-1.2.0-error.log
+            git config user.name 'github-actions[bot]'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git add docs/fakemon-1.2.0-error.log
+            git commit -m 'Registra errore applicazione correzioni Fakemon 1.2.0'
+            git push origin HEAD:release/fakemon-forms-localization-1.2.0
+            exit "$status"
+          fi
+          rm -f tool/apply_fakemon_1_2_0.py docs/fakemon-1.2.0-error.log
+
+      - name: Format changed Dart files
+        if: steps.patch.outputs.pending == 'true'
+        run: |
+          dart format \
+            lib/models/custom_pokemon_advanced_data.dart \
+            lib/models/pokemon_nature.dart \
+            lib/repositories/evolution_repository.dart \
+            lib/repositories/pokemon_repository.dart \
+            lib/screens/pokemon/custom_pokemon_advanced_editor_screen.dart \
+            lib/screens/pokemon/custom_pokemon_library_screen.dart \
+            lib/screens/pokemon/evolution_selector_sheet.dart \
+            lib/screens/pokemon/pokemon_edit_screen.dart \
+            lib/services/custom_pokemon_runtime_registry.dart \
+            lib/services/embedded_custom_pokemon_transfer_service.dart \
+            lib/services/evolution_service.dart \
+            test/evolution_repository_regression_test.dart \
+            test/fakemon_advanced_test.dart
+
+      - name: Install dependencies
+        if: steps.patch.outputs.pending == 'true'
+        run: flutter pub get
+
+      - name: Analyze source
+        if: steps.patch.outputs.pending == 'true'
+        run: flutter analyze
+
+      - name: Run focused regression tests
+        if: steps.patch.outputs.pending == 'true'
+        run: |
+          flutter test test/fakemon_advanced_test.dart --reporter expanded
+          flutter test test/evolution_repository_regression_test.dart --reporter expanded
+          flutter test test/item_localization_integrity_test.dart --reporter expanded
+
+      - name: Run complete test suite
+        if: steps.patch.outputs.pending == 'true'
+        run: flutter test --reporter expanded
+
+      - name: Commit and push changes
+        if: steps.patch.outputs.pending == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Fakemon come forme, selettori evolutivi e localizzazione italiana'
+          git push origin HEAD:release/fakemon-forms-localization-1.2.0

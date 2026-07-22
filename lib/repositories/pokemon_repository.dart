@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../models/custom_pokemon_definition.dart';
 import '../models/pokemon.dart';
 import '../models/pokemon_flavor.dart';
 import '../services/custom_pokemon_discovery_service.dart';

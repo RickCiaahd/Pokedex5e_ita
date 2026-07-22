@@ -1,0 +1,75 @@
+name: Fix Fakemon 1.2.0 analysis
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/fix-fakemon-analyze-1.2.0.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Check out release branch
+        uses: actions/checkout@v4
+        with:
+          ref: release/fakemon-forms-localization-1.2.0
+          fetch-depth: 0
+
+      - name: Correct item description and cleanup temporary files
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('lib/screens/pokemon/custom_pokemon_advanced_editor_screen.dart')
+          source = path.read_text(encoding='utf-8')
+          count = source.count('item.description')
+          print(f'item.description occurrences: {count}')
+          if count != 1:
+              raise SystemExit(f'Expected one item.description occurrence, found {count}')
+          path.write_text(
+              source.replace('item.description', 'item.displayDescription', 1),
+              encoding='utf-8',
+          )
+          PY
+          rm -f tool/fix_fakemon_1_2_0_analyze.py tool/apply_fakemon_1_2_0.py
+          rm -f docs/trigger-fakemon-1.2.0-*.txt docs/fakemon-1.2.0-error.log
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Format changed source
+        run: dart format lib/screens/pokemon/custom_pokemon_advanced_editor_screen.dart
+
+      - name: Commit correction
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Corregge il selettore degli oggetti evolutivi Fakemon'
+          git push origin HEAD:release/fakemon-forms-localization-1.2.0
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze source
+        run: flutter analyze
+
+      - name: Run focused tests
+        run: |
+          flutter test test/fakemon_advanced_test.dart --reporter expanded
+          flutter test test/evolution_repository_regression_test.dart --reporter expanded
+
+      - name: Run complete test suite
+        run: flutter test --reporter expanded

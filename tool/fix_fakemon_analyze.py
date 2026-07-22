@@ -1,5 +1,6 @@
 from pathlib import Path
 
+# Correzioni mirate emerse dalla prima analisi statica del formato v2.
 
 def replace_once(path: str, old: str, new: str) -> None:
     file = Path(path)

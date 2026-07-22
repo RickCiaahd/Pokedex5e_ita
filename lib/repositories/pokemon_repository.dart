@@ -68,18 +68,23 @@ class PokemonRepository {
   }) async {
     if (includeSealed) return List<Pokemon>.from(pokemon);
     final customDefinitions = await CustomPokemonRepository().getAll();
+    final sealedDefinitions = customDefinitions
+        .where((definition) => definition.advanced.sealedForPlayer)
+        .toList(growable: false);
+    if (sealedDefinitions.isEmpty) return List<Pokemon>.from(pokemon);
+
     final visible = await CustomPokemonDiscoveryService().visibleDefinitions(
-      customDefinitions,
+      sealedDefinitions,
     );
     final visibleIds = visible
         .map((definition) => definition.pokemonId)
         .toSet();
+    final hiddenIds = sealedDefinitions
+        .map((definition) => definition.pokemonId)
+        .where((pokemonId) => !visibleIds.contains(pokemonId))
+        .toSet();
     return pokemon
-        .where(
-          (entry) =>
-              entry.id < CustomPokemonDefinition.firstCustomPokemonId ||
-              visibleIds.contains(entry.id),
-        )
+        .where((entry) => !hiddenIds.contains(entry.id))
         .toList(growable: false);
   }
 

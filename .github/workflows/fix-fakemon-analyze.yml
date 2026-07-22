@@ -1,4 +1,4 @@
-name: Fix Fakemon advanced analysis
+name: Fix Fakemon advanced regressions
 
 on:
   pull_request:
@@ -38,7 +38,7 @@ jobs:
           channel: stable
           cache: true
 
-      - name: Apply analysis fixes
+      - name: Apply regression fixes
         if: steps.fix.outputs.pending == 'true'
         run: python tool/fix_fakemon_analyze.py
 
@@ -46,12 +46,14 @@ jobs:
         if: steps.fix.outputs.pending == 'true'
         run: rm tool/fix_fakemon_analyze.py
 
-      - name: Format fixed files
+      - name: Format changed Dart files
         if: steps.fix.outputs.pending == 'true'
+        shell: bash
         run: |
-          dart format \
-            lib/repositories/evolution_repository.dart \
-            lib/screens/pokemon/custom_pokemon_advanced_editor_screen.dart
+          mapfile -t dart_files < <(git diff --name-only --diff-filter=ACMRT | grep '\.dart$' || true)
+          if [ "${#dart_files[@]}" -gt 0 ]; then
+            dart format "${dart_files[@]}"
+          fi
 
       - name: Commit fixed snapshot
         if: steps.fix.outputs.pending == 'true'
@@ -61,7 +63,7 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -A
-          git commit -m 'Corregge l analisi statica dei Fakemon avanzati'
+          git commit -m 'Corregge le regressioni dei Fakemon avanzati'
           git push origin HEAD:feature/fakemon-advanced
 
       - name: Install dependencies

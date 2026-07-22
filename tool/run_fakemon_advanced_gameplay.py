@@ -27,6 +27,17 @@ if old_function not in source:
     raise SystemExit('gameplay replace_once function marker missing')
 source = source.replace(old_function, new_function, 1)
 
+source = source.replace(
+    """    final targetKey = _referenceKey(name);
+    for (final pokemon in widget.allPokemon) {
+""",
+    """    final targetKey = _referenceKey(name);
+
+    for (final pokemon in widget.allPokemon) {
+""",
+    1,
+)
+
 old = '''replace_once(
     path,
     """import '../../services/custom_pokemon_runtime_registry.dart';

@@ -47,6 +47,7 @@ jobs:
           status=${PIPESTATUS[0]}
           set -e
           if [ "$status" -ne 0 ]; then
+            git reset --hard HEAD
             mkdir -p docs
             cp /tmp/fakemon-1.2.0-error.log docs/fakemon-1.2.0-error.log
             git config user.name 'github-actions[bot]'

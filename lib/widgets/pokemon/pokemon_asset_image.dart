@@ -210,6 +210,12 @@ class PokemonAssetImage extends StatelessWidget {
             ? 'male'
             : null);
     final candidates = <String>[
+      ..._regionalAssetCandidates(
+        pokemon: effectivePokemon,
+        formName: effectiveForm,
+        useLargeArtwork: useLargeArtwork,
+        isShiny: isShiny ?? false,
+      ),
       ...PokemonMiniorAssetPaths.candidates(
         pokemon: effectivePokemon,
         useLargeArtwork: useLargeArtwork,
@@ -238,6 +244,68 @@ class PokemonAssetImage extends StatelessWidget {
       scale: useLargeArtwork ? 1.08 : 1.12,
     );
   }
+}
+
+List<String> _regionalAssetCandidates({
+  required Pokemon pokemon,
+  required String? formName,
+  required bool useLargeArtwork,
+  required bool isShiny,
+}) {
+  final formKey = Pokemon.formReferenceKey(formName ?? '', pokemon.name);
+  final regionalNames = switch (formKey) {
+    'alolan' => const ('alolan', 'alola'),
+    'galarian' => const ('galarian', 'galar'),
+    'hisuian' => const ('hisuian', 'hisui'),
+    'paldean' => const ('paldean', 'paldea'),
+    _ => null,
+  };
+  if (regionalNames == null) return const [];
+
+  final speciesSlug = _assetSlug(pokemon.name);
+  if (speciesSlug.isEmpty) return const [];
+
+  final adjective = regionalNames.$1;
+  final region = regionalNames.$2;
+  final folders = <String>[
+    '$adjective-$speciesSlug',
+    '$speciesSlug-$region',
+    '$speciesSlug-$adjective',
+  ];
+  final primary = useLargeArtwork ? 'main' : 'sprite';
+  final secondary = useLargeArtwork ? 'sprite' : 'main';
+  const root = 'assets/textures/textures_webapp/pokemon';
+  final candidates = <String>[];
+
+  for (final folder in folders) {
+    if (isShiny) {
+      candidates.addAll([
+        '$root/$folder/$primary-shiny.png',
+        '$root/$folder/$secondary-shiny.png',
+        '$root/$folder/${primary}_shiny.png',
+        '$root/$folder/${secondary}_shiny.png',
+      ]);
+    }
+    candidates.addAll([
+      '$root/$folder/$primary.png',
+      '$root/$folder/$secondary.png',
+    ]);
+  }
+
+  return candidates;
+}
+
+String _assetSlug(String value) {
+  return value
+      .trim()
+      .toLowerCase()
+      .replaceAll(' ♀', '-f')
+      .replaceAll('♀', '-f')
+      .replaceAll(' ♂', '-m')
+      .replaceAll('♂', '-m')
+      .replaceAll(RegExp(r'[^a-z0-9]+'), '-')
+      .replaceAll(RegExp(r'-+'), '-')
+      .replaceAll(RegExp(r'^-|-$'), '');
 }
 
 class _PreferredAssetImage extends StatelessWidget {

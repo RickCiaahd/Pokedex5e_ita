@@ -62,7 +62,7 @@ jobs:
           path.write_text(source, encoding='utf-8')
           PY
           set +e
-          python tool/apply_fakemon_1_2_0.py 2>&1 | tee /tmp/fakemon-1.2.0-error.log
+          python tool/apply_fakemon_1_2_0.py 2>&1 | tee /tmp/fakemon-1.2.0-patch.log
           status=${PIPESTATUS[0]}
           set -e
           if [ "$status" -ne 0 ]; then
@@ -75,14 +75,15 @@ jobs:
             docs/trigger-fakemon-1.2.0-diagnostics.txt \
             docs/trigger-fakemon-1.2.0-marker.txt \
             docs/trigger-fakemon-1.2.0-marker-2.txt \
-            docs/trigger-fakemon-1.2.0-marker-3.txt
+            docs/trigger-fakemon-1.2.0-marker-3.txt \
+            docs/trigger-fakemon-1.2.0-marker-4.txt
 
       - name: Upload patch diagnostics
         if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: fakemon-1.2.0-patch-diagnostics
-          path: /tmp/fakemon-1.2.0-error.log
+          path: /tmp/fakemon-1.2.0-patch.log
           if-no-files-found: error
           retention-days: 7
 
@@ -111,26 +112,7 @@ jobs:
             test/evolution_repository_regression_test.dart \
             test/fakemon_advanced_test.dart
 
-      - name: Install dependencies
-        if: steps.patch.outputs.pending == 'true' && success()
-        run: flutter pub get
-
-      - name: Analyze source
-        if: steps.patch.outputs.pending == 'true' && success()
-        run: flutter analyze
-
-      - name: Run focused regression tests
-        if: steps.patch.outputs.pending == 'true' && success()
-        run: |
-          flutter test test/fakemon_advanced_test.dart --reporter expanded
-          flutter test test/evolution_repository_regression_test.dart --reporter expanded
-          flutter test test/item_localization_integrity_test.dart --reporter expanded
-
-      - name: Run complete test suite
-        if: steps.patch.outputs.pending == 'true' && success()
-        run: flutter test --reporter expanded
-
-      - name: Commit and push changes
+      - name: Commit patch snapshot
         if: steps.patch.outputs.pending == 'true' && success()
         shell: bash
         run: |
@@ -140,3 +122,46 @@ jobs:
           git add -A
           git commit -m 'Fakemon come forme, selettori evolutivi e localizzazione italiana'
           git push origin HEAD:release/fakemon-forms-localization-1.2.0
+
+      - name: Install dependencies
+        if: steps.patch.outputs.pending == 'true' && success()
+        run: flutter pub get
+
+      - name: Analyze source
+        if: steps.patch.outputs.pending == 'true' && success()
+        shell: bash
+        run: |
+          set +e
+          flutter analyze 2>&1 | tee /tmp/fakemon-1.2.0-analyze.log
+          status=${PIPESTATUS[0]}
+          set -e
+          exit "$status"
+
+      - name: Upload verification diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fakemon-1.2.0-verification-diagnostics
+          path: |
+            /tmp/fakemon-1.2.0-analyze.log
+            /tmp/fakemon-1.2.0-tests.log
+          if-no-files-found: warn
+          retention-days: 7
+
+      - name: Run focused regression tests
+        if: steps.patch.outputs.pending == 'true' && success()
+        shell: bash
+        run: |
+          set +e
+          {
+            flutter test test/fakemon_advanced_test.dart --reporter expanded
+            flutter test test/evolution_repository_regression_test.dart --reporter expanded
+            flutter test test/item_localization_integrity_test.dart --reporter expanded
+          } 2>&1 | tee /tmp/fakemon-1.2.0-tests.log
+          status=${PIPESTATUS[0]}
+          set -e
+          exit "$status"
+
+      - name: Run complete test suite
+        if: steps.patch.outputs.pending == 'true' && success()
+        run: flutter test --reporter expanded

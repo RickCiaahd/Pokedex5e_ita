@@ -47,20 +47,21 @@ jobs:
           status=${PIPESTATUS[0]}
           set -e
           if [ "$status" -ne 0 ]; then
-            git reset --hard HEAD
-            mkdir -p docs
-            cp /tmp/fakemon-1.2.0-error.log docs/fakemon-1.2.0-error.log
-            git config user.name 'github-actions[bot]'
-            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-            git add docs/fakemon-1.2.0-error.log
-            git commit -m 'Registra errore applicazione correzioni Fakemon 1.2.0'
-            git push origin HEAD:release/fakemon-forms-localization-1.2.0
             exit "$status"
           fi
-          rm -f tool/apply_fakemon_1_2_0.py docs/fakemon-1.2.0-error.log
+          rm -f tool/apply_fakemon_1_2_0.py docs/fakemon-1.2.0-error.log docs/trigger-fakemon-1.2.0-retry.txt
+
+      - name: Upload patch diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fakemon-1.2.0-patch-diagnostics
+          path: /tmp/fakemon-1.2.0-error.log
+          if-no-files-found: error
+          retention-days: 7
 
       - name: Format changed Dart files
-        if: steps.patch.outputs.pending == 'true'
+        if: steps.patch.outputs.pending == 'true' && success()
         run: |
           dart format \
             lib/models/custom_pokemon_advanced_data.dart \
@@ -78,26 +79,26 @@ jobs:
             test/fakemon_advanced_test.dart
 
       - name: Install dependencies
-        if: steps.patch.outputs.pending == 'true'
+        if: steps.patch.outputs.pending == 'true' && success()
         run: flutter pub get
 
       - name: Analyze source
-        if: steps.patch.outputs.pending == 'true'
+        if: steps.patch.outputs.pending == 'true' && success()
         run: flutter analyze
 
       - name: Run focused regression tests
-        if: steps.patch.outputs.pending == 'true'
+        if: steps.patch.outputs.pending == 'true' && success()
         run: |
           flutter test test/fakemon_advanced_test.dart --reporter expanded
           flutter test test/evolution_repository_regression_test.dart --reporter expanded
           flutter test test/item_localization_integrity_test.dart --reporter expanded
 
       - name: Run complete test suite
-        if: steps.patch.outputs.pending == 'true'
+        if: steps.patch.outputs.pending == 'true' && success()
         run: flutter test --reporter expanded
 
       - name: Commit and push changes
-        if: steps.patch.outputs.pending == 'true'
+        if: steps.patch.outputs.pending == 'true' && success()
         shell: bash
         run: |
           set -euo pipefail

@@ -44,7 +44,7 @@ jobs:
 
       - name: Apply editor and transfer integration
         if: steps.patch.outputs.pending == 'true'
-        run: python tool/apply_fakemon_advanced_ui.py
+        run: python tool/run_fakemon_advanced_ui.py
 
       - name: Apply gameplay integration
         id: gameplay
@@ -75,6 +75,7 @@ jobs:
             tool/apply_fakemon_advanced_core.py \
             tool/run_fakemon_advanced_core.py \
             tool/apply_fakemon_advanced_ui.py \
+            tool/run_fakemon_advanced_ui.py \
             tool/apply_fakemon_advanced_gameplay.py \
             tool/run_fakemon_advanced_gameplay.py \
             docs/fakemon-advanced-progress.md \

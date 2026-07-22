@@ -1,5 +1,29 @@
 [
   {
+    "conclusion": "",
+    "createdAt": "2026-07-22T09:48:07Z",
+    "databaseId": 29909408290,
+    "event": "workflow_dispatch",
+    "headBranch": "v1.2.0",
+    "headSha": "52e8f710a4b2dfa8eda138ea1d0e73dc9808fe85",
+    "status": "in_progress",
+    "updatedAt": "2026-07-22T09:48:14Z",
+    "url": "https://github.com/RickCiaahd/Pokedex5e_ita/actions/runs/29909408290",
+    "workflowName": "Windows release"
+  },
+  {
+    "conclusion": "",
+    "createdAt": "2026-07-22T09:48:06Z",
+    "databaseId": 29909406748,
+    "event": "workflow_dispatch",
+    "headBranch": "v1.2.0",
+    "headSha": "52e8f710a4b2dfa8eda138ea1d0e73dc9808fe85",
+    "status": "in_progress",
+    "updatedAt": "2026-07-22T09:48:12Z",
+    "url": "https://github.com/RickCiaahd/Pokedex5e_ita/actions/runs/29909406748",
+    "workflowName": "Android release"
+  },
+  {
     "conclusion": "cancelled",
     "createdAt": "2026-07-22T09:16:50Z",
     "databaseId": 29907330510,

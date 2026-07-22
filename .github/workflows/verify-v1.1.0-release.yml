@@ -1,0 +1,68 @@
+name: Verify v1.1.0 release
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/verify-v1.1.0-release.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      GH_TOKEN: ${{ github.token }}
+
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Wait for Android and Windows release assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected=(
+            'Pokedex5eITA-1.1.0.apk'
+            'Pokedex5eITA-1.1.0.aab'
+            'SHA256SUMS.txt'
+            'Pokedex5eITA-1.1.0-Windows-x64.zip'
+            'Pokedex5eITA-1.1.0-Windows-x64-SHA256.txt'
+          )
+          for attempt in $(seq 1 80); do
+            if gh release view v1.1.0 --json assets,isDraft,isPrerelease,url > /tmp/release.json 2>/dev/null; then
+              missing=0
+              for asset in "${expected[@]}"; do
+                if ! jq -e --arg name "$asset" '.assets[] | select(.name == $name and .size > 0)' /tmp/release.json >/dev/null; then
+                  missing=1
+                  break
+                fi
+              done
+              if [ "$missing" -eq 0 ] &&
+                 [ "$(jq -r '.isDraft' /tmp/release.json)" = 'false' ] &&
+                 [ "$(jq -r '.isPrerelease' /tmp/release.json)" = 'false' ]; then
+                cat /tmp/release.json
+                exit 0
+              fi
+            fi
+            echo "Release non ancora completa: tentativo $attempt/80"
+            sleep 30
+          done
+          echo 'La release 1.1.0 non è stata completata entro il tempo previsto.'
+          exit 1
+
+      - name: Remove temporary verification workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm .github/workflows/verify-v1.1.0-release.yml
+          git commit -m 'Rimuove il workflow temporaneo di verifica release 1.1.0'
+          git push origin HEAD:main

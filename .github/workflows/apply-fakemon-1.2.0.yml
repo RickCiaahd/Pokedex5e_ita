@@ -25,7 +25,7 @@ jobs:
         id: patch
         shell: bash
         run: |
-          if test -f tool/apply_fakemon_1_2_0.py; then
+          if test -f tool/apply_fakemon_1_2_0.py || test -f tool/fix_fakemon_1_2_0_analyze.py; then
             echo 'pending=true' >> "$GITHUB_OUTPUT"
           else
             echo 'pending=false' >> "$GITHUB_OUTPUT"
@@ -35,48 +35,41 @@ jobs:
         if: steps.patch.outputs.pending == 'true'
         shell: bash
         run: |
-          python - <<'PY'
-          from pathlib import Path
-          path = Path('tool/apply_fakemon_1_2_0.py')
-          source = path.read_text(encoding='utf-8')
-          source = source.replace(
-              "raise SystemExit(f'{path}: expected one match, found {count}')",
-              "raise SystemExit(f'{path}: expected one match, found {count}; marker={old[:240]!r}')",
-          )
-          source = source.replace(
-              "        builder: (_) => _EvolutionLinkDialog(",
-              "      builder: (_) => _EvolutionLinkDialog(",
-          )
-          for field in (
-              'title: evolvesFrom',
-              'catalog: _catalog',
-              'itemCatalog: _itemCatalog',
-              'moveCatalog: _moveCatalog',
-              'currentPokemonId: widget.currentPokemonId',
-          ):
-              source = source.replace(f'          {field}', f'        {field}')
-          source = source.replace(
-              "        currentPokemonId: widget.currentPokemonId,\n        ),\n",
-              "        currentPokemonId: widget.currentPokemonId,\n      ),\n",
-          )
-          path.write_text(source, encoding='utf-8')
-          PY
-          set +e
-          python tool/apply_fakemon_1_2_0.py 2>&1 | tee /tmp/fakemon-1.2.0-patch.log
-          status=${PIPESTATUS[0]}
-          set -e
-          if [ "$status" -ne 0 ]; then
-            exit "$status"
+          set -euo pipefail
+          if test -f tool/apply_fakemon_1_2_0.py; then
+            python - <<'PY'
+            from pathlib import Path
+            path = Path('tool/apply_fakemon_1_2_0.py')
+            source = path.read_text(encoding='utf-8')
+            source = source.replace(
+                "raise SystemExit(f'{path}: expected one match, found {count}')",
+                "raise SystemExit(f'{path}: expected one match, found {count}; marker={old[:240]!r}')",
+            )
+            source = source.replace(
+                "        builder: (_) => _EvolutionLinkDialog(",
+                "      builder: (_) => _EvolutionLinkDialog(",
+            )
+            for field in (
+                'title: evolvesFrom',
+                'catalog: _catalog',
+                'itemCatalog: _itemCatalog',
+                'moveCatalog: _moveCatalog',
+                'currentPokemonId: widget.currentPokemonId',
+            ):
+                source = source.replace(f'          {field}', f'        {field}')
+            source = source.replace(
+                "        currentPokemonId: widget.currentPokemonId,\n        ),\n",
+                "        currentPokemonId: widget.currentPokemonId,\n      ),\n",
+            )
+            path.write_text(source, encoding='utf-8')
+            PY
+            python tool/apply_fakemon_1_2_0.py 2>&1 | tee /tmp/fakemon-1.2.0-patch.log
           fi
-          rm -f \
-            tool/apply_fakemon_1_2_0.py \
-            docs/fakemon-1.2.0-error.log \
-            docs/trigger-fakemon-1.2.0-retry.txt \
-            docs/trigger-fakemon-1.2.0-diagnostics.txt \
-            docs/trigger-fakemon-1.2.0-marker.txt \
-            docs/trigger-fakemon-1.2.0-marker-2.txt \
-            docs/trigger-fakemon-1.2.0-marker-3.txt \
-            docs/trigger-fakemon-1.2.0-marker-4.txt
+          if test -f tool/fix_fakemon_1_2_0_analyze.py; then
+            python tool/fix_fakemon_1_2_0_analyze.py 2>&1 | tee -a /tmp/fakemon-1.2.0-patch.log
+          fi
+          rm -f tool/apply_fakemon_1_2_0.py tool/fix_fakemon_1_2_0_analyze.py
+          rm -f docs/fakemon-1.2.0-error.log docs/trigger-fakemon-1.2.0-*.txt
 
       - name: Upload patch diagnostics
         if: failure()
@@ -84,7 +77,7 @@ jobs:
         with:
           name: fakemon-1.2.0-patch-diagnostics
           path: /tmp/fakemon-1.2.0-patch.log
-          if-no-files-found: error
+          if-no-files-found: warn
           retention-days: 7
 
       - name: Set up Flutter
@@ -120,7 +113,7 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -A
-          git commit -m 'Fakemon come forme, selettori evolutivi e localizzazione italiana'
+          git commit -m 'Corregge e rifinisce Fakemon e localizzazione 1.2.0'
           git push origin HEAD:release/fakemon-forms-localization-1.2.0
 
       - name: Install dependencies

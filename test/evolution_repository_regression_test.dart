@@ -42,6 +42,23 @@ void main() {
     );
   });
 
+  test('le evoluzioni canoniche non sono duplicate dagli alias', () async {
+    final evolutions = await EvolutionRepository().getEvolutionData();
+
+    final pidgeyTargets = evolutions['pidgey']!.options
+        .map((option) => option.toKey)
+        .toList(growable: false);
+    expect(pidgeyTargets, ['pidgeotto']);
+
+    final exeggcuteTargets = evolutions['exeggcute']!.options
+        .map(
+          (option) =>
+              '${option.toKey}:${option.conditions.map((condition) => condition.valueLabel).join(',')}',
+        )
+        .toSet();
+    expect(exeggcuteTargets.length, 2);
+  });
+
   test('le evoluzioni regionali di Hisui usano nomi risolvibili', () async {
     final evolutions = await EvolutionRepository().getEvolutionData();
 

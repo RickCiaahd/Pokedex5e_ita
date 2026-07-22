@@ -1,1 +1,0 @@
-Retry della patch Fakemon 1.2.0 dopo il miglioramento della diagnostica.

@@ -38,7 +38,30 @@ class PokemonRepository {
 
     final customDefinitions = await CustomPokemonRepository().getAll();
     for (final definition in customDefinitions) {
+      if (definition.advanced.alternateFormOf != null) continue;
       pokemonByNumber[definition.pokemonId] = definition.toPokemon();
+    }
+    for (final definition in customDefinitions) {
+      final parentReference = definition.advanced.alternateFormOf;
+      if (parentReference == null) continue;
+      final parentId = _resolveAlternateFormParentId(
+        parentReference,
+        customDefinitions,
+        pokemonByNumber,
+      );
+      final parent = parentId == null ? null : pokemonByNumber[parentId];
+      if (parent == null) continue;
+      final formPokemon = definition.toPokemon().copyWith(
+        name: parent.name,
+        formDefinitions: const [],
+      );
+      pokemonByNumber[parent.id] = parent.withAdditionalFormDefinitions([
+        PokemonFormDefinition(
+          key: 'fakemon-${definition.stableId}',
+          displayName: definition.name,
+          pokemon: formPokemon,
+        ),
+      ]);
     }
 
     final localizedTexts = await PokemonLocalizationRepository()
@@ -59,6 +82,29 @@ class PokemonRepository {
     _cachedCustomRevision = customRevision;
 
     return _filterSealed(pokemonList, includeSealed: includeSealed);
+  }
+
+  int? _resolveAlternateFormParentId(
+    dynamic reference,
+    List<dynamic> customDefinitions,
+    Map<int, Pokemon> pokemonByNumber,
+  ) {
+    final directId = reference.pokemonId as int?;
+    if (directId != null && pokemonByNumber.containsKey(directId)) {
+      return directId;
+    }
+    final stableId = reference.stableId as String?;
+    if (stableId != null && stableId.isNotEmpty) {
+      for (final definition in customDefinitions) {
+        if (definition.stableId == stableId) return definition.pokemonId as int;
+      }
+    }
+    final name = (reference.name as String).trim().toLowerCase();
+    if (name.isEmpty) return null;
+    for (final entry in pokemonByNumber.entries) {
+      if (entry.value.name.trim().toLowerCase() == name) return entry.key;
+    }
+    return null;
   }
 
   Future<List<Pokemon>> _filterSealed(
@@ -84,6 +130,13 @@ class PokemonRepository {
         .toSet();
     return pokemon
         .where((entry) => !hiddenIds.contains(entry.id))
+        .map((entry) {
+          final visibleForms = entry.formDefinitions
+              .where((form) => !hiddenIds.contains(form.pokemon.id))
+              .toList(growable: false);
+          if (visibleForms.length == entry.formDefinitions.length) return entry;
+          return entry.copyWith(formDefinitions: visibleForms);
+        })
         .toList(growable: false);
   }
 
@@ -270,22 +323,22 @@ class PokemonRepository {
     switch (rawSuffix) {
       case 'm':
       case 'male':
-        return 'Male';
+        return 'Maschio';
       case 'f':
       case 'female':
-        return 'Female';
+        return 'Femmina';
       case 'alola':
       case 'alolan':
-        return 'Alolan';
+        return 'Alola';
       case 'galar':
       case 'galarian':
-        return 'Galarian';
+        return 'Galar';
       case 'hisui':
       case 'hisuian':
-        return 'Hisuian';
+        return 'Hisui';
       case 'paldea':
       case 'paldean':
-        return 'Paldean';
+        return 'Paldea';
       default:
         return Pokemon.labelFromId(rawSuffix);
     }

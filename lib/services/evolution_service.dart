@@ -111,7 +111,9 @@ class EvolutionService {
           requiredItemId = requiredItem?.id;
           if (requiredItem == null) {
             conditionLabels.add(condition.valueLabel);
-            missing.add('Oggetto richiesto non trovato: ${condition.valueLabel}');
+            missing.add(
+              'Oggetto richiesto non trovato: ${condition.valueLabel}',
+            );
           } else {
             conditionLabels.add(requiredItem.name);
             if (!ownedItemIds.contains(requiredItem.id)) {
@@ -185,7 +187,7 @@ class EvolutionService {
       case 'female':
         return 'Femmina';
       case 'genderless':
-        return 'Genderless';
+        return 'Senza sesso';
       default:
         return value;
     }

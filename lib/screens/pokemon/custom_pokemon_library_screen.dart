@@ -595,6 +595,8 @@ class _CustomPokemonEditorScreenState extends State<CustomPokemonEditorScreen> {
   late String _size;
   Uint8List? _imageBytes;
   String? _imageMimeType;
+  Uint8List? _shinyImageBytes;
+  String? _shinyImageMimeType;
   List<CustomPokemonMoveDefinition> _localMoves = [];
   List<CustomPokemonAbilityDefinition> _localAbilities = [];
   CustomPokemonAdvancedData _advanced = const CustomPokemonAdvancedData();
@@ -677,6 +679,8 @@ class _CustomPokemonEditorScreenState extends State<CustomPokemonEditorScreen> {
     _size = definition?.size ?? 'Medium';
     _imageBytes = definition?.imageBytes;
     _imageMimeType = definition?.imageMimeType;
+    _shinyImageBytes = definition?.shinyImageBytes;
+    _shinyImageMimeType = definition?.shinyImageMimeType;
     _localMoves = [...?definition?.localMoves];
     _localAbilities = [...?definition?.localAbilities];
     _advanced = definition?.advanced ?? const CustomPokemonAdvancedData();
@@ -728,9 +732,11 @@ class _CustomPokemonEditorScreenState extends State<CustomPokemonEditorScreen> {
     });
   }
 
-  Future<void> _pickImage() async {
+  Future<void> _pickImage({bool shiny = false}) async {
     final result = await FilePicker.platform.pickFiles(
-      dialogTitle: 'Scegli immagine Fakemon',
+      dialogTitle: shiny
+          ? 'Scegli immagine shiny del Fakemon'
+          : 'Scegli immagine Fakemon',
       type: FileType.custom,
       allowedExtensions: const ['png', 'jpg', 'jpeg', 'webp'],
       allowMultiple: false,
@@ -756,9 +762,66 @@ class _CustomPokemonEditorScreenState extends State<CustomPokemonEditorScreen> {
     }
     if (!mounted) return;
     setState(() {
-      _imageBytes = bytes;
-      _imageMimeType = mimeType;
+      if (shiny) {
+        _shinyImageBytes = bytes;
+        _shinyImageMimeType = mimeType;
+      } else {
+        _imageBytes = bytes;
+        _imageMimeType = mimeType;
+      }
     });
+  }
+
+  Widget _imagePickerCard({
+    required String label,
+    required Uint8List? bytes,
+    required bool shiny,
+  }) {
+    return Column(
+      children: [
+        Text(label, style: Theme.of(context).textTheme.labelLarge),
+        const SizedBox(height: 6),
+        InkWell(
+          borderRadius: BorderRadius.circular(18),
+          onTap: () => _pickImage(shiny: shiny),
+          child: Container(
+            height: 170,
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surfaceContainer,
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(
+                color: Theme.of(context).colorScheme.outlineVariant,
+              ),
+            ),
+            clipBehavior: Clip.antiAlias,
+            child: bytes == null
+                ? Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.add_photo_alternate_outlined, size: 44),
+                      const SizedBox(height: 8),
+                      Text(shiny ? 'AGGIUNGI SHINY' : 'CARICA IMMAGINE'),
+                    ],
+                  )
+                : Image.memory(bytes, fit: BoxFit.contain),
+          ),
+        ),
+        if (bytes != null)
+          TextButton.icon(
+            onPressed: () => setState(() {
+              if (shiny) {
+                _shinyImageBytes = null;
+                _shinyImageMimeType = null;
+              } else {
+                _imageBytes = null;
+                _imageMimeType = null;
+              }
+            }),
+            icon: const Icon(Icons.delete_outline),
+            label: const Text('Rimuovi'),
+          ),
+      ],
+    );
   }
 
   Future<void> _pickGlobalMove(TextEditingController controller) async {
@@ -894,6 +957,12 @@ class _CustomPokemonEditorScreenState extends State<CustomPokemonEditorScreen> {
         creatorNotes: _nullable(_notes.text),
         imageMimeType: imageBytes == null ? null : _imageMimeType,
         imageBase64: imageBytes == null ? null : base64Encode(imageBytes),
+        shinyImageMimeType: _shinyImageBytes == null
+            ? null
+            : _shinyImageMimeType,
+        shinyImageBase64: _shinyImageBytes == null
+            ? null
+            : base64Encode(_shinyImageBytes!),
         localMoves: _localMoves,
         localAbilities: _localAbilities,
         advanced: _advanced,
@@ -934,49 +1003,26 @@ class _CustomPokemonEditorScreenState extends State<CustomPokemonEditorScreen> {
               _EditorSection(
                 title: 'Identità e immagine',
                 children: [
-                  Center(
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(18),
-                      onTap: _pickImage,
-                      child: Container(
-                        width: 180,
-                        height: 180,
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.surfaceContainer,
-                          borderRadius: BorderRadius.circular(18),
-                          border: Border.all(
-                            color: Theme.of(context).colorScheme.outlineVariant,
-                          ),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: _imagePickerCard(
+                          label: 'IMMAGINE PRINCIPALE',
+                          bytes: _imageBytes,
+                          shiny: false,
                         ),
-                        clipBehavior: Clip.antiAlias,
-                        child: _imageBytes == null
-                            ? const Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.add_photo_alternate_outlined,
-                                    size: 48,
-                                  ),
-                                  SizedBox(height: 8),
-                                  Text('CARICA IMMAGINE'),
-                                ],
-                              )
-                            : Image.memory(_imageBytes!, fit: BoxFit.contain),
                       ),
-                    ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: _imagePickerCard(
+                          label: 'SHINY (FACOLTATIVA)',
+                          bytes: _shinyImageBytes,
+                          shiny: true,
+                        ),
+                      ),
+                    ],
                   ),
-                  if (_imageBytes != null)
-                    Align(
-                      alignment: Alignment.center,
-                      child: TextButton.icon(
-                        onPressed: () => setState(() {
-                          _imageBytes = null;
-                          _imageMimeType = null;
-                        }),
-                        icon: const Icon(Icons.delete_outline),
-                        label: const Text('Rimuovi immagine'),
-                      ),
-                    ),
                   _RequiredTextField(controller: _name, label: 'Nome'),
                   _RequiredTextField(controller: _author, label: 'Autore'),
                   TextFormField(

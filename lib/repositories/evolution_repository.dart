@@ -57,12 +57,17 @@ class EvolutionRepository {
     Map<String, EvolutionData> base,
   ) {
     final grouped = <String, List<EvolutionOption>>{};
+    final signaturesBySource = <String, Set<String>>{};
     for (final entry in base.entries) {
-      final options = grouped.putIfAbsent(
-        _referenceKey(entry.key),
-        () => <EvolutionOption>[],
+      final sourceKey = _referenceKey(entry.key);
+      final options = grouped.putIfAbsent(sourceKey, () => <EvolutionOption>[]);
+      final signatures = signaturesBySource.putIfAbsent(
+        sourceKey,
+        () => <String>{},
       );
-      options.addAll(entry.value.options);
+      for (final option in entry.value.options) {
+        if (signatures.add(_optionSignature(option))) options.add(option);
+      }
     }
 
     for (final definition in CustomPokemonRuntimeRegistry.definitions) {
@@ -110,6 +115,21 @@ class EvolutionRepository {
       }
     }
     return result;
+  }
+
+  String _optionSignature(EvolutionOption option) {
+    return <String>[
+      option.id,
+      option.fromKey,
+      option.toKey,
+      option.targetPokemonId?.toString() ?? '',
+      option.targetStableId ?? '',
+      option.targetFormName ?? '',
+      for (final condition in option.conditions)
+        '${condition.type}:${condition.valueLabel}',
+      for (final effect in option.effects)
+        '${effect.type}:${effect.valueLabel}',
+    ].join('|');
   }
 
   void _addCustomOption(

@@ -39,6 +39,27 @@ class PokemonEditScreen extends StatefulWidget {
 }
 
 class _PokemonEditScreenState extends State<PokemonEditScreen> {
+  static const _skillLabels = <String, String>{
+    'Acrobatics': 'Acrobazia',
+    'Animal Handling': 'Addestrare Animali',
+    'Arcana': 'Arcano',
+    'Athletics': 'Atletica',
+    'Deception': 'Inganno',
+    'History': 'Storia',
+    'Insight': 'Intuizione',
+    'Intimidation': 'Intimidire',
+    'Investigation': 'Investigazione',
+    'Medicine': 'Medicina',
+    'Nature': 'Natura',
+    'Perception': 'Percezione',
+    'Performance': 'Intrattenere',
+    'Persuasion': 'Persuasione',
+    'Religion': 'Religione',
+    'Sleight of Hand': 'Rapidità di Mano',
+    'Stealth': 'Furtività',
+    'Survival': 'Sopravvivenza',
+  };
+
   static const _skills = [
     'Acrobatics',
     'Animal Handling',
@@ -529,9 +550,10 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
     final result = await Navigator.of(context).push<String>(
       MaterialPageRoute(
         builder: (_) => _ChoicePickerScreen(
-          title: 'Scegli skill',
+          title: 'Scegli competenza',
           options: _skills,
           blockedOptions: blocked,
+          labels: _skillLabels,
         ),
       ),
     );
@@ -584,7 +606,7 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
                           for (final nature in PokemonNature.names)
                             DropdownMenuItem(
                               value: nature,
-                              child: Text(nature),
+                              child: Text(PokemonNature.labelFor(nature)),
                             ),
                         ],
                         onChanged: (value) {
@@ -616,7 +638,7 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
                           ),
                           DropdownMenuItem<String?>(
                             value: 'genderless',
-                            child: Text('Genderless'),
+                            child: Text('Senza sesso'),
                           ),
                         ],
                         onChanged: (value) {
@@ -646,7 +668,7 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
                     ),
                   ),
                 _CollapsibleEditSection(
-                  title: 'Move set',
+                  title: 'Mosse',
                   isOpen: _movesOpen,
                   onToggle: () => setState(() => _movesOpen = !_movesOpen),
                   child: _MoveSlotGrid(
@@ -663,7 +685,7 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
                   ),
                 ),
                 _CollapsibleEditSection(
-                  title: 'Abilities',
+                  title: 'Abilità',
                   isOpen: _abilitiesOpen,
                   onToggle: () =>
                       setState(() => _abilitiesOpen = !_abilitiesOpen),
@@ -673,7 +695,7 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
                       _ChipSlots(
                         values: _abilities,
                         labels: _abilityDisplayNames,
-                        emptyLabel: 'ABILITY',
+                        emptyLabel: 'ABILITÀ',
                         onAdd: _abilities.length >= 2
                             ? null
                             : () => _pickAbility(),
@@ -691,12 +713,12 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
                   ),
                 ),
                 _CollapsibleEditSection(
-                  title: 'Feats',
+                  title: 'Privilegi',
                   isOpen: _featsOpen,
                   onToggle: () => setState(() => _featsOpen = !_featsOpen),
                   child: _ChipSlots(
                     values: _feats,
-                    emptyLabel: 'FEAT',
+                    emptyLabel: 'PRIVILEGIO',
                     onAdd: () => _pickFeat(),
                     onPick: _pickFeat,
                     onRemove: (index) {
@@ -705,12 +727,13 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
                   ),
                 ),
                 _CollapsibleEditSection(
-                  title: 'Skills',
+                  title: 'Competenze',
                   isOpen: _skillsOpen,
                   onToggle: () => setState(() => _skillsOpen = !_skillsOpen),
                   child: _ChipSlots(
                     values: _extraSkills,
-                    emptyLabel: 'SKILL',
+                    labels: _skillLabels,
+                    emptyLabel: 'COMPETENZA',
                     onAdd: () => _pickSkill(),
                     onPick: _pickSkill,
                     onRemove: (index) {
@@ -720,7 +743,7 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
                 ),
 
                 _CollapsibleEditSection(
-                  title: 'Extra ability score',
+                  title: 'Punteggi caratteristica extra',
                   isOpen: _extraAsiOpen,
                   onToggle: () =>
                       setState(() => _extraAsiOpen = !_extraAsiOpen),
@@ -776,7 +799,7 @@ class _TerrainAdeptDialogState extends State<_TerrainAdeptDialog> {
         .where((terrain) => terrain != BattleNaturalTerrain.none)
         .toList(growable: false);
     return AlertDialog(
-      title: const Text('Terrain Adept'),
+      title: const Text('Esperto del terreno'),
       content: DropdownButtonFormField<BattleNaturalTerrain>(
         initialValue: _terrain,
         isExpanded: true,

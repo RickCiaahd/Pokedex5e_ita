@@ -98,7 +98,7 @@ class _EvolutionChoiceTile extends StatelessWidget {
         title: Text(
           choice.option.isSecret
               ? 'EVOLUZIONE SCONOSCIUTA'
-              : choice.option.toName.toUpperCase(),
+              : _localizedEvolutionName(choice.option.toName).toUpperCase(),
           style: const TextStyle(fontWeight: FontWeight.w900),
         ),
         subtitle: Padding(
@@ -156,6 +156,23 @@ class _EvolutionChoiceTile extends StatelessWidget {
       ),
     );
   }
+}
+
+String _localizedEvolutionName(String value) {
+  final trimmed = value.trim();
+  final regional = RegExp(
+    r'^(Alolan|Galarian|Hisuian|Paldean)\s+(.+)$',
+    caseSensitive: false,
+  ).firstMatch(trimmed);
+  if (regional == null) return trimmed;
+  final region = switch (regional.group(1)!.toLowerCase()) {
+    'alolan' => 'Alola',
+    'galarian' => 'Galar',
+    'hisuian' => 'Hisui',
+    'paldean' => 'Paldea',
+    _ => regional.group(1)!,
+  };
+  return '${regional.group(2)} di $region';
 }
 
 class _ConditionChip extends StatelessWidget {

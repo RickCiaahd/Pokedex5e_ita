@@ -23,7 +23,33 @@ class PokemonNature {
     'No Nature': {},
   };
 
+  static const Map<String, String> labels = {
+    'Reckless': 'Sconsiderata',
+    'Rash': 'Impulsiva',
+    'Brave': 'Coraggiosa',
+    'Arrogant': 'Arrogante',
+    'Skittish': 'Timorosa',
+    'Hasty': 'Frettolosa',
+    'Energetic': 'Energica',
+    'Clumsy': 'Goffa',
+    'Apathetic': 'Apatica',
+    'Stubborn': 'Testarda',
+    'Grumpy': 'Scontrosa',
+    'Relaxed': 'Rilassata',
+    'Careful': 'Prudente',
+    'Curious': 'Curiosa',
+    'Naughty': 'Birichina',
+    'Cheerful': 'Allegra',
+    'Sassy': 'Insolente',
+    'Innocent': 'Innocente',
+    'Hardy': 'Tenace',
+    'Nimble': 'Agile',
+    'No Nature': 'Nessuna natura',
+  };
+
   static List<String> get names => modifiers.keys.toList();
+
+  static String labelFor(String nature) => labels[nature] ?? nature;
 
   static Map<String, int> forName(String nature) {
     return modifiers[nature] ?? const {};

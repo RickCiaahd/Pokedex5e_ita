@@ -1,1 +1,1 @@
-Riprova la trasformazione automatica dello scheletro onboarding con registrazione diagnostica degli errori.
+Riprova la trasformazione automatica dello scheletro onboarding pubblicando la diagnostica nella pull request.

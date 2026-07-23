@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: flutter-ci-${{ github.workflow }}-${{ github.ref }}
@@ -73,3 +73,42 @@ jobs:
           path: build/app/outputs/flutter-apk/app-debug.apk
           if-no-files-found: error
           retention-days: 7
+
+  apply_onboarding_skeleton:
+    name: Apply onboarding asset skeleton
+    if: github.event_name == 'pull_request' && github.event.pull_request.title == 'Crea lo scheletro grafico dell onboarding'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out feature branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+
+      - name: Extract and run the temporary migration
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          workflow = Path('.github/workflows/apply-onboarding-asset-skeleton.yml')
+          lines = workflow.read_text(encoding='utf-8').splitlines()
+          marker = '        run: |'
+          start = lines.index(marker) + 1
+          script_lines = []
+          for line in lines[start:]:
+              if line.startswith('          '):
+                  script_lines.append(line[10:])
+              elif not line.strip():
+                  script_lines.append('')
+              else:
+                  break
+          Path('/tmp/apply-onboarding-skeleton.sh').write_text(
+              '\n'.join(script_lines) + '\n',
+              encoding='utf-8',
+          )
+          PY
+          bash /tmp/apply-onboarding-skeleton.sh

@@ -1,5 +1,6 @@
 name: Publish v1.3.0
 
+# Workflow temporaneo: prepara la versione, crea il tag e poi si rimuove.
 on:
   push:
     branches:

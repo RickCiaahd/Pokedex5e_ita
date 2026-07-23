@@ -106,6 +106,10 @@ jobs:
                   script_lines.append('')
               else:
                   break
+          script_lines = [
+              line for line in script_lines
+              if not line.strip().startswith('dart format ')
+          ]
           Path('/tmp/apply-onboarding-skeleton.sh').write_text(
               '\n'.join(script_lines) + '\n',
               encoding='utf-8',

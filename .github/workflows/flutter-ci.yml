@@ -9,8 +9,6 @@ on:
 
 permissions:
   contents: write
-  issues: write
-  pull-requests: write
 
 concurrency:
   group: flutter-ci-${{ github.workflow }}-${{ github.ref }}
@@ -81,8 +79,6 @@ jobs:
     if: github.event_name == 'pull_request' && github.event.pull_request.title == 'Crea lo scheletro grafico dell onboarding'
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    env:
-      GH_TOKEN: ${{ github.token }}
 
     steps:
       - name: Check out feature branch
@@ -91,51 +87,20 @@ jobs:
           ref: ${{ github.event.pull_request.head.ref }}
           fetch-depth: 0
 
-      - name: Extract and run the temporary migration
+      - name: Apply clean skeleton migration
         shell: bash
         run: |
           set -euo pipefail
-          python3 - <<'PY'
-          from pathlib import Path
-
-          workflow = Path('.github/workflows/apply-onboarding-asset-skeleton.yml')
-          lines = workflow.read_text(encoding='utf-8').splitlines()
-          marker = '        run: |'
-          start = lines.index(marker) + 1
-          script_lines = []
-          for line in lines[start:]:
-              if line.startswith('          '):
-                  script_lines.append(line[10:])
-              elif not line.strip():
-                  script_lines.append('')
-              else:
-                  break
-          script_lines = [
-              line for line in script_lines
-              if not line.strip().startswith('dart format ')
-          ]
-          Path('/tmp/apply-onboarding-skeleton.sh').write_text(
-              '\n'.join(script_lines) + '\n',
-              encoding='utf-8',
-          )
-          PY
-
-          set +e
-          bash /tmp/apply-onboarding-skeleton.sh > /tmp/onboarding-skeleton.log 2>&1
-          status=$?
-          set -e
-          cat /tmp/onboarding-skeleton.log
-
-          if [ "$status" -ne 0 ]; then
-            {
-              echo '### Errore migrazione scheletro onboarding'
-              echo
-              echo '```text'
-              tail -n 80 /tmp/onboarding-skeleton.log
-              echo '```'
-            } > /tmp/onboarding-skeleton-comment.md
-            gh pr comment '${{ github.event.pull_request.number }}' \
-              --repo '${{ github.repository }}' \
-              --body-file /tmp/onboarding-skeleton-comment.md
-            exit "$status"
+          migration='.github/scripts/apply_onboarding_skeleton.py'
+          if [ ! -f "$migration" ]; then
+            echo 'Scheletro onboarding già applicato.'
+            exit 0
           fi
+
+          python3 "$migration"
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Crea lo scheletro grafico configurabile dell onboarding'
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}

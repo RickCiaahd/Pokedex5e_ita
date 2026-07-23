@@ -169,7 +169,6 @@ jobs:
           path.write_text(text, encoding='utf-8')
           PY
 
-          dart format lib/screens/onboarding/first_launch_onboarding_screen.dart
           rm -f .github/workflows/adjust-professor-position.yml
 
       - name: Commit positioning changes

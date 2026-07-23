@@ -650,7 +650,7 @@ class _DialogueCard extends StatelessWidget {
                     ),
                   ),
                 ),
-                trailing?,
+                ?trailing,
               ],
             ),
             const SizedBox(height: 8),

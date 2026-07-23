@@ -373,7 +373,7 @@ class _FirstLaunchOnboardingScreenState
           title: 'Ogni Allenatore porta con sé una storia.',
           body: 'Da dove provieni?',
           content: DropdownButtonFormField<TrainerOrigin>(
-            value: _origin,
+            initialValue: _origin,
             isExpanded: true,
             items: [
               for (final origin in _origins)
@@ -397,7 +397,7 @@ class _FirstLaunchOnboardingScreenState
           title: 'Quale strada ti ha portato fin qui?',
           body: 'Scegli il background che descrive meglio il tuo Allenatore.',
           content: DropdownButtonFormField<String>(
-            value: _background,
+            initialValue: _background,
             items: [
               for (final background in _backgrounds)
                 DropdownMenuItem(value: background, child: Text(background)),
@@ -495,11 +495,31 @@ class _FirstLaunchOnboardingScreenState
           body: 'Controlla le scelte e preparati a iniziare.',
           content: Column(
             children: [
-              _SummaryRow(icon: Icons.person_outline, label: 'Nome', value: _nameController.text.trim()),
-              _SummaryRow(icon: Icons.cake_outlined, label: 'Età', value: '$_age'),
-              _SummaryRow(icon: Icons.public, label: 'Origine', value: _origin?.name ?? '—'),
-              _SummaryRow(icon: Icons.menu_book_outlined, label: 'Background', value: _background),
-              _SummaryRow(icon: Icons.catching_pokemon, label: 'Starter', value: _starter?.name ?? '—'),
+              _SummaryRow(
+                icon: Icons.person_outline,
+                label: 'Nome',
+                value: _nameController.text.trim(),
+              ),
+              _SummaryRow(
+                icon: Icons.cake_outlined,
+                label: 'Età',
+                value: '$_age',
+              ),
+              _SummaryRow(
+                icon: Icons.public,
+                label: 'Origine',
+                value: _origin?.name ?? '—',
+              ),
+              _SummaryRow(
+                icon: Icons.menu_book_outlined,
+                label: 'Background',
+                value: _background,
+              ),
+              _SummaryRow(
+                icon: Icons.catching_pokemon,
+                label: 'Starter',
+                value: _starter?.name ?? '—',
+              ),
             ],
           ),
         );
@@ -524,7 +544,7 @@ class _ProfessorScene extends StatelessWidget {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                colors.primaryContainer.withOpacity(.7),
+                colors.primaryContainer.withValues(alpha: .7),
                 colors.surface,
               ],
             ),
@@ -564,7 +584,7 @@ class _ProfessorPlaceholder extends StatelessWidget {
       child: Container(
         constraints: const BoxConstraints(maxWidth: 320, maxHeight: 420),
         decoration: BoxDecoration(
-          color: colors.surface.withOpacity(.78),
+          color: colors.surface.withValues(alpha: .78),
           borderRadius: BorderRadius.circular(24),
           border: Border.all(color: colors.outlineVariant),
         ),
@@ -653,7 +673,11 @@ class _DialogueCard extends StatelessWidget {
 }
 
 class _SummaryRow extends StatelessWidget {
-  const _SummaryRow({required this.icon, required this.label, required this.value});
+  const _SummaryRow({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
 
   final IconData icon;
   final String label;

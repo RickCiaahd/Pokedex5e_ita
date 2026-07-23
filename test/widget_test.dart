@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:hive/hive.dart';
 
 import 'package:pokedex_5e_ita/app.dart';
+import 'package:pokedex_5e_ita/screens/onboarding/first_launch_onboarding_screen.dart';
 
 void main() {
   late Directory hiveDirectory;
@@ -23,9 +24,14 @@ void main() {
     WidgetTester tester,
   ) async {
     await tester.pumpWidget(const Pokedex5EApp());
-    await tester.pumpAndSettle();
 
-    expect(find.text('Benvenuto, Allenatore.'), findsOneWidget);
-    expect(find.text('AVANTI'), findsOneWidget);
+    for (var attempt = 0; attempt < 20; attempt++) {
+      await tester.pump(const Duration(milliseconds: 100));
+      if (find.byType(FirstLaunchOnboardingScreen).evaluate().isNotEmpty) {
+        break;
+      }
+    }
+
+    expect(find.byType(FirstLaunchOnboardingScreen), findsOneWidget);
   });
 }

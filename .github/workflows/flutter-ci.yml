@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: flutter-ci-${{ github.workflow }}-${{ github.ref }}
@@ -73,3 +73,237 @@ jobs:
           path: build/app/outputs/flutter-apk/app-debug.apk
           if-no-files-found: error
           retention-days: 7
+
+  apply_professor_portrait:
+    name: Integrate elegant professor portrait
+    if: github.event_name == 'pull_request' && github.event.pull_request.title == 'Integra il Professore elegante nell onboarding'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out feature branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+
+      - name: Apply portrait integration
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [ ! -f assets/images/professor/professor.webp ]; then
+            echo 'Ritratto già integrato.'
+            exit 0
+          fi
+
+          mkdir -p assets/textures/trainers
+          git mv \
+            assets/images/professor/professor.webp \
+            assets/textures/trainers/professor_riccardo.webp
+
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path('lib/screens/onboarding/first_launch_onboarding_screen.dart')
+          text = path.read_text(encoding='utf-8')
+
+          old_scene = '''        final cardTop = constraints.maxHeight * compactCardTopFactor;
+          return Container(
+            decoration: BoxDecoration(
+              color: _OnboardingPalette.peachSoft,
+              borderRadius: BorderRadius.circular(30),
+            ),
+            child: Stack(
+              children: [
+                Positioned(
+                  left: 20,
+                  right: 20,
+                  top: 20,
+                  height: math.max(190.0, cardTop + 48),
+                  child: const _ProfessorPortrait(),
+                ),
+                Positioned(
+                  left: 20,
+                  right: 20,
+                  top: math.max(142.0, cardTop),
+                  bottom: 18,
+                  child: child,
+                ),
+              ],
+            ),
+          );'''
+
+          new_scene = '''        final cardTop = constraints.maxHeight * compactCardTopFactor;
+        final portraitHeight = math.max(230.0, cardTop + 116);
+        return Container(
+          decoration: BoxDecoration(
+            color: _OnboardingPalette.peachSoft,
+            borderRadius: BorderRadius.circular(30),
+          ),
+          child: Stack(
+            children: [
+              Positioned(
+                left: 10,
+                right: 10,
+                top: 10,
+                height: portraitHeight,
+                child: const _ProfessorPortrait(),
+              ),
+              Positioned(
+                left: 18,
+                right: 18,
+                top: math.max(154.0, cardTop),
+                bottom: 14,
+                child: child,
+              ),
+            ],
+          ),
+        );'''
+
+          old_portrait = '''class _ProfessorPortrait extends StatelessWidget {
+  const _ProfessorPortrait();
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(26),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: _OnboardingPalette.card,
+          border: Border.all(color: _OnboardingPalette.border),
+        ),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            const CustomPaint(painter: _LaboratoryPainter()),
+            Center(
+              child: Container(
+                width: 164,
+                height: 164,
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: .70),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.person,
+                  size: 122,
+                  color: Color(0xFF242120),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}'''
+
+          new_portrait = '''class _ProfessorPortrait extends StatelessWidget {
+  const _ProfessorPortrait();
+
+  static const _assetPath =
+      'assets/textures/trainers/professor_riccardo.webp';
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(26),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: _OnboardingPalette.card,
+          border: Border.all(color: _OnboardingPalette.border),
+        ),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            const CustomPaint(painter: _LaboratoryPainter()),
+            const DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Color(0x1AFFFFFF),
+                    Color(0x00FFFFFF),
+                    Color(0x26FFF4EC),
+                  ],
+                ),
+              ),
+            ),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: FractionallySizedBox(
+                widthFactor: .98,
+                heightFactor: .98,
+                child: Transform.translate(
+                  offset: const Offset(0, 10),
+                  child: Image.asset(
+                    _assetPath,
+                    fit: BoxFit.contain,
+                    alignment: Alignment.bottomCenter,
+                    filterQuality: FilterQuality.high,
+                    errorBuilder: (context, error, stackTrace) => const Center(
+                      child: Icon(
+                        Icons.person,
+                        size: 122,
+                        color: Color(0xFF242120),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              left: 14,
+              top: 14,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: .84),
+                  borderRadius: BorderRadius.circular(999),
+                  border: Border.all(
+                    color: _OnboardingPalette.border,
+                  ),
+                ),
+                child: const Text(
+                  'PROFESSORE',
+                  style: TextStyle(
+                    color: _OnboardingPalette.rust,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: .8,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}'''
+
+          if text.count(old_scene) != 1:
+              raise SystemExit('Blocco scena Professore inatteso')
+          if text.count(old_portrait) != 1:
+              raise SystemExit('Blocco ritratto Professore inatteso')
+
+          text = text.replace(old_scene, new_scene, 1)
+          text = text.replace(old_portrait, new_portrait, 1)
+          path.write_text(text, encoding='utf-8')
+          PY
+
+          dart format lib/screens/onboarding/first_launch_onboarding_screen.dart
+          git rm .github/workflows/apply-professor-portrait.yml
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add \
+            assets/textures/trainers/professor_riccardo.webp \
+            lib/screens/onboarding/first_launch_onboarding_screen.dart
+          git commit -m 'Integra il Professore elegante nell onboarding'
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}

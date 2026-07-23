@@ -45,16 +45,7 @@ class _FirstLaunchOnboardingScreenState
     }
 
     if (!tappedBottomAction || _estimatedStep >= 9) return;
-
-    final previousStep = _estimatedStep;
     setState(() => _estimatedStep += 1);
-
-    if (previousStep == 7) {
-      Future<void>.delayed(const Duration(milliseconds: 950), () {
-        if (!mounted || _estimatedStep != 8) return;
-        setState(() => _estimatedStep = 9);
-      });
-    }
   }
 
   @override

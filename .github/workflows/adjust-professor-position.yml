@@ -104,8 +104,6 @@ jobs:
           path.write_text(text, encoding='utf-8')
           PY
 
-          dart format lib/screens/onboarding/first_launch_onboarding_screen.dart
-
       - name: Commit positioning changes
         shell: bash
         run: |

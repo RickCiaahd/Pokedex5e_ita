@@ -1,0 +1,568 @@
+name: Apply onboarding asset skeleton
+
+on:
+  push:
+    branches:
+      - fix/onboarding-asset-skeleton
+    paths:
+      - '.github/workflows/apply-onboarding-asset-skeleton.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out feature branch
+        uses: actions/checkout@v4
+        with:
+          ref: fix/onboarding-asset-skeleton
+          fetch-depth: 0
+
+      - name: Build clean onboarding skeleton
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          python3 - <<'PY'
+          from pathlib import Path
+
+          source = Path('lib/screens/onboarding/first_launch_onboarding_screen_impl.dart')
+          target = Path('lib/screens/onboarding/first_launch_onboarding_screen.dart')
+          text = source.read_text(encoding='utf-8')
+
+          old_factors = '''    final compactCardFactor = switch (_step) {
+      6 => .19,
+      7 || 8 || 9 => .24,
+      _ => .41,
+    };'''
+          new_factors = '''    final compactCardFactor = switch (_step) {
+      6 => .46,
+      7 => .42,
+      8 || 9 => .54,
+      _ => .55,
+    };'''
+          if text.count(old_factors) != 1:
+              raise SystemExit('Fattori della card onboarding inattesi')
+          text = text.replace(old_factors, new_factors, 1)
+
+          def replace_section(value: str, start: str, end: str, replacement: str) -> str:
+              start_index = value.index(start)
+              end_index = value.index(end, start_index)
+              return value[:start_index] + replacement.rstrip() + '\n\n' + value[end_index:]
+
+          welcome = r'''class _OnboardingAssets {
+  const _OnboardingAssets._();
+
+  static const welcomeBackground =
+      'assets/textures/trainers/onboarding_welcome_background.webp';
+  static const laboratoryBackground =
+      'assets/textures/trainers/onboarding_lab_background.webp';
+  static const professor =
+      'assets/textures/trainers/onboarding_professor.png';
+}
+
+class _WelcomeStage extends StatelessWidget {
+  const _WelcomeStage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(30),
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          _OnboardingAssetImage(
+            path: _OnboardingAssets.welcomeBackground,
+            fit: BoxFit.cover,
+            fallback: const _WelcomeBackgroundPlaceholder(),
+          ),
+          const DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Color(0x08FFFFFF),
+                  Color(0x24FFFFFF),
+                  Color(0x66FFF8ED),
+                ],
+                stops: [0, .48, 1],
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(28),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  width: 112,
+                  height: 112,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: .82),
+                    shape: BoxShape.circle,
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Color(0x22000000),
+                        blurRadius: 24,
+                        offset: Offset(0, 10),
+                      ),
+                    ],
+                  ),
+                  child: const Icon(
+                    Icons.catching_pokemon,
+                    size: 72,
+                    color: _OnboardingPalette.rust,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                const Text(
+                  'TRAINER ATLAS',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: _OnboardingPalette.text,
+                    fontSize: 34,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 1.2,
+                    shadows: [
+                      Shadow(color: Color(0x44FFFFFF), blurRadius: 12),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'Il tuo compagno per le avventure da tavolo',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: _OnboardingPalette.rust,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _OnboardingAssetImage extends StatelessWidget {
+  const _OnboardingAssetImage({
+    required this.path,
+    required this.fallback,
+    this.fit = BoxFit.contain,
+    this.alignment = Alignment.center,
+  });
+
+  final String path;
+  final Widget fallback;
+  final BoxFit fit;
+  final Alignment alignment;
+
+  @override
+  Widget build(BuildContext context) {
+    return Image.asset(
+      path,
+      fit: fit,
+      alignment: alignment,
+      filterQuality: FilterQuality.high,
+      errorBuilder: (context, error, stackTrace) => fallback,
+    );
+  }
+}
+
+class _WelcomeBackgroundPlaceholder extends StatelessWidget {
+  const _WelcomeBackgroundPlaceholder();
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Color(0xFFEAF7FB), Color(0xFFFFF4DE)],
+        ),
+      ),
+      child: Stack(
+        fit: StackFit.expand,
+        children: const [
+          CustomPaint(painter: _WelcomeLandscapePainter()),
+          Align(
+            alignment: Alignment.topCenter,
+            child: Padding(
+              padding: EdgeInsets.only(top: 18),
+              child: _MissingAssetLabel(
+                text: 'SFONDO COPERTINA',
+                fileName: 'onboarding_welcome_background.webp',
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _WelcomeLandscapePainter extends CustomPainter {
+  const _WelcomeLandscapePainter();
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final far = Paint()..color = const Color(0xFFCFE6DB);
+    final middle = Paint()..color = const Color(0xFFAED6B4);
+    final near = Paint()..color = const Color(0xFF83B887);
+    final horizon = size.height * .64;
+
+    canvas.drawPath(
+      Path()
+        ..moveTo(0, horizon)
+        ..quadraticBezierTo(size.width * .25, horizon - 80, size.width * .5, horizon)
+        ..quadraticBezierTo(size.width * .75, horizon - 110, size.width, horizon - 20)
+        ..lineTo(size.width, size.height)
+        ..lineTo(0, size.height)
+        ..close(),
+      far,
+    );
+    canvas.drawPath(
+      Path()
+        ..moveTo(0, horizon + 45)
+        ..quadraticBezierTo(size.width * .25, horizon - 20, size.width * .55, horizon + 45)
+        ..quadraticBezierTo(size.width * .8, horizon - 35, size.width, horizon + 25)
+        ..lineTo(size.width, size.height)
+        ..lineTo(0, size.height)
+        ..close(),
+      middle,
+    );
+    canvas.drawPath(
+      Path()
+        ..moveTo(0, horizon + 105)
+        ..quadraticBezierTo(size.width * .35, horizon + 25, size.width * .7, horizon + 100)
+        ..quadraticBezierTo(size.width * .88, horizon + 55, size.width, horizon + 75)
+        ..lineTo(size.width, size.height)
+        ..lineTo(0, size.height)
+        ..close(),
+      near,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+'''
+
+          scene = r'''class _ProfessorScene extends StatelessWidget {
+  const _ProfessorScene({
+    super.key,
+    required this.child,
+    required this.compactCardTopFactor,
+  });
+
+  final Widget child;
+  final double compactCardTopFactor;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final cardTop = math.max(
+          210.0,
+          constraints.maxHeight * compactCardTopFactor,
+        );
+        final horizontalInset = constraints.maxWidth < 760 ? 14.0 : 34.0;
+
+        return Align(
+          alignment: Alignment.topCenter,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 620),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(30),
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  const _OnboardingAssetImage(
+                    path: _OnboardingAssets.laboratoryBackground,
+                    fit: BoxFit.cover,
+                    alignment: Alignment.topCenter,
+                    fallback: _LaboratoryBackgroundPlaceholder(),
+                  ),
+                  const DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Color(0x08FFFFFF),
+                          Color(0x00FFFFFF),
+                          Color(0x33FFF2EA),
+                        ],
+                        stops: [0, .55, 1],
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    left: constraints.maxWidth < 760 ? 28 : 88,
+                    right: constraints.maxWidth < 760 ? 28 : 88,
+                    top: 8,
+                    height: cardTop + 70,
+                    child: const _ProfessorPortrait(),
+                  ),
+                  Positioned(
+                    left: horizontalInset,
+                    right: horizontalInset,
+                    top: cardTop,
+                    bottom: 14,
+                    child: child,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _ProfessorPortrait extends StatelessWidget {
+  const _ProfessorPortrait();
+
+  @override
+  Widget build(BuildContext context) {
+    return _OnboardingAssetImage(
+      path: _OnboardingAssets.professor,
+      fit: BoxFit.contain,
+      alignment: Alignment.bottomCenter,
+      fallback: const _ProfessorAssetPlaceholder(),
+    );
+  }
+}
+
+class _LaboratoryBackgroundPlaceholder extends StatelessWidget {
+  const _LaboratoryBackgroundPlaceholder();
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: const BoxDecoration(color: Color(0xFFF4EFEA)),
+      child: Stack(
+        fit: StackFit.expand,
+        children: const [
+          CustomPaint(painter: _LaboratorySkeletonPainter()),
+          Align(
+            alignment: Alignment.topCenter,
+            child: Padding(
+              padding: EdgeInsets.only(top: 18),
+              child: _MissingAssetLabel(
+                text: 'SFONDO LABORATORIO',
+                fileName: 'onboarding_lab_background.webp',
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ProfessorAssetPlaceholder extends StatelessWidget {
+  const _ProfessorAssetPlaceholder();
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.bottomCenter,
+      child: Container(
+        width: 260,
+        height: 330,
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: .58),
+          borderRadius: const BorderRadius.vertical(
+            top: Radius.circular(120),
+            bottom: Radius.circular(28),
+          ),
+          border: Border.all(color: const Color(0xFFBCA99F), width: 2),
+        ),
+        child: const Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.person_add_alt_1_outlined,
+              size: 72,
+              color: _OnboardingPalette.rust,
+            ),
+            SizedBox(height: 12),
+            Text(
+              'PROFESSORE PNG\nTRASPARENTE',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: _OnboardingPalette.rust,
+                fontWeight: FontWeight.w900,
+                letterSpacing: .8,
+              ),
+            ),
+            SizedBox(height: 8),
+            Text(
+              'onboarding_professor.png',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 11),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _MissingAssetLabel extends StatelessWidget {
+  const _MissingAssetLabel({required this.text, required this.fileName});
+
+  final String text;
+  final String fileName;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: .88),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: _OnboardingPalette.border),
+      ),
+      child: Text.rich(
+        TextSpan(
+          children: [
+            TextSpan(
+              text: '$text  ',
+              style: const TextStyle(fontWeight: FontWeight.w900),
+            ),
+            TextSpan(text: fileName),
+          ],
+        ),
+        textAlign: TextAlign.center,
+        style: const TextStyle(
+          color: _OnboardingPalette.rust,
+          fontSize: 11,
+        ),
+      ),
+    );
+  }
+}
+
+class _LaboratorySkeletonPainter extends CustomPainter {
+  const _LaboratorySkeletonPainter();
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final windowPaint = Paint()..color = const Color(0xFFDCE8E6);
+    final wood = Paint()..color = const Color(0xFFC7B8A9);
+    final plant = Paint()..color = const Color(0xFFB8CDA9);
+
+    final window = Rect.fromLTWH(
+      size.width * .05,
+      size.height * .10,
+      size.width * .34,
+      size.height * .40,
+    );
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(window, const Radius.circular(10)),
+      windowPaint,
+    );
+    canvas.drawRect(
+      Rect.fromLTWH(window.center.dx - 2, window.top, 4, window.height),
+      wood,
+    );
+    canvas.drawRect(
+      Rect.fromLTWH(window.left, window.center.dy - 2, window.width, 4),
+      wood,
+    );
+
+    for (var index = 0; index < 4; index++) {
+      final y = size.height * (.18 + index * .10);
+      canvas.drawRect(
+        Rect.fromLTWH(size.width * .72, y, size.width * .22, 4),
+        wood,
+      );
+      canvas.drawRRect(
+        RRect.fromRectAndRadius(
+          Rect.fromLTWH(size.width * .76, y - 22, size.width * .06, 22),
+          const Radius.circular(3),
+        ),
+        plant,
+      );
+    }
+
+    canvas.drawRect(
+      Rect.fromLTWH(0, size.height * .78, size.width, size.height * .22),
+      Paint()..color = const Color(0xFFE0D1C3),
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+'''
+
+          text = replace_section(
+              text,
+              'class _WelcomeStage extends StatelessWidget {',
+              'class _ProfessorScene extends StatelessWidget {',
+              welcome,
+          )
+          text = replace_section(
+              text,
+              'class _ProfessorScene extends StatelessWidget {',
+              'class _DialogueCard extends StatelessWidget {',
+              scene,
+          )
+
+          target.write_text(text, encoding='utf-8')
+          source.unlink()
+          PY
+
+          cat > assets/textures/trainers/README_ONBOARDING.md <<'EOF'
+          # Asset grafici dell'onboarding
+
+          Lo scheletro dell'onboarding carica automaticamente questi tre file:
+
+          1. `onboarding_welcome_background.webp`
+             - sfondo verticale della schermata iniziale;
+             - formato consigliato: 1440 × 2560 px, rapporto 9:16;
+             - lascia libera la zona centrale per logo e titolo.
+
+          2. `onboarding_lab_background.webp`
+             - laboratorio usato in tutte le schermate del Professore;
+             - formato consigliato: 1440 × 2560 px, rapporto 9:16;
+             - evita personaggi o testi; finestra e scaffali possono stare ai lati.
+
+          3. `onboarding_professor.png`
+             - personaggio del Professore con sfondo trasparente;
+             - formato consigliato: almeno 1200 × 1800 px;
+             - figura intera o a tre quarti, piedi/busto allineati al bordo inferiore;
+             - lascia margine trasparente intorno a capelli, mani e tablet.
+
+          Inserire tutti e tre i file in questa cartella:
+
+          `assets/textures/trainers/`
+
+          Non occorre modificare `pubspec.yaml`: la cartella è già inclusa negli asset Flutter.
+          Se un file manca, l'app mostra un segnaposto con il nome esatto da usare.
+          EOF
+
+          rm -f assets/textures/trainers/professor_riccardo.webp
+          rm .github/workflows/apply-onboarding-asset-skeleton.yml
+
+          dart format lib/screens/onboarding/first_launch_onboarding_screen.dart
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Crea lo scheletro grafico configurabile dell onboarding'
+          git push origin HEAD:fix/onboarding-asset-skeleton

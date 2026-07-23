@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: flutter-ci-${{ github.workflow }}-${{ github.ref }}
@@ -73,34 +73,3 @@ jobs:
           path: build/app/outputs/flutter-apk/app-debug.apk
           if-no-files-found: error
           retention-days: 7
-
-  apply_onboarding_skeleton:
-    name: Apply onboarding asset skeleton
-    if: github.event_name == 'pull_request' && github.event.pull_request.title == 'Crea lo scheletro grafico dell onboarding'
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-
-    steps:
-      - name: Check out feature branch
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.pull_request.head.ref }}
-          fetch-depth: 0
-
-      - name: Apply clean skeleton migration
-        shell: bash
-        run: |
-          set -euo pipefail
-          migration='.github/scripts/apply_onboarding_skeleton.py'
-          if [ ! -f "$migration" ]; then
-            echo 'Scheletro onboarding già applicato.'
-            exit 0
-          fi
-
-          python3 "$migration"
-
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -A
-          git commit -m 'Crea lo scheletro grafico configurabile dell onboarding'
-          git push origin HEAD:${{ github.event.pull_request.head.ref }}

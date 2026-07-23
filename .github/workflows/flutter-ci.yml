@@ -9,6 +9,8 @@ on:
 
 permissions:
   contents: write
+  issues: write
+  pull-requests: write
 
 concurrency:
   group: flutter-ci-${{ github.workflow }}-${{ github.ref }}
@@ -79,6 +81,8 @@ jobs:
     if: github.event_name == 'pull_request' && github.event.pull_request.title == 'Crea lo scheletro grafico dell onboarding'
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    env:
+      GH_TOKEN: ${{ github.token }}
 
     steps:
       - name: Check out feature branch
@@ -123,13 +127,15 @@ jobs:
           cat /tmp/onboarding-skeleton.log
 
           if [ "$status" -ne 0 ]; then
-            cp /tmp/onboarding-skeleton.log .github/onboarding-skeleton-error.log
-            git config user.name 'github-actions[bot]'
-            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-            git add .github/onboarding-skeleton-error.log
-            if ! git diff --cached --quiet; then
-              git commit -m 'Registra errore dello scheletro onboarding'
-              git push origin HEAD:${{ github.event.pull_request.head.ref }}
-            fi
+            {
+              echo '### Errore migrazione scheletro onboarding'
+              echo
+              echo '```text'
+              tail -n 80 /tmp/onboarding-skeleton.log
+              echo '```'
+            } > /tmp/onboarding-skeleton-comment.md
+            gh pr comment '${{ github.event.pull_request.number }}' \
+              --repo '${{ github.repository }}' \
+              --body-file /tmp/onboarding-skeleton-comment.md
             exit "$status"
           fi

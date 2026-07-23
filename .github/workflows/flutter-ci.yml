@@ -115,4 +115,21 @@ jobs:
               encoding='utf-8',
           )
           PY
-          bash /tmp/apply-onboarding-skeleton.sh
+
+          set +e
+          bash /tmp/apply-onboarding-skeleton.sh > /tmp/onboarding-skeleton.log 2>&1
+          status=$?
+          set -e
+          cat /tmp/onboarding-skeleton.log
+
+          if [ "$status" -ne 0 ]; then
+            cp /tmp/onboarding-skeleton.log .github/onboarding-skeleton-error.log
+            git config user.name 'github-actions[bot]'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git add .github/onboarding-skeleton-error.log
+            if ! git diff --cached --quiet; then
+              git commit -m 'Registra errore dello scheletro onboarding'
+              git push origin HEAD:${{ github.event.pull_request.head.ref }}
+            fi
+            exit "$status"
+          fi

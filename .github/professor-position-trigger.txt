@@ -1,0 +1,1 @@
+Trigger temporaneo per applicare il posizionamento del Professore dietro la card di dialogo.

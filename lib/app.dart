@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'screens/home/home_screen.dart';
+import 'screens/onboarding/app_bootstrap_screen.dart';
 
 class Pokedex5EApp extends StatelessWidget {
   const Pokedex5EApp({super.key});
@@ -32,7 +32,7 @@ class Pokedex5EApp extends StatelessWidget {
     );
 
     return MaterialApp(
-      title: 'Pokédex 5e ITA',
+      title: 'Trainer Atlas',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: colorScheme,
@@ -113,7 +113,7 @@ class Pokedex5EApp extends StatelessWidget {
           labelStyle: TextStyle(fontWeight: FontWeight.w900),
         ),
       ),
-      home: const HomeScreen(),
+      home: const AppBootstrapScreen(),
     );
   }
 }

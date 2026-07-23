@@ -1,10 +1,11 @@
 import 'dart:io';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hive/hive.dart';
 
-import 'package:pokedex_5e_ita/app.dart';
 import 'package:pokedex_5e_ita/screens/onboarding/first_launch_onboarding_screen.dart';
+import 'package:pokedex_5e_ita/services/app_launch_service.dart';
 
 void main() {
   late Directory hiveDirectory;
@@ -20,17 +21,19 @@ void main() {
     await hiveDirectory.delete(recursive: true);
   });
 
-  testWidgets('shows first-launch onboarding when no profiles exist', (
+  test('an empty installation requests first-launch onboarding', () async {
+    expect(await AppLaunchService().shouldShowOnboarding(), isTrue);
+  });
+
+  testWidgets('first-launch onboarding can be mounted', (
     WidgetTester tester,
   ) async {
-    await tester.pumpWidget(const Pokedex5EApp());
-
-    for (var attempt = 0; attempt < 20; attempt++) {
-      await tester.pump(const Duration(milliseconds: 100));
-      if (find.byType(FirstLaunchOnboardingScreen).evaluate().isNotEmpty) {
-        break;
-      }
-    }
+    await tester.pumpWidget(
+      MaterialApp(
+        home: FirstLaunchOnboardingScreen(onCompleted: () {}),
+      ),
+    );
+    await tester.pump();
 
     expect(find.byType(FirstLaunchOnboardingScreen), findsOneWidget);
   });

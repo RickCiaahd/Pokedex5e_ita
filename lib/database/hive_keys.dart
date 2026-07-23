@@ -1,3 +1,4 @@
 class HiveKeys {
   static const activeProfileId = 'active_profile_id';
+  static const onboardingCompleted = 'onboarding_completed';
 }

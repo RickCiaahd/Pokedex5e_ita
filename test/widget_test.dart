@@ -1,9 +1,11 @@
 import 'dart:io';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hive/hive.dart';
 
-import 'package:pokedex_5e_ita/app.dart';
+import 'package:pokedex_5e_ita/screens/onboarding/first_launch_onboarding_screen.dart';
+import 'package:pokedex_5e_ita/services/app_launch_service.dart';
 
 void main() {
   late Directory hiveDirectory;
@@ -19,10 +21,20 @@ void main() {
     await hiveDirectory.delete(recursive: true);
   });
 
-  testWidgets('shows the home screen', (WidgetTester tester) async {
-    await tester.pumpWidget(const Pokedex5EApp());
+  test('an empty installation requests first-launch onboarding', () async {
+    expect(await AppLaunchService().shouldShowOnboarding(), isTrue);
+  });
+
+  testWidgets('first-launch onboarding can be mounted', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: FirstLaunchOnboardingScreen(onCompleted: () {}),
+      ),
+    );
     await tester.pump();
 
-    expect(find.text('Pokédex 5e ITA'), findsOneWidget);
+    expect(find.byType(FirstLaunchOnboardingScreen), findsOneWidget);
   });
 }

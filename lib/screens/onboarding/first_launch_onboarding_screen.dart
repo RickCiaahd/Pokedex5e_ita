@@ -431,9 +431,9 @@ class _FirstLaunchOnboardingScreenState
     final dialogue = _buildDialogue();
     final compactCardFactor = switch (_step) {
       6 => .46,
-      7 => .42,
-      8 || 9 => .54,
-      _ => .55,
+      7 => .36,
+      8 || 9 => .50,
+      _ => .48,
     };
 
     return _ProfessorScene(
@@ -871,13 +871,22 @@ class _ProfessorScene extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
+        final compact = constraints.maxWidth < 760;
         final proposedCardTop = constraints.maxHeight * compactCardTopFactor;
-        final maximumCardTop = math.max(160.0, constraints.maxHeight - 140);
+        final minimumCardTop = compact ? 170.0 : 210.0;
+        final maximumCardTop = math.max(
+          minimumCardTop,
+          constraints.maxHeight - 140,
+        );
         final cardTop = math.min(
           maximumCardTop,
-          math.max(190.0, proposedCardTop),
+          math.max(minimumCardTop, proposedCardTop),
         );
-        final horizontalInset = constraints.maxWidth < 760 ? 14.0 : 34.0;
+        final horizontalInset = compact ? 8.0 : 28.0;
+        final professorInset = compact ? 4.0 : 72.0;
+        final professorOverlap = compact
+            ? math.min(220.0, math.max(132.0, cardTop * .48))
+            : math.min(260.0, math.max(170.0, cardTop * .42));
 
         return Align(
           alignment: Alignment.topCenter,
@@ -909,10 +918,10 @@ class _ProfessorScene extends StatelessWidget {
                     ),
                   ),
                   Positioned(
-                    left: constraints.maxWidth < 760 ? 28 : 88,
-                    right: constraints.maxWidth < 760 ? 28 : 88,
-                    top: 8,
-                    height: cardTop + 78,
+                    left: professorInset,
+                    right: professorInset,
+                    top: compact ? 0 : 8,
+                    height: cardTop + professorOverlap,
                     child: const _ProfessorPortrait(),
                   ),
                   Positioned(
@@ -939,8 +948,8 @@ class _ProfessorPortrait extends StatelessWidget {
   Widget build(BuildContext context) {
     return const _OnboardingAssetImage(
       path: _OnboardingAssets.professor,
-      fit: BoxFit.contain,
-      alignment: Alignment.bottomCenter,
+      fit: BoxFit.cover,
+      alignment: Alignment.topCenter,
       fallback: _ProfessorAssetPlaceholder(),
     );
   }

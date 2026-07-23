@@ -13,6 +13,7 @@ class UserProfile {
   final String name;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final int trainerAge;
   final int trainerLevel;
   final int money;
   final Map<String, int> abilityScores;
@@ -37,6 +38,7 @@ class UserProfile {
     required this.name,
     required this.createdAt,
     required this.updatedAt,
+    this.trainerAge = 16,
     this.trainerLevel = 1,
     this.money = 0,
     Map<String, int>? abilityScores,
@@ -73,6 +75,7 @@ class UserProfile {
       name: name,
       createdAt: now,
       updatedAt: now,
+      trainerAge: 16,
       trainerLevel: 1,
       money: 0,
       abilityScores: defaultAbilityScores,
@@ -102,6 +105,7 @@ class UserProfile {
       name: 'Allenatore',
       createdAt: now,
       updatedAt: now,
+      trainerAge: 16,
       trainerLevel: 1,
       money: 0,
       abilityScores: defaultAbilityScores,
@@ -128,6 +132,7 @@ class UserProfile {
     String? name,
     DateTime? createdAt,
     DateTime? updatedAt,
+    int? trainerAge,
     int? trainerLevel,
     int? money,
     Map<String, int>? abilityScores,
@@ -152,6 +157,7 @@ class UserProfile {
       name: name ?? this.name,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? DateTime.now(),
+      trainerAge: trainerAge ?? this.trainerAge,
       trainerLevel: trainerLevel ?? this.trainerLevel,
       money: money ?? this.money,
       abilityScores: abilityScores ?? this.abilityScores,
@@ -181,6 +187,7 @@ class UserProfile {
       'name': name,
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt.toIso8601String(),
+      'trainerAge': trainerAge,
       'trainerLevel': trainerLevel,
       'money': money,
       'abilityScores': abilityScores,
@@ -208,6 +215,7 @@ class UserProfile {
       name: json['name'],
       createdAt: DateTime.parse(json['createdAt']),
       updatedAt: DateTime.parse(json['updatedAt']),
+      trainerAge: json['trainerAge'] ?? 16,
       trainerLevel: json['trainerLevel'] ?? 1,
       money: json['money'] ?? 0,
       abilityScores: _readAbilityScores(json['abilityScores']),

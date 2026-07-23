@@ -107,7 +107,7 @@ jobs:
           Copy-Item -Path (Join-Path $source '*') -Destination $staging -Recurse -Force
 
           @"
-          Pokédex 5e ITA $version — Windows x64
+          Trainer Atlas $version — Windows x64
 
           1. Estrarre interamente questa cartella.
           2. Avviare Pokedex5eITA.exe.
@@ -136,7 +136,7 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with:
-          name: Pokédex 5e ITA ${{ steps.version.outputs.name }}
+          name: Trainer Atlas ${{ steps.version.outputs.name }}
           generate_release_notes: true
           files: |
             dist/*.zip

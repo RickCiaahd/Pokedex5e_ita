@@ -19,10 +19,13 @@ void main() {
     await hiveDirectory.delete(recursive: true);
   });
 
-  testWidgets('shows the home screen', (WidgetTester tester) async {
+  testWidgets('shows first-launch onboarding when no profiles exist', (
+    WidgetTester tester,
+  ) async {
     await tester.pumpWidget(const Pokedex5EApp());
-    await tester.pump();
+    await tester.pumpAndSettle();
 
-    expect(find.text('Pokédex 5e ITA'), findsOneWidget);
+    expect(find.text('Benvenuto, Allenatore.'), findsOneWidget);
+    expect(find.text('AVANTI'), findsOneWidget);
   });
 }

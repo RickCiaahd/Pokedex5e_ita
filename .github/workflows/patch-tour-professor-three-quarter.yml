@@ -26,65 +26,58 @@ jobs:
         run: |
           set -euo pipefail
           python3 - <<'PY'
-          import re
           from pathlib import Path
 
           path = Path('lib/widgets/tour/guided_tour.dart')
           text = path.read_text(encoding='utf-8')
 
-          text, size_count = re.subn(
-              r'(    final compact = MediaQuery\.sizeOf\(context\)\.width < 430;\n)'
-              r'    final professorWidth = compact \? 82\.0 : 116\.0;',
-              r'\1    final professorWidth = compact ? 112.0 : 168.0;\n'
-              r'    final professorHeight = compact ? 148.0 : 210.0;',
-              text,
-              count=1,
+          old_width = '    final professorWidth = compact ? 82.0 : 116.0;'
+          new_width = (
+              '    final professorWidth = compact ? 112.0 : 168.0;\n'
+              '    final professorHeight = compact ? 148.0 : 210.0;'
           )
+          if text.count(old_width) != 1:
+              raise SystemExit('La riga professorWidth non è stata trovata una sola volta.')
+          text = text.replace(old_width, new_width, 1)
 
-          image_pattern = re.compile(
-              r'''          SizedBox\(
-                width: professorWidth,
-                height: compact \? 176 : 214,
-                child: Image\.asset\(
-                  GuidedTourOverlay\.professorAsset,
-                  fit: BoxFit\.contain,
-                  alignment: Alignment\.bottomCenter,
-                  errorBuilder: \(_, _, _\) => const Align\(
-                    alignment: Alignment\.bottomCenter,
-                    child: Icon\(Icons\.person, size: 78, color: Colors\.white\),
-                  \),
-                \),
-              \),'''
+          start_marker = (
+              '          SizedBox(\n'
+              '            width: professorWidth,\n'
+              '            height: compact ? 176 : 214,'
           )
-          replacement = '''          Transform.translate(
-            offset: const Offset(0, 8),
-            child: SizedBox(
-              width: professorWidth,
-              height: professorHeight,
-              child: ClipRect(
-                child: Image.asset(
-                  GuidedTourOverlay.professorAsset,
-                  fit: BoxFit.cover,
-                  alignment: Alignment.topCenter,
-                  errorBuilder: (_, _, _) => const Align(
-                    alignment: Alignment.bottomCenter,
-                    child: Icon(
-                      Icons.person,
-                      size: 78,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),'''
-          text, image_count = image_pattern.subn(replacement, text, count=1)
+          end_marker = '          Expanded('
+          start = text.find(start_marker)
+          if start < 0:
+              raise SystemExit('L’inizio del blocco immagine del Professore non è stato trovato.')
+          end = text.find(end_marker, start)
+          if end < 0:
+              raise SystemExit('La fine del blocco immagine del Professore non è stata trovata.')
 
-          if size_count != 1:
-              raise SystemExit('Le dimensioni del Professore non sono state sostituite una sola volta.')
-          if image_count != 1:
-              raise SystemExit('Il blocco immagine del Professore non è stato sostituito una sola volta.')
-
+          replacement = (
+              '          Transform.translate(\n'
+              '            offset: const Offset(0, 8),\n'
+              '            child: SizedBox(\n'
+              '              width: professorWidth,\n'
+              '              height: professorHeight,\n'
+              '              child: ClipRect(\n'
+              '                child: Image.asset(\n'
+              '                  GuidedTourOverlay.professorAsset,\n'
+              '                  fit: BoxFit.cover,\n'
+              '                  alignment: Alignment.topCenter,\n'
+              '                  errorBuilder: (_, _, _) => const Align(\n'
+              '                    alignment: Alignment.bottomCenter,\n'
+              '                    child: Icon(\n'
+              '                      Icons.person,\n'
+              '                      size: 78,\n'
+              '                      color: Colors.white,\n'
+              '                    ),\n'
+              '                  ),\n'
+              '                ),\n'
+              '              ),\n'
+              '            ),\n'
+              '          ),\n'
+          )
+          text = text[:start] + replacement + text[end:]
           path.write_text(text, encoding='utf-8')
           PY
 

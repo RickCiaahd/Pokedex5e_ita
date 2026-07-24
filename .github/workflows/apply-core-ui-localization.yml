@@ -1,16 +1,16 @@
 name: Apply core UI localization
 
 on:
-  pull_request:
+  push:
     branches:
-      - main
+      - feature/complete-ui-localization
+  workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
   apply:
-    if: github.head_ref == 'feature/complete-ui-localization'
     runs-on: ubuntu-latest
     timeout-minutes: 60
 
@@ -51,7 +51,6 @@ jobs:
               "    lambda _match: new_type_block + '  static PokemonFormChoice? _formChoiceFromAssetPath',\n",
               1,
           )
-
           turn_start = text.index(
               "text = replace_once(\n    text,\n    \"                  ? 'Nessun turno impostato.'"
           )

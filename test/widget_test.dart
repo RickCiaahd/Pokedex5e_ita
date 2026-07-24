@@ -26,7 +26,7 @@ void main() {
     expect(await AppLaunchService().shouldShowOnboarding(), isTrue);
   });
 
-  test('the Home tour is requested once and can be completed', () async {
+  test('the global Home tour is requested once and can be completed', () async {
     final service = HomeTourService();
 
     expect(await service.shouldShowTour(), isTrue);

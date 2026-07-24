@@ -1,0 +1,548 @@
+Resolving dependencies...
+Downloading packages...
+  file_picker 10.3.10 (11.0.2 available)
+  hooks 2.0.2 (2.1.0 available)
+  intl 0.20.2 (0.20.3 available)
+  matcher 0.12.19 (0.12.20 available)
+  meta 1.18.0 (1.19.0 available)
+  package_config 2.2.0 (3.0.0 available)
+  record_use 0.6.0 (1.0.0 available)
+  share_plus 12.0.2 (13.3.0 available)
+  share_plus_platform_interface 6.1.0 (7.2.0 available)
+  test_api 0.7.11 (0.7.13 available)
+  uuid 4.5.3 (4.6.0 available)
+  vector_math 2.2.0 (2.4.1 available)
+  win32 5.15.0 (6.3.0 available)
+  xml 6.6.1 (7.0.1 available)
+Got dependencies!
+14 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.
+00:00 +0: loading /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/alolan_raichu_asset_test.dart
+00:00 +0: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/alolan_raichu_asset_test.dart: Raichu di Alola usa l artwork regionale nella scheda
+00:00 +1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/alolan_raichu_asset_test.dart: Raichu di Alola usa l artwork regionale nella scheda
+00:00 +2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/evolution_form_alias_service_test.dart: Alolan Rattata prefers Alolan Raticate for the base target name
+00:01 +3: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/evolution_form_alias_service_test.dart: explicit Alolan Raichu evolution target is available by name
+00:01 +4: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/evolution_form_alias_service_test.dart: temporary battle transformations are not evolution aliases
+00:01 +5: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/trainer_ui_localization_test.dart: caratteristiche e abilità vengono mostrate in italiano
+00:01 +6: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/trainer_ui_localization_test.dart: nomi tecnici mantengono etichette italiane separate
+00:01 +7: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/trainer_ui_localization_test.dart: la UI non reintroduce le principali etichette inglesi
+00:01 +8: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/fakemon_advanced_test.dart: una forma personalizzata sovrascrive statistiche e tipi
+00:01 +9: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/fakemon_advanced_test.dart: un Fakemon può essere collegato come forma di una specie
+00:01 +10: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/fakemon_advanced_test.dart: Eevee riceve una nuova evoluzione Fakemon
+00:01 +11: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/fakemon_advanced_test.dart: Eevee riceve una nuova evoluzione Fakemon
+00:01 +12: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/fakemon_advanced_test.dart: Eevee riceve una nuova evoluzione Fakemon
+00:01 +13: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/fakemon_advanced_test.dart: il pacchetto segreto conserva checksum e flag sealed
+00:02 +14: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/breeding_egg_test.dart: BreedingEgg mantiene incubazione e contenuto nel JSON
+00:02 +15: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/trainer_path_automation_test.dart: TrainerPathAutomationService resources calcola automaticamente dadi e utilizzi dalle caratteristiche
+00:02 +16: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/trainer_path_automation_test.dart: TrainerPathAutomationService resources i punti di Grunt e Tactician seguono il livello
+00:02 +17: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/trainer_path_automation_test.dart: TrainerPathAutomationService resources la riserva di Nurse vale livello per cinque
+00:02 +18: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/trainer_path_automation_test.dart: TrainerPathAutomationService resources il riposo breve recupera solo le risorse corrette
+00:02 +19: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/trainer_path_automation_test.dart: TrainerPathAutomationService resources il cambio di caratteristica riduce senza superare il nuovo massimo
+00:02 +20: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/trainer_path_automation_test.dart: TrainerPathAutomationService choices Researcher richiede la scelta tra WIS e INT
+00:02 +21: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/trainer_path_automation_test.dart: TrainerPathAutomationService choices Type Master limita la resistenza ai tipi specializzati
+00:02 +22: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/trainer_path_automation_test.dart: TrainerPathAutomationService choices il secondo legame del Ranger è facoltativo
+00:02 +23: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/trainer_path_automation_test.dart: UserProfile mantiene compatibilità e serializza lo stato del path
+00:02 +24: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/encounter_generator_service_test.dart: filters by habitat and excludes legendary species by default
+00:02 +25: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/encounter_generator_service_test.dart: automatic generation respects the requested enemy bounds
+00:02 +26: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/encounter_generator_service_test.dart: manual generation creates the requested quantities
+00:02 +27: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/encounter_generator_service_test.dart: manual generation preserves the selected permanent form
+00:02 +28: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/encounter_generator_service_test.dart: a 100 percent collection always selects its only species
+00:02 +29: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/encounter_generator_service_test.dart: weighted collections preserve an explicitly selected form
+00:02 +30: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/encounter_generator_service_test.dart: collection generation without duplicates returns unique species
+00:02 +31: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/team_slot_egg_test.dart: TeamSlot conserva un uovo e lo considera uno slot occupato
+00:02 +32: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/team_slot_egg_test.dart: inserire un Pokémon rimuove l’uovo dallo slot
+00:03 +33: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_transfer_service_test.dart: il file di un singolo Pokémon conserva tutti i dati utili
+00:03 +34: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_transfer_service_test.dart: importare un Pokémon sostituisce lo slot e salva il precedente nel PC
+00:03 +35: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_transfer_service_test.dart: importare una squadra preserva le uova e manda gli esuberi nel PC
+00:03 +36: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_transfer_service_test.dart: un uovo non può essere esportato come Pokémon
+00:03 +37: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/full_move_catalog_test.dart: il catalogo completo delle mosse contiene Surf
+00:03 +38: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/full_move_catalog_test.dart: l editor separa learnset e scelta manuale globale
+00:03 +39: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/layout_final_block_integration_test.dart: l’ultimo blocco layout copre combattimenti e strumenti del Master
+00:04 +40: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/move_visible_terminology_test.dart: i metadati tecnici delle mosse vengono mostrati in italiano
+00:04 +41: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/move_visible_terminology_test.dart: Tackle viene mostrata come Azione senza perdere il nome tecnico
+00:04 +42: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/move_visible_terminology_test.dart: Tackle viene mostrata come Azione senza perdere il nome tecnico
+00:04 +43: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/move_visible_terminology_test.dart: Tackle viene mostrata come Azione senza perdere il nome tecnico
+00:04 +44: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/move_visible_terminology_test.dart: Tackle viene mostrata come Azione senza perdere il nome tecnico
+00:04 +45: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_generator_multi_select_test.dart: deduplicates type aliases and sorts them by Italian label
+00:04 +46: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_generator_multi_select_test.dart: accepts Italian type labels in filters and free-text search
+00:05 +47: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_generator_multi_select_test.dart: generates one independent result for every selected species
+00:05 +48: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/profile_backup_service_test.dart: (setUpAll)
+00:05 +48: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/profile_backup_service_test.dart: imports every section with a new ID and deletes it completely
+00:05 +49: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/profile_backup_service_test.dart: (tearDownAll)
+00:05 +49: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/move_localization_integrity_test.dart: i cataloghi italiani coprono tutte le 830 mosse in ordine
+00:05 +50: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/move_localization_integrity_test.dart: tutte le 830 mosse usano i nomi italiani verificati
+00:05 +51: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/move_localization_integrity_test.dart: il repository mostra l’italiano e conserva i riferimenti inglesi
+00:06 +52: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_form_mechanics_test.dart: Alolan Rattata applies mechanical variant data
+00:06 +53: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_form_mechanics_test.dart: Dusk Mane Necrozma deep-merges stats and types
+00:06 +54: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_form_mechanics_test.dart: Deoxys exposes one base form plus Attack, Defense and Speed
+00:06 +55: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_form_mechanics_test.dart: Aegislash Shield Forme swaps AC and DEX
+00:06 +56: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_form_mechanics_test.dart: Darmanitan Zen Mode applies the 5e form mechanics
+00:06 +57: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_form_mechanics_test.dart: web gender variants are selected from the saved gender
+00:06 +58: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/battle_round_controls_test.dart: ogni fight espone un solo controllo Prossimo turno
+00:06 +59: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/trainer_path_passive_service_test.dart: TrainerPathPassiveService Ace Trainer applica attacco, danno e Max Potential
+00:06 +60: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/trainer_path_passive_service_test.dart: TrainerPathPassiveService Max Potential velocità non crea movimento da una velocità zero
+00:06 +61: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/trainer_path_passive_service_test.dart: TrainerPathPassiveService Type Master usa al massimo due specializzazioni compatibili
+00:06 +62: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/trainer_path_passive_service_test.dart: TrainerPathPassiveService Commander raddoppia soltanto i bonus positivi di Lealtà
+00:06 +63: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/trainer_path_passive_service_test.dart: TrainerPathPassiveService Guru aggiunge competenza ai TS di Saggezza
+00:06 +64: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/trainer_path_passive_service_test.dart: TrainerPathPassiveService Many Faces applica i privilegi passivi copiati supportati
+00:07 +65: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/battle_quick_item_service_test.dart: resolves usable battle items even with non-standard catalog types
+00:07 +66: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/battle_quick_item_service_test.dart: classifies Poké Ball IDs without relying on the type field
+00:07 +67: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokedex_form_entry_test.dart: PokedexEntry form migration legacy species state becomes the base form
+00:07 +68: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokedex_form_entry_test.dart: PokedexEntry form migration stored full form names resolve to the canonical species form
+00:07 +69: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokedex_form_entry_test.dart: PokedexEntry preview priority base wins when both forms have the same state
+00:07 +70: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokedex_form_entry_test.dart: PokedexEntry preview priority caught form wins over a form that is only seen
+00:07 +71: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokedex_form_entry_test.dart: PokedexEntry preview priority an alternative is used when the base form is unknown
+00:07 +72: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokedex_form_entry_test.dart: temporary battle transformations are not tracked as forms
+00:07 +73: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokedex_form_entry_test.dart: form state survives JSON serialization
+00:07 +74: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/item_localization_integrity_test.dart: i cataloghi italiani coprono tutti i sei blocchi completati
+00:07 +75: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/item_localization_integrity_test.dart: i 39 oggetti evolutivi usano i nomi verificati
+00:07 +76: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/item_localization_integrity_test.dart: i 163 strumenti da tenere usano i nomi verificati
+00:07 +77: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/item_localization_integrity_test.dart: i 49 strumenti dell’Allenatore usano i nomi verificati
+00:07 +78: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/item_localization_integrity_test.dart: il repository localizza la UI e conserva i dati tecnici
+00:07 +79: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/widget_test.dart: (setUpAll)
+00:08 +79: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/widget_test.dart: an empty installation requests first-launch onboarding
+00:08 +80: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/widget_test.dart: the global Home tour is requested once and can be completed
+00:08 +81: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/widget_test.dart: first-launch onboarding can be mounted
+00:08 +82: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/widget_test.dart: first-launch onboarding can be mounted
+00:08 +83: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/widget_test.dart: first-launch onboarding can be mounted
+00:08 +84: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/widget_test.dart: first-launch onboarding can be mounted
+00:08 +85: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/widget_test.dart: first-launch onboarding can be mounted
+00:08 +86: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/widget_test.dart: (tearDownAll)
+00:09 +86: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/portable_fakemon_transfer_test.dart: il trasferimento di un Pokémon incorpora la specie Fakemon
+00:09 +87: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/portable_fakemon_transfer_test.dart: un incontro incorpora una sola volta ogni Fakemon usato
+00:09 +88: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/portable_fakemon_transfer_test.dart: un conflitto numerico rimappa la specie importata
+00:09 +89: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/portable_fakemon_transfer_test.dart: i trasferimenti versione 1 restano importabili
+00:09 +90: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_gender_asset_paths_test.dart: catalog contains all 102 visually dimorphic species
+00:09 +91: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_gender_asset_paths_test.dart: well-known dimorphic species are recognized
+00:09 +92: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_gender_asset_paths_test.dart: female Pikachu uses canonical files inside the base folder
+00:09 +93: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_gender_asset_paths_test.dart: shiny female Wobbuffet falls back to the same-sex normal sprite
+00:09 +94: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_gender_asset_paths_test.dart: Meowstic gender symbols resolve dedicated male and female folders
+00:09 +95: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_gender_asset_paths_test.dart: Pyroar keeps using its existing dedicated gender folders
+00:09 +96: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_gender_asset_paths_test.dart: permanent forms may keep gender files in their own folder
+00:09 +97: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_gender_asset_paths_test.dart: genderless and unspecified Pokémon add no extra candidates
+00:09 +98: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/evolution_repository_regression_test.dart: Eevee espone soltanto le evoluzioni canoniche
+00:09 +99: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/evolution_repository_regression_test.dart: le evoluzioni canoniche non sono duplicate dagli alias
+00:09 +100: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/evolution_repository_regression_test.dart: le evoluzioni regionali di Hisui usano nomi risolvibili
+00:09 +101: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_battle_attributes_card_test.dart: mostra tutte le caratteristiche e i modificatori
+00:10 +102: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_battle_attributes_card_test.dart: non genera vincoli negativi con larghezza quasi nulla
+00:11 +103: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/guided_tour_scroll_restoration_test.dart: chiudendo l’ultima tappa il contenuto torna all’inizio
+00:11 +104: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/guided_tour_scroll_restoration_test.dart: chiudendo l’ultima tappa il contenuto torna all’inizio
+00:11 +105: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/guided_tour_scroll_restoration_test.dart: chiudendo l’ultima tappa il contenuto torna all’inizio
+00:11 +106: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/guided_tour_scroll_restoration_test.dart: chiudendo l’ultima tappa il contenuto torna all’inizio
+00:11 +107: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/guided_tour_scroll_restoration_test.dart: chiudendo l’ultima tappa il contenuto torna all’inizio
+00:11 +108: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/guided_tour_scroll_restoration_test.dart: chiudendo l’ultima tappa il contenuto torna all’inizio
+00:11 +109: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/guided_tour_scroll_restoration_test.dart: chiudendo l’ultima tappa il contenuto torna all’inizio
+══╡ EXCEPTION CAUGHT BY WIDGETS LIBRARY ╞═══════════════════════════════════════════════════════════
+The following _TypeError was thrown building _TourSpeechCard(dirty, dependencies:
+[_LocalizationsScope-[GlobalKey#adfb0]]):
+Null check operator used on a null value
+
+The relevant error-causing widget was:
+  _TourSpeechCard
+  _TourSpeechCard:file:///home/runner/work/Pokedex5e_ita/Pokedex5e_ita/lib/widgets/tour/professor_tour_panel.dart:106:30
+
+When the exception was thrown, this was the stack:
+#0      AppLocalizations.of (package:pokedex_5e_ita/l10n/app_localizations.dart:71:73)
+#1      _TourSpeechCard.build (package:pokedex_5e_ita/widgets/tour/professor_tour_panel.dart:154:35)
+#2      StatelessElement.build (package:flutter/src/widgets/framework.dart:5889:49)
+#3      ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5817:15)
+#4      Element.rebuild (package:flutter/src/widgets/framework.dart:5529:7)
+#5      ComponentElement._firstBuild (package:flutter/src/widgets/framework.dart:5799:5)
+#6      ComponentElement.mount (package:flutter/src/widgets/framework.dart:5793:5)
+...     Normal element mounting (7 frames)
+#13     Element.inflateWidget (package:flutter/src/widgets/framework.dart:4587:20)
+#14     MultiChildRenderObjectElement.inflateWidget (package:flutter/src/widgets/framework.dart:7264:36)
+#15     MultiChildRenderObjectElement.mount (package:flutter/src/widgets/framework.dart:7279:32)
+...     Normal element mounting (10 frames)
+#25     Element.inflateWidget (package:flutter/src/widgets/framework.dart:4587:20)
+#26     Element.updateChild (package:flutter/src/widgets/framework.dart:4059:18)
+#27     _LayoutBuilderElement._rebuildWithConstraints.updateChildCallback (package:flutter/src/widgets/layout_builder.dart:247:18)
+#28     BuildOwner.buildScope (package:flutter/src/widgets/framework.dart:3101:19)
+#29     _LayoutBuilderElement._rebuildWithConstraints (package:flutter/src/widgets/layout_builder.dart:270:12)
+#30     RenderAbstractLayoutBuilderMixin.layoutCallback (package:flutter/src/widgets/layout_builder.dart:333:38)
+#31     RenderObjectWithLayoutCallbackMixin.runLayoutCallback.<anonymous closure> (package:flutter/src/rendering/object.dart:4302:33)
+#32     RenderObject.invokeLayoutCallback.<anonymous closure> (package:flutter/src/rendering/object.dart:3026:17)
+#33     PipelineOwner._enableMutationsToDirtySubtrees (package:flutter/src/rendering/object.dart:1223:15)
+#34     RenderObject.invokeLayoutCallback (package:flutter/src/rendering/object.dart:3025:14)
+#35     RenderObjectWithLayoutCallbackMixin.runLayoutCallback (package:flutter/src/rendering/object.dart:4302:5)
+#36     _RenderLayoutBuilder.performLayout (package:flutter/src/widgets/layout_builder.dart:447:5)
+#37     RenderObject.layout (package:flutter/src/rendering/object.dart:2907:7)
+#38     RenderStack.layoutPositionedChild (package:flutter/src/rendering/stack.dart:551:11)
+#39     RenderStack.performLayout (package:flutter/src/rendering/stack.dart:693:13)
+#40     RenderObject.layout (package:flutter/src/rendering/object.dart:2907:7)
+#41     RenderStack.layoutPositionedChild (package:flutter/src/rendering/stack.dart:551:11)
+#42     RenderStack.performLayout (package:flutter/src/rendering/stack.dart:693:13)
+#43     RenderObject.layout (package:flutter/src/rendering/object.dart:2907:7)
+#44     MultiChildLayoutDelegate.layoutChild (package:flutter/src/rendering/custom_layout.dart:180:12)
+#45     _ScaffoldLayout.performLayout (package:flutter/src/material/scaffold.dart:1113:7)
+#46     MultiChildLayoutDelegate._callPerformLayout (package:flutter/src/rendering/custom_layout.dart:246:7)
+#47     RenderCustomMultiChildLayoutBox.performLayout (package:flutter/src/rendering/custom_layout.dart:417:14)
+#48     RenderObject._layoutWithoutResize (package:flutter/src/rendering/object.dart:2755:7)
+#49     PipelineOwner.flushLayout (package:flutter/src/rendering/object.dart:1174:18)
+#50     PipelineOwner.flushLayout (package:flutter/src/rendering/object.dart:1187:15)
+#51     AutomatedTestWidgetsFlutterBinding.drawFrame (package:flutter_test/src/binding.dart:2433:27)
+#52     RendererBinding._handlePersistentFrameCallback (package:flutter/src/rendering/binding.dart:509:5)
+#53     SchedulerBinding._invokeFrameCallback (package:flutter/src/scheduler/binding.dart:1430:15)
+#54     SchedulerBinding.handleDrawFrame (package:flutter/src/scheduler/binding.dart:1345:9)
+#55     AutomatedTestWidgetsFlutterBinding.pump.<anonymous closure> (package:flutter_test/src/binding.dart:2260:9)
+#58     TestAsyncUtils.guard (package:flutter_test/src/test_async_utils.dart:74:41)
+#59     AutomatedTestWidgetsFlutterBinding.pump (package:flutter_test/src/binding.dart:2249:27)
+#60     WidgetTester.pump.<anonymous closure> (package:flutter_test/src/widget_tester.dart:652:53)
+#63     TestAsyncUtils.guard (package:flutter_test/src/test_async_utils.dart:74:41)
+#64     WidgetTester.pump (package:flutter_test/src/widget_tester.dart:652:27)
+#65     main.<anonymous closure> (file:///home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/guided_tour_scroll_restoration_test.dart:70:18)
+<asynchronous suspension>
+#66     testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#67     TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided 5 frames from dart:async and package:stack_trace)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: exactly one matching candidate
+  Actual: _TextWidgetFinder:<Found 0 widgets with text "HO CAPITO": []>
+   Which: means none were found but one was expected
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/guided_tour_scroll_restoration_test.dart:73:5)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/guided_tour_scroll_restoration_test.dart line 73
+The test description was:
+  chiudendo l’ultima tappa il contenuto torna all’inizio
+════════════════════════════════════════════════════════════════════════════════════════════════════
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following message was thrown:
+Multiple exceptions (2) were detected during the running of the current test, and at least one was
+unexpected.
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:12 +109 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/guided_tour_scroll_restoration_test.dart: chiudendo l’ultima tappa il contenuto torna all’inizio [E]
+  Test failed. See exception logs above.
+  The test description was: chiudendo l’ultima tappa il contenuto torna all’inizio
+  
+00:12 +109 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/responsive_content_test.dart: limita la larghezza sulle finestre desktop
+00:12 +110 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/responsive_content_test.dart: limita la larghezza sulle finestre desktop
+00:12 +111 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/responsive_content_test.dart: limita la larghezza sulle finestre desktop
+00:13 +112 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/responsive_content_test.dart: usa tutta la larghezza disponibile su smartphone
+00:13 +113 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/battle_status_rules_test.dart: BattleStatusRules non mostra assistenza senza status supportati
+00:13 +114 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/battle_status_rules_test.dart: BattleStatusRules ordina Paralyzed prima di Asleep e Confused
+00:13 +115 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/battle_status_rules_test.dart: BattleStatusRules Burned ricorda danni a inizio turno e riduzione dei danni
+00:13 +116 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/battle_status_rules_test.dart: BattleStatusRules Poisoned e Badly Poisoned usano il promemoria di fine turno
+00:13 +117 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/battle_status_rules_test.dart: BattleStatusRules Frozen ricorda sia il TS sia lo scioglimento da mossa
+00:13 +118 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/battle_status_rules_test.dart: BattleStatusRules Asleep ricorda entrambi i tiri di risveglio
+00:13 +119 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/battle_status_rules_test.dart: BattleStatusRules Flinched ricorda penalità e scadenza senza autorimozione
+00:13 +120 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/battle_form_change_service_test.dart: battle form support covers in-combat transformations
+00:13 +121 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/battle_form_change_service_test.dart: battle form support covers in-combat transformations
+00:13 +122 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/battle_form_change_service_test.dart: battle form support covers in-combat transformations
+00:13 +123 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/battle_form_change_service_test.dart: battle form support covers in-combat transformations
+00:14 +124 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/battle_form_change_service_test.dart: Deoxys uses official Italian form labels and 5e bonuses
+00:14 +125 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/battle_form_change_service_test.dart: Darmanitan does not mix Unovan and Galarian battle forms
+00:14 +126 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/battle_form_change_service_test.dart: Zygarde uses Forma 50% as base and keeps all three stat profiles
+00:14 +127 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/battle_form_change_service_test.dart: Palafin Forma Possente applies battle-only CA, FOR and DES bonuses
+00:14 +128 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/egg_pc_storage_test.dart: i salvataggi precedenti considerano l’uovo fuori dal PC
+00:14 +129 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/egg_pc_storage_test.dart: deposito e ritiro dal PC mantengono il contenuto dell’uovo
+00:14 +130 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/fakemon_phase7_integration_test.dart: risolve mosse Fakemon omonime per specie in generatori, incontri e fight
+00:14 +131 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/fakemon_phase7_integration_test.dart: Fakemon generato conserva specie, abilità e mossa passando tra cattura, squadra e PC
+00:14 +132 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/fakemon_phase7_integration_test.dart: incontri manuali accettano una specie Fakemon
+00:14 +133 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/fakemon_phase7_integration_test.dart: il generatore Allenatori PNG usa il Fakemon dal catalogo
+00:14 +134 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/fakemon_phase7_integration_test.dart: metadati di allevamento Fakemon producono compatibilità e uovo della specie corretta
+00:14 +135 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/fakemon_phase7_integration_test.dart: JSON Fakemon mantiene i dati di allevamento
+00:14 +136 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/ability_localization_integrity_test.dart: le traduzioni coprono una sola volta tutte le abilità sorgente
+00:15 +137 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/ability_localization_integrity_test.dart: numeri, dadi e percentuali restano invariati
+00:15 +138 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/ability_localization_integrity_test.dart: il repository applica 330 descrizioni senza cambiare i metadati
+00:15 +139 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/battle_session_test.dart: battle session survives JSON round trip
+00:15 +140 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/battle_session_test.dart: saved transient state is rejected for a different Pokémon instance
+00:15 +141 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/battle_environment_service_test.dart: la tabella meteo rispetta i confini stagionali del manuale
+00:15 +142 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/battle_environment_service_test.dart: il vantaggio opzionale usa il tipo della mossa e Weather Ball
+00:15 +143 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/battle_environment_service_test.dart: Terrain Adept configurato concede +2 solo nel terreno scelto
+00:15 +144 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/battle_environment_service_test.dart: abilità ambientali modificano CA, velocità e danni
+00:15 +145 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/battle_environment_service_test.dart: Grandine e Tempesta di sabbia rispettano immunità e livello
+00:15 +146 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/battle_environment_service_test.dart: durate e ambiente sopravvivono al salvataggio della battaglia
+00:15 +147 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/battle_temporary_hp_service_test.dart: Fantasmanto exposes an extensible temporary HP rule
+00:16 +148 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/guided_tour_stack_layout_test.dart: chiudendo il tour lo Stack mantiene le dimensioni della schermata
+00:16 +149 -1: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/guided_tour_stack_layout_test.dart: chiudendo il tour lo Stack mantiene le dimensioni della schermata
+══╡ EXCEPTION CAUGHT BY WIDGETS LIBRARY ╞═══════════════════════════════════════════════════════════
+The following _TypeError was thrown building _TourSpeechCard(dirty, dependencies:
+[_LocalizationsScope-[GlobalKey#58c8c]]):
+Null check operator used on a null value
+
+When the exception was thrown, this was the stack:
+#0      AppLocalizations.of (package:pokedex_5e_ita/l10n/app_localizations.dart:71:73)
+#1      _TourSpeechCard.build (package:pokedex_5e_ita/widgets/tour/professor_tour_panel.dart:154:35)
+#2      StatelessElement.build (package:flutter/src/widgets/framework.dart:5889:49)
+#3      ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5817:15)
+#4      Element.rebuild (package:flutter/src/widgets/framework.dart:5529:7)
+#5      ComponentElement._firstBuild (package:flutter/src/widgets/framework.dart:5799:5)
+#6      ComponentElement.mount (package:flutter/src/widgets/framework.dart:5793:5)
+...     Normal element mounting (7 frames)
+#13     Element.inflateWidget (package:flutter/src/widgets/framework.dart:4587:20)
+#14     MultiChildRenderObjectElement.inflateWidget (package:flutter/src/widgets/framework.dart:7264:36)
+#15     MultiChildRenderObjectElement.mount (package:flutter/src/widgets/framework.dart:7279:32)
+...     Normal element mounting (10 frames)
+#25     Element.inflateWidget (package:flutter/src/widgets/framework.dart:4587:20)
+#26     Element.updateChild (package:flutter/src/widgets/framework.dart:4059:18)
+#27     _LayoutBuilderElement._rebuildWithConstraints.updateChildCallback (package:flutter/src/widgets/layout_builder.dart:247:18)
+#28     BuildOwner.buildScope (package:flutter/src/widgets/framework.dart:3101:19)
+#29     _LayoutBuilderElement._rebuildWithConstraints (package:flutter/src/widgets/layout_builder.dart:270:12)
+#30     RenderAbstractLayoutBuilderMixin.layoutCallback (package:flutter/src/widgets/layout_builder.dart:333:38)
+#31     RenderObjectWithLayoutCallbackMixin.runLayoutCallback.<anonymous closure> (package:flutter/src/rendering/object.dart:4302:33)
+#32     RenderObject.invokeLayoutCallback.<anonymous closure> (package:flutter/src/rendering/object.dart:3026:17)
+#33     PipelineOwner._enableMutationsToDirtySubtrees (package:flutter/src/rendering/object.dart:1223:15)
+#34     RenderObject.invokeLayoutCallback (package:flutter/src/rendering/object.dart:3025:14)
+#35     RenderObjectWithLayoutCallbackMixin.runLayoutCallback (package:flutter/src/rendering/object.dart:4302:5)
+#36     _RenderLayoutBuilder.performLayout (package:flutter/src/widgets/layout_builder.dart:447:5)
+#37     RenderObject.layout (package:flutter/src/rendering/object.dart:2907:7)
+#38     RenderStack.layoutPositionedChild (package:flutter/src/rendering/stack.dart:551:11)
+#39     RenderStack.performLayout (package:flutter/src/rendering/stack.dart:693:13)
+#40     RenderObject.layout (package:flutter/src/rendering/object.dart:2907:7)
+#41     RenderStack.layoutPositionedChild (package:flutter/src/rendering/stack.dart:551:11)
+#42     RenderStack.performLayout (package:flutter/src/rendering/stack.dart:693:13)
+#43     RenderObject.layout (package:flutter/src/rendering/object.dart:2907:7)
+#44     RenderPositionedBox.performLayout (package:flutter/src/rendering/shifted_box.dart:484:14)
+#45     RenderObject.layout (package:flutter/src/rendering/object.dart:2907:7)
+#46     MultiChildLayoutDelegate.layoutChild (package:flutter/src/rendering/custom_layout.dart:180:12)
+#47     _ScaffoldLayout.performLayout (package:flutter/src/material/scaffold.dart:1113:7)
+#48     MultiChildLayoutDelegate._callPerformLayout (package:flutter/src/rendering/custom_layout.dart:246:7)
+#49     RenderCustomMultiChildLayoutBox.performLayout (package:flutter/src/rendering/custom_layout.dart:417:14)
+#50     RenderObject.layout (package:flutter/src/rendering/object.dart:2907:7)
+#51     RenderProxyBoxMixin.performLayout (package:flutter/src/rendering/proxy_box.dart:118:18)
+#52     RenderObject.layout (package:flutter/src/rendering/object.dart:2907:7)
+#53     RenderProxyBoxMixin.performLayout (package:flutter/src/rendering/proxy_box.dart:118:18)
+#54     _RenderCustomClip.performLayout (package:flutter/src/rendering/proxy_box.dart:1549:11)
+#55     RenderObject.layout (package:flutter/src/rendering/object.dart:2907:7)
+#56     RenderProxyBoxMixin.performLayout (package:flutter/src/rendering/proxy_box.dart:118:18)
+#57     RenderObject.layout (package:flutter/src/rendering/object.dart:2907:7)
+#58     RenderProxyBoxMixin.performLayout (package:flutter/src/rendering/proxy_box.dart:118:18)
+#59     RenderObject.layout (package:flutter/src/rendering/object.dart:2907:7)
+#60     RenderProxyBoxMixin.performLayout (package:flutter/src/rendering/proxy_box.dart:118:18)
+#61     RenderObject.layout (package:flutter/src/rendering/object.dart:2907:7)
+#62     RenderProxyBoxMixin.performLayout (package:flutter/src/rendering/proxy_box.dart:118:18)
+#63     RenderObject.layout (package:flutter/src/rendering/object.dart:2907:7)
+#64     RenderProxyBoxMixin.performLayout (package:flutter/src/rendering/proxy_box.dart:118:18)
+#65     RenderObject.layout (package:flutter/src/rendering/object.dart:2907:7)
+#66     RenderProxyBoxMixin.performLayout (package:flutter/src/rendering/proxy_box.dart:118:18)
+#67     RenderObject.layout (package:flutter/src/rendering/object.dart:2907:7)
+#68     RenderProxyBoxMixin.performLayout (package:flutter/src/rendering/proxy_box.dart:118:18)
+#69     RenderObject.layout (package:flutter/src/rendering/object.dart:2907:7)
+#70     RenderProxyBoxMixin.performLayout (package:flutter/src/rendering/proxy_box.dart:118:18)
+#71     RenderObject.layout (package:flutter/src/rendering/object.dart:2907:7)
+#72     RenderProxyBoxMixin.performLayout (package:flutter/src/rendering/proxy_box.dart:118:18)
+#73     RenderObject.layout (package:flutter/src/rendering/object.dart:2907:7)
+#74     RenderProxyBoxMixin.performLayout (package:flutter/src/rendering/proxy_box.dart:118:18)
+#75     RenderObject.layout (package:flutter/src/rendering/object.dart:2907:7)
+#76     RenderProxyBoxMixin.performLayout (package:flutter/src/rendering/proxy_box.dart:118:18)
+#77     RenderObject.layout (package:flutter/src/rendering/object.dart:2907:7)
+#78     RenderProxyBoxMixin.performLayout (package:flutter/src/rendering/proxy_box.dart:118:18)
+#79     RenderObject.layout (package:flutter/src/rendering/object.dart:2907:7)
+#80     RenderProxyBoxMixin.performLayout (package:flutter/src/rendering/proxy_box.dart:118:18)
+#81     RenderObject.layout (package:flutter/src/rendering/object.dart:2907:7)
+#82     RenderProxyBoxMixin.performLayout (package:flutter/src/rendering/proxy_box.dart:118:18)
+#83     RenderObject.layout (package:flutter/src/rendering/object.dart:2907:7)
+#84     RenderProxyBoxMixin.performLayout (package:flutter/src/rendering/proxy_box.dart:118:18)
+#85     RenderObject.layout (package:flutter/src/rendering/object.dart:2907:7)
+#86     RenderProxyBoxMixin.performLayout (package:flutter/src/rendering/proxy_box.dart:118:18)
+#87     RenderOffstage.performLayout (package:flutter/src/rendering/proxy_box.dart:3923:13)
+#88     RenderObject.layout (package:flutter/src/rendering/object.dart:2907:7)
+#89     RenderProxyBoxMixin.performLayout (package:flutter/src/rendering/proxy_box.dart:118:18)
+#90     RenderObject.layout (package:flutter/src/rendering/object.dart:2907:7)
+#91     _RenderTheaterMixin.layoutChild (package:flutter/src/widgets/overlay.dart:1124:13)
+#92     _RenderTheater.performLayout (package:flutter/src/widgets/overlay.dart:1481:9)
+#93     RenderObject.layout (package:flutter/src/rendering/object.dart:2907:7)
+#94     RenderProxyBoxMixin.performLayout (package:flutter/src/rendering/proxy_box.dart:118:18)
+#95     RenderObject.layout (package:flutter/src/rendering/object.dart:2907:7)
+#96     RenderProxyBoxMixin.performLayout (package:flutter/src/rendering/proxy_box.dart:118:18)
+#97     RenderObject.layout (package:flutter/src/rendering/object.dart:2907:7)
+#98     RenderProxyBoxMixin.performLayout (package:flutter/src/rendering/proxy_box.dart:118:18)
+#99     RenderObject.layout (package:flutter/src/rendering/object.dart:2907:7)
+#100    RenderProxyBoxMixin.performLayout (package:flutter/src/rendering/proxy_box.dart:118:18)
+#101    RenderCustomPaint.performLayout (package:flutter/src/rendering/custom_paint.dart:574:11)
+#102    RenderObject.layout (package:flutter/src/rendering/object.dart:2907:7)
+#103    RenderProxyBoxMixin.performLayout (package:flutter/src/rendering/proxy_box.dart:118:18)
+#104    RenderObject.layout (package:flutter/src/rendering/object.dart:2907:7)
+#105    RenderProxyBoxMixin.performLayout (package:flutter/src/rendering/proxy_box.dart:118:18)
+#106    RenderObject.layout (package:flutter/src/rendering/object.dart:2907:7)
+#107    RenderProxyBoxMixin.performLayout (package:flutter/src/rendering/proxy_box.dart:118:18)
+#108    RenderObject.layout (package:flutter/src/rendering/object.dart:2907:7)
+#109    RenderProxyBoxMixin.performLayout (package:flutter/src/rendering/proxy_box.dart:118:18)
+#110    RenderObject.layout (package:flutter/src/rendering/object.dart:2907:7)
+#111    RenderProxyBoxMixin.performLayout (package:flutter/src/rendering/proxy_box.dart:118:18)
+#112    RenderObject.layout (package:flutter/src/rendering/object.dart:2907:7)
+#113    RenderProxyBoxMixin.performLayout (package:flutter/src/rendering/proxy_box.dart:118:18)
+#114    RenderObject.layout (package:flutter/src/rendering/object.dart:2907:7)
+#115    RenderView.performLayout (package:flutter/src/rendering/view.dart:292:12)
+#116    RenderObject._layoutWithoutResize (package:flutter/src/rendering/object.dart:2755:7)
+#117    PipelineOwner.flushLayout (package:flutter/src/rendering/object.dart:1174:18)
+#118    PipelineOwner.flushLayout (package:flutter/src/rendering/object.dart:1187:15)
+#119    AutomatedTestWidgetsFlutterBinding.drawFrame (package:flutter_test/src/binding.dart:2433:27)
+#120    RendererBinding._handlePersistentFrameCallback (package:flutter/src/rendering/binding.dart:509:5)
+#121    SchedulerBinding._invokeFrameCallback (package:flutter/src/scheduler/binding.dart:1430:15)
+#122    SchedulerBinding.handleDrawFrame (package:flutter/src/scheduler/binding.dart:1345:9)
+#123    AutomatedTestWidgetsFlutterBinding.pump.<anonymous closure> (package:flutter_test/src/binding.dart:2260:9)
+#126    TestAsyncUtils.guard (package:flutter_test/src/test_async_utils.dart:74:41)
+#127    AutomatedTestWidgetsFlutterBinding.pump (package:flutter_test/src/binding.dart:2249:27)
+#128    WidgetTester.pumpWidget.<anonymous closure> (package:flutter_test/src/widget_tester.dart:598:22)
+#131    TestAsyncUtils.guard (package:flutter_test/src/test_async_utils.dart:74:41)
+#132    WidgetTester.pumpWidget (package:flutter_test/src/widget_tester.dart:595:27)
+#133    main.<anonymous closure> (file:///home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/guided_tour_stack_layout_test.dart:33:20)
+<asynchronous suspension>
+#134    testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#135    TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided 5 frames from dart:async and package:stack_trace)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:16 +149 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/guided_tour_stack_layout_test.dart: chiudendo il tour lo Stack mantiene le dimensioni della schermata [E]
+  Test failed. See exception logs above.
+  The test description was: chiudendo il tour lo Stack mantiene le dimensioni della schermata
+  
+══╡ EXCEPTION CAUGHT BY WIDGET INSPECTOR ╞══════════════════════════════════════════════════════════
+The following assertion was thrown:
+Looking up a deactivated widget's ancestor is unsafe.
+At this point the state of the widget's element tree is no longer stable.
+To safely refer to a widget's ancestor in its dispose() method, save a reference to the ancestor by
+calling dependOnInheritedWidgetOfExactType() in the widget's didChangeDependencies() method.
+
+When the exception was thrown, this was the stack:
+#0      Element._debugCheckStateIsActiveForAncestorLookup.<anonymous closure> (package:flutter/src/widgets/framework.dart:5049:9)
+#1      Element._debugCheckStateIsActiveForAncestorLookup (package:flutter/src/widgets/framework.dart:5063:6)
+#2      Element.visitAncestorElements (package:flutter/src/widgets/framework.dart:5174:12)
+#3      _describeRelevantUserCode (package:flutter/src/widgets/widget_inspector.dart:4242:13)
+#4      _parseDiagnosticsNode (package:flutter/src/widgets/widget_inspector.dart:4161:12)
+#5      debugTransformDebugCreator (package:flutter/src/widgets/widget_inspector.dart:4140:21)
+#6      _FlutterErrorDetailsNode.builder (package:flutter/src/foundation/assertions.dart:1300:31)
+#7      DiagnosticableNode.getProperties (package:flutter/src/foundation/diagnostics.dart:2943:68)
+#8      TextTreeRenderer._debugRender (package:flutter/src/foundation/diagnostics.dart:1270:63)
+#9      TextTreeRenderer.render (package:flutter/src/foundation/diagnostics.dart:1137:14)
+#10     FlutterError.dumpErrorToConsole (package:flutter/src/foundation/assertions.dart:1030:13)
+#11     _defaultTestExceptionReporter (package:flutter_test/src/test_exception_reporter.dart:29:16)
+#12     TestWidgetsFlutterBinding._createTestCompletionHandler.<anonymous closure> (package:flutter_test/src/binding.dart:1713:28)
+<asynchronous suspension>
+(elided 8 frames from dart:async and package:stack_trace)
+
+This exception was caught while trying to describe the user-relevant code of another error.
+════════════════════════════════════════════════════════════════════════════════════════════════════
+══╡ EXCEPTION CAUGHT BY WIDGET INSPECTOR ╞══════════════════════════════════════════════════════════
+The following assertion was thrown:
+Looking up a deactivated widget's ancestor is unsafe.
+At this point the state of the widget's element tree is no longer stable.
+To safely refer to a widget's ancestor in its dispose() method, save a reference to the ancestor by
+calling dependOnInheritedWidgetOfExactType() in the widget's didChangeDependencies() method.
+
+When the exception was thrown, this was the stack:
+#0      Element._debugCheckStateIsActiveForAncestorLookup.<anonymous closure> (package:flutter/src/widgets/framework.dart:5049:9)
+#1      Element._debugCheckStateIsActiveForAncestorLookup (package:flutter/src/widgets/framework.dart:5063:6)
+#2      Element.visitAncestorElements (package:flutter/src/widgets/framework.dart:5174:12)
+#3      _describeRelevantUserCode (package:flutter/src/widgets/widget_inspector.dart:4242:13)
+#4      _parseDiagnosticsNode (package:flutter/src/widgets/widget_inspector.dart:4161:12)
+#5      debugTransformDebugCreator (package:flutter/src/widgets/widget_inspector.dart:4140:21)
+#6      _FlutterErrorDetailsNode.builder (package:flutter/src/foundation/assertions.dart:1300:31)
+#7      DiagnosticableNode.emptyBodyDescription (package:flutter/src/foundation/diagnostics.dart:2939:45)
+#8      TextTreeRenderer._debugRender (package:flutter/src/foundation/diagnostics.dart:1307:14)
+#9      TextTreeRenderer.render (package:flutter/src/foundation/diagnostics.dart:1137:14)
+#10     FlutterError.dumpErrorToConsole (package:flutter/src/foundation/assertions.dart:1030:13)
+#11     _defaultTestExceptionReporter (package:flutter_test/src/test_exception_reporter.dart:29:16)
+#12     TestWidgetsFlutterBinding._createTestCompletionHandler.<anonymous closure> (package:flutter_test/src/binding.dart:1713:28)
+<asynchronous suspension>
+(elided 8 frames from dart:async and package:stack_trace)
+
+This exception was caught while trying to describe the user-relevant code of another error.
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:19 +149 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/native_share_service_test.dart: restituisce il messaggio di successo personalizzato
+00:19 +150 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/native_share_service_test.dart: distingue annullamento ed esito non comunicato
+00:19 +151 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/app_locale_controller_test.dart: una lingua dispositivo non supportata usa il fallback inglese
+00:19 +152 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/app_locale_controller_test.dart: il sistema mantiene italiano e inglese quando supportati
+00:19 +153 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/app_locale_controller_test.dart: la preferenza manuale prevale e viene salvata
+00:19 +154 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/npc_library_master_battle_test.dart: saved NPC trainer JSON preserves identity and complete team
+00:19 +155 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/npc_library_master_battle_test.dart: saved NPC trainer mapper restores generated Pokémon
+00:19 +156 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/npc_library_master_battle_test.dart: master fight supports multiple trainers with independent active teams
+00:19 +157 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/npc_library_master_battle_test.dart: wild encounter starts a temporary Master fight
+00:19 +158 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/npc_library_master_battle_test.dart: master battle session JSON preserves HP, PP and statuses
+00:19 +159 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_localization_integrity_test.dart: i file italiani coprono una sola volta tutti i Pokémon localizzati
+00:19 +160 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_localization_integrity_test.dart: il repository carica le 1025 traduzioni italiane
+00:19 +161 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_localization_integrity_test.dart: le categorie coincidono con il riferimento italiano ufficiale
+00:19 +162 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_localization_integrity_test.dart: le descrizioni legacy preservano altezza e peso originali
+00:20 +163 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/custom_pokemon_definition_test.dart: CustomPokemonDefinition conserva immagine, mosse e abilità esclusive nel JSON
+00:20 +164 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/custom_pokemon_definition_test.dart: CustomPokemonDefinition una mossa esclusiva non assegnata diventa una mossa iniziale
+00:20 +165 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/custom_pokemon_definition_test.dart: CustomPokemonDefinition il file portabile rileva una modifica al contenuto
+00:20 +166 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/custom_pokemon_definition_test.dart: CustomPokemonDefinition MoveRepository risolve una mossa Fakemon senza cercare un asset
+00:20 +167 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/custom_pokemon_definition_test.dart: CustomPokemonDefinition MoveRepository risolve una mossa Fakemon senza cercare un asset
+00:20 +168 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/custom_pokemon_definition_test.dart: CustomPokemonDefinition MoveRepository risolve una mossa Fakemon senza cercare un asset
+00:20 +169 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/custom_pokemon_definition_test.dart: CustomPokemonDefinition MoveRepository risolve una mossa Fakemon senza cercare un asset
+00:20 +170 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/custom_pokemon_definition_test.dart: CustomPokemonDefinition MoveRepository risolve una mossa Fakemon senza cercare un asset
+00:20 +171 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/custom_pokemon_definition_test.dart: CustomPokemonRepository salva la specie globale e aggiorna il registro runtime
+00:20 +172 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/minior_color_forms_test.dart: Minior exposes seven aesthetic cores with shared statistics
+00:21 +173 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/minior_color_forms_test.dart: Minior exposes seven aesthetic cores with shared statistics
+00:21 +174 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/minior_color_forms_test.dart: Minior uses the dedicated Meteor Form images by default
+00:21 +175 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/minior_color_forms_test.dart: Minior colour candidates point to the bundled shared folder
+00:21 +176 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/minior_color_forms_test.dart: gender-only textures do not create a Forma selector
+00:21 +177 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/minior_color_forms_test.dart: Pyroar gender changes appearance without changing battle data
+00:21 +178 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/minior_color_forms_test.dart: Meowstic keeps its stats but changes learnset and hidden ability
+00:21 +179 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/campaign_transfer_service_test.dart: CampaignTransferBundle serializza e rilegge un incontro
+00:21 +180 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/campaign_transfer_service_test.dart: CampaignTransferBundle serializza e rilegge un Allenatore PNG
+00:21 +181 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/campaign_transfer_service_test.dart: CampaignTransferService imports importa un incontro con nuovo id e nome non distruttivo
+00:21 +182 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/campaign_transfer_service_test.dart: CampaignTransferService imports importa un Allenatore PNG e conserva la scheda
+00:21 +183 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/campaign_transfer_service_test.dart: CampaignTransferService imports rifiuta specie non presenti nel catalogo
+00:21 +184 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/campaign_transfer_service_test.dart: il riepilogo del Fight include turno, PF, status e PP
+00:22 +185 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/data_integrity_test.dart: (setUpAll)
+00:22 +186 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/data_integrity_test.dart: (setUpAll)
+00:22 +187 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/data_integrity_test.dart: (setUpAll)
+00:22 +188 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/data_integrity_test.dart: (setUpAll)
+00:22 +189 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/data_integrity_test.dart: (setUpAll)
+00:22 +190 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/data_integrity_test.dart: (setUpAll)
+00:22 +191 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/data_integrity_test.dart: (setUpAll)
+00:22 +192 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/data_integrity_test.dart: (setUpAll)
+00:22 +193 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/data_integrity_test.dart: (setUpAll)
+00:22 +193 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/data_integrity_test.dart: File sorgente l indice legacy punta solo a file Pokemon validi
+00:22 +194 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/data_integrity_test.dart: File sorgente i cataloghi web hanno identificatori univoci e campi minimi
+00:22 +195 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/data_integrity_test.dart: Catalogo unificato contiene tutte le specie con ID positivi e univoci
+00:22 +196 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/data_integrity_test.dart: Catalogo unificato statistiche, mosse e forme rispettano i vincoli minimi
+00:22 +197 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/data_integrity_test.dart: Catalogo unificato ogni specie ha almeno un immagine inclusa nel bundle
+00:22 +198 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/navigation_and_percentage_test.dart: il pulsante indietro torna di un solo livello
+00:22 +199 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/navigation_and_percentage_test.dart: il pulsante indietro torna di un solo livello
+00:23 +200 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/fakemon_backup_safe_delete_test.dart: il backup v6 incorpora e rimappa un Fakemon in conflitto
+00:23 +201 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/navigation_and_percentage_test.dart: il pulsante Home torna direttamente alla radice
+00:23 +202 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/navigation_and_percentage_test.dart: il pulsante Home torna direttamente alla radice
+00:23 +203 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/navigation_and_percentage_test.dart: il pulsante Home torna direttamente alla radice
+00:23 +204 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/navigation_and_percentage_test.dart: il pulsante Home torna direttamente alla radice
+00:23 +205 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/navigation_and_percentage_test.dart: la percentuale accetta più cifre senza perdere il focus
+00:24 +206 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/breeding_egg_repository_test.dart: (setUpAll)
+00:24 +206 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/breeding_egg_repository_test.dart: salva il primo uovo anche quando il profilo non ne contiene ancora
+00:24 +207 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/breeding_egg_repository_test.dart: (tearDownAll)
+00:24 +207 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/user_profile_test.dart: UserProfile reads older saved profiles with trainer defaults
+00:24 +208 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/user_profile_test.dart: UserProfile persists trainer companion fields
+00:24 +209 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/user_profile_test.dart: UserProfile copyWith updates trainer companion fields
+00:24 +210 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_asset_paths_test.dart: Alolan Rattata artwork is resolved before the base web artwork
+00:24 +211 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_asset_paths_test.dart: Dusk Mane Necrozma sprite is resolved before the base web sprite
+00:24 +212 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_asset_paths_test.dart: Abomasnow shiny artwork is resolved before normal detail artwork
+00:24 +213 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_asset_paths_test.dart: Abomasnow shiny artwork is included in the Flutter asset bundle
+00:25 +214 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_asset_paths_test.dart: Abomasnow shiny artwork is included in the Flutter asset bundle
+00:25 +215 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_asset_paths_test.dart: Alolan Rattata shiny artwork is resolved before all fallbacks
+00:25 +216 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_asset_paths_test.dart: Dusk Mane Necrozma shiny artwork uses the form-first folder
+00:25 +217 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_asset_paths_test.dart: alternate shiny artwork is included in the Flutter asset bundle
+00:25 +218 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/breeding_data_test.dart: il catalogo Gruppi Uova include specie comuni e casi speciali
+00:25 +219 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/egg_asset_image_test.dart: EggAssetImage usa lo sprite caricato nel progetto
+00:26 +220 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_summary_dialog_layout_test.dart: Pokédex summary dialog lays out the horizontal form selector
+00:26 +221 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_summary_dialog_layout_test.dart: Pokédex summary dialog lays out the horizontal form selector
+00:26 +222 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_summary_dialog_layout_test.dart: Pokédex summary dialog lays out the horizontal form selector
+00:26 +223 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_summary_dialog_layout_test.dart: Pokédex summary dialog lays out the horizontal form selector
+00:26 +224 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_summary_dialog_layout_test.dart: Pokédex summary dialog lays out the horizontal form selector
+00:27 +225 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/ability_name_localization_integrity_test.dart: il riferimento ufficiale copre 308 delle 330 voci del catalogo
+00:27 +226 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/ability_name_localization_integrity_test.dart: i nomi verificati coincidono con le denominazioni italiane attese
+00:27 +227 -2: /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/ability_name_localization_integrity_test.dart: il repository conserva il nome tecnico e localizza solo la UI
+00:27 +228 -2: Some tests failed.
+
+Failing tests:
+  /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/guided_tour_scroll_restoration_test.dart: chiudendo l’ultima tappa il contenuto torna all’inizio
+  /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/guided_tour_stack_layout_test.dart: chiudendo il tour lo Stack mantiene le dimensioni della schermata

@@ -1,0 +1,1163 @@
+name: Apply localization foundation
+
+on:
+  push:
+    branches:
+      - feature/app-localization-foundation
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v4
+        with:
+          ref: feature/app-localization-foundation
+          fetch-depth: 0
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Apply localization foundation
+        shell: bash
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+          import json
+          import re
+          import shutil
+
+          root = Path('.')
+
+          # Branding and definitive Android identity.
+          text_extensions = {
+              '.dart', '.md', '.yml', '.yaml', '.xml', '.kts', '.kt', '.cpp',
+              '.rc', '.txt', '.json', '.properties', '.html'
+          }
+          for path in root.rglob('*'):
+              if not path.is_file() or '.git' in path.parts or path.suffix.lower() not in text_extensions:
+                  continue
+              try:
+                  text = path.read_text(encoding='utf-8')
+              except UnicodeDecodeError:
+                  continue
+              updated = text.replace(
+                  'io.github.rickciaahd.pokedex5eita',
+                  'io.github.rickciaahd.traineratlas',
+              ).replace(
+                  'Pokédex 5e ITA',
+                  'Trainer Atlas 5e',
+              )
+              if updated != text:
+                  path.write_text(updated, encoding='utf-8')
+
+          old_activity = root / 'android/app/src/main/kotlin/io/github/rickciaahd/pokedex5eita/MainActivity.kt'
+          new_activity = root / 'android/app/src/main/kotlin/io/github/rickciaahd/traineratlas/MainActivity.kt'
+          if old_activity.exists():
+              new_activity.parent.mkdir(parents=True, exist_ok=True)
+              activity_text = old_activity.read_text(encoding='utf-8').replace(
+                  'package io.github.rickciaahd.pokedex5eita',
+                  'package io.github.rickciaahd.traineratlas',
+              )
+              new_activity.write_text(activity_text, encoding='utf-8')
+              old_activity.unlink()
+              for directory in [old_activity.parent, old_activity.parent.parent]:
+                  try:
+                      directory.rmdir()
+                  except OSError:
+                      pass
+
+          # Flutter localization dependencies and generated sources.
+          pubspec = root / 'pubspec.yaml'
+          pubspec_text = pubspec.read_text(encoding='utf-8')
+          dependency_anchor = "  flutter:\n    sdk: flutter\n"
+          dependency_block = (
+              dependency_anchor
+              + "\n  flutter_localizations:\n    sdk: flutter\n"
+              + "  intl: any\n"
+          )
+          if 'flutter_localizations:' not in pubspec_text:
+              if dependency_anchor not in pubspec_text:
+                  raise SystemExit('Impossibile trovare il blocco flutter in pubspec.yaml')
+              pubspec_text = pubspec_text.replace(
+                  dependency_anchor,
+                  dependency_block,
+                  1,
+              )
+          if '  generate: true\n' not in pubspec_text:
+              pubspec_text = pubspec_text.replace(
+                  'flutter:\n\n  uses-material-design: true',
+                  'flutter:\n  generate: true\n\n  uses-material-design: true',
+                  1,
+              )
+          pubspec.write_text(pubspec_text, encoding='utf-8')
+
+          (root / 'l10n.yaml').write_text(
+              """arb-dir: lib/l10n
+template-arb-file: app_en.arb
+output-localization-file: app_localizations.dart
+output-class: AppLocalizations
+nullable-getter: false
+""",
+              encoding='utf-8',
+          )
+
+          l10n_dir = root / 'lib/l10n'
+          l10n_dir.mkdir(parents=True, exist_ok=True)
+
+          en = {
+              '@@locale': 'en',
+              'appTitle': 'Trainer Atlas 5e',
+              'infoAction': 'INFO',
+              'reviewTourTooltip': 'INFO · Review the tour',
+              'settingsTitle': 'Settings',
+              'settingsSubtitle': 'Language and application preferences.',
+              'languageSectionTitle': 'LANGUAGE',
+              'languageSectionSubtitle': 'Choose how Trainer Atlas 5e selects the interface language.',
+              'languageSystemTitle': 'Device language',
+              'languageSystemSubtitle': 'Uses Italian or English when available and falls back to English for every other device language.',
+              'languageItalianTitle': 'Italiano',
+              'languageItalianSubtitle': 'Always use the Italian interface.',
+              'languageEnglishTitle': 'English',
+              'languageEnglishSubtitle': 'Always use the English interface.',
+              'homeTourDashboardTitle': 'Your dashboard',
+              'homeTourDashboardDescription': 'See the active profile, level, money, available Poké Slots and the maximum challenge rating you can control.',
+              'homeTourTrainerTitle': 'Trainer and team',
+              'homeTourTrainerDescription': 'Manage the Trainer sheet, catch creatures, organize the team and PC, check the Bag and follow breeding and Eggs.',
+              'homeTourPokedexTitle': 'The Pokédex',
+              'homeTourPokedexDescription': 'Open the Pokédex to browse creatures, apply filters and record which ones you have seen or caught.',
+              'homeTourMasterTitle': 'GM tools',
+              'homeTourMasterDescription': 'This area contains generators, encounters, collections, NPC Trainers and tools for preparing and running battles.',
+              'homeTourProfilesTitle': 'Profiles and help',
+              'homeTourProfilesDescription': 'Use Profiles to create or switch Trainers. Select INFO at any time to review this tour.',
+              'tourSkip': 'SKIP TOUR',
+              'backAction': 'BACK',
+              'tourUnderstood': 'GOT IT',
+              'nextAction': 'NEXT',
+              'homeOngoingSessionsTitle': 'ONGOING SESSIONS',
+              'homeOngoingSessionsSubtitle': 'Continue immediately from where you stopped.',
+              'homeResumeBattleTitle': 'Resume battle',
+              'homeResumeBattleSubtitle': 'Continue with the saved round, turn, PP and status conditions.',
+              'homeResumeMasterFightTitle': 'Resume GM Fight',
+              'homeResumeMasterFightSubtitle': 'Reopen the GM session with saved HP, PP, status conditions and initiative.',
+              'homeTrainerAndTeamTitle': 'TRAINER AND TEAM',
+              'homeTrainerAndTeamSubtitle': 'Manage the character and caught creatures.',
+              'homeBattleCompanionTitle': 'Battle Companion',
+              'homeBattleCompanionSubtitle': 'Track rounds, HP, status conditions and PP during combat.',
+              'homeTrainerSheetTitle': 'Trainer Sheet',
+              'homeTrainerSheetSubtitle': 'Update level, money and campaign progression.',
+              'homeCaptureTitle': 'Catch a creature',
+              'homeCaptureSubtitle': 'Choose a creature: it joins the team when there is room, otherwise it goes to the PC.',
+              'homeTeamTitle': 'Team',
+              'homeTeamSubtitle': 'Choose up to 6 creatures for the active profile.',
+              'homePcTitle': 'Creature PC',
+              'homePcSubtitle': 'Manage caught creatures outside the active team.',
+              'homeBreedingTitle': 'Breeding and Eggs',
+              'homeBreedingSubtitle': 'Check the parents, create Eggs, advance incubation and hatch creatures.',
+              'homeBagTitle': 'Bag',
+              'homeBagSubtitle': 'Equipment, healing items and catching supplies.',
+              'homeConsultationTitle': 'REFERENCE',
+              'homeConsultationSubtitle': 'Find information and update your progress.',
+              'homeOpenPokedexTitle': 'Open Pokédex',
+              'homeOpenPokedexSubtitle': 'Browse, filter and mark creatures.',
+              'homeMasterToolsTitle': 'GM TOOLS',
+              'homeMasterToolsSubtitle': 'Generate content, use libraries and prepare fights.',
+              'homeOpenMasterToolsTitle': 'Open GM Tools',
+              'homeOpenMasterToolsSubtitle': 'Creature generators, encounters, collections and NPC Trainers.',
+              'homeAppManagementTitle': 'APPLICATION MANAGEMENT',
+              'homeAppManagementSubtitle': 'Manage profiles and application data.',
+              'homeProfilesTitle': 'Profiles',
+              'homeProfilesSubtitle': 'Create, switch or delete Trainer profiles.',
+              'trainerFallback': 'Trainer',
+              'homeGreeting': 'Hello, {name}',
+              '@homeGreeting': {'placeholders': {'name': {'type': 'String'}}},
+              'trainerLevelChip': 'Lv. {level}',
+              '@trainerLevelChip': {'placeholders': {'level': {'type': 'int'}}},
+              'trainerMoneyChip': '₽ {amount}',
+              '@trainerMoneyChip': {'placeholders': {'amount': {'type': 'int'}}},
+              'trainerPokeslotChip': 'Poké Slots {count}',
+              '@trainerPokeslotChip': {'placeholders': {'count': {'type': 'int'}}},
+              'trainerMaxSrChip': 'Max SR {value}',
+              '@trainerMaxSrChip': {'placeholders': {'value': {'type': 'num'}}},
+              'pokedexProgressTitle': 'Pokédex progress',
+              'seenLabel': 'Seen',
+              'caughtLabel': 'Caught',
+              'errorWithMessage': 'Error: {message}',
+              '@errorWithMessage': {'placeholders': {'message': {'type': 'String'}}},
+              'retryAction': 'Retry',
+          }
+
+          it = {
+              '@@locale': 'it',
+              'appTitle': 'Trainer Atlas 5e',
+              'infoAction': 'INFO',
+              'reviewTourTooltip': 'INFO · Rivedi il tour',
+              'settingsTitle': 'Impostazioni',
+              'settingsSubtitle': 'Lingua e preferenze dell’applicazione.',
+              'languageSectionTitle': 'LINGUA',
+              'languageSectionSubtitle': 'Scegli come Trainer Atlas 5e determina la lingua dell’interfaccia.',
+              'languageSystemTitle': 'Lingua del dispositivo',
+              'languageSystemSubtitle': 'Usa italiano o inglese quando disponibili e passa all’inglese per ogni altra lingua del dispositivo.',
+              'languageItalianTitle': 'Italiano',
+              'languageItalianSubtitle': 'Usa sempre l’interfaccia italiana.',
+              'languageEnglishTitle': 'English',
+              'languageEnglishSubtitle': 'Usa sempre l’interfaccia inglese.',
+              'homeTourDashboardTitle': 'La tua dashboard',
+              'homeTourDashboardDescription': 'Qui trovi subito il profilo attivo, il livello, il denaro, i Pokéslot disponibili e il grado sfida massimo che puoi controllare.',
+              'homeTourTrainerTitle': 'Allenatore e squadra',
+              'homeTourTrainerDescription': 'Da questa sezione gestisci la scheda dell’Allenatore, catturi Pokémon, organizzi squadra e PC, controlli lo Zaino e segui allevamento e uova.',
+              'homeTourPokedexTitle': 'Il Pokédex',
+              'homeTourPokedexDescription': 'Apri il Pokédex per consultare le creature, applicare filtri e registrare quali Pokémon hai visto o catturato.',
+              'homeTourMasterTitle': 'Strumenti del Master',
+              'homeTourMasterDescription': 'Quest’area raccoglie generatori, incontri, raccolte, Allenatori PNG e strumenti per preparare e gestire i combattimenti.',
+              'homeTourProfilesTitle': 'Profili e aiuto',
+              'homeTourProfilesDescription': 'In Profili puoi creare o cambiare Allenatore. Per rivedere questa spiegazione in qualsiasi momento usa il pulsante INFO in alto.',
+              'tourSkip': 'SALTA TOUR',
+              'backAction': 'INDIETRO',
+              'tourUnderstood': 'HO CAPITO',
+              'nextAction': 'AVANTI',
+              'homeOngoingSessionsTitle': 'SESSIONI IN CORSO',
+              'homeOngoingSessionsSubtitle': 'Riprendi subito da dove avevi lasciato.',
+              'homeResumeBattleTitle': 'Riprendi battaglia',
+              'homeResumeBattleSubtitle': 'Continua dal round, turno, PP e status salvati.',
+              'homeResumeMasterFightTitle': 'Riprendi Fight del Master',
+              'homeResumeMasterFightSubtitle': 'Riapri la sessione del Master con PF, PP, status e iniziativa salvati.',
+              'homeTrainerAndTeamTitle': 'ALLENATORE E SQUADRA',
+              'homeTrainerAndTeamSubtitle': 'Gestisci il personaggio e i Pokémon catturati.',
+              'homeBattleCompanionTitle': 'Battle Companion',
+              'homeBattleCompanionSubtitle': 'Traccia round, PF, status e PP durante il combattimento.',
+              'homeTrainerSheetTitle': 'Scheda Allenatore',
+              'homeTrainerSheetSubtitle': 'Aggiorna livello, soldi e progressione campagna.',
+              'homeCaptureTitle': 'Cattura Pokémon',
+              'homeCaptureSubtitle': 'Scegli il Pokémon: va in squadra se c’è posto, altrimenti nel PC.',
+              'homeTeamTitle': 'Squadra',
+              'homeTeamSubtitle': 'Scegli fino a 6 Pokémon per il profilo attivo.',
+              'homePcTitle': 'PC Pokémon',
+              'homePcSubtitle': 'Gestisci i Pokémon catturati fuori squadra.',
+              'homeBreedingTitle': 'Allevamento e uova',
+              'homeBreedingSubtitle': 'Verifica i genitori, crea uova, avanza l’incubazione e fai schiudere i Pokémon.',
+              'homeBagTitle': 'Zaino',
+              'homeBagSubtitle': 'Equipaggiamento, cure e oggetti da cattura.',
+              'homeConsultationTitle': 'CONSULTAZIONE',
+              'homeConsultationSubtitle': 'Cerca informazioni e aggiorna i progressi.',
+              'homeOpenPokedexTitle': 'Apri Pokédex',
+              'homeOpenPokedexSubtitle': 'Consulta, filtra e marca i Pokémon.',
+              'homeMasterToolsTitle': 'STRUMENTI DEL MASTER',
+              'homeMasterToolsSubtitle': 'Genera contenuti, usa le librerie e prepara i fight.',
+              'homeOpenMasterToolsTitle': 'Apri Strumenti del Master',
+              'homeOpenMasterToolsSubtitle': 'Generatori Pokémon, incontri, raccolte e Allenatori PNG.',
+              'homeAppManagementTitle': 'GESTIONE APPLICAZIONE',
+              'homeAppManagementSubtitle': 'Gestisci i profili e i dati dell’app.',
+              'homeProfilesTitle': 'Profili',
+              'homeProfilesSubtitle': 'Crea, cambia o elimina profili allenatore.',
+              'trainerFallback': 'Allenatore',
+              'homeGreeting': 'Ciao, {name}',
+              '@homeGreeting': {'placeholders': {'name': {'type': 'String'}}},
+              'trainerLevelChip': 'Lv. {level}',
+              '@trainerLevelChip': {'placeholders': {'level': {'type': 'int'}}},
+              'trainerMoneyChip': '₽ {amount}',
+              '@trainerMoneyChip': {'placeholders': {'amount': {'type': 'int'}}},
+              'trainerPokeslotChip': 'Pokéslot {count}',
+              '@trainerPokeslotChip': {'placeholders': {'count': {'type': 'int'}}},
+              'trainerMaxSrChip': 'SR max {value}',
+              '@trainerMaxSrChip': {'placeholders': {'value': {'type': 'num'}}},
+              'pokedexProgressTitle': 'Progresso Pokédex',
+              'seenLabel': 'Visti',
+              'caughtLabel': 'Catturati',
+              'errorWithMessage': 'Errore: {message}',
+              '@errorWithMessage': {'placeholders': {'message': {'type': 'String'}}},
+              'retryAction': 'Riprova',
+          }
+
+          (l10n_dir / 'app_en.arb').write_text(
+              json.dumps(en, ensure_ascii=False, indent=2) + '\n',
+              encoding='utf-8',
+          )
+          (l10n_dir / 'app_it.arb').write_text(
+              json.dumps(it, ensure_ascii=False, indent=2) + '\n',
+              encoding='utf-8',
+          )
+
+          services_dir = root / 'lib/services'
+          services_dir.mkdir(parents=True, exist_ok=True)
+          (services_dir / 'app_locale_service.dart').write_text(
+              """import 'package:hive_flutter/hive_flutter.dart';
+
+import '../database/hive_boxes.dart';
+import '../database/hive_keys.dart';
+
+abstract class AppLocaleStore {
+  Future<String?> readLocalePreference();
+
+  Future<void> writeLocalePreference(String value);
+}
+
+class AppLocaleService implements AppLocaleStore {
+  Future<Box<dynamic>> _box() => Hive.openBox(HiveBoxes.appState);
+
+  @override
+  Future<String?> readLocalePreference() async {
+    final box = await _box();
+    return box.get(HiveKeys.appLocalePreference)?.toString();
+  }
+
+  @override
+  Future<void> writeLocalePreference(String value) async {
+    final box = await _box();
+    await box.put(HiveKeys.appLocalePreference, value);
+    await box.flush();
+  }
+}
+""",
+              encoding='utf-8',
+          )
+
+          localization_dir = root / 'lib/localization'
+          localization_dir.mkdir(parents=True, exist_ok=True)
+          (localization_dir / 'app_locale_controller.dart').write_text(
+              """import 'package:flutter/material.dart';
+
+import '../services/app_locale_service.dart';
+
+enum AppLocalePreference {
+  system('system'),
+  italian('it'),
+  english('en');
+
+  const AppLocalePreference(this.storageValue);
+
+  final String storageValue;
+
+  static AppLocalePreference fromStorage(String? value) {
+    return AppLocalePreference.values.firstWhere(
+      (preference) => preference.storageValue == value,
+      orElse: () => AppLocalePreference.system,
+    );
+  }
+}
+
+class AppLocaleController extends ChangeNotifier {
+  AppLocaleController({AppLocaleStore? store})
+      : _store = store ?? AppLocaleService();
+
+  final AppLocaleStore _store;
+
+  AppLocalePreference _preference = AppLocalePreference.system;
+  bool _isLoaded = false;
+
+  AppLocalePreference get preference => _preference;
+  bool get isLoaded => _isLoaded;
+
+  Locale? get locale {
+    return switch (_preference) {
+      AppLocalePreference.system => null,
+      AppLocalePreference.italian => const Locale('it'),
+      AppLocalePreference.english => const Locale('en'),
+    };
+  }
+
+  Future<void> load() async {
+    try {
+      _preference = AppLocalePreference.fromStorage(
+        await _store.readLocalePreference(),
+      );
+    } catch (error) {
+      debugPrint('Impossibile caricare la lingua dell’app: $error');
+      _preference = AppLocalePreference.system;
+    }
+    _isLoaded = true;
+    notifyListeners();
+  }
+
+  Future<void> setPreference(AppLocalePreference preference) async {
+    if (_preference == preference) return;
+    _preference = preference;
+    notifyListeners();
+
+    try {
+      await _store.writeLocalePreference(preference.storageValue);
+    } catch (error) {
+      debugPrint('Impossibile salvare la lingua dell’app: $error');
+    }
+  }
+
+  Locale resolveDeviceLocale(Locale? deviceLocale) {
+    final selectedLocale = locale;
+    if (selectedLocale != null) return selectedLocale;
+    if (deviceLocale?.languageCode.toLowerCase() == 'it') {
+      return const Locale('it');
+    }
+    return const Locale('en');
+  }
+}
+
+class AppLocaleScope extends InheritedNotifier<AppLocaleController> {
+  const AppLocaleScope({
+    super.key,
+    required AppLocaleController controller,
+    required super.child,
+  }) : super(notifier: controller);
+
+  static AppLocaleController of(BuildContext context) {
+    final scope = context.dependOnInheritedWidgetOfExactType<AppLocaleScope>();
+    assert(scope != null, 'AppLocaleScope non trovato nel widget tree.');
+    return scope!.notifier!;
+  }
+}
+""",
+              encoding='utf-8',
+          )
+
+          app_file = root / 'lib/app.dart'
+          app_file.write_text(
+              """import 'dart:async';
+
+import 'package:flutter/material.dart';
+
+import 'l10n/app_localizations.dart';
+import 'localization/app_locale_controller.dart';
+import 'screens/onboarding/app_bootstrap_screen.dart';
+
+class Pokedex5EApp extends StatefulWidget {
+  const Pokedex5EApp({super.key, this.localeController});
+
+  final AppLocaleController? localeController;
+
+  @override
+  State<Pokedex5EApp> createState() => _Pokedex5EAppState();
+}
+
+class _Pokedex5EAppState extends State<Pokedex5EApp> {
+  static const Color _brandOrange = Color(0xFFF26A21);
+  static const Color _appBackground = Color(0xFFF4F1EC);
+  static const VisualDensity _compactDensity = VisualDensity(
+    horizontal: -1,
+    vertical: -1.5,
+  );
+
+  late final AppLocaleController _localeController;
+  late final bool _ownsLocaleController;
+
+  @override
+  void initState() {
+    super.initState();
+    _ownsLocaleController = widget.localeController == null;
+    _localeController = widget.localeController ?? AppLocaleController();
+    if (_ownsLocaleController) {
+      unawaited(_localeController.load());
+    }
+  }
+
+  @override
+  void dispose() {
+    if (_ownsLocaleController) {
+      _localeController.dispose();
+    }
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AppLocaleScope(
+      controller: _localeController,
+      child: AnimatedBuilder(
+        animation: _localeController,
+        builder: (context, _) {
+          final colorScheme = ColorScheme.fromSeed(
+            seedColor: _brandOrange,
+            brightness: Brightness.light,
+          );
+
+          final compactButtonStyle = ButtonStyle(
+            minimumSize: const WidgetStatePropertyAll(Size(0, 42)),
+            padding: const WidgetStatePropertyAll(
+              EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            ),
+            visualDensity: _compactDensity,
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            shape: WidgetStatePropertyAll(
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+          );
+
+          return MaterialApp(
+            title: 'Trainer Atlas 5e',
+            onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
+            debugShowCheckedModeBanner: false,
+            locale: _localeController.locale,
+            supportedLocales: AppLocalizations.supportedLocales,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            localeResolutionCallback: (deviceLocale, supportedLocales) {
+              return _localeController.resolveDeviceLocale(deviceLocale);
+            },
+            scrollBehavior: const MaterialScrollBehavior().copyWith(
+              scrollbars: false,
+            ),
+            theme: ThemeData(
+              colorScheme: colorScheme,
+              scaffoldBackgroundColor: _appBackground,
+              useMaterial3: true,
+              visualDensity: _compactDensity,
+              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              appBarTheme: const AppBarTheme(
+                backgroundColor: _brandOrange,
+                foregroundColor: Colors.white,
+                elevation: 0,
+                centerTitle: false,
+                toolbarHeight: 56,
+                titleTextStyle: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 0.2,
+                ),
+                iconTheme: IconThemeData(color: Colors.white),
+              ),
+              cardTheme: CardThemeData(
+                color: Colors.white,
+                elevation: 1.5,
+                margin: const EdgeInsets.symmetric(vertical: 4),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+              ),
+              filledButtonTheme: FilledButtonThemeData(
+                style: compactButtonStyle.copyWith(
+                  backgroundColor: const WidgetStatePropertyAll(_brandOrange),
+                  foregroundColor: const WidgetStatePropertyAll(Colors.white),
+                  textStyle: const WidgetStatePropertyAll(
+                    TextStyle(fontWeight: FontWeight.w800),
+                  ),
+                ),
+              ),
+              outlinedButtonTheme: OutlinedButtonThemeData(
+                style: compactButtonStyle,
+              ),
+              textButtonTheme: TextButtonThemeData(
+                style: compactButtonStyle.copyWith(
+                  minimumSize: const WidgetStatePropertyAll(Size(0, 38)),
+                ),
+              ),
+              iconButtonTheme: IconButtonThemeData(
+                style: IconButton.styleFrom(
+                  minimumSize: const Size(40, 40),
+                  padding: const EdgeInsets.all(8),
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  visualDensity: _compactDensity,
+                ),
+              ),
+              inputDecorationTheme: InputDecorationTheme(
+                filled: true,
+                fillColor: Colors.white,
+                isDense: true,
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 11,
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: colorScheme.outlineVariant),
+                ),
+              ),
+              listTileTheme: const ListTileThemeData(
+                dense: true,
+                minVerticalPadding: 4,
+                contentPadding: EdgeInsets.symmetric(horizontal: 12),
+              ),
+              tabBarTheme: const TabBarThemeData(
+                labelColor: _brandOrange,
+                unselectedLabelColor: Colors.black54,
+                indicatorColor: _brandOrange,
+                labelStyle: TextStyle(fontWeight: FontWeight.w900),
+              ),
+            ),
+            home: const AppBootstrapScreen(),
+          );
+        },
+      ),
+    );
+  }
+}
+""",
+              encoding='utf-8',
+          )
+
+          (root / 'lib/main.dart').write_text(
+              """import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+
+import 'app.dart';
+import 'localization/app_locale_controller.dart';
+import 'repositories/custom_pokemon_repository.dart';
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Hive.initFlutter();
+  CustomPokemonRepository.markStorageReady();
+
+  final localeController = AppLocaleController();
+  await localeController.load();
+
+  runApp(Pokedex5EApp(localeController: localeController));
+}
+""",
+              encoding='utf-8',
+          )
+
+          hive_keys = root / 'lib/database/hive_keys.dart'
+          hive_text = hive_keys.read_text(encoding='utf-8')
+          if 'appLocalePreference' not in hive_text:
+              hive_text = hive_text.replace(
+                  "  static const guidedToursCompleted = 'guided_tours_completed';\n",
+                  "  static const guidedToursCompleted = 'guided_tours_completed';\n  static const appLocalePreference = 'app_locale_preference';\n",
+              )
+          hive_keys.write_text(hive_text, encoding='utf-8')
+
+          settings_dir = root / 'lib/screens/settings'
+          settings_dir.mkdir(parents=True, exist_ok=True)
+          (settings_dir / 'settings_screen.dart').write_text(
+              """import 'package:flutter/material.dart';
+
+import '../../l10n/app_localizations.dart';
+import '../../localization/app_locale_controller.dart';
+import '../../widgets/layout/responsive_content.dart';
+
+class SettingsScreen extends StatelessWidget {
+  const SettingsScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final controller = AppLocaleScope.of(context);
+
+    return Scaffold(
+      appBar: AppBar(title: Text(l10n.settingsTitle)),
+      body: ResponsiveContent(
+        maxWidth: 760,
+        child: AnimatedBuilder(
+          animation: controller,
+          builder: (context, _) {
+            return ListView(
+              padding: const EdgeInsets.fromLTRB(16, 20, 16, 32),
+              children: [
+                Text(
+                  l10n.languageSectionTitle,
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.w900,
+                      ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  l10n.languageSectionSubtitle,
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+                const SizedBox(height: 16),
+                _LocaleOption(
+                  icon: Icons.phone_android_outlined,
+                  title: l10n.languageSystemTitle,
+                  subtitle: l10n.languageSystemSubtitle,
+                  selected: controller.preference == AppLocalePreference.system,
+                  onTap: () async {
+                    await controller.setPreference(AppLocalePreference.system);
+                  },
+                ),
+                _LocaleOption(
+                  icon: Icons.language,
+                  title: l10n.languageItalianTitle,
+                  subtitle: l10n.languageItalianSubtitle,
+                  selected: controller.preference == AppLocalePreference.italian,
+                  onTap: () async {
+                    await controller.setPreference(AppLocalePreference.italian);
+                  },
+                ),
+                _LocaleOption(
+                  icon: Icons.public,
+                  title: l10n.languageEnglishTitle,
+                  subtitle: l10n.languageEnglishSubtitle,
+                  selected: controller.preference == AppLocalePreference.english,
+                  onTap: () async {
+                    await controller.setPreference(AppLocalePreference.english);
+                  },
+                ),
+              ],
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class _LocaleOption extends StatelessWidget {
+  const _LocaleOption({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Card(
+      color: selected ? colors.primaryContainer : null,
+      child: ListTile(
+        leading: Icon(
+          icon,
+          color: selected ? colors.onPrimaryContainer : colors.primary,
+        ),
+        title: Text(title, style: const TextStyle(fontWeight: FontWeight.w800)),
+        subtitle: Text(subtitle),
+        trailing: Icon(
+          selected ? Icons.check_circle : Icons.radio_button_unchecked,
+          color: selected ? colors.primary : colors.outline,
+        ),
+        onTap: onTap,
+      ),
+    );
+  }
+}
+""",
+              encoding='utf-8',
+          )
+
+          # Localize the Home shell and its guided tour.
+          home = root / 'lib/screens/home/home_screen.dart'
+          home_text = home.read_text(encoding='utf-8')
+          if "../../l10n/app_localizations.dart" not in home_text:
+              home_text = home_text.replace(
+                  "import 'package:flutter/material.dart';\n",
+                  "import 'package:flutter/material.dart';\n\nimport '../../l10n/app_localizations.dart';\n",
+                  1,
+              )
+          if "../settings/settings_screen.dart" not in home_text:
+              home_text = home_text.replace(
+                  "import '../profile/profiles_screen.dart';\n",
+                  "import '../profile/profiles_screen.dart';\nimport '../settings/settings_screen.dart';\n",
+                  1,
+              )
+
+          old_tour = """  List<HomeTourStepData> get _tourSteps => [
+        HomeTourStepData(
+          targetKey: _trainerHeaderKey,
+          icon: Icons.dashboard_outlined,
+          title: 'La tua dashboard',
+          description:
+              'Qui trovi subito il profilo attivo, il livello, il denaro, i Pokéslot disponibili e il grado sfida massimo che puoi controllare.',
+        ),
+        HomeTourStepData(
+          targetKey: _trainerSectionKey,
+          icon: Icons.groups_outlined,
+          title: 'Allenatore e squadra',
+          description:
+              'Da questa sezione gestisci la scheda dell’Allenatore, catturi Pokémon, organizzi squadra e PC, controlli lo Zaino e segui allevamento e uova.',
+        ),
+        HomeTourStepData(
+          targetKey: _pokedexKey,
+          icon: Icons.catching_pokemon,
+          title: 'Il Pokédex',
+          description:
+              'Apri il Pokédex per consultare le creature, applicare filtri e registrare quali Pokémon hai visto o catturato.',
+        ),
+        HomeTourStepData(
+          targetKey: _masterSectionKey,
+          icon: Icons.construction_outlined,
+          title: 'Strumenti del Master',
+          description:
+              'Quest’area raccoglie generatori, incontri, raccolte, Allenatori PNG e strumenti per preparare e gestire i combattimenti.',
+        ),
+        HomeTourStepData(
+          targetKey: _profilesKey,
+          icon: Icons.info_outline,
+          title: 'Profili e aiuto',
+          description:
+              'In Profili puoi creare o cambiare Allenatore. Per rivedere questa spiegazione in qualsiasi momento usa il pulsante INFO in alto.',
+        ),
+      ];
+"""
+          new_tour = """  List<HomeTourStepData> get _tourSteps {
+    final l10n = AppLocalizations.of(context);
+    return [
+      HomeTourStepData(
+        targetKey: _trainerHeaderKey,
+        icon: Icons.dashboard_outlined,
+        title: l10n.homeTourDashboardTitle,
+        description: l10n.homeTourDashboardDescription,
+      ),
+      HomeTourStepData(
+        targetKey: _trainerSectionKey,
+        icon: Icons.groups_outlined,
+        title: l10n.homeTourTrainerTitle,
+        description: l10n.homeTourTrainerDescription,
+      ),
+      HomeTourStepData(
+        targetKey: _pokedexKey,
+        icon: Icons.catching_pokemon,
+        title: l10n.homeTourPokedexTitle,
+        description: l10n.homeTourPokedexDescription,
+      ),
+      HomeTourStepData(
+        targetKey: _masterSectionKey,
+        icon: Icons.construction_outlined,
+        title: l10n.homeTourMasterTitle,
+        description: l10n.homeTourMasterDescription,
+      ),
+      HomeTourStepData(
+        targetKey: _profilesKey,
+        icon: Icons.info_outline,
+        title: l10n.homeTourProfilesTitle,
+        description: l10n.homeTourProfilesDescription,
+      ),
+    ];
+  }
+"""
+          if old_tour not in home_text:
+              raise SystemExit('Blocco tour Home non trovato')
+          home_text = home_text.replace(old_tour, new_tour, 1)
+
+          build_anchor = "  Widget build(BuildContext context) {\n    final profile = _profile;"
+          if build_anchor not in home_text:
+              raise SystemExit('Build principale Home non trovato')
+          home_text = home_text.replace(
+              build_anchor,
+              "  Widget build(BuildContext context) {\n    final l10n = AppLocalizations.of(context);\n    final profile = _profile;",
+              1,
+          )
+          home_text = home_text.replace(
+              "title: const Text('Trainer Atlas 5e')",
+              'title: Text(l10n.appTitle)',
+              1,
+          )
+          home_text = home_text.replace(
+              "label: const Text('INFO')",
+              'label: Text(l10n.infoAction)',
+              1,
+          )
+          home_text = home_text.replace(
+              "tooltip: 'INFO · Rivedi il tour'",
+              'tooltip: l10n.reviewTourTooltip',
+              1,
+          )
+          settings_action = """          IconButton(
+            onPressed: _isTourVisible
+                ? null
+                : () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const SettingsScreen(),
+                      ),
+                    );
+                  },
+            tooltip: l10n.settingsTitle,
+            icon: const Icon(Icons.settings_outlined),
+          ),
+          const SizedBox(width: 4),
+"""
+          home_text = home_text.replace(
+              '          const SizedBox(width: 4),\n',
+              settings_action,
+              1,
+          )
+          home_text = home_text.replace('const _HomeSectionTitle(', '_HomeSectionTitle(')
+
+          def replace_field(field, literal, expression):
+              nonlocal_text = None
+              pattern = rf"{field}:\s*'{re.escape(literal)}'"
+              updated, count = re.subn(
+                  pattern,
+                  f'{field}: {expression}',
+                  replace_field.text,
+                  count=1,
+              )
+              if count != 1:
+                  raise SystemExit(f'Campo Home non trovato: {field} / {literal}')
+              replace_field.text = updated
+
+          replace_field.text = home_text
+          replacements = [
+              ('title', 'SESSIONI IN CORSO', 'l10n.homeOngoingSessionsTitle'),
+              ('subtitle', 'Riprendi subito da dove avevi lasciato.', 'l10n.homeOngoingSessionsSubtitle'),
+              ('title', 'Riprendi battaglia', 'l10n.homeResumeBattleTitle'),
+              ('subtitle', 'Continua dal round, turno, PP e status salvati.', 'l10n.homeResumeBattleSubtitle'),
+              ('title', 'Riprendi Fight del Master', 'l10n.homeResumeMasterFightTitle'),
+              ('subtitle', 'Riapri la sessione del Master con PF, PP, status e iniziativa salvati.', 'l10n.homeResumeMasterFightSubtitle'),
+              ('title', 'ALLENATORE E SQUADRA', 'l10n.homeTrainerAndTeamTitle'),
+              ('subtitle', 'Gestisci il personaggio e i Pokémon catturati.', 'l10n.homeTrainerAndTeamSubtitle'),
+              ('title', 'Battle Companion', 'l10n.homeBattleCompanionTitle'),
+              ('subtitle', 'Traccia round, PF, status e PP durante il combattimento.', 'l10n.homeBattleCompanionSubtitle'),
+              ('title', 'Scheda Allenatore', 'l10n.homeTrainerSheetTitle'),
+              ('subtitle', 'Aggiorna livello, soldi e progressione campagna.', 'l10n.homeTrainerSheetSubtitle'),
+              ('title', 'Cattura Pokémon', 'l10n.homeCaptureTitle'),
+              ('subtitle', 'Scegli il Pokémon: va in squadra se c’è posto, altrimenti nel PC.', 'l10n.homeCaptureSubtitle'),
+              ('title', 'Squadra', 'l10n.homeTeamTitle'),
+              ('subtitle', 'Scegli fino a 6 Pokémon per il profilo attivo.', 'l10n.homeTeamSubtitle'),
+              ('title', 'PC Pokémon', 'l10n.homePcTitle'),
+              ('subtitle', 'Gestisci i Pokémon catturati fuori squadra.', 'l10n.homePcSubtitle'),
+              ('title', 'Allevamento e uova', 'l10n.homeBreedingTitle'),
+              ('subtitle', 'Verifica i genitori, crea uova, avanza l’incubazione e fai schiudere i Pokémon.', 'l10n.homeBreedingSubtitle'),
+              ('title', 'Zaino', 'l10n.homeBagTitle'),
+              ('subtitle', 'Equipaggiamento, cure e oggetti da cattura.', 'l10n.homeBagSubtitle'),
+              ('title', 'CONSULTAZIONE', 'l10n.homeConsultationTitle'),
+              ('subtitle', 'Cerca informazioni e aggiorna i progressi.', 'l10n.homeConsultationSubtitle'),
+              ('title', 'Apri Pokédex', 'l10n.homeOpenPokedexTitle'),
+              ('subtitle', 'Consulta, filtra e marca i Pokémon.', 'l10n.homeOpenPokedexSubtitle'),
+              ('title', 'STRUMENTI DEL MASTER', 'l10n.homeMasterToolsTitle'),
+              ('subtitle', 'Genera contenuti, usa le librerie e prepara i fight.', 'l10n.homeMasterToolsSubtitle'),
+              ('title', 'Apri Strumenti del Master', 'l10n.homeOpenMasterToolsTitle'),
+              ('subtitle', 'Generatori Pokémon, incontri, raccolte e Allenatori PNG.', 'l10n.homeOpenMasterToolsSubtitle'),
+              ('title', 'GESTIONE APPLICAZIONE', 'l10n.homeAppManagementTitle'),
+              ('subtitle', 'Gestisci i profili e i dati dell’app.', 'l10n.homeAppManagementSubtitle'),
+              ('title', 'Profili', 'l10n.homeProfilesTitle'),
+              ('subtitle', 'Crea, cambia o elimina profili allenatore.', 'l10n.homeProfilesSubtitle'),
+          ]
+          for field, literal, expression in replacements:
+              replace_field(field, literal, expression)
+          home_text = replace_field.text
+          home_text = home_text.replace(
+              "nickname: profile?.name ?? 'Allenatore'",
+              'nickname: profile?.name ?? l10n.trainerFallback',
+              1,
+          )
+
+          trainer_anchor = "  Widget build(BuildContext context) {\n    final profileName = profile?.name ?? 'Allenatore';"
+          if trainer_anchor not in home_text:
+              raise SystemExit('Header Allenatore Home non trovato')
+          home_text = home_text.replace(
+              trainer_anchor,
+              "  Widget build(BuildContext context) {\n    final l10n = AppLocalizations.of(context);\n    final profileName = profile?.name ?? l10n.trainerFallback;",
+              1,
+          )
+          home_text = home_text.replace("'Ciao, $profileName'", 'l10n.homeGreeting(profileName)', 1)
+          home_text = home_text.replace("'Lv. $trainerLevel'", 'l10n.trainerLevelChip(trainerLevel)', 1)
+          home_text = home_text.replace("'₽ $money'", 'l10n.trainerMoneyChip(money)', 1)
+          home_text = home_text.replace("'Pokéslot $pokeslots'", 'l10n.trainerPokeslotChip(pokeslots)', 1)
+          home_text = home_text.replace("'SR max $maxSr'", 'l10n.trainerMaxSrChip(maxSr)', 1)
+
+          progress_anchor = "class _ProgressOverview extends StatelessWidget {"
+          progress_index = home_text.index(progress_anchor)
+          progress_build = "  Widget build(BuildContext context) {\n    return Card("
+          progress_pos = home_text.index(progress_build, progress_index)
+          home_text = (
+              home_text[:progress_pos]
+              + "  Widget build(BuildContext context) {\n    final l10n = AppLocalizations.of(context);\n    return Card("
+              + home_text[progress_pos + len(progress_build):]
+          )
+          home_text = home_text.replace("'Progresso Pokédex'", 'l10n.pokedexProgressTitle', 1)
+          home_text = home_text.replace("label: 'Visti'", 'label: l10n.seenLabel', 1)
+          home_text = home_text.replace("label: 'Catturati'", 'label: l10n.caughtLabel', 1)
+
+          error_anchor = "class _ErrorState extends StatelessWidget {"
+          error_index = home_text.index(error_anchor)
+          error_build = "  Widget build(BuildContext context) {\n    return Center("
+          error_pos = home_text.index(error_build, error_index)
+          home_text = (
+              home_text[:error_pos]
+              + "  Widget build(BuildContext context) {\n    final l10n = AppLocalizations.of(context);\n    return Center("
+              + home_text[error_pos + len(error_build):]
+          )
+          home_text = home_text.replace("Text('Errore: $message'", 'Text(l10n.errorWithMessage(message)', 1)
+          home_text = home_text.replace(
+              "FilledButton(onPressed: onRetry, child: const Text('Riprova'))",
+              'FilledButton(onPressed: onRetry, child: Text(l10n.retryAction))',
+              1,
+          )
+          home.write_text(home_text, encoding='utf-8')
+
+          professor = root / 'lib/widgets/tour/professor_tour_panel.dart'
+          professor_text = professor.read_text(encoding='utf-8')
+          if "../../l10n/app_localizations.dart" not in professor_text:
+              professor_text = professor_text.replace(
+                  "import 'package:flutter/material.dart';\n",
+                  "import 'package:flutter/material.dart';\n\nimport '../../l10n/app_localizations.dart';\n",
+                  1,
+              )
+          speech_anchor = "  Widget build(BuildContext context) {\n    final colors = Theme.of(context).colorScheme;"
+          speech_index = professor_text.index('class _TourSpeechCard')
+          speech_pos = professor_text.index(speech_anchor, speech_index)
+          professor_text = (
+              professor_text[:speech_pos]
+              + "  Widget build(BuildContext context) {\n    final l10n = AppLocalizations.of(context);\n    final colors = Theme.of(context).colorScheme;"
+              + professor_text[speech_pos + len(speech_anchor):]
+          )
+          professor_text = professor_text.replace(
+              "TextButton(onPressed: onSkip, child: const Text('SALTA TOUR'))",
+              'TextButton(onPressed: onSkip, child: Text(l10n.tourSkip))',
+              1,
+          )
+          professor_text = professor_text.replace(
+              "child: const Text('INDIETRO')",
+              'child: Text(l10n.backAction)',
+              1,
+          )
+          professor_text = professor_text.replace(
+              "child: Text(lastStep ? 'HO CAPITO' : 'AVANTI')",
+              'child: Text(lastStep ? l10n.tourUnderstood : l10n.nextAction)',
+              1,
+          )
+          professor.write_text(professor_text, encoding='utf-8')
+
+          tests = root / 'test'
+          tests.mkdir(exist_ok=True)
+          (tests / 'app_locale_controller_test.dart').write_text(
+              """import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:pokedex_5e_ita/localization/app_locale_controller.dart';
+import 'package:pokedex_5e_ita/services/app_locale_service.dart';
+
+class _MemoryLocaleStore implements AppLocaleStore {
+  _MemoryLocaleStore([this.value]);
+
+  String? value;
+
+  @override
+  Future<String?> readLocalePreference() async => value;
+
+  @override
+  Future<void> writeLocalePreference(String value) async {
+    this.value = value;
+  }
+}
+
+void main() {
+  test('una lingua dispositivo non supportata usa il fallback inglese', () {
+    final controller = AppLocaleController(store: _MemoryLocaleStore());
+
+    expect(
+      controller.resolveDeviceLocale(const Locale('fr')),
+      const Locale('en'),
+    );
+    expect(
+      controller.resolveDeviceLocale(const Locale('de')),
+      const Locale('en'),
+    );
+  });
+
+  test('il sistema mantiene italiano e inglese quando supportati', () {
+    final controller = AppLocaleController(store: _MemoryLocaleStore());
+
+    expect(
+      controller.resolveDeviceLocale(const Locale('it', 'IT')),
+      const Locale('it'),
+    );
+    expect(
+      controller.resolveDeviceLocale(const Locale('en', 'US')),
+      const Locale('en'),
+    );
+  });
+
+  test('la preferenza manuale prevale e viene salvata', () async {
+    final store = _MemoryLocaleStore();
+    final controller = AppLocaleController(store: store);
+
+    await controller.load();
+    await controller.setPreference(AppLocalePreference.italian);
+
+    expect(controller.locale, const Locale('it'));
+    expect(store.value, 'it');
+    expect(
+      controller.resolveDeviceLocale(const Locale('en')),
+      const Locale('it'),
+    );
+  });
+}
+""",
+              encoding='utf-8',
+          )
+
+          (tests / 'localization_assets_test.dart').write_text(
+              """import 'dart:convert';
+import 'dart:io';
+
+import 'package:flutter_test/flutter_test.dart';
+
+void main() {
+  test('i cataloghi ARB italiano e inglese espongono le stesse chiavi', () {
+    Map<String, dynamic> read(String path) {
+      return Map<String, dynamic>.from(
+        jsonDecode(File(path).readAsStringSync()) as Map,
+      );
+    }
+
+    final english = read('lib/l10n/app_en.arb');
+    final italian = read('lib/l10n/app_it.arb');
+
+    Set<String> publicKeys(Map<String, dynamic> values) {
+      return values.keys
+          .where((key) => !key.startsWith('@'))
+          .toSet();
+    }
+
+    expect(publicKeys(italian), publicKeys(english));
+    expect(english['@@locale'], 'en');
+    expect(italian['@@locale'], 'it');
+  });
+}
+""",
+              encoding='utf-8',
+          )
+
+          # The patch workflow is deliberately self-removing.
+          Path('.github/workflows/app-localization-foundation-patch.yml').unlink()
+          PY
+
+      - name: Resolve dependencies and generate localizations
+        run: |
+          flutter pub get
+          flutter gen-l10n
+
+      - name: Format changed Dart sources
+        run: |
+          dart format \
+            lib/app.dart \
+            lib/main.dart \
+            lib/localization/app_locale_controller.dart \
+            lib/services/app_locale_service.dart \
+            lib/screens/settings/settings_screen.dart \
+            lib/screens/home/home_screen.dart \
+            lib/widgets/tour/professor_tour_panel.dart \
+            lib/l10n/app_localizations.dart \
+            lib/l10n/app_localizations_en.dart \
+            lib/l10n/app_localizations_it.dart \
+            test/app_locale_controller_test.dart \
+            test/localization_assets_test.dart \
+            test/android_release_config_test.dart
+
+      - name: Validate localization foundation
+        run: |
+          flutter analyze
+          flutter test test/app_locale_controller_test.dart
+          flutter test test/localization_assets_test.dart
+          flutter test test/android_release_config_test.dart
+
+      - name: Commit generated foundation
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "Nessuna modifica da pubblicare."
+            exit 0
+          fi
+          git commit -m "Introduce la base bilingue di Trainer Atlas 5e"
+          git push origin HEAD:feature/app-localization-foundation

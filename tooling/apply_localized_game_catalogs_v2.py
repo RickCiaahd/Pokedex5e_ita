@@ -29,7 +29,38 @@ for source, target in normalizations.items():
     text = text.replace(source, target, 1)
 move_repository.write_text(text, encoding='utf-8')
 
-runpy.run_path(
-    str(root / 'tooling/apply_localized_game_catalogs.py'),
-    run_name='__main__',
+original_script = root / 'tooling/apply_localized_game_catalogs.py'
+script = original_script.read_text(encoding='utf-8')
+old_block = '''replace_once(
+    "lib/repositories/pokemon_repository.dart",
+    "    final localizedTexts = await PokemonLocalizationRepository()\\n"
+    "        .getPokemonTexts();\\n",
+    "    final localizedTexts = GameCatalogLocale.isItalian\\n"
+    "        ? await PokemonLocalizationRepository().getPokemonTexts()\\n"
+    "        : const <int, PokemonLocalizedText>{};\\n",
 )
+'''
+new_block = '''text = read("lib/repositories/pokemon_repository.dart")
+old = (
+    "    final localizedTexts = await PokemonLocalizationRepository()\\n"
+    "        .getPokemonTexts();\\n"
+)
+new = (
+    "    final localizedTexts = GameCatalogLocale.isItalian\\n"
+    "        ? await PokemonLocalizationRepository().getPokemonTexts()\\n"
+    "        : const <int, PokemonLocalizedText>{};\\n"
+)
+if text.count(old) < 1:
+    raise RuntimeError("pokemon_repository.dart: overlay principale non trovato")
+write(
+    "lib/repositories/pokemon_repository.dart",
+    text.replace(old, new, 1),
+)
+'''
+if old_block not in script:
+    raise RuntimeError('Blocco overlay Pokémon non trovato nello script principale')
+script = script.replace(old_block, new_block, 1)
+patched_script = root / 'tooling/apply_localized_game_catalogs_runtime.py'
+patched_script.write_text(script, encoding='utf-8')
+
+runpy.run_path(str(patched_script), run_name='__main__')

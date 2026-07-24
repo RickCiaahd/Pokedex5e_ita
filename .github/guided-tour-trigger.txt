@@ -1,1 +1,1 @@
-Trigger temporaneo per rieseguire l'integrazione dopo la correzione dello script.
+Trigger temporaneo per rieseguire lo script con sostituzione univoca.

@@ -88,7 +88,19 @@ jobs:
           fetch-depth: 0
 
       - name: Apply submenu tour integration
-        run: python3 tooling/apply_guided_submenu_tours.py
+        shell: bash
+        run: |
+          set -o pipefail
+          python3 tooling/apply_guided_submenu_tours.py 2>&1 | tee guided-tour-apply.log
+
+      - name: Upload integration log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: guided-tour-apply-log
+          path: guided-tour-apply.log
+          if-no-files-found: ignore
+          retention-days: 7
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2

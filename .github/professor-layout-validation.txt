@@ -1,1 +1,0 @@
-Trigger temporaneo per validare il layout a tre quarti dopo la rimozione del workflow di patch.

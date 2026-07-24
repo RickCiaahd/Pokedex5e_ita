@@ -1,1 +1,0 @@
-Trigger temporaneo per rieseguire l'integrazione con riparazione robusta.

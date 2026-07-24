@@ -73,3 +73,28 @@ jobs:
           path: build/app/outputs/flutter-apk/app-debug.apk
           if-no-files-found: error
           retention-days: 7
+
+  tour_diagnostics:
+    name: Guided tour regression diagnostics
+    if: github.event_name == 'pull_request' && github.event.pull_request.title == 'Corregge definitivamente le schermate vuote dopo i tour'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Test scroll restoration
+        run: flutter test test/guided_tour_scroll_restoration_test.dart --reporter expanded
+
+      - name: Test Stack layout preservation
+        run: flutter test test/guided_tour_stack_layout_test.dart --reporter expanded

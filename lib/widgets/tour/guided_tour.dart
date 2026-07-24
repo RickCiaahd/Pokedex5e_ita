@@ -378,23 +378,29 @@ class _ProfessorSpeechPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     final compact = MediaQuery.sizeOf(context).width < 430;
-    final professorWidth = compact ? 82.0 : 116.0;
+    final professorWidth = compact ? 112.0 : 168.0;
+    final professorHeight = compact ? 148.0 : 210.0;
 
     return Material(
       color: Colors.transparent,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          SizedBox(
-            width: professorWidth,
-            height: compact ? 176 : 214,
-            child: Image.asset(
-              GuidedTourOverlay.professorAsset,
-              fit: BoxFit.contain,
-              alignment: Alignment.bottomCenter,
-              errorBuilder: (_, _, _) => const Align(
-                alignment: Alignment.bottomCenter,
-                child: Icon(Icons.person, size: 78, color: Colors.white),
+          Transform.translate(
+            offset: const Offset(0, 8),
+            child: SizedBox(
+              width: professorWidth,
+              height: professorHeight,
+              child: ClipRect(
+                child: Image.asset(
+                  GuidedTourOverlay.professorAsset,
+                  fit: BoxFit.cover,
+                  alignment: Alignment.topCenter,
+                  errorBuilder: (_, _, _) => const Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Icon(Icons.person, size: 78, color: Colors.white),
+                  ),
+                ),
               ),
             ),
           ),

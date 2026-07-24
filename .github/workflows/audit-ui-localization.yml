@@ -1,0 +1,32 @@
+name: Audit UI localization
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'lib/**'
+      - 'tooling/audit_ui_strings.py'
+      - '.github/workflows/audit-ui-localization.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v4
+        with:
+          ref: feature/complete-ui-localization
+
+      - name: Run UI localization audit
+        run: python tooling/audit_ui_strings.py
+
+      - name: Upload audit report
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-localization-audit
+          path: build/ui-localization-audit
+          retention-days: 14

@@ -54,20 +54,22 @@ jobs:
               for line in raw_lines
           ) + '\n'
 
-          old = """if old_tour not in home_text:
-    raise SystemExit('Blocco tour Home non trovato')
-home_text = home_text.replace(old_tour, new_tour, 1)
-"""
-          new = """tour_start = home_text.index(
-    '  List<HomeTourStepData> get _tourSteps'
-)
-tour_end = home_text.index('\\n\\n  @override', tour_start)
-home_text = (
-    home_text[:tour_start]
-    + new_tour.rstrip()
-    + home_text[tour_end:]
-)
-"""
+          old = (
+              "if old_tour not in home_text:\n"
+              "    raise SystemExit('Blocco tour Home non trovato')\n"
+              "home_text = home_text.replace(old_tour, new_tour, 1)\n"
+          )
+          new = (
+              "tour_start = home_text.index(\n"
+              "    '  List<HomeTourStepData> get _tourSteps'\n"
+              ")\n"
+              "tour_end = home_text.index('\\n\\n  @override', tour_start)\n"
+              "home_text = (\n"
+              "    home_text[:tour_start]\n"
+              "    + new_tour.rstrip()\n"
+              "    + home_text[tour_end:]\n"
+              ")\n"
+          )
           if old not in script:
               raise SystemExit('Sezione di patch del tour non trovata nello script')
           script = script.replace(old, new, 1)

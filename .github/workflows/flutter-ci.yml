@@ -60,18 +60,7 @@ jobs:
           retention-days: 7
 
       - name: Run complete test suite
-        run: |
-          set -o pipefail
-          flutter test --reporter expanded 2>&1 | tee complete-test-suite.log
-
-      - name: Upload complete test log
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: complete-test-suite-log
-          path: complete-test-suite.log
-          if-no-files-found: ignore
-          retention-days: 7
+        run: flutter test --reporter expanded
 
       - name: Build Android debug APK
         run: flutter build apk --debug

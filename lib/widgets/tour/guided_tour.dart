@@ -149,6 +149,26 @@ class GuidedTourLayer extends StatelessWidget {
   final List<GuidedTourStepData> steps;
   final ScrollController scrollController;
 
+  void _finishTour() {
+    if (scrollController.hasClients) {
+      final position = scrollController.position;
+      if (position.hasContentDimensions) {
+        final target = position.minScrollExtent;
+        if ((position.pixels - target).abs() > .5) {
+          try {
+            position.jumpTo(target);
+          } catch (error) {
+            debugPrint(
+              'Impossibile ripristinare lo scorrimento del tour: $error',
+            );
+          }
+        }
+      }
+    }
+
+    controller.finish();
+  }
+
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
@@ -167,11 +187,13 @@ class GuidedTourLayer extends StatelessWidget {
             scrollController: scrollController,
             onBack: safeIndex == 0 ? null : controller.previous,
             onNext: () {
+              if (safeIndex == steps.length - 1) {
+                _finishTour();
+                return;
+              }
               controller.next(steps.length);
             },
-            onSkip: () {
-              controller.finish();
-            },
+            onSkip: _finishTour,
           ),
         );
       },

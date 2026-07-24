@@ -24,8 +24,8 @@ jobs:
       - name: Execute embedded patch
         shell: bash
         run: |
-          set -euo pipefail
-          python3 - <<'PY'
+          set -o pipefail
+          python3 - <<'PY' 2>&1 | tee tour-montage-patch.log
           import textwrap
           from pathlib import Path
 
@@ -40,10 +40,20 @@ jobs:
           exec(compile(textwrap.dedent(script), 'tour_montage_patch.py', 'exec'))
           PY
 
+      - name: Upload patch log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tour-montage-patch-log
+          path: tour-montage-patch.log
+          if-no-files-found: error
+          retention-days: 7
+
       - name: Remove temporary branch workflows
         run: |
           rm -f .github/workflows/apply-tour-montage-scrollbar-fix.yml
           rm -f .github/workflows/bootstrap-tour-montage.yml
+          rm -f .github/tour-montage-pr-trigger.txt
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2

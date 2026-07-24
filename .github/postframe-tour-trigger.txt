@@ -1,1 +1,1 @@
-Trigger temporaneo per applicare la correzione post-frame dalla CI del branch principale.
+Trigger temporaneo per rieseguire la correzione robusta post-frame dalla CI del branch principale.

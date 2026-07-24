@@ -23,10 +23,8 @@ class GuidedTourStepData {
 }
 
 class GuidedTourController extends ChangeNotifier {
-  GuidedTourController({
-    required this.tourId,
-    GuidedTourService? service,
-  }) : _service = service ?? GuidedTourService();
+  GuidedTourController({required this.tourId, GuidedTourService? service})
+    : _service = service ?? GuidedTourService();
 
   final String tourId;
   final GuidedTourService _service;
@@ -266,8 +264,8 @@ class _GuidedTourOverlayState extends State<GuidedTourOverlay> {
 
     if (!mounted || token != _resolutionToken) return;
     final overlayBox = context.findRenderObject() as RenderBox?;
-    final targetBox = widget.step.targetKey.currentContext?.findRenderObject()
-        as RenderBox?;
+    final targetBox =
+        widget.step.targetKey.currentContext?.findRenderObject() as RenderBox?;
     if (overlayBox == null || targetBox == null || !targetBox.hasSize) return;
 
     final targetOrigin = overlayBox.globalToLocal(
@@ -287,10 +285,7 @@ class _GuidedTourOverlayState extends State<GuidedTourOverlay> {
     return Stack(
       children: [
         const Positioned.fill(
-          child: ModalBarrier(
-            dismissible: false,
-            color: Colors.transparent,
-          ),
+          child: ModalBarrier(dismissible: false, color: Colors.transparent),
         ),
         Positioned.fill(
           child: IgnorePointer(
@@ -400,15 +395,14 @@ class _ProfessorSpeechPanel extends StatelessWidget {
                         Expanded(
                           child: Text(
                             step.title,
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleMedium
+                            style: Theme.of(context).textTheme.titleMedium
                                 ?.copyWith(fontWeight: FontWeight.w900),
                           ),
                         ),
                         Text(
                           '${stepIndex + 1}/$totalSteps',
-                          style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                          style: Theme.of(context).textTheme.labelMedium
+                              ?.copyWith(
                                 color: colors.onSurfaceVariant,
                                 fontWeight: FontWeight.w800,
                               ),
@@ -418,9 +412,9 @@ class _ProfessorSpeechPanel extends StatelessWidget {
                     const SizedBox(height: 8),
                     Text(
                       step.description,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            height: 1.35,
-                          ),
+                      style: Theme.of(
+                        context,
+                      ).textTheme.bodyMedium?.copyWith(height: 1.35),
                     ),
                     const SizedBox(height: 14),
                     Wrap(
@@ -466,10 +460,7 @@ class _SpotlightPainter extends CustomPainter {
     final target = targetRect;
 
     if (target == null) {
-      canvas.drawPath(
-        fullScreen,
-        Paint()..color = const Color(0xB8000000),
-      );
+      canvas.drawPath(fullScreen, Paint()..color = const Color(0xB8000000));
       return;
     }
 
@@ -481,30 +472,19 @@ class _SpotlightPainter extends CustomPainter {
     );
     final safeRect = target.intersect(visibleBounds);
     if (safeRect.isEmpty) {
-      canvas.drawPath(
-        fullScreen,
-        Paint()..color = const Color(0xB8000000),
-      );
+      canvas.drawPath(fullScreen, Paint()..color = const Color(0xB8000000));
       return;
     }
 
     final spotlight = Path()
-      ..addRRect(
-        RRect.fromRectAndRadius(
-          safeRect,
-          const Radius.circular(18),
-        ),
-      );
+      ..addRRect(RRect.fromRectAndRadius(safeRect, const Radius.circular(18)));
     final shadedArea = Path.combine(
       PathOperation.difference,
       fullScreen,
       spotlight,
     );
 
-    canvas.drawPath(
-      shadedArea,
-      Paint()..color = const Color(0xB8000000),
-    );
+    canvas.drawPath(shadedArea, Paint()..color = const Color(0xB8000000));
     canvas.drawRRect(
       RRect.fromRectAndRadius(safeRect, const Radius.circular(18)),
       Paint()

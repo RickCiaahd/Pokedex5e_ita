@@ -151,7 +151,10 @@ class _TourSpeechCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
+    final l10n = Localizations.of<AppLocalizations>(
+      context,
+      AppLocalizations,
+    );
     final colors = Theme.of(context).colorScheme;
     final compact = MediaQuery.sizeOf(context).width < 430;
 
@@ -209,15 +212,22 @@ class _TourSpeechCard extends StatelessWidget {
               spacing: 8,
               runSpacing: 8,
               children: [
-                TextButton(onPressed: onSkip, child: Text(l10n.tourSkip)),
+                TextButton(
+                  onPressed: onSkip,
+                  child: Text(l10n?.tourSkip ?? 'SALTA TOUR'),
+                ),
                 if (onBack != null)
                   OutlinedButton(
                     onPressed: onBack,
-                    child: Text(l10n.backAction),
+                    child: Text(l10n?.backAction ?? 'INDIETRO'),
                   ),
                 FilledButton(
                   onPressed: onNext,
-                  child: Text(lastStep ? l10n.tourUnderstood : l10n.nextAction),
+                  child: Text(
+                    lastStep
+                        ? l10n?.tourUnderstood ?? 'HO CAPITO'
+                        : l10n?.nextAction ?? 'AVANTI',
+                  ),
                 ),
               ],
             ),

@@ -51,6 +51,20 @@ jobs:
               "    lambda _match: new_type_block + '  static PokemonFormChoice? _formChoiceFromAssetPath',\n",
               1,
           )
+
+          turn_start = text.index(
+              "text = replace_once(\n    text,\n    \"                  ? 'Nessun turno impostato.'"
+          )
+          turn_marker = "    'turno corrente',\n)\n"
+          turn_end = text.index(turn_marker, turn_start) + len(turn_marker)
+          turn_replacement = '''text = replace_once(
+    text,
+    "'Turno: ${currentEntry.name}'",
+    "context.uiText('Turno: ${currentEntry.name}', 'Turn: ${currentEntry.name}')",
+    'turno corrente',
+)
+'''
+          text = text[:turn_start] + turn_replacement + text[turn_end:]
           path.write_text(text, encoding='utf-8')
           PY
 

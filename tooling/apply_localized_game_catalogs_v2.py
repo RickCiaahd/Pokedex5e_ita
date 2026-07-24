@@ -64,3 +64,14 @@ patched_script = root / 'tooling/apply_localized_game_catalogs_runtime.py'
 patched_script.write_text(script, encoding='utf-8')
 
 runpy.run_path(str(patched_script), run_name='__main__')
+
+move_data = root / 'lib/models/move_data.dart'
+text = move_data.read_text(encoding='utf-8')
+unused_helper = '''  static String? _localizeNullableText(String? value) {
+    return _nullableText(value, localizeToItalian: true);
+  }
+
+'''
+if unused_helper not in text:
+    raise RuntimeError('Helper _localizeNullableText generato non trovato')
+move_data.write_text(text.replace(unused_helper, '', 1), encoding='utf-8')

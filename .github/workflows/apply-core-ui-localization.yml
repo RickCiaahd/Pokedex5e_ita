@@ -34,7 +34,26 @@ jobs:
           cache: true
 
       - name: Apply core localization
-        run: python tooling/apply_core_ui_localization.py
+        shell: bash
+        run: |
+          set +e
+          python tooling/apply_core_ui_localization.py > core-ui-localization.log 2>&1
+          status=$?
+          cat core-ui-localization.log
+          echo "$status" > core-ui-localization.status
+          exit 0
+
+      - name: Upload transformation diagnostics
+        uses: actions/upload-artifact@v4
+        with:
+          name: core-ui-localization-diagnostics
+          path: |
+            core-ui-localization.log
+            core-ui-localization.status
+          retention-days: 7
+
+      - name: Stop when transformation failed
+        run: test "$(cat core-ui-localization.status)" = "0"
 
       - name: Install dependencies
         run: flutter pub get

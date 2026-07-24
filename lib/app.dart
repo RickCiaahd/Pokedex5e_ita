@@ -34,6 +34,9 @@ class Pokedex5EApp extends StatelessWidget {
     return MaterialApp(
       title: 'Trainer Atlas',
       debugShowCheckedModeBanner: false,
+      scrollBehavior: const MaterialScrollBehavior().copyWith(
+        scrollbars: false,
+      ),
       theme: ThemeData(
         colorScheme: colorScheme,
         scaffoldBackgroundColor: _appBackground,
@@ -93,9 +96,7 @@ class Pokedex5EApp extends StatelessWidget {
             horizontal: 12,
             vertical: 11,
           ),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide(color: colorScheme.outlineVariant),

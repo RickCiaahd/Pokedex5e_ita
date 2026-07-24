@@ -97,7 +97,7 @@ class _HomeTourOverlayState extends State<HomeTourOverlay> {
       }
     }
 
-    if (targetContext != null) {
+    if (targetContext != null && targetContext.mounted) {
       await Scrollable.ensureVisible(
         targetContext,
         alignment: 0.12,

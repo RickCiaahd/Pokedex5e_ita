@@ -1,1 +1,1 @@
-Trigger temporaneo per applicare la correzione strutturale del layer dei tour.
+Trigger temporaneo per rieseguire la riparazione completa del layer dei tour guidati.

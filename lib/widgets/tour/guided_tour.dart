@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 import '../../services/guided_tour_service.dart';
+import 'professor_tour_panel.dart';
 
 class GuidedTourStepData {
   const GuidedTourStepData({
@@ -229,9 +230,6 @@ class GuidedTourOverlay extends StatefulWidget {
     required this.onSkip,
   });
 
-  static const professorAsset =
-      'assets/textures/trainers/onboarding_professor.png';
-
   final GuidedTourStepData step;
   final int stepIndex;
   final int totalSteps;
@@ -316,8 +314,6 @@ class _GuidedTourOverlayState extends State<GuidedTourOverlay> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.sizeOf(context);
-    final compact = size.width < 700;
     final lastStep = widget.stepIndex == widget.totalSteps - 1;
 
     return Stack(
@@ -333,162 +329,22 @@ class _GuidedTourOverlayState extends State<GuidedTourOverlay> {
           ),
         ),
         Positioned(
-          left: compact ? 8 : 24,
-          right: compact ? 8 : null,
-          bottom: 8,
-          width: compact ? null : math.min(650.0, size.width - 48),
-          child: SafeArea(
-            top: false,
-            child: _ProfessorSpeechPanel(
-              step: widget.step,
-              stepIndex: widget.stepIndex,
-              totalSteps: widget.totalSteps,
-              lastStep: lastStep,
-              onBack: widget.onBack,
-              onNext: widget.onNext,
-              onSkip: widget.onSkip,
-            ),
+          left: 0,
+          right: 0,
+          bottom: 0,
+          child: ProfessorTourPanel(
+            icon: widget.step.icon,
+            title: widget.step.title,
+            description: widget.step.description,
+            stepIndex: widget.stepIndex,
+            totalSteps: widget.totalSteps,
+            lastStep: lastStep,
+            onBack: widget.onBack,
+            onNext: widget.onNext,
+            onSkip: widget.onSkip,
           ),
         ),
       ],
-    );
-  }
-}
-
-class _ProfessorSpeechPanel extends StatelessWidget {
-  const _ProfessorSpeechPanel({
-    required this.step,
-    required this.stepIndex,
-    required this.totalSteps,
-    required this.lastStep,
-    required this.onBack,
-    required this.onNext,
-    required this.onSkip,
-  });
-
-  final GuidedTourStepData step;
-  final int stepIndex;
-  final int totalSteps;
-  final bool lastStep;
-  final VoidCallback? onBack;
-  final VoidCallback onNext;
-  final VoidCallback onSkip;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    final compact = MediaQuery.sizeOf(context).width < 430;
-    final professorWidth = compact ? 112.0 : 168.0;
-    final professorHeight = compact ? 148.0 : 210.0;
-
-    return Material(
-      color: Colors.transparent,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          Transform.translate(
-            offset: const Offset(0, 8),
-            child: SizedBox(
-              width: professorWidth,
-              height: professorHeight,
-              child: ClipRect(
-                child: Image.asset(
-                  GuidedTourOverlay.professorAsset,
-                  fit: BoxFit.cover,
-                  alignment: Alignment.topCenter,
-                  errorBuilder: (_, _, _) => const Align(
-                    alignment: Alignment.bottomCenter,
-                    child: Icon(Icons.person, size: 78, color: Colors.white),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Expanded(
-            child: Transform.translate(
-              offset: const Offset(-10, 0),
-              child: Container(
-                padding: EdgeInsets.fromLTRB(
-                  compact ? 16 : 20,
-                  16,
-                  compact ? 14 : 18,
-                  14,
-                ),
-                decoration: BoxDecoration(
-                  color: colors.surface,
-                  borderRadius: BorderRadius.circular(22),
-                  border: Border.all(
-                    color: colors.primary.withValues(alpha: .45),
-                  ),
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Color(0x55000000),
-                      blurRadius: 24,
-                      offset: Offset(0, 12),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(step.icon, color: colors.primary, size: 21),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            step.title,
-                            style: Theme.of(context).textTheme.titleMedium
-                                ?.copyWith(fontWeight: FontWeight.w900),
-                          ),
-                        ),
-                        Text(
-                          '${stepIndex + 1}/$totalSteps',
-                          style: Theme.of(context).textTheme.labelMedium
-                              ?.copyWith(
-                                color: colors.onSurfaceVariant,
-                                fontWeight: FontWeight.w800,
-                              ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      step.description,
-                      style: Theme.of(
-                        context,
-                      ).textTheme.bodyMedium?.copyWith(height: 1.35),
-                    ),
-                    const SizedBox(height: 14),
-                    Wrap(
-                      alignment: WrapAlignment.end,
-                      crossAxisAlignment: WrapCrossAlignment.center,
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: [
-                        TextButton(
-                          onPressed: onSkip,
-                          child: const Text('SALTA TOUR'),
-                        ),
-                        if (onBack != null)
-                          OutlinedButton(
-                            onPressed: onBack,
-                            child: const Text('INDIETRO'),
-                          ),
-                        FilledButton(
-                          onPressed: onNext,
-                          child: Text(lastStep ? 'HO CAPITO' : 'AVANTI'),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

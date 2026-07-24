@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "RickCiaahd" "\0"
-            VALUE "FileDescription", "Pokédex 5e ITA" "\0"
+            VALUE "FileDescription", "Trainer Atlas 5e" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
             VALUE "InternalName", "Pokedex5eITA" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2026 RickCiaahd. All rights reserved." "\0"
             VALUE "OriginalFilename", "Pokedex5eITA.exe" "\0"
-            VALUE "ProductName", "Pokédex 5e ITA" "\0"
+            VALUE "ProductName", "Trainer Atlas 5e" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

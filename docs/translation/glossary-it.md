@@ -1,6 +1,6 @@
 # Glossario italiano dei contenuti
 
-Questo glossario definisce la terminologia da usare nelle descrizioni visualizzate da **Pokédex 5e ITA**. I nomi propri di Pokémon, mosse, abilità e oggetti restano invariati finché non viene approvata esplicitamente una localizzazione separata dei nomi.
+Questo glossario definisce la terminologia da usare nelle descrizioni visualizzate da **Trainer Atlas 5e**. I nomi propri di Pokémon, mosse, abilità e oggetti restano invariati finché non viene approvata esplicitamente una localizzazione separata dei nomi.
 
 ## Regole generali
 

@@ -47,7 +47,7 @@ class CustomPokemonTransferBundle {
     if (json['application']?.toString() != applicationId ||
         json['kind']?.toString() != kind) {
       throw const FormatException(
-        'Il file non è un Fakemon di Pokédex 5e ITA.',
+        'Il file non è un Fakemon di Trainer Atlas 5e.',
       );
     }
     final version = _readInt(json['formatVersion']);

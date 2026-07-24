@@ -1,0 +1,117 @@
+{
+  "@@locale": "it",
+  "appTitle": "Trainer Atlas 5e",
+  "infoAction": "INFO",
+  "reviewTourTooltip": "INFO · Rivedi il tour",
+  "settingsTitle": "Impostazioni",
+  "settingsSubtitle": "Lingua e preferenze dell’applicazione.",
+  "languageSectionTitle": "LINGUA",
+  "languageSectionSubtitle": "Scegli come Trainer Atlas 5e determina la lingua dell’interfaccia.",
+  "languageSystemTitle": "Lingua del dispositivo",
+  "languageSystemSubtitle": "Usa italiano o inglese quando disponibili e passa all’inglese per ogni altra lingua del dispositivo.",
+  "languageItalianTitle": "Italiano",
+  "languageItalianSubtitle": "Usa sempre l’interfaccia italiana.",
+  "languageEnglishTitle": "English",
+  "languageEnglishSubtitle": "Usa sempre l’interfaccia inglese.",
+  "homeTourDashboardTitle": "La tua dashboard",
+  "homeTourDashboardDescription": "Qui trovi subito il profilo attivo, il livello, il denaro, i Pokéslot disponibili e il grado sfida massimo che puoi controllare.",
+  "homeTourTrainerTitle": "Allenatore e squadra",
+  "homeTourTrainerDescription": "Da questa sezione gestisci la scheda dell’Allenatore, catturi Pokémon, organizzi squadra e PC, controlli lo Zaino e segui allevamento e uova.",
+  "homeTourPokedexTitle": "Il Pokédex",
+  "homeTourPokedexDescription": "Apri il Pokédex per consultare le creature, applicare filtri e registrare quali Pokémon hai visto o catturato.",
+  "homeTourMasterTitle": "Strumenti del Master",
+  "homeTourMasterDescription": "Quest’area raccoglie generatori, incontri, raccolte, Allenatori PNG e strumenti per preparare e gestire i combattimenti.",
+  "homeTourProfilesTitle": "Profili e aiuto",
+  "homeTourProfilesDescription": "In Profili puoi creare o cambiare Allenatore. Per rivedere questa spiegazione in qualsiasi momento usa il pulsante INFO in alto.",
+  "tourSkip": "SALTA TOUR",
+  "backAction": "INDIETRO",
+  "tourUnderstood": "HO CAPITO",
+  "nextAction": "AVANTI",
+  "homeOngoingSessionsTitle": "SESSIONI IN CORSO",
+  "homeOngoingSessionsSubtitle": "Riprendi subito da dove avevi lasciato.",
+  "homeResumeBattleTitle": "Riprendi battaglia",
+  "homeResumeBattleSubtitle": "Continua dal round, turno, PP e status salvati.",
+  "homeResumeMasterFightTitle": "Riprendi Fight del Master",
+  "homeResumeMasterFightSubtitle": "Riapri la sessione del Master con PF, PP, status e iniziativa salvati.",
+  "homeTrainerAndTeamTitle": "ALLENATORE E SQUADRA",
+  "homeTrainerAndTeamSubtitle": "Gestisci il personaggio e i Pokémon catturati.",
+  "homeBattleCompanionTitle": "Battle Companion",
+  "homeBattleCompanionSubtitle": "Traccia round, PF, status e PP durante il combattimento.",
+  "homeTrainerSheetTitle": "Scheda Allenatore",
+  "homeTrainerSheetSubtitle": "Aggiorna livello, soldi e progressione campagna.",
+  "homeCaptureTitle": "Cattura Pokémon",
+  "homeCaptureSubtitle": "Scegli il Pokémon: va in squadra se c’è posto, altrimenti nel PC.",
+  "homeTeamTitle": "Squadra",
+  "homeTeamSubtitle": "Scegli fino a 6 Pokémon per il profilo attivo.",
+  "homePcTitle": "PC Pokémon",
+  "homePcSubtitle": "Gestisci i Pokémon catturati fuori squadra.",
+  "homeBreedingTitle": "Allevamento e uova",
+  "homeBreedingSubtitle": "Verifica i genitori, crea uova, avanza l’incubazione e fai schiudere i Pokémon.",
+  "homeBagTitle": "Zaino",
+  "homeBagSubtitle": "Equipaggiamento, cure e oggetti da cattura.",
+  "homeConsultationTitle": "CONSULTAZIONE",
+  "homeConsultationSubtitle": "Cerca informazioni e aggiorna i progressi.",
+  "homeOpenPokedexTitle": "Apri Pokédex",
+  "homeOpenPokedexSubtitle": "Consulta, filtra e marca i Pokémon.",
+  "homeMasterToolsTitle": "STRUMENTI DEL MASTER",
+  "homeMasterToolsSubtitle": "Genera contenuti, usa le librerie e prepara i fight.",
+  "homeOpenMasterToolsTitle": "Apri Strumenti del Master",
+  "homeOpenMasterToolsSubtitle": "Generatori Pokémon, incontri, raccolte e Allenatori PNG.",
+  "homeAppManagementTitle": "GESTIONE APPLICAZIONE",
+  "homeAppManagementSubtitle": "Gestisci i profili e i dati dell’app.",
+  "homeProfilesTitle": "Profili",
+  "homeProfilesSubtitle": "Crea, cambia o elimina profili allenatore.",
+  "trainerFallback": "Allenatore",
+  "homeGreeting": "Ciao, {name}",
+  "@homeGreeting": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "trainerLevelChip": "Lv. {level}",
+  "@trainerLevelChip": {
+    "placeholders": {
+      "level": {
+        "type": "int"
+      }
+    }
+  },
+  "trainerMoneyChip": "₽ {amount}",
+  "@trainerMoneyChip": {
+    "placeholders": {
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
+  "trainerPokeslotChip": "Pokéslot {count}",
+  "@trainerPokeslotChip": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "trainerMaxSrChip": "SR max {value}",
+  "@trainerMaxSrChip": {
+    "placeholders": {
+      "value": {
+        "type": "num"
+      }
+    }
+  },
+  "pokedexProgressTitle": "Progresso Pokédex",
+  "seenLabel": "Visti",
+  "caughtLabel": "Catturati",
+  "errorWithMessage": "Errore: {message}",
+  "@errorWithMessage": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "retryAction": "Riprova"
+}

@@ -1,4 +1,4 @@
-# Pokédex 5e ITA
+# Trainer Atlas 5e
 
 [![Flutter CI](https://github.com/RickCiaahd/Pokedex5e_ita/actions/workflows/flutter-ci.yml/badge.svg)](https://github.com/RickCiaahd/Pokedex5e_ita/actions/workflows/flutter-ci.yml)
 [![Windows release](https://github.com/RickCiaahd/Pokedex5e_ita/actions/workflows/windows-release.yml/badge.svg)](https://github.com/RickCiaahd/Pokedex5e_ita/actions/workflows/windows-release.yml)
@@ -73,7 +73,7 @@ Quando vengono aggiunti Pokémon, forme, mosse, abilità o asset, il test di int
 
 ## Release Android
 
-L'app Android usa il nome `Pokédex 5e ITA` e l'Application ID definitivo `io.github.rickciaahd.pokedex5eita`.
+L'app Android usa il nome `Trainer Atlas 5e` e l'Application ID definitivo `io.github.rickciaahd.traineratlas`.
 
 La guida completa per creare il keystore, configurare i secret GitHub e generare APK/AAB firmati è disponibile in [`docs/android-release.md`](docs/android-release.md).
 
@@ -81,7 +81,7 @@ Il workflow `Android release` può essere avviato manualmente dopo la configuraz
 
 ## Release Windows
 
-L'app Windows usa il titolo `Pokédex 5e ITA` e l'eseguibile `Pokedex5eITA.exe`. Viene distribuita inizialmente come archivio ZIP portatile x64 contenente l'intera cartella necessaria all'avvio.
+L'app Windows usa il titolo `Trainer Atlas 5e` e l'eseguibile `Pokedex5eITA.exe`. Viene distribuita inizialmente come archivio ZIP portatile x64 contenente l'intera cartella necessaria all'avvio.
 
 La guida di compilazione e distribuzione è disponibile in [`docs/windows-release.md`](docs/windows-release.md).
 

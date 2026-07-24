@@ -175,7 +175,7 @@ class CampaignTransferBundle {
 
   factory CampaignTransferBundle.fromJson(Map<String, dynamic> json) {
     if (json['application']?.toString() != applicationId) {
-      throw const FormatException('Il file non appartiene a Pokédex 5e ITA.');
+      throw const FormatException('Il file non appartiene a Trainer Atlas 5e.');
     }
     final version = _readInt(json['formatVersion']);
     if (version < 1 || version > currentFormatVersion) {

@@ -509,8 +509,8 @@ class _NpcBattleScreenState extends State<NpcBattleScreen> {
         fileName: _summaryService.fileName(_session, exportedAt: exportedAt),
         mimeType: 'text/plain',
         title: 'Condividi il riepilogo del Fight del Master',
-        subject: 'Riepilogo Fight del Master · Pokédex 5e ITA',
-        text: 'Riepilogo esportato da Pokédex 5e ITA.',
+        subject: 'Riepilogo Fight del Master · Trainer Atlas 5e',
+        text: 'Riepilogo esportato da Trainer Atlas 5e.',
       );
       if (!mounted) return;
       setState(() {

@@ -207,8 +207,8 @@ class _NpcTrainerLibraryScreenState extends State<NpcTrainerLibraryScreen> {
         fileName: _transferService.fileNameForNpcTrainer(bundle),
         mimeType: 'application/json',
         title: 'Condividi ${saved.displayName}',
-        subject: '${saved.displayName} · Pokédex 5e ITA',
-        text: 'Allenatore PNG esportato da Pokédex 5e ITA.',
+        subject: '${saved.displayName} · Trainer Atlas 5e',
+        text: 'Allenatore PNG esportato da Trainer Atlas 5e.',
       );
       _setMessage(
         _shareService.feedback(

@@ -1,10 +1,10 @@
 # Release Windows
 
-La versione Windows di Pokédex 5e ITA viene distribuita come archivio portatile per sistemi Windows x64.
+La versione Windows di Trainer Atlas 5e viene distribuita come archivio portatile per sistemi Windows x64.
 
 ## Identità dell'applicazione
 
-- Nome prodotto: `Pokédex 5e ITA`
+- Nome prodotto: `Trainer Atlas 5e`
 - Eseguibile: `Pokedex5eITA.exe`
 - Architettura: `Windows x64`
 - Formato di distribuzione iniziale: archivio ZIP portatile

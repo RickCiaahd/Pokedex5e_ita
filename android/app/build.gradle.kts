@@ -29,7 +29,7 @@ if (releaseTaskRequested && !keystorePropertiesFile.exists()) {
 }
 
 android {
-    namespace = "io.github.rickciaahd.pokedex5eita"
+    namespace = "io.github.rickciaahd.traineratlas"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -39,7 +39,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "io.github.rickciaahd.pokedex5eita"
+        applicationId = "io.github.rickciaahd.traineratlas"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode

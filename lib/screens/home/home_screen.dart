@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../l10n/app_localizations.dart';
+
 import '../../models/pokedex_entry.dart';
 import '../../models/pokemon.dart';
 import '../../models/trainer_progression.dart';
@@ -20,6 +22,7 @@ import '../capture/capture_pokemon_screen.dart';
 import '../pc/pokemon_pc_screen.dart';
 import '../pokedex/pokedex_screen.dart';
 import '../profile/profiles_screen.dart';
+import '../settings/settings_screen.dart';
 import '../team/team_selection_screen.dart';
 import '../tools/tools_screen.dart';
 import '../trainer/trainer_sheet_screen.dart';
@@ -62,43 +65,41 @@ class _HomeScreenState extends State<HomeScreen> {
   Rect? _tourTargetRect;
   String? _errorMessage;
 
-  List<HomeTourStepData> get _tourSteps => [
-        HomeTourStepData(
-          targetKey: _trainerHeaderKey,
-          icon: Icons.dashboard_outlined,
-          title: 'La tua dashboard',
-          description:
-              'Qui trovi subito il profilo attivo, il livello, il denaro, i Pokéslot disponibili e il grado sfida massimo che puoi controllare.',
-        ),
-        HomeTourStepData(
-          targetKey: _trainerSectionKey,
-          icon: Icons.groups_outlined,
-          title: 'Allenatore e squadra',
-          description:
-              'Da questa sezione gestisci la scheda dell’Allenatore, catturi Pokémon, organizzi squadra e PC, controlli lo Zaino e segui allevamento e uova.',
-        ),
-        HomeTourStepData(
-          targetKey: _pokedexKey,
-          icon: Icons.catching_pokemon,
-          title: 'Il Pokédex',
-          description:
-              'Apri il Pokédex per consultare le creature, applicare filtri e registrare quali Pokémon hai visto o catturato.',
-        ),
-        HomeTourStepData(
-          targetKey: _masterSectionKey,
-          icon: Icons.construction_outlined,
-          title: 'Strumenti del Master',
-          description:
-              'Quest’area raccoglie generatori, incontri, raccolte, Allenatori PNG e strumenti per preparare e gestire i combattimenti.',
-        ),
-        HomeTourStepData(
-          targetKey: _profilesKey,
-          icon: Icons.info_outline,
-          title: 'Profili e aiuto',
-          description:
-              'In Profili puoi creare o cambiare Allenatore. Per rivedere questa spiegazione in qualsiasi momento usa il pulsante INFO in alto.',
-        ),
-      ];
+  List<HomeTourStepData> get _tourSteps {
+    final l10n = AppLocalizations.of(context);
+    return [
+      HomeTourStepData(
+        targetKey: _trainerHeaderKey,
+        icon: Icons.dashboard_outlined,
+        title: l10n.homeTourDashboardTitle,
+        description: l10n.homeTourDashboardDescription,
+      ),
+      HomeTourStepData(
+        targetKey: _trainerSectionKey,
+        icon: Icons.groups_outlined,
+        title: l10n.homeTourTrainerTitle,
+        description: l10n.homeTourTrainerDescription,
+      ),
+      HomeTourStepData(
+        targetKey: _pokedexKey,
+        icon: Icons.catching_pokemon,
+        title: l10n.homeTourPokedexTitle,
+        description: l10n.homeTourPokedexDescription,
+      ),
+      HomeTourStepData(
+        targetKey: _masterSectionKey,
+        icon: Icons.construction_outlined,
+        title: l10n.homeTourMasterTitle,
+        description: l10n.homeTourMasterDescription,
+      ),
+      HomeTourStepData(
+        targetKey: _profilesKey,
+        icon: Icons.info_outline,
+        title: l10n.homeTourProfilesTitle,
+        description: l10n.homeTourProfilesDescription,
+      ),
+    ];
+  }
 
   @override
   void initState() {
@@ -202,10 +203,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
     final bodyBox =
         _homeBodyKey.currentContext?.findRenderObject() as RenderBox?;
-    final targetBox = _tourSteps[_tourStepIndex]
-        .targetKey
-        .currentContext
-        ?.findRenderObject() as RenderBox?;
+    final targetBox =
+        _tourSteps[_tourStepIndex].targetKey.currentContext?.findRenderObject()
+            as RenderBox?;
 
     if (bodyBox == null || targetBox == null || !targetBox.hasSize) {
       setState(() => _tourTargetRect = null);
@@ -282,6 +282,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final profile = _profile;
     final total = _pokemon.length;
     final seen = _pokemon.where((pokemon) {
@@ -295,7 +296,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Pokédex 5e ITA'),
+        title: Text(l10n.appTitle),
         actions: [
           if (wideAppBar)
             TextButton.icon(
@@ -308,7 +309,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 foregroundColor: Theme.of(context).colorScheme.onSurface,
               ),
               icon: const Icon(Icons.info_outline),
-              label: const Text('INFO'),
+              label: Text(l10n.infoAction),
             )
           else
             IconButton(
@@ -317,9 +318,20 @@ class _HomeScreenState extends State<HomeScreen> {
                   : () {
                       _startTour();
                     },
-              tooltip: 'INFO · Rivedi il tour',
+              tooltip: l10n.reviewTourTooltip,
               icon: const Icon(Icons.info_outline),
             ),
+          IconButton(
+            onPressed: _isTourVisible
+                ? null
+                : () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const SettingsScreen()),
+                    );
+                  },
+            tooltip: l10n.settingsTitle,
+            icon: const Icon(Icons.settings_outlined),
+          ),
           const SizedBox(width: 4),
         ],
       ),
@@ -351,25 +363,25 @@ class _HomeScreenState extends State<HomeScreen> {
                         onRetry: _loadDashboard,
                       )
                     else ...[
-                      _TrainerHeader(
-                        key: _trainerHeaderKey,
-                        profile: profile,
-                      ),
+                      _TrainerHeader(key: _trainerHeaderKey, profile: profile),
                       const SizedBox(height: 20),
-                      _ProgressOverview(total: total, seen: seen, caught: caught),
+                      _ProgressOverview(
+                        total: total,
+                        seen: seen,
+                        caught: caught,
+                      ),
                       if (hasActiveSession) ...[
                         const SizedBox(height: 24),
-                        const _HomeSectionTitle(
+                        _HomeSectionTitle(
                           icon: Icons.play_circle_outline,
-                          title: 'SESSIONI IN CORSO',
-                          subtitle: 'Riprendi subito da dove avevi lasciato.',
+                          title: l10n.homeOngoingSessionsTitle,
+                          subtitle: l10n.homeOngoingSessionsSubtitle,
                         ),
                         if (_hasActiveBattle)
                           _HomeActionButton(
                             icon: Icons.flash_on,
-                            title: 'Riprendi battaglia',
-                            subtitle:
-                                'Continua dal round, turno, PP e status salvati.',
+                            title: l10n.homeResumeBattleTitle,
+                            subtitle: l10n.homeResumeBattleSubtitle,
                             emphasized: true,
                             onTap: () async {
                               await Navigator.of(context).push(
@@ -383,9 +395,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         if (_hasActiveMasterFight)
                           _HomeActionButton(
                             icon: Icons.sports_mma_outlined,
-                            title: 'Riprendi Fight del Master',
-                            subtitle:
-                                'Riapri la sessione del Master con PF, PP, status e iniziativa salvati.',
+                            title: l10n.homeResumeMasterFightTitle,
+                            subtitle: l10n.homeResumeMasterFightSubtitle,
                             emphasized: true,
                             onTap: _resumeMasterFight,
                           ),
@@ -394,16 +405,14 @@ class _HomeScreenState extends State<HomeScreen> {
                       _HomeSectionTitle(
                         key: _trainerSectionKey,
                         icon: Icons.person_outline,
-                        title: 'ALLENATORE E SQUADRA',
-                        subtitle:
-                            'Gestisci il personaggio e i Pokémon catturati.',
+                        title: l10n.homeTrainerAndTeamTitle,
+                        subtitle: l10n.homeTrainerAndTeamSubtitle,
                       ),
                       if (!_hasActiveBattle)
                         _HomeActionButton(
                           icon: Icons.flash_on,
-                          title: 'Battle Companion',
-                          subtitle:
-                              'Traccia round, PF, status e PP durante il combattimento.',
+                          title: l10n.homeBattleCompanionTitle,
+                          subtitle: l10n.homeBattleCompanionSubtitle,
                           onTap: () async {
                             await Navigator.of(context).push(
                               MaterialPageRoute(
@@ -415,9 +424,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       _HomeActionButton(
                         icon: Icons.badge_outlined,
-                        title: 'Scheda Allenatore',
-                        subtitle:
-                            'Aggiorna livello, soldi e progressione campagna.',
+                        title: l10n.homeTrainerSheetTitle,
+                        subtitle: l10n.homeTrainerSheetSubtitle,
                         onTap: () async {
                           await Navigator.of(context).push(
                             MaterialPageRoute(
@@ -429,9 +437,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       _HomeActionButton(
                         icon: Icons.add_circle_outline,
-                        title: 'Cattura Pokémon',
-                        subtitle:
-                            'Scegli il Pokémon: va in squadra se c’è posto, altrimenti nel PC.',
+                        title: l10n.homeCaptureTitle,
+                        subtitle: l10n.homeCaptureSubtitle,
                         onTap: () async {
                           await Navigator.of(context).push(
                             MaterialPageRoute(
@@ -443,14 +450,13 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       _HomeActionButton(
                         icon: Icons.groups,
-                        title: 'Squadra',
-                        subtitle:
-                            'Scegli fino a 6 Pokémon per il profilo attivo.',
+                        title: l10n.homeTeamTitle,
+                        subtitle: l10n.homeTeamSubtitle,
                         onTap: () async {
                           await Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (_) => TeamSelectionScreen(
-                                nickname: profile?.name ?? 'Allenatore',
+                                nickname: profile?.name ?? l10n.trainerFallback,
                               ),
                             ),
                           );
@@ -459,9 +465,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       _HomeActionButton(
                         icon: Icons.computer,
-                        title: 'PC Pokémon',
-                        subtitle:
-                            'Gestisci i Pokémon catturati fuori squadra.',
+                        title: l10n.homePcTitle,
+                        subtitle: l10n.homePcSubtitle,
                         onTap: () async {
                           await Navigator.of(context).push(
                             MaterialPageRoute(
@@ -473,9 +478,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       _HomeActionButton(
                         icon: Icons.egg_alt_outlined,
-                        title: 'Allevamento e uova',
-                        subtitle:
-                            'Verifica i genitori, crea uova, avanza l’incubazione e fai schiudere i Pokémon.',
+                        title: l10n.homeBreedingTitle,
+                        subtitle: l10n.homeBreedingSubtitle,
                         onTap: () async {
                           await Navigator.of(context).push(
                             MaterialPageRoute(
@@ -487,9 +491,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       _HomeActionButton(
                         icon: Icons.backpack_outlined,
-                        title: 'Zaino',
-                        subtitle:
-                            'Equipaggiamento, cure e oggetti da cattura.',
+                        title: l10n.homeBagTitle,
+                        subtitle: l10n.homeBagSubtitle,
                         onTap: () async {
                           await Navigator.of(context).push(
                             MaterialPageRoute(
@@ -500,16 +503,16 @@ class _HomeScreenState extends State<HomeScreen> {
                         },
                       ),
                       const SizedBox(height: 24),
-                      const _HomeSectionTitle(
+                      _HomeSectionTitle(
                         icon: Icons.menu_book_outlined,
-                        title: 'CONSULTAZIONE',
-                        subtitle: 'Cerca informazioni e aggiorna i progressi.',
+                        title: l10n.homeConsultationTitle,
+                        subtitle: l10n.homeConsultationSubtitle,
                       ),
                       _HomeActionButton(
                         key: _pokedexKey,
                         icon: Icons.catching_pokemon,
-                        title: 'Apri Pokédex',
-                        subtitle: 'Consulta, filtra e marca i Pokémon.',
+                        title: l10n.homeOpenPokedexTitle,
+                        subtitle: l10n.homeOpenPokedexSubtitle,
                         onTap: () async {
                           await Navigator.of(context).push(
                             MaterialPageRoute(
@@ -523,15 +526,13 @@ class _HomeScreenState extends State<HomeScreen> {
                       _HomeSectionTitle(
                         key: _masterSectionKey,
                         icon: Icons.construction,
-                        title: 'STRUMENTI DEL MASTER',
-                        subtitle:
-                            'Genera contenuti, usa le librerie e prepara i fight.',
+                        title: l10n.homeMasterToolsTitle,
+                        subtitle: l10n.homeMasterToolsSubtitle,
                       ),
                       _HomeActionButton(
                         icon: Icons.construction,
-                        title: 'Apri Strumenti del Master',
-                        subtitle:
-                            'Generatori Pokémon, incontri, raccolte e Allenatori PNG.',
+                        title: l10n.homeOpenMasterToolsTitle,
+                        subtitle: l10n.homeOpenMasterToolsSubtitle,
                         onTap: () async {
                           await Navigator.of(context).push(
                             MaterialPageRoute(
@@ -542,17 +543,16 @@ class _HomeScreenState extends State<HomeScreen> {
                         },
                       ),
                       const SizedBox(height: 24),
-                      const _HomeSectionTitle(
+                      _HomeSectionTitle(
                         icon: Icons.settings_outlined,
-                        title: 'GESTIONE APPLICAZIONE',
-                        subtitle: 'Gestisci i profili e i dati dell’app.',
+                        title: l10n.homeAppManagementTitle,
+                        subtitle: l10n.homeAppManagementSubtitle,
                       ),
                       _HomeActionButton(
                         key: _profilesKey,
                         icon: Icons.person,
-                        title: 'Profili',
-                        subtitle:
-                            'Crea, cambia o elimina profili allenatore.',
+                        title: l10n.homeProfilesTitle,
+                        subtitle: l10n.homeProfilesSubtitle,
                         onTap: () async {
                           await Navigator.of(context).push(
                             MaterialPageRoute(
@@ -601,7 +601,8 @@ class _TrainerHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final profileName = profile?.name ?? 'Allenatore';
+    final l10n = AppLocalizations.of(context);
+    final profileName = profile?.name ?? l10n.trainerFallback;
     final trainerLevel = profile?.trainerLevel ?? 1;
     final money = profile?.money ?? 0;
     final pokeslots = TrainerProgression.pokeslotsForLevel(trainerLevel);
@@ -624,20 +625,20 @@ class _TrainerHeader extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Ciao, $profileName',
+                l10n.homeGreeting(profileName),
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 4),
               Wrap(
                 spacing: 8,
                 runSpacing: 6,
                 children: [
-                  _TrainerInfoChip(label: 'Lv. $trainerLevel'),
-                  _TrainerInfoChip(label: '₽ $money'),
-                  _TrainerInfoChip(label: 'Pokéslot $pokeslots'),
-                  _TrainerInfoChip(label: 'SR max $maxSr'),
+                  _TrainerInfoChip(label: l10n.trainerLevelChip(trainerLevel)),
+                  _TrainerInfoChip(label: l10n.trainerMoneyChip(money)),
+                  _TrainerInfoChip(label: l10n.trainerPokeslotChip(pokeslots)),
+                  _TrainerInfoChip(label: l10n.trainerMaxSrChip(maxSr)),
                 ],
               ),
             ],
@@ -666,9 +667,9 @@ class _TrainerInfoChip extends StatelessWidget {
         child: Text(
           label,
           style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                color: colors.onSurfaceVariant,
-                fontWeight: FontWeight.w800,
-              ),
+            color: colors.onSurfaceVariant,
+            fontWeight: FontWeight.w800,
+          ),
         ),
       ),
     );
@@ -688,6 +689,7 @@ class _ProgressOverview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -695,11 +697,10 @@ class _ProgressOverview extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Progresso Pokédex',
-              style: Theme.of(context)
-                  .textTheme
-                  .titleMedium
-                  ?.copyWith(fontWeight: FontWeight.bold),
+              l10n.pokedexProgressTitle,
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
             LinearProgressIndicator(
@@ -710,11 +711,14 @@ class _ProgressOverview extends StatelessWidget {
             Row(
               children: [
                 Expanded(
-                  child: _ProgressStat(label: 'Visti', value: '$seen/$total'),
+                  child: _ProgressStat(
+                    label: l10n.seenLabel,
+                    value: '$seen/$total',
+                  ),
                 ),
                 Expanded(
                   child: _ProgressStat(
-                    label: 'Catturati',
+                    label: l10n.caughtLabel,
                     value: '$caught/$total',
                   ),
                 ),
@@ -742,10 +746,9 @@ class _ProgressStat extends StatelessWidget {
         const SizedBox(height: 4),
         Text(
           value,
-          style: Theme.of(context)
-              .textTheme
-              .titleLarge
-              ?.copyWith(fontWeight: FontWeight.bold),
+          style: Theme.of(
+            context,
+          ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
         ),
       ],
     );
@@ -781,8 +784,8 @@ class _HomeSectionTitle extends StatelessWidget {
                 Text(
                   title,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w900,
-                      ),
+                    fontWeight: FontWeight.w900,
+                  ),
                 ),
                 const SizedBox(height: 2),
                 Text(subtitle, style: Theme.of(context).textTheme.bodySmall),
@@ -838,14 +841,15 @@ class _ErrorState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Center(
       child: Column(
         children: [
           const Icon(Icons.error_outline, size: 48),
           const SizedBox(height: 16),
-          Text('Errore: $message', textAlign: TextAlign.center),
+          Text(l10n.errorWithMessage(message), textAlign: TextAlign.center),
           const SizedBox(height: 16),
-          FilledButton(onPressed: onRetry, child: const Text('Riprova')),
+          FilledButton(onPressed: onRetry, child: Text(l10n.retryAction)),
         ],
       ),
     );

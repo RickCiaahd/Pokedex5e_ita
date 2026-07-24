@@ -1,0 +1,117 @@
+{
+  "@@locale": "en",
+  "appTitle": "Trainer Atlas 5e",
+  "infoAction": "INFO",
+  "reviewTourTooltip": "INFO · Review the tour",
+  "settingsTitle": "Settings",
+  "settingsSubtitle": "Language and application preferences.",
+  "languageSectionTitle": "LANGUAGE",
+  "languageSectionSubtitle": "Choose how Trainer Atlas 5e selects the interface language.",
+  "languageSystemTitle": "Device language",
+  "languageSystemSubtitle": "Uses Italian or English when available and falls back to English for every other device language.",
+  "languageItalianTitle": "Italiano",
+  "languageItalianSubtitle": "Always use the Italian interface.",
+  "languageEnglishTitle": "English",
+  "languageEnglishSubtitle": "Always use the English interface.",
+  "homeTourDashboardTitle": "Your dashboard",
+  "homeTourDashboardDescription": "See the active profile, level, money, available Poké Slots and the maximum challenge rating you can control.",
+  "homeTourTrainerTitle": "Trainer and team",
+  "homeTourTrainerDescription": "Manage the Trainer sheet, catch creatures, organize the team and PC, check the Bag and follow breeding and Eggs.",
+  "homeTourPokedexTitle": "The Pokédex",
+  "homeTourPokedexDescription": "Open the Pokédex to browse creatures, apply filters and record which ones you have seen or caught.",
+  "homeTourMasterTitle": "GM tools",
+  "homeTourMasterDescription": "This area contains generators, encounters, collections, NPC Trainers and tools for preparing and running battles.",
+  "homeTourProfilesTitle": "Profiles and help",
+  "homeTourProfilesDescription": "Use Profiles to create or switch Trainers. Select INFO at any time to review this tour.",
+  "tourSkip": "SKIP TOUR",
+  "backAction": "BACK",
+  "tourUnderstood": "GOT IT",
+  "nextAction": "NEXT",
+  "homeOngoingSessionsTitle": "ONGOING SESSIONS",
+  "homeOngoingSessionsSubtitle": "Continue immediately from where you stopped.",
+  "homeResumeBattleTitle": "Resume battle",
+  "homeResumeBattleSubtitle": "Continue with the saved round, turn, PP and status conditions.",
+  "homeResumeMasterFightTitle": "Resume GM Fight",
+  "homeResumeMasterFightSubtitle": "Reopen the GM session with saved HP, PP, status conditions and initiative.",
+  "homeTrainerAndTeamTitle": "TRAINER AND TEAM",
+  "homeTrainerAndTeamSubtitle": "Manage the character and caught creatures.",
+  "homeBattleCompanionTitle": "Battle Companion",
+  "homeBattleCompanionSubtitle": "Track rounds, HP, status conditions and PP during combat.",
+  "homeTrainerSheetTitle": "Trainer Sheet",
+  "homeTrainerSheetSubtitle": "Update level, money and campaign progression.",
+  "homeCaptureTitle": "Catch a creature",
+  "homeCaptureSubtitle": "Choose a creature: it joins the team when there is room, otherwise it goes to the PC.",
+  "homeTeamTitle": "Team",
+  "homeTeamSubtitle": "Choose up to 6 creatures for the active profile.",
+  "homePcTitle": "Creature PC",
+  "homePcSubtitle": "Manage caught creatures outside the active team.",
+  "homeBreedingTitle": "Breeding and Eggs",
+  "homeBreedingSubtitle": "Check the parents, create Eggs, advance incubation and hatch creatures.",
+  "homeBagTitle": "Bag",
+  "homeBagSubtitle": "Equipment, healing items and catching supplies.",
+  "homeConsultationTitle": "REFERENCE",
+  "homeConsultationSubtitle": "Find information and update your progress.",
+  "homeOpenPokedexTitle": "Open Pokédex",
+  "homeOpenPokedexSubtitle": "Browse, filter and mark creatures.",
+  "homeMasterToolsTitle": "GM TOOLS",
+  "homeMasterToolsSubtitle": "Generate content, use libraries and prepare fights.",
+  "homeOpenMasterToolsTitle": "Open GM Tools",
+  "homeOpenMasterToolsSubtitle": "Creature generators, encounters, collections and NPC Trainers.",
+  "homeAppManagementTitle": "APPLICATION MANAGEMENT",
+  "homeAppManagementSubtitle": "Manage profiles and application data.",
+  "homeProfilesTitle": "Profiles",
+  "homeProfilesSubtitle": "Create, switch or delete Trainer profiles.",
+  "trainerFallback": "Trainer",
+  "homeGreeting": "Hello, {name}",
+  "@homeGreeting": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "trainerLevelChip": "Lv. {level}",
+  "@trainerLevelChip": {
+    "placeholders": {
+      "level": {
+        "type": "int"
+      }
+    }
+  },
+  "trainerMoneyChip": "₽ {amount}",
+  "@trainerMoneyChip": {
+    "placeholders": {
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
+  "trainerPokeslotChip": "Poké Slots {count}",
+  "@trainerPokeslotChip": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "trainerMaxSrChip": "Max SR {value}",
+  "@trainerMaxSrChip": {
+    "placeholders": {
+      "value": {
+        "type": "num"
+      }
+    }
+  },
+  "pokedexProgressTitle": "Pokédex progress",
+  "seenLabel": "Seen",
+  "caughtLabel": "Caught",
+  "errorWithMessage": "Error: {message}",
+  "@errorWithMessage": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "retryAction": "Retry"
+}

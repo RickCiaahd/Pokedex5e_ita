@@ -12,19 +12,16 @@ void main() {
       'android/app/src/main/res/values/strings.xml',
     ).readAsStringSync();
     final activity = File(
-      'android/app/src/main/kotlin/io/github/rickciaahd/pokedex5eita/MainActivity.kt',
+      'android/app/src/main/kotlin/io/github/rickciaahd/traineratlas/MainActivity.kt',
     );
     final legacyActivity = File(
       'android/app/src/main/kotlin/com/example/pokedex_5e_ita/MainActivity.kt',
     );
 
+    expect(gradle, contains('namespace = "io.github.rickciaahd.traineratlas"'));
     expect(
       gradle,
-      contains('namespace = "io.github.rickciaahd.pokedex5eita"'),
-    );
-    expect(
-      gradle,
-      contains('applicationId = "io.github.rickciaahd.pokedex5eita"'),
+      contains('applicationId = "io.github.rickciaahd.traineratlas"'),
     );
     expect(gradle, contains('rootProject.file("key.properties")'));
     expect(
@@ -32,11 +29,14 @@ void main() {
       isNot(contains('signingConfig = signingConfigs.getByName("debug")')),
     );
     expect(manifest, contains('android:label="@string/app_name"'));
-    expect(strings, contains('<string name="app_name">Pokédex 5e ITA</string>'));
+    expect(
+      strings,
+      contains('<string name="app_name">Trainer Atlas 5e</string>'),
+    );
     expect(activity.existsSync(), isTrue);
     expect(
       activity.readAsStringSync(),
-      contains('package io.github.rickciaahd.pokedex5eita'),
+      contains('package io.github.rickciaahd.traineratlas'),
     );
     expect(legacyActivity.existsSync(), isFalse);
   });
@@ -45,14 +45,12 @@ void main() {
     final workflow = File(
       '.github/workflows/android-release.yml',
     ).readAsStringSync();
-    final documentation = File(
-      'docs/android-release.md',
-    ).readAsStringSync();
+    final documentation = File('docs/android-release.md').readAsStringSync();
 
     expect(workflow, contains('flutter build apk --release'));
     expect(workflow, contains('flutter build appbundle --release'));
     expect(workflow, contains('ANDROID_KEYSTORE_BASE64'));
-    expect(documentation, contains('io.github.rickciaahd.pokedex5eita'));
+    expect(documentation, contains('io.github.rickciaahd.traineratlas'));
     expect(documentation, contains('flutter build appbundle --release'));
   });
 }

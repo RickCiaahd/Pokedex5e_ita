@@ -314,8 +314,8 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
         ),
         mimeType: 'application/json',
         title: 'Condividi $displayName',
-        subject: '$displayName · Pokédex 5e ITA',
-        text: 'Pokémon esportato da Pokédex 5e ITA.',
+        subject: '$displayName · Trainer Atlas 5e',
+        text: 'Pokémon esportato da Trainer Atlas 5e.',
       );
       _setStatus(
         _shareService.feedback(
@@ -356,8 +356,8 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
         fileName: _transferService.fileNameForTeam(bundle),
         mimeType: 'application/json',
         title: 'Condividi la squadra di ${profile.name}',
-        subject: 'Squadra di ${profile.name} · Pokédex 5e ITA',
-        text: 'Squadra esportata da Pokédex 5e ITA.',
+        subject: 'Squadra di ${profile.name} · Trainer Atlas 5e',
+        text: 'Squadra esportata da Trainer Atlas 5e.',
       );
       _setStatus(
         _shareService.feedback(

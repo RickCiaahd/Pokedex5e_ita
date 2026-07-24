@@ -1,8 +1,6 @@
-  File "/tmp/apply_localization_foundation.py", line 1
-    from pathlib import Path
-IndentationError: unexpected indent
+Blocco tour Home non trovato
 Traceback (most recent call last):
-  File "<stdin>", line 14, in <module>
+  File "<stdin>", line 17, in <module>
   File "/usr/lib/python3.12/subprocess.py", line 571, in run
     raise CalledProcessError(retcode, process.args,
 subprocess.CalledProcessError: Command '['python3', '/tmp/apply_localization_foundation.py']' returned non-zero exit status 1.

@@ -1,0 +1,1 @@
+Trigger temporaneo per eseguire separatamente i test di regressione dei tour guidati.

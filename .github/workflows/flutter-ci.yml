@@ -87,6 +87,38 @@ jobs:
           ref: ${{ github.event.pull_request.head.ref }}
           fetch-depth: 0
 
+      - name: Repair patch script
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path('tooling/apply_guided_submenu_tours.py')
+          text = path.read_text(encoding='utf-8')
+          old = '''replace_once(
+              trainer,
+              """  final TextEditingController nameController;
+          """,
+              """  final GlobalKey progressionKey;
+            final TextEditingController nameController;
+          """,
+          )'''
+          new = '''replace_once(
+              trainer,
+              """  final TextEditingController nameController;
+            final TextEditingController moneyController;
+          """,
+              """  final GlobalKey progressionKey;
+            final TextEditingController nameController;
+            final TextEditingController moneyController;
+          """,
+          )'''
+          if old not in text:
+              raise SystemExit('Blocco di correzione dello script non trovato.')
+          path.write_text(text.replace(old, new, 1), encoding='utf-8')
+          PY
+
       - name: Apply submenu tour integration
         shell: bash
         run: |

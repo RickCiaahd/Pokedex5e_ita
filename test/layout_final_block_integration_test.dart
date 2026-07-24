@@ -15,7 +15,8 @@ void main() {
     ).readAsStringSync();
 
     expect(battle, contains('maxWidth: 1280'));
-    expect(battle, contains('actions: const [HomeAppBarAction()]'));
+    expect(battle, contains('GuidedTourInfoAction('));
+    expect(battle, contains('const HomeAppBarAction()'));
     expect(battle, contains('useSafeArea: true'));
     expect(battle, contains('scrollable: true'));
 
@@ -25,6 +26,8 @@ void main() {
     expect(master, contains('scrollable: true'));
 
     expect(tools, contains('maxWidth: 1180'));
+    expect(tools, contains('GuidedTourInfoAction('));
+    expect(tools, contains('const HomeAppBarAction()'));
     expect(tools, contains('class _ToolCardGrid'));
     expect(tools, contains('constraints.maxWidth >= 760'));
     expect(tools, contains('constraints.maxWidth < 430'));

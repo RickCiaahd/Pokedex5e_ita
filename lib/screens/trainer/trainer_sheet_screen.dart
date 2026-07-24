@@ -14,9 +14,11 @@ import '../../repositories/pokemon_repository.dart';
 import '../../repositories/profile_repository.dart';
 import '../../repositories/team_repository.dart';
 import '../../repositories/trainer_manual_repository.dart';
+import '../../services/guided_tour_service.dart';
 import '../../services/trainer_path_automation_service.dart';
 import '../../services/trainer_path_passive_service.dart';
 import '../../widgets/navigation/home_leading_button.dart';
+import '../../widgets/tour/guided_tour.dart';
 import '../../widgets/trainer/trainer_path_automation_panel.dart';
 
 class TrainerSheetScreen extends StatefulWidget {
@@ -36,6 +38,13 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _moneyController = TextEditingController();
   final TextEditingController _raceController = TextEditingController();
+  final GuidedTourController _tourController = GuidedTourController(
+    tourId: GuidedTourIds.trainerSheet,
+  );
+  final ScrollController _scrollController = ScrollController();
+  final GlobalKey _sheetKey = GlobalKey();
+  final GlobalKey _progressionKey = GlobalKey();
+  final GlobalKey _automationKey = GlobalKey();
 
   UserProfile? _profile;
   List<Pokemon> _starterCandidates = [];
@@ -62,6 +71,32 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
   bool _isSaving = false;
   String? _errorMessage;
 
+  List<GuidedTourStepData> get _tourSteps => [
+    GuidedTourStepData(
+      targetKey: _sheetKey,
+      icon: Icons.badge_outlined,
+      title: 'La scheda interattiva',
+      description:
+          'Qui aggiorni nome, livello, denaro, origine, starter, caratteristiche, PF, CA, velocità, competenze e tiri salvezza. I riquadri modificabili reagiscono al tocco.',
+    ),
+    GuidedTourStepData(
+      targetKey: _progressionKey,
+      icon: Icons.route_outlined,
+      title: 'Avanzamento e percorso',
+      description:
+          'La colonna Avanzamento mostra specializzazioni, Percorso Allenatore e privilegi sbloccati ai livelli corretti. Le scelte disponibili cambiano con il livello.',
+      fallbackScrollFraction: .58,
+    ),
+    GuidedTourStepData(
+      targetKey: _automationKey,
+      icon: Icons.auto_awesome_outlined,
+      title: 'Risorse del percorso',
+      description:
+          'Questo pannello gestisce risorse, scelte e recuperi del Trainer Path. Ricorda di salvare la scheda dopo aver modificato i dati principali.',
+      fallbackScrollFraction: 1,
+    ),
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -79,6 +114,8 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
     _nameController.dispose();
     _moneyController.dispose();
     _raceController.dispose();
+    _tourController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -137,6 +174,7 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
         _reconcileTrainerPathAutomation();
         _isLoading = false;
       });
+      _tourController.showAutomaticallyIfNeeded(ready: true);
     } catch (e) {
       if (!mounted) return;
 
@@ -689,86 +727,122 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
       appBar: AppBar(
         leading: const HomeLeadingButton(),
         title: const Text('Scheda Allenatore'),
+        actions: [
+          GuidedTourInfoAction(
+            controller: _tourController,
+            enabled: !_isLoading && _profile != null,
+          ),
+          const HomeAppBarAction(),
+        ],
       ),
-      body: RefreshIndicator(
-        onRefresh: _loadProfile,
-        child: ListView(
-          padding: const EdgeInsets.all(24),
-          children: [
-            if (_isLoading)
-              const Padding(
-                padding: EdgeInsets.only(top: 120),
-                child: Center(child: CircularProgressIndicator()),
-              )
-            else if (_errorMessage != null && _profile == null)
-              _TrainerSheetErrorState(
-                message: _errorMessage!,
-                onRetry: _loadProfile,
-              )
-            else ...[
-              _InteractiveTrainerSheet(
-                nameController: _nameController,
-                moneyController: _moneyController,
-                race: _raceController.text.trim(),
-                raceDescription:
-                    _originByName(_raceController.text.trim())?.description ??
-                    '',
-                selectedStarter: _selectedStarter,
-                startingPack: _startingPack,
-                trainerLevel: _trainerLevel,
-                trainerPath: _trainerPath,
-                trainerPaths: _trainerPaths,
-                abilityScores: _abilityScores,
-                armorClass: _armorClass,
-                maxHp: _maxHp,
-                currentHp: _currentHp,
-                speed: _speed,
-                skillProficiencies: _skillProficiencies,
-                savingThrowProficiencies: _savingThrowProficiencies,
-                specializations: _specializations,
-                canAddStarterToTeam:
-                    _selectedStarter != null &&
-                    !_starterAlreadyInTeam &&
-                    _hasEmptyTeamSlot,
-                starterAlreadyInTeam: _starterAlreadyInTeam,
-                isSaving: _isSaving,
-                errorMessage: _errorMessage,
-                onDecreaseLevel: () => _changeLevel(-1),
-                onIncreaseLevel: () => _changeLevel(1),
-                onRaceTap: _openRacePicker,
-                onStarterTap: _openStarterPicker,
-                onAddStarterToTeam: _addStarterToTeam,
-                onStartingPackTap: _openStartingPackPicker,
-                onTrainerPathTap: _openTrainerPathPicker,
-                onSkillToggle: _toggleSkillProficiency,
-                onSavingThrowToggle: _toggleSavingThrowProficiency,
-                onSpecializationTap: _openSpecializationPicker,
-                onAbilityScoreChanged: _changeAbilityScore,
-                onArmorClassChanged: _changeArmorClass,
-                onMaxHpChanged: _changeMaxHp,
-                onCurrentHpChanged: _changeCurrentHp,
-                onSpeedChanged: _changeSpeed,
-                onSave: _saveProfile,
+      body: AnimatedBuilder(
+        animation: _tourController,
+        builder: (context, _) {
+          return Stack(
+            children: [
+              Positioned.fill(
+                child: RefreshIndicator(
+                  onRefresh: _loadProfile,
+                  child: ListView(
+                    controller: _scrollController,
+                    padding: EdgeInsets.fromLTRB(
+                      24,
+                      24,
+                      24,
+                      _tourController.isVisible ? 340 : 24,
+                    ),
+                    children: [
+                      if (_isLoading)
+                        const Padding(
+                          padding: EdgeInsets.only(top: 120),
+                          child: Center(child: CircularProgressIndicator()),
+                        )
+                      else if (_errorMessage != null && _profile == null)
+                        _TrainerSheetErrorState(
+                          message: _errorMessage!,
+                          onRetry: _loadProfile,
+                        )
+                      else ...[
+                        _InteractiveTrainerSheet(
+                          key: _sheetKey,
+                          progressionKey: _progressionKey,
+                          nameController: _nameController,
+                          moneyController: _moneyController,
+                          race: _raceController.text.trim(),
+                          raceDescription:
+                              _originByName(
+                                _raceController.text.trim(),
+                              )?.description ??
+                              '',
+                          selectedStarter: _selectedStarter,
+                          startingPack: _startingPack,
+                          trainerLevel: _trainerLevel,
+                          trainerPath: _trainerPath,
+                          trainerPaths: _trainerPaths,
+                          abilityScores: _abilityScores,
+                          armorClass: _armorClass,
+                          maxHp: _maxHp,
+                          currentHp: _currentHp,
+                          speed: _speed,
+                          skillProficiencies: _skillProficiencies,
+                          savingThrowProficiencies: _savingThrowProficiencies,
+                          specializations: _specializations,
+                          canAddStarterToTeam:
+                              _selectedStarter != null &&
+                              !_starterAlreadyInTeam &&
+                              _hasEmptyTeamSlot,
+                          starterAlreadyInTeam: _starterAlreadyInTeam,
+                          isSaving: _isSaving,
+                          errorMessage: _errorMessage,
+                          onDecreaseLevel: () => _changeLevel(-1),
+                          onIncreaseLevel: () => _changeLevel(1),
+                          onRaceTap: _openRacePicker,
+                          onStarterTap: _openStarterPicker,
+                          onAddStarterToTeam: _addStarterToTeam,
+                          onStartingPackTap: _openStartingPackPicker,
+                          onTrainerPathTap: _openTrainerPathPicker,
+                          onSkillToggle: _toggleSkillProficiency,
+                          onSavingThrowToggle: _toggleSavingThrowProficiency,
+                          onSpecializationTap: _openSpecializationPicker,
+                          onAbilityScoreChanged: _changeAbilityScore,
+                          onArmorClassChanged: _changeArmorClass,
+                          onMaxHpChanged: _changeMaxHp,
+                          onCurrentHpChanged: _changeCurrentHp,
+                          onSpeedChanged: _changeSpeed,
+                          onSave: _saveProfile,
+                        ),
+                        const SizedBox(height: 16),
+                        KeyedSubtree(
+                          key: _automationKey,
+                          child: TrainerPathAutomationPanel(
+                            trainerPath: _trainerPath,
+                            resources: _trainerPathResourceDefinitions,
+                            resourceValues: _trainerPathResources,
+                            choices: _trainerPathChoiceDefinitions,
+                            choiceValues: _trainerPathChoices,
+                            onResourceChanged: _changeTrainerPathResource,
+                            onChoiceChanged: _changeTrainerPathChoice,
+                            onShortRest: () => _restoreTrainerPathResources(
+                              TrainerPathResourceReset.shortRest,
+                            ),
+                            onLongRest: () => _restoreTrainerPathResources(
+                              TrainerPathResourceReset.longRest,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
               ),
-              const SizedBox(height: 16),
-              TrainerPathAutomationPanel(
-                trainerPath: _trainerPath,
-                resources: _trainerPathResourceDefinitions,
-                resourceValues: _trainerPathResources,
-                choices: _trainerPathChoiceDefinitions,
-                choiceValues: _trainerPathChoices,
-                onResourceChanged: _changeTrainerPathResource,
-                onChoiceChanged: _changeTrainerPathChoice,
-                onShortRest: () => _restoreTrainerPathResources(
-                  TrainerPathResourceReset.shortRest,
-                ),
-                onLongRest: () => _restoreTrainerPathResources(
-                  TrainerPathResourceReset.longRest,
-                ),
+              GuidedTourLayer(
+                controller: _tourController,
+                steps: _tourSteps,
+                scrollController: _scrollController,
               ),
             ],
-          ],
-        ),
+          );
+        },
       ),
     );
   }
@@ -788,6 +862,8 @@ String _signed(int value) {
 
 class _InteractiveTrainerSheet extends StatelessWidget {
   const _InteractiveTrainerSheet({
+    super.key,
+    required this.progressionKey,
     required this.nameController,
     required this.moneyController,
     required this.race,
@@ -827,6 +903,7 @@ class _InteractiveTrainerSheet extends StatelessWidget {
     required this.onSave,
   });
 
+  final GlobalKey progressionKey;
   final TextEditingController nameController;
   final TextEditingController moneyController;
   final String race;
@@ -933,6 +1010,7 @@ class _InteractiveTrainerSheet extends StatelessWidget {
                   SizedBox(
                     width: 300,
                     child: _TrainerProgressionColumn(
+                      key: progressionKey,
                       trainerLevel: trainerLevel,
                       trainerPath: trainerPath,
                       trainerPaths: trainerPaths,
@@ -984,6 +1062,7 @@ class _InteractiveTrainerSheet extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                   _TrainerProgressionColumn(
+                    key: progressionKey,
                     trainerLevel: trainerLevel,
                     trainerPath: trainerPath,
                     trainerPaths: trainerPaths,
@@ -1614,6 +1693,7 @@ class _CheckValueRow extends StatelessWidget {
 
 class _TrainerProgressionColumn extends StatelessWidget {
   const _TrainerProgressionColumn({
+    super.key,
     required this.trainerLevel,
     required this.trainerPath,
     required this.trainerPaths,

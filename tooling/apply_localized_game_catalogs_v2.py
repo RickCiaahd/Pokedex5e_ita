@@ -75,3 +75,16 @@ unused_helper = '''  static String? _localizeNullableText(String? value) {
 if unused_helper not in text:
     raise RuntimeError('Helper _localizeNullableText generato non trovato')
 move_data.write_text(text.replace(unused_helper, '', 1), encoding='utf-8')
+
+catalog_locale = root / 'lib/localization/game_catalog_locale.dart'
+text = catalog_locale.read_text(encoding='utf-8')
+old = "    final normalized = value?.trim().toLowerCase() == 'it' ? 'it' : 'en';\n"
+new = (
+    "    final normalizedValue = value?.trim().toLowerCase() ?? '';\n"
+    "    final normalized = RegExp(r'^it(?:[-_]|$)').hasMatch(normalizedValue)\n"
+    "        ? 'it'\n"
+    "        : 'en';\n"
+)
+if old not in text:
+    raise RuntimeError('Normalizzazione lingua generata non trovata')
+catalog_locale.write_text(text.replace(old, new, 1), encoding='utf-8')

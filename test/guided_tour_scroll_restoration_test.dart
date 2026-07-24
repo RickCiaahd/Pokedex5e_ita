@@ -82,5 +82,9 @@ void main() {
       scrollController.offset,
       closeTo(scrollController.position.minScrollExtent, .1),
     );
+
+    // _resolveTarget può avere ancora il breve timer usato per aspettare lo
+    // scorrimento automatico. Lo facciamo terminare prima di smontare il test.
+    await tester.pump(const Duration(milliseconds: 500));
   });
 }

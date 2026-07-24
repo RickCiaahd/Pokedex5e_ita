@@ -1,0 +1,84 @@
+name: Apply core UI localization
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: github.head_ref == 'feature/complete-ui-localization'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Check out localization branch
+        uses: actions/checkout@v4
+        with:
+          ref: feature/complete-ui-localization
+          fetch-depth: 0
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Apply core localization
+        run: python tooling/apply_core_ui_localization.py
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Format changed files
+        run: |
+          dart format \
+            lib/localization/ui_text.dart \
+            lib/models/trainer_ui_localization.dart \
+            lib/widgets/pokemon/pokemon_asset_image_legacy.dart \
+            lib/widgets/pokedex/pokemon_summary_dialog.dart \
+            lib/screens/battle/battle_screen.dart \
+            lib/screens/trainer/trainer_sheet_screen.dart \
+            lib/screens/tools/tools_screen.dart \
+            test/secondary_ui_localization_test.dart
+
+      - name: Analyze source
+        run: flutter analyze
+
+      - name: Run localization tests
+        run: |
+          flutter test test/secondary_ui_localization_test.dart
+          flutter test test/trainer_ui_localization_test.dart
+          flutter test test/localized_game_catalogs_test.dart
+
+      - name: Run complete test suite
+        run: flutter test
+
+      - name: Build Android debug APK
+        run: flutter build apk --debug
+
+      - name: Publish core localization
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
+            lib/localization/ui_text.dart \
+            lib/models/trainer_ui_localization.dart \
+            lib/widgets/pokemon/pokemon_asset_image_legacy.dart \
+            lib/widgets/pokedex/pokemon_summary_dialog.dart \
+            lib/screens/battle/battle_screen.dart \
+            lib/screens/trainer/trainer_sheet_screen.dart \
+            lib/screens/tools/tools_screen.dart \
+            test/secondary_ui_localization_test.dart
+          git commit -m "Localizza le schermate principali rimaste [skip ci]"
+          git push origin HEAD:feature/complete-ui-localization

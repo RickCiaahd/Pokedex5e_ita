@@ -26,62 +26,65 @@ jobs:
         run: |
           set -euo pipefail
           python3 - <<'PY'
+          import re
           from pathlib import Path
 
           path = Path('lib/widgets/tour/guided_tour.dart')
           text = path.read_text(encoding='utf-8')
 
-          old_sizes = '''    final colors = Theme.of(context).colorScheme;
-            final compact = MediaQuery.sizeOf(context).width < 430;
-            final professorWidth = compact ? 82.0 : 116.0;'''
-          new_sizes = '''    final colors = Theme.of(context).colorScheme;
-            final compact = MediaQuery.sizeOf(context).width < 430;
-            final professorWidth = compact ? 112.0 : 168.0;
-            final professorHeight = compact ? 148.0 : 210.0;'''
+          text, size_count = re.subn(
+              r'(    final compact = MediaQuery\.sizeOf\(context\)\.width < 430;\n)'
+              r'    final professorWidth = compact \? 82\.0 : 116\.0;',
+              r'\1    final professorWidth = compact ? 112.0 : 168.0;\n'
+              r'    final professorHeight = compact ? 148.0 : 210.0;',
+              text,
+              count=1,
+          )
 
-          old_image = '''          SizedBox(
+          image_pattern = re.compile(
+              r'''          SizedBox\(
                 width: professorWidth,
-                height: compact ? 176 : 214,
+                height: compact \? 176 : 214,
+                child: Image\.asset\(
+                  GuidedTourOverlay\.professorAsset,
+                  fit: BoxFit\.contain,
+                  alignment: Alignment\.bottomCenter,
+                  errorBuilder: \(_, _, _\) => const Align\(
+                    alignment: Alignment\.bottomCenter,
+                    child: Icon\(Icons\.person, size: 78, color: Colors\.white\),
+                  \),
+                \),
+              \),'''
+          )
+          replacement = '''          Transform.translate(
+            offset: const Offset(0, 8),
+            child: SizedBox(
+              width: professorWidth,
+              height: professorHeight,
+              child: ClipRect(
                 child: Image.asset(
                   GuidedTourOverlay.professorAsset,
-                  fit: BoxFit.contain,
-                  alignment: Alignment.bottomCenter,
+                  fit: BoxFit.cover,
+                  alignment: Alignment.topCenter,
                   errorBuilder: (_, _, _) => const Align(
                     alignment: Alignment.bottomCenter,
-                    child: Icon(Icons.person, size: 78, color: Colors.white),
-                  ),
-                ),
-              ),'''
-          new_image = '''          Transform.translate(
-                offset: const Offset(0, 8),
-                child: SizedBox(
-                  width: professorWidth,
-                  height: professorHeight,
-                  child: ClipRect(
-                    child: Image.asset(
-                      GuidedTourOverlay.professorAsset,
-                      fit: BoxFit.cover,
-                      alignment: Alignment.topCenter,
-                      errorBuilder: (_, _, _) => const Align(
-                        alignment: Alignment.bottomCenter,
-                        child: Icon(
-                          Icons.person,
-                          size: 78,
-                          color: Colors.white,
-                        ),
-                      ),
+                    child: Icon(
+                      Icons.person,
+                      size: 78,
+                      color: Colors.white,
                     ),
                   ),
                 ),
-              ),'''
+              ),
+            ),
+          ),'''
+          text, image_count = image_pattern.subn(replacement, text, count=1)
 
-          if text.count(old_sizes) != 1:
-              raise SystemExit('Il blocco delle dimensioni del Professore non è stato trovato una sola volta.')
-          if text.count(old_image) != 1:
-              raise SystemExit('Il blocco immagine del Professore non è stato trovato una sola volta.')
+          if size_count != 1:
+              raise SystemExit('Le dimensioni del Professore non sono state sostituite una sola volta.')
+          if image_count != 1:
+              raise SystemExit('Il blocco immagine del Professore non è stato sostituito una sola volta.')
 
-          text = text.replace(old_sizes, new_sizes, 1)
-          text = text.replace(old_image, new_image, 1)
           path.write_text(text, encoding='utf-8')
           PY
 

@@ -74,6 +74,29 @@ jobs:
               raise SystemExit('Sezione di patch del tour non trovata nello script')
           script = script.replace(old, new, 1)
 
+          const_replacement = (
+              "home_text = home_text.replace(\n"
+              "    'const _HomeSectionTitle(', '_HomeSectionTitle('\n"
+              ")\n"
+          )
+          if const_replacement not in script:
+              const_replacement = (
+                  "home_text = home_text.replace('const _HomeSectionTitle(', "
+                  "'_HomeSectionTitle(')\n"
+              )
+          const_fix = const_replacement + (
+              "home_text = home_text.replace(\n"
+              "    'class _HomeSectionTitle extends StatelessWidget {\\n"
+              "  _HomeSectionTitle(',\n"
+              "    'class _HomeSectionTitle extends StatelessWidget {\\n"
+              "  const _HomeSectionTitle(',\n"
+              "    1,\n"
+              ")\n"
+          )
+          if const_replacement not in script:
+              raise SystemExit('Sostituzione const della Home non trovata nello script')
+          script = script.replace(const_replacement, const_fix, 1)
+
           patch = Path('/tmp/apply_localization_foundation.py')
           patch.write_text(script, encoding='utf-8')
           subprocess.run(['python3', str(patch)], check=True)

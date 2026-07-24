@@ -1,1 +1,0 @@
-Trigger temporaneo per validare la correzione definitiva delle schermate vuote dopo i tour.

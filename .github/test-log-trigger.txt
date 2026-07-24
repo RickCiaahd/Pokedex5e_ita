@@ -1,0 +1,1 @@
+Trigger temporaneo per acquisire il log completo dei test.

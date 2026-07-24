@@ -126,10 +126,10 @@ class _HomeTourOverlayState extends State<HomeTourOverlay> {
 
     void visit(Element element) {
       if (result != null) return;
-      if (element is StatefulElement && element.state is ScrollableState) {
-        final candidate = element.state as ScrollableState;
-        if (candidate.position.axis == Axis.vertical) {
-          result = candidate;
+      if (element is StatefulElement) {
+        final state = element.state;
+        if (state is ScrollableState && state.position.axis == Axis.vertical) {
+          result = state;
           return;
         }
       }
@@ -341,8 +341,8 @@ class _SpotlightPainter extends CustomPainter {
     final visibleBounds = Rect.fromLTWH(
       8,
       8,
-      math.max(0, size.width - 16),
-      math.max(0, size.height - 16),
+      math.max(0.0, size.width - 16),
+      math.max(0.0, size.height - 16),
     );
     final safeRect = target.intersect(visibleBounds);
     if (safeRect.isEmpty) {

@@ -77,6 +77,10 @@ void main() {
 
       expect(tourController.isVisible, isFalse);
       expect(tester.getSize(find.byKey(contentKey)).height, greaterThan(0));
+
+      // Consuma il breve timer usato dal resolver del bersaglio prima che il
+      // widget di test venga smontato.
+      await tester.pump(const Duration(milliseconds: 500));
     },
   );
 }

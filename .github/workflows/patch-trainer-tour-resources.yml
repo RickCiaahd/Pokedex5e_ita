@@ -1,0 +1,103 @@
+name: Patch trainer tour resources
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    name: Hide locked path resources from tour
+    if: github.event.pull_request.title == 'Nasconde dal tour le risorse non ancora sbloccate'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out feature branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+
+      - name: Make the third tour step conditional
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import re
+          from pathlib import Path
+
+          path = Path('lib/screens/trainer/trainer_sheet_screen.dart')
+          text = path.read_text(encoding='utf-8')
+          replacement = '''  List<GuidedTourStepData> get _tourSteps {
+            final steps = <GuidedTourStepData>[
+              GuidedTourStepData(
+                targetKey: _sheetKey,
+                icon: Icons.badge_outlined,
+                title: 'La scheda interattiva',
+                description:
+                    'Qui aggiorni nome, livello, denaro, origine, starter, caratteristiche, PF, CA, velocità, competenze e tiri salvezza. I riquadri modificabili reagiscono al tocco.',
+              ),
+              GuidedTourStepData(
+                targetKey: _progressionKey,
+                icon: Icons.route_outlined,
+                title: 'Avanzamento e percorso',
+                description:
+                    'La colonna Avanzamento mostra specializzazioni, Percorso Allenatore e privilegi sbloccati ai livelli corretti. Le scelte disponibili cambiano con il livello.',
+                fallbackScrollFraction: .58,
+              ),
+            ];
+
+            final hasUnlockedPathManagement =
+                _trainerPath.trim().isNotEmpty &&
+                (_trainerPathChoiceDefinitions.isNotEmpty ||
+                    _trainerPathResourceDefinitions.isNotEmpty);
+
+            if (hasUnlockedPathManagement) {
+              steps.add(
+                GuidedTourStepData(
+                  targetKey: _automationKey,
+                  icon: Icons.auto_awesome_outlined,
+                  title: 'Risorse del percorso',
+                  description:
+                      'Qui gestisci soltanto le scelte e le risorse già sbloccate dal tuo Percorso Allenatore, compresi i recuperi con riposo breve o lungo.',
+                  fallbackScrollFraction: 1,
+                ),
+              );
+            }
+
+            return steps;
+          }'''
+
+          updated, count = re.subn(
+              r'  List<GuidedTourStepData> get _tourSteps => \[.*?^  \];',
+              replacement,
+              text,
+              count=1,
+              flags=re.S | re.M,
+          )
+          if count != 1:
+              raise SystemExit('Il blocco _tourSteps non è stato sostituito una sola volta.')
+          path.write_text(updated, encoding='utf-8')
+          PY
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Format file
+        run: dart format lib/screens/trainer/trainer_sheet_screen.dart
+
+      - name: Commit change
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add lib/screens/trainer/trainer_sheet_screen.dart
+          git commit -m 'Mostra nel tour solo le risorse del percorso sbloccate'
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}

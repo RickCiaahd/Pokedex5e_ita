@@ -96,15 +96,25 @@ jobs:
 
           path = Path('tooling/apply_guided_submenu_tours.py')
           text = path.read_text(encoding='utf-8')
-          old = '''replace_once(
+          marker = '''replace_once(
+              trainer,
+              """  final TextEditingController nameController;'''
+          corrected_marker = '''replace_once(
               trainer,
               """  final TextEditingController nameController;
-          """,
-              """  final GlobalKey progressionKey;
-            final TextEditingController nameController;
-          """,
-          )'''
-          new = '''replace_once(
+            final TextEditingController moneyController;
+            final String race;'''
+
+          if corrected_marker not in text:
+              start = text.find(marker)
+              if start < 0:
+                  raise SystemExit('Inizio del blocco ambiguo non trovato nello script.')
+              end_marker = '\n          )\n          replace_once('
+              end = text.find(end_marker, start)
+              if end < 0:
+                  raise SystemExit('Fine del blocco ambiguo non trovata nello script.')
+              end += len('\n          )')
+              replacement = '''replace_once(
               trainer,
               """  final TextEditingController nameController;
             final TextEditingController moneyController;
@@ -126,9 +136,8 @@ jobs:
             final String trainerPath;
           """,
           )'''
-          if old not in text:
-              raise SystemExit('Blocco di correzione dello script non trovato.')
-          path.write_text(text.replace(old, new, 1), encoding='utf-8')
+              text = text[:start] + replacement + text[end:]
+              path.write_text(text, encoding='utf-8')
           PY
 
       - name: Apply submenu tour integration

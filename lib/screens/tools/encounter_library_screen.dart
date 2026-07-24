@@ -252,8 +252,8 @@ class _EncounterLibraryScreenState extends State<EncounterLibraryScreen> {
         fileName: _transferService.fileNameForEncounter(bundle),
         mimeType: 'application/json',
         title: 'Condividi ${saved.name}',
-        subject: '${saved.name} · Pokédex 5e ITA',
-        text: 'Incontro esportato da Pokédex 5e ITA.',
+        subject: '${saved.name} · Trainer Atlas 5e',
+        text: 'Incontro esportato da Trainer Atlas 5e.',
       );
       _setMessage(
         _shareService.feedback(

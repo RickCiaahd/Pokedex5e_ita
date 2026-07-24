@@ -2,6 +2,8 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import '../../l10n/app_localizations.dart';
+
 /// Pannello condiviso dai tour della Home e dei principali sottomenu.
 ///
 /// Il Professore è disposto come in una schermata dialogo: figura ampia a
@@ -149,6 +151,7 @@ class _TourSpeechCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final colors = Theme.of(context).colorScheme;
     final compact = MediaQuery.sizeOf(context).width < 430;
 
@@ -206,15 +209,15 @@ class _TourSpeechCard extends StatelessWidget {
               spacing: 8,
               runSpacing: 8,
               children: [
-                TextButton(onPressed: onSkip, child: const Text('SALTA TOUR')),
+                TextButton(onPressed: onSkip, child: Text(l10n.tourSkip)),
                 if (onBack != null)
                   OutlinedButton(
                     onPressed: onBack,
-                    child: const Text('INDIETRO'),
+                    child: Text(l10n.backAction),
                   ),
                 FilledButton(
                   onPressed: onNext,
-                  child: Text(lastStep ? 'HO CAPITO' : 'AVANTI'),
+                  child: Text(lastStep ? l10n.tourUnderstood : l10n.nextAction),
                 ),
               ],
             ),

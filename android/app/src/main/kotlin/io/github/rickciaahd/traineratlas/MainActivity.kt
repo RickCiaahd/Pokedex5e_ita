@@ -1,4 +1,4 @@
-package io.github.rickciaahd.pokedex5eita
+package io.github.rickciaahd.traineratlas
 
 import io.flutter.embedding.android.FlutterActivity
 

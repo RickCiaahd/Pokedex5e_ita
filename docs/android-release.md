@@ -2,8 +2,8 @@
 
 ## Identità applicazione
 
-- Nome visibile: `Pokédex 5e ITA`
-- Application ID: `io.github.rickciaahd.pokedex5eita`
+- Nome visibile: `Trainer Atlas 5e`
+- Application ID: `io.github.rickciaahd.traineratlas`
 - Versione corrente: `1.0.1+2`
 
 L'Application ID è definitivo: cambiarlo dopo la distribuzione farebbe installare Android una seconda applicazione invece di aggiornare quella esistente.

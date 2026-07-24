@@ -54,7 +54,7 @@ Nessuna modifica successiva alla release 1.2.0.
 ### Modificato
 
 - nome dell'eseguibile Windows impostato su `Pokedex5eITA.exe`;
-- titolo della finestra e metadati del prodotto uniformati a `Pokédex 5e ITA`;
+- titolo della finestra e metadati del prodotto uniformati a `Trainer Atlas 5e`;
 - nome autore/editore Windows impostato su `RickCiaahd`;
 - versione applicativa aggiornata a `1.0.2+3` per la release multipiattaforma.
 
@@ -86,7 +86,7 @@ Nessuna modifica successiva alla release 1.2.0.
 - trasferimenti e backup resi sicuri anche in presenza di Fakemon, uova, slot bloccati ed elementi sostituiti;
 - Battle Companion e Fight del Master resi più compatti e coerenti nella gestione di round, status e azioni;
 - localizzati nomi, categorie e descrizioni preservando ID, valori meccanici e compatibilità dei salvataggi;
-- identità Android impostata su `Pokédex 5e ITA` con Application ID definitivo `io.github.rickciaahd.pokedex5eita`;
+- identità Android impostata su `Trainer Atlas 5e` con Application ID definitivo `io.github.rickciaahd.traineratlas`;
 - firma release separata dalla chiave di debug e resa obbligatoria per le build firmate;
 - rimossi prototipi, test, schermate e inizializzatori non più raggiungibili dall’app;
 - eliminati i log verbosi delle operazioni ordinarie di persistenza, mantenendo le segnalazioni degli errori effettivi.

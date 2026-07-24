@@ -340,7 +340,7 @@ class _CustomPokemonLibraryScreenState
         mimeType: 'application/json',
         title: 'Condividi ${definition.name}',
         subject: 'Fakemon ${definition.name}',
-        text: 'Fakemon creato con Pokédex 5e ITA.',
+        text: 'Fakemon creato con Trainer Atlas 5e.',
       );
       _setMessage(
         _shareService.feedback(

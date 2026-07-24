@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import 'l10n/app_localizations.dart';
 import 'localization/app_locale_controller.dart';
+import 'localization/game_catalog_locale.dart';
 import 'screens/onboarding/app_bootstrap_screen.dart';
 
 class Pokedex5EApp extends StatefulWidget {
@@ -51,6 +52,11 @@ class _Pokedex5EAppState extends State<Pokedex5EApp> {
       child: AnimatedBuilder(
         animation: _localeController,
         builder: (context, _) {
+          final explicitLocale = _localeController.locale;
+          if (explicitLocale != null) {
+            GameCatalogLocale.setLanguageCode(explicitLocale.languageCode);
+          }
+
           final colorScheme = ColorScheme.fromSeed(
             seedColor: _brandOrange,
             brightness: Brightness.light,
@@ -76,7 +82,11 @@ class _Pokedex5EAppState extends State<Pokedex5EApp> {
             supportedLocales: AppLocalizations.supportedLocales,
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             localeResolutionCallback: (deviceLocale, supportedLocales) {
-              return _localeController.resolveDeviceLocale(deviceLocale);
+              final resolvedLocale = _localeController.resolveDeviceLocale(
+                deviceLocale,
+              );
+              GameCatalogLocale.setLanguageCode(resolvedLocale.languageCode);
+              return resolvedLocale;
             },
             scrollBehavior: const MaterialScrollBehavior().copyWith(
               scrollbars: false,

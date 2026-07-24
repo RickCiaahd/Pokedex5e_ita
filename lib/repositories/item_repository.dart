@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/services.dart';
 
+import '../localization/game_catalog_locale.dart';
 import '../models/bag_item.dart';
 import '../models/move_data.dart';
 import '../models/tm_data.dart';
@@ -15,8 +16,10 @@ class ItemRepository {
 
   Map<String, String>? _descriptionCache;
   List<BagItem>? _webItemCache;
+  int _catalogLocaleRevision = -1;
 
   Future<Map<String, String>> getItemDescriptions() async {
+    _ensureLocaleCache();
     if (_descriptionCache != null) {
       return _descriptionCache!;
     }
@@ -33,6 +36,7 @@ class ItemRepository {
   }
 
   Future<List<BagItem>> getWebItems() async {
+    _ensureLocaleCache();
     if (_webItemCache != null) {
       return _webItemCache!;
     }
@@ -42,7 +46,9 @@ class ItemRepository {
     );
     final json = Map<String, dynamic>.from(jsonDecode(jsonString));
     final itemsJson = List<dynamic>.from(json['items'] ?? const []);
-    final localizations = await ItemLocalizationRepository().getEntries();
+    final localizations = GameCatalogLocale.isItalian
+        ? await ItemLocalizationRepository().getEntries()
+        : const <String, ItemLocalization>{};
     final items = itemsJson
         .map((value) => BagItem.fromWebJson(Map<String, dynamic>.from(value)))
         .where((item) => item.id.isNotEmpty)
@@ -95,7 +101,9 @@ class ItemRepository {
     final move = await _moveRepository.getMove(tm.moveId);
     final moveName = move?.name ?? _labelFromId(tm.moveId);
     final description = <String>[
-      '${tm.label}: insegna $moveName a un Pokémon compatibile.',
+      GameCatalogLocale.isItalian
+          ? '${tm.label}: insegna $moveName a un Pokémon compatibile.'
+          : '${tm.label}: teaches $moveName to a compatible Pokémon.',
       if (move?.description.isNotEmpty == true) move!.description,
     ];
 
@@ -115,16 +123,24 @@ class ItemRepository {
   }
 
   String _moveTypeFileName(String type) {
-    final normalized = type
-        .trim()
-        .toLowerCase()
-        .replaceAll(RegExp(r'[^a-z0-9]+'), '-');
+    final normalized = type.trim().toLowerCase().replaceAll(
+      RegExp(r'[^a-z0-9]+'),
+      '-',
+    );
 
     return normalized
         .split('-')
         .where((part) => part.isNotEmpty)
         .map((part) => '${part[0].toUpperCase()}${part.substring(1)}')
         .join('-');
+  }
+
+  void _ensureLocaleCache() {
+    final revision = GameCatalogLocale.revision;
+    if (_catalogLocaleRevision == revision) return;
+    _catalogLocaleRevision = revision;
+    _descriptionCache = null;
+    _webItemCache = null;
   }
 
   String _labelFromId(String id) {

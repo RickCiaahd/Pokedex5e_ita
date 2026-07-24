@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../localization/game_catalog_locale.dart';
 import '../models/pokemon.dart';
 import '../models/pokemon_flavor.dart';
 import '../services/custom_pokemon_discovery_service.dart';
@@ -12,10 +13,13 @@ import 'pokemon_localization_repository.dart';
 class PokemonRepository {
   static List<Pokemon>? _cachedAllPokemon;
   static int _cachedCustomRevision = -1;
+  static int _cachedLocaleRevision = -1;
 
   Future<List<Pokemon>> getAllPokemon({bool includeSealed = false}) async {
     final customRevision = CustomPokemonRepository.revision;
-    if (_cachedAllPokemon != null && _cachedCustomRevision == customRevision) {
+    if (_cachedAllPokemon != null &&
+        _cachedCustomRevision == customRevision &&
+        _cachedLocaleRevision == GameCatalogLocale.revision) {
       return _filterSealed(_cachedAllPokemon!, includeSealed: includeSealed);
     }
 
@@ -64,8 +68,9 @@ class PokemonRepository {
       ]);
     }
 
-    final localizedTexts = await PokemonLocalizationRepository()
-        .getPokemonTexts();
+    final localizedTexts = GameCatalogLocale.isItalian
+        ? await PokemonLocalizationRepository().getPokemonTexts()
+        : const <int, PokemonLocalizedText>{};
     final pokemonList =
         pokemonByNumber.values
             .map((pokemon) {
@@ -80,6 +85,7 @@ class PokemonRepository {
           ..sort((a, b) => a.id.compareTo(b.id));
     _cachedAllPokemon = pokemonList;
     _cachedCustomRevision = customRevision;
+    _cachedLocaleRevision = GameCatalogLocale.revision;
 
     return _filterSealed(pokemonList, includeSealed: includeSealed);
   }
@@ -143,6 +149,7 @@ class PokemonRepository {
   static void clearCache() {
     _cachedAllPokemon = null;
     _cachedCustomRevision = -1;
+    _cachedLocaleRevision = -1;
   }
 
   Future<List<Pokemon>> _getLegacyPokemon() async {
@@ -323,10 +330,10 @@ class PokemonRepository {
     switch (rawSuffix) {
       case 'm':
       case 'male':
-        return 'Maschio';
+        return GameCatalogLocale.isItalian ? 'Maschio' : 'Male';
       case 'f':
       case 'female':
-        return 'Femmina';
+        return GameCatalogLocale.isItalian ? 'Femmina' : 'Female';
       case 'alola':
       case 'alolan':
         return 'Alola';
@@ -368,8 +375,9 @@ class PokemonRepository {
         PokemonFlavor.fromJson(value as Map<String, dynamic>),
       ),
     );
-    final localizedTexts = await PokemonLocalizationRepository()
-        .getPokemonTexts();
+    final localizedTexts = GameCatalogLocale.isItalian
+        ? await PokemonLocalizationRepository().getPokemonTexts()
+        : const <int, PokemonLocalizedText>{};
 
     return flavors.map((pokemonId, flavor) {
       final localized = localizedTexts[pokemonId];

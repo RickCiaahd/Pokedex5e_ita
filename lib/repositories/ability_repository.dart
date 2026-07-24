@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/services.dart';
 
+import '../localization/game_catalog_locale.dart';
 import '../models/pokemon_ability.dart';
 import '../services/custom_pokemon_runtime_registry.dart';
 import 'ability_localization_repository.dart';
@@ -11,8 +12,10 @@ class AbilityRepository {
   Map<String, String>? _displayNameCache;
   List<PokemonAbility>? _webAbilityCache;
   Set<String>? _deprecatedAbilityCache;
+  int _catalogLocaleRevision = -1;
 
   Future<Map<String, String>> getAbilityDescriptions({int? pokemonId}) async {
+    _ensureLocaleCache();
     if (_descriptionCache == null) {
       final descriptions = <String, String>{};
 
@@ -46,6 +49,7 @@ class AbilityRepository {
   }
 
   Future<Map<String, String>> getAbilityDisplayNames({int? pokemonId}) async {
+    _ensureLocaleCache();
     if (_displayNameCache == null) {
       final abilities = await getWebAbilities(includeDeprecated: true);
       _displayNameCache = {
@@ -66,16 +70,20 @@ class AbilityRepository {
   Future<List<PokemonAbility>> getWebAbilities({
     bool includeDeprecated = false,
   }) async {
+    _ensureLocaleCache();
     if (_webAbilityCache == null) {
       final jsonString = await rootBundle.loadString(
         'assets/data_webapp/abilities.json',
       );
       final json = Map<String, dynamic>.from(jsonDecode(jsonString));
       final abilityJson = List<dynamic>.from(json['items'] ?? const []);
-      final localizationRepository = AbilityLocalizationRepository();
-      final localizedDescriptions = await localizationRepository
-          .getDescriptions();
-      final localizedNames = await localizationRepository.getNames();
+      var localizedDescriptions = const <String, String>{};
+      var localizedNames = const <String, String>{};
+      if (GameCatalogLocale.isItalian) {
+        final localizationRepository = AbilityLocalizationRepository();
+        localizedDescriptions = await localizationRepository.getDescriptions();
+        localizedNames = await localizationRepository.getNames();
+      }
 
       _webAbilityCache =
           abilityJson
@@ -114,6 +122,7 @@ class AbilityRepository {
   }
 
   Future<Set<String>> getDeprecatedAbilityNames() async {
+    _ensureLocaleCache();
     if (_deprecatedAbilityCache != null) return _deprecatedAbilityCache!;
 
     final abilities = await getWebAbilities(includeDeprecated: true);
@@ -123,5 +132,15 @@ class AbilityRepository {
         .toSet();
 
     return _deprecatedAbilityCache!;
+  }
+
+  void _ensureLocaleCache() {
+    final revision = GameCatalogLocale.revision;
+    if (_catalogLocaleRevision == revision) return;
+    _catalogLocaleRevision = revision;
+    _descriptionCache = null;
+    _displayNameCache = null;
+    _webAbilityCache = null;
+    _deprecatedAbilityCache = null;
   }
 }

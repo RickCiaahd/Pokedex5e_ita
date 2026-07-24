@@ -556,13 +556,21 @@ replace_once(
     "        _cachedCustomRevision == customRevision &&\n"
     "        _cachedLocaleRevision == GameCatalogLocale.revision) {\n",
 )
-replace_once(
-    "lib/repositories/pokemon_repository.dart",
+text = read("lib/repositories/pokemon_repository.dart")
+old = (
     "    final localizedTexts = await PokemonLocalizationRepository()\n"
-    "        .getPokemonTexts();\n",
+    "        .getPokemonTexts();\n"
+)
+new = (
     "    final localizedTexts = GameCatalogLocale.isItalian\n"
     "        ? await PokemonLocalizationRepository().getPokemonTexts()\n"
-    "        : const <int, PokemonLocalizedText>{};\n",
+    "        : const <int, PokemonLocalizedText>{};\n"
+)
+if text.count(old) < 1:
+    raise RuntimeError("pokemon_repository.dart: overlay principale non trovato")
+write(
+    "lib/repositories/pokemon_repository.dart",
+    text.replace(old, new, 1),
 )
 replace_once(
     "lib/repositories/pokemon_repository.dart",

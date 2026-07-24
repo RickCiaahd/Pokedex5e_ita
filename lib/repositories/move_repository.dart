@@ -3,14 +3,17 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 
 import '../models/move_data.dart';
+import '../localization/game_catalog_locale.dart';
 import '../services/custom_pokemon_runtime_registry.dart';
 import 'move_localization_repository.dart';
 
 class MoveRepository {
   final Map<String, MoveData?> _cache = {};
   Map<String, MoveData>? _webMoveCache;
+  int _catalogLocaleRevision = -1;
 
   Future<MoveData?> getMove(String reference, {int? pokemonId}) async {
+    _ensureLocaleCache();
     if (pokemonId != null) {
       final localMove = CustomPokemonRuntimeRegistry.moveFor(
         pokemonId,
@@ -41,7 +44,11 @@ class MoveRepository {
         'assets/data/moves/$reference.json',
       );
       final json = Map<String, dynamic>.from(jsonDecode(jsonString));
-      final move = MoveData.fromJson(reference, json);
+      final move = MoveData.fromJson(
+        reference,
+        json,
+        localizeToItalian: GameCatalogLocale.isItalian,
+      );
       _cache[cacheKey] = move;
       return move;
     } catch (_) {
@@ -108,6 +115,7 @@ class MoveRepository {
   }
 
   Future<Map<String, MoveData>> _getWebMoveCatalog() async {
+    _ensureLocaleCache();
     if (_webMoveCache != null) return _webMoveCache!;
 
     final jsonString = await rootBundle.loadString(
@@ -115,7 +123,9 @@ class MoveRepository {
     );
     final json = Map<String, dynamic>.from(jsonDecode(jsonString));
     final movesJson = List<dynamic>.from(json['moves'] ?? const []);
-    final localizations = await MoveLocalizationRepository().getEntries();
+    final localizations = GameCatalogLocale.isItalian
+        ? await MoveLocalizationRepository().getEntries()
+        : const <String, MoveLocalization>{};
     final moves = <String, MoveData>{};
 
     for (final value in movesJson) {
@@ -123,6 +133,7 @@ class MoveRepository {
       final moveId = sourceJson['id']?.toString() ?? '';
       final move = MoveData.fromWebJson(
         _localizedMoveJson(sourceJson, localizations[moveId]),
+        localizeToItalian: GameCatalogLocale.isItalian,
       );
       if (move.name.trim().isEmpty) continue;
 
@@ -155,6 +166,14 @@ class MoveRepository {
       'description': localization.description,
       'higherLevels': localization.higherLevels,
     };
+  }
+
+  void _ensureLocaleCache() {
+    final revision = GameCatalogLocale.revision;
+    if (_catalogLocaleRevision == revision) return;
+    _catalogLocaleRevision = revision;
+    _cache.clear();
+    _webMoveCache = null;
   }
 
   void _registerMoveKey(

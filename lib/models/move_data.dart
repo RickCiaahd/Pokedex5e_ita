@@ -48,7 +48,11 @@ class MoveData {
     return value == null || value.isEmpty ? name : value;
   }
 
-  factory MoveData.fromJson(String name, Map<String, dynamic> json) {
+  factory MoveData.fromJson(
+    String name,
+    Map<String, dynamic> json, {
+    bool localizeToItalian = true,
+  }) {
     final damageJson = Map<String, dynamic>.from(json['Damage'] ?? {});
 
     return MoveData(
@@ -56,11 +60,26 @@ class MoveData {
       name: name,
       type: json['Type']?.toString() ?? 'Typeless',
       pp: json['PP']?.toString() ?? '-',
-      range: _localizeMetadata(json['Range']?.toString() ?? '-'),
-      duration: _localizeMetadata(json['Duration']?.toString() ?? '-'),
-      moveTime: _localizeMetadata(json['Move Time']?.toString() ?? '-'),
-      description: _localizeVisibleText(json['Description']?.toString() ?? ''),
-      scaling: _localizeNullableText(json['Scaling']?.toString()),
+      range: _metadataText(
+        json['Range']?.toString() ?? '-',
+        localizeToItalian: localizeToItalian,
+      ),
+      duration: _metadataText(
+        json['Duration']?.toString() ?? '-',
+        localizeToItalian: localizeToItalian,
+      ),
+      moveTime: _metadataText(
+        json['Move Time']?.toString() ?? '-',
+        localizeToItalian: localizeToItalian,
+      ),
+      description: _visibleText(
+        json['Description']?.toString() ?? '',
+        localizeToItalian: localizeToItalian,
+      ),
+      scaling: _nullableText(
+        json['Scaling']?.toString(),
+        localizeToItalian: localizeToItalian,
+      ),
       damageByLevel: damageJson.map(
         (key, value) => MapEntry(
           int.parse(key),
@@ -69,11 +88,16 @@ class MoveData {
       ),
       movePowers: _normalizePowers(json['Move Power']),
       isAttack: json['atk'] == true,
-      save: _localizeSave(json['Save']?.toString()),
+      save: localizeToItalian
+          ? _localizeSave(json['Save']?.toString())
+          : _normalizedNullableText(json['Save']?.toString()),
     );
   }
 
-  factory MoveData.fromWebJson(Map<String, dynamic> json) {
+  factory MoveData.fromWebJson(
+    Map<String, dynamic> json, {
+    bool localizeToItalian = true,
+  }) {
     final damage = json['damage'];
     final damageMap = damage is Map ? Map<String, dynamic>.from(damage) : null;
     final diceMap = damageMap == null
@@ -85,8 +109,9 @@ class MoveData {
     final saveMap = save is Map ? Map<String, dynamic>.from(save) : null;
     final tm = json['tm'];
     final tmMap = tm is Map ? Map<String, dynamic>.from(tm) : null;
-    final higherLevels = _localizeNullableText(
+    final higherLevels = _nullableText(
       json['higherLevels']?.toString(),
+      localizeToItalian: localizeToItalian,
     );
     final name = json['name']?.toString() ?? 'Mossa sconosciuta';
 
@@ -96,12 +121,22 @@ class MoveData {
       sourceName: json['sourceName']?.toString(),
       type: _titleCase(json['type']?.toString() ?? 'Typeless'),
       pp: json['pp']?.toString() ?? '-',
-      range: _localizeMetadata(json['range']?.toString() ?? '-'),
-      duration: _localizeMetadata(json['duration']?.toString() ?? '-'),
-      moveTime: _localizeMetadata(json['time']?.toString() ?? '-'),
+      range: _metadataText(
+        json['range']?.toString() ?? '-',
+        localizeToItalian: localizeToItalian,
+      ),
+      duration: _metadataText(
+        json['duration']?.toString() ?? '-',
+        localizeToItalian: localizeToItalian,
+      ),
+      moveTime: _metadataText(
+        json['time']?.toString() ?? '-',
+        localizeToItalian: localizeToItalian,
+      ),
       description: _readDescription(
         json['description'],
         higherLevels: higherLevels,
+        localizeToItalian: localizeToItalian,
       ),
       scaling: higherLevels,
       higherLevels: higherLevels,
@@ -114,11 +149,11 @@ class MoveData {
       movePowers: _normalizePowers(json['power']),
       isAttack: attackMap != null,
       attackScope: attackMap?['scope']?.toString(),
-      save: _readSave(saveMap),
+      save: _readSave(saveMap, localizeToItalian: localizeToItalian),
       damageModifier: damageMap?['modifier']?.toString(),
-      damageTypes: _readStringList(damageMap?['type'])
-          .map(_titleCase)
-          .toList(growable: false),
+      damageTypes: _readStringList(
+        damageMap?['type'],
+      ).map(_titleCase).toList(growable: false),
       tmNumber: _readInt(tmMap?['id']),
       tmCost: _readInt(tmMap?['cost']),
     );
@@ -170,28 +205,47 @@ class MoveData {
     return const [];
   }
 
-  static String _readDescription(dynamic value, {String? higherLevels}) {
+  static String _readDescription(
+    dynamic value, {
+    String? higherLevels,
+    required bool localizeToItalian,
+  }) {
     final parts = <String>[];
 
     if (value is String && value.trim().isNotEmpty) {
-      parts.add(_localizeVisibleText(value.trim()));
+      parts.add(
+        _visibleText(value.trim(), localizeToItalian: localizeToItalian),
+      );
     } else if (value is List) {
       parts.addAll(
         value
-            .map(_descriptionBlockToText)
+            .map(
+              (block) => _descriptionBlockToText(
+                block,
+                localizeToItalian: localizeToItalian,
+              ),
+            )
             .where((entry) => entry.trim().isNotEmpty),
       );
     }
 
     if (higherLevels != null && higherLevels.trim().isNotEmpty) {
-      parts.add('Livelli superiori: ${higherLevels.trim()}');
+      final label = localizeToItalian
+          ? 'Livelli superiori'
+          : 'At Higher Levels';
+      parts.add('$label: ${higherLevels.trim()}');
     }
 
     return parts.join('\n\n');
   }
 
-  static String _descriptionBlockToText(dynamic block) {
-    if (block is String) return _localizeVisibleText(block);
+  static String _descriptionBlockToText(
+    dynamic block, {
+    required bool localizeToItalian,
+  }) {
+    if (block is String) {
+      return _visibleText(block, localizeToItalian: localizeToItalian);
+    }
 
     if (block is Map) {
       final map = Map<String, dynamic>.from(block);
@@ -201,13 +255,29 @@ class MoveData {
         final lines = <String>[];
 
         if (headers.isNotEmpty) {
-          lines.add(headers.map(_localizeVisibleText).join(' | '));
+          lines.add(
+            headers
+                .map(
+                  (header) => _visibleText(
+                    header,
+                    localizeToItalian: localizeToItalian,
+                  ),
+                )
+                .join(' | '),
+          );
         }
 
         if (rows is List) {
           for (final row in rows) {
             lines.add(
-              _readStringList(row).map(_localizeVisibleText).join(' | '),
+              _readStringList(row)
+                  .map(
+                    (cell) => _visibleText(
+                      cell,
+                      localizeToItalian: localizeToItalian,
+                    ),
+                  )
+                  .join(' | '),
             );
           }
         }
@@ -216,20 +286,36 @@ class MoveData {
       }
 
       return map.values
-          .map((value) => _localizeVisibleText(value.toString()))
+          .map(
+            (value) => _visibleText(
+              value.toString(),
+              localizeToItalian: localizeToItalian,
+            ),
+          )
           .join(' ');
     }
 
-    return _localizeVisibleText(block?.toString() ?? '');
+    return _visibleText(
+      block?.toString() ?? '',
+      localizeToItalian: localizeToItalian,
+    );
   }
 
-  static String? _readSave(Map<String, dynamic>? saveMap) {
+  static String? _readSave(
+    Map<String, dynamic>? saveMap, {
+    required bool localizeToItalian,
+  }) {
     if (saveMap == null) return null;
-
     final attributes = _readStringList(saveMap['attribute'])
-        .map((attribute) => _localizeAbilityAbbreviation(attribute.toUpperCase()))
+        .map(
+          (attribute) => localizeToItalian
+              ? _localizeAbilityAbbreviation(attribute.toUpperCase())
+              : attribute.toUpperCase(),
+        )
         .toList(growable: false);
-    if (attributes.isEmpty) return 'TIRO SALVEZZA';
+    if (attributes.isEmpty) {
+      return localizeToItalian ? 'TIRO SALVEZZA' : 'SAVING THROW';
+    }
 
     return attributes.join('/');
   }
@@ -285,28 +371,71 @@ class MoveData {
         .replaceAll(RegExp(r'\bhour\b', caseSensitive: false), 'ora');
   }
 
-  static String? _localizeNullableText(String? value) {
+  static String _metadataText(String value, {required bool localizeToItalian}) {
+    return localizeToItalian ? _localizeMetadata(value) : value.trim();
+  }
+
+  static String _visibleText(String value, {required bool localizeToItalian}) {
+    return localizeToItalian ? _localizeVisibleText(value) : value;
+  }
+
+  static String? _nullableText(
+    String? value, {
+    required bool localizeToItalian,
+  }) {
+    final normalized = _normalizedNullableText(value);
+    if (normalized == null) return null;
+    return localizeToItalian ? _localizeVisibleText(normalized) : normalized;
+  }
+
+  static String? _normalizedNullableText(String? value) {
     final normalized = value?.trim();
-    if (normalized == null || normalized.isEmpty) return null;
-    return _localizeVisibleText(normalized);
+    return normalized == null || normalized.isEmpty ? null : normalized;
   }
 
   static String _localizeVisibleText(String value) {
     var result = value;
 
     for (final replacement in <MapEntry<RegExp, String>>[
-      MapEntry(RegExp(r'\bMove\s+DC\b', caseSensitive: false), 'CD della mossa'),
-      MapEntry(RegExp(r'\bfree action\b', caseSensitive: false), 'azione gratuita'),
-      MapEntry(RegExp(r'\bbonus action\b', caseSensitive: false), 'azione bonus'),
+      MapEntry(
+        RegExp(r'\bMove\s+DC\b', caseSensitive: false),
+        'CD della mossa',
+      ),
+      MapEntry(
+        RegExp(r'\bfree action\b', caseSensitive: false),
+        'azione gratuita',
+      ),
+      MapEntry(
+        RegExp(r'\bbonus action\b', caseSensitive: false),
+        'azione bonus',
+      ),
       MapEntry(RegExp(r'\breaction\b', caseSensitive: false), 'reazione'),
       MapEntry(RegExp(r'\baction\b', caseSensitive: false), 'azione'),
-      MapEntry(RegExp(r'\bsaving throws\b', caseSensitive: false), 'tiri salvezza'),
-      MapEntry(RegExp(r'\bsaving throw\b', caseSensitive: false), 'tiro salvezza'),
+      MapEntry(
+        RegExp(r'\bsaving throws\b', caseSensitive: false),
+        'tiri salvezza',
+      ),
+      MapEntry(
+        RegExp(r'\bsaving throw\b', caseSensitive: false),
+        'tiro salvezza',
+      ),
       MapEntry(RegExp(r'\bhit points\b', caseSensitive: false), 'punti ferita'),
-      MapEntry(RegExp(r'\bArmor Class\b', caseSensitive: false), 'Classe Armatura'),
-      MapEntry(RegExp(r'\bproficiency bonus\b', caseSensitive: false), 'bonus di competenza'),
-      MapEntry(RegExp(r'\binstantaneous\b', caseSensitive: false), 'istantanea'),
-      MapEntry(RegExp(r'\bconcentration\b', caseSensitive: false), 'concentrazione'),
+      MapEntry(
+        RegExp(r'\bArmor Class\b', caseSensitive: false),
+        'Classe Armatura',
+      ),
+      MapEntry(
+        RegExp(r'\bproficiency bonus\b', caseSensitive: false),
+        'bonus di competenza',
+      ),
+      MapEntry(
+        RegExp(r'\binstantaneous\b', caseSensitive: false),
+        'istantanea',
+      ),
+      MapEntry(
+        RegExp(r'\bconcentration\b', caseSensitive: false),
+        'concentrazione',
+      ),
     ]) {
       result = result.replaceAll(replacement.key, replacement.value);
     }
@@ -343,7 +472,10 @@ class MoveData {
         .trim()
         .split(RegExp(r'[\s_-]+'))
         .where((part) => part.isNotEmpty)
-        .map((part) => '${part[0].toUpperCase()}${part.substring(1).toLowerCase()}')
+        .map(
+          (part) =>
+              '${part[0].toUpperCase()}${part.substring(1).toLowerCase()}',
+        )
         .join(' ');
   }
 }

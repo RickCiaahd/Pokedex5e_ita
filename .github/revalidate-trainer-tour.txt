@@ -1,0 +1,1 @@
+Trigger temporaneo di validazione dopo la rimozione del workflow di patch.

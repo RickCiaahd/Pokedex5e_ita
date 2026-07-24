@@ -151,36 +151,52 @@ class GuidedTourLayer extends StatelessWidget {
 
   void _finishTour() {
     if (scrollController.hasClients) {
-      final position = scrollController.position;
-      if (position.hasContentDimensions) {
-        final target = position.minScrollExtent;
-        if ((position.pixels - target).abs() > .5) {
-          try {
-            position.jumpTo(target);
-          } catch (error) {
-            debugPrint(
-              'Impossibile ripristinare lo scorrimento del tour: $error',
-            );
-          }
-        }
+      try {
+        final position = scrollController.position;
+        position.jumpTo(position.pixels);
+      } catch (error) {
+        debugPrint('Impossibile interrompere lo scorrimento del tour: $error');
       }
     }
 
     controller.finish();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _restoreScrollToStart();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _restoreScrollToStart();
+      });
+    });
+  }
+
+  void _restoreScrollToStart() {
+    if (!scrollController.hasClients) return;
+
+    final position = scrollController.position;
+    if (!position.hasContentDimensions) return;
+
+    final target = position.minScrollExtent;
+    if ((position.pixels - target).abs() <= .5) return;
+
+    try {
+      position.jumpTo(target);
+    } catch (error) {
+      debugPrint('Impossibile ripristinare lo scorrimento del tour: $error');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: controller,
-      builder: (context, _) {
-        if (!controller.isVisible || steps.isEmpty) {
-          return const SizedBox.shrink();
-        }
+    return Positioned.fill(
+      child: AnimatedBuilder(
+        animation: controller,
+        builder: (context, _) {
+          if (!controller.isVisible || steps.isEmpty) {
+            return const IgnorePointer(child: SizedBox.shrink());
+          }
 
-        final safeIndex = controller.stepIndex.clamp(0, steps.length - 1);
-        return Positioned.fill(
-          child: GuidedTourOverlay(
+          final safeIndex = controller.stepIndex.clamp(0, steps.length - 1);
+          return GuidedTourOverlay(
             step: steps[safeIndex],
             stepIndex: safeIndex,
             totalSteps: steps.length,
@@ -194,9 +210,9 @@ class GuidedTourLayer extends StatelessWidget {
               controller.next(steps.length);
             },
             onSkip: _finishTour,
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 }

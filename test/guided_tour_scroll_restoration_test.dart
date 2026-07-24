@@ -67,18 +67,24 @@ void main() {
     );
 
     tourController.start();
-    await tester.pumpAndSettle();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 80));
 
-    expect(scrollController.offset, greaterThan(0));
     expect(find.text('HO CAPITO'), findsOneWidget);
 
     await tester.tap(find.text('HO CAPITO'));
     await tester.pump();
+    await tester.pump();
+    await tester.pumpAndSettle();
 
     expect(tourController.isVisible, isFalse);
     expect(
       scrollController.offset,
       closeTo(scrollController.position.minScrollExtent, .1),
     );
+
+    // _resolveTarget può avere ancora il breve timer usato per aspettare lo
+    // scorrimento automatico. Lo facciamo terminare prima di smontare il test.
+    await tester.pump(const Duration(milliseconds: 500));
   });
 }

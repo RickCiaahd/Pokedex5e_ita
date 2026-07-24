@@ -22,6 +22,24 @@ jobs:
             lib/l10n
             test
 
+      - name: Repair onboarding transformation script
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('tooling/apply_localized_onboarding.py')
+          text = path.read_text(encoding='utf-8')
+          old = '''    "            FilledButton(onPressed: onRetry, child: const Text('RIPROVA')),
+          ",
+          '''
+          new = '''    "            FilledButton(onPressed: onRetry, child: const Text('RIPROVA')),\\n",
+          '''
+          if old not in text:
+              raise RuntimeError('Frammento sintattico da correggere non trovato')
+          path.write_text(text.replace(old, new, 1), encoding='utf-8')
+          PY
+
       - name: Capture onboarding localization result
         shell: bash
         run: |

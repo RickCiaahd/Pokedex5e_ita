@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: flutter-ci-${{ github.workflow }}-${{ github.ref }}
@@ -73,110 +73,3 @@ jobs:
           path: build/app/outputs/flutter-apk/app-debug.apk
           if-no-files-found: error
           retention-days: 7
-
-  apply_guided_submenu_tours:
-    name: Apply guided submenu tours
-    if: github.event_name == 'pull_request' && github.event.pull_request.title == 'Aggiunge i tour guidati ai principali sottomenu'
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-
-    steps:
-      - name: Check out feature branch
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.pull_request.head.ref }}
-          fetch-depth: 0
-
-      - name: Repair patch script
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 - <<'PY'
-          from pathlib import Path
-
-          path = Path('tooling/apply_guided_submenu_tours.py')
-          text = path.read_text(encoding='utf-8')
-          marker = '''replace_once(
-              trainer,
-              """  final TextEditingController nameController;'''
-          corrected_marker = '''replace_once(
-              trainer,
-              """  final TextEditingController nameController;
-            final TextEditingController moneyController;
-            final String race;'''
-
-          if corrected_marker not in text:
-              start = text.find(marker)
-              if start < 0:
-                  raise SystemExit('Inizio del blocco ambiguo non trovato nello script.')
-              end_marker = '\n)\nreplace_once('
-              end = text.find(end_marker, start)
-              if end < 0:
-                  raise SystemExit('Fine del blocco ambiguo non trovata nello script.')
-              end += len('\n)')
-              replacement = '''replace_once(
-              trainer,
-              """  final TextEditingController nameController;
-            final TextEditingController moneyController;
-            final String race;
-            final String raceDescription;
-            final Pokemon? selectedStarter;
-            final String startingPack;
-            final int trainerLevel;
-            final String trainerPath;
-          """,
-              """  final GlobalKey progressionKey;
-            final TextEditingController nameController;
-            final TextEditingController moneyController;
-            final String race;
-            final String raceDescription;
-            final Pokemon? selectedStarter;
-            final String startingPack;
-            final int trainerLevel;
-            final String trainerPath;
-          """,
-          )'''
-              text = text[:start] + replacement + text[end:]
-              path.write_text(text, encoding='utf-8')
-          PY
-
-      - name: Apply submenu tour integration
-        shell: bash
-        run: |
-          set -o pipefail
-          python3 tooling/apply_guided_submenu_tours.py 2>&1 | tee guided-tour-apply.log
-
-      - name: Upload integration log
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: guided-tour-apply-log
-          path: guided-tour-apply.log
-          if-no-files-found: ignore
-          retention-days: 7
-
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-          cache: true
-
-      - name: Format Dart sources
-        run: |
-          dart format \
-            lib/database/hive_keys.dart \
-            lib/services/guided_tour_service.dart \
-            lib/widgets/tour/guided_tour.dart \
-            lib/screens/tools/tools_screen.dart \
-            lib/screens/trainer/trainer_sheet_screen.dart \
-            lib/screens/battle/battle_screen.dart
-
-      - name: Commit generated changes
-        shell: bash
-        run: |
-          set -euo pipefail
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -A
-          git commit -m 'Aggiunge i tour guidati ai principali sottomenu'
-          git push origin HEAD:${{ github.event.pull_request.head.ref }}

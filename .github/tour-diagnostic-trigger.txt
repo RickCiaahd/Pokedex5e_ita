@@ -1,1 +1,1 @@
-Trigger temporaneo per eseguire separatamente i test di regressione dei tour guidati.
+Trigger temporaneo per rieseguire i test di regressione dei tour con log completo.

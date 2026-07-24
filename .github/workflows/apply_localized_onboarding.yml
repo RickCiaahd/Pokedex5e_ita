@@ -5,22 +5,31 @@ on:
     branches:
       - main
 
+permissions:
+  contents: write
+
 jobs:
   apply:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check out onboarding files
+      - name: Check out onboarding branch
         uses: actions/checkout@v4
         with:
           ref: feature/localized-onboarding
-          fetch-depth: 1
-          show-progress: false
-          sparse-checkout: |
-            tooling
-            lib/screens/onboarding
-            lib/l10n
-            test
+          fetch-depth: 0
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
 
       - name: Repair onboarding transformation script
         shell: bash
@@ -40,22 +49,37 @@ jobs:
           path.write_text(text.replace(old, new, 1), encoding='utf-8')
           PY
 
-      - name: Capture onboarding localization result
+      - name: Apply onboarding localization
+        run: python tooling/apply_localized_onboarding.py
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Generate localizations
+        run: flutter gen-l10n
+
+      - name: Format changed Dart files
+        run: dart format lib/screens/onboarding/first_launch_onboarding_screen.dart lib/l10n test/onboarding_localization_test.dart
+
+      - name: Analyze source
+        run: flutter analyze
+
+      - name: Run onboarding localization test
+        run: flutter test test/onboarding_localization_test.dart
+
+      - name: Run complete test suite
+        run: flutter test
+
+      - name: Build Android debug APK
+        run: flutter build apk --debug
+
+      - name: Publish localized onboarding
         shell: bash
         run: |
-          set +e
-          python tooling/apply_localized_onboarding.py > onboarding_apply_error.log 2>&1
-          echo "$?" > onboarding_apply_status.txt
-          exit 0
-
-      - name: Upload onboarding diagnostics
-        uses: actions/upload-artifact@v4
-        with:
-          name: onboarding-localization-diagnostics
-          path: |
-            onboarding_apply_error.log
-            onboarding_apply_status.txt
-
-      - name: Fail when localization did not apply
-        shell: bash
-        run: test "$(cat onboarding_apply_status.txt)" = "0"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/apply_localized_onboarding.yml
+          git rm tooling/apply_localized_onboarding.py
+          git add -A
+          git commit -m "Localizza completamente l'onboarding [skip ci]"
+          git push origin HEAD:feature/localized-onboarding

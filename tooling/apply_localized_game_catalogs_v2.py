@@ -16,8 +16,12 @@ text = move_repository.read_text(encoding='utf-8')
 normalizations = {
     "      final move = MoveData.fromJson(reference, json);\n":
         "       final move = MoveData.fromJson(reference, json);\n",
-    "      final move = MoveData.fromWebJson(\n":
-        "       final move = MoveData.fromWebJson(\n",
+    "      final move = MoveData.fromWebJson(\n"
+    "        _localizedMoveJson(sourceJson, localizations[moveId]),\n"
+    "      );\n":
+        "       final move = MoveData.fromWebJson(\n"
+        "         _localizedMoveJson(sourceJson, localizations[moveId]),\n"
+        "       );\n",
 }
 for source, target in normalizations.items():
     if source not in text:

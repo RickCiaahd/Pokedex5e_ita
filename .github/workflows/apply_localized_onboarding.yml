@@ -59,7 +59,7 @@ jobs:
         run: flutter gen-l10n
 
       - name: Format changed Dart files
-        run: dart format lib/screens/onboarding/first_launch_onboarding_screen.dart lib/l10n test/onboarding_localization_test.dart
+        run: dart format lib/screens/onboarding/first_launch_onboarding_screen.dart lib/l10n test/onboarding_localization_test.dart test/widget_test.dart
 
       - name: Analyze source
         run: flutter analyze
@@ -67,22 +67,19 @@ jobs:
       - name: Run onboarding localization test
         run: flutter test test/onboarding_localization_test.dart
 
-      - name: Capture complete test suite
+      - name: Run complete test suite
+        run: flutter test
+
+      - name: Build Android debug APK
+        run: flutter build apk --debug
+
+      - name: Publish localized onboarding
         shell: bash
         run: |
-          set +e
-          flutter test > onboarding_full_test.log 2>&1
-          echo "$?" > onboarding_full_test_status.txt
-          exit 0
-
-      - name: Upload complete test diagnostics
-        uses: actions/upload-artifact@v4
-        with:
-          name: onboarding-full-test-diagnostics
-          path: |
-            onboarding_full_test.log
-            onboarding_full_test_status.txt
-
-      - name: Fail when the suite did not pass
-        shell: bash
-        run: test "$(cat onboarding_full_test_status.txt)" = "0"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/apply_localized_onboarding.yml
+          git rm tooling/apply_localized_onboarding.py
+          git add -A
+          git commit -m "Localizza completamente l'onboarding [skip ci]"
+          git push origin HEAD:feature/localized-onboarding

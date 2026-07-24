@@ -64,7 +64,7 @@ class HomeTourOverlay extends StatelessWidget {
           left: compact ? 8 : 24,
           right: compact ? 8 : null,
           bottom: 8,
-          width: compact ? null : math.min(650, size.width - 48),
+          width: compact ? null : math.min(650.0, size.width - 48),
           child: SafeArea(
             top: false,
             child: _ProfessorSpeechPanel(
@@ -106,7 +106,7 @@ class _ProfessorSpeechPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     final compact = MediaQuery.sizeOf(context).width < 430;
-    final professorWidth = compact ? 84.0 : 116.0;
+    final professorWidth = compact ? 82.0 : 116.0;
 
     return Material(
       color: Colors.transparent,
@@ -126,12 +126,9 @@ class _ProfessorSpeechPanel extends StatelessWidget {
               ),
             ),
           ),
-          Transform.translate(
-            offset: const Offset(-10, 0),
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                maxWidth: compact ? 292 : 510,
-              ),
+          Expanded(
+            child: Transform.translate(
+              offset: const Offset(-10, 0),
               child: Container(
                 padding: EdgeInsets.fromLTRB(
                   compact ? 16 : 20,
@@ -237,12 +234,21 @@ class _SpotlightPainter extends CustomPainter {
       return;
     }
 
-    final safeRect = Rect.fromLTRB(
-      target.left.clamp(8.0, size.width - 8.0),
-      target.top.clamp(8.0, size.height - 8.0),
-      target.right.clamp(8.0, size.width - 8.0),
-      target.bottom.clamp(8.0, size.height - 8.0),
+    final visibleBounds = Rect.fromLTWH(
+      8,
+      8,
+      math.max(0, size.width - 16),
+      math.max(0, size.height - 16),
     );
+    final safeRect = target.intersect(visibleBounds);
+    if (safeRect.isEmpty) {
+      canvas.drawPath(
+        fullScreen,
+        Paint()..color = const Color(0xB8000000),
+      );
+      return;
+    }
+
     final spotlight = Path()
       ..addRRect(
         RRect.fromRectAndRadius(

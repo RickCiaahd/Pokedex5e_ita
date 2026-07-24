@@ -24,6 +24,19 @@ void main() {
     expect(guided, isNot(contains('class _ProfessorSpeechPanel')));
   });
 
+  test('il fumetto viene dipinto sopra il Professore', () {
+    final panel = File(
+      'lib/widgets/tour/professor_tour_panel.dart',
+    ).readAsStringSync();
+
+    final professorPosition = panel.indexOf('child: Image.asset(');
+    final speechCardPosition = panel.indexOf('child: _TourSpeechCard(');
+
+    expect(professorPosition, greaterThanOrEqualTo(0));
+    expect(speechCardPosition, greaterThan(professorPosition));
+    expect(panel, contains('opaco protegge sempre la leggibilità'));
+  });
+
   test('le scrollbar desktop automatiche sono disattivate', () {
     final app = File('lib/app.dart').readAsStringSync();
     expect(app, contains('MaterialScrollBehavior().copyWith('));

@@ -5,9 +5,9 @@ import 'package:flutter/material.dart';
 /// Pannello condiviso dai tour della Home e dei principali sottomenu.
 ///
 /// Il Professore è disposto come in una schermata dialogo: figura ampia a
-/// destra, ritagliata a tre quarti e appoggiata al bordo inferiore, mentre il
-/// fumetto occupa la parte sinistra e rimane interattivo anche nelle zone di
-/// sovrapposizione.
+/// destra, ritagliata a tre quarti e appoggiata al bordo inferiore. Il fumetto
+/// viene dipinto sopra la porzione sovrapposta del personaggio, così il volto e
+/// il tablet restano ben visibili senza coprire testi o pulsanti.
 class ProfessorTourPanel extends StatelessWidget {
   const ProfessorTourPanel({
     super.key,
@@ -68,26 +68,9 @@ class ProfessorTourPanel extends StatelessWidget {
                 clipBehavior: Clip.none,
                 alignment: Alignment.bottomLeft,
                 children: [
-                  Padding(
-                    padding: EdgeInsets.only(
-                      left: compact ? 6 : 12,
-                      bottom: compact ? 8 : 12,
-                    ),
-                    child: SizedBox(
-                      width: panelWidth,
-                      child: _TourSpeechCard(
-                        icon: icon,
-                        title: title,
-                        description: description,
-                        stepIndex: stepIndex,
-                        totalSteps: totalSteps,
-                        lastStep: lastStep,
-                        onBack: onBack,
-                        onNext: onNext,
-                        onSkip: onSkip,
-                      ),
-                    ),
-                  ),
+                  // Il personaggio viene disegnato per primo: il fumetto
+                  // opaco protegge sempre la leggibilità del testo nelle zone
+                  // in cui i due elementi si sovrappongono.
                   Positioned(
                     right: 0,
                     bottom: 0,
@@ -108,6 +91,26 @@ class ProfessorTourPanel extends StatelessWidget {
                             ),
                           ),
                         ),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(
+                      left: compact ? 6 : 12,
+                      bottom: compact ? 8 : 12,
+                    ),
+                    child: SizedBox(
+                      width: panelWidth,
+                      child: _TourSpeechCard(
+                        icon: icon,
+                        title: title,
+                        description: description,
+                        stepIndex: stepIndex,
+                        totalSteps: totalSteps,
+                        lastStep: lastStep,
+                        onBack: onBack,
+                        onNext: onNext,
+                        onSkip: onSkip,
                       ),
                     ),
                   ),

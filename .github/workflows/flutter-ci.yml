@@ -114,16 +114,47 @@ jobs:
             test/android_release_config_test.dart
 
       - name: Validate localization foundation
+        shell: bash
         run: |
-          flutter analyze
-          flutter test test/app_locale_controller_test.dart
-          flutter test test/localization_assets_test.dart
-          flutter test test/android_release_config_test.dart
+          set +e
+          log=/tmp/localization-validation.log
+          : > "$log"
+
+          run_check() {
+            echo "" | tee -a "$log"
+            echo "> $*" | tee -a "$log"
+            "$@" 2>&1 | tee -a "$log"
+            return ${PIPESTATUS[0]}
+          }
+
+          status=0
+          run_check flutter analyze || status=$?
+          if [ "$status" -eq 0 ]; then
+            run_check flutter test test/app_locale_controller_test.dart || status=$?
+          fi
+          if [ "$status" -eq 0 ]; then
+            run_check flutter test test/localization_assets_test.dart || status=$?
+          fi
+          if [ "$status" -eq 0 ]; then
+            run_check flutter test test/android_release_config_test.dart || status=$?
+          fi
+
+          if [ "$status" -ne 0 ]; then
+            mkdir -p diagnostics
+            cp "$log" diagnostics/localization-validation-error.txt
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add diagnostics/localization-validation-error.txt
+            git commit -m "Registra l'errore dei test bilingui" || true
+            git push origin HEAD:feature/app-localization-foundation
+            exit "$status"
+          fi
 
       - name: Restore CI and publish branch
         shell: bash
         run: |
           rm -f diagnostics/localization-patch-error.txt
+          rm -f diagnostics/localization-validation-error.txt
           rm -f .github/workflows/app-localization-foundation-patch.yml
           rm -f .github/workflows/app-localization-foundation-run.yml
           git checkout origin/main -- .github/workflows/flutter-ci.yml

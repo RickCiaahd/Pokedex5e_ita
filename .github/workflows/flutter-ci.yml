@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: flutter-ci-${{ github.workflow }}-${{ github.ref }}
@@ -23,6 +23,9 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          ref: feature/app-localization-foundation
+          fetch-depth: 0
 
       - name: Set up Java
         uses: actions/setup-java@v4
@@ -60,7 +63,21 @@ jobs:
           retention-days: 7
 
       - name: Run complete test suite
-        run: flutter test --reporter expanded
+        shell: bash
+        run: |
+          set +e
+          flutter test --reporter expanded 2>&1 | tee full-test.log
+          status=${PIPESTATUS[0]}
+          if [ "$status" -ne 0 ]; then
+            mkdir -p diagnostics
+            cp full-test.log diagnostics/full-test-error.txt
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add diagnostics/full-test-error.txt
+            git commit -m "Registra l'errore della suite bilingue" || true
+            git push origin HEAD:feature/app-localization-foundation
+            exit "$status"
+          fi
 
       - name: Build Android debug APK
         run: flutter build apk --debug

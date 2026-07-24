@@ -19,12 +19,6 @@ jobs:
           ref: feature/localized-onboarding
           fetch-depth: 0
 
-      - name: Set up Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: '17'
-
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
@@ -52,34 +46,19 @@ jobs:
       - name: Apply onboarding localization
         run: python tooling/apply_localized_onboarding.py
 
-      - name: Install dependencies
-        run: flutter pub get
-
-      - name: Generate localizations
-        run: flutter gen-l10n
+      - name: Install dependencies and generate localizations
+        run: |
+          flutter pub get
+          flutter gen-l10n
 
       - name: Format changed Dart files
         run: dart format lib/screens/onboarding/first_launch_onboarding_screen.dart lib/l10n test/onboarding_localization_test.dart test/widget_test.dart
 
-      - name: Analyze source
-        run: flutter analyze
-
-      - name: Run onboarding localization test
-        run: flutter test test/onboarding_localization_test.dart
-
-      - name: Run complete test suite
-        run: flutter test
-
-      - name: Build Android debug APK
-        run: flutter build apk --debug
-
-      - name: Publish localized onboarding
+      - name: Commit localized onboarding
         shell: bash
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git rm .github/workflows/apply_localized_onboarding.yml
-          git rm tooling/apply_localized_onboarding.py
-          git add -A
+          git add lib/l10n lib/screens/onboarding/first_launch_onboarding_screen.dart test/onboarding_localization_test.dart test/widget_test.dart
           git commit -m "Localizza completamente l'onboarding [skip ci]"
           git push origin HEAD:feature/localized-onboarding

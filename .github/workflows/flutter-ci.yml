@@ -1,29 +1,34 @@
 name: Flutter CI
 
 on:
+  push:
+    branches:
+      - main
   pull_request:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: flutter-ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  localization_foundation:
-    name: Apply localization foundation
-    if: github.event_name == 'pull_request' && github.head_ref == 'feature/app-localization-foundation'
+  quality:
+    name: Analyze, test and build Android
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 45
 
     steps:
-      - name: Check out localization branch
+      - name: Check out repository
         uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
         with:
-          ref: feature/app-localization-foundation
-          fetch-depth: 0
+          distribution: temurin
+          java-version: '17'
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
@@ -31,139 +36,40 @@ jobs:
           channel: stable
           cache: true
 
-      - name: Apply prepared localization patch
-        shell: bash
+      - name: Show Flutter version
+        run: flutter --version
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze source
+        run: flutter analyze
+
+      - name: Validate application data
         run: |
-          python3 <<'PY'
-          from pathlib import Path
-          import subprocess
+          set -o pipefail
+          flutter test test/data_integrity_test.dart --reporter expanded 2>&1 | tee data-validation.log
 
-          workflow = Path('.github/workflows/app-localization-foundation-patch.yml')
-          text = workflow.read_text(encoding='utf-8')
-          marker_start = "          python3 <<'PY'\n"
-          marker_end = "\n          PY\n"
-          start = text.index(marker_start) + len(marker_start)
-          end = text.index(marker_end, start)
-          raw_lines = text[start:end].splitlines()
-          script = '\n'.join(
-              line[10:] if line.startswith('          ') else line
-              for line in raw_lines
-          ) + '\n'
+      - name: Upload validation log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: data-validation-log
+          path: data-validation.log
+          if-no-files-found: ignore
+          retention-days: 7
 
-          old = (
-              "if old_tour not in home_text:\n"
-              "    raise SystemExit('Blocco tour Home non trovato')\n"
-              "home_text = home_text.replace(old_tour, new_tour, 1)\n"
-          )
-          new = (
-              "tour_start = home_text.index(\n"
-              "    '  List<HomeTourStepData> get _tourSteps'\n"
-              ")\n"
-              "tour_end = home_text.index('\\n\\n  @override', tour_start)\n"
-              "home_text = (\n"
-              "    home_text[:tour_start]\n"
-              "    + new_tour.rstrip()\n"
-              "    + home_text[tour_end:]\n"
-              ")\n"
-          )
-          if old not in script:
-              raise SystemExit('Sezione di patch del tour non trovata nello script')
-          script = script.replace(old, new, 1)
+      - name: Run complete test suite
+        run: flutter test --reporter expanded
 
-          const_replacement = (
-              "home_text = home_text.replace(\n"
-              "    'const _HomeSectionTitle(', '_HomeSectionTitle('\n"
-              ")\n"
-          )
-          if const_replacement not in script:
-              const_replacement = (
-                  "home_text = home_text.replace('const _HomeSectionTitle(', "
-                  "'_HomeSectionTitle(')\n"
-              )
-          const_fix = const_replacement + (
-              "home_text = home_text.replace(\n"
-              "    'class _HomeSectionTitle extends StatelessWidget {\\n"
-              "  _HomeSectionTitle(',\n"
-              "    'class _HomeSectionTitle extends StatelessWidget {\\n"
-              "  const _HomeSectionTitle(',\n"
-              "    1,\n"
-              ")\n"
-          )
-          if const_replacement not in script:
-              raise SystemExit('Sostituzione const della Home non trovata nello script')
-          script = script.replace(const_replacement, const_fix, 1)
+      - name: Build Android debug APK
+        run: flutter build apk --debug
 
-          patch = Path('/tmp/apply_localization_foundation.py')
-          patch.write_text(script, encoding='utf-8')
-          subprocess.run(['python3', str(patch)], check=True)
-
-          old_activity = Path(
-              'android/app/src/main/kotlin/io/github/rickciaahd/pokedex5eita/MainActivity.kt'
-          )
-          new_activity = Path(
-              'android/app/src/main/kotlin/io/github/rickciaahd/traineratlas/MainActivity.kt'
-          )
-          if old_activity.exists():
-              new_activity.parent.mkdir(parents=True, exist_ok=True)
-              content = old_activity.read_text(encoding='utf-8').replace(
-                  'package io.github.rickciaahd.pokedex5eita',
-                  'package io.github.rickciaahd.traineratlas',
-              )
-              new_activity.write_text(content, encoding='utf-8')
-              old_activity.unlink()
-          if not new_activity.exists():
-              raise SystemExit('MainActivity non disponibile nel nuovo namespace')
-
-          android_test = Path('test/android_release_config_test.dart')
-          android_test.write_text(
-              android_test.read_text(encoding='utf-8').replace(
-                  'io/github/rickciaahd/pokedex5eita/MainActivity.kt',
-                  'io/github/rickciaahd/traineratlas/MainActivity.kt',
-              ),
-              encoding='utf-8',
-          )
-          PY
-
-      - name: Resolve dependencies and generate localizations
-        run: |
-          flutter pub get
-          flutter gen-l10n
-
-      - name: Format changed Dart sources
-        run: |
-          dart format \
-            lib/app.dart \
-            lib/main.dart \
-            lib/localization/app_locale_controller.dart \
-            lib/services/app_locale_service.dart \
-            lib/screens/settings/settings_screen.dart \
-            lib/screens/home/home_screen.dart \
-            lib/widgets/tour/professor_tour_panel.dart \
-            lib/l10n/app_localizations.dart \
-            lib/l10n/app_localizations_en.dart \
-            lib/l10n/app_localizations_it.dart \
-            test/app_locale_controller_test.dart \
-            test/localization_assets_test.dart \
-            test/android_release_config_test.dart
-
-      - name: Validate localization foundation
-        run: |
-          flutter analyze
-          flutter test test/app_locale_controller_test.dart
-          flutter test test/localization_assets_test.dart
-          flutter test test/android_release_config_test.dart
-
-      - name: Publish application changes
-        shell: bash
-        run: |
-          rm -f diagnostics/localization-patch-error.txt
-          rm -f diagnostics/localization-validation-error.txt
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A -- . ':(exclude).github/workflows/**'
-          if git diff --cached --quiet; then
-            echo "Nessuna modifica applicativa da pubblicare."
-            exit 0
-          fi
-          git commit -m "Introduce la base bilingue di Trainer Atlas 5e"
-          git push origin HEAD:feature/app-localization-foundation
+      - name: Upload debug APK
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@v4
+        with:
+          name: Pokedex5eITA-debug
+          path: build/app/outputs/flutter-apk/app-debug.apk
+          if-no-files-found: error
+          retention-days: 7

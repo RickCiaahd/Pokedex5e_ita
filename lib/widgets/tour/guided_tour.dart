@@ -151,22 +151,38 @@ class GuidedTourLayer extends StatelessWidget {
 
   void _finishTour() {
     if (scrollController.hasClients) {
-      final position = scrollController.position;
-      if (position.hasContentDimensions) {
-        final target = position.minScrollExtent;
-        if ((position.pixels - target).abs() > .5) {
-          try {
-            position.jumpTo(target);
-          } catch (error) {
-            debugPrint(
-              'Impossibile ripristinare lo scorrimento del tour: $error',
-            );
-          }
-        }
+      try {
+        final position = scrollController.position;
+        position.jumpTo(position.pixels);
+      } catch (error) {
+        debugPrint('Impossibile interrompere lo scorrimento del tour: $error');
       }
     }
 
     controller.finish();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _restoreScrollToStart();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _restoreScrollToStart();
+      });
+    });
+  }
+
+  void _restoreScrollToStart() {
+    if (!scrollController.hasClients) return;
+
+    final position = scrollController.position;
+    if (!position.hasContentDimensions) return;
+
+    final target = position.minScrollExtent;
+    if ((position.pixels - target).abs() <= .5) return;
+
+    try {
+      position.jumpTo(target);
+    } catch (error) {
+      debugPrint('Impossibile ripristinare lo scorrimento del tour: $error');
+    }
   }
 
   @override

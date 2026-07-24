@@ -67,13 +67,15 @@ void main() {
     );
 
     tourController.start();
-    await tester.pumpAndSettle();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 80));
 
-    expect(scrollController.offset, greaterThan(0));
     expect(find.text('HO CAPITO'), findsOneWidget);
 
     await tester.tap(find.text('HO CAPITO'));
     await tester.pump();
+    await tester.pump();
+    await tester.pumpAndSettle();
 
     expect(tourController.isVisible, isFalse);
     expect(

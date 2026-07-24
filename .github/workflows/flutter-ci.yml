@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: flutter-ci-${{ github.workflow }}-${{ github.ref }}
@@ -43,18 +43,7 @@ jobs:
         run: flutter pub get
 
       - name: Analyze source
-        run: |
-          set -o pipefail
-          flutter analyze 2>&1 | tee analyze.log
-
-      - name: Upload analyzer log
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: home-tour-analyzer-log
-          path: analyze.log
-          if-no-files-found: ignore
-          retention-days: 7
+        run: flutter analyze
 
       - name: Validate application data
         run: |
@@ -84,65 +73,3 @@ jobs:
           path: build/app/outputs/flutter-apk/app-debug.apk
           if-no-files-found: error
           retention-days: 7
-
-  fix_home_tour_lints:
-    name: Fix home tour async lints
-    if: github.event_name == 'pull_request' && github.event.pull_request.title == 'Aggiunge il tour guidato dei menu della Home'
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-
-    steps:
-      - name: Check out feature branch
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.pull_request.head.ref }}
-          fetch-depth: 0
-
-      - name: Guard target contexts after async gaps
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 - <<'PY'
-          from pathlib import Path
-
-          replacements = {
-              Path('lib/screens/home/home_screen.dart'): (
-                  """    final targetContext = _tourSteps[_tourStepIndex].targetKey.currentContext;
-    if (targetContext != null) {
-      await Scrollable.ensureVisible(""",
-                  """    final targetContext = _tourSteps[_tourStepIndex].targetKey.currentContext;
-    if (targetContext != null && targetContext.mounted) {
-      await Scrollable.ensureVisible(""",
-              ),
-              Path('lib/widgets/home/home_tour_overlay.dart'): (
-                  """    if (targetContext != null) {
-      await Scrollable.ensureVisible(""",
-                  """    if (targetContext != null && targetContext.mounted) {
-      await Scrollable.ensureVisible(""",
-              ),
-          }
-
-          for path, (old, new) in replacements.items():
-              text = path.read_text(encoding='utf-8')
-              if old in text:
-                  text = text.replace(old, new, 1)
-                  path.write_text(text, encoding='utf-8')
-              elif new not in text:
-                  raise SystemExit(f'Blocco inatteso in {path}')
-          PY
-
-          rm -f .github/workflows/fix-home-tour-lints.yml
-
-      - name: Commit fixes when needed
-        shell: bash
-        run: |
-          set -euo pipefail
-          if git diff --quiet; then
-            echo 'Nessuna correzione necessaria.'
-            exit 0
-          fi
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -A
-          git commit -m 'Corregge i lint asincroni del tour della Home'
-          git push origin HEAD:${{ github.event.pull_request.head.ref }}

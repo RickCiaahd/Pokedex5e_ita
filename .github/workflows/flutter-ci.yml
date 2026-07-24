@@ -109,11 +109,11 @@ jobs:
               start = text.find(marker)
               if start < 0:
                   raise SystemExit('Inizio del blocco ambiguo non trovato nello script.')
-              end_marker = '\n          )\n          replace_once('
+              end_marker = '\n)\nreplace_once('
               end = text.find(end_marker, start)
               if end < 0:
                   raise SystemExit('Fine del blocco ambiguo non trovata nello script.')
-              end += len('\n          )')
+              end += len('\n)')
               replacement = '''replace_once(
               trainer,
               """  final TextEditingController nameController;

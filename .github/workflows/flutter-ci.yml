@@ -94,7 +94,19 @@ jobs:
         run: flutter pub get
 
       - name: Test scroll restoration
-        run: flutter test test/guided_tour_scroll_restoration_test.dart --reporter expanded
+        shell: bash
+        run: |
+          set -o pipefail
+          flutter test test/guided_tour_scroll_restoration_test.dart --reporter expanded 2>&1 | tee guided-scroll-test.log
+
+      - name: Upload scroll restoration log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: guided-scroll-test-log
+          path: guided-scroll-test.log
+          if-no-files-found: error
+          retention-days: 7
 
       - name: Test Stack layout preservation
         run: flutter test test/guided_tour_stack_layout_test.dart --reporter expanded

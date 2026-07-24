@@ -110,93 +110,16 @@ class GuidedTourInfoAction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: controller,
-      builder: (context, _) {
-        final canStart = enabled && !controller.isVisible;
-        final wide = MediaQuery.sizeOf(context).width >= 600;
+    return Positioned.fill(
+      child: AnimatedBuilder(
+        animation: controller,
+        builder: (context, _) {
+          if (!controller.isVisible || steps.isEmpty) {
+            return const IgnorePointer(child: SizedBox.shrink());
+          }
 
-        if (wide) {
-          return TextButton.icon(
-            onPressed: canStart ? controller.start : null,
-            style: TextButton.styleFrom(
-              foregroundColor: Theme.of(context).colorScheme.onSurface,
-            ),
-            icon: const Icon(Icons.info_outline),
-            label: const Text('INFO'),
-          );
-        }
-
-        return IconButton(
-          onPressed: canStart ? controller.start : null,
-          tooltip: 'INFO · Rivedi il tour',
-          icon: const Icon(Icons.info_outline),
-        );
-      },
-    );
-  }
-}
-
-class GuidedTourLayer extends StatelessWidget {
-  const GuidedTourLayer({
-    super.key,
-    required this.controller,
-    required this.steps,
-    required this.scrollController,
-  });
-
-  final GuidedTourController controller;
-  final List<GuidedTourStepData> steps;
-  final ScrollController scrollController;
-
-  void _finishTour() {
-    if (scrollController.hasClients) {
-      try {
-        final position = scrollController.position;
-        position.jumpTo(position.pixels);
-      } catch (error) {
-        debugPrint('Impossibile interrompere lo scorrimento del tour: $error');
-      }
-    }
-
-    controller.finish();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _restoreScrollToStart();
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _restoreScrollToStart();
-      });
-    });
-  }
-
-  void _restoreScrollToStart() {
-    if (!scrollController.hasClients) return;
-
-    final position = scrollController.position;
-    if (!position.hasContentDimensions) return;
-
-    final target = position.minScrollExtent;
-    if ((position.pixels - target).abs() <= .5) return;
-
-    try {
-      position.jumpTo(target);
-    } catch (error) {
-      debugPrint('Impossibile ripristinare lo scorrimento del tour: $error');
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: controller,
-      builder: (context, _) {
-        if (!controller.isVisible || steps.isEmpty) {
-          return const SizedBox.shrink();
-        }
-
-        final safeIndex = controller.stepIndex.clamp(0, steps.length - 1);
-        return Positioned.fill(
-          child: GuidedTourOverlay(
+          final safeIndex = controller.stepIndex.clamp(0, steps.length - 1);
+          return GuidedTourOverlay(
             step: steps[safeIndex],
             stepIndex: safeIndex,
             totalSteps: steps.length,
@@ -210,9 +133,9 @@ class GuidedTourLayer extends StatelessWidget {
               controller.next(steps.length);
             },
             onSkip: _finishTour,
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 }

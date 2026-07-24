@@ -100,6 +100,23 @@ jobs:
           patch = Path('/tmp/apply_localization_foundation.py')
           patch.write_text(script, encoding='utf-8')
           subprocess.run(['python3', str(patch)], check=True)
+
+          old_activity = Path(
+              'android/app/src/main/kotlin/io/github/rickciaahd/pokedex5eita/MainActivity.kt'
+          )
+          new_activity = Path(
+              'android/app/src/main/kotlin/io/github/rickciaahd/traineratlas/MainActivity.kt'
+          )
+          if old_activity.exists():
+              new_activity.parent.mkdir(parents=True, exist_ok=True)
+              content = old_activity.read_text(encoding='utf-8').replace(
+                  'package io.github.rickciaahd.pokedex5eita',
+                  'package io.github.rickciaahd.traineratlas',
+              )
+              new_activity.write_text(content, encoding='utf-8')
+              old_activity.unlink()
+          if not new_activity.exists():
+              raise SystemExit('MainActivity non disponibile nel nuovo namespace')
           PY
           status=$?
           cat /tmp/localization-foundation.log

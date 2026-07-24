@@ -183,7 +183,7 @@ class _HomeScreenState extends State<HomeScreen> {
     if (!mounted || !_isTourVisible) return;
 
     final targetContext = _tourSteps[_tourStepIndex].targetKey.currentContext;
-    if (targetContext != null) {
+    if (targetContext != null && targetContext.mounted) {
       await Scrollable.ensureVisible(
         targetContext,
         alignment: 0.12,

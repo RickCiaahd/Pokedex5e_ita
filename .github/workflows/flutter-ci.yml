@@ -74,8 +74,8 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
-  apply_structural_tour_fix:
-    name: Keep tour layer positioned
+  repair_guided_tour_classes:
+    name: Repair guided tour classes
     if: github.event_name == 'pull_request' && github.event.pull_request.title == 'Corregge definitivamente le schermate vuote dopo i tour'
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -87,7 +87,7 @@ jobs:
           ref: ${{ github.event.pull_request.head.ref }}
           fetch-depth: 0
 
-      - name: Keep GuidedTourLayer positioned when hidden
+      - name: Repair reusable tour widgets
         shell: bash
         run: |
           set -euo pipefail
@@ -97,7 +97,98 @@ jobs:
 
           path = Path('lib/widgets/tour/guided_tour.dart')
           text = path.read_text(encoding='utf-8')
-          replacement = '''  @override
+          replacement = '''class GuidedTourInfoAction extends StatelessWidget {
+            const GuidedTourInfoAction({
+              super.key,
+              required this.controller,
+              this.enabled = true,
+            });
+
+            final GuidedTourController controller;
+            final bool enabled;
+
+            @override
+            Widget build(BuildContext context) {
+              return AnimatedBuilder(
+                animation: controller,
+                builder: (context, _) {
+                  final canStart = enabled && !controller.isVisible;
+                  final wide = MediaQuery.sizeOf(context).width >= 600;
+
+                  if (wide) {
+                    return TextButton.icon(
+                      onPressed: canStart ? controller.start : null,
+                      style: TextButton.styleFrom(
+                        foregroundColor: Theme.of(context).colorScheme.onSurface,
+                      ),
+                      icon: const Icon(Icons.info_outline),
+                      label: const Text('INFO'),
+                    );
+                  }
+
+                  return IconButton(
+                    onPressed: canStart ? controller.start : null,
+                    tooltip: 'INFO · Rivedi il tour',
+                    icon: const Icon(Icons.info_outline),
+                  );
+                },
+              );
+            }
+          }
+
+          class GuidedTourLayer extends StatelessWidget {
+            const GuidedTourLayer({
+              super.key,
+              required this.controller,
+              required this.steps,
+              required this.scrollController,
+            });
+
+            final GuidedTourController controller;
+            final List<GuidedTourStepData> steps;
+            final ScrollController scrollController;
+
+            void _finishTour() {
+              if (scrollController.hasClients) {
+                try {
+                  final position = scrollController.position;
+                  position.jumpTo(position.pixels);
+                } catch (error) {
+                  debugPrint(
+                    'Impossibile interrompere lo scorrimento del tour: $error',
+                  );
+                }
+              }
+
+              controller.finish();
+
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                _restoreScrollToStart();
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  _restoreScrollToStart();
+                });
+              });
+            }
+
+            void _restoreScrollToStart() {
+              if (!scrollController.hasClients) return;
+
+              final position = scrollController.position;
+              if (!position.hasContentDimensions) return;
+
+              final target = position.minScrollExtent;
+              if ((position.pixels - target).abs() <= .5) return;
+
+              try {
+                position.jumpTo(target);
+              } catch (error) {
+                debugPrint(
+                  'Impossibile ripristinare lo scorrimento del tour: $error',
+                );
+              }
+            }
+
+            @override
             Widget build(BuildContext context) {
               return Positioned.fill(
                 child: AnimatedBuilder(
@@ -132,21 +223,21 @@ jobs:
             }
           }
 
-          class GuidedTourOverlay'''
+          class GuidedTourOverlay extends StatefulWidget {'''
 
           updated, count = re.subn(
-              r'  @override\n  Widget build\(BuildContext context\) \{\n    return AnimatedBuilder\(.*?\n  \}\n\}\n\nclass GuidedTourOverlay',
+              r'class GuidedTourInfoAction extends StatelessWidget \{.*?class GuidedTourOverlay extends StatefulWidget \{',
               replacement,
               text,
               count=1,
               flags=re.S,
           )
           if count != 1:
-              raise SystemExit('Il build di GuidedTourLayer non è stato sostituito una sola volta.')
+              raise SystemExit('Il segmento delle classi tour non è stato riparato una sola volta.')
           path.write_text(updated, encoding='utf-8')
           PY
 
-      - name: Add stack regression test
+      - name: Ensure stack regression test
         shell: bash
         run: |
           set -euo pipefail
@@ -223,17 +314,26 @@ jobs:
                 );
                 await tester.pump();
 
-                expect(tester.getSize(find.byKey(contentKey)).height, greaterThan(0));
+                expect(
+                  tester.getSize(find.byKey(contentKey)).height,
+                  greaterThan(0),
+                );
 
                 await tourController.finish();
                 await tester.pumpAndSettle();
 
                 expect(tourController.isVisible, isFalse);
-                expect(tester.getSize(find.byKey(contentKey)).height, greaterThan(0));
+                expect(
+                  tester.getSize(find.byKey(contentKey)).height,
+                  greaterThan(0),
+                );
               },
             );
           }
           DART
+
+      - name: Remove temporary trigger
+        run: rm -f .github/structural-tour-trigger.txt
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
@@ -244,12 +344,12 @@ jobs:
       - name: Format changed files
         run: dart format lib/widgets/tour/guided_tour.dart test/guided_tour_stack_layout_test.dart
 
-      - name: Commit fix
+      - name: Commit repair
         shell: bash
         run: |
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add lib/widgets/tour/guided_tour.dart test/guided_tour_stack_layout_test.dart
-          git commit -m 'Mantiene il layer del tour posizionato nello Stack'
+          git add -A
+          git commit -m 'Ripara il layer riutilizzabile dei tour guidati'
           git push origin HEAD:${{ github.event.pull_request.head.ref }}

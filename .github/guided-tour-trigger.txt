@@ -1,1 +1,1 @@
-Trigger temporaneo per rieseguire l'integrazione con log diagnostico.
+Trigger temporaneo per rieseguire l'integrazione dopo la correzione dello script.

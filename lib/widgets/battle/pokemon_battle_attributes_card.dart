@@ -49,15 +49,27 @@ class PokemonBattleAttributesCard extends StatelessWidget {
             const SizedBox(height: 12),
             LayoutBuilder(
               builder: (context, constraints) {
-                final columns = constraints.maxWidth >= 620
+                if (!constraints.hasBoundedWidth ||
+                    constraints.maxWidth <= 0) {
+                  return const SizedBox.shrink();
+                }
+
+                final availableWidth = constraints.maxWidth;
+                final columns = availableWidth >= 620
                     ? 6
-                    : constraints.maxWidth >= 360
+                    : availableWidth >= 360
                         ? 3
-                        : 2;
+                        : availableWidth >= 180
+                            ? 2
+                            : 1;
                 const spacing = 8.0;
+                final occupiedBySpacing = spacing * (columns - 1);
                 final itemWidth =
-                    (constraints.maxWidth - (spacing * (columns - 1))) /
-                        columns;
+                    (availableWidth - occupiedBySpacing) / columns;
+
+                if (itemWidth <= 0) {
+                  return const SizedBox.shrink();
+                }
 
                 return Wrap(
                   spacing: spacing,

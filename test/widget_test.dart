@@ -6,6 +6,7 @@ import 'package:hive/hive.dart';
 
 import 'package:pokedex_5e_ita/screens/onboarding/first_launch_onboarding_screen.dart';
 import 'package:pokedex_5e_ita/services/app_launch_service.dart';
+import 'package:pokedex_5e_ita/services/home_tour_service.dart';
 
 void main() {
   late Directory hiveDirectory;
@@ -23,6 +24,14 @@ void main() {
 
   test('an empty installation requests first-launch onboarding', () async {
     expect(await AppLaunchService().shouldShowOnboarding(), isTrue);
+  });
+
+  test('the global Home tour is requested once and can be completed', () async {
+    final service = HomeTourService();
+
+    expect(await service.shouldShowTour(), isTrue);
+    await service.markTourCompleted();
+    expect(await service.shouldShowTour(), isFalse);
   });
 
   testWidgets('first-launch onboarding can be mounted', (

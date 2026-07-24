@@ -1,0 +1,108 @@
+name: Apply home tour polish
+
+on:
+  push:
+    branches:
+      - feature/home-menu-tour
+    paths:
+      - '.github/workflows/apply-home-tour-polish.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out feature branch
+        uses: actions/checkout@v4
+        with:
+          ref: feature/home-menu-tour
+          fetch-depth: 0
+
+      - name: Add fallback scrolling for lazy Home sections
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path('lib/screens/home/home_screen.dart')
+          text = path.read_text(encoding='utf-8')
+          old = """  Future<void> _revealCurrentTourStep() async {
+    if (!_isTourVisible || _tourStepIndex >= _tourSteps.length) return;
+
+    await Future<void>.delayed(Duration.zero);
+    if (!mounted || !_isTourVisible) return;
+
+    final targetContext = _tourSteps[_tourStepIndex].targetKey.currentContext;
+    if (targetContext != null) {
+      await Scrollable.ensureVisible(
+        targetContext,
+        alignment: 0.12,
+        duration: const Duration(milliseconds: 360),
+        curve: Curves.easeOutCubic,
+      );
+    }
+
+    await Future<void>.delayed(const Duration(milliseconds: 380));
+    if (!mounted || !_isTourVisible) return;
+    _updateTourTargetRect();
+  }
+"""
+          new = """  Future<void> _revealCurrentTourStep() async {
+    if (!_isTourVisible || _tourStepIndex >= _tourSteps.length) return;
+
+    await Future<void>.delayed(Duration.zero);
+    if (!mounted || !_isTourVisible) return;
+
+    BuildContext? targetContext =
+        _tourSteps[_tourStepIndex].targetKey.currentContext;
+    if (targetContext == null && _scrollController.hasClients) {
+      const fallbackFractions = <double>[0, .18, .64, .82, 1];
+      final fallbackIndex = _tourStepIndex < fallbackFractions.length
+          ? _tourStepIndex
+          : fallbackFractions.length - 1;
+      await _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent *
+            fallbackFractions[fallbackIndex],
+        duration: const Duration(milliseconds: 360),
+        curve: Curves.easeOutCubic,
+      );
+      await Future<void>.delayed(const Duration(milliseconds: 120));
+      if (!mounted || !_isTourVisible) return;
+      targetContext = _tourSteps[_tourStepIndex].targetKey.currentContext;
+    }
+
+    if (targetContext != null) {
+      await Scrollable.ensureVisible(
+        targetContext,
+        alignment: 0.12,
+        duration: const Duration(milliseconds: 360),
+        curve: Curves.easeOutCubic,
+      );
+    }
+
+    await Future<void>.delayed(const Duration(milliseconds: 380));
+    if (!mounted || !_isTourVisible) return;
+    _updateTourTargetRect();
+  }
+"""
+          if text.count(old) != 1:
+              raise SystemExit('Metodo _revealCurrentTourStep inatteso.')
+          path.write_text(text.replace(old, new, 1), encoding='utf-8')
+          PY
+
+          git rm .github/workflows/apply-home-tour-polish.yml
+
+      - name: Commit patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Rende robusto lo scorrimento del tour della Home'
+          git push origin HEAD:feature/home-menu-tour

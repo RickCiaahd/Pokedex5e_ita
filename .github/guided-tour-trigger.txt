@@ -1,1 +1,1 @@
-Trigger temporaneo per rieseguire lo script con sostituzione univoca.
+Trigger temporaneo per rieseguire i tour dalla base pulita con formattazione mirata.

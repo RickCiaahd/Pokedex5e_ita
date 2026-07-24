@@ -34,10 +34,7 @@ void main() {
 
     expect(professorPosition, greaterThanOrEqualTo(0));
     expect(speechCardPosition, greaterThan(professorPosition));
-    expect(
-      panel,
-      contains('il fumetto\n                  // opaco protegge sempre la leggibilità'),
-    );
+    expect(panel, contains('opaco protegge sempre la leggibilità'));
   });
 
   test('le scrollbar desktop automatiche sono disattivate', () {

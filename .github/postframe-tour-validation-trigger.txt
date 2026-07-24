@@ -1,1 +1,0 @@
-Trigger temporaneo per eseguire la validazione completa della correzione post-frame.

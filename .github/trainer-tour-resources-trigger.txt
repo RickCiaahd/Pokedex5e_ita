@@ -1,1 +1,0 @@
-Trigger temporaneo per rendere dinamica la tappa sulle risorse del Percorso Allenatore.

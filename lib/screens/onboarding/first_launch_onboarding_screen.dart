@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../../models/pokemon.dart';
 import '../../models/pokemon_type_localization.dart';
 import '../../models/team_slot.dart';
@@ -56,42 +57,15 @@ class _FirstLaunchOnboardingScreenState
   static const int _totalSteps = 10;
 
   static const List<_BackgroundOption> _backgroundOptions = [
-    _BackgroundOption(
-      name: 'Ricercatore',
-      description:
-          'Osservi, cataloghi e studi ogni scoperta prima di trarre conclusioni.',
-      icon: Icons.science_outlined,
-    ),
-    _BackgroundOption(
-      name: 'Esploratore',
-      description:
-          'Ti senti a casa sulle strade meno battute e negli ambienti selvaggi.',
-      icon: Icons.explore_outlined,
-    ),
-    _BackgroundOption(
-      name: 'Allevatore',
-      description:
-          'Conosci le necessità delle creature e costruisci legami pazienti.',
-      icon: Icons.pets_outlined,
-    ),
+    _BackgroundOption(name: 'Ricercatore', icon: Icons.science_outlined),
+    _BackgroundOption(name: 'Esploratore', icon: Icons.explore_outlined),
+    _BackgroundOption(name: 'Allevatore', icon: Icons.pets_outlined),
     _BackgroundOption(
       name: 'Combattente',
-      description:
-          'Affronti le difficoltà con disciplina, coraggio e spirito competitivo.',
       icon: Icons.sports_martial_arts_outlined,
     ),
-    _BackgroundOption(
-      name: 'Artista',
-      description:
-          'Esprimi te stesso attraverso spettacolo, creatività e sensibilità.',
-      icon: Icons.palette_outlined,
-    ),
-    _BackgroundOption(
-      name: 'Studioso',
-      description:
-          'Hai dedicato anni a libri, tradizioni e conoscenze specialistiche.',
-      icon: Icons.menu_book_outlined,
-    ),
+    _BackgroundOption(name: 'Artista', icon: Icons.palette_outlined),
+    _BackgroundOption(name: 'Studioso', icon: Icons.menu_book_outlined),
   ];
 
   @override
@@ -135,8 +109,7 @@ class _FirstLaunchOnboardingScreenState
         final currentStage = evolution?.currentStage as int?;
         final isFirstStage = currentStage == null || currentStage <= 1;
         return entry.sr <= 0.5 && isFirstStage;
-      }).toList()
-        ..sort((a, b) => a.id.compareTo(b.id));
+      }).toList()..sort((a, b) => a.id.compareTo(b.id));
 
       if (!mounted) return;
       setState(() {
@@ -158,21 +131,76 @@ class _FirstLaunchOnboardingScreenState
     final query = _starterQuery.toLowerCase();
     if (query.isEmpty) return _starterCandidates;
 
-    return _starterCandidates.where((pokemon) {
-      final nameMatches = pokemon.name.toLowerCase().contains(query);
-      final typeMatches = pokemon.types.any((type) {
-        final italian = PokemonTypeLocalization.italianLabel(type).toLowerCase();
-        final english = PokemonTypeLocalization.englishValue(type).toLowerCase();
-        return italian.contains(query) || english.contains(query);
-      });
-      return nameMatches || typeMatches;
-    }).toList(growable: false);
+    return _starterCandidates
+        .where((pokemon) {
+          final nameMatches = pokemon.name.toLowerCase().contains(query);
+          final typeMatches = pokemon.types.any((type) {
+            final italian = PokemonTypeLocalization.italianLabel(
+              type,
+            ).toLowerCase();
+            final english = PokemonTypeLocalization.englishValue(
+              type,
+            ).toLowerCase();
+            return italian.contains(query) || english.contains(query);
+          });
+          return nameMatches || typeMatches;
+        })
+        .toList(growable: false);
   }
 
   _BackgroundOption get _selectedBackground => _backgroundOptions.firstWhere(
-        (option) => option.name == _background,
-        orElse: () => _backgroundOptions.first,
-      );
+    (option) => option.name == _background,
+    orElse: () => _backgroundOptions.first,
+  );
+
+  String _backgroundLabel(_BackgroundOption option, AppLocalizations l10n) {
+    return switch (option.name) {
+      'Ricercatore' => l10n.onboardingBackgroundResearcher,
+      'Esploratore' => l10n.onboardingBackgroundExplorer,
+      'Allevatore' => l10n.onboardingBackgroundBreeder,
+      'Combattente' => l10n.onboardingBackgroundFighter,
+      'Artista' => l10n.onboardingBackgroundArtist,
+      'Studioso' => l10n.onboardingBackgroundScholar,
+      _ => option.name,
+    };
+  }
+
+  String _backgroundDescription(
+    _BackgroundOption option,
+    AppLocalizations l10n,
+  ) {
+    return switch (option.name) {
+      'Ricercatore' => l10n.onboardingBackgroundResearcherDescription,
+      'Esploratore' => l10n.onboardingBackgroundExplorerDescription,
+      'Allevatore' => l10n.onboardingBackgroundBreederDescription,
+      'Combattente' => l10n.onboardingBackgroundFighterDescription,
+      'Artista' => l10n.onboardingBackgroundArtistDescription,
+      'Studioso' => l10n.onboardingBackgroundScholarDescription,
+      _ => option.name,
+    };
+  }
+
+  String _originDisplayName(TrainerOrigin origin, AppLocalizations l10n) {
+    return origin.name == 'Origine 5e approvata dal DM'
+        ? l10n.onboardingOriginDmApprovedName
+        : origin.name;
+  }
+
+  String _originDescription(TrainerOrigin origin, AppLocalizations l10n) {
+    return switch (origin.name) {
+      'Alolan' => l10n.onboardingOriginAlolanDescription,
+      'Hoennian' => l10n.onboardingOriginHoennianDescription,
+      'Johtoan' => l10n.onboardingOriginJohtoanDescription,
+      'Kalosian' => l10n.onboardingOriginKalosianDescription,
+      'Kantoan' => l10n.onboardingOriginKantoanDescription,
+      'Sinnoan' => l10n.onboardingOriginSinnoanDescription,
+      'Unovan' => l10n.onboardingOriginUnovanDescription,
+      'Galarian' => l10n.onboardingOriginGalarianDescription,
+      'Origine 5e approvata dal DM' =>
+        l10n.onboardingOriginDmApprovedDescription,
+      _ => origin.description,
+    };
+  }
 
   bool get _canContinue {
     switch (_step) {
@@ -192,17 +220,20 @@ class _FirstLaunchOnboardingScreenState
   }
 
   String get _buttonLabel {
+    final l10n = AppLocalizations.of(context);
     switch (_step) {
       case 0:
-        return 'INIZIA LA TUA AVVENTURA';
+        return l10n.onboardingStartAdventure;
       case 7:
-        return 'CONFERMA';
+        return l10n.onboardingConfirm;
       case 8:
-        return _errorMessage == null ? 'CREAZIONE IN CORSO...' : 'RIPROVA';
+        return _errorMessage == null
+            ? l10n.onboardingCreatingProfile
+            : l10n.retryAction.toUpperCase();
       case 9:
-        return 'INIZIA!';
+        return l10n.onboardingBegin;
       default:
-        return 'AVANTI';
+        return l10n.nextAction;
     }
   }
 
@@ -249,7 +280,9 @@ class _FirstLaunchOnboardingScreenState
   }
 
   String _originBonuses(TrainerOrigin origin) {
-    if (origin.abilityBonuses.isEmpty) return 'Nessun bonus automatico';
+    if (origin.abilityBonuses.isEmpty) {
+      return AppLocalizations.of(context).onboardingNoAutomaticBonuses;
+    }
     return origin.abilityBonuses.entries
         .map((entry) => '${entry.key.toUpperCase()} +${entry.value}')
         .join(', ');
@@ -333,6 +366,7 @@ class _FirstLaunchOnboardingScreenState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     if (_isLoading) {
       return const Scaffold(
         backgroundColor: _OnboardingPalette.page,
@@ -380,7 +414,7 @@ class _FirstLaunchOnboardingScreenState
                   if (_errorMessage != null && _step >= 8) ...[
                     const SizedBox(height: 10),
                     Text(
-                      'Non è stato possibile creare il profilo. Riprova.',
+                      l10n.onboardingProfileCreationError,
                       textAlign: TextAlign.center,
                       style: const TextStyle(
                         color: Colors.redAccent,
@@ -398,8 +432,8 @@ class _FirstLaunchOnboardingScreenState
                         style: FilledButton.styleFrom(
                           backgroundColor: _OnboardingPalette.orange,
                           foregroundColor: Colors.white,
-                          disabledBackgroundColor:
-                              _OnboardingPalette.orange.withValues(alpha: .35),
+                          disabledBackgroundColor: _OnboardingPalette.orange
+                              .withValues(alpha: .35),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(16),
                           ),
@@ -444,40 +478,40 @@ class _FirstLaunchOnboardingScreenState
   }
 
   Widget _buildDialogue() {
+    final l10n = AppLocalizations.of(context);
     switch (_step) {
       case 1:
-        return const _DialogueCard(
-          speaker: 'Professore',
-          title: 'Benvenuto nel tuo nuovo viaggio.',
-          body:
-              'Qui potrai creare il tuo Allenatore, scegliere il primo compagno e prepararti alle avventure da tavolo.',
+        return _DialogueCard(
+          speaker: l10n.onboardingProfessor,
+          title: l10n.onboardingWelcomeTitle,
+          body: l10n.onboardingWelcomeBody,
           content: _InfoBanner(
             icon: Icons.auto_stories_outlined,
-            text: 'Le tue scelte potranno essere modificate in seguito dal profilo.',
+            text: l10n.onboardingWelcomeNote,
           ),
         );
       case 2:
         return _DialogueCard(
-          speaker: 'Professore',
-          title: 'Prima di iniziare, dimmi…',
-          body: 'Come ti chiami?',
+          speaker: l10n.onboardingProfessor,
+          title: l10n.onboardingNameTitle,
+          body: l10n.onboardingNameBody,
           content: TextField(
             controller: _nameController,
             autofocus: true,
             textCapitalization: TextCapitalization.words,
-            decoration: const InputDecoration(
-              labelText: 'Nome Allenatore',
-              hintText: 'Inserisci il tuo nome',
-              prefixIcon: Icon(Icons.person_outline),
+            decoration: InputDecoration(
+              labelText: l10n.onboardingTrainerNameLabel,
+              hintText: l10n.onboardingTrainerNameHint,
+              prefixIcon: const Icon(Icons.person_outline),
             ),
             onChanged: (_) => setState(() {}),
           ),
         );
       case 3:
         return _DialogueCard(
-          speaker: 'Professore',
-          title: 'Bene! E quanti anni hai?',
-          body: 'Puoi sempre modificare questa informazione in seguito.',
+          speaker: l10n.onboardingProfessor,
+          title: l10n.onboardingAgeTitle,
+          body: l10n.onboardingAgeBody,
           content: _AgeSelector(
             age: _age,
             onDecrease: _age > 6 ? () => setState(() => _age--) : null,
@@ -487,9 +521,9 @@ class _FirstLaunchOnboardingScreenState
       case 4:
         final origin = _origin;
         return _DialogueCard(
-          speaker: 'Professore',
-          title: 'Ogni Allenatore porta con sé una storia.',
-          body: 'Da dove provieni?',
+          speaker: l10n.onboardingProfessor,
+          title: l10n.onboardingOriginTitle,
+          body: l10n.onboardingOriginBody,
           content: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -498,29 +532,32 @@ class _FirstLaunchOnboardingScreenState
                 isExpanded: true,
                 items: [
                   for (final item in _origins)
-                    DropdownMenuItem(value: item, child: Text(item.name)),
+                    DropdownMenuItem(
+                      value: item,
+                      child: Text(_originDisplayName(item, l10n)),
+                    ),
                 ],
                 onChanged: (value) => setState(() => _origin = value),
-                decoration: const InputDecoration(
-                  labelText: 'Origine',
-                  prefixIcon: Icon(Icons.public),
+                decoration: InputDecoration(
+                  labelText: l10n.onboardingOriginLabel,
+                  prefixIcon: const Icon(Icons.public),
                 ),
               ),
               if (origin != null) ...[
                 const SizedBox(height: 16),
                 _DetailLine(
-                  label: 'Bonus caratteristiche',
+                  label: l10n.onboardingOriginBonusLabel,
                   value: _originBonuses(origin),
                 ),
                 _DetailLine(
-                  label: 'Competenze',
+                  label: l10n.onboardingProficienciesLabel,
                   value: origin.skillProficiencies.isEmpty
-                      ? 'Nessuna competenza aggiuntiva'
+                      ? l10n.onboardingNoAdditionalProficiencies
                       : origin.skillProficiencies.join(', '),
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  origin.description,
+                  _originDescription(origin, l10n),
                   style: const TextStyle(height: 1.35),
                 ),
               ],
@@ -530,9 +567,9 @@ class _FirstLaunchOnboardingScreenState
       case 5:
         final selected = _selectedBackground;
         return _DialogueCard(
-          speaker: 'Professore',
-          title: 'Quale strada ti ha portato fin qui?',
-          body: 'Scegli il background che descrive meglio il tuo Allenatore.',
+          speaker: l10n.onboardingProfessor,
+          title: l10n.onboardingBackgroundTitle,
+          body: l10n.onboardingBackgroundBody,
           content: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -547,7 +584,7 @@ class _FirstLaunchOnboardingScreenState
                         children: [
                           Icon(option.icon, size: 20),
                           const SizedBox(width: 10),
-                          Text(option.name),
+                          Text(_backgroundLabel(option, l10n)),
                         ],
                       ),
                     ),
@@ -555,27 +592,31 @@ class _FirstLaunchOnboardingScreenState
                 onChanged: (value) {
                   if (value != null) setState(() => _background = value);
                 },
-                decoration: const InputDecoration(labelText: 'Background'),
+                decoration: InputDecoration(
+                  labelText: l10n.onboardingBackgroundLabel,
+                ),
               ),
               const SizedBox(height: 16),
-              _InfoBanner(icon: selected.icon, text: selected.description),
+              _InfoBanner(
+                icon: selected.icon,
+                text: _backgroundDescription(selected, l10n),
+              ),
             ],
           ),
         );
       case 6:
         return _DialogueCard(
-          speaker: 'Professore',
-          title: 'Infine, scegli il tuo primo compagno.',
-          body:
-              'Puoi scegliere qualunque Pokémon non evoluto con SR 1/2 o inferiore.',
+          speaker: l10n.onboardingProfessor,
+          title: l10n.onboardingStarterTitle,
+          body: l10n.onboardingStarterBody,
           content: Column(
             children: [
               TextField(
                 controller: _searchController,
-                decoration: const InputDecoration(
-                  labelText: 'Cerca per nome o tipo in italiano',
-                  hintText: 'Esempio: Bulbasaur, Erba, Fuoco…',
-                  prefixIcon: Icon(Icons.search),
+                decoration: InputDecoration(
+                  labelText: l10n.onboardingStarterSearchLabel,
+                  hintText: l10n.onboardingStarterSearchHint,
+                  prefixIcon: const Icon(Icons.search),
                 ),
               ),
               const SizedBox(height: 12),
@@ -589,34 +630,36 @@ class _FirstLaunchOnboardingScreenState
         );
       case 7:
         return _DialogueCard(
-          speaker: 'Professore',
-          title: 'Ecco il tuo profilo.',
-          body: 'Controlla le scelte e preparati a iniziare.',
+          speaker: l10n.onboardingProfessor,
+          title: l10n.onboardingSummaryTitle,
+          body: l10n.onboardingSummaryBody,
           content: Column(
             children: [
               _SummaryRow(
                 icon: Icons.person_outline,
-                label: 'Nome',
+                label: l10n.onboardingNameLabel,
                 value: _nameController.text.trim(),
               ),
               _SummaryRow(
                 icon: Icons.cake_outlined,
-                label: 'Età',
+                label: l10n.onboardingAgeLabel,
                 value: '$_age',
               ),
               _SummaryRow(
                 icon: Icons.public,
-                label: 'Origine',
-                value: _origin?.name ?? '—',
+                label: l10n.onboardingOriginLabel,
+                value: _origin == null
+                    ? '—'
+                    : _originDisplayName(_origin!, l10n),
               ),
               _SummaryRow(
                 icon: Icons.menu_book_outlined,
-                label: 'Background',
-                value: _background,
+                label: l10n.onboardingBackgroundLabel,
+                value: _backgroundLabel(_selectedBackground, l10n),
               ),
               _SummaryRow(
                 icon: Icons.catching_pokemon,
-                label: 'Starter',
+                label: l10n.onboardingStarterLabel,
                 value: _starter?.name ?? '—',
               ),
             ],
@@ -624,22 +667,21 @@ class _FirstLaunchOnboardingScreenState
         );
       case 8:
         return _DialogueCard(
-          speaker: 'Professore',
-          title: 'Sto creando il tuo profilo.',
+          speaker: l10n.onboardingProfessor,
+          title: l10n.onboardingSavingTitle,
           body: _errorMessage == null
-              ? 'Un momento… sto preparando il tuo Allenatore e il primo Pokémon.'
-              : 'Qualcosa non ha funzionato. Puoi riprovare senza perdere le tue scelte.',
+              ? l10n.onboardingSavingBody
+              : l10n.onboardingSavingErrorBody,
           content: _SavingView(hasError: _errorMessage != null),
         );
       default:
-        return const _DialogueCard(
-          speaker: 'Professore',
-          title: 'Tutto pronto!',
-          body:
-              'La tua avventura sta per iniziare. Ci vediamo nel mondo dei Pokémon!',
+        return _DialogueCard(
+          speaker: l10n.onboardingProfessor,
+          title: l10n.onboardingDoneTitle,
+          body: l10n.onboardingDoneBody,
           content: _InfoBanner(
             icon: Icons.celebration_outlined,
-            text: 'Il profilo e il tuo starter sono stati creati correttamente.',
+            text: l10n.onboardingDoneNote,
           ),
         );
     }
@@ -684,7 +726,7 @@ class _ProgressHeader extends StatelessWidget {
                   onPressed: onBack,
                   icon: const Icon(Icons.arrow_back, size: 28),
                   color: _OnboardingPalette.text,
-                  tooltip: 'Indietro',
+                  tooltip: AppLocalizations.of(context).backAction,
                 )
               : null,
         ),
@@ -696,8 +738,9 @@ class _ProgressHeader extends StatelessWidget {
               value: value,
               minHeight: 9,
               backgroundColor: const Color(0xFFFFD8CD),
-              valueColor:
-                  const AlwaysStoppedAnimation<Color>(_OnboardingPalette.rust),
+              valueColor: const AlwaysStoppedAnimation<Color>(
+                _OnboardingPalette.rust,
+              ),
             ),
           ),
         ),
@@ -714,8 +757,7 @@ class _OnboardingAssets {
       'assets/textures/trainers/onboarding_welcome_background.webp';
   static const laboratoryBackground =
       'assets/textures/trainers/onboarding_lab_background.webp';
-  static const professor =
-      'assets/textures/trainers/onboarding_professor.png';
+  static const professor = 'assets/textures/trainers/onboarding_professor.png';
 }
 
 class _WelcomeStage extends StatelessWidget {
@@ -723,6 +765,7 @@ class _WelcomeStage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return ClipRRect(
       borderRadius: BorderRadius.circular(30),
       child: Stack(
@@ -781,16 +824,14 @@ class _WelcomeStage extends StatelessWidget {
                     fontSize: 34,
                     fontWeight: FontWeight.w900,
                     letterSpacing: 1.2,
-                    shadows: [
-                      Shadow(color: Color(0x44FFFFFF), blurRadius: 12),
-                    ],
+                    shadows: [Shadow(color: Color(0x44FFFFFF), blurRadius: 12)],
                   ),
                 ),
                 const SizedBox(height: 8),
-                const Text(
-                  'Il tuo compagno per le avventure da tavolo',
+                Text(
+                  l10n.onboardingTagline,
                   textAlign: TextAlign.center,
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: _OnboardingPalette.rust,
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
@@ -835,8 +876,8 @@ class _WelcomeBackgroundPlaceholder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const DecoratedBox(
-      decoration: BoxDecoration(
+    return DecoratedBox(
+      decoration: const BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
@@ -846,9 +887,11 @@ class _WelcomeBackgroundPlaceholder extends StatelessWidget {
       child: Align(
         alignment: Alignment.topCenter,
         child: Padding(
-          padding: EdgeInsets.only(top: 18),
+          padding: const EdgeInsets.only(top: 18),
           child: _MissingAssetLabel(
-            title: 'SFONDO COPERTINA',
+            title: AppLocalizations.of(
+              context,
+            ).onboardingMissingCoverBackground,
             fileName: 'onboarding_welcome_background.webp',
           ),
         ),
@@ -960,8 +1003,8 @@ class _LaboratoryBackgroundPlaceholder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const DecoratedBox(
-      decoration: BoxDecoration(
+    return DecoratedBox(
+      decoration: const BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -971,9 +1014,9 @@ class _LaboratoryBackgroundPlaceholder extends StatelessWidget {
       child: Align(
         alignment: Alignment.topCenter,
         child: Padding(
-          padding: EdgeInsets.only(top: 18),
+          padding: const EdgeInsets.only(top: 18),
           child: _MissingAssetLabel(
-            title: 'SFONDO LABORATORIO',
+            title: AppLocalizations.of(context).onboardingMissingLabBackground,
             fileName: 'onboarding_lab_background.webp',
           ),
         ),
@@ -1001,26 +1044,26 @@ class _ProfessorAssetPlaceholder extends StatelessWidget {
           ),
           border: Border.all(color: const Color(0xFFBCA99F), width: 2),
         ),
-        child: const Column(
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
+            const Icon(
               Icons.person_add_alt_1_outlined,
               size: 72,
               color: _OnboardingPalette.rust,
             ),
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
             Text(
-              'PROFESSORE PNG\nTRASPARENTE',
+              AppLocalizations.of(context).onboardingMissingProfessor,
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: const TextStyle(
                 color: _OnboardingPalette.rust,
                 fontWeight: FontWeight.w900,
                 letterSpacing: .8,
               ),
             ),
-            SizedBox(height: 8),
-            Text(
+            const SizedBox(height: 8),
+            const Text(
               'onboarding_professor.png',
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 11),
@@ -1033,10 +1076,7 @@ class _ProfessorAssetPlaceholder extends StatelessWidget {
 }
 
 class _MissingAssetLabel extends StatelessWidget {
-  const _MissingAssetLabel({
-    required this.title,
-    required this.fileName,
-  });
+  const _MissingAssetLabel({required this.title, required this.fileName});
 
   final String title;
   final String fileName;
@@ -1125,10 +1165,7 @@ class _DialogueCard extends StatelessWidget {
                   height: 1.35,
                 ),
               ),
-              if (content != null) ...[
-                const SizedBox(height: 18),
-                content!,
-              ],
+              if (content != null) ...[const SizedBox(height: 18), content!],
             ],
           ),
         ),
@@ -1245,10 +1282,12 @@ class _StarterGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final isItalian = Localizations.localeOf(context).languageCode == 'it';
     if (pokemon.isEmpty) {
-      return const _InfoBanner(
+      return _InfoBanner(
         icon: Icons.search_off,
-        text: 'Nessun Pokémon corrisponde alla ricerca.',
+        text: l10n.onboardingNoStarterResults,
       );
     }
 
@@ -1310,7 +1349,11 @@ class _StarterGrid extends StatelessWidget {
                       const SizedBox(height: 2),
                       Text(
                         entry.types
-                            .map(PokemonTypeLocalization.italianLabel)
+                            .map(
+                              isItalian
+                                  ? PokemonTypeLocalization.italianLabel
+                                  : PokemonTypeLocalization.englishValue,
+                            )
                             .join(' / '),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -1389,11 +1432,7 @@ class _SavingView extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 20),
         child: hasError
-            ? const Icon(
-                Icons.error_outline,
-                size: 72,
-                color: Colors.redAccent,
-              )
+            ? const Icon(Icons.error_outline, size: 72, color: Colors.redAccent)
             : const SizedBox(
                 width: 72,
                 height: 72,
@@ -1408,14 +1447,9 @@ class _SavingView extends StatelessWidget {
 }
 
 class _BackgroundOption {
-  const _BackgroundOption({
-    required this.name,
-    required this.description,
-    required this.icon,
-  });
+  const _BackgroundOption({required this.name, required this.icon});
 
   final String name;
-  final String description;
   final IconData icon;
 }
 
@@ -1437,7 +1471,12 @@ class _OnboardingError extends StatelessWidget {
             const SizedBox(height: 12),
             Text(message, textAlign: TextAlign.center),
             const SizedBox(height: 16),
-            FilledButton(onPressed: onRetry, child: const Text('RIPROVA')),
+            FilledButton(
+              onPressed: onRetry,
+              child: Text(
+                AppLocalizations.of(context).retryAction.toUpperCase(),
+              ),
+            ),
           ],
         ),
       ),

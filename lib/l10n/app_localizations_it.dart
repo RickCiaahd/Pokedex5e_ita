@@ -256,4 +256,234 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get retryAction => 'Riprova';
+
+  @override
+  String get onboardingStartAdventure => 'INIZIA LA TUA AVVENTURA';
+
+  @override
+  String get onboardingConfirm => 'CONFERMA';
+
+  @override
+  String get onboardingCreatingProfile => 'CREAZIONE IN CORSO...';
+
+  @override
+  String get onboardingBegin => 'INIZIA!';
+
+  @override
+  String get onboardingProfileCreationError =>
+      'Non è stato possibile creare il profilo. Riprova.';
+
+  @override
+  String get onboardingProfessor => 'Professore';
+
+  @override
+  String get onboardingWelcomeTitle => 'Benvenuto nel tuo nuovo viaggio.';
+
+  @override
+  String get onboardingWelcomeBody =>
+      'Qui potrai creare il tuo Allenatore, scegliere il primo compagno e prepararti alle avventure da tavolo.';
+
+  @override
+  String get onboardingWelcomeNote =>
+      'Le tue scelte potranno essere modificate in seguito dal profilo.';
+
+  @override
+  String get onboardingNameTitle => 'Prima di iniziare, dimmi…';
+
+  @override
+  String get onboardingNameBody => 'Come ti chiami?';
+
+  @override
+  String get onboardingTrainerNameLabel => 'Nome Allenatore';
+
+  @override
+  String get onboardingTrainerNameHint => 'Inserisci il tuo nome';
+
+  @override
+  String get onboardingAgeTitle => 'Bene! E quanti anni hai?';
+
+  @override
+  String get onboardingAgeBody =>
+      'Puoi sempre modificare questa informazione in seguito.';
+
+  @override
+  String get onboardingOriginTitle =>
+      'Ogni Allenatore porta con sé una storia.';
+
+  @override
+  String get onboardingOriginBody => 'Da dove provieni?';
+
+  @override
+  String get onboardingOriginLabel => 'Origine';
+
+  @override
+  String get onboardingOriginBonusLabel => 'Bonus caratteristiche';
+
+  @override
+  String get onboardingProficienciesLabel => 'Competenze';
+
+  @override
+  String get onboardingNoAutomaticBonuses => 'Nessun bonus automatico';
+
+  @override
+  String get onboardingNoAdditionalProficiencies =>
+      'Nessuna competenza aggiuntiva';
+
+  @override
+  String get onboardingBackgroundTitle => 'Quale strada ti ha portato fin qui?';
+
+  @override
+  String get onboardingBackgroundBody =>
+      'Scegli il background che descrive meglio il tuo Allenatore.';
+
+  @override
+  String get onboardingBackgroundLabel => 'Background';
+
+  @override
+  String get onboardingBackgroundResearcher => 'Ricercatore';
+
+  @override
+  String get onboardingBackgroundResearcherDescription =>
+      'Osservi, cataloghi e studi ogni scoperta prima di trarre conclusioni.';
+
+  @override
+  String get onboardingBackgroundExplorer => 'Esploratore';
+
+  @override
+  String get onboardingBackgroundExplorerDescription =>
+      'Ti senti a casa sulle strade meno battute e negli ambienti selvaggi.';
+
+  @override
+  String get onboardingBackgroundBreeder => 'Allevatore';
+
+  @override
+  String get onboardingBackgroundBreederDescription =>
+      'Conosci le necessità delle creature e costruisci legami pazienti.';
+
+  @override
+  String get onboardingBackgroundFighter => 'Combattente';
+
+  @override
+  String get onboardingBackgroundFighterDescription =>
+      'Affronti le difficoltà con disciplina, coraggio e spirito competitivo.';
+
+  @override
+  String get onboardingBackgroundArtist => 'Artista';
+
+  @override
+  String get onboardingBackgroundArtistDescription =>
+      'Esprimi te stesso attraverso spettacolo, creatività e sensibilità.';
+
+  @override
+  String get onboardingBackgroundScholar => 'Studioso';
+
+  @override
+  String get onboardingBackgroundScholarDescription =>
+      'Hai dedicato anni a libri, tradizioni e conoscenze specialistiche.';
+
+  @override
+  String get onboardingStarterTitle => 'Infine, scegli il tuo primo compagno.';
+
+  @override
+  String get onboardingStarterBody =>
+      'Puoi scegliere qualunque Pokémon non evoluto con SR 1/2 o inferiore.';
+
+  @override
+  String get onboardingStarterSearchLabel => 'Cerca per nome o tipo';
+
+  @override
+  String get onboardingStarterSearchHint => 'Esempio: Bulbasaur, Erba, Fuoco…';
+
+  @override
+  String get onboardingNoStarterResults =>
+      'Nessun Pokémon corrisponde alla ricerca.';
+
+  @override
+  String get onboardingSummaryTitle => 'Ecco il tuo profilo.';
+
+  @override
+  String get onboardingSummaryBody =>
+      'Controlla le scelte e preparati a iniziare.';
+
+  @override
+  String get onboardingNameLabel => 'Nome';
+
+  @override
+  String get onboardingAgeLabel => 'Età';
+
+  @override
+  String get onboardingStarterLabel => 'Starter';
+
+  @override
+  String get onboardingSavingTitle => 'Sto creando il tuo profilo.';
+
+  @override
+  String get onboardingSavingBody =>
+      'Un momento… sto preparando il tuo Allenatore e il primo Pokémon.';
+
+  @override
+  String get onboardingSavingErrorBody =>
+      'Qualcosa non ha funzionato. Puoi riprovare senza perdere le tue scelte.';
+
+  @override
+  String get onboardingDoneTitle => 'Tutto pronto!';
+
+  @override
+  String get onboardingDoneBody =>
+      'La tua avventura sta per iniziare. Ci vediamo nel mondo dei Pokémon!';
+
+  @override
+  String get onboardingDoneNote =>
+      'Il profilo e il tuo starter sono stati creati correttamente.';
+
+  @override
+  String get onboardingTagline => 'Il tuo compagno per le avventure da tavolo';
+
+  @override
+  String get onboardingMissingCoverBackground => 'SFONDO COPERTINA';
+
+  @override
+  String get onboardingMissingLabBackground => 'SFONDO LABORATORIO';
+
+  @override
+  String get onboardingMissingProfessor => 'PROFESSORE PNG\nTRASPARENTE';
+
+  @override
+  String get onboardingOriginDmApprovedName => 'Origine 5e approvata dal DM';
+
+  @override
+  String get onboardingOriginAlolanDescription =>
+      'Bonus caratteristiche: INT +2, CHA +1.\nCompetenza: Nature.\nTratto: puoi lanciare Speak with Pokémon una volta per riposo lungo. È una buona origine per trainer curiosi, sociali e molto legati alla vita naturale dei Pokémon.';
+
+  @override
+  String get onboardingOriginHoennianDescription =>
+      'Bonus caratteristiche: WIS +2, INT +1.\nCompetenza: Survival.\nTratto: sei abituato a viaggiare in ambienti difficili e a cavartela tra clima, terreno e rotte selvagge. Funziona bene per esploratori, ranger e allenatori da viaggio.';
+
+  @override
+  String get onboardingOriginJohtoanDescription =>
+      'Bonus caratteristiche: INT +2, STR +1.\nCompetenza: History.\nTratto: la tua formazione richiama tradizioni antiche e disciplina fisica; il tratto marziale premia i colpi critici con armi. Adatta a trainer legati a storia, templi, rovine e leggende.';
+
+  @override
+  String get onboardingOriginKalosianDescription =>
+      'Bonus caratteristiche: CHA +2, INT +1.\nCompetenza: Persuasion.\nTratto: puoi ritirare un 1 secondo le regole dell’origine. È pensata per trainer eleganti, diplomatici e capaci di restare lucidi quando contano presenza e stile.';
+
+  @override
+  String get onboardingOriginKantoanDescription =>
+      'Bonus caratteristiche: +1 a due caratteristiche a scelta. Questo bonus va assegnato manualmente nei box delle caratteristiche.\nCompetenza: Investigation.\nTratto: ottieni un talento approvato dal DM. È l’origine più flessibile, ottima per costruire un trainer molto personalizzato.';
+
+  @override
+  String get onboardingOriginSinnoanDescription =>
+      'Bonus caratteristiche: CON +2, STR +1.\nCompetenza: Athletics.\nTratto: ottieni competenza nei tiri salvezza di Costituzione. Ideale per allenatori resistenti, abituati a montagna, neve e lunghe spedizioni.';
+
+  @override
+  String get onboardingOriginUnovanDescription =>
+      'Bonus caratteristiche: DEX +2, WIS +1.\nCompetenza: Insight.\nTratto: ottieni due competenze aggiuntive a scelta. Perfetta per trainer rapidi, adattabili e capaci di leggere persone e situazioni.';
+
+  @override
+  String get onboardingOriginGalarianDescription =>
+      'Bonus caratteristiche: scegli DEX +2 e STR +1 oppure STR +2 e DEX +1. Questo bonus va assegnato manualmente nei box delle caratteristiche.\nCompetenza: Intimidation.\nTratto: ottieni una reazione difensiva. Adatta a trainer competitivi, fisici e abituati a reggere la pressione dello scontro.';
+
+  @override
+  String get onboardingOriginDmApprovedDescription =>
+      'Usa un’origine 5e classica o homebrew approvata dal DM. Segna manualmente bonus caratteristiche, competenze e tratti concordati al tavolo.';
 }

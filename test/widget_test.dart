@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hive/hive.dart';
 
+import 'package:pokedex_5e_ita/l10n/app_localizations.dart';
 import 'package:pokedex_5e_ita/screens/onboarding/first_launch_onboarding_screen.dart';
 import 'package:pokedex_5e_ita/services/app_launch_service.dart';
 import 'package:pokedex_5e_ita/services/home_tour_service.dart';
@@ -39,6 +40,8 @@ void main() {
   ) async {
     await tester.pumpWidget(
       MaterialApp(
+        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         home: FirstLaunchOnboardingScreen(onCompleted: () {}),
       ),
     );

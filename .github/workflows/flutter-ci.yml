@@ -108,10 +108,22 @@ jobs:
               trainer,
               """  final TextEditingController nameController;
             final TextEditingController moneyController;
+            final String race;
+            final String raceDescription;
+            final Pokemon? selectedStarter;
+            final String startingPack;
+            final int trainerLevel;
+            final String trainerPath;
           """,
               """  final GlobalKey progressionKey;
             final TextEditingController nameController;
             final TextEditingController moneyController;
+            final String race;
+            final String raceDescription;
+            final Pokemon? selectedStarter;
+            final String startingPack;
+            final int trainerLevel;
+            final String trainerPath;
           """,
           )'''
           if old not in text:

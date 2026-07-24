@@ -33,6 +33,27 @@ jobs:
           channel: stable
           cache: true
 
+      - name: Repair transformation script
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('tooling/apply_core_ui_localization.py')
+          text = path.read_text(encoding='utf-8')
+          text = text.replace(
+              "    new_tail + '}',\n",
+              "    lambda _match: new_tail + '}',\n",
+              1,
+          )
+          text = text.replace(
+              "    new_type_block + '  static PokemonFormChoice? _formChoiceFromAssetPath',\n",
+              "    lambda _match: new_type_block + '  static PokemonFormChoice? _formChoiceFromAssetPath',\n",
+              1,
+          )
+          path.write_text(text, encoding='utf-8')
+          PY
+
       - name: Apply core localization
         shell: bash
         run: |

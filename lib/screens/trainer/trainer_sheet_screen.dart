@@ -71,31 +71,45 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
   bool _isSaving = false;
   String? _errorMessage;
 
-  List<GuidedTourStepData> get _tourSteps => [
-    GuidedTourStepData(
-      targetKey: _sheetKey,
-      icon: Icons.badge_outlined,
-      title: 'La scheda interattiva',
-      description:
-          'Qui aggiorni nome, livello, denaro, origine, starter, caratteristiche, PF, CA, velocità, competenze e tiri salvezza. I riquadri modificabili reagiscono al tocco.',
-    ),
-    GuidedTourStepData(
-      targetKey: _progressionKey,
-      icon: Icons.route_outlined,
-      title: 'Avanzamento e percorso',
-      description:
-          'La colonna Avanzamento mostra specializzazioni, Percorso Allenatore e privilegi sbloccati ai livelli corretti. Le scelte disponibili cambiano con il livello.',
-      fallbackScrollFraction: .58,
-    ),
-    GuidedTourStepData(
-      targetKey: _automationKey,
-      icon: Icons.auto_awesome_outlined,
-      title: 'Risorse del percorso',
-      description:
-          'Questo pannello gestisce risorse, scelte e recuperi del Trainer Path. Ricorda di salvare la scheda dopo aver modificato i dati principali.',
-      fallbackScrollFraction: 1,
-    ),
-  ];
+  List<GuidedTourStepData> get _tourSteps {
+    final steps = <GuidedTourStepData>[
+      GuidedTourStepData(
+        targetKey: _sheetKey,
+        icon: Icons.badge_outlined,
+        title: 'La scheda interattiva',
+        description:
+            'Qui aggiorni nome, livello, denaro, origine, starter, caratteristiche, PF, CA, velocità, competenze e tiri salvezza. I riquadri modificabili reagiscono al tocco.',
+      ),
+      GuidedTourStepData(
+        targetKey: _progressionKey,
+        icon: Icons.route_outlined,
+        title: 'Avanzamento e percorso',
+        description:
+            'La colonna Avanzamento mostra specializzazioni, Percorso Allenatore e privilegi sbloccati ai livelli corretti. Le scelte disponibili cambiano con il livello.',
+        fallbackScrollFraction: .58,
+      ),
+    ];
+
+    final hasUnlockedPathManagement =
+        _trainerPath.trim().isNotEmpty &&
+        (_trainerPathChoiceDefinitions.isNotEmpty ||
+            _trainerPathResourceDefinitions.isNotEmpty);
+
+    if (hasUnlockedPathManagement) {
+      steps.add(
+        GuidedTourStepData(
+          targetKey: _automationKey,
+          icon: Icons.auto_awesome_outlined,
+          title: 'Risorse del percorso',
+          description:
+              'Qui gestisci soltanto le scelte e le risorse già sbloccate dal tuo Percorso Allenatore, compresi i recuperi con riposo breve o lungo.',
+          fallbackScrollFraction: 1,
+        ),
+      );
+    }
+
+    return steps;
+  }
 
   @override
   void initState() {

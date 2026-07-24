@@ -529,6 +529,408 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Retry'**
   String get retryAction;
+
+  /// No description provided for @onboardingStartAdventure.
+  ///
+  /// In en, this message translates to:
+  /// **'START YOUR ADVENTURE'**
+  String get onboardingStartAdventure;
+
+  /// No description provided for @onboardingConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'CONFIRM'**
+  String get onboardingConfirm;
+
+  /// No description provided for @onboardingCreatingProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'CREATING PROFILE...'**
+  String get onboardingCreatingProfile;
+
+  /// No description provided for @onboardingBegin.
+  ///
+  /// In en, this message translates to:
+  /// **'BEGIN!'**
+  String get onboardingBegin;
+
+  /// No description provided for @onboardingProfileCreationError.
+  ///
+  /// In en, this message translates to:
+  /// **'The profile could not be created. Try again.'**
+  String get onboardingProfileCreationError;
+
+  /// No description provided for @onboardingProfessor.
+  ///
+  /// In en, this message translates to:
+  /// **'Professor'**
+  String get onboardingProfessor;
+
+  /// No description provided for @onboardingWelcomeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to your new journey.'**
+  String get onboardingWelcomeTitle;
+
+  /// No description provided for @onboardingWelcomeBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Here you can create your Trainer, choose your first companion and prepare for tabletop adventures.'**
+  String get onboardingWelcomeBody;
+
+  /// No description provided for @onboardingWelcomeNote.
+  ///
+  /// In en, this message translates to:
+  /// **'You can change these choices later from your profile.'**
+  String get onboardingWelcomeNote;
+
+  /// No description provided for @onboardingNameTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Before we begin, tell me…'**
+  String get onboardingNameTitle;
+
+  /// No description provided for @onboardingNameBody.
+  ///
+  /// In en, this message translates to:
+  /// **'What is your name?'**
+  String get onboardingNameBody;
+
+  /// No description provided for @onboardingTrainerNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Trainer name'**
+  String get onboardingTrainerNameLabel;
+
+  /// No description provided for @onboardingTrainerNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your name'**
+  String get onboardingTrainerNameHint;
+
+  /// No description provided for @onboardingAgeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Great! How old are you?'**
+  String get onboardingAgeTitle;
+
+  /// No description provided for @onboardingAgeBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You can change this information later.'**
+  String get onboardingAgeBody;
+
+  /// No description provided for @onboardingOriginTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Every Trainer carries a story.'**
+  String get onboardingOriginTitle;
+
+  /// No description provided for @onboardingOriginBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Where do you come from?'**
+  String get onboardingOriginBody;
+
+  /// No description provided for @onboardingOriginLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Origin'**
+  String get onboardingOriginLabel;
+
+  /// No description provided for @onboardingOriginBonusLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Ability bonuses'**
+  String get onboardingOriginBonusLabel;
+
+  /// No description provided for @onboardingProficienciesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Proficiencies'**
+  String get onboardingProficienciesLabel;
+
+  /// No description provided for @onboardingNoAutomaticBonuses.
+  ///
+  /// In en, this message translates to:
+  /// **'No automatic bonuses'**
+  String get onboardingNoAutomaticBonuses;
+
+  /// No description provided for @onboardingNoAdditionalProficiencies.
+  ///
+  /// In en, this message translates to:
+  /// **'No additional proficiencies'**
+  String get onboardingNoAdditionalProficiencies;
+
+  /// No description provided for @onboardingBackgroundTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Which path brought you here?'**
+  String get onboardingBackgroundTitle;
+
+  /// No description provided for @onboardingBackgroundBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the background that best describes your Trainer.'**
+  String get onboardingBackgroundBody;
+
+  /// No description provided for @onboardingBackgroundLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Background'**
+  String get onboardingBackgroundLabel;
+
+  /// No description provided for @onboardingBackgroundResearcher.
+  ///
+  /// In en, this message translates to:
+  /// **'Researcher'**
+  String get onboardingBackgroundResearcher;
+
+  /// No description provided for @onboardingBackgroundResearcherDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'You observe, catalogue and study every discovery before drawing conclusions.'**
+  String get onboardingBackgroundResearcherDescription;
+
+  /// No description provided for @onboardingBackgroundExplorer.
+  ///
+  /// In en, this message translates to:
+  /// **'Explorer'**
+  String get onboardingBackgroundExplorer;
+
+  /// No description provided for @onboardingBackgroundExplorerDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'You feel at home on less-travelled roads and in the wilderness.'**
+  String get onboardingBackgroundExplorerDescription;
+
+  /// No description provided for @onboardingBackgroundBreeder.
+  ///
+  /// In en, this message translates to:
+  /// **'Breeder'**
+  String get onboardingBackgroundBreeder;
+
+  /// No description provided for @onboardingBackgroundBreederDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'You understand the needs of creatures and build patient bonds.'**
+  String get onboardingBackgroundBreederDescription;
+
+  /// No description provided for @onboardingBackgroundFighter.
+  ///
+  /// In en, this message translates to:
+  /// **'Fighter'**
+  String get onboardingBackgroundFighter;
+
+  /// No description provided for @onboardingBackgroundFighterDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'You face challenges with discipline, courage and a competitive spirit.'**
+  String get onboardingBackgroundFighterDescription;
+
+  /// No description provided for @onboardingBackgroundArtist.
+  ///
+  /// In en, this message translates to:
+  /// **'Artist'**
+  String get onboardingBackgroundArtist;
+
+  /// No description provided for @onboardingBackgroundArtistDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'You express yourself through performance, creativity and sensitivity.'**
+  String get onboardingBackgroundArtistDescription;
+
+  /// No description provided for @onboardingBackgroundScholar.
+  ///
+  /// In en, this message translates to:
+  /// **'Scholar'**
+  String get onboardingBackgroundScholar;
+
+  /// No description provided for @onboardingBackgroundScholarDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'You have devoted years to books, traditions and specialist knowledge.'**
+  String get onboardingBackgroundScholarDescription;
+
+  /// No description provided for @onboardingStarterTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Finally, choose your first companion.'**
+  String get onboardingStarterTitle;
+
+  /// No description provided for @onboardingStarterBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You may choose any unevolved Pokémon with SR 1/2 or lower.'**
+  String get onboardingStarterBody;
+
+  /// No description provided for @onboardingStarterSearchLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by name or type'**
+  String get onboardingStarterSearchLabel;
+
+  /// No description provided for @onboardingStarterSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Example: Bulbasaur, Grass, Fire…'**
+  String get onboardingStarterSearchHint;
+
+  /// No description provided for @onboardingNoStarterResults.
+  ///
+  /// In en, this message translates to:
+  /// **'No Pokémon match your search.'**
+  String get onboardingNoStarterResults;
+
+  /// No description provided for @onboardingSummaryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Here is your profile.'**
+  String get onboardingSummaryTitle;
+
+  /// No description provided for @onboardingSummaryBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Review your choices and get ready to begin.'**
+  String get onboardingSummaryBody;
+
+  /// No description provided for @onboardingNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get onboardingNameLabel;
+
+  /// No description provided for @onboardingAgeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Age'**
+  String get onboardingAgeLabel;
+
+  /// No description provided for @onboardingStarterLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Starter'**
+  String get onboardingStarterLabel;
+
+  /// No description provided for @onboardingSavingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'I am creating your profile.'**
+  String get onboardingSavingTitle;
+
+  /// No description provided for @onboardingSavingBody.
+  ///
+  /// In en, this message translates to:
+  /// **'One moment… I am preparing your Trainer and first Pokémon.'**
+  String get onboardingSavingBody;
+
+  /// No description provided for @onboardingSavingErrorBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong. You can try again without losing your choices.'**
+  String get onboardingSavingErrorBody;
+
+  /// No description provided for @onboardingDoneTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'All set!'**
+  String get onboardingDoneTitle;
+
+  /// No description provided for @onboardingDoneBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your adventure is about to begin. See you in the world of Pokémon!'**
+  String get onboardingDoneBody;
+
+  /// No description provided for @onboardingDoneNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Your profile and starter were created successfully.'**
+  String get onboardingDoneNote;
+
+  /// No description provided for @onboardingTagline.
+  ///
+  /// In en, this message translates to:
+  /// **'Your companion for tabletop adventures'**
+  String get onboardingTagline;
+
+  /// No description provided for @onboardingMissingCoverBackground.
+  ///
+  /// In en, this message translates to:
+  /// **'COVER BACKGROUND'**
+  String get onboardingMissingCoverBackground;
+
+  /// No description provided for @onboardingMissingLabBackground.
+  ///
+  /// In en, this message translates to:
+  /// **'LABORATORY BACKGROUND'**
+  String get onboardingMissingLabBackground;
+
+  /// No description provided for @onboardingMissingProfessor.
+  ///
+  /// In en, this message translates to:
+  /// **'TRANSPARENT\nPROFESSOR PNG'**
+  String get onboardingMissingProfessor;
+
+  /// No description provided for @onboardingOriginDmApprovedName.
+  ///
+  /// In en, this message translates to:
+  /// **'GM-approved 5e Origin'**
+  String get onboardingOriginDmApprovedName;
+
+  /// No description provided for @onboardingOriginAlolanDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Ability bonuses: INT +2, CHA +1.\nProficiency: Nature.\nTrait: you can cast Speak with Pokémon once per long rest. A good origin for curious, sociable Trainers closely connected to the natural lives of Pokémon.'**
+  String get onboardingOriginAlolanDescription;
+
+  /// No description provided for @onboardingOriginHoennianDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Ability bonuses: WIS +2, INT +1.\nProficiency: Survival.\nTrait: you are accustomed to travelling through difficult environments and handling climate, terrain and wild routes. It suits explorers, rangers and travelling Trainers.'**
+  String get onboardingOriginHoennianDescription;
+
+  /// No description provided for @onboardingOriginJohtoanDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Ability bonuses: INT +2, STR +1.\nProficiency: History.\nTrait: your training draws on ancient traditions and physical discipline; the martial trait rewards critical hits with weapons. It suits Trainers connected to history, temples, ruins and legends.'**
+  String get onboardingOriginJohtoanDescription;
+
+  /// No description provided for @onboardingOriginKalosianDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Ability bonuses: CHA +2, INT +1.\nProficiency: Persuasion.\nTrait: you may reroll a 1 according to the origin rules. It is designed for elegant, diplomatic Trainers who stay composed when presence and style matter.'**
+  String get onboardingOriginKalosianDescription;
+
+  /// No description provided for @onboardingOriginKantoanDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Ability bonuses: +1 to two abilities of your choice. Assign these bonuses manually in the ability boxes.\nProficiency: Investigation.\nTrait: gain a feat approved by the GM. This is the most flexible origin and is ideal for building a highly customised Trainer.'**
+  String get onboardingOriginKantoanDescription;
+
+  /// No description provided for @onboardingOriginSinnoanDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Ability bonuses: CON +2, STR +1.\nProficiency: Athletics.\nTrait: gain proficiency in Constitution saving throws. Ideal for resilient Trainers accustomed to mountains, snow and long expeditions.'**
+  String get onboardingOriginSinnoanDescription;
+
+  /// No description provided for @onboardingOriginUnovanDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Ability bonuses: DEX +2, WIS +1.\nProficiency: Insight.\nTrait: gain two additional proficiencies of your choice. Perfect for quick, adaptable Trainers who can read people and situations.'**
+  String get onboardingOriginUnovanDescription;
+
+  /// No description provided for @onboardingOriginGalarianDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Ability bonuses: choose DEX +2 and STR +1, or STR +2 and DEX +1. Assign these bonuses manually in the ability boxes.\nProficiency: Intimidation.\nTrait: gain a defensive reaction. It suits competitive, physical Trainers accustomed to handling the pressure of battle.'**
+  String get onboardingOriginGalarianDescription;
+
+  /// No description provided for @onboardingOriginDmApprovedDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Use a classic or homebrew 5e origin approved by the GM. Record the agreed ability bonuses, proficiencies and traits manually.'**
+  String get onboardingOriginDmApprovedDescription;
 }
 
 class _AppLocalizationsDelegate

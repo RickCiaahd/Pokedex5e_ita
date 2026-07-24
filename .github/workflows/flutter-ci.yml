@@ -117,6 +117,15 @@ jobs:
               old_activity.unlink()
           if not new_activity.exists():
               raise SystemExit('MainActivity non disponibile nel nuovo namespace')
+
+          android_test = Path('test/android_release_config_test.dart')
+          android_test.write_text(
+              android_test.read_text(encoding='utf-8').replace(
+                  'io/github/rickciaahd/pokedex5eita/MainActivity.kt',
+                  'io/github/rickciaahd/traineratlas/MainActivity.kt',
+              ),
+              encoding='utf-8',
+          )
           PY
           status=$?
           cat /tmp/localization-foundation.log

@@ -1,0 +1,128 @@
+name: Patch tour professor three-quarter
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    name: Enlarge and crop tour professor
+    if: github.event.pull_request.title == 'Mostra il Professore a tre quarti nei tour'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out feature branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+
+      - name: Update professor layout
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path('lib/widgets/tour/guided_tour.dart')
+          text = path.read_text(encoding='utf-8')
+
+          old_sizes = '''    final colors = Theme.of(context).colorScheme;
+            final compact = MediaQuery.sizeOf(context).width < 430;
+            final professorWidth = compact ? 82.0 : 116.0;'''
+          new_sizes = '''    final colors = Theme.of(context).colorScheme;
+            final compact = MediaQuery.sizeOf(context).width < 430;
+            final professorWidth = compact ? 112.0 : 168.0;
+            final professorHeight = compact ? 148.0 : 210.0;'''
+
+          old_image = '''          SizedBox(
+                width: professorWidth,
+                height: compact ? 176 : 214,
+                child: Image.asset(
+                  GuidedTourOverlay.professorAsset,
+                  fit: BoxFit.contain,
+                  alignment: Alignment.bottomCenter,
+                  errorBuilder: (_, _, _) => const Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Icon(Icons.person, size: 78, color: Colors.white),
+                  ),
+                ),
+              ),'''
+          new_image = '''          Transform.translate(
+                offset: const Offset(0, 8),
+                child: SizedBox(
+                  width: professorWidth,
+                  height: professorHeight,
+                  child: ClipRect(
+                    child: Image.asset(
+                      GuidedTourOverlay.professorAsset,
+                      fit: BoxFit.cover,
+                      alignment: Alignment.topCenter,
+                      errorBuilder: (_, _, _) => const Align(
+                        alignment: Alignment.bottomCenter,
+                        child: Icon(
+                          Icons.person,
+                          size: 78,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),'''
+
+          if text.count(old_sizes) != 1:
+              raise SystemExit('Il blocco delle dimensioni del Professore non è stato trovato una sola volta.')
+          if text.count(old_image) != 1:
+              raise SystemExit('Il blocco immagine del Professore non è stato trovato una sola volta.')
+
+          text = text.replace(old_sizes, new_sizes, 1)
+          text = text.replace(old_image, new_image, 1)
+          path.write_text(text, encoding='utf-8')
+          PY
+
+      - name: Add regression test
+        shell: bash
+        run: |
+          cat > test/guided_tour_professor_layout_test.dart <<'DART'
+          import 'dart:io';
+
+          import 'package:flutter_test/flutter_test.dart';
+
+          void main() {
+            test('il Professore del tour usa un ritaglio a tre quarti', () {
+              final source = File(
+                'lib/widgets/tour/guided_tour.dart',
+              ).readAsStringSync();
+
+              expect(source, contains('final professorWidth = compact ? 112.0 : 168.0;'));
+              expect(source, contains('final professorHeight = compact ? 148.0 : 210.0;'));
+              expect(source, contains('offset: const Offset(0, 8)'));
+              expect(source, contains('fit: BoxFit.cover'));
+              expect(source, contains('alignment: Alignment.topCenter'));
+            });
+          }
+          DART
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Format changed files
+        run: dart format lib/widgets/tour/guided_tour.dart test/guided_tour_professor_layout_test.dart
+
+      - name: Commit change
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add lib/widgets/tour/guided_tour.dart test/guided_tour_professor_layout_test.dart
+          git commit -m 'Mostra il Professore a tre quarti nei tour'
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}

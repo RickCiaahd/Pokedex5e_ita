@@ -1,1 +1,0 @@
-Trigger temporaneo per rieseguire la riparazione completa del layer dei tour guidati.

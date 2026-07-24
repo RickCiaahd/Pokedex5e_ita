@@ -1,1 +1,0 @@
-Trigger temporaneo per rieseguire i test di regressione dei tour con log completo.

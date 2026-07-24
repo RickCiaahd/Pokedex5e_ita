@@ -16,7 +16,7 @@ class HomeTourStepData {
   final String description;
 }
 
-class HomeTourOverlay extends StatelessWidget {
+class HomeTourOverlay extends StatefulWidget {
   const HomeTourOverlay({
     super.key,
     required this.step,
@@ -40,10 +40,112 @@ class HomeTourOverlay extends StatelessWidget {
   final VoidCallback onSkip;
 
   @override
+  State<HomeTourOverlay> createState() => _HomeTourOverlayState();
+}
+
+class _HomeTourOverlayState extends State<HomeTourOverlay> {
+  Rect? _resolvedTargetRect;
+  int _resolutionToken = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _resolvedTargetRect = widget.targetRect;
+    _scheduleTargetResolution();
+  }
+
+  @override
+  void didUpdateWidget(covariant HomeTourOverlay oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.stepIndex != widget.stepIndex) {
+      _resolvedTargetRect = null;
+      _scheduleTargetResolution();
+    } else if (oldWidget.targetRect != widget.targetRect &&
+        widget.targetRect != null) {
+      _resolvedTargetRect = widget.targetRect;
+    }
+  }
+
+  void _scheduleTargetResolution() {
+    final token = ++_resolutionToken;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _resolveTarget(token);
+    });
+  }
+
+  Future<void> _resolveTarget(int token) async {
+    if (!mounted || token != _resolutionToken) return;
+
+    BuildContext? targetContext = widget.step.targetKey.currentContext;
+    if (targetContext == null) {
+      final scrollable = _findHomeScrollable();
+      if (scrollable != null && scrollable.position.hasContentDimensions) {
+        const fallbackFractions = <double>[0, .18, .64, .82, 1];
+        final fallbackIndex = widget.stepIndex < fallbackFractions.length
+            ? widget.stepIndex
+            : fallbackFractions.length - 1;
+        final destination = scrollable.position.maxScrollExtent *
+            fallbackFractions[fallbackIndex];
+        await scrollable.position.animateTo(
+          destination,
+          duration: const Duration(milliseconds: 360),
+          curve: Curves.easeOutCubic,
+        );
+        await Future<void>.delayed(const Duration(milliseconds: 120));
+        if (!mounted || token != _resolutionToken) return;
+        targetContext = widget.step.targetKey.currentContext;
+      }
+    }
+
+    if (targetContext != null) {
+      await Scrollable.ensureVisible(
+        targetContext,
+        alignment: 0.12,
+        duration: const Duration(milliseconds: 320),
+        curve: Curves.easeOutCubic,
+      );
+      await Future<void>.delayed(const Duration(milliseconds: 340));
+    }
+
+    if (!mounted || token != _resolutionToken) return;
+    final overlayBox = context.findRenderObject() as RenderBox?;
+    final targetBox = widget.step.targetKey.currentContext?.findRenderObject()
+        as RenderBox?;
+    if (overlayBox == null || targetBox == null || !targetBox.hasSize) return;
+
+    final targetOrigin = overlayBox.globalToLocal(
+      targetBox.localToGlobal(Offset.zero),
+    );
+    setState(() {
+      _resolvedTargetRect = (targetOrigin & targetBox.size).inflate(8);
+    });
+  }
+
+  ScrollableState? _findHomeScrollable() {
+    ScrollableState? result;
+
+    void visit(Element element) {
+      if (result != null) return;
+      if (element is StatefulElement && element.state is ScrollableState) {
+        final candidate = element.state as ScrollableState;
+        if (candidate.position.axis == Axis.vertical) {
+          result = candidate;
+          return;
+        }
+      }
+      element.visitChildren(visit);
+    }
+
+    final root = WidgetsBinding.instance.rootElement;
+    if (root != null) visit(root);
+    return result;
+  }
+
+  @override
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
     final compact = size.width < 700;
-    final lastStep = stepIndex == totalSteps - 1;
+    final lastStep = widget.stepIndex == widget.totalSteps - 1;
 
     return Stack(
       children: [
@@ -56,7 +158,9 @@ class HomeTourOverlay extends StatelessWidget {
         Positioned.fill(
           child: IgnorePointer(
             child: CustomPaint(
-              painter: _SpotlightPainter(targetRect: targetRect),
+              painter: _SpotlightPainter(
+                targetRect: _resolvedTargetRect ?? widget.targetRect,
+              ),
             ),
           ),
         ),
@@ -68,13 +172,13 @@ class HomeTourOverlay extends StatelessWidget {
           child: SafeArea(
             top: false,
             child: _ProfessorSpeechPanel(
-              step: step,
-              stepIndex: stepIndex,
-              totalSteps: totalSteps,
+              step: widget.step,
+              stepIndex: widget.stepIndex,
+              totalSteps: widget.totalSteps,
               lastStep: lastStep,
-              onBack: onBack,
-              onNext: onNext,
-              onSkip: onSkip,
+              onBack: widget.onBack,
+              onNext: widget.onNext,
+              onSkip: widget.onSkip,
             ),
           ),
         ),

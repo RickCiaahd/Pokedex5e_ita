@@ -1,7 +1,7 @@
 
 > flutter analyze
 Analyzing Pokedex5e_ita...                                      
-No issues found! (ran in 15.9s)
+No issues found! (ran in 14.6s)
 
 > flutter test test/app_locale_controller_test.dart
 

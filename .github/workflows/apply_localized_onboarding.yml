@@ -10,12 +10,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check out onboarding branch
+      - name: Check out onboarding files
         uses: actions/checkout@v4
         with:
           ref: feature/localized-onboarding
           fetch-depth: 1
           show-progress: false
+          sparse-checkout: |
+            tooling
+            lib/screens/onboarding
+            lib/l10n
+            test
 
       - name: Apply onboarding localization
         run: python tooling/apply_localized_onboarding.py

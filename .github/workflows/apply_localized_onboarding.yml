@@ -22,5 +22,22 @@ jobs:
             lib/l10n
             test
 
-      - name: Apply onboarding localization
-        run: python tooling/apply_localized_onboarding.py
+      - name: Capture onboarding localization result
+        shell: bash
+        run: |
+          set +e
+          python tooling/apply_localized_onboarding.py > onboarding_apply_error.log 2>&1
+          echo "$?" > onboarding_apply_status.txt
+          exit 0
+
+      - name: Upload onboarding diagnostics
+        uses: actions/upload-artifact@v4
+        with:
+          name: onboarding-localization-diagnostics
+          path: |
+            onboarding_apply_error.log
+            onboarding_apply_status.txt
+
+      - name: Fail when localization did not apply
+        shell: bash
+        run: test "$(cat onboarding_apply_status.txt)" = "0"

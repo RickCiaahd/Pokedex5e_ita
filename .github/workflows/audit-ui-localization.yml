@@ -115,6 +115,7 @@ jobs:
         run: |
           set +e
           mkdir -p validation-diagnostics
+          tar -czf validation-diagnostics/transformed-source.tar.gz lib test
           log=validation-diagnostics/validation.log
           : > "$log"
 

@@ -9,6 +9,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: complete-ui-localization
+  cancel-in-progress: true
+
 jobs:
   apply:
     if: github.actor != 'github-actions[bot]'
@@ -64,19 +68,46 @@ jobs:
               1,
           )
 
-          marker = "text = replace_once(\n    text,\n    \"                  ? 'Nessun turno impostato.'"
-          if marker in text:
-              turn_start = text.index(marker)
-              turn_end_marker = "    'turno corrente',\n)\n"
-              turn_end = text.index(turn_end_marker, turn_start) + len(turn_end_marker)
-              turn_replacement = '''text = replace_once(
+          bad_import = '''text = add_import(
+    text,
+    "class TrainerUiLocalization {\\n",
+    "import '../localization/game_catalog_locale.dart';\\n\\n",
+)
+'''
+          good_import = '''if "import '../localization/game_catalog_locale.dart';" not in text:
+    text = "import '../localization/game_catalog_locale.dart';\\n\\n" + text
+'''
+          if bad_import not in text:
+              raise RuntimeError('Blocco import TrainerUiLocalization non trovato')
+          text = text.replace(bad_import, good_import, 1)
+
+          turn_marker = "text = replace_once(\n    text,\n    \"                  ? 'Nessun turno impostato.'"
+          if turn_marker in text:
+              start = text.index(turn_marker)
+              end_marker = "    'turno corrente',\n)\n"
+              end = text.index(end_marker, start) + len(end_marker)
+              replacement = '''text = replace_once(
     text,
     "'Turno: ${currentEntry.name}'",
     "context.uiText('Turno: ${currentEntry.name}', 'Turn: ${currentEntry.name}')",
     'turno corrente',
 )
 '''
-              text = text[:turn_start] + turn_replacement + text[turn_end:]
+              text = text[:start] + replacement + text[end:]
+
+          order_marker = "text = replace_once(\n    text,\n    \"              'Ordine e comandi"
+          if order_marker in text:
+              start = text.index(order_marker)
+              end_marker = "    'ordine iniziativa',\n)\n"
+              end = text.index(end_marker, start) + len(end_marker)
+              replacement = '''text = replace_once(
+    text,
+    "'Ordine e comandi (${entries.length})'",
+    "context.uiText('Ordine e comandi (${entries.length})', 'Order and commands (${entries.length})')",
+    'ordine iniziativa',
+)
+'''
+              text = text[:start] + replacement + text[end:]
 
           path.write_text(text, encoding='utf-8')
           PY

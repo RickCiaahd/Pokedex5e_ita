@@ -23,7 +23,12 @@ jobs:
           fetch-depth: 0
 
       - name: Create source snapshot
-        run: git archive --format=tar.gz --output=english-ui-source.tar.gz HEAD
+        run: |
+          git archive \
+            --format=tar.gz \
+            --output=english-ui-source.tar.gz \
+            HEAD \
+            lib test tooling pubspec.yaml pubspec.lock analysis_options.yaml android .github/workflows/flutter-ci.yml
 
       - name: Upload source snapshot
         uses: actions/upload-artifact@v4

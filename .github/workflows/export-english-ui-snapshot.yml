@@ -24,7 +24,12 @@ jobs:
 
       - name: Create source snapshot
         run: |
-          tar --exclude=.git --exclude=build --exclude=.dart_tool -czf english-ui-source.tar.gz .
+          tar \
+            --exclude=.git \
+            --exclude=build \
+            --exclude=.dart_tool \
+            --exclude=english-ui-source.tar.gz \
+            -czf english-ui-source.tar.gz .
 
       - name: Upload source snapshot
         uses: actions/upload-artifact@v4

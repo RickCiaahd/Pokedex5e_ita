@@ -1,29 +1,28 @@
 name: Flutter CI
 
 on:
+  push:
+    branches:
+      - main
   pull_request:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: flutter-ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  apply_core_localization:
-    name: Apply and validate core UI localization
-    if: github.event_name == 'pull_request' && github.head_ref == 'feature/complete-ui-localization'
+  quality:
+    name: Analyze, test and build Android
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 45
 
     steps:
-      - name: Check out localization branch
+      - name: Check out repository
         uses: actions/checkout@v4
-        with:
-          ref: feature/complete-ui-localization
-          fetch-depth: 0
 
       - name: Set up Java
         uses: actions/setup-java@v4
@@ -37,88 +36,40 @@ jobs:
           channel: stable
           cache: true
 
-      - name: Repair transformation script
-        shell: bash
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-
-          path = Path('tooling/apply_core_ui_localization.py')
-          text = path.read_text(encoding='utf-8')
-          text = text.replace(
-              "    new_tail + '}',\n",
-              "    lambda _match: new_tail + '}',\n",
-              1,
-          )
-          text = text.replace(
-              "    new_type_block + '  static PokemonFormChoice? _formChoiceFromAssetPath',\n",
-              "    lambda _match: new_type_block + '  static PokemonFormChoice? _formChoiceFromAssetPath',\n",
-              1,
-          )
-          turn_start = text.index(
-              "text = replace_once(\n    text,\n    \"                  ? 'Nessun turno impostato.'"
-          )
-          turn_marker = "    'turno corrente',\n)\n"
-          turn_end = text.index(turn_marker, turn_start) + len(turn_marker)
-          turn_replacement = '''text = replace_once(
-    text,
-    "'Turno: ${currentEntry.name}'",
-    "context.uiText('Turno: ${currentEntry.name}', 'Turn: ${currentEntry.name}')",
-    'turno corrente',
-)
-'''
-          text = text[:turn_start] + turn_replacement + text[turn_end:]
-          path.write_text(text, encoding='utf-8')
-          PY
-
-      - name: Apply core localization
-        run: python tooling/apply_core_ui_localization.py
+      - name: Show Flutter version
+        run: flutter --version
 
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Format changed files
-        run: |
-          dart format \
-            lib/localization/ui_text.dart \
-            lib/models/trainer_ui_localization.dart \
-            lib/widgets/pokemon/pokemon_asset_image_legacy.dart \
-            lib/widgets/pokedex/pokemon_summary_dialog.dart \
-            lib/screens/battle/battle_screen.dart \
-            lib/screens/trainer/trainer_sheet_screen.dart \
-            lib/screens/tools/tools_screen.dart \
-            test/secondary_ui_localization_test.dart
-
       - name: Analyze source
         run: flutter analyze
 
-      - name: Run localization tests
+      - name: Validate application data
         run: |
-          flutter test test/secondary_ui_localization_test.dart
-          flutter test test/trainer_ui_localization_test.dart
-          flutter test test/localized_game_catalogs_test.dart
+          set -o pipefail
+          flutter test test/data_integrity_test.dart --reporter expanded 2>&1 | tee data-validation.log
+
+      - name: Upload validation log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: data-validation-log
+          path: data-validation.log
+          if-no-files-found: ignore
+          retention-days: 7
 
       - name: Run complete test suite
-        run: flutter test
+        run: flutter test --reporter expanded
 
       - name: Build Android debug APK
         run: flutter build apk --debug
 
-      - name: Restore CI and publish application changes
-        shell: bash
-        run: |
-          git checkout origin/main -- .github/workflows/flutter-ci.yml
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add \
-            .github/workflows/flutter-ci.yml \
-            lib/localization/ui_text.dart \
-            lib/models/trainer_ui_localization.dart \
-            lib/widgets/pokemon/pokemon_asset_image_legacy.dart \
-            lib/widgets/pokedex/pokemon_summary_dialog.dart \
-            lib/screens/battle/battle_screen.dart \
-            lib/screens/trainer/trainer_sheet_screen.dart \
-            lib/screens/tools/tools_screen.dart \
-            test/secondary_ui_localization_test.dart
-          git commit -m "Localizza le schermate principali rimaste [skip ci]"
-          git push origin HEAD:feature/complete-ui-localization
+      - name: Upload debug APK
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@v4
+        with:
+          name: Pokedex5eITA-debug
+          path: build/app/outputs/flutter-apk/app-debug.apk
+          if-no-files-found: error
+          retention-days: 7

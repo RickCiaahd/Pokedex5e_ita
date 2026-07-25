@@ -90,8 +90,11 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Format migrated sources
+      - name: Capture format result
+        shell: bash
         run: |
+          set +e
+          mkdir -p validation-diagnostics
           dart format \
             lib/localization/ui_text.dart \
             lib/models/trainer_ui_localization.dart \
@@ -108,7 +111,21 @@ jobs:
             lib/widgets/pokemon/pokemon_asset_image_legacy.dart \
             test/navigation_ui_localization_test.dart \
             test/secondary_ui_localization_test.dart \
-            test/trainer_ui_localization_test.dart
+            test/trainer_ui_localization_test.dart \
+            > validation-diagnostics/format.log 2>&1
+          echo "$?" > validation-diagnostics/format.status
+          cat validation-diagnostics/format.log
+          exit 0
+
+      - name: Upload validation diagnostics
+        uses: actions/upload-artifact@v4
+        with:
+          name: complete-ui-validation-diagnostics
+          path: validation-diagnostics
+          retention-days: 7
+
+      - name: Stop when formatting failed
+        run: test "$(cat validation-diagnostics/format.status)" = "0"
 
       - name: Analyze source
         run: flutter analyze

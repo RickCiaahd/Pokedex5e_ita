@@ -41,39 +41,15 @@ jobs:
             echo "already_applied=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Rebuild patch and capture status
+      - name: Rebuild patch
         if: steps.state.outputs.already_applied == 'false'
         shell: bash
         run: |
-          set +e
           mkdir -p patch-diagnostics
           cat tooling/patches/complete-ui.patch.gz.b64.part* | tr -d '\r\n\t ' > patch-diagnostics/complete-ui.patch.gz.b64
-          sha256sum patch-diagnostics/complete-ui.patch.gz.b64 | tee patch-diagnostics/checksums.txt
           base64 --decode patch-diagnostics/complete-ui.patch.gz.b64 | gzip --decompress > patch-diagnostics/complete-ui.patch
-          status=$?
-          if [ "$status" -eq 0 ]; then
-            sha256sum patch-diagnostics/complete-ui.patch | tee -a patch-diagnostics/checksums.txt
-            git apply --check patch-diagnostics/complete-ui.patch
-            status=$?
-          fi
-          echo "$status" > patch-diagnostics/status.txt
-          exit 0
-
-      - name: Upload patch diagnostics
-        if: steps.state.outputs.already_applied == 'false'
-        uses: actions/upload-artifact@v4
-        with:
-          name: complete-ui-patch-diagnostics
-          path: patch-diagnostics
-          retention-days: 7
-
-      - name: Stop when patch reconstruction failed
-        if: steps.state.outputs.already_applied == 'false'
-        run: test "$(cat patch-diagnostics/status.txt)" = "0"
-
-      - name: Apply reconstructed patch
-        if: steps.state.outputs.already_applied == 'false'
-        run: git apply patch-diagnostics/complete-ui.patch
+          git apply --check patch-diagnostics/complete-ui.patch
+          git apply patch-diagnostics/complete-ui.patch
 
       - name: Repair concatenated profile copy
         if: steps.state.outputs.already_applied == 'false'
@@ -114,11 +90,8 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Capture format result
-        shell: bash
+      - name: Format migrated sources
         run: |
-          set +e
-          mkdir -p validation-diagnostics
           dart format \
             lib/localization/ui_text.dart \
             lib/models/trainer_ui_localization.dart \
@@ -135,10 +108,32 @@ jobs:
             lib/widgets/pokemon/pokemon_asset_image_legacy.dart \
             test/navigation_ui_localization_test.dart \
             test/secondary_ui_localization_test.dart \
-            test/trainer_ui_localization_test.dart \
-            > validation-diagnostics/format.log 2>&1
-          echo "$?" > validation-diagnostics/format.status
-          cat validation-diagnostics/format.log
+            test/trainer_ui_localization_test.dart
+
+      - name: Capture validation result
+        shell: bash
+        run: |
+          set +e
+          mkdir -p validation-diagnostics
+          log=validation-diagnostics/validation.log
+          : > "$log"
+
+          run_check() {
+            echo "" | tee -a "$log"
+            echo "> $*" | tee -a "$log"
+            "$@" 2>&1 | tee -a "$log"
+            return ${PIPESTATUS[0]}
+          }
+
+          status=0
+          run_check flutter analyze || status=$?
+          if [ "$status" -eq 0 ]; then run_check flutter test test/secondary_ui_localization_test.dart || status=$?; fi
+          if [ "$status" -eq 0 ]; then run_check flutter test test/navigation_ui_localization_test.dart || status=$?; fi
+          if [ "$status" -eq 0 ]; then run_check flutter test test/trainer_ui_localization_test.dart || status=$?; fi
+          if [ "$status" -eq 0 ]; then run_check flutter test test/localized_game_catalogs_test.dart || status=$?; fi
+          if [ "$status" -eq 0 ]; then run_check flutter test --reporter expanded || status=$?; fi
+          if [ "$status" -eq 0 ]; then run_check flutter build apk --debug || status=$?; fi
+          echo "$status" > validation-diagnostics/status.txt
           exit 0
 
       - name: Upload validation diagnostics
@@ -148,24 +143,8 @@ jobs:
           path: validation-diagnostics
           retention-days: 7
 
-      - name: Stop when formatting failed
-        run: test "$(cat validation-diagnostics/format.status)" = "0"
-
-      - name: Analyze source
-        run: flutter analyze
-
-      - name: Run targeted localization tests
-        run: |
-          flutter test test/secondary_ui_localization_test.dart
-          flutter test test/navigation_ui_localization_test.dart
-          flutter test test/trainer_ui_localization_test.dart
-          flutter test test/localized_game_catalogs_test.dart
-
-      - name: Run complete test suite
-        run: flutter test --reporter expanded
-
-      - name: Build Android debug APK
-        run: flutter build apk --debug
+      - name: Stop when validation failed
+        run: test "$(cat validation-diagnostics/status.txt)" = "0"
 
       - name: Run post-migration UI audit
         run: python tooling/audit_ui_strings.py

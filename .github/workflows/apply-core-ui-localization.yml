@@ -117,6 +117,9 @@ jobs:
             run_step python tooling/apply_core_ui_localization.py || status=$?
           fi
           if [ "$status" -eq 0 ]; then
+            run_step python tooling/finalize_core_ui_localization.py || status=$?
+          fi
+          if [ "$status" -eq 0 ]; then
             run_step flutter pub get || status=$?
           fi
           if [ "$status" -eq 0 ]; then
@@ -128,7 +131,8 @@ jobs:
               lib/screens/battle/battle_screen.dart \
               lib/screens/trainer/trainer_sheet_screen.dart \
               lib/screens/tools/tools_screen.dart \
-              test/secondary_ui_localization_test.dart || status=$?
+              test/secondary_ui_localization_test.dart \
+              test/trainer_ui_localization_test.dart || status=$?
           fi
           if [ "$status" -eq 0 ]; then
             run_step flutter analyze || status=$?
@@ -170,6 +174,7 @@ jobs:
             lib/screens/battle/battle_screen.dart \
             lib/screens/trainer/trainer_sheet_screen.dart \
             lib/screens/tools/tools_screen.dart \
-            test/secondary_ui_localization_test.dart
+            test/secondary_ui_localization_test.dart \
+            test/trainer_ui_localization_test.dart
           git commit -m "Localizza le schermate principali rimaste [skip ci]"
           git push origin HEAD:feature/complete-ui-localization

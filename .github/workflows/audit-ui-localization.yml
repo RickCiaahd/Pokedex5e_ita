@@ -41,16 +41,39 @@ jobs:
             echo "already_applied=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Rebuild and verify patch
+      - name: Rebuild patch and capture status
         if: steps.state.outputs.already_applied == 'false'
         shell: bash
         run: |
-          cat tooling/patches/complete-ui.patch.gz.b64.part* | tr -d '\r\n\t ' > /tmp/complete-ui.patch.gz.b64
-          echo "ae56118e2db8dae3de8a2f15567e566e03bc092d1de3176a2ade31be5f07eaaa  /tmp/complete-ui.patch.gz.b64" | sha256sum --check
-          base64 --decode /tmp/complete-ui.patch.gz.b64 | gzip --decompress > /tmp/complete-ui.patch
-          echo "81cbf7c305bded30687deebd0da5fbcef6661cb01b66352cd5b219eab1f713d5  /tmp/complete-ui.patch" | sha256sum --check
-          git apply --check /tmp/complete-ui.patch
-          git apply /tmp/complete-ui.patch
+          set +e
+          mkdir -p patch-diagnostics
+          cat tooling/patches/complete-ui.patch.gz.b64.part* | tr -d '\r\n\t ' > patch-diagnostics/complete-ui.patch.gz.b64
+          sha256sum patch-diagnostics/complete-ui.patch.gz.b64 | tee patch-diagnostics/checksums.txt
+          base64 --decode patch-diagnostics/complete-ui.patch.gz.b64 | gzip --decompress > patch-diagnostics/complete-ui.patch
+          status=$?
+          if [ "$status" -eq 0 ]; then
+            sha256sum patch-diagnostics/complete-ui.patch | tee -a patch-diagnostics/checksums.txt
+            git apply --check patch-diagnostics/complete-ui.patch
+            status=$?
+          fi
+          echo "$status" > patch-diagnostics/status.txt
+          exit 0
+
+      - name: Upload patch diagnostics
+        if: steps.state.outputs.already_applied == 'false'
+        uses: actions/upload-artifact@v4
+        with:
+          name: complete-ui-patch-diagnostics
+          path: patch-diagnostics
+          retention-days: 7
+
+      - name: Stop when patch reconstruction failed
+        if: steps.state.outputs.already_applied == 'false'
+        run: test "$(cat patch-diagnostics/status.txt)" = "0"
+
+      - name: Apply reconstructed patch
+        if: steps.state.outputs.already_applied == 'false'
+        run: git apply patch-diagnostics/complete-ui.patch
 
       - name: Set up Java
         uses: actions/setup-java@v4

@@ -1,8 +1,12 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+
+import '../../localization/ui_text.dart';
 
 import '../../models/profile_backup.dart';
 import '../../models/user_profile.dart';
@@ -85,7 +89,12 @@ class _ProfilesScreenState extends State<ProfilesScreen> {
       final profile = await _profileRepository.createProfile(name.trim());
       await _profileRepository.setActiveProfile(profile.id);
       await _loadProfiles();
-      _setStatus('Profilo ${profile.name} creato e attivato.');
+      _setStatus(
+        context.uiText(
+          'Profilo ${profile.name} creato e attivato.',
+          'Profile ${profile.name} created and activated.',
+        ),
+      );
     } catch (error) {
       _setStatus(_friendlyError(error), isError: true);
     } finally {
@@ -99,7 +108,12 @@ class _ProfilesScreenState extends State<ProfilesScreen> {
     try {
       await _profileRepository.setActiveProfile(profile.id);
       await _loadProfiles();
-      _setStatus('${profile.name} è ora il profilo attivo.');
+      _setStatus(
+        context.uiText(
+          '${profile.name} è ora il profilo attivo.',
+          '${profile.name} is now the active profile.',
+        ),
+      );
     } catch (error) {
       _setStatus(_friendlyError(error), isError: true);
     } finally {
@@ -114,14 +128,19 @@ class _ProfilesScreenState extends State<ProfilesScreen> {
       final backup = await _backupService.createBackup(profile.id);
       final json = _backupService.encodeBackup(backup);
       final path = await FilePicker.platform.saveFile(
-        dialogTitle: 'Esporta il profilo ${profile.name}',
+        dialogTitle: context.uiText(
+          'Esporta il profilo ${profile.name}',
+          'Export profile ${profile.name}',
+        ),
         fileName: _backupService.fileNameFor(backup),
         type: FileType.custom,
         allowedExtensions: const ['json'],
         bytes: Uint8List.fromList(utf8.encode(json)),
       );
       if (path == null) {
-        _setStatus('Esportazione annullata.');
+        _setStatus(
+          context.uiText('Esportazione annullata.', 'Export cancelled.'),
+        );
       } else {
         _setStatus('Backup di ${profile.name} esportato correttamente.');
       }
@@ -144,7 +163,9 @@ class _ProfilesScreenState extends State<ProfilesScreen> {
         withData: true,
       );
       if (result == null || result.files.isEmpty) {
-        _setStatus('Importazione annullata.');
+        _setStatus(
+          context.uiText('Importazione annullata.', 'Import cancelled.'),
+        );
         return;
       }
 
@@ -164,7 +185,9 @@ class _ProfilesScreenState extends State<ProfilesScreen> {
         ),
       );
       if (choice == null) {
-        _setStatus('Importazione annullata.');
+        _setStatus(
+          context.uiText('Importazione annullata.', 'Import cancelled.'),
+        );
         return;
       }
 
@@ -176,8 +199,14 @@ class _ProfilesScreenState extends State<ProfilesScreen> {
       await _loadProfiles();
       _setStatus(
         choice.targetProfileId == null
-            ? 'Profilo ${imported.name} importato e attivato.'
-            : 'Profilo ${imported.name} sostituito con il backup e attivato.',
+            ? context.uiText(
+                'Profilo ${imported.name} importato e attivato.',
+                'Profile ${imported.name} imported and activated.',
+              )
+            : context.uiText(
+                'Profilo ${imported.name} sostituito con il backup e attivato.',
+                'Profile ${imported.name} replaced with the backup and activated.',
+              ),
       );
     } catch (error) {
       _setStatus(_friendlyError(error), isError: true);
@@ -192,7 +221,12 @@ class _ProfilesScreenState extends State<ProfilesScreen> {
     try {
       final duplicate = await _backupService.duplicateProfile(profile.id);
       await _loadProfiles();
-      _setStatus('${duplicate.name} creato e attivato.');
+      _setStatus(
+        context.uiText(
+          '${duplicate.name} creato e attivato.',
+          '${duplicate.name} created and activated.',
+        ),
+      );
     } catch (error) {
       _setStatus(_friendlyError(error), isError: true);
     } finally {
@@ -205,10 +239,12 @@ class _ProfilesScreenState extends State<ProfilesScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Eliminare profilo?'),
+        title: Text(context.uiText('Eliminare profilo?', 'Delete profile?')),
         content: Text(
-          'Vuoi eliminare ${profile.name}? Verranno rimossi scheda allenatore, '
-          'Pokédex, squadra, PC, zaino, impostazioni, incontri, Allenatori PNG e battaglie salvate.',
+          context.uiText(
+            'Vuoi eliminare ${profile.name}? Verranno rimossi scheda allenatore, Pokédex, squadra, PC, zaino, impostazioni, incontri, Allenatori PNG e battaglie salvate.',
+            'Delete ${profile.name}? This will remove the Trainer sheet, Pokédex, team, PC, Bag, settings, encounters, NPC Trainers and saved battles.',
+          ),
         ),
         actions: [
           TextButton(
@@ -232,7 +268,12 @@ class _ProfilesScreenState extends State<ProfilesScreen> {
     try {
       await _backupService.deleteProfileCompletely(profile.id);
       await _loadProfiles();
-      _setStatus('Profilo ${profile.name} eliminato completamente.');
+      _setStatus(
+        context.uiText(
+          'Profilo ${profile.name} eliminato completamente.',
+          'Profile ${profile.name} deleted completely.',
+        ),
+      );
     } catch (error) {
       _setStatus(_friendlyError(error), isError: true);
     } finally {
@@ -302,8 +343,10 @@ class _ProfilesScreenState extends State<ProfilesScreen> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Ogni profilo conserva separatamente scheda, Pokédex, squadra, '
-                  'PC, zaino, impostazioni, raccolte e incontri salvati.',
+                  context.uiText(
+                    'Ogni profilo conserva separatamente scheda, Pokédex, squadra, PC, zaino, impostazioni, raccolte e incontri salvati.',
+                    'Each profile separately stores its sheet, Pokédex, team, PC, Bag, settings, collections and saved encounters.',
+                  ),
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
                 const SizedBox(height: 12),
@@ -360,7 +403,7 @@ class _ProfilesHeader extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Profilo attivo',
+                  context.uiText('Profilo attivo', 'Active profile'),
                   style: Theme.of(context).textTheme.labelLarge?.copyWith(
                     color: colorScheme.onPrimaryContainer,
                   ),
@@ -377,7 +420,10 @@ class _ProfilesHeader extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  '$profileCount profili salvati',
+                  context.uiText(
+                    '$profileCount profili salvati',
+                    '$profileCount saved profiles',
+                  ),
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: colorScheme.onPrimaryContainer,
                   ),
@@ -430,7 +476,7 @@ class _ProfileStatusBanner extends StatelessWidget {
               child: Text(message, style: TextStyle(color: foreground)),
             ),
             IconButton(
-              tooltip: 'Chiudi messaggio',
+              tooltip: context.uiText('Chiudi messaggio', 'Close message'),
               onPressed: onDismiss,
               icon: Icon(Icons.close, color: foreground),
             ),
@@ -459,7 +505,7 @@ class _ProfilesSectionHeader extends StatelessWidget {
       children: [
         Expanded(
           child: Text(
-            'Profili allenatore',
+            context.uiText('Profili allenatore', 'Trainer profiles'),
             style: Theme.of(
               context,
             ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
@@ -549,8 +595,14 @@ class _ProfileTile extends StatelessWidget {
           padding: const EdgeInsets.only(top: 6),
           child: Text(
             isActive
-                ? 'Lv. ${profile.trainerLevel} | Profilo attivo'
-                : 'Lv. ${profile.trainerLevel} | Creato il ${_formatDate(profile.createdAt)}',
+                ? context.uiText(
+                    'Lv. ${profile.trainerLevel} | Profilo attivo',
+                    'Lv. ${profile.trainerLevel} | Active profile',
+                  )
+                : context.uiText(
+                    'Lv. ${profile.trainerLevel} | Creato il ${_formatDate(profile.createdAt)}',
+                    'Lv. ${profile.trainerLevel} | Created ${_formatDate(profile.createdAt)}',
+                  ),
           ),
         ),
         trailing: Row(
@@ -564,7 +616,7 @@ class _ProfileTile extends StatelessWidget {
             else
               Icon(Icons.check_circle, color: colorScheme.primary),
             PopupMenuButton<_ProfileAction>(
-              tooltip: 'Azioni profilo',
+              tooltip: context.uiText('Azioni profilo', 'Profile actions'),
               enabled: !isBusy,
               onSelected: (action) {
                 switch (action) {
@@ -580,11 +632,13 @@ class _ProfileTile extends StatelessWidget {
                 }
               },
               itemBuilder: (_) => [
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: _ProfileAction.export,
                   child: ListTile(
                     leading: Icon(Icons.file_download_outlined),
-                    title: Text('Esporta backup'),
+                    title: Text(
+                      context.uiText('Esporta backup', 'Export backup'),
+                    ),
                     contentPadding: EdgeInsets.zero,
                   ),
                 ),
@@ -683,11 +737,13 @@ class _CreateProfileDialogState extends State<_CreateProfileDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Nuovo profilo'),
+      title: Text(context.uiText('Nuovo profilo', 'New profile')),
       content: TextField(
         controller: _controller,
         autofocus: true,
-        decoration: const InputDecoration(labelText: 'Nome allenatore'),
+        decoration: InputDecoration(
+          labelText: context.uiText('Nome allenatore', 'Trainer name'),
+        ),
         onSubmitted: (_) => _submit(),
       ),
       actions: [
@@ -772,7 +828,9 @@ class _ProfileImportDialogState extends State<_ProfileImportDialog> {
     final exportedDate = _formatDateTime(backup.exportedAt);
 
     return AlertDialog(
-      title: const Text('Importa backup profilo'),
+      title: Text(
+        context.uiText('Importa backup profilo', 'Import profile backup'),
+      ),
       content: SizedBox(
         width: 520,
         child: SingleChildScrollView(
@@ -787,7 +845,10 @@ class _ProfileImportDialogState extends State<_ProfileImportDialog> {
                 ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
               ),
               Text(
-                'Formato ${backup.formatVersion} · Esportato il $exportedDate',
+                context.uiText(
+                  'Formato ${backup.formatVersion} · Esportato il $exportedDate',
+                  'Format ${backup.formatVersion} · Exported $exportedDate',
+                ),
               ),
               const SizedBox(height: 12),
               Wrap(
@@ -800,56 +861,77 @@ class _ProfileImportDialogState extends State<_ProfileImportDialog> {
                   ),
                   _SummaryChip(
                     icon: Icons.visibility_outlined,
-                    label: '${backup.seenSpecies} visti',
+                    label: context.uiText(
+                      '${backup.seenSpecies} visti',
+                      '${backup.seenSpecies} seen',
+                    ),
                   ),
                   _SummaryChip(
                     icon: Icons.catching_pokemon,
-                    label: '${backup.caughtSpecies} catturati',
+                    label: context.uiText(
+                      '${backup.caughtSpecies} catturati',
+                      '${backup.caughtSpecies} caught',
+                    ),
                   ),
                   _SummaryChip(
                     icon: Icons.groups_outlined,
-                    label: '${backup.occupiedTeamSlots}/6 in squadra',
+                    label: context.uiText(
+                      '${backup.occupiedTeamSlots}/6 in squadra',
+                      '${backup.occupiedTeamSlots}/6 in team',
+                    ),
                   ),
                   _SummaryChip(
                     icon: Icons.computer_outlined,
-                    label: '${backup.pc.length} nel PC',
+                    label: context.uiText(
+                      '${backup.pc.length} nel PC',
+                      '${backup.pc.length} in the PC',
+                    ),
                   ),
                   _SummaryChip(
                     icon: Icons.backpack_outlined,
-                    label: '${backup.bagItemQuantity} oggetti',
+                    label: context.uiText(
+                      '${backup.bagItemQuantity} oggetti',
+                      '${backup.bagItemQuantity} items',
+                    ),
                   ),
                   _SummaryChip(
                     icon: Icons.bookmarks_outlined,
-                    label: '${backup.savedEncounters.length} incontri',
+                    label: context.uiText(
+                      '${backup.savedEncounters.length} incontri',
+                      '${backup.savedEncounters.length} encounters',
+                    ),
                   ),
                   _SummaryChip(
                     icon: Icons.flash_on_outlined,
                     label: backup.battleSession == null
-                        ? 'Nessuna battaglia'
-                        : 'Battaglia salvata',
+                        ? context.uiText('Nessuna battaglia', 'No battle')
+                        : context.uiText('Battaglia salvata', 'Saved battle'),
                   ),
                 ],
               ),
               const SizedBox(height: 16),
               TextField(
                 controller: _nameController,
-                decoration: const InputDecoration(
-                  labelText: 'Nome del profilo importato',
+                decoration: InputDecoration(
+                  labelText: context.uiText(
+                    'Nome del profilo importato',
+                    'Imported profile name',
+                  ),
                   border: OutlineInputBorder(),
                 ),
               ),
               const SizedBox(height: 14),
               SegmentedButton<_ProfileImportMode>(
-                segments: const [
+                segments: [
                   ButtonSegment(
                     value: _ProfileImportMode.createNew,
                     icon: Icon(Icons.person_add_alt_1),
-                    label: Text('Nuovo profilo'),
+                    label: Text(context.uiText('Nuovo profilo', 'New profile')),
                   ),
                   ButtonSegment(
                     value: _ProfileImportMode.replaceExisting,
                     icon: Icon(Icons.sync_alt),
-                    label: Text('Sostituisci'),
+                    label: Text(context.uiText('Sostituisci', 'Replace')),
                   ),
                 ],
                 selected: {_mode},
@@ -861,8 +943,11 @@ class _ProfileImportDialogState extends State<_ProfileImportDialog> {
                 const SizedBox(height: 12),
                 DropdownButtonFormField<String>(
                   initialValue: _targetProfileId,
-                  decoration: const InputDecoration(
-                    labelText: 'Profilo da sostituire',
+                  decoration: InputDecoration(
+                    labelText: context.uiText(
+                      'Profilo da sostituire',
+                      'Profile to replace',
+                    ),
                     border: OutlineInputBorder(),
                   ),
                   items: [
@@ -878,9 +963,10 @@ class _ProfileImportDialogState extends State<_ProfileImportDialog> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Tutti i dati del profilo scelto verranno sostituiti dal '
-                  'backup. L’operazione viene annullata automaticamente se il '
-                  'ripristino non riesce.',
+                  context.uiText(
+                    'Tutti i dati del profilo scelto verranno sostituiti dal backup. L’operazione viene annullata automaticamente se il ripristino non riesce.',
+                    'All data in the selected profile will be replaced by the backup. The operation is cancelled automatically if the restore fails.',
+                  ),
                   style: TextStyle(
                     color: Theme.of(context).colorScheme.error,
                     fontWeight: FontWeight.w700,
@@ -943,7 +1029,10 @@ class _ProfilesErrorState extends StatelessWidget {
         children: [
           const Icon(Icons.error_outline, size: 48),
           const SizedBox(height: 16),
-          Text('Errore: $message', textAlign: TextAlign.center),
+          Text(
+            context.uiText('Errore: $message', 'Error: $message'),
+            textAlign: TextAlign.center,
+          ),
           const SizedBox(height: 16),
           FilledButton(onPressed: onRetry, child: const Text('Riprova')),
         ],

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../models/pokedex_entry.dart';
+import '../../localization/ui_text.dart';
 import '../../models/pokemon.dart';
 import '../../models/pokemon_flavor.dart';
 import '../../screens/pokemon/pokemon_detail_screen.dart';
@@ -95,7 +96,8 @@ class _PokemonSummaryDialogState extends State<PokemonSummaryDialog> {
   Pokemon get _selectedPokemon =>
       widget.pokemon.resolveVariant(formName: _selectedFormName);
 
-  String get _selectedLabel => _selectedFormName ?? 'Base';
+  String _selectedLabel(BuildContext context) =>
+      _selectedFormName ?? context.uiText('Base', 'Base');
 
   Future<void> _toggleSeen() async {
     final current = _selectedFormEntry;
@@ -193,7 +195,7 @@ class _PokemonSummaryDialogState extends State<PokemonSummaryDialog> {
               ),
               const SizedBox(height: 10),
               Text(
-                _selectedLabel.toUpperCase(),
+                _selectedLabel(context).toUpperCase(),
                 style: Theme.of(
                   context,
                 ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
@@ -229,8 +231,10 @@ class _PokemonSummaryDialogState extends State<PokemonSummaryDialog> {
                 ],
                 if (heightMeters != null && weightKg != null) ...[
                   Text(
-                    'Altezza: ${heightMeters.toStringAsFixed(1)} m · '
-                    'Peso: ${weightKg.toStringAsFixed(1)} kg',
+                    context.uiText(
+                      'Altezza: ${heightMeters.toStringAsFixed(1)} m · Peso: ${weightKg.toStringAsFixed(1)} kg',
+                      'Height: ${heightMeters.toStringAsFixed(1)} m · Weight: ${weightKg.toStringAsFixed(1)} kg',
+                    ),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 10),
@@ -254,28 +258,46 @@ class _PokemonSummaryDialogState extends State<PokemonSummaryDialog> {
                   spacing: 8,
                   runSpacing: 8,
                   children: [
-                    _StatChip(label: 'CA', value: pokemon.armorClass),
-                    _StatChip(label: 'PF', value: pokemon.hitPoints),
-                    _StatChip(label: 'FOR', value: pokemon.attributes.strength),
                     _StatChip(
-                      label: 'DES',
+                      label: context.uiText('CA', 'AC'),
+                      value: pokemon.armorClass,
+                    ),
+                    _StatChip(
+                      label: context.uiText('PF', 'HP'),
+                      value: pokemon.hitPoints,
+                    ),
+                    _StatChip(
+                      label: context.uiText('FOR', 'STR'),
+                      value: pokemon.attributes.strength,
+                    ),
+                    _StatChip(
+                      label: context.uiText('DES', 'DEX'),
                       value: pokemon.attributes.dexterity,
                     ),
                     _StatChip(
-                      label: 'COS',
+                      label: context.uiText('COS', 'CON'),
                       value: pokemon.attributes.constitution,
                     ),
                     _StatChip(
                       label: 'INT',
                       value: pokemon.attributes.intelligence,
                     ),
-                    _StatChip(label: 'SAG', value: pokemon.attributes.wisdom),
-                    _StatChip(label: 'CAR', value: pokemon.attributes.charisma),
+                    _StatChip(
+                      label: context.uiText('SAG', 'WIS'),
+                      value: pokemon.attributes.wisdom,
+                    ),
+                    _StatChip(
+                      label: context.uiText('CAR', 'CHA'),
+                      value: pokemon.attributes.charisma,
+                    ),
                   ],
                 ),
               ] else
-                const Text(
-                  'Forma non ancora vista.',
+                Text(
+                  context.uiText(
+                    'Forma non ancora vista.',
+                    'Form not seen yet.',
+                  ),
                   textAlign: TextAlign.center,
                 ),
             ],
@@ -285,11 +307,19 @@ class _PokemonSummaryDialogState extends State<PokemonSummaryDialog> {
       actions: [
         TextButton(
           onPressed: _toggleSeen,
-          child: Text(formEntry.seen ? 'Non visto' : 'Visto'),
+          child: Text(
+            formEntry.seen
+                ? context.uiText('Non visto', 'Mark unseen')
+                : context.uiText('Visto', 'Mark seen'),
+          ),
         ),
         TextButton(
           onPressed: _toggleCaught,
-          child: Text(formEntry.caught ? 'Non catturato' : 'Catturato'),
+          child: Text(
+            formEntry.caught
+                ? context.uiText('Non catturato', 'Mark uncaught')
+                : context.uiText('Catturato', 'Mark caught'),
+          ),
         ),
         FilledButton(
           onPressed: formEntry.seen
@@ -302,7 +332,7 @@ class _PokemonSummaryDialogState extends State<PokemonSummaryDialog> {
                   );
                 }
               : null,
-          child: const Text('Scheda'),
+          child: Text(context.uiText('Scheda', 'Sheet')),
         ),
       ],
     );
@@ -326,7 +356,7 @@ class _FormCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final label = formName ?? 'Base';
+    final label = formName ?? context.uiText('Base', 'Base');
     final colorScheme = Theme.of(context).colorScheme;
 
     return InkWell(

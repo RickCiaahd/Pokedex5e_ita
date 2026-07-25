@@ -1,6 +1,10 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+
+import '../../localization/ui_text.dart';
 
 import '../../models/bag_inventory_entry.dart';
 import '../../models/bag_item.dart';
@@ -97,7 +101,12 @@ class _BagScreenState extends State<BagScreen> {
     if (action == _BagAction.buy) {
       final cost = item.cost;
       if (cost == null) {
-        await _reload(message: '${item.name} non si può acquistare.');
+        await _reload(
+          message: context.uiText(
+            '${item.name} non si può acquistare.',
+            '${item.name} cannot be purchased.',
+          ),
+        );
         return;
       }
 
@@ -122,7 +131,10 @@ class _BagScreenState extends State<BagScreen> {
     final quantityText = quantity == 1 ? '' : ' x$quantity';
     final actionText = action == _BagAction.buy ? 'acquistato' : 'aggiunto';
     await _reload(
-      message: '${item.name}$quantityText $actionText e aggiunto allo zaino.',
+      message: context.uiText(
+        '${item.name}$quantityText $actionText e aggiunto allo zaino.',
+        '${item.name}$quantityText $actionText and added to the Bag.',
+      ),
     );
   }
 
@@ -150,7 +162,10 @@ class _BagScreenState extends State<BagScreen> {
     }
 
     await _reload(
-      message: '${item.name} non è ancora utilizzabile dallo zaino.',
+      message: context.uiText(
+        '${item.name} non è ancora utilizzabile dallo zaino.',
+        '${item.name} cannot be used from the Bag yet.',
+      ),
     );
   }
 
@@ -181,7 +196,10 @@ class _BagScreenState extends State<BagScreen> {
 
     if (candidates.isEmpty) {
       await _reload(
-        message: 'Non hai Pokémon in squadra su cui usare ${entry.item.name}.',
+        message: context.uiText(
+          'Non hai Pokémon in squadra su cui usare ${entry.item.name}.',
+          'There are no Pokémon in the team that can use ${entry.item.name}.',
+        ),
       );
       return;
     }
@@ -211,7 +229,12 @@ class _BagScreenState extends State<BagScreen> {
       itemId: entry.item.id,
     );
     if (!consumed) {
-      await _reload(message: 'Non hai più ${entry.item.name} nello zaino.');
+      await _reload(
+        message: context.uiText(
+          'Non hai più ${entry.item.name} nello zaino.',
+          'You have no more ${entry.item.name} in the Bag.',
+        ),
+      );
       return;
     }
 
@@ -249,7 +272,10 @@ class _BagScreenState extends State<BagScreen> {
 
     if (candidates.isEmpty) {
       await _reload(
-        message: 'Non hai Pokémon in squadra a cui dare ${entry.item.name}.',
+        message: context.uiText(
+          'Non hai Pokémon in squadra a cui dare ${entry.item.name}.',
+          'There are no Pokémon in the team that can hold ${entry.item.name}.',
+        ),
       );
       return;
     }
@@ -275,7 +301,10 @@ class _BagScreenState extends State<BagScreen> {
 
     if (previousItem?.id == entry.item.id) {
       await _reload(
-        message: '${candidate.displayName} tiene già ${entry.item.name}.',
+        message: context.uiText(
+          '${candidate.displayName} tiene già ${entry.item.name}.',
+          '${candidate.displayName} is already holding ${entry.item.name}.',
+        ),
       );
       return;
     }
@@ -285,7 +314,12 @@ class _BagScreenState extends State<BagScreen> {
       itemId: entry.item.id,
     );
     if (!consumed) {
-      await _reload(message: 'Non hai più ${entry.item.name} nello zaino.');
+      await _reload(
+        message: context.uiText(
+          'Non hai più ${entry.item.name} nello zaino.',
+          'You have no more ${entry.item.name} in the Bag.',
+        ),
+      );
       return;
     }
 
@@ -303,7 +337,10 @@ class _BagScreenState extends State<BagScreen> {
 
     final replacementText = previousItem == null
         ? ''
-        : ' ${previousItem.name} è tornato nello zaino.';
+        : context.uiText(
+            ' ${previousItem.name} è tornato nello zaino.',
+            ' ${previousItem.name} was returned to the Bag.',
+          );
     await _reload(
       message:
           '${candidate.displayName} ora tiene ${entry.item.name}.$replacementText',
@@ -321,28 +358,45 @@ class _BagScreenState extends State<BagScreen> {
     );
 
     await _reload(
-      message:
-          '${entry.displayName} non tiene più ${entry.item.name}. L’oggetto è tornato nello zaino.',
+      message: context.uiText(
+        '${entry.displayName} non tiene più ${entry.item.name}. L’oggetto è tornato nello zaino.',
+        '${entry.displayName} is no longer holding ${entry.item.name}. The item was returned to the Bag.',
+      ),
     );
   }
 
   Future<void> _useTm(_BagData data, _OwnedBagItem entry) async {
     final tmNumber = _tmNumberFromItemId(entry.item.id);
     if (tmNumber == null) {
-      await _reload(message: 'Questa MT non è collegata a una mossa valida.');
+      await _reload(
+        message: context.uiText(
+          'Questa MT non è collegata a una mossa valida.',
+          'This TM is not linked to a valid move.',
+        ),
+      );
       return;
     }
 
     final tmMap = await _tmRepository.getTmMap();
     final tm = tmMap[tmNumber];
     if (tm == null) {
-      await _reload(message: 'Dati della MT non disponibili.');
+      await _reload(
+        message: context.uiText(
+          'Dati della MT non disponibili.',
+          'TM data is unavailable.',
+        ),
+      );
       return;
     }
 
     final move = await _moveRepository.getMove(tm.moveId);
     if (move == null) {
-      await _reload(message: 'Dati della mossa non disponibili.');
+      await _reload(
+        message: context.uiText(
+          'Dati della mossa non disponibili.',
+          'Move data is unavailable.',
+        ),
+      );
       return;
     }
 
@@ -371,8 +425,10 @@ class _BagScreenState extends State<BagScreen> {
 
     if (candidates.isEmpty) {
       await _reload(
-        message:
-            'Nessun Pokémon in squadra può imparare ${move.name} tramite ${entry.item.name}.',
+        message: context.uiText(
+          'Nessun Pokémon in squadra può imparare ${move.name} tramite ${entry.item.name}.',
+          'No Pokémon in the team can learn ${move.name} from ${entry.item.name}.',
+        ),
       );
       return;
     }
@@ -394,7 +450,12 @@ class _BagScreenState extends State<BagScreen> {
     final selectedMoves = _normalizedMoves(candidate.slot.selectedMoves);
     if (_knowsMove(selectedMoves, move)) {
       final pokemonName = candidate.slot.nickname ?? candidate.pokemon.name;
-      await _reload(message: '$pokemonName conosce già ${move.name}.');
+      await _reload(
+        message: context.uiText(
+          '$pokemonName conosce già ${move.name}.',
+          '$pokemonName already knows ${move.name}.',
+        ),
+      );
       return;
     }
 
@@ -436,7 +497,12 @@ class _BagScreenState extends State<BagScreen> {
       itemId: entry.item.id,
     );
     if (!consumed) {
-      await _reload(message: 'Non hai più ${entry.item.name} nello zaino.');
+      await _reload(
+        message: context.uiText(
+          'Non hai più ${entry.item.name} nello zaino.',
+          'You have no more ${entry.item.name} in the Bag.',
+        ),
+      );
       return;
     }
 
@@ -483,7 +549,10 @@ class _BagScreenState extends State<BagScreen> {
 
     if (candidates.isEmpty) {
       await _reload(
-        message: 'Non hai Pokémon in squadra su cui usare ${entry.item.name}.',
+        message: context.uiText(
+          'Non hai Pokémon in squadra su cui usare ${entry.item.name}.',
+          'There are no Pokémon in the team that can use ${entry.item.name}.',
+        ),
       );
       return;
     }
@@ -521,7 +590,12 @@ class _BagScreenState extends State<BagScreen> {
       itemId: entry.item.id,
     );
     if (!consumed) {
-      await _reload(message: 'Non hai più ${entry.item.name} nello zaino.');
+      await _reload(
+        message: context.uiText(
+          'Non hai più ${entry.item.name} nello zaino.',
+          'You have no more ${entry.item.name} in the Bag.',
+        ),
+      );
       return;
     }
 
@@ -585,7 +659,10 @@ class _BagScreenState extends State<BagScreen> {
         currentHp: updatedHp,
         statusEffects: updatedStatuses,
       ),
-      message: '$displayName $effects usando ${item.name}.',
+      message: context.uiText(
+        '$displayName $effects usando ${item.name}.',
+        '$displayName $effects using ${item.name}.',
+      ),
     );
   }
 
@@ -1061,7 +1138,7 @@ class _BagHeader extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Zaino allenatore',
+                    context.uiText('Zaino allenatore', 'Trainer Bag'),
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       color: colorScheme.onTertiaryContainer,
                       fontWeight: FontWeight.w900,
@@ -1069,7 +1146,10 @@ class _BagHeader extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '$ownedCount tipi di oggetto, $totalQuantity oggetti totali • ₽ $money',
+                    context.uiText(
+                      '$ownedCount tipi di oggetto, $totalQuantity oggetti totali • ₽ $money',
+                      '$ownedCount item types, $totalQuantity total items • ₽ $money',
+                    ),
                     style: TextStyle(color: colorScheme.onTertiaryContainer),
                   ),
                 ],
@@ -1121,7 +1201,7 @@ class _BagActions extends StatelessWidget {
           child: FilledButton.icon(
             onPressed: onFindItem,
             icon: const Icon(Icons.search),
-            label: const Text('Trova oggetto'),
+            label: Text(context.uiText('Trova oggetto', 'Find item')),
           ),
         ),
         const SizedBox(width: 12),
@@ -1129,7 +1209,7 @@ class _BagActions extends StatelessWidget {
           child: OutlinedButton.icon(
             onPressed: onBuyItem,
             icon: const Icon(Icons.shopping_cart_outlined),
-            label: const Text('Compra oggetto'),
+            label: Text(context.uiText('Compra oggetto', 'Buy item')),
           ),
         ),
       ],
@@ -1314,15 +1394,23 @@ class _BagItemCardState extends State<_BagItemCard> {
                 }
 
                 if (move == null) {
-                  return const Align(
+                  return Align(
                     alignment: Alignment.centerLeft,
-                    child: Text('Dettagli mossa non disponibili.'),
+                    child: Text(
+                      context.uiText(
+                        'Dettagli mossa non disponibili.',
+                        'Move details are unavailable.',
+                      ),
+                    ),
                   );
                 }
 
                 return _MoveDetailsCard(
                   move: move,
-                  title: 'Mossa insegnata dalla MT',
+                  title: context.uiText(
+                    'Mossa insegnata dalla MT',
+                    'Move taught by the TM',
+                  ),
                   initiallyExpanded: false,
                 );
               },
@@ -1341,12 +1429,19 @@ class _BagItemCardState extends State<_BagItemCard> {
                         OutlinedButton.icon(
                           onPressed: widget.onUse,
                           icon: const Icon(Icons.medical_services_outlined),
-                          label: const Text('Usa bacca'),
+                          label: Text(
+                            uiTextForLanguage('Usa bacca', 'Use Berry'),
+                          ),
                         ),
                         FilledButton.icon(
                           onPressed: widget.onEquip,
                           icon: const Icon(Icons.inventory_2_outlined),
-                          label: const Text('Dai a Pokémon'),
+                          label: Text(
+                            uiTextForLanguage(
+                              'Dai a Pokémon',
+                              'Give to Pokémon',
+                            ),
+                          ),
                         ),
                       ],
                     )
@@ -1408,7 +1503,7 @@ class _EquippedHeldItemsSection extends StatelessWidget {
       children: [
         const SizedBox(height: 16),
         Text(
-          'Strumenti tenuti',
+          context.uiText('Strumenti tenuti', 'Held items'),
           style: Theme.of(
             context,
           ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
@@ -1462,8 +1557,11 @@ class _HeldItemPokemonPickerSheet extends StatelessWidget {
               ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
             ),
             const SizedBox(height: 4),
-            const Text(
-              'Scegli il Pokémon a cui far tenere questo strumento. Se ha già uno strumento, quello vecchio torna nello zaino.',
+            Text(
+              context.uiText(
+                'Scegli il Pokémon a cui far tenere questo strumento. Se ha già uno strumento, quello vecchio torna nello zaino.',
+                'Choose the Pokémon that will hold this item. If it already holds one, the previous item returns to the Bag.',
+              ),
             ),
             const SizedBox(height: 12),
             for (final candidate in candidates)
@@ -1524,7 +1622,12 @@ class _MedicinePokemonPickerSheet extends StatelessWidget {
               ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
             ),
             const SizedBox(height: 4),
-            const Text('Scegli il Pokémon della squadra.'),
+            Text(
+              context.uiText(
+                'Scegli il Pokémon della squadra.',
+                'Choose a Pokémon from the team.',
+              ),
+            ),
             const SizedBox(height: 12),
             for (final candidate in candidates)
               Card(
@@ -1553,7 +1656,7 @@ class _MedicinePokemonPickerSheet extends StatelessWidget {
     final currentHp = candidate.slot.currentHp.clamp(0, maxHp).toInt();
     final statuses = candidate.slot.statusEffects;
     final statusText = statuses.isEmpty
-        ? 'nessuno status'
+        ? uiTextForLanguage('nessuno status', 'no conditions')
         : statuses.join(', ');
 
     return 'Slot ${candidate.slot.slotIndex + 1} • HP $currentHp/$maxHp • $statusText';
@@ -1586,9 +1689,20 @@ class _TmPokemonPickerSheet extends StatelessWidget {
               ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
             ),
             const SizedBox(height: 4),
-            Text('Scegli un Pokémon compatibile con ${move.name}.'),
+            Text(
+              context.uiText(
+                'Scegli un Pokémon compatibile con ${move.name}.',
+                'Choose a Pokémon compatible with ${move.name}.',
+              ),
+            ),
             const SizedBox(height: 12),
-            _MoveDetailsCard(move: move, title: 'Dettagli della nuova mossa'),
+            _MoveDetailsCard(
+              move: move,
+              title: context.uiText(
+                'Dettagli della nuova mossa',
+                'New move details',
+              ),
+            ),
             const SizedBox(height: 12),
             for (final candidate in candidates)
               Card(
@@ -1643,14 +1757,20 @@ class _MoveReplaceSheet extends StatelessWidget {
               ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
             ),
             const SizedBox(height: 4),
-            const Text(
-              'Il moveset è pieno. Controlla la nuova mossa e scegli quale dimenticare.',
+            Text(
+              context.uiText(
+                'Il moveset è pieno. Controlla la nuova mossa e scegli quale dimenticare.',
+                'The moveset is full. Review the new move and choose one to forget.',
+              ),
             ),
             const SizedBox(height: 12),
-            _MoveDetailsCard(move: newMove, title: 'Nuova mossa'),
+            _MoveDetailsCard(
+              move: newMove,
+              title: context.uiText('Nuova mossa', 'New move'),
+            ),
             const SizedBox(height: 16),
             Text(
-              'Mosse da dimenticare',
+              context.uiText('Mosse da dimenticare', 'Moves to forget'),
               style: Theme.of(
                 context,
               ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
@@ -1665,7 +1785,7 @@ class _MoveReplaceSheet extends StatelessWidget {
             const SizedBox(height: 8),
             OutlinedButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Annulla'),
+              child: Text(uiTextForLanguage('Annulla', 'Cancel')),
             ),
           ],
         ),
@@ -1810,7 +1930,11 @@ List<(String, String)> _moveDetailRows(MoveData move) {
       ('Durata', move.duration),
     if (move.movePowers.isNotEmpty) ('Power', move.movePowers.join('/')),
     if (move.damageByLevel.isNotEmpty) ('Danni', _damageSummary(move)),
-    if (move.damageTypes.isNotEmpty) ('Danno tipo', move.damageTypes.join('/')),
+    if (move.damageTypes.isNotEmpty)
+      (
+        uiTextForLanguage('Danno tipo', 'Damage type'),
+        move.damageTypes.join('/'),
+      ),
     if (move.damageModifier?.trim().isNotEmpty == true)
       ('Mod.', move.damageModifier!.trim()),
     if (move.save?.trim().isNotEmpty == true) ('TS', move.save!.trim()),
@@ -1918,22 +2042,29 @@ class _ItemPickerSheetState extends State<_ItemPickerSheet> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                _isBuy ? 'Compra oggetto' : 'Trova oggetto',
+                _isBuy
+                    ? context.uiText('Compra oggetto', 'Buy item')
+                    : context.uiText('Trova oggetto', 'Find item'),
                 style: Theme.of(
                   context,
                 ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
               ),
               if (_isBuy) ...[
                 const SizedBox(height: 4),
-                Text('Pokédollari disponibili: ₽ ${widget.availableMoney}'),
+                Text(
+                  context.uiText(
+                    'Pokédollari disponibili: ₽ ${widget.availableMoney}',
+                    'Available Pokédollars: ₽ ${widget.availableMoney}',
+                  ),
+                ),
               ],
               const SizedBox(height: 12),
               TextField(
                 controller: _controller,
                 autofocus: true,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   prefixIcon: Icon(Icons.search),
-                  labelText: 'Cerca oggetto',
+                  labelText: context.uiText('Cerca oggetto', 'Search items'),
                   border: OutlineInputBorder(),
                 ),
                 onChanged: (value) => setState(() => _query = value),
@@ -2048,7 +2179,10 @@ class _BagError extends StatelessWidget {
             const Icon(Icons.error_outline, size: 48),
             const SizedBox(height: 12),
             Text(
-              'Non riesco a caricare gli oggetti dello zaino.',
+              context.uiText(
+                'Non riesco a caricare gli oggetti dello zaino.',
+                'Could not load Bag items.',
+              ),
               style: Theme.of(context).textTheme.titleMedium,
               textAlign: TextAlign.center,
             ),
@@ -2066,10 +2200,12 @@ class _BagEmpty extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
+    return Center(
       child: Padding(
         padding: EdgeInsets.all(24),
-        child: Text('Nessun oggetto nello zaino.'),
+        child: Text(
+          context.uiText('Nessun oggetto nello zaino.', 'No items in the Bag.'),
+        ),
       ),
     );
   }
@@ -2102,15 +2238,15 @@ IconData _useIconForItemType(String type) {
 String _useLabelForItemType(String type) {
   switch (type) {
     case 'tm':
-      return 'Usa MT';
+      return uiTextForLanguage('Usa MT', 'Use TM');
     case 'medicine':
-      return 'Usa oggetto';
+      return uiTextForLanguage('Usa oggetto', 'Use item');
     case 'held-item':
-      return 'Dai a Pokémon';
+      return uiTextForLanguage('Dai a Pokémon', 'Give to Pokémon');
     case 'berry':
-      return 'Usa bacca';
+      return uiTextForLanguage('Usa bacca', 'Use Berry');
     default:
-      return 'Usa';
+      return uiTextForLanguage('Usa', 'Use');
   }
 }
 

@@ -1,4 +1,8 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
+
+import '../../localization/ui_text.dart';
 
 import '../../models/bag_inventory_entry.dart';
 import '../../models/bag_item.dart';
@@ -202,8 +206,10 @@ class _CapturePokemonScreenState extends State<CapturePokemonScreen> {
         if (selectedBall.quantity < result.ballQuantity) {
           if (!mounted) return;
           setState(() {
-            _errorMessage =
-                'Non hai abbastanza ${selectedBall.item.name} nello zaino.';
+            _errorMessage = context.uiText(
+              'Non hai abbastanza ${selectedBall.item.name} nello zaino.',
+              'You do not have enough ${selectedBall.item.name} in the Bag.',
+            );
           });
           return;
         }
@@ -235,8 +241,14 @@ class _CapturePokemonScreenState extends State<CapturePokemonScreen> {
       if (!mounted) return;
       setState(() {
         _successMessage = revealed
-            ? '${pokemon.name} scoperto, registrato come catturato e $destination.'
-            : '${pokemon.name} registrato come catturato e $destination.';
+            ? context.uiText(
+                '${pokemon.name} scoperto, registrato come catturato e $destination.',
+                '${pokemon.name} discovered, recorded as caught and $destination.',
+              )
+            : context.uiText(
+                '${pokemon.name} registrato come catturato e $destination.',
+                '${pokemon.name} recorded as caught and $destination.',
+              );
       });
     } catch (error) {
       if (!mounted) return;
@@ -260,7 +272,12 @@ class _CapturePokemonScreenState extends State<CapturePokemonScreen> {
     if (revealed) PokemonRepository.clearCache();
 
     if (!mounted) return;
-    setState(() => _successMessage = '${pokemon.name} registrato come visto.');
+    setState(
+      () => _successMessage = context.uiText(
+        '${pokemon.name} registrato come visto.',
+        '${pokemon.name} recorded as seen.',
+      ),
+    );
   }
 
   Future<String> _addPokemonToCollection(
@@ -330,7 +347,10 @@ class _CapturePokemonScreenState extends State<CapturePokemonScreen> {
 
     return teamSlot == null
         ? 'inviato al PC'
-        : 'aggiunto allo slot squadra ${teamSlot.slotIndex + 1}';
+        : context.uiText(
+            'aggiunto allo slot squadra ${teamSlot.slotIndex + 1}',
+            'added to team slot ${teamSlot.slotIndex + 1}',
+          );
   }
 
   @override
@@ -340,7 +360,7 @@ class _CapturePokemonScreenState extends State<CapturePokemonScreen> {
     return Scaffold(
       appBar: AppBar(
         leading: const HomeLeadingButton(),
-        title: const Text('Aggiungi Pokémon'),
+        title: Text(context.uiText('Aggiungi Pokémon', 'Add Pokémon')),
       ),
       body: RefreshIndicator(
         onRefresh: () => _loadData(clearMessages: false),
@@ -380,8 +400,11 @@ class _CapturePokemonScreenState extends State<CapturePokemonScreen> {
               const SizedBox(height: 12),
               TextField(
                 controller: _searchController,
-                decoration: const InputDecoration(
-                  hintText: 'Cerca per nome, numero o tipo...',
+                decoration: InputDecoration(
+                  hintText: context.uiText(
+                    'Cerca per nome, numero o tipo...',
+                    'Search by name, number or type...',
+                  ),
                   prefixIcon: Icon(Icons.search),
                 ),
                 onChanged: (value) => setState(() => _query = value),
@@ -454,8 +477,14 @@ class _CaptureHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final destination = freeSlotIndex == null
-        ? 'La squadra è piena: le catture andranno al PC.'
-        : 'Prossima cattura nello slot squadra ${freeSlotIndex! + 1}.';
+        ? context.uiText(
+            'La squadra è piena: le catture andranno al PC.',
+            'The team is full: catches will go to the PC.',
+          )
+        : context.uiText(
+            'Prossima cattura nello slot squadra ${freeSlotIndex! + 1}.',
+            'Next catch will use team slot ${freeSlotIndex! + 1}.',
+          );
 
     return Card(
       color: colorScheme.primaryContainer,
@@ -474,7 +503,10 @@ class _CaptureHeader extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Registra Pokémon catturato',
+                    context.uiText(
+                      'Registra Pokémon catturato',
+                      'Record caught Pokémon',
+                    ),
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       color: colorScheme.onPrimaryContainer,
                       fontWeight: FontWeight.w900,
@@ -487,7 +519,10 @@ class _CaptureHeader extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Il calcolo della cattura resta al Master: qui registri solo il risultato finale.',
+                    context.uiText(
+                      'Il calcolo della cattura resta al Master: qui registri solo il risultato finale.',
+                      'The GM handles the catch calculation; this screen records only the final result.',
+                    ),
                     style: TextStyle(color: colorScheme.onPrimaryContainer),
                   ),
                 ],
@@ -584,7 +619,14 @@ class _RegisterCaughtSheetState extends State<_RegisterCaughtSheet> {
     final parsedHp = int.tryParse(_hpController.text.trim());
     if (action == _CaptureRegistrationAction.register && parsedHp == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Inserisci un valore HP valido.')),
+        SnackBar(
+          content: Text(
+            context.uiText(
+              'Inserisci un valore HP valido.',
+              'Enter a valid HP value.',
+            ),
+          ),
+        ),
       );
       return;
     }
@@ -665,9 +707,15 @@ class _RegisterCaughtSheetState extends State<_RegisterCaughtSheet> {
             const SizedBox(height: 14),
             TextField(
               controller: _nicknameController,
-              decoration: const InputDecoration(
-                labelText: 'Nickname opzionale',
-                hintText: 'Lascia vuoto per usare il nome del Pokémon',
+              decoration: InputDecoration(
+                labelText: context.uiText(
+                  'Nickname opzionale',
+                  'Optional nickname',
+                ),
+                hintText: context.uiText(
+                  'Lascia vuoto per usare il nome del Pokémon',
+                  'Leave blank to use the Pokémon name',
+                ),
               ),
             ),
             const SizedBox(height: 10),
@@ -723,7 +771,9 @@ class _RegisterCaughtSheetState extends State<_RegisterCaughtSheet> {
                   child: TextField(
                     controller: _hpController,
                     keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(labelText: 'HP iniziali'),
+                    decoration: InputDecoration(
+                      labelText: context.uiText('HP iniziali', 'Starting HP'),
+                    ),
                   ),
                 ),
                 const SizedBox(width: 10),
@@ -740,13 +790,21 @@ class _RegisterCaughtSheetState extends State<_RegisterCaughtSheet> {
             const SizedBox(height: 10),
             DropdownButtonFormField<String?>(
               initialValue: _selectedBallId,
-              decoration: const InputDecoration(
-                labelText: 'Poké Ball da consumare (facoltativo)',
+              decoration: InputDecoration(
+                labelText: context.uiText(
+                  'Poké Ball da consumare (facoltativo)',
+                  'Poké Ball to consume (optional)',
+                ),
               ),
               items: [
-                const DropdownMenuItem<String?>(
+                DropdownMenuItem<String?>(
                   value: null,
-                  child: Text('Nessuna / già consumata'),
+                  child: Text(
+                    context.uiText(
+                      'Nessuna / già consumata',
+                      'None / already consumed',
+                    ),
+                  ),
                 ),
                 for (final ball in widget.ownedPokeballs)
                   DropdownMenuItem<String?>(
@@ -766,7 +824,12 @@ class _RegisterCaughtSheetState extends State<_RegisterCaughtSheet> {
               Row(
                 children: [
                   Expanded(
-                    child: Text('Ball usate da scalare: $_ballQuantity'),
+                    child: Text(
+                      context.uiText(
+                        'Ball usate da scalare: $_ballQuantity',
+                        'Balls to consume: $_ballQuantity',
+                      ),
+                    ),
                   ),
                   IconButton(
                     onPressed: _ballQuantity <= 1
@@ -791,12 +854,14 @@ class _RegisterCaughtSheetState extends State<_RegisterCaughtSheet> {
                 FilledButton.icon(
                   onPressed: () => _submit(_CaptureRegistrationAction.register),
                   icon: const Icon(Icons.check_circle_outline),
-                  label: const Text('REGISTRA CATTURA'),
+                  label: Text(
+                    context.uiText('REGISTRA CATTURA', 'RECORD CATCH'),
+                  ),
                 ),
                 OutlinedButton.icon(
                   onPressed: () => _submit(_CaptureRegistrationAction.markSeen),
                   icon: const Icon(Icons.visibility_outlined),
-                  label: const Text('SEGNA VISTO'),
+                  label: Text(context.uiText('SEGNA VISTO', 'MARK SEEN')),
                 ),
               ],
             ),
@@ -892,7 +957,10 @@ class _CaptureErrorState extends StatelessWidget {
         children: [
           const Icon(Icons.error_outline, size: 48),
           const SizedBox(height: 16),
-          Text('Errore: $message', textAlign: TextAlign.center),
+          Text(
+            context.uiText('Errore: $message', 'Error: $message'),
+            textAlign: TextAlign.center,
+          ),
           const SizedBox(height: 16),
           FilledButton(onPressed: onRetry, child: const Text('Riprova')),
         ],
@@ -903,19 +971,37 @@ class _CaptureErrorState extends StatelessWidget {
 
 List<_GenderOption> _genderOptionsFor(Pokemon pokemon) {
   if (_genderlessPokemonIds.contains(pokemon.id)) {
-    return const [_GenderOption(value: 'Genderless', label: 'Senza sesso')];
+    return [
+      _GenderOption(
+        value: 'Genderless',
+        label: uiTextForLanguage('Senza sesso', 'Genderless'),
+      ),
+    ];
   }
   if (_femaleOnlyPokemonIds.contains(pokemon.id)) {
-    return const [_GenderOption(value: 'Female', label: 'Femmina')];
+    return [
+      _GenderOption(
+        value: 'Female',
+        label: uiTextForLanguage('Femmina', 'Female'),
+      ),
+    ];
   }
   if (_maleOnlyPokemonIds.contains(pokemon.id)) {
-    return const [_GenderOption(value: 'Male', label: 'Maschio')];
+    return [
+      _GenderOption(value: 'Male', label: uiTextForLanguage('Maschio', 'Male')),
+    ];
   }
 
-  return const [
-    _GenderOption(value: null, label: 'Non specificato'),
-    _GenderOption(value: 'Male', label: 'Maschio'),
-    _GenderOption(value: 'Female', label: 'Femmina'),
+  return [
+    _GenderOption(
+      value: null,
+      label: uiTextForLanguage('Non specificato', 'Not specified'),
+    ),
+    _GenderOption(value: 'Male', label: uiTextForLanguage('Maschio', 'Male')),
+    _GenderOption(
+      value: 'Female',
+      label: uiTextForLanguage('Femmina', 'Female'),
+    ),
   ];
 }
 

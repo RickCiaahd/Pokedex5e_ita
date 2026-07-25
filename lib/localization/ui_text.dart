@@ -2,6 +2,10 @@ import 'package:flutter/widgets.dart';
 
 import 'game_catalog_locale.dart';
 
+String uiTextForLanguage(String italian, String english) {
+  return GameCatalogLocale.isItalian ? italian : english;
+}
+
 /// Ponte leggero per migrare progressivamente le schermate secondarie.
 ///
 /// Le nuove schermate continuano a preferire gli ARB. Questo helper permette di

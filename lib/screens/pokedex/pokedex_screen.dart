@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../localization/ui_text.dart';
+
 import '../../models/custom_pokemon_definition.dart';
 import '../../models/pokedex_entry.dart';
 import '../../models/pokemon.dart';
@@ -227,13 +229,13 @@ class _PokedexScreenState extends State<PokedexScreen> {
       case SortMode.numberAsc:
         break;
       case SortMode.numberDesc:
-        details.add('Numero decrescente');
+        details.add(context.uiText('Numero decrescente', 'Number descending'));
         break;
       case SortMode.nameAsc:
-        details.add('Nome A-Z');
+        details.add(context.uiText('Nome A-Z', 'Name A-Z'));
         break;
       case SortMode.nameDesc:
-        details.add('Nome Z-A');
+        details.add(context.uiText('Nome Z-A', 'Name Z-A'));
         break;
     }
 
@@ -246,13 +248,13 @@ class _PokedexScreenState extends State<PokedexScreen> {
       case ViewFilter.all:
         break;
       case ViewFilter.seen:
-        details.add('Visti');
+        details.add(context.uiText('Visti', 'Seen'));
         break;
       case ViewFilter.unseen:
-        details.add('Non visti');
+        details.add(context.uiText('Non visti', 'Unseen'));
         break;
       case ViewFilter.caught:
-        details.add('Catturati');
+        details.add(context.uiText('Catturati', 'Caught'));
         break;
     }
 
@@ -260,13 +262,13 @@ class _PokedexScreenState extends State<PokedexScreen> {
       case MarkMode.none:
         break;
       case MarkMode.seen:
-        details.add('Segna visto');
+        details.add(context.uiText('Segna visto', 'Mark seen'));
         break;
       case MarkMode.unseen:
-        details.add('Segna non visto');
+        details.add(context.uiText('Segna non visto', 'Mark unseen'));
         break;
       case MarkMode.caught:
-        details.add('Segna catturato');
+        details.add(context.uiText('Segna catturato', 'Mark caught'));
         break;
     }
 
@@ -560,9 +562,12 @@ class _PokedexScreenState extends State<PokedexScreen> {
               },
             ),
             const SizedBox(height: 12),
-            const _FilterGroupTitle(
+            _FilterGroupTitle(
               icon: Icons.touch_app_outlined,
-              label: 'Quando tocchi un Pokémon',
+              label: context.uiText(
+                'Quando tocchi un Pokémon',
+                'When you tap a Pokémon',
+              ),
             ),
             const SizedBox(height: 6),
             _MarkModeSelector(
@@ -582,7 +587,11 @@ class _PokedexScreenState extends State<PokedexScreen> {
     if (_isLoading) {
       content = const Center(child: CircularProgressIndicator());
     } else if (_errorMessage != null) {
-      content = Center(child: Text('Errore: $_errorMessage'));
+      content = Center(
+        child: Text(
+          context.uiText('Errore: $_errorMessage', 'Error: $_errorMessage'),
+        ),
+      );
     } else {
       content = Column(
         children: [
@@ -595,12 +604,18 @@ class _PokedexScreenState extends State<PokedexScreen> {
                   onChanged: _onSearchChanged,
                   textInputAction: TextInputAction.search,
                   decoration: InputDecoration(
-                    hintText: 'Cerca Pokémon...',
+                    hintText: context.uiText(
+                      'Cerca Pokémon...',
+                      'Search Pokémon...',
+                    ),
                     prefixIcon: const Icon(Icons.search),
                     suffixIcon: _searchController.text.isEmpty
                         ? null
                         : IconButton(
-                            tooltip: 'Cancella ricerca',
+                            tooltip: context.uiText(
+                              'Cancella ricerca',
+                              'Clear search',
+                            ),
                             onPressed: _clearSearch,
                             icon: const Icon(Icons.close),
                           ),
@@ -614,7 +629,14 @@ class _PokedexScreenState extends State<PokedexScreen> {
           ),
           Expanded(
             child: _visibleSections.isEmpty
-                ? const Center(child: Text('Nessun Pokémon trovato.'))
+                ? Center(
+                    child: Text(
+                      context.uiText(
+                        'Nessun Pokémon trovato.',
+                        'No Pokémon found.',
+                      ),
+                    ),
+                  )
                 : ListView.builder(
                     keyboardDismissBehavior:
                         ScrollViewKeyboardDismissBehavior.onDrag,
@@ -641,10 +663,10 @@ class _PokedexScreenState extends State<PokedexScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Pokédex'),
+        title: Text(context.uiText('Pokédex', 'Pokédex')),
         actions: [
           IconButton(
-            tooltip: 'I miei Fakemon',
+            tooltip: context.uiText('I miei Fakemon', 'My Fakémon'),
             onPressed: _openCustomPokemonLibrary,
             icon: const Icon(Icons.auto_awesome),
           ),
@@ -817,7 +839,7 @@ class _RegionFilterDialogState extends State<_RegionFilterDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Filtra per regione'),
+      title: Text(context.uiText('Filtra per regione', 'Filter by region')),
       content: SizedBox(
         width: double.maxFinite,
         child: ListView(
@@ -914,23 +936,31 @@ class _SortModeSelector extends StatelessWidget {
   Widget build(BuildContext context) {
     return DropdownButtonFormField<SortMode>(
       initialValue: sortMode,
-      decoration: const InputDecoration(
-        labelText: 'Ordina',
+      decoration: InputDecoration(
+        labelText: context.uiText('Ordina', 'Sort'),
         prefixIcon: Icon(Icons.sort),
         border: OutlineInputBorder(),
         isDense: true,
       ),
-      items: const [
+      items: [
         DropdownMenuItem(
           value: SortMode.numberAsc,
-          child: Text('Numero crescente'),
+          child: Text(context.uiText('Numero crescente', 'Number ascending')),
         ),
         DropdownMenuItem(
           value: SortMode.numberDesc,
-          child: Text('Numero decrescente'),
+          child: Text(
+            context.uiText('Numero decrescente', 'Number descending'),
+          ),
         ),
-        DropdownMenuItem(value: SortMode.nameAsc, child: Text('Nome A-Z')),
-        DropdownMenuItem(value: SortMode.nameDesc, child: Text('Nome Z-A')),
+        DropdownMenuItem(
+          value: SortMode.nameAsc,
+          child: Text(context.uiText('Nome A-Z', 'Name A-Z')),
+        ),
+        DropdownMenuItem(
+          value: SortMode.nameDesc,
+          child: Text(context.uiText('Nome Z-A', 'Name Z-A')),
+        ),
       ],
       onChanged: (value) {
         if (value != null) onChanged(value);
@@ -957,8 +987,11 @@ class _TypeFilterSelector extends StatelessWidget {
     if (types.isEmpty) return const SizedBox.shrink();
 
     final label = selectedTypes.isEmpty
-        ? 'Tipi'
-        : 'Tipi (${selectedTypes.length})';
+        ? context.uiText('Tipi', 'Types')
+        : context.uiText(
+            'Tipi (${selectedTypes.length})',
+            'Types (${selectedTypes.length})',
+          );
 
     return OutlinedButton.icon(
       icon: Icon(selectedTypes.isEmpty ? Icons.category : Icons.close),
@@ -1003,7 +1036,7 @@ class _TypeFilterDialogState extends State<_TypeFilterDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Filtra per tipo'),
+      title: Text(context.uiText('Filtra per tipo', 'Filter by type')),
       content: SizedBox(
         width: double.maxFinite,
         child: SingleChildScrollView(
@@ -1105,22 +1138,22 @@ class _ViewFilterSelector extends StatelessWidget {
       runSpacing: 8,
       children: [
         ChoiceChip(
-          label: const Text('Tutti'),
+          label: Text(context.uiText('Tutti', 'All')),
           selected: selectedFilter == ViewFilter.all,
           onSelected: (_) => onChanged(ViewFilter.all),
         ),
         ChoiceChip(
-          label: const Text('Visti'),
+          label: Text(context.uiText('Visti', 'Seen')),
           selected: selectedFilter == ViewFilter.seen,
           onSelected: (_) => onChanged(ViewFilter.seen),
         ),
         ChoiceChip(
-          label: const Text('Non visti'),
+          label: Text(context.uiText('Non visti', 'Unseen')),
           selected: selectedFilter == ViewFilter.unseen,
           onSelected: (_) => onChanged(ViewFilter.unseen),
         ),
         ChoiceChip(
-          label: const Text('Catturati'),
+          label: Text(context.uiText('Catturati', 'Caught')),
           selected: selectedFilter == ViewFilter.caught,
           onSelected: (_) => onChanged(ViewFilter.caught),
         ),
@@ -1145,22 +1178,22 @@ class _MarkModeSelector extends StatelessWidget {
       runSpacing: 8,
       children: [
         ChoiceChip(
-          label: const Text('Apri scheda'),
+          label: Text(context.uiText('Apri scheda', 'Open sheet')),
           selected: selectedMode == MarkMode.none,
           onSelected: (_) => onChanged(MarkMode.none),
         ),
         ChoiceChip(
-          label: const Text('Segna visto'),
+          label: Text(context.uiText('Segna visto', 'Mark seen')),
           selected: selectedMode == MarkMode.seen,
           onSelected: (_) => onChanged(MarkMode.seen),
         ),
         ChoiceChip(
-          label: const Text('Segna non visto'),
+          label: Text(context.uiText('Segna non visto', 'Mark unseen')),
           selected: selectedMode == MarkMode.unseen,
           onSelected: (_) => onChanged(MarkMode.unseen),
         ),
         ChoiceChip(
-          label: const Text('Segna catturato'),
+          label: Text(context.uiText('Segna catturato', 'Mark caught')),
           selected: selectedMode == MarkMode.caught,
           onSelected: (_) => onChanged(MarkMode.caught),
         ),

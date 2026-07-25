@@ -1,9 +1,12 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
 
 import '../../models/bag_inventory_entry.dart';
+import '../../localization/ui_text.dart';
 import '../../models/bag_item.dart';
 import '../../models/battle_environment.dart';
 import '../../models/custom_pokemon_advanced_data.dart';
@@ -88,40 +91,50 @@ class _BattleScreenState extends State<BattleScreen> {
     GuidedTourStepData(
       targetKey: _battleHeaderKey,
       icon: Icons.groups_outlined,
-      title: 'Squadra e round',
-      description:
-          'In alto controlli il round, termini la battaglia e scegli quale Pokémon della squadra è attivo. La sessione viene conservata finché non la chiudi.',
+      title: context.uiText('Squadra e round', 'Team and round'),
+      description: context.uiText(
+        'In alto controlli il round, termini la battaglia e scegli quale Pokémon della squadra è attivo. La sessione viene conservata finché non la chiudi.',
+        'At the top you control the round, end the battle and choose the active Pokémon. The session is preserved until you close it.',
+      ),
     ),
     GuidedTourStepData(
       targetKey: _initiativeKey,
       icon: Icons.format_list_numbered,
-      title: 'Iniziativa e turni',
-      description:
-          'Aggiungi partecipanti, modifica l’ordine e usa il comando del turno successivo. Quando il giro termina, il round avanza automaticamente.',
+      title: context.uiText('Iniziativa e turni', 'Initiative and turns'),
+      description: context.uiText(
+        'Aggiungi partecipanti, modifica l’ordine e usa il comando del turno successivo. Quando il giro termina, il round avanza automaticamente.',
+        'Add participants, change the order and use the next-turn command. When the cycle ends, the round advances automatically.',
+      ),
       fallbackScrollFraction: .16,
     ),
     GuidedTourStepData(
       targetKey: _environmentKey,
       icon: Icons.public_outlined,
-      title: 'Meteo e terreno',
-      description:
-          'L’ambiente applica regole e modificatori a velocità, CA, tipi e danni. Puoi impostarlo manualmente o generare il meteo con il d100.',
+      title: context.uiText('Meteo e terreno', 'Weather and terrain'),
+      description: context.uiText(
+        'L’ambiente applica regole e modificatori a velocità, CA, tipi e danni. Puoi impostarlo manualmente o generare il meteo con il d100.',
+        'The environment applies rules and modifiers to speed, AC, types and damage. Set it manually or roll weather with a d100.',
+      ),
       fallbackScrollFraction: .30,
     ),
     GuidedTourStepData(
       targetKey: _activePokemonKey,
       icon: Icons.favorite_outline,
-      title: 'Pokémon attivo',
-      description:
-          'Qui gestisci PF, PF temporanei, status, forma di battaglia, oggetto tenuto e Zaino rapido del Pokémon selezionato.',
+      title: context.uiText('Pokémon attivo', 'Active Pokémon'),
+      description: context.uiText(
+        'Qui gestisci PF, PF temporanei, status, forma di battaglia, oggetto tenuto e Zaino rapido del Pokémon selezionato.',
+        'Manage HP, temporary HP, conditions, battle form, held item and the selected Pokémon’s quick Bag.',
+      ),
       fallbackScrollFraction: .50,
     ),
     GuidedTourStepData(
       targetKey: _movesKey,
       icon: Icons.flash_on_outlined,
-      title: 'Mosse e PP',
-      description:
-          'Le mosse mostrano tiro, CD, danni e PP rimanenti. Usa e ripristina i PP dai pulsanti; quando finiscono, il tracker segnala Struggle.',
+      title: context.uiText('Mosse e PP', 'Moves and PP'),
+      description: context.uiText(
+        'Le mosse mostrano tiro, CD, danni e PP rimanenti. Usa e ripristina i PP dai pulsanti; quando finiscono, il tracker segnala Struggle.',
+        'Moves show rolls, DC, damage and remaining PP. Spend or restore PP with the buttons; when all are depleted, the tracker warns you to use Struggle.',
+      ),
       fallbackScrollFraction: 1,
     ),
   ];
@@ -565,8 +578,14 @@ class _BattleScreenState extends State<BattleScreen> {
             : rule.brokenFormName ?? 'Busted';
       }
       _message = enabled
-          ? '${rule.label} attivato: ${_temporaryHpBySlot[slot.slotIndex]} PF temporanei.'
-          : '${rule.label} disattivato.';
+          ? context.uiText(
+              '${rule.label} attivato: ${_temporaryHpBySlot[slot.slotIndex]} PF temporanei.',
+              '${rule.label} enabled: ${_temporaryHpBySlot[slot.slotIndex]} temporary HP.',
+            )
+          : context.uiText(
+              '${rule.label} disattivato.',
+              '${rule.label} disabled.',
+            );
     });
     await _saveSession(data);
   }
@@ -669,7 +688,10 @@ class _BattleScreenState extends State<BattleScreen> {
     );
     await _saveSession(data);
     await _reload(
-      message: '${_displayName(slot, pokemon)} è pronto a combattere.',
+      message: context.uiText(
+        '${_displayName(slot, pokemon)} è pronto a combattere.',
+        '${_displayName(slot, pokemon)} is ready to battle.',
+      ),
     );
   }
 
@@ -715,9 +737,12 @@ class _BattleScreenState extends State<BattleScreen> {
 
       if (items.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             content: Text(
-              'Non hai medicine, bacche utilizzabili o Poké Ball nello zaino.',
+              context.uiText(
+                'Non hai medicine, bacche utilizzabili o Poké Ball nello zaino.',
+                'You have no medicine, usable Berries or Poké Balls in the Bag.',
+              ),
             ),
           ),
         );
@@ -744,7 +769,14 @@ class _BattleScreenState extends State<BattleScreen> {
     } catch (error) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Impossibile aprire lo zaino rapido: $error')),
+        SnackBar(
+          content: Text(
+            context.uiText(
+              'Impossibile aprire lo zaino rapido: $error',
+              'Could not open the quick Bag: $error',
+            ),
+          ),
+        ),
       );
     }
   }
@@ -783,7 +815,12 @@ class _BattleScreenState extends State<BattleScreen> {
       itemId: item.id,
     );
     if (!consumed) {
-      await _reload(message: 'Non hai più ${item.name} nello zaino.');
+      await _reload(
+        message: context.uiText(
+          'Non hai più ${item.name} nello zaino.',
+          'You have no more ${item.name} in the Bag.',
+        ),
+      );
       return;
     }
 
@@ -809,22 +846,27 @@ class _BattleScreenState extends State<BattleScreen> {
       context: context,
       builder: (_) => AlertDialog(
         scrollable: true,
-        title: Text('Lancia ${ball.name}?'),
-        content: const Text(
-          'Dopo il tiro, inserisci l’esito comunicato dal Master. La Poké Ball verrà consumata in ogni caso.',
+        title: Text(
+          context.uiText('Lancia ${ball.name}?', 'Throw ${ball.name}?'),
+        ),
+        content: Text(
+          context.uiText(
+            'Dopo il tiro, inserisci l’esito comunicato dal Master. La Poké Ball verrà consumata in ogni caso.',
+            'After the roll, enter the result given by the GM. The Poké Ball will be consumed either way.',
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Annulla'),
+            child: Text('Annulla'),
           ),
           OutlinedButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('NO, FALLITA'),
+            child: Text(context.uiText('NO, FALLITA', 'NO, FAILED')),
           ),
           FilledButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('SÌ, CATTURATO'),
+            child: Text(context.uiText('SÌ, CATTURATO', 'YES, CAUGHT')),
           ),
         ],
       ),
@@ -837,17 +879,30 @@ class _BattleScreenState extends State<BattleScreen> {
       itemId: ball.id,
     );
     if (!consumed) {
-      await _reload(message: 'Non hai più ${ball.name} nello zaino.');
+      await _reload(
+        message: context.uiText(
+          'Non hai più ${ball.name} nello zaino.',
+          'You have no more ${ball.name} in the Bag.',
+        ),
+      );
       return;
     }
 
     if (!caught) {
-      await _reload(message: '${ball.name} consumata. Cattura fallita.');
+      await _reload(
+        message: context.uiText(
+          '${ball.name} consumata. Cattura fallita.',
+          '${ball.name} consumed. Catch failed.',
+        ),
+      );
       return;
     }
 
     await _reload(
-      message: '${ball.name} consumata. Registra il Pokémon catturato.',
+      message: context.uiText(
+        '${ball.name} consumata. Registra il Pokémon catturato.',
+        '${ball.name} consumed. Record the caught Pokémon.',
+      ),
     );
     if (!mounted) return;
     await Navigator.of(context).push(
@@ -921,7 +976,10 @@ class _BattleScreenState extends State<BattleScreen> {
         statusEffects: updatedNonVolatile,
       ),
       volatileStatuses: updatedVolatile.toSet(),
-      message: '${_displayName(slot, pokemon)} $effects usando ${item.name}.',
+      message: context.uiText(
+        '${_displayName(slot, pokemon)} $effects usando ${item.name}.',
+        '${_displayName(slot, pokemon)} $effects using ${item.name}.',
+      ),
     );
   }
 
@@ -1094,7 +1152,10 @@ class _BattleScreenState extends State<BattleScreen> {
         weatherRoundsRemaining: 0,
         weatherSourceLevel: 0,
       );
-      _message = 'Meteo d100: $roll - ${weather.label}.';
+      _message = context.uiText(
+        'Meteo d100: $roll - ${weather.label}.',
+        'Weather d100: $roll - ${weather.label}.',
+      );
     });
     _scheduleSessionSave(data);
   }
@@ -1119,8 +1180,10 @@ class _BattleScreenState extends State<BattleScreen> {
       updatedSlot: slot.copyWith(currentHp: updatedHp),
     );
     await _reload(
-      message:
-          '${_displayName(slot, pokemon)} subisce $damage danni da ${_environment.weather.label}.',
+      message: context.uiText(
+        '${_displayName(slot, pokemon)} subisce $damage danni da ${_environment.weather.label}.',
+        '${_displayName(slot, pokemon)} takes $damage damage from ${_environment.weather.label}.',
+      ),
     );
   }
 
@@ -1146,7 +1209,10 @@ class _BattleScreenState extends State<BattleScreen> {
       }
       _turnIndex = 0;
       _sortInitiative();
-      _message = 'Iniziativa allenatore/Pokémon: $roll.';
+      _message = context.uiText(
+        'Iniziativa allenatore/Pokémon: $roll.',
+        'Trainer/Pokémon initiative: $roll.',
+      );
     });
     _scheduleSessionSave(data);
   }
@@ -1188,7 +1254,10 @@ class _BattleScreenState extends State<BattleScreen> {
         _turnIndex = 0;
         _round += 1;
         _environment = _environment.advanceRound();
-        _message = 'Round $_round iniziato.';
+        _message = context.uiText(
+          'Round $_round iniziato.',
+          'Round $_round started.',
+        );
       } else {
         _turnIndex += 1;
         _message = null;
@@ -1202,18 +1271,23 @@ class _BattleScreenState extends State<BattleScreen> {
       context: context,
       builder: (_) => AlertDialog(
         scrollable: true,
-        title: const Text('Terminare la battaglia?'),
-        content: const Text(
-          'Round, iniziativa, PP, PF temporanei, forme di battaglia e status volatili verranno rimossi. HP, status persistenti e oggetti consumati resteranno salvati.',
+        title: Text(
+          context.uiText('Terminare la battaglia?', 'End the battle?'),
+        ),
+        content: Text(
+          context.uiText(
+            'Round, iniziativa, PP, PF temporanei, forme di battaglia e status volatili verranno rimossi. HP, status persistenti e oggetti consumati resteranno salvati.',
+            'Rounds, initiative, PP, temporary HP, battle forms and volatile conditions will be cleared. HP, persistent conditions and consumed items will remain saved.',
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('ANNULLA'),
+            child: Text('ANNULLA'),
           ),
           FilledButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('TERMINA'),
+            child: Text('TERMINA'),
           ),
         ],
       ),
@@ -1397,7 +1471,7 @@ class _BattleScreenState extends State<BattleScreen> {
     return Scaffold(
       appBar: AppBar(
         leading: const HomeLeadingButton(),
-        title: const Text('Battle Companion'),
+        title: Text('Battle Companion'),
         actions: [
           GuidedTourInfoAction(
             controller: _tourController,
@@ -1424,7 +1498,10 @@ class _BattleScreenState extends State<BattleScreen> {
                       if (snapshot.hasError) {
                         return _BattleEmptyState(
                           icon: Icons.error_outline,
-                          title: 'Errore caricando il combattimento',
+                          title: context.uiText(
+                            'Errore caricando il combattimento',
+                            'Error loading battle',
+                          ),
                           message: snapshot.error.toString(),
                           actionLabel: 'Riprova',
                           onAction: () => _reload(),
@@ -1435,9 +1512,14 @@ class _BattleScreenState extends State<BattleScreen> {
                       if (data == null || data.occupiedSlots.isEmpty) {
                         return _BattleEmptyState(
                           icon: Icons.groups_outlined,
-                          title: 'Nessun Pokémon in squadra',
-                          message:
-                              'Aggiungi almeno un Pokémon alla squadra prima di aprire il tracker.',
+                          title: context.uiText(
+                            'Nessun Pokémon in squadra',
+                            'No Pokémon in the team',
+                          ),
+                          message: context.uiText(
+                            'Aggiungi almeno un Pokémon alla squadra prima di aprire il tracker.',
+                            'Add at least one Pokémon to the team before opening the tracker.',
+                          ),
                           actionLabel: 'Ricarica',
                           onAction: () => _reload(),
                         );
@@ -1701,7 +1783,10 @@ class _BattleScreenState extends State<BattleScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
                                   Text(
-                                    'MOSSE DA COMBATTIMENTO',
+                                    context.uiText(
+                                      'MOSSE DA COMBATTIMENTO',
+                                      'BATTLE MOVES',
+                                    ),
                                     style: Theme.of(context)
                                         .textTheme
                                         .titleMedium
@@ -1981,7 +2066,7 @@ String _itemTypeLabel(String type) {
     case 'berry':
       return 'Bacca';
     case 'held-item':
-      return 'Strumento tenuto';
+      return uiTextForLanguage('Strumento tenuto', 'Held item');
     case 'medicine':
       return 'Medicina';
     case 'pokeball':
@@ -1999,7 +2084,10 @@ String _quickItemActionLabel(BagItem item) {
 
 String _quickItemDescription(BagItem item) {
   if (BattleQuickItemService.isPokeball(item)) {
-    return 'Lancia la Poké Ball. Dopo la risposta del Master verrà consumata.';
+    return uiTextForLanguage(
+      'Lancia la Poké Ball. Dopo la risposta del Master verrà consumata.',
+      'Throw the Poké Ball. It will be consumed after the GM reports the result.',
+    );
   }
   return item.displayDescription;
 }
@@ -2049,7 +2137,7 @@ class _BattleHeader extends StatelessWidget {
               ),
             ),
             IconButton(
-              tooltip: 'Termina battaglia',
+              tooltip: context.uiText('Termina battaglia', 'End battle'),
               onPressed: onEnd,
               icon: const Icon(Icons.stop_circle_outlined),
             ),
@@ -2085,7 +2173,7 @@ class _PartyBar extends StatelessWidget {
         child: Row(
           children: [
             Text(
-              'SQUADRA',
+              context.uiText('SQUADRA', 'TEAM'),
               style: Theme.of(
                 context,
               ).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w900),
@@ -2230,7 +2318,7 @@ class _InitiativeTracker extends StatelessWidget {
               children: [
                 Expanded(
                   child: Text(
-                    'INIZIATIVA',
+                    context.uiText('INIZIATIVA', 'INITIATIVE'),
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w900,
                     ),
@@ -2245,8 +2333,14 @@ class _InitiativeTracker extends StatelessWidget {
                 Expanded(
                   child: Text(
                     currentEntry == null
-                        ? 'Nessun turno impostato.'
-                        : 'Turno: ${currentEntry.name}',
+                        ? context.uiText(
+                            'Nessun turno impostato.',
+                            'No turn is set.',
+                          )
+                        : context.uiText(
+                            'Turno: ${currentEntry.name}',
+                            'Turn: ${currentEntry.name}',
+                          ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -2258,7 +2352,7 @@ class _InitiativeTracker extends StatelessWidget {
                 FilledButton.icon(
                   onPressed: onNextTurn,
                   icon: const Icon(Icons.navigate_next),
-                  label: const Text('PROSSIMO TURNO'),
+                  label: Text(context.uiText('PROSSIMO TURNO', 'NEXT TURN')),
                 ),
               ],
             ),
@@ -2267,7 +2361,12 @@ class _InitiativeTracker extends StatelessWidget {
               childrenPadding: EdgeInsets.zero,
               dense: true,
               visualDensity: VisualDensity.compact,
-              title: Text('Ordine e comandi (${entries.length})'),
+              title: Text(
+                context.uiText(
+                  'Ordine e comandi (${entries.length})',
+                  'Order and commands (${entries.length})',
+                ),
+              ),
               children: [
                 Align(
                   alignment: Alignment.centerLeft,
@@ -2285,7 +2384,7 @@ class _InitiativeTracker extends StatelessWidget {
                       OutlinedButton.icon(
                         onPressed: onAddEntry,
                         icon: const Icon(Icons.add),
-                        label: const Text('AGGIUNGI'),
+                        label: Text('AGGIUNGI'),
                       ),
                     ],
                   ),
@@ -2341,8 +2440,11 @@ class _InitiativeTile extends StatelessWidget {
           ),
           subtitle: Text(
             entry.isTrainerGroup
-                ? 'Allenatore + Pokémon'
-                : 'Partecipante esterno',
+                ? context.uiText('Allenatore + Pokémon', 'Trainer + Pokémon')
+                : context.uiText(
+                    'Partecipante esterno',
+                    'External participant',
+                  ),
           ),
           trailing: onRemove == null
               ? null
@@ -2388,14 +2490,19 @@ class _InitiativeEntryDialogState extends State<_InitiativeEntryDialog> {
   Widget build(BuildContext context) {
     return AlertDialog(
       scrollable: true,
-      title: const Text('Aggiungi iniziativa'),
+      title: Text(context.uiText('Aggiungi iniziativa', 'Add initiative')),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           TextField(
             controller: _nameController,
             autofocus: true,
-            decoration: const InputDecoration(labelText: 'Nome partecipante'),
+            decoration: InputDecoration(
+              labelText: context.uiText(
+                'Nome partecipante',
+                'Participant name',
+              ),
+            ),
             onSubmitted: (_) => _submit(),
           ),
           const SizedBox(height: 10),
@@ -2410,9 +2517,9 @@ class _InitiativeEntryDialogState extends State<_InitiativeEntryDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Annulla'),
+          child: Text('Annulla'),
         ),
-        FilledButton(onPressed: _submit, child: const Text('Aggiungi')),
+        FilledButton(onPressed: _submit, child: Text('Aggiungi')),
       ],
     );
   }
@@ -2439,7 +2546,7 @@ class _BattleFormPickerSheet extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
         children: [
           Text(
-            'Cambia forma in battaglia',
+            context.uiText('Cambia forma in battaglia', 'Change battle form'),
             style: Theme.of(
               context,
             ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
@@ -2630,7 +2737,7 @@ class _ActivePokemonCard extends StatelessWidget {
                   OutlinedButton.icon(
                     onPressed: onChangeForm,
                     icon: const Icon(Icons.swap_horiz),
-                    label: const Text('CAMBIA FORMA'),
+                    label: Text(context.uiText('CAMBIA FORMA', 'CHANGE FORM')),
                   ),
                 ],
               ),
@@ -2687,7 +2794,9 @@ class _ActivePokemonCard extends StatelessWidget {
                 _SmallBattleButton(label: '+5', onTap: onPlusFive),
                 FilledButton(
                   onPressed: onHeal,
-                  child: const Text('POKÉMON CENTER'),
+                  child: Text(
+                    context.uiText('POKÉMON CENTER', 'POKÉMON CENTER'),
+                  ),
                 ),
               ],
             ),
@@ -2852,7 +2961,7 @@ class _StatusPanel extends StatelessWidget {
                   runSpacing: 6,
                   crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
-                    const Text('STATUS:'),
+                    Text('STATUS:'),
                     if (nonVolatileStatus != null)
                       _StatusChip(
                         status: nonVolatileStatus!,
@@ -2862,7 +2971,7 @@ class _StatusPanel extends StatelessWidget {
                       _StatusChip(status: status, prefix: 'VOLATILE'),
                   ],
                 )
-              : const Text('STATUS: nessuno'),
+              : Text(context.uiText('STATUS: nessuno', 'CONDITIONS: none')),
         ),
       ),
     );
@@ -2926,16 +3035,19 @@ class _StatusPickerSheetState extends State<_StatusPickerSheet> {
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
             child: Text(
-              'STATUS IN COMBATTIMENTO',
+              context.uiText('STATUS IN COMBATTIMENTO', 'BATTLE CONDITIONS'),
               style: Theme.of(
                 context,
               ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
             ),
           ),
-          const Padding(
-            padding: EdgeInsets.fromLTRB(16, 0, 16, 8),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
             child: Text(
-              'Tocca uno status per applicarlo subito. Un solo status non-volatile alla volta; gli status volatili terminano fuori dal combattimento.',
+              context.uiText(
+                'Tocca uno status per applicarlo subito. Un solo status non-volatile alla volta; gli status volatili terminano fuori dal combattimento.',
+                'Tap a condition to apply it immediately. Only one non-volatile condition can be active at a time; volatile conditions end outside battle.',
+              ),
             ),
           ),
           Padding(
@@ -2954,7 +3066,7 @@ class _StatusPickerSheetState extends State<_StatusPickerSheet> {
               runSpacing: 8,
               children: [
                 ChoiceChip(
-                  label: const Text('NESSUNO'),
+                  label: Text('NESSUNO'),
                   selected: _nonVolatileStatus == null,
                   onSelected: (_) => _selectNonVolatile(null),
                 ),
@@ -2988,7 +3100,7 @@ class _StatusPickerSheetState extends State<_StatusPickerSheet> {
           if (_nonVolatileStatus != null || _volatileStatuses.isNotEmpty)
             ListTile(
               leading: const Icon(Icons.clear),
-              title: const Text('RIMUOVI TUTTI'),
+              title: Text(context.uiText('RIMUOVI TUTTI', 'REMOVE ALL')),
               onTap: () => Navigator.of(context).pop(
                 const _StatusPickerResult(
                   nonVolatileStatus: null,
@@ -3045,10 +3157,19 @@ class _HeldItemPanel extends StatelessWidget {
                   ),
                   Text(
                     item == null
-                        ? 'Apri lo zaino rapido per usare un consumabile o lanciare una Poké Ball.'
+                        ? context.uiText(
+                            'Apri lo zaino rapido per usare un consumabile o lanciare una Poké Ball.',
+                            'Open the quick Bag to use a consumable or throw a Poké Ball.',
+                          )
                         : item.type == 'berry'
-                        ? 'Bacca tenuta: puoi consumarla subito in combattimento.'
-                        : 'Strumento tenuto: ${_itemTypeLabel(item.type)}.',
+                        ? context.uiText(
+                            'Bacca tenuta: puoi consumarla subito in combattimento.',
+                            'Held Berry: you can consume it immediately in battle.',
+                          )
+                        : context.uiText(
+                            'Strumento tenuto: ${_itemTypeLabel(item.type)}.',
+                            'Held item: ${_itemTypeLabel(item.type)}.',
+                          ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -3057,12 +3178,9 @@ class _HeldItemPanel extends StatelessWidget {
             ),
             const SizedBox(width: 8),
             if (item?.type == 'berry')
-              OutlinedButton(
-                onPressed: onUseHeldBerry,
-                child: const Text('USA'),
-              ),
+              OutlinedButton(onPressed: onUseHeldBerry, child: Text('USA')),
             const SizedBox(width: 6),
-            FilledButton(onPressed: onOpenBag, child: const Text('ZAINO')),
+            FilledButton(onPressed: onOpenBag, child: Text('ZAINO')),
           ],
         ),
       ),
@@ -3091,7 +3209,7 @@ class _QuickBagSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final statusParts = [?nonVolatileStatus, ...volatileStatuses];
     final statusText = statusParts.isEmpty
-        ? 'nessuno status'
+        ? context.uiText('nessuno status', 'no conditions')
         : statusParts.join(', ');
 
     return SafeArea(
@@ -3101,7 +3219,7 @@ class _QuickBagSheet extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 18),
           children: [
             Text(
-              'Zaino rapido',
+              context.uiText('Zaino rapido', 'Quick Bag'),
               style: Theme.of(
                 context,
               ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
@@ -3189,12 +3307,12 @@ class _MoveCard extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   IconButton(
-                    tooltip: 'Recupera PP',
+                    tooltip: context.uiText('Recupera PP', 'Restore PP'),
                     onPressed: remainingPp >= maxPp ? null : onRestore,
                     icon: const Icon(Icons.add),
                   ),
                   IconButton(
-                    tooltip: 'Usa mossa',
+                    tooltip: context.uiText('Usa mossa', 'Use move'),
                     onPressed: remainingPp <= 0 ? null : onUse,
                     icon: const Icon(Icons.remove),
                   ),
@@ -3204,7 +3322,12 @@ class _MoveCard extends StatelessWidget {
         childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 14),
         children: [
           if (move == null)
-            const Text('Dettagli mossa non disponibili.')
+            Text(
+              context.uiText(
+                'Dettagli mossa non disponibili.',
+                'Move details are unavailable.',
+              ),
+            )
           else ...[
             Align(
               alignment: Alignment.centerLeft,
@@ -3379,26 +3502,28 @@ class _HpInputDialogState extends State<_HpInputDialog> {
   Widget build(BuildContext context) {
     return AlertDialog(
       scrollable: true,
-      title: const Text('Modifica HP'),
+      title: Text(context.uiText('Modifica HP', 'Change HP')),
       content: TextField(
         controller: _controller,
         autofocus: true,
         keyboardType: const TextInputType.numberWithOptions(signed: true),
         decoration: InputDecoration(
-          labelText: 'HP o modifica',
-          helperText:
-              'Esempi: -12, +8 oppure 35. Attuali ${widget.currentHp}/${widget.maxHp}',
+          labelText: context.uiText('HP o modifica', 'HP or change'),
+          helperText: context.uiText(
+            'Esempi: -12, +8 oppure 35. Attuali ${widget.currentHp}/${widget.maxHp}',
+            'Examples: -12, +8 or 35. Current ${widget.currentHp}/${widget.maxHp}',
+          ),
         ),
         onSubmitted: (value) => Navigator.of(context).pop(value),
       ),
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Annulla'),
+          child: Text('Annulla'),
         ),
         FilledButton(
           onPressed: () => Navigator.of(context).pop(_controller.text),
-          child: const Text('Salva'),
+          child: Text('Salva'),
         ),
       ],
     );
@@ -3429,7 +3554,10 @@ class _StruggleWarning extends StatelessWidget {
             const SizedBox(height: 6),
             Text(
               move?.description ??
-                  'Tutti i PP delle mosse tracciabili sono a zero. Usa Struggle.',
+                  context.uiText(
+                    'Tutti i PP delle mosse tracciabili sono a zero. Usa Struggle.',
+                    'All tracked move PP are at zero. Use Struggle.',
+                  ),
               style: TextStyle(
                 color: Theme.of(context).colorScheme.onErrorContainer,
               ),

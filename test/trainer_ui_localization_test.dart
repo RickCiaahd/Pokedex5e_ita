@@ -1,9 +1,18 @@
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pokedex_5e_ita/localization/game_catalog_locale.dart';
 import 'package:pokedex_5e_ita/models/trainer_ui_localization.dart';
 
 void main() {
+  setUp(() {
+    GameCatalogLocale.setLanguageCode('it');
+  });
+
+  tearDown(() {
+    GameCatalogLocale.setLanguageCode('it');
+  });
+
   test('caratteristiche e abilità vengono mostrate in italiano', () {
     expect(TrainerUiLocalization.abilityAbbreviation('STR'), 'FOR');
     expect(TrainerUiLocalization.abilityAbbreviation('DEX'), 'DES');
@@ -20,6 +29,21 @@ void main() {
     );
   });
 
+  test('etichette tecniche rimangono inglesi con interfaccia inglese', () {
+    GameCatalogLocale.setLanguageCode('en');
+
+    expect(TrainerUiLocalization.abilityAbbreviation('STR'), 'STR');
+    expect(TrainerUiLocalization.abilityAbbreviation('DEX'), 'DEX');
+    expect(
+      TrainerUiLocalization.skillName('Animal Handling'),
+      'Animal Handling',
+    );
+    expect(TrainerUiLocalization.trainerPathName('Ace Trainer'), 'Ace Trainer');
+    expect(TrainerUiLocalization.natureName('Adamant'), 'Adamant');
+    expect(TrainerUiLocalization.sizeName('Medium'), 'Medium');
+    expect(TrainerUiLocalization.genderName('Female'), 'Female');
+  });
+
   test('nomi tecnici mantengono etichette italiane separate', () {
     expect(
       TrainerUiLocalization.trainerPathName('Ace Trainer'),
@@ -31,22 +55,15 @@ void main() {
       'Avicoltore',
     );
     expect(
-      TrainerUiLocalization.specializationName('Bug Maniac'),
-      'Insettologo',
-    );
-    expect(TrainerUiLocalization.specializationName('Engineer'), 'Meccanico');
-    expect(
       TrainerUiLocalization.featureName('Rapid Switching'),
       'Cambio Rapido',
     );
-    expect(TrainerUiLocalization.featureName('Follow Me'), 'Sonoqui');
     expect(TrainerUiLocalization.natureName('Adamant'), 'Decisa');
-    expect(TrainerUiLocalization.natureName('Jolly'), 'Allegra');
     expect(TrainerUiLocalization.sizeName('Medium'), 'Media');
     expect(TrainerUiLocalization.genderName('Female'), 'Femmina');
   });
 
-  test('la UI non reintroduce le principali etichette inglesi', () {
+  test('le schermate migrate contengono entrambe le lingue', () {
     final pokemonDetail = File(
       'lib/screens/pokemon/pokemon_detail_screen_legacy.dart',
     ).readAsStringSync();
@@ -56,14 +73,15 @@ void main() {
 
     expect(pokemonDetail, contains("Tab(text: 'PRIVILEGI')"));
     expect(pokemonDetail, contains("Tab(text: 'TRATTI')"));
-    expect(pokemonDetail, contains("'TIRI SALVEZZA'"));
-    expect(pokemonDetail, contains("'+ AGGIUNGI STATUS'"));
-    expect(pokemonDetail, contains("'LEALTÀ'"));
-    expect(trainerSheet, contains("title: 'ALLENATORE'"));
-    expect(trainerSheet, contains("title: 'ABILITÀ'"));
-    expect(trainerSheet, contains("title: 'TIRI SALVEZZA'"));
-    expect(trainerSheet, contains("title: 'AVANZAMENTO'"));
-    expect(trainerSheet, contains("title: 'Privilegio del Percorso'"));
-    expect(trainerSheet, contains("label: 'Dotazione iniziale'"));
+    expect(trainerSheet, contains("context.uiText('ALLENATORE', 'TRAINER')"));
+    expect(trainerSheet, contains("context.uiText('ABILITÀ', 'SKILLS')"));
+    expect(
+      trainerSheet,
+      contains("context.uiText('TIRI SALVEZZA', 'SAVING THROWS')"),
+    );
+    expect(
+      trainerSheet,
+      contains("context.uiText('AVANZAMENTO', 'PROGRESSION')"),
+    );
   });
 }

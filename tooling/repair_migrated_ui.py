@@ -25,9 +25,6 @@ def ignore_async_context(path: str) -> None:
     write(path, text)
 
 
-# A locale-only helper is required by top-level formatting functions that have
-# no BuildContext. The application synchronizes GameCatalogLocale from the
-# resolved MaterialApp locale, so these labels follow the same language choice.
 path = 'lib/localization/ui_text.dart'
 text = read(path)
 helper = """String uiTextForLanguage(String italian, String english) {
@@ -53,7 +50,6 @@ for file in (
 ):
     ignore_async_context(file)
 
-# Bag: helper methods and top-level formatters do not expose BuildContext.
 path = 'lib/screens/bag/bag_screen.dart'
 text = read(path)
 for old, new in (
@@ -63,16 +59,12 @@ for old, new in (
     ("context.uiText('Dai a Pokémon', 'Give to Pokémon')", "uiTextForLanguage('Dai a Pokémon', 'Give to Pokémon')"),
     ("context.uiText('Usa bacca', 'Use Berry')", "uiTextForLanguage('Usa bacca', 'Use Berry')"),
 ):
-    # Only the calls in context-free helpers need the global helper. Replacing
-    # every identical call is safe and avoids introducing new async-context
-    # lints in actions that run after repository writes.
     text = text.replace(old, new)
 text = text.replace("child: const Text('Annulla')", "child: Text(uiTextForLanguage('Annulla', 'Cancel'))")
 text = text.replace("return 'Usa MT';", "return uiTextForLanguage('Usa MT', 'Use TM');")
 text = text.replace("return 'Usa';", "return uiTextForLanguage('Usa', 'Use');")
 write(path, text)
 
-# Battle: top-level item helpers and a const panel containing localized copy.
 path = 'lib/screens/battle/battle_screen.dart'
 text = read(path)
 text = text.replace(
@@ -91,14 +83,12 @@ text = replace_required(
 )
 write(path, text)
 
-# Capture: localized values cannot live in const constructors and the gender
-# helper is top-level.
 path = 'lib/screens/capture/capture_pokemon_screen.dart'
 text = read(path)
 text = replace_required(
     text,
-    '                const DropdownMenuItem<String?>(\n                  value: null,\n                  child: Text(\n                    context.uiText(',
-    '                DropdownMenuItem<String?>(\n                  value: null,\n                  child: Text(\n                    context.uiText(',
+    '                const DropdownMenuItem<String?>(\n                  value: null,',
+    '                DropdownMenuItem<String?>(\n                  value: null,',
     'voce Poké Ball facoltativa',
 )
 text = text.replace('    return const [\n      _GenderOption(', '    return [\n      _GenderOption(', 1)
@@ -129,7 +119,6 @@ text = text.replace(
 )
 write(path, text)
 
-# Pokédex sorting and type filter.
 path = 'lib/screens/pokedex/pokedex_screen.dart'
 text = read(path)
 text = replace_required(text, '      items: const [', '      items: [', 'ordinamento Pokédex')
@@ -143,14 +132,12 @@ text = text.replace(
 )
 write(path, text)
 
-# Profiles segmented import mode.
 path = 'lib/screens/profile/profiles_screen.dart'
 text = read(path)
 text = replace_required(text, '                segments: const [', '                segments: [', 'modalità import profilo')
 text = text.replace("label: Text('Sostituisci')", "label: Text(context.uiText('Sostituisci', 'Replace'))")
 write(path, text)
 
-# Team transfer menu.
 path = 'lib/screens/team/team_selection_screen.dart'
 text = read(path)
 text = replace_required(
@@ -161,8 +148,6 @@ text = replace_required(
 )
 write(path, text)
 
-# Static title widget can remain const after removing const call sites during
-# migration.
 path = 'lib/screens/tools/tools_screen.dart'
 text = read(path)
 text = replace_required(

@@ -75,6 +75,10 @@ jobs:
           path.write_text(text, encoding='utf-8')
           PY
 
+      - name: Repair migrated UI analyzer issues
+        if: steps.state.outputs.already_applied == 'false'
+        run: python tooling/repair_migrated_ui.py
+
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
@@ -166,6 +170,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add \
+            lib/localization/ui_text.dart \
             lib/models/trainer_ui_localization.dart \
             lib/screens/bag/bag_screen.dart \
             lib/screens/battle/battle_screen.dart \

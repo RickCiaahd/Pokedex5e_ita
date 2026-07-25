@@ -45,7 +45,7 @@ jobs:
         if: steps.state.outputs.already_applied == 'false'
         shell: bash
         run: |
-          cat tooling/patches/complete-ui.patch.gz.b64.part* > /tmp/complete-ui.patch.gz.b64
+          cat tooling/patches/complete-ui.patch.gz.b64.part* | tr -d '\r\n\t ' > /tmp/complete-ui.patch.gz.b64
           echo "ae56118e2db8dae3de8a2f15567e566e03bc092d1de3176a2ade31be5f07eaaa  /tmp/complete-ui.patch.gz.b64" | sha256sum --check
           base64 --decode /tmp/complete-ui.patch.gz.b64 | gzip --decompress > /tmp/complete-ui.patch
           echo "81cbf7c305bded30687deebd0da5fbcef6661cb01b66352cd5b219eab1f713d5  /tmp/complete-ui.patch" | sha256sum --check

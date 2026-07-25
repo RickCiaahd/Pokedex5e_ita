@@ -72,6 +72,10 @@ text = text.replace(
     "uiTextForLanguage('Strumento tenuto', 'Held item')",
 )
 text = text.replace(
+    "return context.uiText('Lancia la Poké Ball. Dopo la risposta del Master verrà consumata.', 'Throw the Poké Ball. It will be consumed after the GM reports the result.');",
+    "return uiTextForLanguage('Lancia la Poké Ball. Dopo la risposta del Master verrà consumata.', 'Throw the Poké Ball. It will be consumed after the GM reports the result.');",
+)
+text = text.replace(
     "context.uiText(\n      'Lancia la Poké Ball. Dopo la risposta del Master verrà consumata.',",
     "uiTextForLanguage(\n      'Lancia la Poké Ball. Dopo la risposta del Master verrà consumata.',",
 )

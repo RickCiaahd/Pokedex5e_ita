@@ -1,0 +1,190 @@
+name: Complete UI localization
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'lib/**'
+      - 'test/**'
+      - 'tooling/**'
+      - '.github/workflows/audit-ui-localization.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: complete-ui-localization-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  apply_and_validate:
+    if: github.head_ref == 'feature/complete-ui-localization' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+
+    steps:
+      - name: Check out localization branch
+        uses: actions/checkout@v4
+        with:
+          ref: feature/complete-ui-localization
+          fetch-depth: 0
+
+      - name: Detect application state
+        id: state
+        shell: bash
+        run: |
+          if grep -q "static Map<String, String> get abilityLabels" lib/models/trainer_ui_localization.dart; then
+            echo "already_applied=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "already_applied=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Rebuild patch
+        if: steps.state.outputs.already_applied == 'false'
+        shell: bash
+        run: |
+          mkdir -p patch-diagnostics
+          cat tooling/patches/complete-ui.patch.gz.b64.part* | tr -d '\r\n\t ' > patch-diagnostics/complete-ui.patch.gz.b64
+          base64 --decode patch-diagnostics/complete-ui.patch.gz.b64 | gzip --decompress > patch-diagnostics/complete-ui.patch
+          git apply --check patch-diagnostics/complete-ui.patch
+          git apply patch-diagnostics/complete-ui.patch
+
+      - name: Repair concatenated profile copy
+        if: steps.state.outputs.already_applied == 'false'
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('lib/screens/profile/profiles_screen.dart')
+          text = path.read_text(encoding='utf-8')
+          replacements = {
+              "context.uiText('Vuoi eliminare ${profile.name}? Verranno rimossi scheda allenatore, ', 'Delete ${profile.name}? This will remove the Trainer sheet, ')\n          context.uiText('Pokédex, squadra, PC, zaino, impostazioni, incontri, Allenatori PNG e battaglie salvate.', 'Pokédex, team, PC, Bag, settings, encounters, NPC Trainers and saved battles.')":
+              "context.uiText(\n            'Vuoi eliminare ${profile.name}? Verranno rimossi scheda allenatore, Pokédex, squadra, PC, zaino, impostazioni, incontri, Allenatori PNG e battaglie salvate.',\n            'Delete ${profile.name}? This will remove the Trainer sheet, Pokédex, team, PC, Bag, settings, encounters, NPC Trainers and saved battles.',\n          )",
+              "context.uiText('Ogni profilo conserva separatamente scheda, Pokédex, squadra, ', 'Each profile separately stores its sheet, Pokédex, team, ')\n                  context.uiText('PC, zaino, impostazioni, raccolte e incontri salvati.', 'PC, Bag, settings, collections and saved encounters.')":
+              "context.uiText(\n                    'Ogni profilo conserva separatamente scheda, Pokédex, squadra, PC, zaino, impostazioni, raccolte e incontri salvati.',\n                    'Each profile separately stores its sheet, Pokédex, team, PC, Bag, settings, collections and saved encounters.',\n                  )",
+              "context.uiText('Tutti i dati del profilo scelto verranno sostituiti dal ', 'All data in the selected profile will be replaced by the ')\n                  context.uiText('backup. L’operazione viene annullata automaticamente se il ', 'backup. The operation is cancelled automatically if the ')\n                  'ripristino non riesce.'":
+              "context.uiText(\n                    'Tutti i dati del profilo scelto verranno sostituiti dal backup. L’operazione viene annullata automaticamente se il ripristino non riesce.',\n                    'All data in the selected profile will be replaced by the backup. The operation is cancelled automatically if the restore fails.',\n                  )",
+          }
+          for old, new in replacements.items():
+              if old not in text:
+                  raise RuntimeError(f'Frammento profilo non trovato: {old[:60]}')
+              text = text.replace(old, new, 1)
+          path.write_text(text, encoding='utf-8')
+          PY
+
+      - name: Repair migrated UI analyzer issues
+        if: steps.state.outputs.already_applied == 'false'
+        run: python tooling/repair_migrated_ui.py
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Format migrated sources
+        run: |
+          dart format \
+            lib/localization/ui_text.dart \
+            lib/models/trainer_ui_localization.dart \
+            lib/screens/bag/bag_screen.dart \
+            lib/screens/battle/battle_screen.dart \
+            lib/screens/capture/capture_pokemon_screen.dart \
+            lib/screens/pc/pokemon_pc_screen.dart \
+            lib/screens/pokedex/pokedex_screen.dart \
+            lib/screens/profile/profiles_screen.dart \
+            lib/screens/team/team_selection_screen.dart \
+            lib/screens/tools/tools_screen.dart \
+            lib/screens/trainer/trainer_sheet_screen.dart \
+            lib/widgets/pokedex/pokemon_summary_dialog.dart \
+            lib/widgets/pokemon/pokemon_asset_image_legacy.dart \
+            test/navigation_ui_localization_test.dart \
+            test/secondary_ui_localization_test.dart \
+            test/trainer_ui_localization_test.dart
+
+      - name: Capture validation result
+        shell: bash
+        run: |
+          set +e
+          mkdir -p validation-diagnostics
+          tar -czf validation-diagnostics/transformed-source.tar.gz lib test
+          log=validation-diagnostics/validation.log
+          : > "$log"
+
+          run_check() {
+            echo "" | tee -a "$log"
+            echo "> $*" | tee -a "$log"
+            "$@" 2>&1 | tee -a "$log"
+            return ${PIPESTATUS[0]}
+          }
+
+          status=0
+          run_check flutter analyze || status=$?
+          if [ "$status" -eq 0 ]; then run_check flutter test test/secondary_ui_localization_test.dart || status=$?; fi
+          if [ "$status" -eq 0 ]; then run_check flutter test test/navigation_ui_localization_test.dart || status=$?; fi
+          if [ "$status" -eq 0 ]; then run_check flutter test test/trainer_ui_localization_test.dart || status=$?; fi
+          if [ "$status" -eq 0 ]; then run_check flutter test test/localized_game_catalogs_test.dart || status=$?; fi
+          if [ "$status" -eq 0 ]; then run_check flutter test --reporter expanded || status=$?; fi
+          if [ "$status" -eq 0 ]; then run_check flutter build apk --debug || status=$?; fi
+          echo "$status" > validation-diagnostics/status.txt
+          exit 0
+
+      - name: Upload validation diagnostics
+        uses: actions/upload-artifact@v4
+        with:
+          name: complete-ui-validation-diagnostics
+          path: validation-diagnostics
+          retention-days: 7
+
+      - name: Stop when validation failed
+        run: test "$(cat validation-diagnostics/status.txt)" = "0"
+
+      - name: Run post-migration UI audit
+        run: python tooling/audit_ui_strings.py
+
+      - name: Upload UI audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-localization-audit
+          path: build/ui-localization-audit
+          if-no-files-found: ignore
+          retention-days: 14
+
+      - name: Publish migrated sources
+        if: steps.state.outputs.already_applied == 'false'
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
+            lib/localization/ui_text.dart \
+            lib/models/trainer_ui_localization.dart \
+            lib/screens/bag/bag_screen.dart \
+            lib/screens/battle/battle_screen.dart \
+            lib/screens/capture/capture_pokemon_screen.dart \
+            lib/screens/pc/pokemon_pc_screen.dart \
+            lib/screens/pokedex/pokedex_screen.dart \
+            lib/screens/profile/profiles_screen.dart \
+            lib/screens/team/team_selection_screen.dart \
+            lib/screens/tools/tools_screen.dart \
+            lib/screens/trainer/trainer_sheet_screen.dart \
+            lib/widgets/pokedex/pokemon_summary_dialog.dart \
+            lib/widgets/pokemon/pokemon_asset_image_legacy.dart \
+            test/navigation_ui_localization_test.dart \
+            test/secondary_ui_localization_test.dart \
+            test/trainer_ui_localization_test.dart
+          git commit -m "Completa la localizzazione delle schermate principali [skip ci]"
+          git push origin HEAD:feature/complete-ui-localization

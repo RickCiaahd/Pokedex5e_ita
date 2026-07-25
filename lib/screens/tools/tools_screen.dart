@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../models/pokemon.dart';
+import '../../localization/ui_text.dart';
 import '../../repositories/master_battle_session_repository.dart';
 import '../../repositories/pokemon_repository.dart';
 import '../../repositories/profile_repository.dart';
@@ -45,24 +46,30 @@ class _ToolsScreenState extends State<ToolsScreen> {
     GuidedTourStepData(
       targetKey: _introKey,
       icon: Icons.construction_outlined,
-      title: 'Il centro di comando',
-      description:
-          'Questa schermata separa la preparazione della sessione dalle librerie e dal Fight del Master. Ogni blocco raccoglie strumenti con uno scopo preciso.',
+      title: context.uiText('Il centro di comando', 'The command center'),
+      description: context.uiText(
+        'Questa schermata separa la preparazione della sessione dalle librerie e dal Fight del Master. Ogni blocco raccoglie strumenti con uno scopo preciso.',
+        'This screen separates session preparation from libraries and the GM Fight. Each section groups tools with a specific purpose.',
+      ),
     ),
     GuidedTourStepData(
       targetKey: _generatorsKey,
       icon: Icons.auto_awesome_outlined,
-      title: 'Generatori',
-      description:
-          'Qui crei Pokémon, incontri e Allenatori PNG. I risultati possono essere usati subito oppure salvati per una sessione futura.',
+      title: context.uiText('Generatori', 'Generators'),
+      description: context.uiText(
+        'Qui crei Pokémon, incontri e Allenatori PNG. I risultati possono essere usati subito oppure salvati per una sessione futura.',
+        'Create Pokémon, encounters and NPC Trainers. Results can be used immediately or saved for a future session.',
+      ),
       fallbackScrollFraction: .38,
     ),
     GuidedTourStepData(
       targetKey: _librariesKey,
       icon: Icons.inventory_2_outlined,
-      title: 'Librerie e Fight',
-      description:
-          'Le librerie riaprono i contenuti salvati e permettono di portarli nel Fight del Master, che conserva PF, PP, status, iniziativa e round.',
+      title: context.uiText('Librerie e Fight', 'Libraries and Fight'),
+      description: context.uiText(
+        'Le librerie riaprono i contenuti salvati e permettono di portarli nel Fight del Master, che conserva PF, PP, status, iniziativa e round.',
+        'Libraries reopen saved content and send it to the GM Fight, which preserves HP, PP, conditions, initiative and rounds.',
+      ),
       fallbackScrollFraction: 1,
     ),
   ];
@@ -142,7 +149,7 @@ class _ToolsScreenState extends State<ToolsScreen> {
     return Scaffold(
       appBar: AppBar(
         leading: const HomeLeadingButton(),
-        title: const Text('Strumenti del Master'),
+        title: Text(context.uiText('Strumenti del Master', 'GM Tools')),
         actions: [
           GuidedTourInfoAction(
             controller: _tourController,
@@ -190,7 +197,10 @@ class _ToolsScreenState extends State<ToolsScreen> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        'Preparazione e gestione della sessione',
+                                        context.uiText(
+                                          'Preparazione e gestione della sessione',
+                                          'Session preparation and management',
+                                        ),
                                         style: Theme.of(context)
                                             .textTheme
                                             .titleLarge
@@ -202,7 +212,10 @@ class _ToolsScreenState extends State<ToolsScreen> {
                                       ),
                                       const SizedBox(height: 6),
                                       Text(
-                                        'Generatori, raccolte, contenuti salvati e Fight del Master sono divisi per funzione.',
+                                        context.uiText(
+                                          'Generatori, raccolte, contenuti salvati e Fight del Master sono divisi per funzione.',
+                                          'Generators, collections, saved content and the GM Fight are organized by purpose.',
+                                        ),
                                         style: TextStyle(
                                           color: colorScheme.onPrimaryContainer,
                                         ),
@@ -235,11 +248,16 @@ class _ToolsScreenState extends State<ToolsScreen> {
                         ],
                         if (_hasActiveMasterFight) ...[
                           const SizedBox(height: 18),
-                          const _ToolSectionTitle(
+                          _ToolSectionTitle(
                             icon: Icons.play_circle_outline,
-                            title: 'SESSIONE IN CORSO',
-                            subtitle:
-                                'La sessione rimane salvata finché non viene sostituita.',
+                            title: context.uiText(
+                              'SESSIONE IN CORSO',
+                              'ONGOING SESSION',
+                            ),
+                            subtitle: context.uiText(
+                              'La sessione rimane salvata finché non viene sostituita.',
+                              'The session remains saved until it is replaced.',
+                            ),
                           ),
                           Card(
                             color: colorScheme.secondaryContainer,
@@ -248,12 +266,18 @@ class _ToolsScreenState extends State<ToolsScreen> {
                                 Icons.sports_mma_outlined,
                                 color: colorScheme.onSecondaryContainer,
                               ),
-                              title: const Text(
-                                'Fight del Master in corso',
+                              title: Text(
+                                context.uiText(
+                                  'Fight del Master in corso',
+                                  'GM Fight in progress',
+                                ),
                                 style: TextStyle(fontWeight: FontWeight.w900),
                               ),
-                              subtitle: const Text(
-                                'Riprendi PF, PP, status, round e iniziativa salvati.',
+                              subtitle: Text(
+                                context.uiText(
+                                  'Riprendi PF, PP, status, round e iniziativa salvati.',
+                                  'Resume saved HP, PP, conditions, rounds and initiative.',
+                                ),
                               ),
                               trailing: const Icon(Icons.play_arrow),
                               onTap: _isLoading ? null : _resumeMasterFight,
@@ -264,35 +288,53 @@ class _ToolsScreenState extends State<ToolsScreen> {
                         _ToolSectionTitle(
                           key: _generatorsKey,
                           icon: Icons.auto_awesome_outlined,
-                          title: 'GENERATORI',
-                          subtitle: 'Crea nuovi contenuti da usare o salvare.',
+                          title: context.uiText('GENERATORI', 'GENERATORS'),
+                          subtitle: context.uiText(
+                            'Crea nuovi contenuti da usare o salvare.',
+                            'Create new content to use or save.',
+                          ),
                         ),
                         _ToolCardGrid(
                           children: [
                             _ToolCard(
                               icon: Icons.catching_pokemon,
-                              title: 'Generatore Pokémon',
-                              subtitle:
-                                  'Estrai un Pokémon con forma, livello, natura, abilità, mosse, sesso e probabilità shiny.',
-                              actionLabel: 'GENERA',
+                              title: context.uiText(
+                                'Generatore Pokémon',
+                                'Pokémon Generator',
+                              ),
+                              subtitle: context.uiText(
+                                'Estrai un Pokémon con forma, livello, natura, abilità, mosse, sesso e probabilità shiny.',
+                                'Generate a Pokémon with form, level, nature, ability, moves, gender and shiny chance.',
+                              ),
+                              actionLabel: context.uiText('GENERA', 'GENERATE'),
                               onTap: () =>
                                   _open(const PokemonGeneratorScreen()),
                             ),
                             _ToolCard(
                               icon: Icons.travel_explore,
-                              title: 'Generatore incontri',
-                              subtitle:
-                                  'Composizione automatica, manuale e raccolte ponderate con stima della difficoltà.',
-                              actionLabel: 'GENERA',
+                              title: context.uiText(
+                                'Generatore incontri',
+                                'Encounter Generator',
+                              ),
+                              subtitle: context.uiText(
+                                'Composizione automatica, manuale e raccolte ponderate con stima della difficoltà.',
+                                'Automatic or manual composition and weighted collections with difficulty estimates.',
+                              ),
+                              actionLabel: context.uiText('GENERA', 'GENERATE'),
                               onTap: () =>
                                   _open(const EncounterGeneratorScreen()),
                             ),
                             _ToolCard(
                               icon: Icons.groups_2_outlined,
-                              title: 'Generatore Allenatori PNG',
-                              subtitle:
-                                  'Crea identità, specializzazione, squadra, personalità, tattiche e ricompense.',
-                              actionLabel: 'GENERA',
+                              title: context.uiText(
+                                'Generatore Allenatori PNG',
+                                'NPC Trainer Generator',
+                              ),
+                              subtitle: context.uiText(
+                                'Crea identità, specializzazione, squadra, personalità, tattiche e ricompense.',
+                                'Create identity, specialization, team, personality, tactics and rewards.',
+                              ),
+                              actionLabel: context.uiText('GENERA', 'GENERATE'),
                               onTap: () =>
                                   _open(const NpcTrainerGeneratorScreen()),
                             ),
@@ -302,27 +344,39 @@ class _ToolsScreenState extends State<ToolsScreen> {
                         _ToolSectionTitle(
                           key: _librariesKey,
                           icon: Icons.inventory_2_outlined,
-                          title: 'LIBRERIE',
-                          subtitle:
-                              'Riapri, modifica e usa i contenuti già preparati.',
+                          title: context.uiText('LIBRERIE', 'LIBRARIES'),
+                          subtitle: context.uiText(
+                            'Riapri, modifica e usa i contenuti già preparati.',
+                            'Reopen, edit and use prepared content.',
+                          ),
                         ),
                         _ToolCardGrid(
                           children: [
                             _ToolCard(
                               icon: Icons.bookmarks_outlined,
-                              title: 'Libreria incontri',
-                              subtitle:
-                                  'Incontri salvati, raccolte ponderate e avvio diretto nel Fight del Master.',
-                              actionLabel: 'APRI',
+                              title: context.uiText(
+                                'Libreria incontri',
+                                'Encounter Library',
+                              ),
+                              subtitle: context.uiText(
+                                'Incontri salvati, raccolte ponderate e avvio diretto nel Fight del Master.',
+                                'Saved encounters, weighted collections and direct launch into the GM Fight.',
+                              ),
+                              actionLabel: context.uiText('APRI', 'OPEN'),
                               onTap: () =>
                                   _open(const EncounterLibraryScreen()),
                             ),
                             _ToolCard(
                               icon: Icons.people_alt_outlined,
-                              title: 'Libreria Allenatori PNG',
-                              subtitle:
-                                  'Allenatori salvati, selezione multipla e gestione delle loro squadre nel fight.',
-                              actionLabel: 'APRI',
+                              title: context.uiText(
+                                'Libreria Allenatori PNG',
+                                'NPC Trainer Library',
+                              ),
+                              subtitle: context.uiText(
+                                'Allenatori salvati, selezione multipla e gestione delle loro squadre nel fight.',
+                                'Saved Trainers, multiple selection and team management in the fight.',
+                              ),
+                              actionLabel: context.uiText('APRI', 'OPEN'),
                               onTap: () =>
                                   _open(const NpcTrainerLibraryScreen()),
                             ),

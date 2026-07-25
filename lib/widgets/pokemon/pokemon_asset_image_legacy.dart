@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../models/pokedex_entry.dart';
+import '../../localization/game_catalog_locale.dart';
 import '../../models/pokemon.dart';
 import '../../models/pokemon_form_preferences.dart';
 
@@ -503,6 +504,7 @@ class PokemonAssetPaths {
   }
 
   static List<String> typeCandidates(String type) {
+    if (!GameCatalogLocale.isItalian) return const [];
     final localized = localizedTypeLabel(type);
     final assetName = _assetName(localized);
     final lowercaseAssetName = assetName.toLowerCase();
@@ -515,7 +517,69 @@ class PokemonAssetPaths {
   }
 
   static String localizedTypeLabel(String type) {
-    switch (type.trim().toLowerCase()) {
+    final normalized = type.trim().toLowerCase();
+    if (!GameCatalogLocale.isItalian) {
+      switch (normalized) {
+        case 'coleottero':
+        case 'bug':
+          return 'Bug';
+        case 'buio':
+        case 'dark':
+          return 'Dark';
+        case 'drago':
+        case 'dragon':
+          return 'Dragon';
+        case 'elettro':
+        case 'electric':
+          return 'Electric';
+        case 'folletto':
+        case 'fairy':
+          return 'Fairy';
+        case 'lotta':
+        case 'fighting':
+          return 'Fighting';
+        case 'fuoco':
+        case 'fire':
+          return 'Fire';
+        case 'volante':
+        case 'flying':
+          return 'Flying';
+        case 'spettro':
+        case 'ghost':
+          return 'Ghost';
+        case 'erba':
+        case 'grass':
+          return 'Grass';
+        case 'terra':
+        case 'ground':
+          return 'Ground';
+        case 'ghiaccio':
+        case 'ice':
+          return 'Ice';
+        case 'normale':
+        case 'normal':
+          return 'Normal';
+        case 'veleno':
+        case 'poison':
+          return 'Poison';
+        case 'psico':
+        case 'psychic':
+          return 'Psychic';
+        case 'roccia':
+        case 'rock':
+          return 'Rock';
+        case 'acciaio':
+        case 'steel':
+          return 'Steel';
+        case 'acqua':
+        case 'water':
+          return 'Water';
+        default:
+          return type;
+      }
+    }
+
+    switch (normalized) {
       case 'bug':
       case 'coleottero':
         return 'Coleottero';

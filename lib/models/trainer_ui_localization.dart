@@ -1,7 +1,9 @@
+import '../localization/game_catalog_locale.dart';
+
 class TrainerUiLocalization {
   const TrainerUiLocalization._();
 
-  static const Map<String, String> abilityLabels = {
+  static const Map<String, String> _abilityLabelsIt = {
     'STR': 'FOR',
     'DEX': 'DES',
     'CON': 'COS',
@@ -13,7 +15,7 @@ class TrainerUiLocalization {
     'DC': 'CD',
   };
 
-  static const Map<String, String> skillLabels = {
+  static const Map<String, String> _skillLabelsIt = {
     'Acrobatics': 'Acrobazia',
     'Animal Handling': 'Addestrare Animali',
     'Arcana': 'Arcano',
@@ -34,13 +36,13 @@ class TrainerUiLocalization {
     'Survival': 'Sopravvivenza',
   };
 
-  static const Map<String, String> startingPackLabels = {
+  static const Map<String, String> _startingPackLabelsIt = {
     "Dungeoneer's pack": 'Dotazione da Avventuriero',
     "Explorer's pack": 'Dotazione da Esploratore',
     "Filcher's pack": 'Dotazione da Borseggiatore',
   };
 
-  static const Map<String, String> natureLabels = {
+  static const Map<String, String> _natureLabelsIt = {
     'Hardy': 'Ardita',
     'Lonely': 'Schiva',
     'Brave': 'Audace',
@@ -69,7 +71,7 @@ class TrainerUiLocalization {
     'No Nature': 'Nessuna natura',
   };
 
-  static const Map<String, String> sizeLabels = {
+  static const Map<String, String> _sizeLabelsIt = {
     'Tiny': 'Minuscola',
     'Small': 'Piccola',
     'Medium': 'Media',
@@ -78,14 +80,14 @@ class TrainerUiLocalization {
     'Gargantuan': 'Mastodontica',
   };
 
-  static const Map<String, String> genderLabels = {
+  static const Map<String, String> _genderLabelsIt = {
     'Male': 'Maschio',
     'Female': 'Femmina',
     'Genderless': 'Senza sesso',
     'Random': 'Casuale',
   };
 
-  static const Map<String, String> specializationLabels = {
+  static const Map<String, String> _specializationLabelsIt = {
     'Bird Keeper': 'Avicoltore',
     'Bug Maniac': 'Insettologo',
     'Camper': 'Campeggiatore',
@@ -106,7 +108,7 @@ class TrainerUiLocalization {
     'Gardener': 'Giardiniere',
   };
 
-  static const Map<String, String> trainerPathLabels = {
+  static const Map<String, String> _trainerPathLabelsIt = {
     'Ace Trainer': 'Fantallenatore',
     'Hobbyist': 'Appassionato',
     'Poké Mentor': 'Mentore Pokémon',
@@ -123,7 +125,7 @@ class TrainerUiLocalization {
     'Pokémon Breeder': 'Allevapokémon',
   };
 
-  static const Map<String, String> featureLabels = {
+  static const Map<String, String> _featureLabelsIt = {
     'Ace Trainer': 'Fantallenatore',
     'Battle Master': 'Maestro della Lotta',
     'Max Potential': 'Massimo Potenziale',
@@ -181,50 +183,77 @@ class TrainerUiLocalization {
     'Master of Traits': 'Maestro dei Tratti',
   };
 
+  static bool get _isItalian => GameCatalogLocale.isItalian;
+
+  static Map<String, String> _localizedMap(Map<String, String> italian) {
+    if (_isItalian) return italian;
+    return {for (final key in italian.keys) key: key};
+  }
+
+  static Map<String, String> get abilityLabels =>
+      _localizedMap(_abilityLabelsIt);
+  static Map<String, String> get skillLabels => _localizedMap(_skillLabelsIt);
+  static Map<String, String> get startingPackLabels =>
+      _localizedMap(_startingPackLabelsIt);
+  static Map<String, String> get natureLabels => _localizedMap(_natureLabelsIt);
+  static Map<String, String> get sizeLabels => _localizedMap(_sizeLabelsIt);
+  static Map<String, String> get genderLabels => _localizedMap(_genderLabelsIt);
+  static Map<String, String> get specializationLabels =>
+      _localizedMap(_specializationLabelsIt);
+  static Map<String, String> get trainerPathLabels =>
+      _localizedMap(_trainerPathLabelsIt);
+  static Map<String, String> get featureLabels =>
+      _localizedMap(_featureLabelsIt);
+
   static String abilityAbbreviation(String value) {
-    return abilityLabels[value.trim().toUpperCase()] ?? value;
+    final normalized = value.trim().toUpperCase();
+    return _isItalian ? (_abilityLabelsIt[normalized] ?? value) : normalized;
   }
 
-  static String skillName(String value) => skillLabels[value] ?? value;
+  static String skillName(String value) =>
+      _isItalian ? (_skillLabelsIt[value] ?? value) : value;
 
-  static String startingPackName(String value) {
-    return startingPackLabels[value] ?? value;
-  }
+  static String startingPackName(String value) =>
+      _isItalian ? (_startingPackLabelsIt[value] ?? value) : value;
 
-  static String natureName(String value) => natureLabels[value] ?? value;
+  static String natureName(String value) =>
+      _isItalian ? (_natureLabelsIt[value] ?? value) : value;
 
-  static String sizeName(String value) => sizeLabels[value] ?? value;
+  static String sizeName(String value) =>
+      _isItalian ? (_sizeLabelsIt[value] ?? value) : value;
 
-  static String genderName(String value) => genderLabels[value] ?? value;
+  static String genderName(String value) =>
+      _isItalian ? (_genderLabelsIt[value] ?? value) : value;
 
-  static String specializationName(String value) {
-    return specializationLabels[value] ?? value;
-  }
+  static String specializationName(String value) =>
+      _isItalian ? (_specializationLabelsIt[value] ?? value) : value;
 
-  static String trainerPathName(String value) {
-    return trainerPathLabels[value] ?? value;
-  }
+  static String trainerPathName(String value) =>
+      _isItalian ? (_trainerPathLabelsIt[value] ?? value) : value;
 
   static String featureName(String value) {
-    return featureLabels[value] ?? trainerPathName(value);
+    if (!_isItalian) return value;
+    return _featureLabelsIt[value] ?? trainerPathName(value);
   }
 
   static String optionLabel(String value) {
+    if (!_isItalian) return value;
     final parts = value.split(' · ');
     if (parts.length == 3 && parts[1].startsWith('Lv ')) {
       return '${trainerPathName(parts[0])} · Liv. ${parts[1].substring(3)} · ${featureName(parts[2])}';
     }
-    final ability = abilityLabels[value.toUpperCase()];
+    final ability = _abilityLabelsIt[value.toUpperCase()];
     if (ability != null) return ability;
-    final specialization = specializationLabels[value];
+    final specialization = _specializationLabelsIt[value];
     if (specialization != null) return specialization;
     return visibleText(value);
   }
 
   static String visibleText(String value) {
-    final exactFeature = featureLabels[value];
+    if (!_isItalian) return value;
+    final exactFeature = _featureLabelsIt[value];
     if (exactFeature != null) return exactFeature;
-    final exactPath = trainerPathLabels[value];
+    final exactPath = _trainerPathLabelsIt[value];
     if (exactPath != null) return exactPath;
 
     var result = value;
@@ -264,10 +293,10 @@ class TrainerUiLocalization {
     for (final entry in phraseReplacements.entries) {
       result = result.replaceAll(entry.key, entry.value);
     }
-    for (final entry in skillLabels.entries) {
+    for (final entry in _skillLabelsIt.entries) {
       result = result.replaceAll(entry.key, entry.value);
     }
-    for (final entry in abilityLabels.entries) {
+    for (final entry in _abilityLabelsIt.entries) {
       result = result.replaceAll(
         RegExp('\\b${RegExp.escape(entry.key)}\\b'),
         entry.value,

@@ -1,0 +1,34 @@
+name: Export English UI snapshot
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/export-english-ui-snapshot.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    if: github.head_ref == 'fix/english-ui-residuals'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v4
+        with:
+          ref: fix/english-ui-residuals
+          fetch-depth: 0
+
+      - name: Create source snapshot
+        run: |
+          tar --exclude=.git --exclude=build --exclude=.dart_tool -czf english-ui-source.tar.gz .
+
+      - name: Upload source snapshot
+        uses: actions/upload-artifact@v4
+        with:
+          name: english-ui-source
+          path: english-ui-source.tar.gz
+          retention-days: 3

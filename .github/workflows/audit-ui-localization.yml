@@ -6,7 +6,8 @@ on:
       - main
     paths:
       - 'lib/**'
-      - 'tooling/audit_ui_strings.py'
+      - 'test/**'
+      - 'tooling/**'
       - '.github/workflows/audit-ui-localization.yml'
 
 permissions:
@@ -20,9 +21,20 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: feature/complete-ui-localization
+          fetch-depth: 0
 
       - name: Run UI localization audit
         run: python tooling/audit_ui_strings.py
+
+      - name: Prepare source snapshot
+        run: |
+          tar -czf source-snapshot.tar.gz \
+            lib \
+            test \
+            tooling \
+            pubspec.yaml \
+            pubspec.lock \
+            l10n.yaml
 
       - name: Upload audit report
         uses: actions/upload-artifact@v4
@@ -30,3 +42,10 @@ jobs:
           name: ui-localization-audit
           path: build/ui-localization-audit
           retention-days: 14
+
+      - name: Upload source snapshot
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-localization-source-snapshot
+          path: source-snapshot.tar.gz
+          retention-days: 7

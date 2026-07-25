@@ -1,0 +1,105 @@
+name: Complete remaining UI localization
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'tooling/complete_remaining_ui_localization.py'
+      - '.github/workflows/complete-remaining-ui-localization.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: complete-remaining-ui-localization-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  localize_and_validate:
+    if: github.head_ref == 'feature/complete-ui-localization' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+
+    steps:
+      - name: Check out localization branch
+        uses: actions/checkout@v4
+        with:
+          ref: feature/complete-ui-localization
+          fetch-depth: 0
+
+      - name: Apply safe localization replacements
+        run: python tooling/complete_remaining_ui_localization.py
+
+      - name: Format changed Dart files
+        shell: bash
+        run: |
+          if [ -s build/remaining-ui-modified-files.txt ]; then
+            xargs -r dart format < build/remaining-ui-modified-files.txt
+          fi
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Validate source and tests
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p build/remaining-ui-validation
+          flutter analyze 2>&1 | tee build/remaining-ui-validation/analyze.log
+          flutter test test/secondary_ui_localization_test.dart --reporter expanded 2>&1 | tee build/remaining-ui-validation/secondary-ui.log
+          flutter test test/navigation_ui_localization_test.dart --reporter expanded 2>&1 | tee build/remaining-ui-validation/navigation-ui.log
+          flutter test test/trainer_ui_localization_test.dart --reporter expanded 2>&1 | tee build/remaining-ui-validation/trainer-ui.log
+          flutter test test/localized_game_catalogs_test.dart --reporter expanded 2>&1 | tee build/remaining-ui-validation/catalogs.log
+          flutter test --reporter expanded 2>&1 | tee build/remaining-ui-validation/full-suite.log
+
+      - name: Build Android debug APK
+        run: flutter build apk --debug
+
+      - name: Upload second-pass reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: remaining-ui-localization-report
+          path: |
+            build/remaining-ui-localization-report.md
+            build/remaining-ui-validation
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Publish localized sources and clean temporary tooling
+        shell: bash
+        run: |
+          rm -f .github/workflows/audit-ui-localization.yml
+          rm -f .github/workflows/complete-remaining-ui-localization.yml
+          rm -f tooling/apply_core_ui_localization.py
+          rm -f tooling/finalize_core_ui_localization.py
+          rm -f tooling/repair_migrated_ui.py
+          rm -f tooling/complete_remaining_ui_localization.py
+          rm -f tooling/patches/complete-ui.patch.gz.b64.part*
+          rm -f tooling/patches/remaining-ui.patch.gz.b64.part*
+          rmdir tooling/patches 2>/dev/null || true
+          rm -rf patch-diagnostics validation-diagnostics
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "Nessuna modifica da pubblicare."
+            exit 0
+          fi
+          git commit -m "Completa il secondo passaggio della localizzazione UI"
+          git push origin HEAD:feature/complete-ui-localization

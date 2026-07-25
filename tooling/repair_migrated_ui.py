@@ -72,8 +72,8 @@ text = text.replace(
     "uiTextForLanguage('Strumento tenuto', 'Held item')",
 )
 text = text.replace(
-    "return context.uiText(\n      'Lancia la Poké Ball. Dopo la risposta del Master verrà consumata.',\n      'Throw the Poké Ball. It will be consumed after the GM reports the result.',\n    );",
-    "return uiTextForLanguage(\n      'Lancia la Poké Ball. Dopo la risposta del Master verrà consumata.',\n      'Throw the Poké Ball. It will be consumed after the GM reports the result.',\n    );",
+    "context.uiText(\n      'Lancia la Poké Ball. Dopo la risposta del Master verrà consumata.',",
+    "uiTextForLanguage(\n      'Lancia la Poké Ball. Dopo la risposta del Master verrà consumata.',",
 )
 text = replace_required(
     text,
@@ -91,7 +91,10 @@ text = replace_required(
     '                DropdownMenuItem<String?>(\n                  value: null,',
     'voce Poké Ball facoltativa',
 )
-text = text.replace('    return const [\n      _GenderOption(', '    return [\n      _GenderOption(', 1)
+text = text.replace(
+    '  if (_genderlessPokemonIds.contains(pokemon.id)) {\n    return const [',
+    '  if (_genderlessPokemonIds.contains(pokemon.id)) {\n    return [',
+)
 text = text.replace(
     "label: context.uiText('Senza sesso', 'Genderless')",
     "label: uiTextForLanguage('Senza sesso', 'Genderless')",

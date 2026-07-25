@@ -75,6 +75,30 @@ jobs:
         if: steps.state.outputs.already_applied == 'false'
         run: git apply patch-diagnostics/complete-ui.patch
 
+      - name: Repair concatenated profile copy
+        if: steps.state.outputs.already_applied == 'false'
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('lib/screens/profile/profiles_screen.dart')
+          text = path.read_text(encoding='utf-8')
+          replacements = {
+              "context.uiText('Vuoi eliminare ${profile.name}? Verranno rimossi scheda allenatore, ', 'Delete ${profile.name}? This will remove the Trainer sheet, ')\n          context.uiText('Pokédex, squadra, PC, zaino, impostazioni, incontri, Allenatori PNG e battaglie salvate.', 'Pokédex, team, PC, Bag, settings, encounters, NPC Trainers and saved battles.')":
+              "context.uiText(\n            'Vuoi eliminare ${profile.name}? Verranno rimossi scheda allenatore, Pokédex, squadra, PC, zaino, impostazioni, incontri, Allenatori PNG e battaglie salvate.',\n            'Delete ${profile.name}? This will remove the Trainer sheet, Pokédex, team, PC, Bag, settings, encounters, NPC Trainers and saved battles.',\n          )",
+              "context.uiText('Ogni profilo conserva separatamente scheda, Pokédex, squadra, ', 'Each profile separately stores its sheet, Pokédex, team, ')\n                  context.uiText('PC, zaino, impostazioni, raccolte e incontri salvati.', 'PC, Bag, settings, collections and saved encounters.')":
+              "context.uiText(\n                    'Ogni profilo conserva separatamente scheda, Pokédex, squadra, PC, zaino, impostazioni, raccolte e incontri salvati.',\n                    'Each profile separately stores its sheet, Pokédex, team, PC, Bag, settings, collections and saved encounters.',\n                  )",
+              "context.uiText('Tutti i dati del profilo scelto verranno sostituiti dal ', 'All data in the selected profile will be replaced by the ')\n                  context.uiText('backup. L’operazione viene annullata automaticamente se il ', 'backup. The operation is cancelled automatically if the ')\n                  'ripristino non riesce.'":
+              "context.uiText(\n                    'Tutti i dati del profilo scelto verranno sostituiti dal backup. L’operazione viene annullata automaticamente se il ripristino non riesce.',\n                    'All data in the selected profile will be replaced by the backup. The operation is cancelled automatically if the restore fails.',\n                  )",
+          }
+          for old, new in replacements.items():
+              if old not in text:
+                  raise RuntimeError(f'Frammento profilo non trovato: {old[:60]}')
+              text = text.replace(old, new, 1)
+          path.write_text(text, encoding='utf-8')
+          PY
+
       - name: Set up Java
         uses: actions/setup-java@v4
         with:

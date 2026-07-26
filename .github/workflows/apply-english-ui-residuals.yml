@@ -8,6 +8,7 @@ on:
       - '.github/workflows/apply-english-ui-residuals.yml'
       - 'tooling/english_ui_residuals.patch.b64.part*'
       - 'tooling/english_ui_syntax_repair.patch'
+      - 'tooling/english_ui_context_repair.patch'
 
 permissions:
   contents: write
@@ -53,6 +54,8 @@ jobs:
           git apply --whitespace=fix /tmp/english-ui-residuals.patch
           git apply --check tooling/english_ui_syntax_repair.patch
           git apply --whitespace=fix tooling/english_ui_syntax_repair.patch
+          git apply --check tooling/english_ui_context_repair.patch
+          git apply --whitespace=fix tooling/english_ui_context_repair.patch
 
       - name: Resolve dependencies and generate localizations
         run: |
@@ -116,6 +119,7 @@ jobs:
         run: |
           rm -f tooling/english_ui_residuals.patch.b64.part*
           rm -f tooling/english_ui_syntax_repair.patch
+          rm -f tooling/english_ui_context_repair.patch
           rm -f .github/workflows/export-english-ui-snapshot.yml
           rm -f .github/workflows/apply-english-ui-residuals.yml
           rm -f diagnostics/english-ui-format-error.txt

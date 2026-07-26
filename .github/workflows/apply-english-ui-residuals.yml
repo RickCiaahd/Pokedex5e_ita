@@ -7,6 +7,7 @@ on:
     paths:
       - '.github/workflows/apply-english-ui-residuals.yml'
       - 'tooling/english_ui_residuals.patch.b64.part*'
+      - 'tooling/english_ui_syntax_repair.patch'
 
 permissions:
   contents: write
@@ -40,7 +41,7 @@ jobs:
           channel: stable
           cache: true
 
-      - name: Rebuild and apply prepared patch
+      - name: Rebuild and apply prepared patches
         shell: bash
         run: |
           set -euo pipefail
@@ -50,6 +51,8 @@ jobs:
             > /tmp/english-ui-residuals.patch
           git apply --check /tmp/english-ui-residuals.patch
           git apply --whitespace=fix /tmp/english-ui-residuals.patch
+          git apply --check tooling/english_ui_syntax_repair.patch
+          git apply --whitespace=fix tooling/english_ui_syntax_repair.patch
 
       - name: Resolve dependencies and generate localizations
         run: |
@@ -98,6 +101,7 @@ jobs:
         shell: bash
         run: |
           rm -f tooling/english_ui_residuals.patch.b64.part*
+          rm -f tooling/english_ui_syntax_repair.patch
           rm -f .github/workflows/export-english-ui-snapshot.yml
           rm -f .github/workflows/apply-english-ui-residuals.yml
           rm -f diagnostics/english-ui-format-error.txt

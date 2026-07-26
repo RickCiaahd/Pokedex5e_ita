@@ -29,9 +29,6 @@ Analyzing Pokedex5e_ita...
    info • Don't use 'BuildContext's across async gaps. Try rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check • lib/screens/tools/encounter_library_screen.dart:316:11 • use_build_context_synchronously
    info • Don't use 'BuildContext's across async gaps. Try rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check • lib/screens/tools/encounter_library_screen.dart:356:11 • use_build_context_synchronously
    info • Don't use 'BuildContext's across async gaps. Try rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check • lib/screens/tools/encounter_library_screen.dart:367:9 • use_build_context_synchronously
-  error • Undefined name 'context'. Try correcting the name to one that is defined, or defining the name • lib/screens/tools/encounter_library_screen.dart:765:34 • undefined_identifier
-  error • Undefined name 'context'. Try correcting the name to one that is defined, or defining the name • lib/screens/tools/encounter_library_screen.dart:766:31 • undefined_identifier
-  error • Undefined name 'context'. Try correcting the name to one that is defined, or defining the name • lib/screens/tools/encounter_library_screen.dart:767:35 • undefined_identifier
    info • Don't use 'BuildContext's across async gaps. Try rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check • lib/screens/tools/npc_trainer_library_screen.dart:179:22 • use_build_context_synchronously
    info • Don't use 'BuildContext's across async gaps. Try rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check • lib/screens/tools/npc_trainer_library_screen.dart:190:15 • use_build_context_synchronously
    info • Don't use 'BuildContext's across async gaps. Try rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check • lib/screens/tools/npc_trainer_library_screen.dart:191:15 • use_build_context_synchronously
@@ -45,6 +42,5 @@ Analyzing Pokedex5e_ita...
    info • Don't use 'BuildContext's across async gaps. Try rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check • lib/screens/tools/pokemon_generator_screen.dart:449:23 • use_build_context_synchronously
    info • Don't use 'BuildContext's across async gaps. Try rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check • lib/screens/tools/pokemon_generator_screen.dart:472:23 • use_build_context_synchronously
    info • Don't use 'BuildContext's across async gaps. Try rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check • lib/screens/tools/pokemon_generator_screen.dart:570:22 • use_build_context_synchronously
-  error • Undefined name 'context'. Try correcting the name to one that is defined, or defining the name • lib/screens/trainer/trainer_sheet_screen.dart:1962:14 • undefined_identifier
 
-27 issues found. (ran in 11.5s)
+23 issues found. (ran in 15.2s)

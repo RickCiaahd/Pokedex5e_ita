@@ -1,5 +1,5 @@
 diff --git a/test/english_ui_residuals_test.dart b/test/english_ui_residuals_test.dart
-index 19bbf3a..4714775 100644
+index 19bbf3a..97f9886 100644
 --- a/test/english_ui_residuals_test.dart
 +++ b/test/english_ui_residuals_test.dart
 @@ -62,7 +62,6 @@ void main() {
@@ -10,3 +10,18 @@ index 19bbf3a..4714775 100644
          "'ROLL WEATHER'",
        ],
        'lib/screens/bag/bag_screen.dart': [
+@@ -93,12 +92,12 @@ void main() {
+       'lib/screens/tools/encounter_generator_screen.dart': [
+         "'Encounter Generator'",
+         "'Automatic composition'",
+-        "'Advanced filters'",
++        "'ADVANCED FILTERS'",
+       ],
+       'lib/screens/tools/npc_trainer_generator_screen.dart': [
+         "'NPC Trainer'",
+         "'NPC Trainer Generator'",
+-        "'TRAINER LEVELS AND TEAM'",
++        "'LEVELS AND TEAM'",
+       ],
+       'lib/screens/tools/encounter_library_screen.dart': [
+         "'Encounter Library'",

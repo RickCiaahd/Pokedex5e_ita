@@ -8,8 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
-  actions: read
+  contents: read
 
 concurrency:
   group: flutter-ci-${{ github.workflow }}-${{ github.ref }}
@@ -74,96 +73,3 @@ jobs:
           path: build/app/outputs/flutter-apk/app-debug.apk
           if-no-files-found: error
           retention-days: 7
-
-  publish_v132:
-    name: Publish Trainer Atlas 1.3.2
-    needs: quality
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && startsWith(github.event.head_commit.message, 'Prepara release 1.3.2')
-    runs-on: ubuntu-latest
-    timeout-minutes: 180
-    env:
-      GH_TOKEN: ${{ github.token }}
-
-    steps:
-      - name: Check out release commit
-        uses: actions/checkout@v4
-        with:
-          ref: main
-          fetch-depth: 0
-
-      - name: Validate release state
-        shell: bash
-        run: |
-          set -euo pipefail
-          test "$(git rev-parse HEAD)" = '${{ github.sha }}'
-          test "$(awk '/^version:/{print $2}' pubspec.yaml)" = '1.3.2+8'
-          git fetch --tags --force
-          if git rev-parse -q --verify refs/tags/v1.3.2 >/dev/null; then
-            echo 'Il tag v1.3.2 esiste già.' >&2
-            exit 1
-          fi
-
-      - name: Create and push release tag
-        id: tag
-        shell: bash
-        run: |
-          set -euo pipefail
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git tag -a v1.3.2 '${{ github.sha }}' -m 'Trainer Atlas 1.3.2'
-          git push origin v1.3.2
-
-      - name: Wait for Android and Windows packages
-        id: packages
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          find_run() {
-            local workflow="$1"
-            local run_id=''
-            for _ in $(seq 1 60); do
-              run_id=$(gh run list \
-                --workflow "$workflow" \
-                --event push \
-                --limit 30 \
-                --json databaseId,headBranch,headSha \
-                --jq '.[] | select(.headBranch == "v1.3.2" and .headSha == "${{ github.sha }}") | .databaseId' \
-                | head -n 1)
-              if [ -n "$run_id" ]; then
-                printf '%s' "$run_id"
-                return 0
-              fi
-              sleep 5
-            done
-            echo "Run non trovato per $workflow" >&2
-            return 1
-          }
-
-          android_run=$(find_run android-release.yml)
-          windows_run=$(find_run windows-release.yml)
-          echo "Android release run: $android_run"
-          echo "Windows release run: $windows_run"
-          gh run watch "$android_run" --exit-status
-          gh run watch "$windows_run" --exit-status
-
-      - name: Restore standard CI workflow
-        if: always() && steps.tag.outcome == 'success'
-        shell: bash
-        run: |
-          set -euo pipefail
-          git fetch origin main
-          git checkout -B main origin/main
-          git show HEAD^:.github/workflows/flutter-ci.yml > .github/workflows/flutter-ci.yml
-          if git diff --quiet -- .github/workflows/flutter-ci.yml; then
-            exit 0
-          fi
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add .github/workflows/flutter-ci.yml
-          if [ '${{ steps.packages.outcome }}' = 'success' ]; then
-            git commit -m 'Completa release 1.3.2 e ripristina CI'
-          else
-            git commit -m 'Ripristina CI dopo errore release 1.3.2'
-          fi
-          git push origin HEAD:main

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../localization/ui_text.dart';
 import '../../models/generated_pokemon.dart';
 import '../../models/move_data.dart';
 import '../../repositories/move_repository.dart';
@@ -49,8 +50,11 @@ class GeneratedPokemonBatchCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 4),
-            const Text(
-              'Ogni esemplare ha forma, sesso, natura, abilità, mosse, PF e stato shiny indipendenti.',
+            Text(
+              context.uiText(
+                'Ogni esemplare ha forma, sesso, natura, abilità, mosse, PF e stato shiny indipendenti.',
+                'Each specimen has independent form, gender, nature, ability, moves, HP and shiny status.',
+              ),
             ),
             const SizedBox(height: 12),
             for (var index = 0; index < generated.length; index++) ...[
@@ -74,12 +78,20 @@ class GeneratedPokemonBatchCard extends StatelessWidget {
                     )
                   : const Icon(Icons.add_circle_outline),
               label: Text(
-                isSaving ? 'SALVATAGGIO...' : 'AGGIUNGI TUTTI A SQUADRA / PC',
+                isSaving
+                    ? context.uiText('SALVATAGGIO...', 'SAVING...')
+                    : context.uiText(
+                        'AGGIUNGI TUTTI A SQUADRA / PC',
+                        'ADD ALL TO TEAM / PC',
+                      ),
               ),
             ),
             const SizedBox(height: 6),
             Text(
-              'Vengono riempiti prima i Pokéslot sbloccati e liberi; tutti gli altri Pokémon vanno nel PC.',
+              context.uiText(
+                'Vengono riempiti prima i Pokéslot sbloccati e liberi; tutti gli altri Pokémon vanno nel PC.',
+                'Unlocked free Pokéslots are filled first; all remaining Pokémon go to the PC.',
+              ),
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.bodySmall,
             ),
@@ -109,10 +121,10 @@ class _GeneratedBatchTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final pokemon = generated.pokemon;
     final genderLabel = switch (generated.gender) {
-      'Male' => 'Maschio',
-      'Female' => 'Femmina',
-      'Genderless' => 'Senza sesso',
-      _ => 'Non specificato',
+      'Male' => context.uiText('Maschio', 'Male'),
+      'Female' => context.uiText('Femmina', 'Female'),
+      'Genderless' => context.uiText('Senza sesso', 'Genderless'),
+      _ => context.uiText('Non specificato', 'Not specified'),
     };
 
     return ExpansionTile(
@@ -141,7 +153,10 @@ class _GeneratedBatchTile extends StatelessWidget {
         ],
       ),
       subtitle: Text(
-        '${generated.formLabel} · Livello ${generated.level} · $genderLabel · SR ${_formatSr(pokemon.sr)}',
+        context.uiText(
+          '${generated.formLabel} · Livello ${generated.level} · $genderLabel · SR ${_formatSr(pokemon.sr)}',
+          '${generated.formLabel} · Level ${generated.level} · $genderLabel · SR ${_formatSr(pokemon.sr)}',
+        ),
       ),
       children: [
         Align(
@@ -163,7 +178,7 @@ class _GeneratedBatchTile extends StatelessWidget {
         Align(
           alignment: Alignment.centerLeft,
           child: Text(
-            'Mosse',
+            context.uiText('Mosse', 'Moves'),
             style: Theme.of(
               context,
             ).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w900),
@@ -173,7 +188,12 @@ class _GeneratedBatchTile extends StatelessWidget {
         Align(
           alignment: Alignment.centerLeft,
           child: generated.selectedMoves.isEmpty
-              ? const Text('Nessuna mossa naturale disponibile.')
+              ? Text(
+                  context.uiText(
+                    'Nessuna mossa naturale disponibile.',
+                    'No natural moves available.',
+                  ),
+                )
               : Wrap(
                   spacing: 6,
                   runSpacing: 5,
@@ -211,7 +231,7 @@ class _GeneratedBatchTile extends StatelessWidget {
             TextButton.icon(
               onPressed: onRemove,
               icon: const Icon(Icons.close),
-              label: const Text('Rimuovi'),
+              label: Text(context.uiText('Rimuovi', 'Remove')),
             ),
           ],
         ),

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../localization/ui_text.dart';
+
 import '../../models/encounter_collection.dart';
 import '../../models/generated_encounter.dart';
 import '../../models/generated_pokemon.dart';
@@ -200,7 +202,10 @@ class _EncounterGeneratorScreenState extends State<EncounterGeneratorScreen> {
       );
       if (encounter == null) {
         _setError(
-          'Nessun incontro può essere generato con questi filtri. Amplia ambiente, SR, generazioni o livello.',
+          context.uiText(
+            'Nessun incontro può essere generato con questi filtri. Amplia ambiente, SR, generazioni o livello.',
+            'No encounter can be generated with these filters. Broaden habitat, SR, generations or level.',
+          ),
         );
         return;
       }
@@ -213,7 +218,12 @@ class _EncounterGeneratorScreenState extends State<EncounterGeneratorScreen> {
 
   Future<void> _generateManual() async {
     if (_manualQuantities.isEmpty) {
-      _setError('Aggiungi almeno un avversario alla composizione manuale.');
+      _setError(
+        context.uiText(
+          'Aggiungi almeno un avversario alla composizione manuale.',
+          'Add at least one opponent to the manual composition.',
+        ),
+      );
       return;
     }
     if (_isGenerating) return;
@@ -243,7 +253,10 @@ class _EncounterGeneratorScreenState extends State<EncounterGeneratorScreen> {
       );
       if (encounter == null) {
         _setError(
-          'Non è stato possibile generare la composizione selezionata.',
+          context.uiText(
+            'Non è stato possibile generare la composizione selezionata.',
+            'The selected composition could not be generated.',
+          ),
         );
         return;
       }
@@ -257,7 +270,10 @@ class _EncounterGeneratorScreenState extends State<EncounterGeneratorScreen> {
   Future<void> _generateCollection(EncounterCollection collection) async {
     if (!collection.isReady) {
       _setError(
-        'La raccolta “${collection.name}” non è valida: il totale deve essere 100%.',
+        context.uiText(
+          'La raccolta “${collection.name}” non è valida: il totale deve essere 100%.',
+          'The “${collection.name}” collection is invalid: the total must be 100%.',
+        ),
       );
       return;
     }
@@ -277,7 +293,12 @@ class _EncounterGeneratorScreenState extends State<EncounterGeneratorScreen> {
         targetDifficulty: _difficulty,
       );
       if (encounter == null) {
-        _setError('Non è stato possibile generare dalla raccolta selezionata.');
+        _setError(
+          context.uiText(
+            'Non è stato possibile generare dalla raccolta selezionata.',
+            'The selected collection could not generate an encounter.',
+          ),
+        );
         return;
       }
       if (!mounted) return;
@@ -315,7 +336,10 @@ class _EncounterGeneratorScreenState extends State<EncounterGeneratorScreen> {
     if (profile == null) return;
     final copy = collection.copyWith(
       id: DateTime.now().microsecondsSinceEpoch.toString(),
-      name: '${collection.name} (copia)',
+      name: context.uiText(
+        '${collection.name} (copia)',
+        '${collection.name} (copy)',
+      ),
       updatedAt: DateTime.now(),
     );
     await _collectionRepository.saveCollection(
@@ -331,18 +355,23 @@ class _EncounterGeneratorScreenState extends State<EncounterGeneratorScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Eliminare la raccolta?'),
+        title: Text(
+          context.uiText('Eliminare la raccolta?', 'Delete collection?'),
+        ),
         content: Text(
-          '“${collection.name}” verrà rimossa definitivamente dal profilo.',
+          context.uiText(
+            '“${collection.name}” verrà rimossa definitivamente dal profilo.',
+            '“${collection.name}” will be permanently removed from the profile.',
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Annulla'),
+            child: Text(context.uiText('Annulla', 'Cancel')),
           ),
           FilledButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Elimina'),
+            child: Text(context.uiText('Elimina', 'Delete')),
           ),
         ],
       ),
@@ -384,7 +413,9 @@ class _EncounterGeneratorScreenState extends State<EncounterGeneratorScreen> {
       child: Scaffold(
         appBar: AppBar(
           leading: const HomeLeadingButton(),
-          title: const Text('Generatore incontri'),
+          title: Text(
+            context.uiText('Generatore incontri', 'Encounter Generator'),
+          ),
           bottom: TabBar(
             isScrollable: true,
             labelColor: tabForeground,
@@ -396,10 +427,19 @@ class _EncounterGeneratorScreenState extends State<EncounterGeneratorScreen> {
             dividerColor: Colors.transparent,
             overlayColor: const WidgetStatePropertyAll(Colors.transparent),
             splashFactory: NoSplash.splashFactory,
-            tabs: const [
-              Tab(icon: Icon(Icons.auto_awesome), text: 'AUTOMATICO'),
-              Tab(icon: Icon(Icons.tune), text: 'MANUALE'),
-              Tab(icon: Icon(Icons.library_books_outlined), text: 'RACCOLTE'),
+            tabs: [
+              Tab(
+                icon: const Icon(Icons.auto_awesome),
+                text: context.uiText('AUTOMATICO', 'AUTOMATIC'),
+              ),
+              Tab(
+                icon: const Icon(Icons.tune),
+                text: context.uiText('MANUALE', 'MANUAL'),
+              ),
+              Tab(
+                icon: const Icon(Icons.library_books_outlined),
+                text: context.uiText('RACCOLTE', 'COLLECTIONS'),
+              ),
             ],
           ),
         ),
@@ -427,9 +467,14 @@ class _EncounterGeneratorScreenState extends State<EncounterGeneratorScreen> {
       ),
       children: [
         _IntroCard(
-          title: 'Composizione automatica',
-          text:
-              'Imposta il gruppo, la difficoltà e l’ambiente. L’app costruisce un incontro temporaneo e ne mostra il costo stimato.',
+          title: context.uiText(
+            'Composizione automatica',
+            'Automatic composition',
+          ),
+          text: context.uiText(
+            'Imposta il gruppo, la difficoltà e l’ambiente. L’app costruisce un incontro temporaneo e ne mostra il costo stimato.',
+            'Set the party, difficulty and environment. The app builds a temporary encounter and shows its estimated cost.',
+          ),
         ),
         const SizedBox(height: 12),
         _buildPartyCard(),
@@ -442,20 +487,28 @@ class _EncounterGeneratorScreenState extends State<EncounterGeneratorScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Text(
-                  'COMPOSIZIONE',
-                  style: TextStyle(fontWeight: FontWeight.w900),
+                Text(
+                  context.uiText('COMPOSIZIONE', 'COMPOSITION'),
+                  style: const TextStyle(fontWeight: FontWeight.w900),
                 ),
                 const SizedBox(height: 10),
                 DropdownButtonFormField<EncounterDifficulty>(
                   initialValue: _difficulty,
-                  decoration: const InputDecoration(
-                    labelText: 'Difficoltà obiettivo',
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    labelText: context.uiText(
+                      'Difficoltà obiettivo',
+                      'Target difficulty',
+                    ),
+                    border: const OutlineInputBorder(),
                   ),
                   items: [
                     for (final value in EncounterDifficulty.values)
-                      DropdownMenuItem(value: value, child: Text(value.label)),
+                      DropdownMenuItem(
+                        value: value,
+                        child: Text(
+                          context.uiText(value.label, value.englishLabel),
+                        ),
+                      ),
                   ],
                   onChanged: (value) {
                     if (value != null) setState(() => _difficulty = value);
@@ -464,13 +517,21 @@ class _EncounterGeneratorScreenState extends State<EncounterGeneratorScreen> {
                 const SizedBox(height: 10),
                 DropdownButtonFormField<EncounterComposition>(
                   initialValue: _composition,
-                  decoration: const InputDecoration(
-                    labelText: 'Tipo di incontro',
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    labelText: context.uiText(
+                      'Tipo di incontro',
+                      'Encounter type',
+                    ),
+                    border: const OutlineInputBorder(),
                   ),
                   items: [
                     for (final value in EncounterComposition.values)
-                      DropdownMenuItem(value: value, child: Text(value.label)),
+                      DropdownMenuItem(
+                        value: value,
+                        child: Text(
+                          context.uiText(value.label, value.englishLabel),
+                        ),
+                      ),
                   ],
                   onChanged: (value) {
                     if (value != null) setState(() => _composition = value);
@@ -481,7 +542,10 @@ class _EncounterGeneratorScreenState extends State<EncounterGeneratorScreen> {
                   children: [
                     Expanded(
                       child: _IntDropdown(
-                        label: 'Min. avversari',
+                        label: context.uiText(
+                          'Min. avversari',
+                          'Min. opponents',
+                        ),
                         value: _minEnemies,
                         values: List.generate(12, (index) => index + 1),
                         onChanged: (value) => setState(() {
@@ -493,7 +557,10 @@ class _EncounterGeneratorScreenState extends State<EncounterGeneratorScreen> {
                     const SizedBox(width: 10),
                     Expanded(
                       child: _IntDropdown(
-                        label: 'Max. avversari',
+                        label: context.uiText(
+                          'Max. avversari',
+                          'Max. opponents',
+                        ),
                         value: _maxEnemies,
                         values: List.generate(12, (index) => index + 1),
                         onChanged: (value) => setState(() {
@@ -526,8 +593,11 @@ class _EncounterGeneratorScreenState extends State<EncounterGeneratorScreen> {
               : const Icon(Icons.auto_awesome),
           label: Text(
             _isGenerating
-                ? 'GENERAZIONE...'
-                : 'GENERA INCONTRO TRA $candidateCount CANDIDATI',
+                ? context.uiText('GENERAZIONE...', 'GENERATING...')
+                : context.uiText(
+                    'GENERA INCONTRO TRA $candidateCount CANDIDATI',
+                    'GENERATE ENCOUNTER FROM $candidateCount CANDIDATES',
+                  ),
           ),
         ),
       ],
@@ -550,9 +620,11 @@ class _EncounterGeneratorScreenState extends State<EncounterGeneratorScreen> {
       ),
       children: [
         _IntroCard(
-          title: 'Composizione manuale',
-          text:
-              'Scegli specie e quantità. L’app genera ogni esemplare e calcola la difficoltà rispetto al gruppo.',
+          title: context.uiText('Composizione manuale', 'Manual composition'),
+          text: context.uiText(
+            'Scegli specie e quantità. L’app genera ogni esemplare e calcola la difficoltà rispetto al gruppo.',
+            'Choose species and quantities. The app generates each specimen and calculates difficulty against the party.',
+          ),
         ),
         const SizedBox(height: 12),
         _buildPartyCard(),
@@ -561,8 +633,11 @@ class _EncounterGeneratorScreenState extends State<EncounterGeneratorScreen> {
         const SizedBox(height: 12),
         TextField(
           controller: _manualSearchController,
-          decoration: const InputDecoration(
-            labelText: 'Cerca tra i candidati',
+          decoration: InputDecoration(
+            labelText: context.uiText(
+              'Cerca tra i candidati',
+              'Search candidates',
+            ),
             prefixIcon: Icon(Icons.search),
             border: OutlineInputBorder(),
           ),
@@ -573,25 +648,34 @@ class _EncounterGeneratorScreenState extends State<EncounterGeneratorScreen> {
           children: [
             Expanded(
               child: Text(
-                'POKÉMON COMPATIBILI — ${candidates.length}',
+                context.uiText(
+                  'POKÉMON COMPATIBILI — ${candidates.length}',
+                  'MATCHING POKÉMON — ${candidates.length}',
+                ),
                 style: Theme.of(
                   context,
                 ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
               ),
             ),
             Text(
-              '$selectedTotal avversari',
+              context.uiText(
+                '$selectedTotal avversari',
+                '$selectedTotal opponents',
+              ),
               style: const TextStyle(fontWeight: FontWeight.w900),
             ),
           ],
         ),
         const SizedBox(height: 8),
         if (visible.isEmpty)
-          const Card(
+          Card(
             child: Padding(
               padding: EdgeInsets.all(20),
               child: Text(
-                'Nessun Pokémon corrisponde ai filtri.',
+                context.uiText(
+                  'Nessun Pokémon corrisponde ai filtri.',
+                  'No Pokémon match these filters.',
+                ),
                 textAlign: TextAlign.center,
               ),
             ),
@@ -608,7 +692,10 @@ class _EncounterGeneratorScreenState extends State<EncounterGeneratorScreen> {
           ],
         if (candidates.length > visible.length)
           Text(
-            'Mostrati i primi ${visible.length} risultati. Usa la ricerca o restringi i filtri.',
+            context.uiText(
+              'Mostrati i primi ${visible.length} risultati. Usa la ricerca o restringi i filtri.',
+              'Showing the first ${visible.length} results. Search or narrow the filters.',
+            ),
             textAlign: TextAlign.center,
           ),
         if (_error != null) ...[
@@ -621,7 +708,12 @@ class _EncounterGeneratorScreenState extends State<EncounterGeneratorScreen> {
               ? null
               : _generateManual,
           icon: const Icon(Icons.playlist_add_check),
-          label: Text('GENERA $selectedTotal AVVERSARI'),
+          label: Text(
+            context.uiText(
+              'GENERA $selectedTotal AVVERSARI',
+              'GENERATE $selectedTotal OPPONENTS',
+            ),
+          ),
         ),
       ],
     );
@@ -637,9 +729,11 @@ class _EncounterGeneratorScreenState extends State<EncounterGeneratorScreen> {
       ),
       children: [
         _IntroCard(
-          title: 'Raccolte ponderate',
-          text:
-              'Crea tabelle riutilizzabili come “Percorso 24”. Ogni estrazione rispetta le percentuali assegnate alle specie.',
+          title: context.uiText('Raccolte ponderate', 'Weighted collections'),
+          text: context.uiText(
+            'Crea tabelle riutilizzabili come “Percorso 24”. Ogni estrazione rispetta le percentuali assegnate alle specie.',
+            'Create reusable tables such as “Route 24”. Each draw follows the percentages assigned to the species.',
+          ),
         ),
         const SizedBox(height: 12),
         _buildPartyCard(compact: true),
@@ -650,13 +744,16 @@ class _EncounterGeneratorScreenState extends State<EncounterGeneratorScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Text(
-                  'ESTRAZIONE',
-                  style: TextStyle(fontWeight: FontWeight.w900),
+                Text(
+                  context.uiText('ESTRAZIONE', 'DRAW SETTINGS'),
+                  style: const TextStyle(fontWeight: FontWeight.w900),
                 ),
                 const SizedBox(height: 10),
                 _IntDropdown(
-                  label: 'Numero di apparizioni',
+                  label: context.uiText(
+                    'Numero di apparizioni',
+                    'Number of appearances',
+                  ),
                   value: _collectionCount,
                   values: List.generate(12, (index) => index + 1),
                   onChanged: (value) =>
@@ -664,9 +761,14 @@ class _EncounterGeneratorScreenState extends State<EncounterGeneratorScreen> {
                 ),
                 SwitchListTile(
                   contentPadding: EdgeInsets.zero,
-                  title: const Text('Consenti duplicati'),
-                  subtitle: const Text(
-                    'Ogni apparizione effettua una nuova estrazione indipendente.',
+                  title: Text(
+                    context.uiText('Consenti duplicati', 'Allow duplicates'),
+                  ),
+                  subtitle: Text(
+                    context.uiText(
+                      'Ogni apparizione effettua una nuova estrazione indipendente.',
+                      'Each appearance performs a new independent draw.',
+                    ),
                   ),
                   value: _collectionAllowDuplicates,
                   onChanged: (value) =>
@@ -674,16 +776,24 @@ class _EncounterGeneratorScreenState extends State<EncounterGeneratorScreen> {
                 ),
                 DropdownButtonFormField<int>(
                   initialValue: _generatedLevel,
-                  decoration: const InputDecoration(
-                    labelText: 'Livello generato',
+                  decoration: InputDecoration(
+                    labelText: context.uiText(
+                      'Livello generato',
+                      'Generated level',
+                    ),
                     border: OutlineInputBorder(),
                   ),
                   items: [
-                    const DropdownMenuItem(value: 0, child: Text('Automatico')),
+                    DropdownMenuItem(
+                      value: 0,
+                      child: Text(context.uiText('Automatico', 'Automatic')),
+                    ),
                     for (var level = 1; level <= 20; level++)
                       DropdownMenuItem(
                         value: level,
-                        child: Text('Livello $level'),
+                        child: Text(
+                          context.uiText('Livello $level', 'Level $level'),
+                        ),
                       ),
                   ],
                   onChanged: (value) {
@@ -698,15 +808,18 @@ class _EncounterGeneratorScreenState extends State<EncounterGeneratorScreen> {
         FilledButton.tonalIcon(
           onPressed: () => _editCollection(),
           icon: const Icon(Icons.add),
-          label: const Text('NUOVA RACCOLTA'),
+          label: Text(context.uiText('NUOVA RACCOLTA', 'NEW COLLECTION')),
         ),
         const SizedBox(height: 12),
         if (_collections.isEmpty)
-          const Card(
+          Card(
             child: Padding(
-              padding: EdgeInsets.all(24),
+              padding: const EdgeInsets.all(24),
               child: Text(
-                'Non hai ancora creato raccolte. Aggiungi specie e percentuali fino a raggiungere il 100%.',
+                context.uiText(
+                  'Non hai ancora creato raccolte. Aggiungi specie e percentuali fino a raggiungere il 100%.',
+                  'You have not created any collections yet. Add species and percentages until the total reaches 100%.',
+                ),
                 textAlign: TextAlign.center,
               ),
             ),
@@ -736,16 +849,16 @@ class _EncounterGeneratorScreenState extends State<EncounterGeneratorScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text(
-              'GRUPPO DI GIOCO',
-              style: TextStyle(fontWeight: FontWeight.w900),
+            Text(
+              context.uiText('GRUPPO DI GIOCO', 'PLAY GROUP'),
+              style: const TextStyle(fontWeight: FontWeight.w900),
             ),
             const SizedBox(height: 10),
             Row(
               children: [
                 Expanded(
                   child: _IntDropdown(
-                    label: 'Allenatori',
+                    label: context.uiText('Allenatori', 'Trainers'),
                     value: _trainerCount,
                     values: List.generate(8, (index) => index + 1),
                     onChanged: (value) => setState(() => _trainerCount = value),
@@ -754,7 +867,7 @@ class _EncounterGeneratorScreenState extends State<EncounterGeneratorScreen> {
                 const SizedBox(width: 10),
                 Expanded(
                   child: _IntDropdown(
-                    label: 'Pokémon attivi',
+                    label: context.uiText('Pokémon attivi', 'Active Pokémon'),
                     value: _activePokemon,
                     values: List.generate(12, (index) => index + 1),
                     onChanged: (value) =>
@@ -765,7 +878,10 @@ class _EncounterGeneratorScreenState extends State<EncounterGeneratorScreen> {
             ),
             const SizedBox(height: 10),
             _IntDropdown(
-              label: 'Livello medio dei Pokémon alleati',
+              label: context.uiText(
+                'Livello medio dei Pokémon alleati',
+                'Average allied Pokémon level',
+              ),
               value: _averageLevel,
               values: List.generate(20, (index) => index + 1),
               onChanged: (value) => setState(() => _averageLevel = value),
@@ -774,13 +890,21 @@ class _EncounterGeneratorScreenState extends State<EncounterGeneratorScreen> {
               const SizedBox(height: 10),
               DropdownButtonFormField<EncounterDifficulty>(
                 initialValue: _difficulty,
-                decoration: const InputDecoration(
-                  labelText: 'Difficoltà obiettivo',
-                  border: OutlineInputBorder(),
+                decoration: InputDecoration(
+                  labelText: context.uiText(
+                    'Difficoltà obiettivo',
+                    'Target difficulty',
+                  ),
+                  border: const OutlineInputBorder(),
                 ),
                 items: [
                   for (final value in EncounterDifficulty.values)
-                    DropdownMenuItem(value: value, child: Text(value.label)),
+                    DropdownMenuItem(
+                      value: value,
+                      child: Text(
+                        context.uiText(value.label, value.englishLabel),
+                      ),
+                    ),
                 ],
                 onChanged: (value) {
                   if (value != null) setState(() => _difficulty = value);
@@ -797,17 +921,17 @@ class _EncounterGeneratorScreenState extends State<EncounterGeneratorScreen> {
     return Card(
       child: ExpansionTile(
         initiallyExpanded: true,
-        title: const Text(
-          'FILTRI AVANZATI',
-          style: TextStyle(fontWeight: FontWeight.w900),
+        title: Text(
+          context.uiText('FILTRI AVANZATI', 'ADVANCED FILTERS'),
+          style: const TextStyle(fontWeight: FontWeight.w900),
         ),
         childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
         children: [
           DropdownButtonFormField<String>(
             initialValue: _habitat,
-            decoration: const InputDecoration(
-              labelText: 'Ambiente',
-              border: OutlineInputBorder(),
+            decoration: InputDecoration(
+              labelText: context.uiText('Ambiente', 'Environment'),
+              border: const OutlineInputBorder(),
             ),
             items: [
               for (final habitat in PokemonHabitatService.habitats)
@@ -820,16 +944,23 @@ class _EncounterGeneratorScreenState extends State<EncounterGeneratorScreen> {
           const SizedBox(height: 10),
           DropdownButtonFormField<String>(
             initialValue: _selectedType,
-            decoration: const InputDecoration(
-              labelText: 'Tipo',
-              border: OutlineInputBorder(),
+            decoration: InputDecoration(
+              labelText: context.uiText('Tipo', 'Type'),
+              border: const OutlineInputBorder(),
             ),
             items: [
-              const DropdownMenuItem(value: '', child: Text('Tutti i tipi')),
+              DropdownMenuItem(
+                value: '',
+                child: Text(context.uiText('Tutti i tipi', 'All types')),
+              ),
               for (final type in _types)
                 DropdownMenuItem(
                   value: type,
-                  child: Text(PokemonTypeLocalization.italianLabel(type)),
+                  child: Text(
+                    context.usesItalianUi
+                        ? PokemonTypeLocalization.italianLabel(type)
+                        : PokemonTypeLocalization.englishValue(type),
+                  ),
                 ),
             ],
             onChanged: (value) => setState(() => _selectedType = value ?? ''),
@@ -848,7 +979,10 @@ class _EncounterGeneratorScreenState extends State<EncounterGeneratorScreen> {
             onChanged: (value) => setState(() => _srRange = value),
           ),
           Text(
-            'Generazioni ${_generationRange.start.round()} – ${_generationRange.end.round()}',
+            context.uiText(
+              'Generazioni ${_generationRange.start.round()} – ${_generationRange.end.round()}',
+              'Generations ${_generationRange.start.round()} – ${_generationRange.end.round()}',
+            ),
             style: const TextStyle(fontWeight: FontWeight.w800),
           ),
           RangeSlider(
@@ -864,17 +998,28 @@ class _EncounterGeneratorScreenState extends State<EncounterGeneratorScreen> {
           ),
           DropdownButtonFormField<int>(
             initialValue: _generatedLevel,
-            decoration: const InputDecoration(
-              labelText: 'Livello degli avversari',
-              border: OutlineInputBorder(),
+            decoration: InputDecoration(
+              labelText: context.uiText(
+                'Livello degli avversari',
+                'Opponent level',
+              ),
+              border: const OutlineInputBorder(),
             ),
             items: [
-              const DropdownMenuItem(
+              DropdownMenuItem(
                 value: 0,
-                child: Text('Automatico: minimo selvatico'),
+                child: Text(
+                  context.uiText(
+                    'Automatico: minimo selvatico',
+                    'Automatic: minimum wild level',
+                  ),
+                ),
               ),
               for (var level = 1; level <= 20; level++)
-                DropdownMenuItem(value: level, child: Text('Livello $level')),
+                DropdownMenuItem(
+                  value: level,
+                  child: Text(context.uiText('Livello $level', 'Level $level')),
+                ),
             ],
             onChanged: (value) {
               if (value != null) setState(() => _generatedLevel = value);
@@ -882,14 +1027,24 @@ class _EncounterGeneratorScreenState extends State<EncounterGeneratorScreen> {
           ),
           SwitchListTile(
             contentPadding: EdgeInsets.zero,
-            title: const Text('Forme permanenti'),
+            title: Text(context.uiText('Forme permanenti', 'Permanent forms')),
             value: _includeForms,
             onChanged: (value) => setState(() => _includeForms = value),
           ),
           SwitchListTile(
             contentPadding: EdgeInsets.zero,
-            title: const Text('Leggendari e misteriosi'),
-            subtitle: const Text('Disattivati per impostazione predefinita.'),
+            title: Text(
+              context.uiText(
+                'Leggendari e misteriosi',
+                'Legendary and Mythical Pokémon',
+              ),
+            ),
+            subtitle: Text(
+              context.uiText(
+                'Disattivati per impostazione predefinita.',
+                'Disabled by default.',
+              ),
+            ),
             value: _allowLegendary,
             onChanged: (value) => setState(() => _allowLegendary = value),
           ),
@@ -1112,10 +1267,19 @@ class _CollectionCard extends StatelessWidget {
                         break;
                     }
                   },
-                  itemBuilder: (context) => const [
-                    PopupMenuItem(value: 'edit', child: Text('Modifica')),
-                    PopupMenuItem(value: 'duplicate', child: Text('Duplica')),
-                    PopupMenuItem(value: 'delete', child: Text('Elimina')),
+                  itemBuilder: (context) => [
+                    PopupMenuItem(
+                      value: 'edit',
+                      child: Text(context.uiText('Modifica', 'Edit')),
+                    ),
+                    PopupMenuItem(
+                      value: 'duplicate',
+                      child: Text(context.uiText('Duplica', 'Duplicate')),
+                    ),
+                    PopupMenuItem(
+                      value: 'delete',
+                      child: Text(context.uiText('Elimina', 'Delete')),
+                    ),
                   ],
                 ),
               ],

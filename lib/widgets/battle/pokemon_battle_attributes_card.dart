@@ -1,20 +1,19 @@
 import 'package:flutter/material.dart';
 
+import '../../localization/ui_text.dart';
+
 class PokemonBattleAttributesCard extends StatelessWidget {
-  const PokemonBattleAttributesCard({
-    super.key,
-    required this.attributes,
-  });
+  const PokemonBattleAttributesCard({super.key, required this.attributes});
 
   final Map<String, int> attributes;
 
-  static const List<(String, String)> _attributeLabels = [
-    ('STR', 'Forza'),
-    ('DEX', 'Destrezza'),
-    ('CON', 'Costituzione'),
-    ('INT', 'Intelligenza'),
-    ('WIS', 'Saggezza'),
-    ('CHA', 'Carisma'),
+  static const List<(String, String, String)> _attributeLabels = [
+    ('STR', 'Forza', 'Strength'),
+    ('DEX', 'Destrezza', 'Dexterity'),
+    ('CON', 'Costituzione', 'Constitution'),
+    ('INT', 'Intelligenza', 'Intelligence'),
+    ('WIS', 'Saggezza', 'Wisdom'),
+    ('CHA', 'Carisma', 'Charisma'),
   ];
 
   @override
@@ -33,7 +32,7 @@ class PokemonBattleAttributesCard extends StatelessWidget {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    'CARATTERISTICHE',
+                    context.uiText('CARATTERISTICHE', 'ABILITY SCORES'),
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w900,
                     ),
@@ -43,14 +42,16 @@ class PokemonBattleAttributesCard extends StatelessWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              'Valori effettivi e modificatori da usare per prove, tiri salvezza e iniziativa del Pokémon.',
+              context.uiText(
+                'Valori effettivi e modificatori da usare per prove, tiri salvezza e iniziativa del Pokémon.',
+                'Effective scores and modifiers used for checks, saving throws and the Pokémon’s initiative.',
+              ),
               style: Theme.of(context).textTheme.bodySmall,
             ),
             const SizedBox(height: 12),
             LayoutBuilder(
               builder: (context, constraints) {
-                if (!constraints.hasBoundedWidth ||
-                    constraints.maxWidth <= 0) {
+                if (!constraints.hasBoundedWidth || constraints.maxWidth <= 0) {
                   return const SizedBox.shrink();
                 }
 
@@ -58,10 +59,10 @@ class PokemonBattleAttributesCard extends StatelessWidget {
                 final columns = availableWidth >= 620
                     ? 6
                     : availableWidth >= 360
-                        ? 3
-                        : availableWidth >= 180
-                            ? 2
-                            : 1;
+                    ? 3
+                    : availableWidth >= 180
+                    ? 2
+                    : 1;
                 const spacing = 8.0;
                 final occupiedBySpacing = spacing * (columns - 1);
                 final itemWidth =
@@ -75,12 +76,13 @@ class PokemonBattleAttributesCard extends StatelessWidget {
                   spacing: spacing,
                   runSpacing: spacing,
                   children: [
-                    for (final (key, label) in _attributeLabels)
+                    for (final (key, italianLabel, englishLabel)
+                        in _attributeLabels)
                       SizedBox(
                         width: itemWidth,
                         child: _AttributeTile(
                           abbreviation: key,
-                          label: label,
+                          label: context.uiText(italianLabel, englishLabel),
                           score: attributes[key] ?? 0,
                         ),
                       ),
@@ -126,18 +128,18 @@ class _AttributeTile extends StatelessWidget {
           children: [
             Text(
               abbreviation,
-              style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                fontWeight: FontWeight.w900,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w900),
             ),
             const SizedBox(height: 2),
             Text(label, style: Theme.of(context).textTheme.labelSmall),
             const SizedBox(height: 6),
             Text(
               '$score',
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.w900,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w900),
             ),
             const SizedBox(height: 4),
             Container(

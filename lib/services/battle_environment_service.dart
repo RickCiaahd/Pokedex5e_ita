@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import '../localization/ui_text.dart';
 import '../models/battle_environment.dart';
 import '../models/move_data.dart';
 import '../models/pokemon.dart';
@@ -322,30 +323,50 @@ class BattleEnvironmentService {
 
     if (environment.hasTimedWeather) {
       notes.add(
-        '${environment.weather.label}: ${environment.weatherRoundsRemaining} round rimanenti.',
+        uiTextForLanguage(
+          '${environment.weather.label}: ${environment.weatherRoundsRemaining} round rimanenti.',
+          '${environment.weather.englishLabel}: ${environment.weatherRoundsRemaining} rounds remaining.',
+        ),
       );
     }
     if (environment.hasFieldTerrain) {
       notes.add(
-        '${environment.fieldTerrain.label}: ${environment.fieldTerrainRoundsRemaining} round rimanenti.',
+        uiTextForLanguage(
+          '${environment.fieldTerrain.label}: ${environment.fieldTerrainRoundsRemaining} round rimanenti.',
+          '${environment.fieldTerrain.englishLabel}: ${environment.fieldTerrainRoundsRemaining} rounds remaining.',
+        ),
       );
       switch (environment.fieldTerrain) {
         case BattleFieldTerrain.electric:
           notes.add(
-            'Le creature a terra non possono dormire; le mosse Elettro raddoppiano il modificatore MOVE ai danni.',
+            uiTextForLanguage(
+              'Le creature a terra non possono dormire; le mosse Elettro raddoppiano il modificatore MOVE ai danni.',
+              'Grounded creatures cannot fall asleep; Electric moves double the MOVE modifier added to damage.',
+            ),
           );
           break;
         case BattleFieldTerrain.grassy:
           notes.add(
-            'Fine turno: le creature a terra recuperano $proficiency HP; le mosse Erba raddoppiano il modificatore MOVE ai danni.',
+            uiTextForLanguage(
+              'Fine turno: le creature a terra recuperano $proficiency HP; le mosse Erba raddoppiano il modificatore MOVE ai danni.',
+              'End of turn: grounded creatures recover $proficiency HP; Grass moves double the MOVE modifier added to damage.',
+            ),
           );
           break;
         case BattleFieldTerrain.misty:
-          notes.add('Le creature a terra non possono ricevere nuovi status.');
+          notes.add(
+            uiTextForLanguage(
+              'Le creature a terra non possono ricevere nuovi status.',
+              'Grounded creatures cannot gain new conditions.',
+            ),
+          );
           break;
         case BattleFieldTerrain.psychic:
           notes.add(
-            'Le creature a terra non possono usare azioni bonus; le mosse Psico raddoppiano il modificatore MOVE ai danni.',
+            uiTextForLanguage(
+              'Le creature a terra non possono usare azioni bonus; le mosse Psico raddoppiano il modificatore MOVE ai danni.',
+              'Grounded creatures cannot use bonus actions; Psychic moves double the MOVE modifier added to damage.',
+            ),
           );
           break;
         case BattleFieldTerrain.none:
@@ -360,114 +381,192 @@ class BattleEnvironmentService {
     );
     if (hazard != null) {
       if (hazard == 0) {
-        notes.add('È immune ai danni di ${environment.weather.label}.');
+        notes.add(
+          uiTextForLanguage(
+            'È immune ai danni di ${environment.weather.label}.',
+            'It is immune to ${environment.weather.englishLabel} damage.',
+          ),
+        );
       } else {
         notes.add(
-          'Inizio turno: subisce $hazard danni da ${environment.weather.label}.',
+          uiTextForLanguage(
+            'Inizio turno: subisce $hazard danni da ${environment.weather.label}.',
+            'Start of turn: takes $hazard damage from ${environment.weather.englishLabel}.',
+          ),
         );
       }
     } else if ((environment.weather == BattleWeather.hail ||
             environment.weather == BattleWeather.sandstorm) &&
         environment.weatherSourceLevel == 0) {
       notes.add(
-        '${environment.weather.label} naturale: secondo il manuale non infligge danni automatici.',
+        uiTextForLanguage(
+          '${environment.weather.label} naturale: secondo il manuale non infligge danni automatici.',
+          'Natural ${environment.weather.englishLabel}: according to the manual it deals no automatic damage.',
+        ),
       );
     }
 
     if (environment.suppressWeatherAbilities) {
       notes.add(
-        'Air Lock / Cloud Nine attivo: i bonus e malus delle abilità legate al meteo sono soppressi.',
+        uiTextForLanguage(
+          'Air Lock / Cloud Nine attivo: i bonus e malus delle abilità legate al meteo sono soppressi.',
+          'Air Lock / Cloud Nine active: bonuses and penalties from weather-related abilities are suppressed.',
+        ),
       );
     }
 
     if (weatherAllowed && abilities.contains('dry-skin')) {
       if (isHarshSun(environment)) {
-        notes.add('Dry Skin - fine turno: subisce $proficiency danni.');
+        notes.add(
+          uiTextForLanguage(
+            'Dry Skin - fine turno: subisce $proficiency danni.',
+            'Dry Skin - end of turn: takes $proficiency damage.',
+          ),
+        );
       } else if (isRain(environment)) {
-        notes.add('Dry Skin - fine turno: recupera $proficiency HP.');
+        notes.add(
+          uiTextForLanguage(
+            'Dry Skin - fine turno: recupera $proficiency HP.',
+            'Dry Skin - end of turn: recovers $proficiency HP.',
+          ),
+        );
       }
     }
     if (weatherAllowed &&
         abilities.contains('ice-body') &&
         isSnowOrHail(environment)) {
-      notes.add('Ice Body - fine turno: recupera $proficiency HP.');
+      notes.add(
+        uiTextForLanguage(
+          'Ice Body - fine turno: recupera $proficiency HP.',
+          'Ice Body - end of turn: recovers $proficiency HP.',
+        ),
+      );
     }
     if (weatherAllowed &&
         abilities.contains('rain-dish') &&
         isRain(environment)) {
-      notes.add('Rain Dish - fine turno: recupera $proficiency HP.');
+      notes.add(
+        uiTextForLanguage(
+          'Rain Dish - fine turno: recupera $proficiency HP.',
+          'Rain Dish - end of turn: recovers $proficiency HP.',
+        ),
+      );
     }
     if (weatherAllowed &&
         abilities.contains('healing-rain') &&
         isRain(environment)) {
-      notes.add('Healing Rain - azione: recupera $level HP.');
+      notes.add(
+        uiTextForLanguage(
+          'Healing Rain - azione: recupera $level HP.',
+          'Healing Rain - action: recovers $level HP.',
+        ),
+      );
     }
     if (weatherAllowed &&
         abilities.contains('hydration') &&
         (isRain(environment) ||
             environment.naturalTerrain == BattleNaturalTerrain.underwater)) {
       notes.add(
-        'Hydration - immune agli status negativi in queste condizioni.',
+        uiTextForLanguage(
+          'Hydration - immune agli status negativi in queste condizioni.',
+          'Hydration - immune to negative conditions in these circumstances.',
+        ),
       );
     }
     if (weatherAllowed &&
         abilities.contains('leaf-guard') &&
         isHarshSun(environment)) {
       notes.add(
-        'Leaf Guard - immune agli status negativi sotto il sole intenso.',
+        uiTextForLanguage(
+          'Leaf Guard - immune agli status negativi sotto il sole intenso.',
+          'Leaf Guard - immune to negative conditions in harsh sunlight.',
+        ),
       );
     }
     if (weatherAllowed &&
         abilities.contains('flower-gift') &&
         isHarshSun(environment)) {
       notes.add(
-        'Flower Gift - gli alleati entro 30 ft aggiungono +$proficiency ai danni.',
+        uiTextForLanguage(
+          'Flower Gift - gli alleati entro 30 ft aggiungono +$proficiency ai danni.',
+          'Flower Gift - allies within 30 ft add +$proficiency to damage.',
+        ),
       );
     }
     if (weatherAllowed && abilities.contains('forecast')) {
       final form = isRain(environment)
-          ? 'Acqua'
+          ? uiTextForLanguage('Acqua', 'Water')
           : isHarshSun(environment)
-          ? 'Fuoco'
+          ? uiTextForLanguage('Fuoco', 'Fire')
           : isSnowOrHail(environment)
-          ? 'Ghiaccio'
-          : 'Normale';
-      notes.add('Forecast - forma e tipo attuali: $form.');
+          ? uiTextForLanguage('Ghiaccio', 'Ice')
+          : uiTextForLanguage('Normale', 'Normal');
+      notes.add(
+        uiTextForLanguage(
+          'Forecast - forma e tipo attuali: $form.',
+          'Forecast - current form and type: $form.',
+        ),
+      );
     }
     if (weatherAllowed &&
         abilities.contains('sand-force') &&
         isSandstorm(environment)) {
-      notes.add('Sand Force - lo STAB viene raddoppiato quando colpisce.');
+      notes.add(
+        uiTextForLanguage(
+          'Sand Force - lo STAB viene raddoppiato quando colpisce.',
+          'Sand Force - STAB is doubled on a hit.',
+        ),
+      );
     }
     if (weatherAllowed &&
         abilities.contains('solar-power') &&
         isHarshSun(environment)) {
-      notes.add('Solar Power - +2 a tutti i tiri di danno.');
+      notes.add(
+        uiTextForLanguage(
+          'Solar Power - +2 a tutti i tiri di danno.',
+          'Solar Power - +2 to all damage rolls.',
+        ),
+      );
     }
 
     if (abilities.contains('drizzle')) {
       notes.add(
-        'Drizzle - all’ingresso può impostare Pioggerella per 5 round.',
+        uiTextForLanguage(
+          'Drizzle - all’ingresso può impostare Pioggerella per 5 round.',
+          'Drizzle - on entry it can set Light Drizzle for 5 rounds.',
+        ),
       );
     }
     if (abilities.contains('drought')) {
       notes.add(
-        'Drought - all’ingresso può impostare Sole intenso per 5 round.',
+        uiTextForLanguage(
+          'Drought - all’ingresso può impostare Sole intenso per 5 round.',
+          'Drought - on entry it can set Harsh Sunlight for 5 rounds.',
+        ),
       );
     }
     if (abilities.contains('sand-stream')) {
       notes.add(
-        'Sand Stream - all’ingresso può impostare Tempesta di sabbia per 5 round.',
+        uiTextForLanguage(
+          'Sand Stream - all’ingresso può impostare Tempesta di sabbia per 5 round.',
+          'Sand Stream - on entry it can set Sandstorm for 5 rounds.',
+        ),
       );
     }
     if (abilities.contains('snow-warning')) {
       notes.add(
-        'Snow Warning - all’ingresso può impostare Grandine per 5 round.',
+        uiTextForLanguage(
+          'Snow Warning - all’ingresso può impostare Grandine per 5 round.',
+          'Snow Warning - on entry it can set Hail for 5 rounds.',
+        ),
       );
     }
     if (abilities.contains('air-lock') || abilities.contains('cloud-nine')) {
       notes.add(
-        'Questa abilità può sopprimere le abilità legate al meteo: attiva l’opzione nel pannello Ambiente.',
+        uiTextForLanguage(
+          'Questa abilità può sopprimere le abilità legate al meteo: attiva l’opzione nel pannello Ambiente.',
+          'This ability can suppress weather-related abilities: enable the option in the Environment panel.',
+        ),
       );
     }
 
@@ -475,10 +574,18 @@ class BattleEnvironmentService {
     if (slot.feats.any((feat) => featBaseName(feat) == 'Terrain Adept')) {
       if (adept == null) {
         notes.add(
-          'Terrain Adept non configurato: scegli il terreno dalla schermata Modifica Pokémon.',
+          uiTextForLanguage(
+            'Terrain Adept non configurato: scegli il terreno dalla schermata Modifica Pokémon.',
+            'Terrain Adept is not configured: choose a terrain on the Edit Pokémon screen.',
+          ),
         );
       } else if (adept == environment.naturalTerrain) {
-        notes.add('Terrain Adept (${adept.label}) - +2 ai tiri per colpire.');
+        notes.add(
+          uiTextForLanguage(
+            'Terrain Adept (${adept.label}) - +2 ai tiri per colpire.',
+            'Terrain Adept (${adept.englishLabel}) - +2 to attack rolls.',
+          ),
+        );
       }
     }
 
@@ -494,11 +601,19 @@ class BattleEnvironmentService {
     final effectiveType = effectiveMoveType(move, environment);
     if (!PokemonTypeLocalization.sameType(effectiveType, move.type)) {
       notes.add(
-        'Weather Ball: tipo ${PokemonTypeLocalization.italianLabel(effectiveType)}.',
+        uiTextForLanguage(
+          'Weather Ball: tipo ${PokemonTypeLocalization.italianLabel(effectiveType)}.',
+          'Weather Ball: ${PokemonTypeLocalization.englishValue(effectiveType)} type.',
+        ),
       );
     }
     if (grantsWeatherDamageAdvantage(environment: environment, move: move)) {
-      notes.add('Meteo: tira i danni due volte e usa il risultato migliore.');
+      notes.add(
+        uiTextForLanguage(
+          'Meteo: tira i danni due volte e usa il risultato migliore.',
+          'Weather: roll damage twice and use the higher result.',
+        ),
+      );
     }
     final terrainBonus = terrainMoveModifierBonus(
       environment: environment,
@@ -507,7 +622,10 @@ class BattleEnvironmentService {
     );
     if (terrainBonus != 0) {
       notes.add(
-        '${environment.fieldTerrain.label}: modificatore MOVE raddoppiato (${terrainBonus >= 0 ? '+' : ''}$terrainBonus aggiuntivo).',
+        uiTextForLanguage(
+          '${environment.fieldTerrain.label}: modificatore MOVE raddoppiato (${terrainBonus >= 0 ? '+' : ''}$terrainBonus aggiuntivo).',
+          '${environment.fieldTerrain.englishLabel}: MOVE modifier doubled (${terrainBonus >= 0 ? '+' : ''}$terrainBonus additional).',
+        ),
       );
     }
     return notes;
@@ -587,14 +705,38 @@ class BattleEnvironmentService {
   static String environmentMoveMessage(MoveData move) {
     final key = _key(move.id.isEmpty ? move.name : move.id);
     return switch (key) {
-      'rain-dance' => 'Rain Dance ha impostato Pioggia intensa.',
-      'sunny-day' => 'Sunny Day ha impostato Sole intenso.',
-      'hail' => 'Hail ha impostato Grandine.',
-      'sandstorm' => 'Sandstorm ha impostato Tempesta di sabbia.',
-      'electric-terrain' => 'Electric Terrain è attivo per 3 round.',
-      'grassy-terrain' => 'Grassy Terrain è attivo per 3 round.',
-      'misty-terrain' => 'Misty Terrain è attivo per 3 round.',
-      'psychic-terrain' => 'Psychic Terrain è attivo per 3 round.',
+      'rain-dance' => uiTextForLanguage(
+        'Rain Dance ha impostato Pioggia intensa.',
+        'Rain Dance set Heavy Rain.',
+      ),
+      'sunny-day' => uiTextForLanguage(
+        'Sunny Day ha impostato Sole intenso.',
+        'Sunny Day set Harsh Sunlight.',
+      ),
+      'hail' => uiTextForLanguage(
+        'Hail ha impostato Grandine.',
+        'Hail was set.',
+      ),
+      'sandstorm' => uiTextForLanguage(
+        'Sandstorm ha impostato Tempesta di sabbia.',
+        'Sandstorm was set.',
+      ),
+      'electric-terrain' => uiTextForLanguage(
+        'Electric Terrain è attivo per 3 round.',
+        'Electric Terrain is active for 3 rounds.',
+      ),
+      'grassy-terrain' => uiTextForLanguage(
+        'Grassy Terrain è attivo per 3 round.',
+        'Grassy Terrain is active for 3 rounds.',
+      ),
+      'misty-terrain' => uiTextForLanguage(
+        'Misty Terrain è attivo per 3 round.',
+        'Misty Terrain is active for 3 rounds.',
+      ),
+      'psychic-terrain' => uiTextForLanguage(
+        'Psychic Terrain è attivo per 3 round.',
+        'Psychic Terrain is active for 3 rounds.',
+      ),
       _ => '',
     };
   }

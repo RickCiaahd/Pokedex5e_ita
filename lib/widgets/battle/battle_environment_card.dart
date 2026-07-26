@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../localization/ui_text.dart';
 import '../../models/battle_environment.dart';
 import '../../models/pokemon.dart';
 import '../../models/pokemon_type_localization.dart';
@@ -56,9 +57,13 @@ class BattleEnvironmentCard extends StatelessWidget {
       slot: slot,
       environment: environment,
     );
-    final favored = BattleEnvironmentService.favoredMoveTypes(
-      environment,
-    ).map(PokemonTypeLocalization.italianLabel).toList(growable: false);
+    final favored = BattleEnvironmentService.favoredMoveTypes(environment)
+        .map(
+          context.usesItalianUi
+              ? PokemonTypeLocalization.italianLabel
+              : PokemonTypeLocalization.englishValue,
+        )
+        .toList(growable: false);
 
     return Card(
       child: Padding(
@@ -72,14 +77,17 @@ class BattleEnvironmentCard extends StatelessWidget {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    'AMBIENTE',
+                    context.uiText('AMBIENTE', 'ENVIRONMENT'),
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w900,
                     ),
                   ),
                 ),
                 IconButton(
-                  tooltip: 'Modifica ambiente',
+                  tooltip: context.uiText(
+                    'Modifica ambiente',
+                    'Edit environment',
+                  ),
                   onPressed: onEdit,
                   icon: const Icon(Icons.tune),
                 ),
@@ -92,29 +100,35 @@ class BattleEnvironmentCard extends StatelessWidget {
               children: [
                 _EnvironmentChip(
                   icon: Icons.cloud_outlined,
-                  label: environment.weather.label,
+                  label: context.uiText(
+                    environment.weather.label,
+                    environment.weather.englishLabel,
+                  ),
                 ),
                 _EnvironmentChip(
                   icon: Icons.landscape_outlined,
-                  label: environment.naturalTerrain.label,
+                  label: context.uiText(
+                    environment.naturalTerrain.label,
+                    environment.naturalTerrain.englishLabel,
+                  ),
                 ),
                 if (environment.hasFieldTerrain)
                   _EnvironmentChip(
                     icon: Icons.blur_circular,
                     label:
-                        '${environment.fieldTerrain.label} · ${environment.fieldTerrainRoundsRemaining}R',
+                        '${context.uiText(environment.fieldTerrain.label, environment.fieldTerrain.englishLabel)} · ${environment.fieldTerrainRoundsRemaining}R',
                   ),
                 _EnvironmentChip(
                   icon: Icons.shield_outlined,
                   label: acBonus == 0
-                      ? 'CA $baseAc'
-                      : 'CA $baseAc → ${baseAc + acBonus}',
+                      ? '${context.uiText('CA', 'AC')} $baseAc'
+                      : '${context.uiText('CA', 'AC')} $baseAc → ${baseAc + acBonus}',
                 ),
                 _EnvironmentChip(
                   icon: Icons.speed_outlined,
                   label: speed == baseSpeed
-                      ? 'Velocità $baseSpeed ft'
-                      : 'Velocità $baseSpeed → $speed ft',
+                      ? '${context.uiText('Velocità', 'Speed')} $baseSpeed ft'
+                      : '${context.uiText('Velocità', 'Speed')} $baseSpeed → $speed ft',
                 ),
               ],
             ),
@@ -122,7 +136,10 @@ class BattleEnvironmentCard extends StatelessWidget {
                 favored.isNotEmpty) ...[
               const SizedBox(height: 10),
               Text(
-                'Regola opzionale del manuale: vantaggio ai danni per ${favored.join(', ')}.',
+                context.uiText(
+                  'Regola opzionale del manuale: vantaggio ai danni per ${favored.join(', ')}.',
+                  'Optional manual rule: advantage on damage for ${favored.join(', ')}.',
+                ),
                 style: const TextStyle(fontWeight: FontWeight.w700),
               ),
             ],
@@ -142,12 +159,14 @@ class BattleEnvironmentCard extends StatelessWidget {
                 OutlinedButton.icon(
                   onPressed: onRollWeather,
                   icon: const Icon(Icons.casino_outlined),
-                  label: Text('TIRA METEO · ${environment.season.label}'),
+                  label: Text(
+                    '${context.uiText('TIRA METEO', 'ROLL WEATHER')} · ${context.uiText(environment.season.label, environment.season.englishLabel)}',
+                  ),
                 ),
                 OutlinedButton.icon(
                   onPressed: onEdit,
                   icon: const Icon(Icons.edit_outlined),
-                  label: const Text('MODIFICA'),
+                  label: Text(context.uiText('MODIFICA', 'EDIT')),
                 ),
                 if (hazard != null &&
                     hazard > 0 &&
@@ -155,7 +174,12 @@ class BattleEnvironmentCard extends StatelessWidget {
                   FilledButton.tonalIcon(
                     onPressed: onApplyWeatherDamage,
                     icon: const Icon(Icons.heart_broken_outlined),
-                    label: Text('APPLICA $hazard DANNI'),
+                    label: Text(
+                      context.uiText(
+                        'APPLICA $hazard DANNI',
+                        'APPLY $hazard DAMAGE',
+                      ),
+                    ),
                   ),
               ],
             ),
@@ -250,7 +274,7 @@ class _BattleEnvironmentDialogState extends State<_BattleEnvironmentDialog> {
         _weather == BattleWeather.hail || _weather == BattleWeather.sandstorm;
 
     return AlertDialog(
-      title: const Text('Meteo e terreno'),
+      title: Text(context.uiText('Meteo e terreno', 'Weather and terrain')),
       content: SizedBox(
         width: 560,
         child: SingleChildScrollView(
@@ -260,10 +284,17 @@ class _BattleEnvironmentDialogState extends State<_BattleEnvironmentDialog> {
             children: [
               DropdownButtonFormField<BattleSeason>(
                 initialValue: _season,
-                decoration: const InputDecoration(labelText: 'Stagione'),
+                decoration: InputDecoration(
+                  labelText: context.uiText('Stagione', 'Season'),
+                ),
                 items: [
                   for (final value in BattleSeason.values)
-                    DropdownMenuItem(value: value, child: Text(value.label)),
+                    DropdownMenuItem(
+                      value: value,
+                      child: Text(
+                        context.uiText(value.label, value.englishLabel),
+                      ),
+                    ),
                 ],
                 onChanged: (value) {
                   if (value != null) setState(() => _season = value);
@@ -273,10 +304,17 @@ class _BattleEnvironmentDialogState extends State<_BattleEnvironmentDialog> {
               DropdownButtonFormField<BattleWeather>(
                 initialValue: _weather,
                 isExpanded: true,
-                decoration: const InputDecoration(labelText: 'Meteo'),
+                decoration: InputDecoration(
+                  labelText: context.uiText('Meteo', 'Weather'),
+                ),
                 items: [
                   for (final value in BattleWeather.values)
-                    DropdownMenuItem(value: value, child: Text(value.label)),
+                    DropdownMenuItem(
+                      value: value,
+                      child: Text(
+                        context.uiText(value.label, value.englishLabel),
+                      ),
+                    ),
                 ],
                 onChanged: (value) {
                   if (value == null) return;
@@ -288,9 +326,17 @@ class _BattleEnvironmentDialogState extends State<_BattleEnvironmentDialog> {
               ),
               SwitchListTile(
                 contentPadding: EdgeInsets.zero,
-                title: const Text('Meteo creato da mossa o abilità'),
-                subtitle: const Text(
-                  'Attiva una durata in round. Il meteo naturale resta senza scadenza.',
+                title: Text(
+                  context.uiText(
+                    'Meteo creato da mossa o abilità',
+                    'Weather created by a move or ability',
+                  ),
+                ),
+                subtitle: Text(
+                  context.uiText(
+                    'Attiva una durata in round. Il meteo naturale resta senza scadenza.',
+                    'Sets a duration in rounds. Natural weather has no expiration.',
+                  ),
                 ),
                 value: _timedWeather && _weather != BattleWeather.clear,
                 onChanged: _weather == BattleWeather.clear
@@ -300,7 +346,11 @@ class _BattleEnvironmentDialogState extends State<_BattleEnvironmentDialog> {
               if (_timedWeather && _weather != BattleWeather.clear)
                 Row(
                   children: [
-                    const Expanded(child: Text('Round rimanenti')),
+                    Expanded(
+                      child: Text(
+                        context.uiText('Round rimanenti', 'Rounds remaining'),
+                      ),
+                    ),
                     IconButton(
                       onPressed: _weatherRounds > 1
                           ? () => setState(() => _weatherRounds -= 1)
@@ -324,10 +374,15 @@ class _BattleEnvironmentDialogState extends State<_BattleEnvironmentDialog> {
                 TextField(
                   controller: _sourceLevelController,
                   keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(
-                    labelText: 'Livello della creatura che ha creato il meteo',
-                    helperText:
-                        'Serve per i danni di Grandine o Tempesta di sabbia. Lascia 0 per un fenomeno naturale.',
+                  decoration: InputDecoration(
+                    labelText: context.uiText(
+                      'Livello della creatura che ha creato il meteo',
+                      'Level of the creature that created the weather',
+                    ),
+                    helperText: context.uiText(
+                      'Serve per i danni di Grandine o Tempesta di sabbia. Lascia 0 per un fenomeno naturale.',
+                      'Used for Hail or Sandstorm damage. Leave 0 for natural weather.',
+                    ),
                   ),
                 ),
               ],
@@ -335,12 +390,20 @@ class _BattleEnvironmentDialogState extends State<_BattleEnvironmentDialog> {
               DropdownButtonFormField<BattleNaturalTerrain>(
                 initialValue: _naturalTerrain,
                 isExpanded: true,
-                decoration: const InputDecoration(
-                  labelText: 'Terreno naturale',
+                decoration: InputDecoration(
+                  labelText: context.uiText(
+                    'Terreno naturale',
+                    'Natural terrain',
+                  ),
                 ),
                 items: [
                   for (final value in BattleNaturalTerrain.values)
-                    DropdownMenuItem(value: value, child: Text(value.label)),
+                    DropdownMenuItem(
+                      value: value,
+                      child: Text(
+                        context.uiText(value.label, value.englishLabel),
+                      ),
+                    ),
                 ],
                 onChanged: (value) {
                   if (value != null) setState(() => _naturalTerrain = value);
@@ -350,12 +413,20 @@ class _BattleEnvironmentDialogState extends State<_BattleEnvironmentDialog> {
               DropdownButtonFormField<BattleFieldTerrain>(
                 initialValue: _fieldTerrain,
                 isExpanded: true,
-                decoration: const InputDecoration(
-                  labelText: 'Terreno creato da una mossa',
+                decoration: InputDecoration(
+                  labelText: context.uiText(
+                    'Terreno creato da una mossa',
+                    'Terrain created by a move',
+                  ),
                 ),
                 items: [
                   for (final value in BattleFieldTerrain.values)
-                    DropdownMenuItem(value: value, child: Text(value.label)),
+                    DropdownMenuItem(
+                      value: value,
+                      child: Text(
+                        context.uiText(value.label, value.englishLabel),
+                      ),
+                    ),
                 ],
                 onChanged: (value) {
                   if (value != null) setState(() => _fieldTerrain = value);
@@ -364,7 +435,14 @@ class _BattleEnvironmentDialogState extends State<_BattleEnvironmentDialog> {
               if (_fieldTerrain != BattleFieldTerrain.none)
                 Row(
                   children: [
-                    const Expanded(child: Text('Round terreno rimanenti')),
+                    Expanded(
+                      child: Text(
+                        context.uiText(
+                          'Round terreno rimanenti',
+                          'Terrain rounds remaining',
+                        ),
+                      ),
+                    ),
                     IconButton(
                       onPressed: _fieldRounds > 1
                           ? () => setState(() => _fieldRounds -= 1)
@@ -386,9 +464,17 @@ class _BattleEnvironmentDialogState extends State<_BattleEnvironmentDialog> {
               const Divider(height: 24),
               SwitchListTile(
                 contentPadding: EdgeInsets.zero,
-                title: const Text('Vantaggio ai danni per i tipi favoriti'),
-                subtitle: const Text(
-                  'Regola opzionale del manuale: tira due volte i danni e usa il risultato migliore.',
+                title: Text(
+                  context.uiText(
+                    'Vantaggio ai danni per i tipi favoriti',
+                    'Damage advantage for favored types',
+                  ),
+                ),
+                subtitle: Text(
+                  context.uiText(
+                    'Regola opzionale del manuale: tira due volte i danni e usa il risultato migliore.',
+                    'Optional manual rule: roll damage twice and use the higher result.',
+                  ),
                 ),
                 value: _optionalWeatherDamageAdvantage,
                 onChanged: (value) =>
@@ -396,9 +482,17 @@ class _BattleEnvironmentDialogState extends State<_BattleEnvironmentDialog> {
               ),
               SwitchListTile(
                 contentPadding: EdgeInsets.zero,
-                title: const Text('Air Lock / Cloud Nine attivo'),
-                subtitle: const Text(
-                  'Sopprime i bonus e malus delle abilità legate al meteo, non il meteo stesso.',
+                title: Text(
+                  context.uiText(
+                    'Air Lock / Cloud Nine attivo',
+                    'Air Lock / Cloud Nine active',
+                  ),
+                ),
+                subtitle: Text(
+                  context.uiText(
+                    'Sopprime i bonus e malus delle abilità legate al meteo, non il meteo stesso.',
+                    'Suppresses bonuses and penalties from weather-related abilities, not the weather itself.',
+                  ),
                 ),
                 value: _suppressWeatherAbilities,
                 onChanged: (value) =>
@@ -411,7 +505,7 @@ class _BattleEnvironmentDialogState extends State<_BattleEnvironmentDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('ANNULLA'),
+          child: Text(context.uiText('ANNULLA', 'CANCEL')),
         ),
         FilledButton(
           onPressed: () {
@@ -438,7 +532,7 @@ class _BattleEnvironmentDialogState extends State<_BattleEnvironmentDialog> {
               ),
             );
           },
-          child: const Text('SALVA'),
+          child: Text(context.uiText('SALVA', 'SAVE')),
         ),
       ],
     );

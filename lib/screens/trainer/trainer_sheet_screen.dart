@@ -714,7 +714,10 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
             ),
           ),
           content: Text(
-            'Passerai da ${TrainerUiLocalization.trainerPathName(savedPath)} a ${TrainerUiLocalization.trainerPathName(selected)}. Le risorse consumate e le scelte specifiche del vecchio percorso verranno azzerate.',
+            context.uiText(
+              'Passerai da ${TrainerUiLocalization.trainerPathName(savedPath)} a ${TrainerUiLocalization.trainerPathName(selected)}. Le risorse consumate e le scelte specifiche del vecchio percorso verranno azzerate.',
+              'You will switch from ${TrainerUiLocalization.trainerPathName(savedPath)} to ${TrainerUiLocalization.trainerPathName(selected)}. Spent resources and path-specific choices from the old path will be reset.',
+            ),
           ),
           actions: [
             TextButton(
@@ -1264,12 +1267,12 @@ class _TrainerSheetMainColumn extends StatelessWidget {
           runSpacing: 8,
           children: [
             _SheetTextBox(
-              label: 'Nome',
+              label: context.uiText('Nome', 'Name'),
               controller: nameController,
               width: 260,
             ),
             _SheetCounterBox(
-              label: 'Livello',
+              label: context.uiText('Livello', 'Level'),
               value: trainerLevel.toString(),
               onDecrease: trainerLevel <= TrainerProgression.minLevel
                   ? null
@@ -1287,7 +1290,7 @@ class _TrainerSheetMainColumn extends StatelessWidget {
             _SheetInfoBox(
               label: context.uiText('SR max', 'Max SR'),
               value: '$maxSr',
-              detail: 'Controllo',
+              detail: context.uiText('Controllo', 'Control'),
               width: 104,
             ),
             _SheetTextBox(
@@ -1299,7 +1302,7 @@ class _TrainerSheetMainColumn extends StatelessWidget {
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             ),
             _SheetInfoBox(
-              label: 'Competenza',
+              label: context.uiText('Competenza', 'Proficiency'),
               value: _signed(_trainerProficiencyBonus(trainerLevel)),
               width: 108,
             ),
@@ -1359,14 +1362,14 @@ class _TrainerSheetMainColumn extends StatelessWidget {
           onAddToTeam: onAddStarterToTeam,
         ),
         const SizedBox(height: 16),
-        _SheetSectionTitle(title: 'COMBATTIMENTO'),
+        _SheetSectionTitle(title: context.uiText('COMBATTIMENTO', 'COMBAT')),
         const SizedBox(height: 8),
         Wrap(
           spacing: 8,
           runSpacing: 8,
           children: [
             _SheetCounterBox(
-              label: 'CA',
+              label: context.uiText('CA', 'AC'),
               value: armorClass.toString(),
               onDecrease: () => onArmorClassChanged(-1),
               onIncrease: () => onArmorClassChanged(1),
@@ -1386,7 +1389,7 @@ class _TrainerSheetMainColumn extends StatelessWidget {
             ),
             _SheetCounterBox(
               label: context.uiText('Velocità', 'Speed'),
-              value: '$speed piedi',
+              value: context.uiText('$speed piedi', '$speed ft'),
               onDecrease: () => onSpeedChanged(-5),
               onIncrease: () => onSpeedChanged(5),
             ),
@@ -1427,7 +1430,10 @@ class _TrainerSheetMainColumn extends StatelessWidget {
                             'New Poké Slot at level $nextPokeslotLevel.',
                           ),
                     nextControlLevel == null
-                        ? 'Controllo SR: massimo già raggiunto.'
+                        ? context.uiText(
+                            'Controllo SR: massimo già raggiunto.',
+                            'SR control: maximum already reached.',
+                          )
                         : context.uiText(
                             'Nuovo limite SR al livello $nextControlLevel.',
                             'New SR limit at level $nextControlLevel.',
@@ -1833,9 +1839,9 @@ class _TrainerProgressionColumn extends StatelessWidget {
         title: context.uiText('Specializzazione', 'Specialization'),
         level: 1,
         value: _specializationAt(0).isEmpty
-            ? 'Scegli specializzazione'
+            ? context.uiText('Scegli specializzazione', 'Choose specialization')
             : TrainerUiLocalization.specializationName(_specializationAt(0)),
-        detail: _specializationDetail(0),
+        detail: _specializationDetail(context, 0),
         onTap: () => onSpecializationTap(0),
       ),
     ];
@@ -1846,7 +1852,7 @@ class _TrainerProgressionColumn extends StatelessWidget {
           title: context.uiText('Percorso Allenatore', 'Trainer Path'),
           level: 2,
           value: trainerPath.isEmpty
-              ? 'Scegli percorso'
+              ? context.uiText('Scegli percorso', 'Choose path')
               : TrainerUiLocalization.trainerPathName(trainerPath),
           detail: trainerPath.isEmpty
               ? context.uiText(
@@ -1870,8 +1876,14 @@ class _TrainerProgressionColumn extends StatelessWidget {
             level: level,
             value: feature == null
                 ? (trainerPath.isEmpty
-                      ? 'Percorso non scelto'
-                      : 'Privilegio non trovato')
+                      ? context.uiText(
+                          'Percorso non scelto',
+                          'No path selected',
+                        )
+                      : context.uiText(
+                          'Privilegio non trovato',
+                          'Feature not found',
+                        ))
                 : TrainerUiLocalization.featureName(feature.title),
             detail: feature == null
                 ? context.uiText(
@@ -1890,9 +1902,12 @@ class _TrainerProgressionColumn extends StatelessWidget {
           title: context.uiText('Specializzazione', 'Specialization'),
           level: 7,
           value: _specializationAt(1).isEmpty
-              ? 'Scegli specializzazione'
+              ? context.uiText(
+                  'Scegli specializzazione',
+                  'Choose specialization',
+                )
               : TrainerUiLocalization.specializationName(_specializationAt(1)),
-          detail: _specializationDetail(1),
+          detail: _specializationDetail(context, 1),
           onTap: () => onSpecializationTap(1),
         ),
       );
@@ -1904,9 +1919,12 @@ class _TrainerProgressionColumn extends StatelessWidget {
           title: context.uiText('Specializzazione', 'Specialization'),
           level: 18,
           value: _specializationAt(2).isEmpty
-              ? 'Scegli specializzazione'
+              ? context.uiText(
+                  'Scegli specializzazione',
+                  'Choose specialization',
+                )
               : TrainerUiLocalization.specializationName(_specializationAt(2)),
-          detail: _specializationDetail(2),
+          detail: _specializationDetail(context, 2),
           onTap: () => onSpecializationTap(2),
         ),
       );
@@ -1938,10 +1956,13 @@ class _TrainerProgressionColumn extends StatelessWidget {
     return index < specializations.length ? specializations[index] : '';
   }
 
-  String _specializationDetail(int index) {
+  String _specializationDetail(BuildContext context, int index) {
     final specialization = _specializationAt(index);
     if (specialization.isEmpty) {
-      return 'Tocca il riquadro e scegli dall’elenco disponibile.';
+      return context.uiText(
+        'Tocca il riquadro e scegli dall’elenco disponibile.',
+        'Tap the box and choose from the available list.',
+      );
     }
 
     return TrainerUiLocalization.visibleText(
@@ -2280,7 +2301,10 @@ class _StarterSheetBox extends StatelessWidget {
                         ? context.uiText('Scegli starter', 'Choose starter')
                         : selectedPokemon.name,
                     detail: selectedPokemon == null
-                        ? 'Solo primo stadio con SR 1/2 o inferiore.'
+                        ? context.uiText(
+                            'Solo primo stadio con SR 1/2 o inferiore.',
+                            'First-stage Pokémon with SR 1/2 or lower only.',
+                          )
                         : '${selectedPokemon.types.join(' / ')} | SR ${selectedPokemon.sr} | HP ${selectedPokemon.hitPoints} | CA ${selectedPokemon.armorClass}',
                   ),
                 ),
@@ -2554,7 +2578,12 @@ class _StarterPickerSheetState extends State<_StarterPickerSheet> {
                     ),
                   ),
                   const SizedBox(height: 4),
-                  Text('Mostro solo Pokémon primo stadio con SR 1/2 o meno.'),
+                  Text(
+                    context.uiText(
+                      'Mostro solo Pokémon primo stadio con SR 1/2 o meno.',
+                      'Only first-stage Pokémon with SR 1/2 or lower are shown.',
+                    ),
+                  ),
                   const SizedBox(height: 12),
                   TextField(
                     controller: _searchController,
@@ -2720,7 +2749,10 @@ class _TrainerSheetErrorState extends StatelessWidget {
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 16),
-          FilledButton(onPressed: onRetry, child: Text('Riprova')),
+          FilledButton(
+            onPressed: onRetry,
+            child: Text(context.uiText('Riprova', 'Retry')),
+          ),
         ],
       ),
     );

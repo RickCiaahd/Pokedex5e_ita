@@ -48,13 +48,22 @@ jobs:
           from pathlib import Path
 
           path = Path('tooling/apply_english_ui_residuals_round3.py')
-          text = path.read_text(encoding='utf-8')
-          old = '''"label: Text(formLabel ?? context.uiText('Forma', 'Form')),
-           ",'''
-          new = '''"label: Text(formLabel ?? context.uiText('Forma', 'Form')),"'''
-          if old not in text:
-              raise RuntimeError('Broken Form replacement fragment not found')
-          path.write_text(text.replace(old, new, 1), encoding='utf-8')
+          lines = path.read_text(encoding='utf-8').splitlines(keepends=True)
+          repaired = False
+          for index, line in enumerate(lines):
+              if '"label: Text(formLabel ?? context.uiText' not in line:
+                  continue
+              lines[index] = (
+                  '            "label: Text(formLabel ?? '
+                  "context.uiText('Forma', 'Form')),",\n"
+              )
+              if index + 1 < len(lines) and lines[index + 1].strip() == '",':
+                  del lines[index + 1]
+              repaired = True
+              break
+          if not repaired:
+              raise RuntimeError('Broken Form replacement line not found')
+          path.write_text(''.join(lines), encoding='utf-8')
           PY
 
       - name: Validate and apply prepared corrections

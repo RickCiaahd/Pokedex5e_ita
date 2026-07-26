@@ -57,8 +57,36 @@ jobs:
           git apply --whitespace=fix tooling/english_ui_syntax_repair.patch
           git apply --check tooling/english_ui_context_repair.patch
           git apply --whitespace=fix tooling/english_ui_context_repair.patch
-          git apply --check tooling/english_ui_async_locale_repair.patch
-          git apply --whitespace=fix tooling/english_ui_async_locale_repair.patch
+
+          python3 <<'PY'
+          from pathlib import Path
+
+          replacements = {
+              'lib/screens/tools/encounter_library_screen.dart': [
+                  ('  Future<void> _startFight', '  String _copyName'),
+              ],
+              'lib/screens/tools/npc_trainer_library_screen.dart': [
+                  ('  Future<CampaignTransferBundle?> _pickTransferFile', '  String _copyName'),
+              ],
+              'lib/screens/tools/pokemon_generator_screen.dart': [
+                  ('  Future<void> _addGeneratedToCollection', '  TeamSlot? _firstFreeUnlockedSlot'),
+              ],
+          }
+          for file_name, spans in replacements.items():
+              path = Path(file_name)
+              text = path.read_text(encoding='utf-8')
+              for start_marker, end_marker in spans:
+                  start = text.index(start_marker)
+                  end = text.index(end_marker, start)
+                  chunk = text[start:end]
+                  if 'context.uiText(' not in chunk:
+                      raise SystemExit(
+                          f'No context.uiText calls found in {file_name} between markers'
+                      )
+                  chunk = chunk.replace('context.uiText(', 'uiTextForLanguage(')
+                  text = text[:start] + chunk + text[end:]
+              path.write_text(text, encoding='utf-8')
+          PY
 
       - name: Resolve dependencies and generate localizations
         run: |

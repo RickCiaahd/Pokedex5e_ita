@@ -53,10 +53,8 @@ jobs:
           for index, line in enumerate(lines):
               if '"label: Text(formLabel ?? context.uiText' not in line:
                   continue
-              lines[index] = (
-                  '            "label: Text(formLabel ?? '
-                  "context.uiText('Forma', 'Form')),",\n"
-              )
+              lines[index] = """            "label: Text(formLabel ?? context.uiText('Forma', 'Form')),",
+          """
               if index + 1 < len(lines) and lines[index + 1].strip() == '",':
                   del lines[index + 1]
               repaired = True

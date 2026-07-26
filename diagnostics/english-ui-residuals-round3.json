@@ -1,0 +1,2249 @@
+{
+  "candidate_count": 374,
+  "candidates": [
+    {
+      "path": "lib/models/breeding_candidate.dart",
+      "line": 31,
+      "value": "Senza sesso",
+      "source": "'genderless' => 'Senza sesso',"
+    },
+    {
+      "path": "lib/models/breeding_candidate.dart",
+      "line": 32,
+      "value": "Sesso non impostato",
+      "source": "_ => 'Sesso non impostato',"
+    },
+    {
+      "path": "lib/screens/bag/bag_screen.dart",
+      "line": 2319,
+      "value": "Poké Ball",
+      "source": "return 'Poké Ball';"
+    },
+    {
+      "path": "lib/screens/battle/battle_screen.dart",
+      "line": 1208,
+      "value": "${data.profile.name} + Pokémon",
+      "source": "name: '${data.profile.name} + Pokémon',"
+    },
+    {
+      "path": "lib/screens/battle/battle_screen.dart",
+      "line": 2081,
+      "value": "Poké Ball",
+      "source": "return 'Poké Ball';"
+    },
+    {
+      "path": "lib/screens/battle/battle_screen.dart",
+      "line": 2090,
+      "value": "USA",
+      "source": "return BattleQuickItemService.isPokeball(item) ? 'LANCIA' : 'USA';"
+    },
+    {
+      "path": "lib/screens/battle/battle_screen.dart",
+      "line": 2749,
+      "value": "Forma",
+      "source": "label: Text(formLabel ?? 'Forma'),"
+    },
+    {
+      "path": "lib/screens/battle/npc_battle_screen.dart",
+      "line": 143,
+      "value": "Allenatore PNG",
+      "source": "if (!entryId.startsWith('npc:')) return 'Allenatore PNG';"
+    },
+    {
+      "path": "lib/screens/battle/npc_battle_screen.dart",
+      "line": 146,
+      "value": "Allenatore PNG",
+      "source": "if (separator <= 0) return 'Allenatore PNG';"
+    },
+    {
+      "path": "lib/screens/battle/npc_battle_screen.dart",
+      "line": 150,
+      "value": "Allenatore PNG",
+      "source": "if (participant == null || slotIndex == null) return 'Allenatore PNG';"
+    },
+    {
+      "path": "lib/screens/battle/npc_battle_screen.dart",
+      "line": 191,
+      "value": "Ogni allenatore deve avere almeno un Pokémon attivo.",
+      "source": "_message = 'Ogni allenatore deve avere almeno un Pokémon attivo.';"
+    },
+    {
+      "path": "lib/screens/battle/npc_battle_screen.dart",
+      "line": 273,
+      "value": "Pokémon ripristinato completamente.",
+      "source": "message: 'Pokémon ripristinato completamente.',"
+    },
+    {
+      "path": "lib/screens/battle/npc_battle_screen.dart",
+      "line": 352,
+      "value": "Iniziativa rilanciata.",
+      "source": "message: 'Iniziativa rilanciata.',"
+    },
+    {
+      "path": "lib/screens/battle/npc_battle_screen.dart",
+      "line": 365,
+      "value": "Aggiungi partecipante esterno",
+      "source": "title: const Text('Aggiungi partecipante esterno'),"
+    },
+    {
+      "path": "lib/screens/battle/npc_battle_screen.dart",
+      "line": 377,
+      "value": "Iniziativa",
+      "source": "decoration: const InputDecoration(labelText: 'Iniziativa'),"
+    },
+    {
+      "path": "lib/screens/battle/npc_battle_screen.dart",
+      "line": 384,
+      "value": "Annulla",
+      "source": "child: const Text('Annulla'),"
+    },
+    {
+      "path": "lib/screens/battle/npc_battle_screen.dart",
+      "line": 395,
+      "value": "Aggiungi",
+      "source": "child: const Text('Aggiungi'),"
+    },
+    {
+      "path": "lib/screens/battle/npc_battle_screen.dart",
+      "line": 438,
+      "value": "PF, PP, status, Pokémon attivi, iniziativa e round verranno riportati allo stato iniziale.",
+      "source": "'PF, PP, status, Pokémon attivi, iniziativa e round verranno riportati allo stato iniziale.',"
+    },
+    {
+      "path": "lib/screens/battle/npc_battle_screen.dart",
+      "line": 443,
+      "value": "Annulla",
+      "source": "child: const Text('Annulla'),"
+    },
+    {
+      "path": "lib/screens/battle/npc_battle_screen.dart",
+      "line": 543,
+      "value": "La sessione del Master verrà eliminata. Gli Allenatori PNG salvati rimarranno intatti nella libreria.",
+      "source": "'La sessione del Master verrà eliminata. Gli Allenatori PNG salvati rimarranno intatti nella libreria.',"
+    },
+    {
+      "path": "lib/screens/battle/npc_battle_screen.dart",
+      "line": 548,
+      "value": "Annulla",
+      "source": "child: const Text('Annulla'),"
+    },
+    {
+      "path": "lib/screens/battle/npc_battle_screen.dart",
+      "line": 567,
+      "value": "Pokémon #${state.pokemon.pokemonId} non disponibile.",
+      "source": "throw StateError('Pokémon #${state.pokemon.pokemonId} non disponibile.');"
+    },
+    {
+      "path": "lib/screens/battle/npc_battle_screen.dart",
+      "line": 641,
+      "value": "Salva riepilogo",
+      "source": "child: Text('Salva riepilogo'),"
+    },
+    {
+      "path": "lib/screens/battle/npc_battle_screen.dart",
+      "line": 735,
+      "value": "SQUADRA DI ${participant.name.toUpperCase()}",
+      "source": "'SQUADRA DI ${participant.name.toUpperCase()}',"
+    },
+    {
+      "path": "lib/screens/battle/npc_battle_screen.dart",
+      "line": 788,
+      "value": "MOSSE DA COMBATTIMENTO",
+      "source": "'MOSSE DA COMBATTIMENTO',"
+    },
+    {
+      "path": "lib/screens/battle/npc_battle_screen.dart",
+      "line": 814,
+      "value": "Nessuna mossa selezionata.",
+      "source": "child: Text('Nessuna mossa selezionata.'),"
+    },
+    {
+      "path": "lib/screens/battle/npc_battle_screen.dart",
+      "line": 869,
+      "value": "$trainerCount Allenatori PNG · $activePokemonCount Pokémon attivi · nessun avversario gestito dall’app",
+      "source": "'$trainerCount Allenatori PNG · $activePokemonCount Pokémon attivi · nessun avversario gestito dall’app',"
+    },
+    {
+      "path": "lib/screens/battle/npc_battle_screen.dart",
+      "line": 899,
+      "value": "${participant.rank} · ${participant.activeLimit} Pokémon attivi contemporaneamente",
+      "source": "'${participant.rank} · ${participant.activeLimit} Pokémon attivi contemporaneamente',"
+    },
+    {
+      "path": "lib/screens/battle/npc_battle_screen.dart",
+      "line": 903,
+      "value": "Personalità: ${participant.personality}",
+      "source": "Text('Personalità: ${participant.personality}'),"
+    },
+    {
+      "path": "lib/screens/battle/npc_battle_screen.dart",
+      "line": 950,
+      "value": "INIZIATIVA COMUNE",
+      "source": "'INIZIATIVA COMUNE',"
+    },
+    {
+      "path": "lib/screens/battle/npc_battle_screen.dart",
+      "line": 956,
+      "value": "Rilancia iniziativa",
+      "source": "tooltip: 'Rilancia iniziativa',"
+    },
+    {
+      "path": "lib/screens/battle/npc_battle_screen.dart",
+      "line": 961,
+      "value": "Aggiungi voce esterna",
+      "source": "tooltip: 'Aggiungi voce esterna',"
+    },
+    {
+      "path": "lib/screens/battle/npc_battle_screen.dart",
+      "line": 967,
+      "value": "Nessuna voce nell’iniziativa.",
+      "source": "const Text('Nessuna voce nell’iniziativa.')"
+    },
+    {
+      "path": "lib/screens/battle/npc_battle_screen.dart",
+      "line": 979,
+      "value": "Pokémon controllato dal Master",
+      "source": "? 'Pokémon controllato dal Master'"
+    },
+    {
+      "path": "lib/screens/battle/npc_battle_screen.dart",
+      "line": 993,
+      "value": "PROSSIMO TURNO · ROUND $round",
+      "source": "label: Text('PROSSIMO TURNO · ROUND $round'),"
+    },
+    {
+      "path": "lib/screens/battle/npc_battle_screen.dart",
+      "line": 1162,
+      "value": "Nessuna abilità",
+      "source": "Text(generated.ability ?? 'Nessuna abilità'),"
+    },
+    {
+      "path": "lib/screens/battle/npc_battle_screen.dart",
+      "line": 1168,
+      "value": "Scheda completa",
+      "source": "tooltip: 'Scheda completa',"
+    },
+    {
+      "path": "lib/screens/battle/npc_battle_screen.dart",
+      "line": 1295,
+      "value": "Usa mossa",
+      "source": "tooltip: 'Usa mossa',"
+    },
+    {
+      "path": "lib/screens/battle/npc_battle_screen.dart",
+      "line": 1361,
+      "value": "Annulla",
+      "source": "child: const Text('Annulla'),"
+    },
+    {
+      "path": "lib/screens/battle/npc_battle_screen.dart",
+      "line": 1365,
+      "value": "Conferma",
+      "source": "child: const Text('Conferma'),"
+    },
+    {
+      "path": "lib/screens/battle/npc_battle_screen.dart",
+      "line": 1390,
+      "value": "Status del Pokémon",
+      "source": "title: const Text('Status del Pokémon'),"
+    },
+    {
+      "path": "lib/screens/battle/npc_battle_screen.dart",
+      "line": 1441,
+      "value": "Annulla",
+      "source": "child: const Text('Annulla'),"
+    },
+    {
+      "path": "lib/screens/battle/npc_battle_screen.dart",
+      "line": 1453,
+      "value": "Conferma",
+      "source": "child: const Text('Conferma'),"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 208,
+      "value": "Squadra ${slot.slotIndex + 1}",
+      "source": "location: 'Squadra ${slot.slotIndex + 1}',"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 320,
+      "value": "Non hai un Pokéslot libero. Libera uno slot oppure usa la Pensione Pokémon.",
+      "source": "'Non hai un Pokéslot libero. Libera uno slot oppure usa la Pensione Pokémon.';"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 327,
+      "value": "Il risultato del d20 deve essere tra 1 e 20.",
+      "source": "setState(() => _message = 'Il risultato del d20 deve essere tra 1 e 20.');"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 336,
+      "value": "Tentativo fallito: d20 $roll ${_signed(modifier)} = $total contro CD $dc.",
+      "source": "'Tentativo fallito: d20 $roll ${_signed(modifier)} = $total contro CD $dc.';"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 392,
+      "value": "affidato alla Pensione Pokémon",
+      "source": "? 'affidato alla Pensione Pokémon'"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 393,
+      "value": "inserito nello slot squadra ${freeSlot!.slotIndex + 1}",
+      "source": ": 'inserito nello slot squadra ${freeSlot!.slotIndex + 1}';"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 400,
+      "value": "Successo: d20 $roll ${_signed(modifier)} = $total contro CD $dc. Uovo creato e $destination.",
+      "source": "'Successo: d20 $roll ${_signed(modifier)} = $total contro CD $dc. Uovo creato e $destination.',"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 430,
+      "value": "Uovo affidato alla Pensione Pokémon.",
+      "source": "await _reload(message: 'Uovo affidato alla Pensione Pokémon.');"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 450,
+      "value": "Uovo depositato nel PC. L’incubazione resta in pausa.",
+      "source": "message: 'Uovo depositato nel PC. L’incubazione resta in pausa.',"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 464,
+      "value": "Non hai un Pokéslot libero per ritirare l’uovo.",
+      "source": "() => _message = 'Non hai un Pokéslot libero per ritirare l’uovo.',"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 478,
+      "value": "Uovo ritirato nello slot squadra ${freeSlot.slotIndex + 1}.",
+      "source": "message: 'Uovo ritirato nello slot squadra ${freeSlot.slotIndex + 1}.',"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 486,
+      "value": "Nel PC l’incubazione è in pausa. Ritira l’uovo in squadra oppure affidalo alla Pensione.",
+      "source": "'Nel PC l’incubazione è in pausa. Ritira l’uovo in squadra oppure affidalo alla Pensione.';"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 502,
+      "value": "Incubazione: d100 $baseRoll$incubator. Contatore ridotto di ${result.reduction}.",
+      "source": "'Incubazione: d100 $baseRoll$incubator. Contatore ridotto di ${result.reduction}.',"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 515,
+      "value": "L’incubatore è già stato usato per questo uovo e non può essere trasferito.",
+      "source": "'L’incubatore è già stato usato per questo uovo e non può essere trasferito.';"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 527,
+      "value": "Non possiedi un Incubatore ${incubator.label} nello zaino.",
+      "source": "_message = 'Non possiedi un Incubatore ${incubator.label} nello zaino.';"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 553,
+      "value": "Distruggere l’uovo?",
+      "source": "title: const Text('Distruggere l’uovo?'),"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 555,
+      "value": "Secondo il manuale un uovo è distrutto quando raggiunge 0 PF. Questa operazione non può essere annullata.",
+      "source": "'Secondo il manuale un uovo è distrutto quando raggiunge 0 PF. Questa operazione non può essere annullata.',"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 560,
+      "value": "ANNULLA",
+      "source": "child: const Text('ANNULLA'),"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 578,
+      "value": "L’uovo ha raggiunto 0 PF ed è stato distrutto.",
+      "source": "await _reload(message: 'L’uovo ha raggiunto 0 PF ed è stato distrutto.');"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 586,
+      "value": "PF dell’uovo aggiornati a $nextHp/10.",
+      "source": "await _reload(message: 'PF dell’uovo aggiornati a $nextHp/10.');"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 593,
+      "value": "Eliminare l’uovo?",
+      "source": "title: const Text('Eliminare l’uovo?'),"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 595,
+      "value": "Il progresso di incubazione e i dati del Pokémon contenuto andranno persi.",
+      "source": "'Il progresso di incubazione e i dati del Pokémon contenuto andranno persi.',"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 600,
+      "value": "ANNULLA",
+      "source": "child: const Text('ANNULLA'),"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 604,
+      "value": "ELIMINA",
+      "source": "child: const Text('ELIMINA'),"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 618,
+      "value": "Uovo eliminato.",
+      "source": "await _reload(message: 'Uovo eliminato.');"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 626,
+      "value": "Un uovo depositato nel PC non può schiudersi. Ritiralo in squadra oppure spostalo in Pensione.",
+      "source": "'Un uovo depositato nel PC non può schiudersi. Ritiralo in squadra oppure spostalo in Pensione.';"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 632,
+      "value": "La specie dell’uovo non è nel catalogo.",
+      "source": "setState(() => _message = 'La specie dell’uovo non è nel catalogo.');"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 700,
+      "value": "Nato da un uovo nella Pensione Pokémon.",
+      "source": "'Nato da un uovo nella Pensione Pokémon.',"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 702,
+      "value": "Mosse ereditate: ${hatchEgg.inheritedMoves.join(",
+      "source": "'Mosse ereditate: ${hatchEgg.inheritedMoves.join(', ')}.',"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 727,
+      "value": "è stato inviato al PC dalla Pensione Pokémon",
+      "source": "? 'è stato inviato al PC dalla Pensione Pokémon'"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 728,
+      "value": "ha sostituito l’uovo nello slot squadra ${eggSlot.slotIndex + 1}",
+      "source": ": 'ha sostituito l’uovo nello slot squadra ${eggSlot.slotIndex + 1}';"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 736,
+      "value": "${_displayName(pokemon: pokemon, formName: hatchEgg.formName)} si è schiuso, $destination, con Lealtà +$loyalty.$goodGenes",
+      "source": "'${_displayName(pokemon: pokemon, formName: hatchEgg.formName)} si è schiuso, $destination, con Lealtà +$loyalty.$goodGenes',"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 745,
+      "value": "Allevamento e uova",
+      "source": "title: const Text('Allevamento e uova'),"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 758,
+      "value": "Errore: ${snapshot.error}",
+      "source": "child: Text('Errore: ${snapshot.error}'),"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 799,
+      "value": "NUOVO TENTATIVO",
+      "source": "'NUOVO TENTATIVO',"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 805,
+      "value": "Seleziona due Pokémon posseduti. L’app controlla Lealtà, sesso, Ditto e Gruppi Uova.",
+      "source": "'Seleziona due Pokémon posseduti. L’app controlla Lealtà, sesso, Ditto e Gruppi Uova.',"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 809,
+      "value": "Primo genitore",
+      "source": "label: 'Primo genitore',"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 819,
+      "value": "Secondo genitore",
+      "source": "label: 'Secondo genitore',"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 829,
+      "value": "Usa Pensione Pokémon",
+      "source": "title: const Text('Usa Pensione Pokémon'),"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 832,
+      "value": "L’uovo non occupa un Pokéslot e alla schiusa il Pokémon andrà nel PC.",
+      "source": "? 'L’uovo non occupa un Pokéslot e alla schiusa il Pokémon andrà nel PC.'"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 834,
+      "value": "Nessun Pokéslot libero: attiva la Pensione per poter ottenere l’uovo.",
+      "source": "? 'Nessun Pokéslot libero: attiva la Pensione per poter ottenere l’uovo.'"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 835,
+      "value": "L’uovo occuperà lo slot squadra ${freeSlot.slotIndex + 1}.",
+      "source": ": 'L’uovo occuperà lo slot squadra ${freeSlot.slotIndex + 1}.',"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 868,
+      "value": "TIRA IL D20",
+      "source": "label: const Text('TIRA IL D20'),"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 876,
+      "value": "Risultato d20",
+      "source": "labelText: 'Risultato d20',"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 893,
+      "value": "Inserisci il risultato del d20.",
+      "source": "'Inserisci il risultato del d20.';"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 900,
+      "value": "USA IL TIRO",
+      "source": "child: const Text('USA IL TIRO'),"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 920,
+      "value": "UOVA IN INCUBAZIONE (${data.eggs.length})",
+      "source": "'UOVA IN INCUBAZIONE (${data.eggs.length})',"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 927,
+      "value": "Un uovo trasportato occupa davvero un Pokéslot. Un uovo affidato alla Pensione resta fuori dalla squadra e alla schiusa il Pokémon viene inviato al PC.",
+      "source": "'Un uovo trasportato occupa davvero un Pokéslot. Un uovo affidato alla Pensione resta fuori dalla squadra e alla schiusa il Pokémon viene inviato al PC.',"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 935,
+      "value": "Non ci sono uova. Completa con successo un tentativo di allevamento.",
+      "source": "'Non ci sono uova. Completa con successo un tentativo di allevamento.',"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 1016,
+      "value": "Pokémon Breeder",
+      "source": "final breeder = profile.trainerPath == 'Pokémon Breeder';"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 1027,
+      "value": "ALLEVAMENTO POKÉMON",
+      "source": "'ALLEVAMENTO POKÉMON',"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 1034,
+      "value": "Servono Lealtà +2, sesso compatibile e un Gruppo Uova condiviso. Ditto ignora sesso e Gruppo Uova; Undiscovered non può riprodursi.",
+      "source": "'Servono Lealtà +2, sesso compatibile e un Gruppo Uova condiviso. Ditto ignora sesso e Gruppo Uova; Undiscovered non può riprodursi.',"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 1040,
+      "value": "Pokémon Breeder: tiro di accoppiamento ${rollModifier >= 0 ? ",
+      "source": "'Pokémon Breeder: tiro di accoppiamento ${rollModifier >= 0 ? '+' : ''}$rollModifier',"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 1041,
+      "value": "vantaggio ai d100 di incubazione",
+      "source": "if (incubationAdvantage) 'vantaggio ai d100 di incubazione',"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 1042,
+      "value": "Good Genes alla schiusa",
+      "source": "if (goodGenes) 'Good Genes alla schiusa',"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 1043,
+      "value": "Master of Traits sulle uova future",
+      "source": "if (masterOfTraits) 'Master of Traits sulle uova future',"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 1084,
+      "value": "${candidate.displayName} · ${candidate.genderLabel} · Lealtà ${candidate.loyalty >= 0 ? ",
+      "source": "'${candidate.displayName} · ${candidate.genderLabel} · Lealtà ${candidate.loyalty >= 0 ? '+' : ''}${candidate.loyalty} · ${candidate.location}',"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 1128,
+      "value": "Gruppo: ${compatibility.sharedEggGroups.join(",
+      "source": "'Gruppo: ${compatibility.sharedEggGroups.join(', ')} · Risultato: ${resultPokemon?.name ?? '#${compatibility.childSpeciesId}'}',"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 1128,
+      "value": ")} · Risultato: ${resultPokemon?.name ?? ",
+      "source": "'Gruppo: ${compatibility.sharedEggGroups.join(', ')} · Risultato: ${resultPokemon?.name ?? '#${compatibility.childSpeciesId}'}',"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 1132,
+      "value": "Prova: d20 ${modifier >= 0 ? ",
+      "source": "'Prova: d20 ${modifier >= 0 ? '+' : ''}$modifier contro CD $dc.',"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 1195,
+      "value": "Uovo pronto a schiudersi",
+      "source": "? 'Uovo pronto a schiudersi'"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 1196,
+      "value": "Uovo di ${pokemon?.name ?? ",
+      "source": ": 'Uovo di ${pokemon?.name ?? '#${egg.speciesId}'}',"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 1203,
+      "value": "Incubazione completata",
+      "source": "? 'Incubazione completata'"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 1210,
+      "value": "Elimina uovo",
+      "source": "tooltip: 'Elimina uovo',"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 1239,
+      "value": "Mosse ereditate: ${egg.inheritedMoves.join(",
+      "source": "'Mosse ereditate: ${egg.inheritedMoves.join(', ')}',"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 1251,
+      "value": "Viene consumato quando lo assegni all’uovo.",
+      "source": "? 'Viene consumato quando lo assegni all’uovo.'"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 1252,
+      "value": "Già consumato per questo uovo; non è trasferibile.",
+      "source": ": 'Già consumato per questo uovo; non è trasferibile.',"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 1278,
+      "value": "MODIFICA PF UOVO",
+      "source": "label: const Text('MODIFICA PF UOVO'),"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 1293,
+      "value": "PC Pokémon",
+      "source": "? 'PC Pokémon'"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 1295,
+      "value": "Pensione Pokémon",
+      "source": "? 'Pensione Pokémon'"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 1296,
+      "value": "Squadra · Slot ${teamSlotIndex! + 1}",
+      "source": ": 'Squadra · Slot ${teamSlotIndex! + 1}',"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 1301,
+      "value": "L’incubazione è in pausa e l’uovo non occupa un Pokéslot.",
+      "source": "? 'L’incubazione è in pausa e l’uovo non occupa un Pokéslot.'"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 1303,
+      "value": "Occupa un Pokéslot e nascerà con Lealtà +2.",
+      "source": "? 'Occupa un Pokéslot e nascerà con Lealtà +2.'"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 1304,
+      "value": "Non ha trascorso tutta l’incubazione in squadra: Lealtà +1.",
+      "source": ": 'Non ha trascorso tutta l’incubazione in squadra: Lealtà +1.',"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 1319,
+      "value": "RITIRA IN SQUADRA",
+      "source": "? 'RITIRA IN SQUADRA'"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 1320,
+      "value": "NESSUN POKÉSLOT LIBERO",
+      "source": ": 'NESSUN POKÉSLOT LIBERO',"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 1333,
+      "value": "SPOSTA IN PENSIONE",
+      "source": "label: const Text('SPOSTA IN PENSIONE'),"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 1344,
+      "value": "RITIRA L’UOVO PER SCHIUDERLO",
+      "source": "? 'RITIRA L’UOVO PER SCHIUDERLO'"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 1345,
+      "value": "INCUBAZIONE IN PAUSA NEL PC",
+      "source": ": 'INCUBAZIONE IN PAUSA NEL PC',"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 1360,
+      "value": "AVANZA INCUBAZIONE (2d100, migliore)",
+      "source": "? 'AVANZA INCUBAZIONE (2d100, migliore)'"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 1361,
+      "value": "AVANZA INCUBAZIONE (1d100)",
+      "source": ": 'AVANZA INCUBAZIONE (1d100)',"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 1368,
+      "value": "Nel PC l’uovo resta conservato ma non può schiudersi.",
+      "source": "? 'Nel PC l’uovo resta conservato ma non può schiudersi.'"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 1370,
+      "value": "Alla schiusa il Pokémon verrà inviato al PC dalla Pensione.",
+      "source": "? 'Alla schiusa il Pokémon verrà inviato al PC dalla Pensione.'"
+    },
+    {
+      "path": "lib/screens/breeding/breeding_screen.dart",
+      "line": 1371,
+      "value": "Alla schiusa il Pokémon sostituirà l’uovo nello stesso Pokéslot.",
+      "source": ": 'Alla schiusa il Pokémon sostituirà l’uovo nello stesso Pokéslot.',"
+    },
+    {
+      "path": "lib/screens/capture/capture_pokemon_screen.dart",
+      "line": 976,
+      "value": "Riprova",
+      "source": "FilledButton(onPressed: onRetry, child: const Text('Riprova')),"
+    },
+    {
+      "path": "lib/screens/onboarding/app_bootstrap_screen.dart",
+      "line": 71,
+      "value": "RIPROVA",
+      "source": "child: const Text('RIPROVA'),"
+    },
+    {
+      "path": "lib/screens/onboarding/first_launch_onboarding_screen.dart",
+      "line": 184,
+      "value": "Origine 5e approvata dal DM",
+      "source": "return origin.name == 'Origine 5e approvata dal DM'"
+    },
+    {
+      "path": "lib/screens/onboarding/first_launch_onboarding_screen.dart",
+      "line": 199,
+      "value": "Origine 5e approvata dal DM",
+      "source": "'Origine 5e approvata dal DM' =>"
+    },
+    {
+      "path": "lib/screens/pc/pokemon_pc_screen.dart",
+      "line": 431,
+      "value": "Pokémon",
+      "source": "return nickname.isEmpty ? pokemon?.name ?? 'Pokémon' : nickname;"
+    },
+    {
+      "path": "lib/screens/pc/pokemon_pc_screen.dart",
+      "line": 1115,
+      "value": "Pokémon",
+      "source": "? pokemon?.name ?? 'Pokémon'"
+    },
+    {
+      "path": "lib/screens/pokedex/pokedex_screen.dart",
+      "line": 404,
+      "value": "POKEDEX SCREEN: errore save: $error",
+      "source": "debugPrint('POKEDEX SCREEN: errore save: $error');"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_advanced_editor_screen.dart",
+      "line": 117,
+      "value": "Può evolversi in",
+      "source": "title: evolvesFrom ? 'Si evolve da' : 'Può evolversi in',"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_advanced_editor_screen.dart",
+      "line": 187,
+      "value": "L’esportazione per i giocatori può essere sigillata: nome, immagine e dati non saranno mostrati prima della cattura o dell’evoluzione.",
+      "source": "'L’esportazione per i giocatori può essere sigillata: nome, immagine e dati non saranno mostrati prima della cattura o dell’evoluzione.',"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_advanced_editor_screen.dart",
+      "line": 200,
+      "value": "Può essere mostrato senza rivelare nome e aspetto.",
+      "source": "'Può essere mostrato senza rivelare nome e aspetto.',"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_advanced_editor_screen.dart",
+      "line": 206,
+      "value": "Forma alternativa di una specie esistente",
+      "source": "title: 'Forma alternativa di una specie esistente',"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_advanced_editor_screen.dart",
+      "line": 209,
+      "value": "Collega questo Fakemon a un Pokémon già presente: apparirà nel selettore delle forme di quella specie, senza creare una voce separata nel Pokédex.",
+      "source": "'Collega questo Fakemon a un Pokémon già presente: apparirà nel selettore delle forme di quella specie, senza creare una voce separata nel Pokédex.',"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_advanced_editor_screen.dart",
+      "line": 215,
+      "value": "Nessuna specie collegata",
+      "source": "_alternateFormOf?.name ?? 'Nessuna specie collegata',"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_advanced_editor_screen.dart",
+      "line": 219,
+      "value": "Tocca per scegliere Pokémon o Fakemon",
+      "source": "'Tocca per scegliere Pokémon o Fakemon',"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_advanced_editor_screen.dart",
+      "line": 229,
+      "value": "Durata della forma",
+      "source": "labelText: 'Durata della forma',"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_advanced_editor_screen.dart",
+      "line": 258,
+      "value": "Registra questa forma nel Pokédex",
+      "source": "'Registra questa forma nel Pokédex',"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_advanced_editor_screen.dart",
+      "line": 270,
+      "value": "Indizio sulla forma, facoltativo",
+      "source": "labelText: 'Indizio sulla forma, facoltativo',"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_advanced_editor_screen.dart",
+      "line": 300,
+      "value": "${widget.currentName} può evolversi nelle specie elencate, comprese specie ufficiali o altri Fakemon.",
+      "source": "'${widget.currentName} può evolversi nelle specie elencate, comprese specie ufficiali o altri Fakemon.',"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_advanced_editor_screen.dart",
+      "line": 311,
+      "value": "Se questo Fakemon possiede a sua volta più aspetti, puoi aggiungerli qui. Per collegare il Fakemon come forma di una specie esistente usa la sezione precedente.",
+      "source": "'Se questo Fakemon possiede a sua volta più aspetti, puoi aggiungerli qui. Per collegare il Fakemon come forma di una specie esistente usa la sezione precedente.',"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_advanced_editor_screen.dart",
+      "line": 316,
+      "value": "AGGIUNGI FORMA",
+      "source": "label: const Text('AGGIUNGI FORMA'),"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_advanced_editor_screen.dart",
+      "line": 319,
+      "value": "Nessuna forma personalizzata.",
+      "source": "const Text('Nessuna forma personalizzata.')"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_advanced_editor_screen.dart",
+      "line": 339,
+      "value": "Forma momentanea di battaglia",
+      "source": "? 'Forma momentanea di battaglia'"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_advanced_editor_screen.dart",
+      "line": 340,
+      "value": "Forma permanente",
+      "source": ": 'Forma permanente',"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_advanced_editor_screen.dart",
+      "line": 364,
+      "value": "SALVA DATI AVANZATI",
+      "source": "label: const Text('SALVA DATI AVANZATI'),"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_advanced_editor_screen.dart",
+      "line": 396,
+      "value": "AGGIUNGI COLLEGAMENTO",
+      "source": "label: const Text('AGGIUNGI COLLEGAMENTO'),"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_advanced_editor_screen.dart",
+      "line": 399,
+      "value": "Nessun collegamento configurato.",
+      "source": "const Text('Nessun collegamento configurato.')"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_advanced_editor_screen.dart",
+      "line": 578,
+      "value": "Scegli Pokémon o Fakemon",
+      "source": "title: Text(_selected?.name ?? 'Scegli Pokémon o Fakemon'),"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_advanced_editor_screen.dart",
+      "line": 588,
+      "value": "Forma specifica, facoltativa",
+      "source": "labelText: 'Forma specifica, facoltativa',"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_advanced_editor_screen.dart",
+      "line": 594,
+      "value": "Livello minimo",
+      "source": "Expanded(child: _numberField(_level, 'Livello minimo')),"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_advanced_editor_screen.dart",
+      "line": 596,
+      "value": "Lealtà minima",
+      "source": "Expanded(child: _numberField(_loyalty, 'Lealtà minima')),"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_advanced_editor_screen.dart",
+      "line": 607,
+      "value": "Oggetto richiesto",
+      "source": "labelText: 'Oggetto richiesto',"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_advanced_editor_screen.dart",
+      "line": 608,
+      "value": "Seleziona dal catalogo degli oggetti",
+      "source": "helperText: 'Seleziona dal catalogo degli oggetti',"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_advanced_editor_screen.dart",
+      "line": 618,
+      "value": "Mossa richiesta",
+      "source": "labelText: 'Mossa richiesta',"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_advanced_editor_screen.dart",
+      "line": 619,
+      "value": "Seleziona dal catalogo delle mosse",
+      "source": "helperText: 'Seleziona dal catalogo delle mosse',"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_advanced_editor_screen.dart",
+      "line": 626,
+      "value": "Sesso richiesto",
+      "source": "decoration: const InputDecoration(labelText: 'Sesso richiesto'),"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_advanced_editor_screen.dart",
+      "line": 633,
+      "value": "Senza sesso",
+      "source": "child: Text('Senza sesso'),"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_advanced_editor_screen.dart",
+      "line": 654,
+      "value": "ANNULLA",
+      "source": "child: const Text('ANNULLA'),"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_advanced_editor_screen.dart",
+      "line": 658,
+      "value": "AGGIUNGI",
+      "source": "child: const Text('AGGIUNGI'),"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_advanced_editor_screen.dart",
+      "line": 681,
+      "value": "Indietro",
+      "source": "tooltip: 'Indietro',"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_advanced_editor_screen.dart",
+      "line": 734,
+      "value": "Indietro",
+      "source": "tooltip: 'Indietro',"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_advanced_editor_screen.dart",
+      "line": 792,
+      "value": "Indietro",
+      "source": "tooltip: 'Indietro',"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_advanced_editor_screen.dart",
+      "line": 948,
+      "value": "Scegli artwork della forma",
+      "source": ": 'Scegli artwork della forma',"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_advanced_editor_screen.dart",
+      "line": 1044,
+      "value": "FORMA PERSONALIZZATA",
+      "source": "appBar: AppBar(title: const Text('FORMA PERSONALIZZATA')),"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_advanced_editor_screen.dart",
+      "line": 1072,
+      "value": "Nome forma",
+      "source": "decoration: const InputDecoration(labelText: 'Nome forma'),"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_advanced_editor_screen.dart",
+      "line": 1100,
+      "value": "Registra nel Pokédex",
+      "source": "title: const Text('Registra nel Pokédex'),"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_advanced_editor_screen.dart",
+      "line": 1138,
+      "value": "Velocità",
+      "source": "Expanded(child: _numberField(_speed, 'Velocità')),"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_advanced_editor_screen.dart",
+      "line": 1157,
+      "value": "Abilità sostitutive, separate da virgole",
+      "source": "labelText: 'Abilità sostitutive, separate da virgole',"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_advanced_editor_screen.dart",
+      "line": 1163,
+      "value": "Abilità nascosta",
+      "source": "decoration: const InputDecoration(labelText: 'Abilità nascosta'),"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_advanced_editor_screen.dart",
+      "line": 1170,
+      "value": "Descrizione forma",
+      "source": "decoration: const InputDecoration(labelText: 'Descrizione forma'),"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_advanced_editor_screen.dart",
+      "line": 1181,
+      "value": "SALVA FORMA",
+      "source": "label: const Text('SALVA FORMA'),"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_advanced_editor_screen.dart",
+      "line": 1292,
+      "value": "Forma: ${link.pokemon.formName}",
+      "source": "labels.insert(0, 'Forma: ${link.pokemon.formName}');"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_advanced_editor_screen.dart",
+      "line": 1296,
+      "value": "Nessuna condizione",
+      "source": "return labels.isEmpty ? 'Nessuna condizione' : labels.join(' · ');"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 147,
+      "value": "La specie è ancora utilizzata. Rimuovi prima tutti i riferimenti elencati:",
+      "source": "'La specie è ancora utilizzata. Rimuovi prima tutti i riferimenti elencati:',"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 187,
+      "value": "La specie non è utilizzata da nessun profilo e verrà rimossa dal catalogo globale.",
+      "source": "'La specie non è utilizzata da nessun profilo e verrà rimossa dal catalogo globale.',"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 192,
+      "value": "ANNULLA",
+      "source": "child: const Text('ANNULLA'),"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 196,
+      "value": "ELIMINA",
+      "source": "child: const Text('ELIMINA'),"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 282,
+      "value": "Modalità esportazione",
+      "source": "title: const Text('Modalità esportazione'),"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 406,
+      "value": "Contenuto segreto installato. Sarà rivelato al momento della cattura o dell’evoluzione.",
+      "source": "? 'Contenuto segreto installato. Sarà rivelato al momento della cattura o dell’evoluzione.'"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 803,
+      "value": "AGGIUNGI SHINY",
+      "source": "Text(shiny ? 'AGGIUNGI SHINY' : 'CARICA IMMAGINE'),"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 1004,
+      "value": "Identità e immagine",
+      "source": "title: 'Identità e immagine',"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 1038,
+      "value": "Descrizione",
+      "source": "decoration: const InputDecoration(labelText: 'Descrizione'),"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 1091,
+      "value": "Peso (ettogrammi)",
+      "source": "child: _optionalNumber(_weight, 'Peso (ettogrammi)'),"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 1112,
+      "value": "Velocità",
+      "source": "_numberBox(_speed, 'Velocità', min: 0),"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 1115,
+      "value": "Livello minimo",
+      "source": "_numberBox(_minLevel, 'Livello minimo', min: 1),"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 1136,
+      "value": "Competenze, separate da virgole",
+      "source": "labelText: 'Competenze, separate da virgole',"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 1148,
+      "value": "Abilità",
+      "source": "title: 'Abilità',"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 1155,
+      "value": "Abilità disponibili, separate da virgole",
+      "source": "labelText: 'Abilità disponibili, separate da virgole',"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 1161,
+      "value": "Abilità nascosta",
+      "source": "labelText: 'Abilità nascosta',"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 1207,
+      "value": "Il giocatore non vedrà il contenuto prima della scoperta.",
+      "source": "'Il giocatore non vedrà il contenuto prima della scoperta.',"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 1213,
+      "value": "APRI EDITOR AVANZATO",
+      "source": "label: const Text('APRI EDITOR AVANZATO'),"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 1218,
+      "value": "Allevamento",
+      "source": "title: 'Allevamento',"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 1223,
+      "value": "Gruppi Uova, separati da virgole",
+      "source": "labelText: 'Gruppi Uova, separati da virgole',"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 1225,
+      "value": "Lascia vuoto per rendere la specie non disponibile all’allevamento.",
+      "source": "'Lascia vuoto per rendere la specie non disponibile all’allevamento.',"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 1230,
+      "value": "Scegli al massimo due Gruppi Uova.",
+      "source": "return 'Scegli al massimo due Gruppi Uova.';"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 1234,
+      "value": "Gruppo Uova non riconosciuto: $group",
+      "source": "return 'Gruppo Uova non riconosciuto: $group';"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 1244,
+      "value": "ID specie base per la schiusa",
+      "source": "labelText: 'ID specie base per la schiusa',"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 1246,
+      "value": "Facoltativo. Se vuoto, dall’uovo nascerà questa specie.",
+      "source": "'Facoltativo. Se vuoto, dall’uovo nascerà questa specie.',"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 1275,
+      "value": "Mosse",
+      "source": "title: 'Mosse',"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 1279,
+      "value": "Mosse iniziali",
+      "source": "label: 'Mosse iniziali',"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 1287,
+      "value": "Mosse per livello",
+      "source": "labelText: 'Mosse per livello',"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 1289,
+      "value": "Una riga per livello, ad esempio: 5: Tuonoshock, Agilità",
+      "source": "'Una riga per livello, ad esempio: 5: Tuonoshock, Agilità',"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 1322,
+      "value": "CREA MOSSA ESCLUSIVA",
+      "source": "label: const Text('CREA MOSSA ESCLUSIVA'),"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 1357,
+      "value": "SALVA FAKEMON",
+      "source": "label: const Text('SALVA FAKEMON'),"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 1549,
+      "value": "Elimina",
+      "source": "child: Text('Elimina'),"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 1664,
+      "value": "Scegli mossa",
+      "source": "title: const Text('Scegli mossa'),"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 1702,
+      "value": "ANNULLA",
+      "source": "child: const Text('ANNULLA'),"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 1734,
+      "value": "Scegli abilità",
+      "source": "title: const Text('Scegli abilità'),"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 1771,
+      "value": "ANNULLA",
+      "source": "child: const Text('ANNULLA'),"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 1798,
+      "value": "Nuova abilità esclusiva",
+      "source": "title: const Text('Nuova abilità esclusiva'),"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 1811,
+      "value": "Descrizione",
+      "source": "decoration: const InputDecoration(labelText: 'Descrizione'),"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 1818,
+      "value": "ANNULLA",
+      "source": "child: const Text('ANNULLA'),"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 1833,
+      "value": "AGGIUNGI",
+      "source": "child: const Text('AGGIUNGI'),"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 1878,
+      "value": "Nuova mossa esclusiva",
+      "source": "title: const Text('Nuova mossa esclusiva'),"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 1953,
+      "value": "Danno al livello 1, es. 2d6",
+      "source": "labelText: 'Danno al livello 1, es. 2d6',"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 1962,
+      "value": "Descrizione completa",
+      "source": "labelText: 'Descrizione completa',"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 1972,
+      "value": "ANNULLA",
+      "source": "child: const Text('ANNULLA'),"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 1999,
+      "value": "AGGIUNGI",
+      "source": "child: const Text('AGGIUNGI'),"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 2014,
+      "value": "${incoming.name} è già presente",
+      "source": "title: Text('${incoming.name} è già presente'),"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 2016,
+      "value": "La definizione locale è stata aggiornata il ${existing.updatedAt.toLocal()}. Vuoi aggiornarla mantenendo gli esemplari esistenti, oppure importare una copia separata?",
+      "source": "'La definizione locale è stata aggiornata il ${existing.updatedAt.toLocal()}. Vuoi aggiornarla mantenendo gli esemplari esistenti, oppure importare una copia separata?',"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 2021,
+      "value": "ANNULLA",
+      "source": "child: const Text('ANNULLA'),"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 2049,
+      "value": "Nessun Fakemon creato",
+      "source": "'Nessun Fakemon creato',"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 2054,
+      "value": "Crea una nuova specie completa oppure importa un file .p5fakemon.",
+      "source": "'Crea una nuova specie completa oppure importa un file .p5fakemon.',"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 2106,
+      "value": "Riga mosse non valida: $line",
+      "source": "if (separator <= 0) throw FormatException('Riga mosse non valida: $line');"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 2110,
+      "value": "Riga mosse non valida: $line",
+      "source": "throw FormatException('Riga mosse non valida: $line');"
+    },
+    {
+      "path": "lib/screens/pokemon/evolution_selector_sheet.dart",
+      "line": 31,
+      "value": "${currentPokemon.name} può evolversi in ${choices.length} forme.",
+      "source": ": '${currentPokemon.name} può evolversi in ${choices.length} forme.';"
+    },
+    {
+      "path": "lib/screens/pokemon/evolution_selector_sheet.dart",
+      "line": 50,
+      "value": "Nessuna evoluzione soddisfa ancora tutte le condizioni gestibili.",
+      "source": "'Nessuna evoluzione soddisfa ancora tutte le condizioni gestibili.',"
+    },
+    {
+      "path": "lib/screens/pokemon/evolution_selector_sheet.dart",
+      "line": 132,
+      "value": "Pokémon non presente nel catalogo attuale.",
+      "source": "'Pokémon non presente nel catalogo attuale.',"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_detail_screen_legacy.dart",
+      "line": 73,
+      "value": "È incapacitato e trattenuto e ha svantaggio a tutti i tiri salvezza. Dura tre round. Quando subisce un movimento forzato e alla fine di ciascun suo turno, tira 1d20: con 11 o più la condizione termina.",
+      "source": "'È incapacitato e trattenuto e ha svantaggio a tutti i tiri salvezza. Dura tre round. Quando subisce un movimento forzato e alla fine di ciascun suo turno, tira 1d20: con 11 o più la condizione termina.',"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_detail_screen_legacy.dart",
+      "line": 84,
+      "value": "Tira due volte tutti i dadi di danno e usa il risultato inferiore. Finché non viene curato o perde i sensi, subisce danni pari al proprio bonus di competenza alla fine di ciascun turno. I Pokémon di tipo Fuoco sono immuni.",
+      "source": "'Tira due volte tutti i dadi di danno e usa il risultato inferiore. Finché non viene curato o perde i sensi, subisce danni pari al proprio bonus di competenza alla fine di ciascun turno. I Pokémon di tipo Fuoco sono immuni.',"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_detail_screen_legacy.dart",
+      "line": 95,
+      "value": "Non può effettuare reazioni. Dura tre round. All'inizio del suo turno tira 1d8 per determinarne il comportamento; con 8 la condizione termina.",
+      "source": "\"Non può effettuare reazioni. Dura tre round. All'inizio del suo turno tira 1d8 per determinarne il comportamento; con 8 la condizione termina.\","
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_detail_screen_legacy.dart",
+      "line": 106,
+      "value": "Ha svantaggio a tutti i tiri per colpire, alle prove di caratteristica e ai tiri salvezza fino alla fine del suo prossimo turno. È mostrato solo come riferimento e non può essere selezionato manualmente.",
+      "source": "'Ha svantaggio a tutti i tiri per colpire, alle prove di caratteristica e ai tiri salvezza fino alla fine del suo prossimo turno. È mostrato solo come riferimento e non può essere selezionato manualmente.',"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_detail_screen_legacy.dart",
+      "line": 114,
+      "value": "È incapacitato e trattenuto. La condizione termina se si libera, subisce danni di tipo Fuoco o viene colpito da una mossa che può provocare Scottatura. I Pokémon di tipo Ghiaccio sono immuni.",
+      "source": "'È incapacitato e trattenuto. La condizione termina se si libera, subisce danni di tipo Fuoco o viene colpito da una mossa che può provocare Scottatura. I Pokémon di tipo Ghiaccio sono immuni.',"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_detail_screen_legacy.dart",
+      "line": 125,
+      "value": "Ha svantaggio ai tiri salvezza su FOR e DES e si muove a velocità dimezzata. All’inizio del suo turno tira 1d4: con 1 è incapacitato e trattenuto fino all’inizio del turno successivo. I Pokémon di tipo Elettro sono immuni.",
+      "source": "'Ha svantaggio ai tiri salvezza su FOR e DES e si muove a velocità dimezzata. All’inizio del suo turno tira 1d4: con 1 è incapacitato e trattenuto fino all’inizio del turno successivo. I Pokémon di tipo Elettro sono immuni.',"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_detail_screen_legacy.dart",
+      "line": 136,
+      "value": "Ha svantaggio a tutte le prove di caratteristica e ai tiri per colpire. Finché non viene curato o perde i sensi, subisce danni pari al proprio bonus di competenza alla fine di ciascun turno. I Pokémon di tipo Veleno e Acciaio sono immuni.",
+      "source": "'Ha svantaggio a tutte le prove di caratteristica e ai tiri per colpire. Finché non viene curato o perde i sensi, subisce danni pari al proprio bonus di competenza alla fine di ciascun turno. I Pokémon di tipo Veleno e Acciaio sono immuni.',"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_detail_screen_legacy.dart",
+      "line": 500,
+      "value": "${_pokemon.name} è stato curato al Pokémon Center.",
+      "source": "_showMessage('${_pokemon.name} è stato curato al Pokémon Center.');"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_detail_screen_legacy.dart",
+      "line": 580,
+      "value": "${_pokemon.name} non tiene più strumenti.",
+      "source": "_showMessage('${_pokemon.name} non tiene più strumenti.');"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_detail_screen_legacy.dart",
+      "line": 589,
+      "value": "${_pokemon.name} tiene già ${selectedItem.name}.",
+      "source": "_showMessage('${_pokemon.name} tiene già ${selectedItem.name}.');"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_detail_screen_legacy.dart",
+      "line": 598,
+      "value": "Non hai più ${selectedItem.name} nello zaino.",
+      "source": "_showMessage('Non hai più ${selectedItem.name} nello zaino.');"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_detail_screen_legacy.dart",
+      "line": 612,
+      "value": " ${currentItem.name} è tornato nello zaino.",
+      "source": ": ' ${currentItem.name} è tornato nello zaino.';"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_detail_screen_legacy.dart",
+      "line": 818,
+      "value": "Più tardi",
+      "source": "child: const Text('Più tardi'),"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_detail_screen_legacy.dart",
+      "line": 881,
+      "value": "Il moveset è già pieno. Scegli una mossa da dimenticare.",
+      "source": "'Il moveset è già pieno. Scegli una mossa da dimenticare.',"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_detail_screen_legacy.dart",
+      "line": 1027,
+      "value": "Nessuna evoluzione disponibile per ${_pokemon.name}.",
+      "source": "_showMessage('Nessuna evoluzione disponibile per ${_pokemon.name}.');"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_detail_screen_legacy.dart",
+      "line": 1056,
+      "value": "${selected.option.toName} non è presente nel catalogo attuale.",
+      "source": "'${selected.option.toName} non è presente nel catalogo attuale.',"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_detail_screen_legacy.dart",
+      "line": 1069,
+      "value": "Oggetto evolutivo non disponibile nello zaino.",
+      "source": "_showMessage('Oggetto evolutivo non disponibile nello zaino.');"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_detail_screen_legacy.dart",
+      "line": 1094,
+      "value": "$oldName si è evoluto in ${selected.option.toName}!",
+      "source": "_message = '$oldName si è evoluto in ${selected.option.toName}!';"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_detail_screen_legacy.dart",
+      "line": 1104,
+      "value": "$oldName si è evoluto in ${selected.option.toName}! Nuova specie scoperta.",
+      "source": "'$oldName si è evoluto in ${selected.option.toName}! Nuova specie scoperta.',"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_detail_screen_legacy.dart",
+      "line": 1778,
+      "value": "Scegli solo tra gli oggetti presenti nello zaino.",
+      "source": "const Text('Scegli solo tra gli oggetti presenti nello zaino.'),"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_detail_screen_legacy.dart",
+      "line": 1785,
+      "value": "Lo strumento torna nello zaino.",
+      "source": "subtitle: const Text('Lo strumento torna nello zaino.'),"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_detail_screen_legacy.dart",
+      "line": 1796,
+      "value": "Non hai strumenti tenuti o bacche nello zaino.",
+      "source": "child: Text('Non hai strumenti tenuti o bacche nello zaino.'),"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_detail_screen_legacy.dart",
+      "line": 1824,
+      "value": "Oggetto tenuto",
+      "source": "return 'Oggetto tenuto';"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_detail_screen_legacy.dart",
+      "line": 1873,
+      "value": "POKÉMON CENTER",
+      "source": "'POKÉMON CENTER',"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_detail_screen_legacy.dart",
+      "line": 1898,
+      "value": "Pokémon Center",
+      "source": "title: const Text('Pokémon Center'),"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_detail_screen_legacy.dart",
+      "line": 2548,
+      "value": "Descrizione non disponibile.",
+      "source": "'Descrizione non disponibile.',"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_detail_screen_legacy.dart",
+      "line": 2555,
+      "value": "Descrizione non disponibile.",
+      "source": "featDescriptions[feat] ?? 'Descrizione non disponibile.',"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_detail_screen_legacy.dart",
+      "line": 2561,
+      "value": "Nessuna feature disponibile.",
+      "source": "child: Text('Nessuna feature disponibile.'),"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_detail_screen_legacy.dart",
+      "line": 2960,
+      "value": "Usa +2000 per aggiungere, 2000 per impostare.",
+      "source": "helperText: 'Usa +2000 per aggiungere, 2000 per impostare.',"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_detail_screen_legacy.dart",
+      "line": 2968,
+      "value": "Annulla",
+      "source": "child: const Text('Annulla'),"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_detail_screen_legacy.dart",
+      "line": 2970,
+      "value": "Salva",
+      "source": "FilledButton(onPressed: _submit, child: const Text('Salva')),"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_detail_screen_legacy.dart",
+      "line": 3006,
+      "value": "Usa +5 per curare, -5 per danneggiare, 5 per impostare.",
+      "source": "helperText: 'Usa +5 per curare, -5 per danneggiare, 5 per impostare.',"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_detail_screen_legacy.dart",
+      "line": 3015,
+      "value": "Annulla",
+      "source": "child: const Text('Annulla'),"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_detail_screen_legacy.dart",
+      "line": 3017,
+      "value": "Salva",
+      "source": "FilledButton(onPressed: _submit, child: const Text('Salva')),"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_edit_screen.dart",
+      "line": 53,
+      "value": "Natura",
+      "source": "'Nature': 'Natura',"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_edit_screen.dart",
+      "line": 58,
+      "value": "Rapidità di Mano",
+      "source": "'Sleight of Hand': 'Rapidità di Mano',"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_edit_screen.dart",
+      "line": 59,
+      "value": "Furtività",
+      "source": "'Stealth': 'Furtività',"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_edit_screen.dart",
+      "line": 520,
+      "value": "Scegli abilità",
+      "source": "title: 'Scegli abilità',"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_edit_screen.dart",
+      "line": 526,
+      "value": "Abilità naturali del Pokémon",
+      "source": "pinnedLabel: 'Abilità naturali del Pokémon',"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_edit_screen.dart",
+      "line": 602,
+      "value": "Natura",
+      "source": "labelText: 'Natura',"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_edit_screen.dart",
+      "line": 623,
+      "value": "Sesso",
+      "source": "labelText: 'Sesso',"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_edit_screen.dart",
+      "line": 629,
+      "value": "Qualsiasi",
+      "source": "child: Text('Qualsiasi'),"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_edit_screen.dart",
+      "line": 641,
+      "value": "Senza sesso",
+      "source": "child: Text('Senza sesso'),"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_edit_screen.dart",
+      "line": 659,
+      "value": "Forma",
+      "source": "title: 'Forma',"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_edit_screen.dart",
+      "line": 671,
+      "value": "Mosse",
+      "source": "title: 'Mosse',"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_edit_screen.dart",
+      "line": 688,
+      "value": "Abilità",
+      "source": "title: 'Abilità',"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_edit_screen.dart",
+      "line": 698,
+      "value": "ABILITÀ",
+      "source": "emptyLabel: 'ABILITÀ',"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_edit_screen.dart",
+      "line": 709,
+      "value": "Puoi scegliere tra le abilità naturali del Pokémon o dal catalogo completo. Le abilità deprecated non sono selezionabili.",
+      "source": "'Puoi scegliere tra le abilità naturali del Pokémon o dal catalogo completo. Le abilità deprecated non sono selezionabili.',"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_edit_screen.dart",
+      "line": 730,
+      "value": "Competenze",
+      "source": "title: 'Competenze',"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_edit_screen.dart",
+      "line": 768,
+      "value": "SALVA",
+      "source": "child: FilledButton(onPressed: _save, child: const Text('SALVA')),"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_edit_screen.dart",
+      "line": 818,
+      "value": "ANNULLA",
+      "source": "child: const Text('ANNULLA'),"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_edit_screen.dart",
+      "line": 822,
+      "value": "CONFERMA",
+      "source": "child: const Text('CONFERMA'),"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_edit_screen.dart",
+      "line": 833,
+      "value": "Forma base",
+      "source": "return formName?.trim().isNotEmpty == true ? formName! : 'Forma base';"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_edit_screen.dart",
+      "line": 863,
+      "value": "Tocca per cambiare forma.",
+      "source": "subtitle: const Text('Tocca per cambiare forma.'),"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_edit_screen.dart",
+      "line": 895,
+      "value": "Scegli forma",
+      "source": "'Scegli forma',"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_edit_screen.dart",
+      "line": 1226,
+      "value": "Altre mosse",
+      "source": "'other' => 'Altre mosse',"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_edit_screen.dart",
+      "line": 1282,
+      "value": "SCEGLI MOSSA",
+      "source": "title: const Text('SCEGLI MOSSA'),"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_edit_screen.dart",
+      "line": 1324,
+      "value": "Cerca per nome, tipo o descrizione",
+      "source": "labelText: 'Cerca per nome, tipo o descrizione',"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_edit_screen.dart",
+      "line": 1404,
+      "value": "Scelta manuale: la compatibilità con la specie non viene verificata.",
+      "source": "'Scelta manuale: la compatibilità con la specie non viene verificata.',"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_edit_screen.dart",
+      "line": 1415,
+      "value": "$_sourceLabel · ${moves.length} mosse",
+      "source": "'$_sourceLabel · ${moves.length} mosse',"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_edit_screen.dart",
+      "line": 1425,
+      "value": "Nessuna mossa disponibile.",
+      "source": "child: Text('Nessuna mossa disponibile.'),"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_edit_screen.dart",
+      "line": 1556,
+      "value": "Nessun elemento disponibile.",
+      "source": "child: Text('Nessun elemento disponibile.'),"
+    },
+    {
+      "path": "lib/screens/team/team_selection_screen.dart",
+      "line": 212,
+      "value": "Pokémon",
+      "source": "return _pokemonById(slot.pokemonId)?.name ?? 'Pokémon';"
+    },
+    {
+      "path": "lib/screens/team/team_selection_screen.dart",
+      "line": 334,
+      "value": "Pokémon esportato da Trainer Atlas 5e.",
+      "source": "text: 'Pokémon esportato da Trainer Atlas 5e.',"
+    },
+    {
+      "path": "lib/screens/team/team_selection_screen.dart",
+      "line": 433,
+      "value": "Il Pokémon #${importedSlot.pokemonId} non è presente nel catalogo.",
+      "source": "'Il Pokémon #${importedSlot.pokemonId} non è presente nel catalogo.',"
+    },
+    {
+      "path": "lib/screens/team/team_selection_screen.dart",
+      "line": 451,
+      "value": "$replacedName verrà spostato nel PC Pokémon.",
+      "source": "'$replacedName verrà spostato nel PC Pokémon.',"
+    },
+    {
+      "path": "lib/screens/team/team_selection_screen.dart",
+      "line": 456,
+      "value": "ANNULLA",
+      "source": "child: const Text('ANNULLA'),"
+    },
+    {
+      "path": "lib/screens/team/team_selection_screen.dart",
+      "line": 480,
+      "value": "$importedName importato. Il Pokémon sostituito è stato spostato nel PC.",
+      "source": "? '$importedName importato. Il Pokémon sostituito è stato spostato nel PC.'"
+    },
+    {
+      "path": "lib/screens/team/team_selection_screen.dart",
+      "line": 517,
+      "value": "Il catalogo non contiene i Pokémon: ${unknownIds.join(",
+      "source": "'Il catalogo non contiene i Pokémon: ${unknownIds.join(', ')}.',"
+    },
+    {
+      "path": "lib/screens/team/team_selection_screen.dart",
+      "line": 524,
+      "value": "Non ci sono Pokéslot disponibili: gli slot sbloccati contengono uova.",
+      "source": "'Non ci sono Pokéslot disponibili: gli slot sbloccati contengono uova.',"
+    },
+    {
+      "path": "lib/screens/team/team_selection_screen.dart",
+      "line": 540,
+      "value": "Stai importando ${bundle.pokemon.length} Pokémon$source. ",
+      "source": "'Stai importando ${bundle.pokemon.length} Pokémon$source. '"
+    },
+    {
+      "path": "lib/screens/team/team_selection_screen.dart",
+      "line": 542,
+      "value": "Le uova resteranno nei loro slot. ",
+      "source": "'Le uova resteranno nei loro slot. '"
+    },
+    {
+      "path": "lib/screens/team/team_selection_screen.dart",
+      "line": 548,
+      "value": "ANNULLA",
+      "source": "child: const Text('ANNULLA'),"
+    },
+    {
+      "path": "lib/screens/team/team_selection_screen.dart",
+      "line": 1133,
+      "value": "Scegli Pokémon",
+      "source": "'Scegli Pokémon',"
+    },
+    {
+      "path": "lib/screens/team/team_selection_screen.dart",
+      "line": 1264,
+      "value": "Chiudi",
+      "source": "tooltip: 'Chiudi',"
+    },
+    {
+      "path": "lib/screens/team/team_selection_screen.dart",
+      "line": 1291,
+      "value": "Riprova",
+      "source": "FilledButton(onPressed: onRetry, child: const Text('Riprova')),"
+    },
+    {
+      "path": "lib/screens/tools/encounter_generator_screen.dart",
+      "line": 57,
+      "value": "Qualsiasi",
+      "source": "String _habitat = 'Qualsiasi';"
+    },
+    {
+      "path": "lib/screens/tools/encounter_result_screen.dart",
+      "line": 644,
+      "value": "Senza sesso",
+      "source": "'Genderless' => 'Senza sesso',"
+    },
+    {
+      "path": "lib/screens/tools/encounter_result_screen.dart",
+      "line": 727,
+      "value": "Scheda",
+      "source": "label: const Text('Scheda'),"
+    },
+    {
+      "path": "lib/screens/tools/pokemon_generator_screen.dart",
+      "line": 1372,
+      "value": "Senza sesso",
+      "source": "return 'Senza sesso';"
+    },
+    {
+      "path": "lib/screens/trainer/trainer_sheet_screen.dart",
+      "line": 327,
+      "value": "Origine 5e approvata dal DM",
+      "source": "return origin.name == 'Origine 5e approvata dal DM'"
+    },
+    {
+      "path": "lib/screens/trainer/trainer_sheet_screen.dart",
+      "line": 343,
+      "value": "Origine 5e approvata dal DM",
+      "source": "'Origine 5e approvata dal DM' =>"
+    },
+    {
+      "path": "lib/services/pokemon_habitat_service.dart",
+      "line": 8,
+      "value": "Qualsiasi",
+      "source": "'Qualsiasi',"
+    },
+    {
+      "path": "lib/services/pokemon_habitat_service.dart",
+      "line": 9,
+      "value": "Prateria",
+      "source": "'Prateria',"
+    },
+    {
+      "path": "lib/services/pokemon_habitat_service.dart",
+      "line": 10,
+      "value": "Foresta",
+      "source": "'Foresta',"
+    },
+    {
+      "path": "lib/services/pokemon_habitat_service.dart",
+      "line": 11,
+      "value": "Grotta",
+      "source": "'Grotta',"
+    },
+    {
+      "path": "lib/services/pokemon_habitat_service.dart",
+      "line": 12,
+      "value": "Montagna",
+      "source": "'Montagna',"
+    },
+    {
+      "path": "lib/services/pokemon_habitat_service.dart",
+      "line": 13,
+      "value": "Deserto",
+      "source": "'Deserto',"
+    },
+    {
+      "path": "lib/services/pokemon_habitat_service.dart",
+      "line": 14,
+      "value": "Palude",
+      "source": "'Palude',"
+    },
+    {
+      "path": "lib/services/pokemon_habitat_service.dart",
+      "line": 15,
+      "value": "Costa e fiumi",
+      "source": "'Costa e fiumi',"
+    },
+    {
+      "path": "lib/services/pokemon_habitat_service.dart",
+      "line": 16,
+      "value": "Mare",
+      "source": "'Mare',"
+    },
+    {
+      "path": "lib/services/pokemon_habitat_service.dart",
+      "line": 17,
+      "value": "Città",
+      "source": "'Città',"
+    },
+    {
+      "path": "lib/services/pokemon_habitat_service.dart",
+      "line": 18,
+      "value": "Neve e ghiaccio",
+      "source": "'Neve e ghiaccio',"
+    },
+    {
+      "path": "lib/services/pokemon_habitat_service.dart",
+      "line": 23,
+      "value": "qualsiasi",
+      "source": "if (normalizedHabitat.isEmpty || normalizedHabitat == 'qualsiasi') {"
+    },
+    {
+      "path": "lib/services/pokemon_habitat_service.dart",
+      "line": 41,
+      "value": "prateria",
+      "source": "'prateria' =>"
+    },
+    {
+      "path": "lib/services/pokemon_habitat_service.dart",
+      "line": 44,
+      "value": "foresta",
+      "source": "'foresta' =>"
+    },
+    {
+      "path": "lib/services/pokemon_habitat_service.dart",
+      "line": 47,
+      "value": "grotta",
+      "source": "'grotta' =>"
+    },
+    {
+      "path": "lib/services/pokemon_habitat_service.dart",
+      "line": 50,
+      "value": "montagna",
+      "source": "'montagna' =>"
+    },
+    {
+      "path": "lib/services/pokemon_habitat_service.dart",
+      "line": 53,
+      "value": "deserto",
+      "source": "'deserto' =>"
+    },
+    {
+      "path": "lib/services/pokemon_habitat_service.dart",
+      "line": 56,
+      "value": "palude",
+      "source": "'palude' =>"
+    },
+    {
+      "path": "lib/services/pokemon_habitat_service.dart",
+      "line": 59,
+      "value": "costa e fiumi",
+      "source": "'costa e fiumi' =>"
+    },
+    {
+      "path": "lib/services/pokemon_habitat_service.dart",
+      "line": 62,
+      "value": "mare",
+      "source": "'mare' =>"
+    },
+    {
+      "path": "lib/services/pokemon_habitat_service.dart",
+      "line": 66,
+      "value": "città",
+      "source": "'città' =>"
+    },
+    {
+      "path": "lib/services/pokemon_habitat_service.dart",
+      "line": 69,
+      "value": "neve e ghiaccio",
+      "source": "'neve e ghiaccio' =>"
+    },
+    {
+      "path": "lib/widgets/battle/battle_status_assistance_card.dart",
+      "line": 102,
+      "value": "Nessun effetto passivo da ricordare.",
+      "source": "emptyMessage: 'Nessun effetto passivo da ricordare.',"
+    },
+    {
+      "path": "lib/widgets/battle/battle_status_assistance_card.dart",
+      "line": 120,
+      "value": "Nessun tiro o danno richiesto in questa fase.",
+      "source": "emptyMessage: 'Nessun tiro o danno richiesto in questa fase.',"
+    },
+    {
+      "path": "lib/widgets/battle/battle_status_assistance_card.dart",
+      "line": 124,
+      "value": "Le durate e il periodo di protezione dopo la guarigione restano manuali: il pannello non tira dadi e non rimuove automaticamente gli status.",
+      "source": "'Le durate e il periodo di protezione dopo la guarigione restano manuali: il pannello non tira dadi e non rimuove automaticamente gli status.',"
+    },
+    {
+      "path": "lib/widgets/battle/wild_master_fight_launcher.dart",
+      "line": 17,
+      "value": "L’incontro non contiene Pokémon da aggiungere al fight.",
+      "source": "'L’incontro non contiene Pokémon da aggiungere al fight.',"
+    },
+    {
+      "path": "lib/widgets/battle/wild_master_fight_launcher.dart",
+      "line": 31,
+      "value": "È già presente una sessione del Master. Avviandone una nuova perderai PF, PP, status, round e iniziativa della sessione corrente.",
+      "source": "'È già presente una sessione del Master. Avviandone una nuova perderai PF, PP, status, round e iniziativa della sessione corrente.',"
+    },
+    {
+      "path": "lib/widgets/battle/wild_master_fight_launcher.dart",
+      "line": 36,
+      "value": "Annulla",
+      "source": "child: const Text('Annulla'),"
+    },
+    {
+      "path": "lib/widgets/battle/wild_master_fight_launcher.dart",
+      "line": 95,
+      "value": "$memberCount Pokémon verranno copiati nel Fight del Master. L’incontro e la Libreria Allenatori PNG non saranno modificati.",
+      "source": "'$memberCount Pokémon verranno copiati nel Fight del Master. L’incontro e la Libreria Allenatori PNG non saranno modificati.',"
+    },
+    {
+      "path": "lib/widgets/battle/wild_master_fight_launcher.dart",
+      "line": 99,
+      "value": "Pokémon attivi contemporaneamente",
+      "source": "'Pokémon attivi contemporaneamente',"
+    },
+    {
+      "path": "lib/widgets/battle/wild_master_fight_launcher.dart",
+      "line": 124,
+      "value": "Annulla",
+      "source": "child: const Text('Annulla'),"
+    },
+    {
+      "path": "lib/widgets/breeding/breeder_trait_dialogs.dart",
+      "line": 85,
+      "value": "Per ${widget.pokemon.name} puoi ignorare i tiri e scegliere sesso, natura e abilità tra le opzioni disponibili. Lascia Casuale per usare le normali regole di schiusa.",
+      "source": "'Per ${widget.pokemon.name} puoi ignorare i tiri e scegliere sesso, natura e abilità tra le opzioni disponibili. Lascia Casuale per usare le normali regole di schiusa.',"
+    },
+    {
+      "path": "lib/widgets/breeding/breeder_trait_dialogs.dart",
+      "line": 89,
+      "value": "Sesso",
+      "source": "label: 'Sesso',"
+    },
+    {
+      "path": "lib/widgets/breeding/breeder_trait_dialogs.dart",
+      "line": 96,
+      "value": "Natura",
+      "source": "label: 'Natura',"
+    },
+    {
+      "path": "lib/widgets/breeding/breeder_trait_dialogs.dart",
+      "line": 103,
+      "value": "Abilità non nascosta",
+      "source": "label: 'Abilità non nascosta',"
+    },
+    {
+      "path": "lib/widgets/breeding/breeder_trait_dialogs.dart",
+      "line": 117,
+      "value": "Puoi sostituire fino allo stesso numero di Egg Moves ereditate. Le selezioni non usate mantengono le mosse ereditate originali.",
+      "source": "'Puoi sostituire fino allo stesso numero di Egg Moves ereditate. Le selezioni non usate mantengono le mosse ereditate originali.',"
+    },
+    {
+      "path": "lib/widgets/breeding/breeder_trait_dialogs.dart",
+      "line": 151,
+      "value": "ANNULLA",
+      "source": "child: const Text('ANNULLA'),"
+    },
+    {
+      "path": "lib/widgets/breeding/breeder_trait_dialogs.dart",
+      "line": 164,
+      "value": "CONFERMA",
+      "source": "child: const Text('CONFERMA'),"
+    },
+    {
+      "path": "lib/widgets/breeding/breeder_trait_dialogs.dart",
+      "line": 376,
+      "value": "ANNULLA",
+      "source": "child: const Text('ANNULLA'),"
+    },
+    {
+      "path": "lib/widgets/breeding/breeder_trait_dialogs.dart",
+      "line": 416,
+      "value": "PF dell’uovo",
+      "source": "title: const Text('PF dell’uovo'),"
+    },
+    {
+      "path": "lib/widgets/breeding/breeder_trait_dialogs.dart",
+      "line": 424,
+      "value": "Il manuale assegna CA 8 e $maxHp PF. A 0 PF l’uovo è distrutto.",
+      "source": "'Il manuale assegna CA 8 e $maxHp PF. A 0 PF l’uovo è distrutto.',"
+    },
+    {
+      "path": "lib/widgets/breeding/breeder_trait_dialogs.dart",
+      "line": 430,
+      "value": "ANNULLA",
+      "source": "child: const Text('ANNULLA'),"
+    },
+    {
+      "path": "lib/widgets/navigation/home_leading_button.dart",
+      "line": 14,
+      "value": "Indietro",
+      "source": "tooltip: 'Indietro',"
+    },
+    {
+      "path": "lib/widgets/pokemon/egg_asset_image.dart",
+      "line": 12,
+      "value": "Uovo Pokémon",
+      "source": "static const String semanticLabel = 'Uovo Pokémon';"
+    },
+    {
+      "path": "lib/widgets/pokemon/pokemon_asset_image.dart",
+      "line": 98,
+      "value": "senza-sesso",
+      "source": "reduced == 'senza-sesso' ||"
+    },
+    {
+      "path": "lib/widgets/pokemon/pokemon_asset_image.dart",
+      "line": 99,
+      "value": "sesso-sconosciuto",
+      "source": "reduced == 'sesso-sconosciuto';"
+    },
+    {
+      "path": "lib/widgets/pokemon/pokemon_asset_image_legacy.dart",
+      "line": 556,
+      "value": "ghiaccio",
+      "source": "case 'ghiaccio':"
+    },
+    {
+      "path": "lib/widgets/pokemon/pokemon_asset_image_legacy.dart",
+      "line": 617,
+      "value": "ghiaccio",
+      "source": "case 'ghiaccio':"
+    },
+    {
+      "path": "lib/widgets/pokemon/pokemon_asset_image_legacy.dart",
+      "line": 618,
+      "value": "Ghiaccio",
+      "source": "return 'Ghiaccio';"
+    },
+    {
+      "path": "lib/widgets/pokemon/pokemon_asset_image_legacy.dart",
+      "line": 1191,
+      "value": "forma base",
+      "source": "case 'forma base':"
+    },
+    {
+      "path": "lib/widgets/pokemon/pokemon_minior_asset_paths.dart",
+      "line": 86,
+      "value": "forma-meteora",
+      "source": "raw == 'forma-meteora';"
+    },
+    {
+      "path": "lib/widgets/tools/generated_pokemon_batch_card.dart",
+      "line": 44,
+      "value": "GRUPPO GENERATO — ${generated.length}",
+      "source": "'GRUPPO GENERATO — ${generated.length}',"
+    },
+    {
+      "path": "lib/widgets/tools/generated_pokemon_batch_card.dart",
+      "line": 229,
+      "value": "Scheda",
+      "source": "label: const Text('Scheda'),"
+    },
+    {
+      "path": "lib/widgets/tour/professor_tour_panel.dart",
+      "line": 222,
+      "value": "INDIETRO",
+      "source": "child: Text(l10n?.backAction ?? 'INDIETRO'),"
+    },
+    {
+      "path": "lib/widgets/trainer/trainer_path_automation_panel.dart",
+      "line": 57,
+      "value": "GESTIONE PERCORSO ALLENATORE",
+      "source": "'GESTIONE PERCORSO ALLENATORE',"
+    },
+    {
+      "path": "lib/widgets/trainer/trainer_path_automation_panel.dart",
+      "line": 75,
+      "value": "Le risorse massime vengono calcolate dal livello e dalle caratteristiche. Le quantità rimaste e le scelte vengono salvate nella scheda.",
+      "source": "'Le risorse massime vengono calcolate dal livello e dalle caratteristiche. Le quantità rimaste e le scelte vengono salvate nella scheda.',"
+    },
+    {
+      "path": "lib/widgets/trainer/trainer_path_automation_panel.dart",
+      "line": 143,
+      "value": "A questo livello il percorso non ha ancora risorse numeriche da consumare.",
+      "source": "'A questo livello il percorso non ha ancora risorse numeriche da consumare.',"
+    },
+    {
+      "path": "lib/widgets/trainer/trainer_path_automation_panel.dart",
+      "line": 188,
+      "value": "Nessuna opzione disponibile",
+      "source": "? 'Nessuna opzione disponibile'"
+    }
+  ]
+}

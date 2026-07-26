@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:pokedex_5e_ita/l10n/app_localizations.dart';
 import 'package:pokedex_5e_ita/widgets/battle/pokemon_battle_attributes_card.dart';
 
 void main() {
@@ -13,9 +14,14 @@ void main() {
     'CHA': 6,
   };
 
-  testWidgets('mostra tutte le caratteristiche e i modificatori', (tester) async {
+  testWidgets('mostra tutte le caratteristiche e i modificatori', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       const MaterialApp(
+        locale: Locale('it'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         home: Scaffold(
           body: SingleChildScrollView(
             child: PokemonBattleAttributesCard(attributes: attributes),
@@ -45,10 +51,14 @@ void main() {
     expect(find.text('-2'), findsOneWidget);
   });
 
-  testWidgets('non genera vincoli negativi con larghezza quasi nulla',
-      (tester) async {
+  testWidgets('non genera vincoli negativi con larghezza quasi nulla', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       const MaterialApp(
+        locale: Locale('it'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         home: Scaffold(
           body: Align(
             alignment: Alignment.topLeft,

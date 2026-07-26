@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../localization/ui_text.dart';
 import '../../models/encounter_collection.dart';
 import '../../models/generated_pokemon.dart';
 import '../../models/pokemon.dart';
@@ -145,18 +146,34 @@ class _EncounterCollectionEditorScreenState
   Future<void> _save() async {
     final name = _nameController.text.trim();
     if (name.isEmpty) {
-      setState(() => _error = 'Inserisci un nome per la raccolta.');
+      setState(
+        () => _error = context.uiText(
+          'Inserisci un nome per la raccolta.',
+          'Enter a collection name.',
+        ),
+      );
       return;
     }
     if (_weights.isEmpty) {
-      setState(() => _error = 'Aggiungi almeno un Pokémon.');
+      setState(
+        () => _error = context.uiText(
+          'Aggiungi almeno un Pokémon.',
+          'Add at least one Pokémon.',
+        ),
+      );
       return;
     }
     if (_total != 100) {
       setState(() {
         _error = _total < 100
-            ? 'Il totale è $_total%: mancano ${100 - _total}%.'
-            : 'Il totale è $_total%: supera il 100% di ${_total - 100}%.';
+            ? context.uiText(
+                'Il totale è $_total%: mancano ${100 - _total}%.',
+                'The total is $_total%: ${100 - _total}% is missing.',
+              )
+            : context.uiText(
+                'Il totale è $_total%: supera il 100% di ${_total - 100}%.',
+                'The total is $_total%: it exceeds 100% by ${_total - 100}%.',
+              );
       });
       return;
     }
@@ -176,8 +193,10 @@ class _EncounterCollectionEditorScreenState
     }
     if (entries.length != _weights.length) {
       setState(() {
-        _error =
-            'Una forma selezionata non è più disponibile nel catalogo. Rimuovila e aggiungila di nuovo.';
+        _error = context.uiText(
+          'Una forma selezionata non è più disponibile nel catalogo. Rimuovila e aggiungila di nuovo.',
+          'A selected form is no longer available in the catalog. Remove it and add it again.',
+        );
       });
       return;
     }
@@ -225,7 +244,9 @@ class _EncounterCollectionEditorScreenState
       appBar: AppBar(
         leading: const HomeLeadingButton(),
         title: Text(
-          widget.collection == null ? 'Nuova raccolta' : 'Modifica raccolta',
+          widget.collection == null
+              ? context.uiText('Nuova raccolta', 'New collection')
+              : context.uiText('Modifica raccolta', 'Edit collection'),
         ),
         actions: const [HomeAppBarAction()],
       ),
@@ -239,19 +260,19 @@ class _EncounterCollectionEditorScreenState
         children: [
           TextField(
             controller: _nameController,
-            decoration: const InputDecoration(
-              labelText: 'Nome raccolta',
-              hintText: 'Es. Percorso 24',
-              border: OutlineInputBorder(),
+            decoration: InputDecoration(
+              labelText: context.uiText('Nome raccolta', 'Collection name'),
+              hintText: context.uiText('Es. Percorso 24', 'E.g. Route 24'),
+              border: const OutlineInputBorder(),
             ),
           ),
           const SizedBox(height: 10),
           TextField(
             controller: _notesController,
             maxLines: 2,
-            decoration: const InputDecoration(
-              labelText: 'Note facoltative',
-              border: OutlineInputBorder(),
+            decoration: InputDecoration(
+              labelText: context.uiText('Note facoltative', 'Optional notes'),
+              border: const OutlineInputBorder(),
             ),
           ),
           const SizedBox(height: 14),
@@ -261,21 +282,30 @@ class _EncounterCollectionEditorScreenState
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const Text(
-                    'AGGIUNGI POKÉMON O FORMA',
-                    style: TextStyle(fontWeight: FontWeight.w900),
+                  Text(
+                    context.uiText(
+                      'AGGIUNGI POKÉMON O FORMA',
+                      'ADD POKÉMON OR FORM',
+                    ),
+                    style: const TextStyle(fontWeight: FontWeight.w900),
                   ),
                   const SizedBox(height: 4),
-                  const Text(
-                    'La forma base e ogni forma permanente sono selezionabili separatamente.',
+                  Text(
+                    context.uiText(
+                      'La forma base e ogni forma permanente sono selezionabili separatamente.',
+                      'The base form and each permanent form can be selected separately.',
+                    ),
                   ),
                   const SizedBox(height: 8),
                   TextField(
                     controller: _searchController,
-                    decoration: const InputDecoration(
-                      labelText: 'Nome, forma o numero',
-                      prefixIcon: Icon(Icons.search),
-                      border: OutlineInputBorder(),
+                    decoration: InputDecoration(
+                      labelText: context.uiText(
+                        'Nome, forma o numero',
+                        'Name, form or number',
+                      ),
+                      prefixIcon: const Icon(Icons.search),
+                      border: const OutlineInputBorder(),
                     ),
                     onChanged: (value) => setState(() => _query = value),
                   ),
@@ -317,7 +347,7 @@ class _EncounterCollectionEditorScreenState
             children: [
               Expanded(
                 child: Text(
-                  'PROBABILITÀ',
+                  context.uiText('PROBABILITÀ', 'PROBABILITY'),
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w900,
                   ),
@@ -334,11 +364,14 @@ class _EncounterCollectionEditorScreenState
           ),
           const SizedBox(height: 8),
           if (selectedKeys.isEmpty)
-            const Card(
+            Card(
               child: Padding(
-                padding: EdgeInsets.all(20),
+                padding: const EdgeInsets.all(20),
                 child: Text(
-                  'Cerca e aggiungi i Pokémon o le forme che possono apparire in questa raccolta.',
+                  context.uiText(
+                    'Cerca e aggiungi i Pokémon o le forme che possono apparire in questa raccolta.',
+                    'Search for and add the Pokémon or forms that can appear in this collection.',
+                  ),
                   textAlign: TextAlign.center,
                 ),
               ),
@@ -381,7 +414,7 @@ class _EncounterCollectionEditorScreenState
                           ),
                           IconButton(
                             onPressed: () => _removeChoice(key),
-                            tooltip: 'Rimuovi',
+                            tooltip: context.uiText('Rimuovi', 'Remove'),
                             icon: const Icon(Icons.delete_outline),
                           ),
                         ],
@@ -417,11 +450,18 @@ class _EncounterCollectionEditorScreenState
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
                 : const Icon(Icons.save_outlined),
-            label: Text(_isSaving ? 'SALVATAGGIO...' : 'SALVA RACCOLTA'),
+            label: Text(
+              _isSaving
+                  ? context.uiText('SALVATAGGIO...', 'SAVING...')
+                  : context.uiText('SALVA RACCOLTA', 'SAVE COLLECTION'),
+            ),
           ),
           const SizedBox(height: 6),
-          const Text(
-            'La generazione è disponibile solo quando il totale è esattamente 100%.',
+          Text(
+            context.uiText(
+              'La generazione è disponibile solo quando il totale è esattamente 100%.',
+              'Generation is available only when the total is exactly 100%.',
+            ),
             textAlign: TextAlign.center,
           ),
         ],

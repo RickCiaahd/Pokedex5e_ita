@@ -37,6 +37,11 @@ extension BattleSeasonLabel on BattleSeason {
     BattleSeason.springSummer => 'Primavera / Estate',
     BattleSeason.fallWinter => 'Autunno / Inverno',
   };
+
+  String get englishLabel => switch (this) {
+    BattleSeason.springSummer => 'Spring / Summer',
+    BattleSeason.fallWinter => 'Fall / Winter',
+  };
 }
 
 extension BattleWeatherLabel on BattleWeather {
@@ -56,6 +61,23 @@ extension BattleWeatherLabel on BattleWeather {
     BattleWeather.hail => 'Grandine',
     BattleWeather.sandstorm => 'Tempesta di sabbia',
   };
+
+  String get englishLabel => switch (this) {
+    BattleWeather.clear => 'No weather',
+    BattleWeather.harshSunCalm => 'Harsh sunlight, calm',
+    BattleWeather.harshSunWindy => 'Harsh sunlight, windy',
+    BattleWeather.cloudyCalm => 'Cloudy, calm',
+    BattleWeather.cloudyWindy => 'Cloudy, windy',
+    BattleWeather.foggy => 'Fog',
+    BattleWeather.lightDrizzle => 'Light drizzle',
+    BattleWeather.heavyRain => 'Heavy rain',
+    BattleWeather.dangerousStorm => 'Dangerous storm',
+    BattleWeather.lightSnow => 'Light snow',
+    BattleWeather.heavySnow => 'Heavy snow',
+    BattleWeather.blizzard => 'Blizzard',
+    BattleWeather.hail => 'Hail',
+    BattleWeather.sandstorm => 'Sandstorm',
+  };
 }
 
 extension BattleNaturalTerrainLabel on BattleNaturalTerrain {
@@ -71,6 +93,8 @@ extension BattleNaturalTerrainLabel on BattleNaturalTerrain {
     BattleNaturalTerrain.mountain => 'Montagna',
     BattleNaturalTerrain.underwater => 'Subacqueo',
   };
+
+  String get englishLabel => manualName;
 
   String get manualName => switch (this) {
     BattleNaturalTerrain.none => 'None',
@@ -93,6 +117,14 @@ extension BattleFieldTerrainLabel on BattleFieldTerrain {
     BattleFieldTerrain.grassy => 'Terreno Erboso',
     BattleFieldTerrain.misty => 'Terreno Nebbioso',
     BattleFieldTerrain.psychic => 'Terreno Psichico',
+  };
+
+  String get englishLabel => switch (this) {
+    BattleFieldTerrain.none => 'None',
+    BattleFieldTerrain.electric => 'Electric Terrain',
+    BattleFieldTerrain.grassy => 'Grassy Terrain',
+    BattleFieldTerrain.misty => 'Misty Terrain',
+    BattleFieldTerrain.psychic => 'Psychic Terrain',
   };
 }
 

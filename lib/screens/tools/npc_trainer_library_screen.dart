@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
+import '../../localization/ui_text.dart';
 import '../../models/bag_item.dart';
 import '../../models/campaign_transfer_bundle.dart';
 import '../../models/generated_npc_trainer.dart';
@@ -149,7 +150,10 @@ class _NpcTrainerLibraryScreenState extends State<NpcTrainerLibraryScreen> {
 
   Future<CampaignTransferBundle?> _pickTransferFile() async {
     final result = await FilePicker.platform.pickFiles(
-      dialogTitle: 'Importa Allenatore PNG Pokédex 5e',
+      dialogTitle: uiTextForLanguage(
+        'Importa Allenatore PNG Trainer Atlas 5e',
+        'Import NPC Trainer · Trainer Atlas 5e',
+      ),
       type: FileType.custom,
       allowedExtensions: const ['json'],
       allowMultiple: false,
@@ -172,7 +176,10 @@ class _NpcTrainerLibraryScreenState extends State<NpcTrainerLibraryScreen> {
       );
       final json = await _transferService.encodePortable(bundle);
       final path = await FilePicker.platform.saveFile(
-        dialogTitle: 'Esporta ${saved.displayName}',
+        dialogTitle: uiTextForLanguage(
+          'Esporta ${saved.displayName}',
+          'Export ${saved.displayName}',
+        ),
         fileName: _transferService.fileNameForNpcTrainer(bundle),
         type: FileType.custom,
         allowedExtensions: const ['json'],
@@ -180,8 +187,11 @@ class _NpcTrainerLibraryScreenState extends State<NpcTrainerLibraryScreen> {
       );
       _setMessage(
         path == null
-            ? 'Esportazione annullata.'
-            : '${saved.displayName} esportato correttamente.',
+            ? uiTextForLanguage('Esportazione annullata.', 'Export cancelled.')
+            : uiTextForLanguage(
+                '${saved.displayName} esportato correttamente.',
+                '${saved.displayName} exported successfully.',
+              ),
       );
     } catch (error) {
       _setMessage(_friendlyError(error), isError: true);
@@ -206,14 +216,23 @@ class _NpcTrainerLibraryScreenState extends State<NpcTrainerLibraryScreen> {
         content: json,
         fileName: _transferService.fileNameForNpcTrainer(bundle),
         mimeType: 'application/json',
-        title: 'Condividi ${saved.displayName}',
+        title: uiTextForLanguage(
+          'Condividi ${saved.displayName}',
+          'Share ${saved.displayName}',
+        ),
         subject: '${saved.displayName} · Trainer Atlas 5e',
-        text: 'Allenatore PNG esportato da Trainer Atlas 5e.',
+        text: uiTextForLanguage(
+          'Allenatore PNG esportato da Trainer Atlas 5e.',
+          'NPC Trainer exported from Trainer Atlas 5e.',
+        ),
       );
       _setMessage(
         _shareService.feedback(
           outcome,
-          successMessage: '${saved.displayName} condiviso correttamente.',
+          successMessage: uiTextForLanguage(
+            '${saved.displayName} condiviso correttamente.',
+            '${saved.displayName} shared successfully.',
+          ),
         ),
       );
     } catch (error) {
@@ -230,42 +249,62 @@ class _NpcTrainerLibraryScreenState extends State<NpcTrainerLibraryScreen> {
     try {
       final bundle = await _pickTransferFile();
       if (bundle == null) {
-        _setMessage('Importazione annullata.');
+        _setMessage(
+          uiTextForLanguage('Importazione annullata.', 'Import cancelled.'),
+        );
         return;
       }
       if (bundle.kind != CampaignTransferKind.npcTrainer) {
-        throw const FormatException(
-          'Seleziona un file esportato come Allenatore PNG.',
+        throw FormatException(
+          uiTextForLanguage(
+            'Seleziona un file esportato come Allenatore PNG.',
+            'Select a file exported as an NPC Trainer.',
+          ),
         );
       }
       final source = bundle.npcTrainer!;
       if (!mounted) return;
       final origin = bundle.sourceProfileName.isEmpty
           ? ''
-          : ' dal profilo ${bundle.sourceProfileName}';
+          : uiTextForLanguage(
+              ' dal profilo ${bundle.sourceProfileName}',
+              ' from profile ${bundle.sourceProfileName}',
+            );
       final confirmed = await showDialog<bool>(
         context: context,
         builder: (_) => AlertDialog(
-          title: const Text('Importare Allenatore PNG?'),
+          title: Text(
+            uiTextForLanguage(
+              'Importare Allenatore PNG?',
+              'Import NPC Trainer?',
+            ),
+          ),
           content: Text(
-            'Vuoi importare “${source.displayName}”$origin con una squadra '
-            'di ${source.team.length} Pokémon? Verrà creata una nuova copia '
-            'nella libreria del profilo attivo.',
+            uiTextForLanguage(
+              'Vuoi importare “${source.displayName}”$origin con una squadra '
+                  'di ${source.team.length} Pokémon? Verrà creata una nuova copia '
+                  'nella libreria del profilo attivo.',
+              'Import “${source.displayName}”$origin with a team of '
+                  '${source.team.length} Pokémon? A new copy will be created in '
+                  'the active profile library.',
+            ),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
-              child: const Text('ANNULLA'),
+              child: Text(uiTextForLanguage('ANNULLA', 'CANCEL')),
             ),
             FilledButton(
               onPressed: () => Navigator.of(context).pop(true),
-              child: const Text('IMPORTA'),
+              child: Text(uiTextForLanguage('IMPORTA', 'IMPORT')),
             ),
           ],
         ),
       );
       if (confirmed != true) {
-        _setMessage('Importazione annullata.');
+        _setMessage(
+          uiTextForLanguage('Importazione annullata.', 'Import cancelled.'),
+        );
         return;
       }
       final imported = await _transferService.importNpcTrainer(
@@ -274,7 +313,12 @@ class _NpcTrainerLibraryScreenState extends State<NpcTrainerLibraryScreen> {
         catalogPokemonIds: _catalog.map((pokemon) => pokemon.id).toSet(),
       );
       await _load();
-      _setMessage('${imported.displayName} importato nella libreria PNG.');
+      _setMessage(
+        uiTextForLanguage(
+          '${imported.displayName} importato nella libreria PNG.',
+          '${imported.displayName} imported into the NPC library.',
+        ),
+      );
     } catch (error) {
       _setMessage(_friendlyError(error), isError: true);
     } finally {
@@ -296,7 +340,12 @@ class _NpcTrainerLibraryScreenState extends State<NpcTrainerLibraryScreen> {
       );
       await _repository.saveTrainer(profileId: profile.id, trainer: copy);
       await _load();
-      _setMessage('${copy.displayName} duplicato.');
+      _setMessage(
+        uiTextForLanguage(
+          '${copy.displayName} duplicato.',
+          '${copy.displayName} duplicated.',
+        ),
+      );
     } catch (error) {
       _setMessage(_friendlyError(error), isError: true);
     } finally {
@@ -310,18 +359,23 @@ class _NpcTrainerLibraryScreenState extends State<NpcTrainerLibraryScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Eliminare l’allenatore?'),
+        title: Text(
+          uiTextForLanguage('Eliminare l’allenatore?', 'Delete trainer?'),
+        ),
         content: Text(
-          '“${saved.displayName}” verrà rimosso dalla libreria. Le sessioni di fight già avviate non verranno modificate.',
+          uiTextForLanguage(
+            '“${saved.displayName}” verrà rimosso dalla libreria. Le sessioni di fight già avviate non verranno modificate.',
+            '“${saved.displayName}” will be removed from the library. Existing battle sessions will not be changed.',
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Annulla'),
+            child: Text(uiTextForLanguage('Annulla', 'Cancel')),
           ),
           FilledButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Elimina'),
+            child: Text(uiTextForLanguage('Elimina', 'Delete')),
           ),
         ],
       ),
@@ -336,7 +390,12 @@ class _NpcTrainerLibraryScreenState extends State<NpcTrainerLibraryScreen> {
       );
       _selectedIds.remove(saved.id);
       await _load();
-      _setMessage('${saved.displayName} eliminato.');
+      _setMessage(
+        uiTextForLanguage(
+          '${saved.displayName} eliminato.',
+          '${saved.displayName} deleted.',
+        ),
+      );
     } catch (error) {
       _setMessage(_friendlyError(error), isError: true);
     } finally {
@@ -351,7 +410,10 @@ class _NpcTrainerLibraryScreenState extends State<NpcTrainerLibraryScreen> {
     if (!mounted) return;
     if (session == null) {
       _setMessage(
-        'Non c’è nessun fight del Master da riprendere.',
+        uiTextForLanguage(
+          'Non c’è nessun fight del Master da riprendere.',
+          'There is no Game Master battle to resume.',
+        ),
         isError: true,
       );
       await _load();
@@ -384,18 +446,26 @@ class _NpcTrainerLibraryScreenState extends State<NpcTrainerLibraryScreen> {
       final replace = await showDialog<bool>(
         context: context,
         builder: (_) => AlertDialog(
-          title: const Text('Sostituire il fight attivo?'),
-          content: const Text(
-            'È già presente una sessione del Master. Avviandone una nuova perderai PF, PP, status, round e iniziativa della sessione corrente.',
+          title: Text(
+            uiTextForLanguage(
+              'Sostituire il fight attivo?',
+              'Replace the active battle?',
+            ),
+          ),
+          content: Text(
+            uiTextForLanguage(
+              'È già presente una sessione del Master. Avviandone una nuova perderai PF, PP, status, round e iniziativa della sessione corrente.',
+              'A Game Master session is already active. Starting a new one will discard HP, PP, conditions, round and initiative from the current session.',
+            ),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
-              child: const Text('Annulla'),
+              child: Text(uiTextForLanguage('Annulla', 'Cancel')),
             ),
             FilledButton(
               onPressed: () => Navigator.of(context).pop(true),
-              child: const Text('Nuovo fight'),
+              child: Text(uiTextForLanguage('Nuovo fight', 'New battle')),
             ),
           ],
         ),
@@ -439,10 +509,13 @@ class _NpcTrainerLibraryScreenState extends State<NpcTrainerLibraryScreen> {
 
   String _copyName(String original) {
     final names = _trainers.map((trainer) => trainer.name).toSet();
-    var candidate = '$original (copia)';
+    var candidate = context.uiText('$original (copia)', '$original (copy)');
     var index = 2;
     while (names.contains(candidate)) {
-      candidate = '$original (copia $index)';
+      candidate = context.uiText(
+        '$original (copia $index)',
+        '$original (copy $index)',
+      );
       index++;
     }
     return candidate;
@@ -468,11 +541,16 @@ class _NpcTrainerLibraryScreenState extends State<NpcTrainerLibraryScreen> {
     return Scaffold(
       appBar: AppBar(
         leading: const HomeLeadingButton(),
-        title: const Text('Libreria Allenatori PNG'),
+        title: Text(
+          context.uiText('Libreria Allenatori PNG', 'NPC Trainer Library'),
+        ),
         actions: [
           IconButton(
             onPressed: _isBusy || _isLoading ? null : _importTrainer,
-            tooltip: 'Importa Allenatore PNG',
+            tooltip: context.uiText(
+              'Importa Allenatore PNG',
+              'Import NPC Trainer',
+            ),
             icon: const Icon(Icons.download_outlined),
           ),
         ],
@@ -512,7 +590,7 @@ class _NpcTrainerLibraryScreenState extends State<NpcTrainerLibraryScreen> {
                   child: Center(child: CircularProgressIndicator()),
                 )
               else if (_trainers.isEmpty)
-                const Card(
+                Card(
                   child: Padding(
                     padding: EdgeInsets.all(24),
                     child: Column(
@@ -520,12 +598,18 @@ class _NpcTrainerLibraryScreenState extends State<NpcTrainerLibraryScreen> {
                         Icon(Icons.groups_2_outlined, size: 48),
                         SizedBox(height: 12),
                         Text(
-                          'Nessun Allenatore PNG salvato',
+                          context.uiText(
+                            'Nessun Allenatore PNG salvato',
+                            'No saved NPC Trainers',
+                          ),
                           style: TextStyle(fontWeight: FontWeight.w900),
                         ),
                         SizedBox(height: 6),
                         Text(
-                          'Genera un Allenatore PNG e salvalo dalla schermata del risultato.',
+                          context.uiText(
+                            'Genera un Allenatore PNG e salvalo dalla schermata del risultato.',
+                            'Generate an NPC Trainer and save it from the result screen.',
+                          ),
                           textAlign: TextAlign.center,
                         ),
                       ],
@@ -534,7 +618,10 @@ class _NpcTrainerLibraryScreenState extends State<NpcTrainerLibraryScreen> {
                 )
               else ...[
                 Text(
-                  'Seleziona più allenatori per controllarli nello stesso fight.',
+                  context.uiText(
+                    'Seleziona più allenatori per controllarli nello stesso fight.',
+                    'Select multiple trainers to control them in the same battle.',
+                  ),
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
                 const SizedBox(height: 8),
@@ -576,8 +663,14 @@ class _NpcTrainerLibraryScreenState extends State<NpcTrainerLibraryScreen> {
                 icon: const Icon(Icons.flash_on),
                 label: Text(
                   _selectedIds.length == 1
-                      ? 'ENTRA IN FIGHT CON 1 ALLENATORE'
-                      : 'ENTRA IN FIGHT CON ${_selectedIds.length} ALLENATORI',
+                      ? context.uiText(
+                          'ENTRA IN FIGHT CON 1 ALLENATORE',
+                          'START BATTLE WITH 1 TRAINER',
+                        )
+                      : context.uiText(
+                          'ENTRA IN FIGHT CON ${_selectedIds.length} ALLENATORI',
+                          'START BATTLE WITH ${_selectedIds.length} TRAINERS',
+                        ),
                 ),
               ),
             ),
@@ -619,14 +712,20 @@ class _LibraryHeader extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Allenatori del Master',
+                        context.uiText(
+                          'Allenatori del Master',
+                          'Game Master Trainers',
+                        ),
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
                           color: colors.onPrimaryContainer,
                           fontWeight: FontWeight.w900,
                         ),
                       ),
                       Text(
-                        '$count allenatori salvati nel profilo attivo.',
+                        context.uiText(
+                          '$count allenatori salvati nel profilo attivo.',
+                          '$count trainers saved in the active profile.',
+                        ),
                         style: TextStyle(color: colors.onPrimaryContainer),
                       ),
                     ],
@@ -639,7 +738,12 @@ class _LibraryHeader extends StatelessWidget {
               FilledButton.icon(
                 onPressed: onResumeFight,
                 icon: const Icon(Icons.play_arrow),
-                label: const Text('RIPRENDI FIGHT DEL MASTER'),
+                label: Text(
+                  context.uiText(
+                    'RIPRENDI FIGHT DEL MASTER',
+                    'RESUME GAME MASTER BATTLE',
+                  ),
+                ),
               ),
             ],
           ],
@@ -707,7 +811,7 @@ class _NpcTrainerCard extends StatelessWidget {
                                 ?.copyWith(fontWeight: FontWeight.w900),
                           ),
                           Text(
-                            '${trainer.rank.label} · Lv. ${trainer.trainerLevel} · ${trainer.specializations.join(', ')}',
+                            '${context.usesItalianUi ? trainer.rank.label : trainer.rank.englishLabel} · Lv. ${trainer.trainerLevel} · ${trainer.specializations.join(', ')}',
                           ),
                         ],
                       ),
@@ -716,7 +820,10 @@ class _NpcTrainerCard extends StatelessWidget {
                 ),
                 IconButton(
                   onPressed: disabled ? null : onShare,
-                  tooltip: 'Condividi Allenatore',
+                  tooltip: context.uiText(
+                    'Condividi Allenatore',
+                    'Share Trainer',
+                  ),
                   icon: const Icon(Icons.ios_share_outlined),
                 ),
                 PopupMenuButton<String>(
@@ -727,17 +834,27 @@ class _NpcTrainerCard extends StatelessWidget {
                     if (value == 'duplicate') onDuplicate();
                     if (value == 'delete') onDelete();
                   },
-                  itemBuilder: (_) => const [
+                  itemBuilder: (_) => [
                     PopupMenuItem(
                       value: 'export',
-                      child: Text('Esporta Allenatore'),
+                      child: Text(
+                        context.uiText('Esporta Allenatore', 'Export Trainer'),
+                      ),
                     ),
                     PopupMenuItem(
                       value: 'share',
-                      child: Text('Condividi Allenatore'),
+                      child: Text(
+                        context.uiText('Condividi Allenatore', 'Share Trainer'),
+                      ),
                     ),
-                    PopupMenuItem(value: 'duplicate', child: Text('Duplica')),
-                    PopupMenuItem(value: 'delete', child: Text('Elimina')),
+                    PopupMenuItem(
+                      value: 'duplicate',
+                      child: Text(context.uiText('Duplica', 'Duplicate')),
+                    ),
+                    PopupMenuItem(
+                      value: 'delete',
+                      child: Text(context.uiText('Elimina', 'Delete')),
+                    ),
                   ],
                 ),
               ],
@@ -780,7 +897,7 @@ class _NpcTrainerCard extends StatelessWidget {
                   child: OutlinedButton.icon(
                     onPressed: disabled ? null : onOpen,
                     icon: const Icon(Icons.visibility_outlined),
-                    label: const Text('APRI'),
+                    label: Text(context.uiText('APRI', 'OPEN')),
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -788,7 +905,9 @@ class _NpcTrainerCard extends StatelessWidget {
                   child: FilledButton.icon(
                     onPressed: disabled ? null : onFight,
                     icon: const Icon(Icons.flash_on),
-                    label: const Text('ENTRA IN FIGHT'),
+                    label: Text(
+                      context.uiText('ENTRA IN FIGHT', 'START BATTLE'),
+                    ),
                   ),
                 ),
               ],
@@ -817,15 +936,18 @@ class _FightSetupDialogState extends State<_FightSetupDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Configura il fight'),
+      title: Text(context.uiText('Configura il fight', 'Configure battle')),
       content: SizedBox(
         width: 440,
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Text(
-                'Scegli quanti Pokémon può tenere attivi contemporaneamente ciascun allenatore.',
+              Text(
+                context.uiText(
+                  'Scegli quanti Pokémon può tenere attivi contemporaneamente ciascun allenatore.',
+                  'Choose how many Pokémon each trainer can keep active at the same time.',
+                ),
               ),
               const SizedBox(height: 12),
               for (final trainer in widget.trainers)
@@ -844,7 +966,12 @@ class _FightSetupDialogState extends State<_FightSetupDialog> {
                                   fontWeight: FontWeight.w900,
                                 ),
                               ),
-                              Text('${trainer.team.length} Pokémon in squadra'),
+                              Text(
+                                context.uiText(
+                                  '${trainer.team.length} Pokémon in squadra',
+                                  '${trainer.team.length} Pokémon on the team',
+                                ),
+                              ),
                             ],
                           ),
                         ),
@@ -883,12 +1010,12 @@ class _FightSetupDialogState extends State<_FightSetupDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Annulla'),
+          child: Text(context.uiText('Annulla', 'Cancel')),
         ),
         FilledButton.icon(
           onPressed: () => Navigator.of(context).pop(_activeCounts),
           icon: const Icon(Icons.flash_on),
-          label: const Text('ENTRA IN FIGHT'),
+          label: Text(context.uiText('ENTRA IN FIGHT', 'START BATTLE')),
         ),
       ],
     );

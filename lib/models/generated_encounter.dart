@@ -16,6 +16,13 @@ extension EncounterDifficultyLabel on EncounterDifficulty {
     EncounterDifficulty.extreme => 'Estrema',
   };
 
+  String get englishLabel => switch (this) {
+    EncounterDifficulty.easy => 'Easy',
+    EncounterDifficulty.medium => 'Medium',
+    EncounterDifficulty.hard => 'Hard',
+    EncounterDifficulty.extreme => 'Extreme',
+  };
+
   double get targetMultiplier => switch (this) {
     EncounterDifficulty.easy => 0.65,
     EncounterDifficulty.medium => 1.0,
@@ -29,6 +36,12 @@ extension EncounterCompositionLabel on EncounterComposition {
     EncounterComposition.single => 'Singolo potente',
     EncounterComposition.pack => 'Branco',
     EncounterComposition.mixed => 'Gruppo misto',
+  };
+
+  String get englishLabel => switch (this) {
+    EncounterComposition.single => 'Powerful solo',
+    EncounterComposition.pack => 'Pack',
+    EncounterComposition.mixed => 'Mixed group',
   };
 }
 

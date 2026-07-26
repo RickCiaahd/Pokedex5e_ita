@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../localization/ui_text.dart';
+
 import '../../models/generated_pokemon.dart';
 import '../../models/move_data.dart';
 import '../../models/pc_pokemon.dart';
@@ -141,8 +143,10 @@ class _PokemonGeneratorScreenState extends State<PokemonGeneratorScreen> {
           _generated = null;
           _generatedBatch = const [];
           _generatedMoves = const {};
-          _errorMessage =
-              'Nessun Pokémon corrisponde ai filtri selezionati. Prova ad ampliare SR, generazioni o livello.';
+          _errorMessage = context.uiText(
+            'Nessun Pokémon corrisponde ai filtri selezionati. Prova ad ampliare SR, generazioni o livello.',
+            'No Pokémon match the selected filters. Try widening the SR, generation or level ranges.',
+          );
         });
         return;
       }
@@ -155,8 +159,10 @@ class _PokemonGeneratorScreenState extends State<PokemonGeneratorScreen> {
         _generated = generated;
         _generatedBatch = const [];
         _generatedMoves = moves;
-        _statusMessage =
-            '${generated.basePokemon.name} generato. Anteprima pronta qui sotto.';
+        _statusMessage = context.uiText(
+          '${generated.basePokemon.name} generato. Anteprima pronta qui sotto.',
+          '${generated.basePokemon.name} generated. The preview is ready below.',
+        );
       });
       _scrollToResult(_singleResultKey);
     } catch (error) {
@@ -206,19 +212,26 @@ class _PokemonGeneratorScreenState extends State<PokemonGeneratorScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Generare $count Pokémon?'),
-        content: const Text(
-          'La generazione e l’anteprima di un gruppo molto grande possono '
-          'richiedere qualche secondo. Nessun Pokémon verrà ancora salvato.',
+        title: Text(
+          context.uiText(
+            'Generare $count Pokémon?',
+            'Generate $count Pokémon?',
+          ),
+        ),
+        content: Text(
+          context.uiText(
+            'La generazione e l’anteprima di un gruppo molto grande possono richiedere qualche secondo. Nessun Pokémon verrà ancora salvato.',
+            'Generating and previewing a very large group may take a few seconds. No Pokémon will be saved yet.',
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Annulla'),
+            child: Text(context.uiText('Annulla', 'Cancel')),
           ),
           FilledButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Continua'),
+            child: Text(context.uiText('Continua', 'Continue')),
           ),
         ],
       ),
@@ -259,7 +272,10 @@ class _PokemonGeneratorScreenState extends State<PokemonGeneratorScreen> {
         .toList(growable: false);
     if (selected.isEmpty) {
       setState(() {
-        _errorMessage = 'Seleziona almeno un Pokémon dall’elenco compatibile.';
+        _errorMessage = context.uiText(
+          'Seleziona almeno un Pokémon dall’elenco compatibile.',
+          'Select at least one Pokémon from the compatible list.',
+        );
       });
       return;
     }
@@ -283,8 +299,14 @@ class _PokemonGeneratorScreenState extends State<PokemonGeneratorScreen> {
         _generatedBatch = generated;
         _generatedMoves = moves;
         _statusMessage = generated.length == selected.length
-            ? '${generated.length} Pokémon generati. Anteprima pronta qui sotto.'
-            : 'Generati ${generated.length} Pokémon su ${selected.length} selezionati.';
+            ? context.uiText(
+                '${generated.length} Pokémon generati. Anteprima pronta qui sotto.',
+                '${generated.length} Pokémon generated. The preview is ready below.',
+              )
+            : context.uiText(
+                'Generati ${generated.length} Pokémon su ${selected.length} selezionati.',
+                'Generated ${generated.length} of ${selected.length} selected Pokémon.',
+              );
       });
       _scrollToResult(_batchResultKey);
     } catch (error) {
@@ -312,8 +334,10 @@ class _PokemonGeneratorScreenState extends State<PokemonGeneratorScreen> {
       if (regenerated == null) {
         if (!mounted) return;
         setState(() {
-          _errorMessage =
-              '${current.basePokemon.name} non corrisponde più ai filtri attuali.';
+          _errorMessage = context.uiText(
+            '${current.basePokemon.name} non corrisponde più ai filtri attuali.',
+            '${current.basePokemon.name} no longer matches the current filters.',
+          );
         });
         return;
       }
@@ -422,7 +446,10 @@ class _PokemonGeneratorScreenState extends State<PokemonGeneratorScreen> {
                 : [generated.ability!],
           ),
         );
-        destination = 'aggiunto allo slot squadra ${freeSlot.slotIndex + 1}';
+        destination = uiTextForLanguage(
+          'aggiunto allo slot squadra ${freeSlot.slotIndex + 1}',
+          'added to team slot ${freeSlot.slotIndex + 1}',
+        );
       } else {
         await _pcRepository.depositPokemon(
           profileId: profile.id,
@@ -437,9 +464,12 @@ class _PokemonGeneratorScreenState extends State<PokemonGeneratorScreen> {
           abilities: generated.ability == null
               ? const []
               : [generated.ability!],
-          notes: 'Generato dagli Strumenti al livello ${generated.level}.',
+          notes: uiTextForLanguage(
+            'Generato dagli Strumenti al livello ${generated.level}.',
+            'Generated by Tools at level ${generated.level}.',
+          ),
         );
-        destination = 'inviato al PC';
+        destination = uiTextForLanguage('inviato al PC', 'sent to the PC');
       }
 
       final team = await _teamRepository.getTeam(profile.id);
@@ -537,7 +567,10 @@ class _PokemonGeneratorScreenState extends State<PokemonGeneratorScreen> {
               abilities: generated.ability == null
                   ? const []
                   : [generated.ability!],
-              notes: 'Generato dagli Strumenti al livello ${generated.level}.',
+              notes: uiTextForLanguage(
+                'Generato dagli Strumenti al livello ${generated.level}.',
+                'Generated by Tools at level ${generated.level}.',
+              ),
             ),
           );
         }
@@ -562,9 +595,10 @@ class _PokemonGeneratorScreenState extends State<PokemonGeneratorScreen> {
           ..sort((a, b) => a.slotIndex.compareTo(b.slotIndex));
         _generatedBatch = const [];
         _selectedPokemonIds.clear();
-        _statusMessage =
-            '${generatedBatch.length} Pokémon aggiunti: $teamCount in squadra, '
-            '${pcAdditions.length} nel PC.';
+        _statusMessage = uiTextForLanguage(
+          '${generatedBatch.length} Pokémon aggiunti: $teamCount in squadra, ${pcAdditions.length} nel PC.',
+          '${generatedBatch.length} Pokémon added: $teamCount to the team, ${pcAdditions.length} to the PC.',
+        );
       });
     } catch (error) {
       if (!mounted) return;
@@ -602,7 +636,7 @@ class _PokemonGeneratorScreenState extends State<PokemonGeneratorScreen> {
     return Scaffold(
       appBar: AppBar(
         leading: const HomeLeadingButton(),
-        title: const Text('Generatore Pokémon'),
+        title: Text(context.uiText('Generatore Pokémon', 'Pokémon Generator')),
       ),
       body: RefreshIndicator(
         onRefresh: _loadData,
@@ -686,8 +720,11 @@ class _PokemonGeneratorScreenState extends State<PokemonGeneratorScreen> {
                         : const Icon(Icons.casino_outlined),
                     label: Text(
                       _isGenerating
-                          ? 'GENERAZIONE...'
-                          : 'GENERA 1 CASUALE TRA ${candidates.length}',
+                          ? context.uiText('GENERAZIONE...', 'GENERATING...')
+                          : context.uiText(
+                              'GENERA 1 CASUALE TRA ${candidates.length}',
+                              'GENERATE 1 RANDOM FROM ${candidates.length}',
+                            ),
                     ),
                   );
                   final selectedButton = FilledButton.tonalIcon(
@@ -697,8 +734,14 @@ class _PokemonGeneratorScreenState extends State<PokemonGeneratorScreen> {
                     icon: const Icon(Icons.playlist_add_check),
                     label: Text(
                       selectedCount == 0
-                          ? 'GENERA I SELEZIONATI'
-                          : 'GENERA $selectedCount SELEZIONATI',
+                          ? context.uiText(
+                              'GENERA I SELEZIONATI',
+                              'GENERATE SELECTED',
+                            )
+                          : context.uiText(
+                              'GENERA $selectedCount SELEZIONATI',
+                              'GENERATE $selectedCount SELECTED',
+                            ),
                     ),
                   );
                   if (constraints.maxWidth < 650) {
@@ -783,7 +826,10 @@ class _GeneratorIntro extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Crea un Pokémon pronto da usare',
+                    context.uiText(
+                      'Crea un Pokémon pronto da usare',
+                      'Create a ready-to-use Pokémon',
+                    ),
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       color: colors.onPrimaryContainer,
                       fontWeight: FontWeight.w900,
@@ -791,8 +837,10 @@ class _GeneratorIntro extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '$candidateCount candidati con i filtri attuali. Il risultato '
-                    'può restare temporaneo oppure essere aggiunto alla collezione.',
+                    context.uiText(
+                      '$candidateCount candidati con i filtri attuali. Il risultato può restare temporaneo oppure essere aggiunto alla collezione.',
+                      '$candidateCount candidates match the current filters. The result can remain temporary or be added to the collection.',
+                    ),
                     style: TextStyle(color: colors.onPrimaryContainer),
                   ),
                 ],
@@ -860,7 +908,7 @@ class _GeneratorFiltersCard extends StatelessWidget {
               children: [
                 Expanded(
                   child: Text(
-                    'FILTRI',
+                    context.uiText('FILTRI', 'FILTERS'),
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w900,
                     ),
@@ -869,7 +917,7 @@ class _GeneratorFiltersCard extends StatelessWidget {
                 TextButton.icon(
                   onPressed: onReset,
                   icon: const Icon(Icons.restart_alt),
-                  label: const Text('Azzera'),
+                  label: Text(context.uiText('Azzera', 'Reset')),
                 ),
               ],
             ),
@@ -879,28 +927,36 @@ class _GeneratorFiltersCard extends StatelessWidget {
                 final wide = constraints.maxWidth >= 680;
                 final search = TextField(
                   controller: searchController,
-                  decoration: const InputDecoration(
-                    labelText: 'Nome, numero o tipo',
-                    prefixIcon: Icon(Icons.search),
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    labelText: context.uiText(
+                      'Nome, numero o tipo',
+                      'Name, number or type',
+                    ),
+                    prefixIcon: const Icon(Icons.search),
+                    border: const OutlineInputBorder(),
                   ),
                   onChanged: onQueryChanged,
                 );
                 final type = DropdownButtonFormField<String>(
                   initialValue: selectedType,
-                  decoration: const InputDecoration(
-                    labelText: 'Tipo',
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    labelText: context.uiText('Tipo', 'Type'),
+                    border: const OutlineInputBorder(),
                   ),
                   items: [
-                    const DropdownMenuItem(
+                    DropdownMenuItem(
                       value: '',
-                      child: Text('Tutti i tipi'),
+                      child: Text(context.uiText('Tutti i tipi', 'All types')),
                     ),
                     for (final type in types)
                       DropdownMenuItem(
                         value: type,
-                        child: Text(PokemonTypeLocalization.italianLabel(type)),
+                        child: Text(
+                          context.uiText(
+                            PokemonTypeLocalization.italianLabel(type),
+                            PokemonTypeLocalization.englishValue(type),
+                          ),
+                        ),
                       ),
                   ],
                   onChanged: onTypeChanged,
@@ -937,7 +993,10 @@ class _GeneratorFiltersCard extends StatelessWidget {
               onChanged: onSrChanged,
             ),
             Text(
-              'Generazioni ${generationRange.start.round()} – ${generationRange.end.round()}',
+              context.uiText(
+                'Generazioni ${generationRange.start.round()} – ${generationRange.end.round()}',
+                'Generations ${generationRange.start.round()} – ${generationRange.end.round()}',
+              ),
               style: const TextStyle(fontWeight: FontWeight.w800),
             ),
             RangeSlider(
@@ -953,8 +1012,11 @@ class _GeneratorFiltersCard extends StatelessWidget {
             ),
             Text(
               level == 0
-                  ? 'Livello: automatico (minimo selvatico)'
-                  : 'Livello: $level',
+                  ? context.uiText(
+                      'Livello: automatico (minimo selvatico)',
+                      'Level: automatic (minimum wild level)',
+                    )
+                  : context.uiText('Livello: $level', 'Level: $level'),
               style: const TextStyle(fontWeight: FontWeight.w800),
             ),
             Slider(
@@ -970,18 +1032,26 @@ class _GeneratorFiltersCard extends StatelessWidget {
                 final children = [
                   SwitchListTile(
                     contentPadding: EdgeInsets.zero,
-                    title: const Text('Forme permanenti'),
-                    subtitle: const Text(
-                      'Esclude Mega, Gigamax e altre forme temporanee.',
+                    title: Text(
+                      context.uiText('Forme permanenti', 'Permanent forms'),
+                    ),
+                    subtitle: Text(
+                      context.uiText(
+                        'Esclude Mega, Gigamax e altre forme temporanee.',
+                        'Excludes Mega, Gigantamax and other temporary forms.',
+                      ),
                     ),
                     value: includeForms,
                     onChanged: onIncludeFormsChanged,
                   ),
                   DropdownButtonFormField<double>(
                     initialValue: shinyChance,
-                    decoration: const InputDecoration(
-                      labelText: 'Probabilità shiny',
-                      border: OutlineInputBorder(),
+                    decoration: InputDecoration(
+                      labelText: context.uiText(
+                        'Probabilità shiny',
+                        'Shiny chance',
+                      ),
+                      border: const OutlineInputBorder(),
                     ),
                     items: [
                       for (final chance in const [0.0, 0.01, 0.05, 0.10, 1.0])
@@ -1097,14 +1167,19 @@ class _GeneratedPokemonCard extends StatelessWidget {
             ),
             const SizedBox(height: 18),
             Text(
-              'MOSSE GENERATE',
+              context.uiText('MOSSE GENERATE', 'GENERATED MOVES'),
               style: Theme.of(
                 context,
               ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
             ),
             const SizedBox(height: 8),
             if (generated.selectedMoves.isEmpty)
-              const Text('Nessuna mossa naturale disponibile a questo livello.')
+              Text(
+                context.uiText(
+                  'Nessuna mossa naturale disponibile a questo livello.',
+                  'No natural moves are available at this level.',
+                ),
+              )
             else
               Wrap(
                 spacing: 8,
@@ -1130,12 +1205,14 @@ class _GeneratedPokemonCard extends StatelessWidget {
                 OutlinedButton.icon(
                   onPressed: onGenerateAgain,
                   icon: const Icon(Icons.casino_outlined),
-                  label: const Text('GENERA ANCORA'),
+                  label: Text(
+                    context.uiText('GENERA ANCORA', 'GENERATE AGAIN'),
+                  ),
                 ),
                 OutlinedButton.icon(
                   onPressed: onOpenDetails,
                   icon: const Icon(Icons.description_outlined),
-                  label: const Text('SCHEDA COMPLETA'),
+                  label: Text(context.uiText('SCHEDA COMPLETA', 'FULL SHEET')),
                 ),
                 FilledButton.icon(
                   onPressed: isSaving ? null : onAddToCollection,
@@ -1147,14 +1224,22 @@ class _GeneratedPokemonCard extends StatelessWidget {
                         )
                       : const Icon(Icons.add_circle_outline),
                   label: Text(
-                    isSaving ? 'SALVATAGGIO...' : 'AGGIUNGI A SQUADRA / PC',
+                    isSaving
+                        ? context.uiText('SALVATAGGIO...', 'SAVING...')
+                        : context.uiText(
+                            'AGGIUNGI A SQUADRA / PC',
+                            'ADD TO TEAM / PC',
+                          ),
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 6),
             Text(
-              'Aggiungendolo alla collezione verrà registrato come catturato nel Pokédex.',
+              context.uiText(
+                'Aggiungendolo alla collezione verrà registrato come catturato nel Pokédex.',
+                'Adding it to the collection will register it as caught in the Pokédex.',
+              ),
               textAlign: TextAlign.end,
               style: Theme.of(context).textTheme.bodySmall,
             ),
@@ -1196,7 +1281,12 @@ class _GeneratedSummary extends StatelessWidget {
               ),
           ],
         ),
-        Text('$number · ${generated.formLabel} · Livello ${generated.level}'),
+        Text(
+          context.uiText(
+            '$number · ${generated.formLabel} · Livello ${generated.level}',
+            '$number · ${generated.formLabel} · Level ${generated.level}',
+          ),
+        ),
         const SizedBox(height: 8),
         Wrap(
           spacing: 6,
@@ -1212,11 +1302,23 @@ class _GeneratedSummary extends StatelessWidget {
           runSpacing: 8,
           children: [
             _InfoChip(label: 'SR', value: _formatNumber(pokemon.sr)),
-            _InfoChip(label: 'CA', value: '$armorClass'),
-            _InfoChip(label: 'PF', value: '${generated.maxHp}'),
-            _InfoChip(label: 'Sesso', value: _genderLabel(generated.gender)),
-            _InfoChip(label: 'Natura', value: generated.nature),
-            _InfoChip(label: 'Abilità', value: generated.ability ?? 'Nessuna'),
+            _InfoChip(label: context.uiText('CA', 'AC'), value: '$armorClass'),
+            _InfoChip(
+              label: context.uiText('PF', 'HP'),
+              value: '${generated.maxHp}',
+            ),
+            _InfoChip(
+              label: context.uiText('Sesso', 'Gender'),
+              value: _genderLabel(generated.gender),
+            ),
+            _InfoChip(
+              label: context.uiText('Natura', 'Nature'),
+              value: generated.nature,
+            ),
+            _InfoChip(
+              label: context.uiText('Abilità', 'Ability'),
+              value: generated.ability ?? context.uiText('Nessuna', 'None'),
+            ),
           ],
         ),
         const SizedBox(height: 12),
@@ -1224,18 +1326,30 @@ class _GeneratedSummary extends StatelessWidget {
           spacing: 8,
           runSpacing: 8,
           children: [
-            _InfoChip(label: 'FOR', value: '${pokemon.attributes.strength}'),
-            _InfoChip(label: 'DES', value: '${pokemon.attributes.dexterity}'),
             _InfoChip(
-              label: 'COS',
+              label: context.uiText('FOR', 'STR'),
+              value: '${pokemon.attributes.strength}',
+            ),
+            _InfoChip(
+              label: context.uiText('DES', 'DEX'),
+              value: '${pokemon.attributes.dexterity}',
+            ),
+            _InfoChip(
+              label: context.uiText('COS', 'CON'),
               value: '${pokemon.attributes.constitution}',
             ),
             _InfoChip(
               label: 'INT',
               value: '${pokemon.attributes.intelligence}',
             ),
-            _InfoChip(label: 'SAG', value: '${pokemon.attributes.wisdom}'),
-            _InfoChip(label: 'CAR', value: '${pokemon.attributes.charisma}'),
+            _InfoChip(
+              label: context.uiText('SAG', 'WIS'),
+              value: '${pokemon.attributes.wisdom}',
+            ),
+            _InfoChip(
+              label: context.uiText('CAR', 'CHA'),
+              value: '${pokemon.attributes.charisma}',
+            ),
           ],
         ),
       ],

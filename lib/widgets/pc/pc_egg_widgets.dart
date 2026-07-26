@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../localization/ui_text.dart';
 import '../../models/breeding_egg.dart';
 import '../../models/pokemon.dart';
 import '../pokemon/egg_asset_image.dart';
@@ -34,7 +35,7 @@ class PcEggGridCell extends StatelessWidget {
               left: 4,
               top: 4,
               child: Text(
-                'Uovo',
+                context.uiText('Uovo', 'Egg'),
                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
                   color: colorScheme.onTertiaryContainer,
                   fontWeight: FontWeight.w900,
@@ -93,17 +94,30 @@ class PcEggActionSheet extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'UOVO${pokemon == null ? '' : ' DI ${pokemon!.name.toUpperCase()}'}',
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w900,
+                        context.uiText(
+                          'UOVO${pokemon == null ? '' : ' DI ${pokemon!.name.toUpperCase()}'}',
+                          'EGG${pokemon == null ? '' : ' OF ${pokemon!.name.toUpperCase()}'}',
                         ),
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(fontWeight: FontWeight.w900),
                       ),
                       Text(
                         egg.isReady
-                            ? 'Incubazione completata'
-                            : '${egg.incubationRemaining}/${egg.hatchTime} punti rimanenti',
+                            ? context.uiText(
+                                'Incubazione completata',
+                                'Incubation complete',
+                              )
+                            : context.uiText(
+                                '${egg.incubationRemaining}/${egg.hatchTime} punti rimanenti',
+                                '${egg.incubationRemaining}/${egg.hatchTime} points remaining',
+                              ),
                       ),
-                      const Text('Nel PC l’incubazione è in pausa.'),
+                      Text(
+                        context.uiText(
+                          'Nel PC l’incubazione è in pausa.',
+                          'Incubation is paused in the PC.',
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -116,14 +130,22 @@ class PcEggActionSheet extends StatelessWidget {
                   : () => Navigator.of(context).pop(PcEggAction.moveToTeam),
               icon: const Icon(Icons.swap_horiz),
               label: Text(
-                teamIsFull ? 'NESSUN POKÉSLOT LIBERO' : 'SPOSTA IN SQUADRA',
+                teamIsFull
+                    ? context.uiText(
+                        'NESSUN POKÉSLOT LIBERO',
+                        'NO FREE POKÉSLOT',
+                      )
+                    : context.uiText('SPOSTA IN SQUADRA', 'MOVE TO TEAM'),
               ),
             ),
             const SizedBox(height: 8),
             OutlinedButton.icon(
-              onPressed: () => Navigator.of(context).pop(PcEggAction.openBreeding),
+              onPressed: () =>
+                  Navigator.of(context).pop(PcEggAction.openBreeding),
               icon: const Icon(Icons.egg_alt_outlined),
-              label: const Text('GESTISCI IN ALLEVAMENTO'),
+              label: Text(
+                context.uiText('GESTISCI IN ALLEVAMENTO', 'MANAGE IN BREEDING'),
+              ),
             ),
           ],
         ),

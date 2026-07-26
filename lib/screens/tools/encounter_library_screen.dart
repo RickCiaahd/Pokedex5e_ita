@@ -4,6 +4,8 @@ import 'dart:typed_data';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
+import '../../localization/ui_text.dart';
+
 import '../../models/campaign_transfer_bundle.dart';
 import '../../models/generated_encounter.dart';
 import '../../models/pokemon.dart';
@@ -124,7 +126,10 @@ class _EncounterLibraryScreenState extends State<EncounterLibraryScreen> {
       );
       if (!mounted || !launched) return;
       _setMessage(
-        'Il fight di ${saved.name} è stato salvato e può essere ripreso dagli Strumenti del Master.',
+        uiTextForLanguage(
+          'Il fight di ${saved.name} è stato salvato e può essere ripreso dagli Strumenti del Master.',
+          'The fight for ${saved.name} was saved and can be resumed from Master Tools.',
+        ),
       );
     } catch (error) {
       _setMessage(_friendlyError(error), isError: true);
@@ -147,7 +152,12 @@ class _EncounterLibraryScreenState extends State<EncounterLibraryScreen> {
       );
       await _repository.saveEncounter(profileId: profile.id, encounter: copy);
       await _load();
-      _setMessage('${copy.name} duplicato.');
+      _setMessage(
+        uiTextForLanguage(
+          '${copy.name} duplicato.',
+          '${copy.name} duplicated.',
+        ),
+      );
     } catch (error) {
       _setMessage(_friendlyError(error), isError: true);
     } finally {
@@ -161,16 +171,23 @@ class _EncounterLibraryScreenState extends State<EncounterLibraryScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Eliminare l’incontro?'),
-        content: Text('“${saved.name}” verrà rimosso dalla libreria.'),
+        title: Text(
+          uiTextForLanguage('Eliminare l’incontro?', 'Delete encounter?'),
+        ),
+        content: Text(
+          uiTextForLanguage(
+            '“${saved.name}” verrà rimosso dalla libreria.',
+            '“${saved.name}” will be removed from the library.',
+          ),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Annulla'),
+            child: Text(uiTextForLanguage('Annulla', 'Cancel')),
           ),
           FilledButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Elimina'),
+            child: Text(uiTextForLanguage('Elimina', 'Delete')),
           ),
         ],
       ),
@@ -184,7 +201,9 @@ class _EncounterLibraryScreenState extends State<EncounterLibraryScreen> {
         encounterId: saved.id,
       );
       await _load();
-      _setMessage('${saved.name} eliminato.');
+      _setMessage(
+        uiTextForLanguage('${saved.name} eliminato.', '${saved.name} deleted.'),
+      );
     } catch (error) {
       _setMessage(_friendlyError(error), isError: true);
     } finally {
@@ -194,7 +213,10 @@ class _EncounterLibraryScreenState extends State<EncounterLibraryScreen> {
 
   Future<CampaignTransferBundle?> _pickTransferFile() async {
     final result = await FilePicker.platform.pickFiles(
-      dialogTitle: 'Importa incontro Pokédex 5e',
+      dialogTitle: uiTextForLanguage(
+        'Importa incontro Trainer Atlas 5e',
+        'Import Trainer Atlas 5e encounter',
+      ),
       type: FileType.custom,
       allowedExtensions: const ['json'],
       allowMultiple: false,
@@ -217,7 +239,10 @@ class _EncounterLibraryScreenState extends State<EncounterLibraryScreen> {
       );
       final json = await _transferService.encodePortable(bundle);
       final path = await FilePicker.platform.saveFile(
-        dialogTitle: 'Esporta ${saved.name}',
+        dialogTitle: uiTextForLanguage(
+          'Esporta ${saved.name}',
+          'Export ${saved.name}',
+        ),
         fileName: _transferService.fileNameForEncounter(bundle),
         type: FileType.custom,
         allowedExtensions: const ['json'],
@@ -225,8 +250,11 @@ class _EncounterLibraryScreenState extends State<EncounterLibraryScreen> {
       );
       _setMessage(
         path == null
-            ? 'Esportazione annullata.'
-            : '${saved.name} esportato correttamente.',
+            ? uiTextForLanguage('Esportazione annullata.', 'Export cancelled.')
+            : uiTextForLanguage(
+                '${saved.name} esportato correttamente.',
+                '${saved.name} exported successfully.',
+              ),
       );
     } catch (error) {
       _setMessage(_friendlyError(error), isError: true);
@@ -251,14 +279,23 @@ class _EncounterLibraryScreenState extends State<EncounterLibraryScreen> {
         content: json,
         fileName: _transferService.fileNameForEncounter(bundle),
         mimeType: 'application/json',
-        title: 'Condividi ${saved.name}',
+        title: uiTextForLanguage(
+          'Condividi ${saved.name}',
+          'Share ${saved.name}',
+        ),
         subject: '${saved.name} · Trainer Atlas 5e',
-        text: 'Incontro esportato da Trainer Atlas 5e.',
+        text: uiTextForLanguage(
+          'Incontro esportato da Trainer Atlas 5e.',
+          'Encounter exported from Trainer Atlas 5e.',
+        ),
       );
       _setMessage(
         _shareService.feedback(
           outcome,
-          successMessage: '${saved.name} condiviso correttamente.',
+          successMessage: uiTextForLanguage(
+            '${saved.name} condiviso correttamente.',
+            '${saved.name} shared successfully.',
+          ),
         ),
       );
     } catch (error) {
@@ -275,42 +312,55 @@ class _EncounterLibraryScreenState extends State<EncounterLibraryScreen> {
     try {
       final bundle = await _pickTransferFile();
       if (bundle == null) {
-        _setMessage('Importazione annullata.');
+        _setMessage(
+          uiTextForLanguage('Importazione annullata.', 'Import cancelled.'),
+        );
         return;
       }
       if (bundle.kind != CampaignTransferKind.encounter) {
-        throw const FormatException(
-          'Seleziona un file esportato come incontro.',
+        throw FormatException(
+          uiTextForLanguage(
+            'Seleziona un file esportato come incontro.',
+            'Select a file exported as an encounter.',
+          ),
         );
       }
       final source = bundle.encounter!;
       if (!mounted) return;
       final origin = bundle.sourceProfileName.isEmpty
           ? ''
-          : ' dal profilo ${bundle.sourceProfileName}';
+          : uiTextForLanguage(
+              ' dal profilo ${bundle.sourceProfileName}',
+              ' from profile ${bundle.sourceProfileName}',
+            );
       final confirmed = await showDialog<bool>(
         context: context,
         builder: (_) => AlertDialog(
-          title: const Text('Importare incontro?'),
+          title: Text(
+            uiTextForLanguage('Importare incontro?', 'Import encounter?'),
+          ),
           content: Text(
-            'Vuoi importare “${source.name}”$origin con '
-            '${source.enemyCount} avversari? Verrà creata una nuova copia '
-            'nella libreria del profilo attivo.',
+            uiTextForLanguage(
+              'Vuoi importare “${source.name}”$origin con ${source.enemyCount} avversari? Verrà creata una nuova copia nella libreria del profilo attivo.',
+              'Import “${source.name}”$origin with ${source.enemyCount} opponents? A new copy will be created in the active profile library.',
+            ),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
-              child: const Text('ANNULLA'),
+              child: Text(uiTextForLanguage('ANNULLA', 'CANCEL')),
             ),
             FilledButton(
               onPressed: () => Navigator.of(context).pop(true),
-              child: const Text('IMPORTA'),
+              child: Text(uiTextForLanguage('IMPORTA', 'IMPORT')),
             ),
           ],
         ),
       );
       if (confirmed != true) {
-        _setMessage('Importazione annullata.');
+        _setMessage(
+          uiTextForLanguage('Importazione annullata.', 'Import cancelled.'),
+        );
         return;
       }
       final imported = await _transferService.importEncounter(
@@ -319,7 +369,12 @@ class _EncounterLibraryScreenState extends State<EncounterLibraryScreen> {
         catalogPokemonIds: _catalog.map((pokemon) => pokemon.id).toSet(),
       );
       await _load();
-      _setMessage('${imported.name} importato nella libreria incontri.');
+      _setMessage(
+        uiTextForLanguage(
+          '${imported.name} importato nella libreria incontri.',
+          '${imported.name} imported into the encounter library.',
+        ),
+      );
     } catch (error) {
       _setMessage(_friendlyError(error), isError: true);
     } finally {
@@ -329,10 +384,13 @@ class _EncounterLibraryScreenState extends State<EncounterLibraryScreen> {
 
   String _copyName(String original) {
     final names = _encounters.map((encounter) => encounter.name).toSet();
-    var candidate = '$original (copia)';
+    var candidate = context.uiText('$original (copia)', '$original (copy)');
     var index = 2;
     while (names.contains(candidate)) {
-      candidate = '$original (copia $index)';
+      candidate = context.uiText(
+        '$original (copia $index)',
+        '$original (copy $index)',
+      );
       index++;
     }
     return candidate;
@@ -358,11 +416,11 @@ class _EncounterLibraryScreenState extends State<EncounterLibraryScreen> {
     return Scaffold(
       appBar: AppBar(
         leading: const HomeLeadingButton(),
-        title: const Text('Libreria incontri'),
+        title: Text(context.uiText('Libreria incontri', 'Encounter Library')),
         actions: [
           IconButton(
             onPressed: _isBusy || _isLoading ? null : _importEncounter,
-            tooltip: 'Importa incontro',
+            tooltip: context.uiText('Importa incontro', 'Import encounter'),
             icon: const Icon(Icons.download_outlined),
           ),
         ],
@@ -395,20 +453,26 @@ class _EncounterLibraryScreenState extends State<EncounterLibraryScreen> {
                   child: Center(child: CircularProgressIndicator()),
                 )
               else if (_encounters.isEmpty)
-                const Card(
+                Card(
                   child: Padding(
-                    padding: EdgeInsets.all(24),
+                    padding: const EdgeInsets.all(24),
                     child: Column(
                       children: [
-                        Icon(Icons.bookmarks_outlined, size: 48),
-                        SizedBox(height: 12),
+                        const Icon(Icons.bookmarks_outlined, size: 48),
+                        const SizedBox(height: 12),
                         Text(
-                          'Nessun incontro salvato',
-                          style: TextStyle(fontWeight: FontWeight.w900),
+                          context.uiText(
+                            'Nessun incontro salvato',
+                            'No saved encounters',
+                          ),
+                          style: const TextStyle(fontWeight: FontWeight.w900),
                         ),
-                        SizedBox(height: 6),
+                        const SizedBox(height: 6),
                         Text(
-                          'Genera un incontro e premi Salva nella schermata del risultato.',
+                          context.uiText(
+                            'Genera un incontro e premi Salva nella schermata del risultato.',
+                            'Generate an encounter and press Save on the result screen.',
+                          ),
                           textAlign: TextAlign.center,
                         ),
                       ],
@@ -463,7 +527,7 @@ class _LibraryIntroCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Incontri preparati',
+                    context.uiText('Incontri preparati', 'Prepared encounters'),
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       color: colors.onPrimaryContainer,
                       fontWeight: FontWeight.w900,
@@ -471,7 +535,10 @@ class _LibraryIntroCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '$count incontri salvati nel profilo attivo. Aprili, modificali, rigenerali e salvali di nuovo.',
+                    context.uiText(
+                      '$count incontri salvati nel profilo attivo. Aprili, modificali, rigenerali e salvali di nuovo.',
+                      '$count encounters saved in the active profile. Open, edit, regenerate and save them again.',
+                    ),
                     style: TextStyle(color: colors.onPrimaryContainer),
                   ),
                 ],
@@ -547,7 +614,10 @@ class _SavedEncounterCard extends StatelessWidget {
                   ),
                   IconButton(
                     onPressed: isBusy ? null : onShare,
-                    tooltip: 'Condividi incontro',
+                    tooltip: context.uiText(
+                      'Condividi incontro',
+                      'Share encounter',
+                    ),
                     icon: const Icon(Icons.ios_share_outlined),
                   ),
                   PopupMenuButton<String>(
@@ -568,17 +638,33 @@ class _SavedEncounterCard extends StatelessWidget {
                           break;
                       }
                     },
-                    itemBuilder: (_) => const [
+                    itemBuilder: (_) => [
                       PopupMenuItem(
                         value: 'export',
-                        child: Text('Esporta incontro'),
+                        child: Text(
+                          context.uiText(
+                            'Esporta incontro',
+                            'Export encounter',
+                          ),
+                        ),
                       ),
                       PopupMenuItem(
                         value: 'share',
-                        child: Text('Condividi incontro'),
+                        child: Text(
+                          context.uiText(
+                            'Condividi incontro',
+                            'Share encounter',
+                          ),
+                        ),
                       ),
-                      PopupMenuItem(value: 'duplicate', child: Text('Duplica')),
-                      PopupMenuItem(value: 'delete', child: Text('Elimina')),
+                      PopupMenuItem(
+                        value: 'duplicate',
+                        child: Text(context.uiText('Duplica', 'Duplicate')),
+                      ),
+                      PopupMenuItem(
+                        value: 'delete',
+                        child: Text(context.uiText('Elimina', 'Delete')),
+                      ),
                     ],
                   ),
                 ],
@@ -591,19 +677,41 @@ class _SavedEncounterCard extends StatelessWidget {
                 spacing: 7,
                 runSpacing: 7,
                 children: [
-                  Chip(label: Text('${saved.enemyCount} avversari')),
                   Chip(
                     label: Text(
-                      'Lv medio ${_formatLevel(saved.averageEnemyLevel)}',
+                      context.uiText(
+                        '${saved.enemyCount} avversari',
+                        '${saved.enemyCount} opponents',
+                      ),
                     ),
                   ),
-                  Chip(label: Text(saved.targetDifficulty.label)),
-                  Chip(label: Text(_sourceLabel(saved.source))),
+                  Chip(
+                    label: Text(
+                      context.uiText(
+                        'Lv medio ${_formatLevel(saved.averageEnemyLevel)}',
+                        'Average Lv ${_formatLevel(saved.averageEnemyLevel)}',
+                      ),
+                    ),
+                  ),
+                  Chip(
+                    label: Text(
+                      context.uiText(
+                        saved.targetDifficulty.label,
+                        saved.targetDifficulty.englishLabel,
+                      ),
+                    ),
+                  ),
+                  Chip(label: Text(_sourceLabel(context, saved.source))),
                 ],
               ),
               const SizedBox(height: 8),
               Text(
-                remaining > 0 ? '$summary · +$remaining specie' : summary,
+                remaining > 0
+                    ? context.uiText(
+                        '$summary · +$remaining specie',
+                        '$summary · +$remaining species',
+                      )
+                    : summary,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -612,7 +720,10 @@ class _SavedEncounterCard extends StatelessWidget {
                 children: [
                   Expanded(
                     child: Text(
-                      'Aggiornato ${_formatDate(saved.updatedAt)}',
+                      context.uiText(
+                        'Aggiornato ${_formatDate(saved.updatedAt)}',
+                        'Updated ${_formatDate(saved.updatedAt)}',
+                      ),
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
                   ),
@@ -627,12 +738,14 @@ class _SavedEncounterCard extends StatelessWidget {
                   OutlinedButton.icon(
                     onPressed: isBusy ? null : onFight,
                     icon: const Icon(Icons.sports_mma_outlined),
-                    label: const Text('FIGHT DEL MASTER'),
+                    label: Text(
+                      context.uiText('FIGHT DEL MASTER', 'MASTER FIGHT'),
+                    ),
                   ),
                   FilledButton.tonalIcon(
                     onPressed: isBusy ? null : onOpen,
                     icon: const Icon(Icons.open_in_new),
-                    label: const Text('APRI'),
+                    label: Text(context.uiText('APRI', 'OPEN')),
                   ),
                 ],
               ),
@@ -654,11 +767,12 @@ class _SavedEncounterCard extends StatelessWidget {
     return '$day/$month/${value.year}';
   }
 
-  String _sourceLabel(EncounterSource source) => switch (source) {
-    EncounterSource.automatic => 'Automatico',
-    EncounterSource.manual => 'Manuale',
-    EncounterSource.collection => 'Raccolta',
-  };
+  String _sourceLabel(BuildContext context, EncounterSource source) =>
+      switch (source) {
+        EncounterSource.automatic => context.uiText('Automatico', 'Automatic'),
+        EncounterSource.manual => context.uiText('Manuale', 'Manual'),
+        EncounterSource.collection => context.uiText('Raccolta', 'Collection'),
+      };
 }
 
 class _LibraryMessage extends StatelessWidget {

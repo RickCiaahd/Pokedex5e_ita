@@ -241,7 +241,12 @@ class _PokedexScreenState extends State<PokedexScreen> {
 
     if (_selectedRegion != null) details.add(_selectedRegion!);
     if (_selectedTypes.isNotEmpty) {
-      details.add('${_selectedTypes.length} tipi');
+      details.add(
+        context.uiText(
+          '${_selectedTypes.length} tipi',
+          '${_selectedTypes.length} types',
+        ),
+      );
     }
 
     switch (_viewFilter) {
@@ -272,7 +277,10 @@ class _PokedexScreenState extends State<PokedexScreen> {
         break;
     }
 
-    final resultLabel = '${_filteredPokemon.length} risultati';
+    final resultLabel = context.uiText(
+      '${_filteredPokemon.length} risultati',
+      '${_filteredPokemon.length} results',
+    );
     return details.isEmpty
         ? resultLabel
         : '$resultLabel · ${details.join(' · ')}';
@@ -309,7 +317,9 @@ class _PokedexScreenState extends State<PokedexScreen> {
 
   List<String> get _visibleSections {
     if (!_usesRegionSections) {
-      return _filteredPokemon.isEmpty ? const [] : const ['Risultati'];
+      return _filteredPokemon.isEmpty
+          ? const []
+          : [context.uiText('Risultati', 'Results')];
     }
     return _visibleRegions;
   }
@@ -526,9 +536,9 @@ class _PokedexScreenState extends State<PokedexScreen> {
           tilePadding: const EdgeInsets.symmetric(horizontal: 12),
           childrenPadding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
           leading: const Icon(Icons.tune),
-          title: const Text(
-            'Filtri e modalità',
-            style: TextStyle(fontWeight: FontWeight.w800),
+          title: Text(
+            context.uiText('Filtri e modalità', 'Filters and modes'),
+            style: const TextStyle(fontWeight: FontWeight.w800),
           ),
           subtitle: Text(
             _filterSummary,
@@ -542,14 +552,14 @@ class _PokedexScreenState extends State<PokedexScreen> {
                 child: TextButton.icon(
                   onPressed: _resetOptions,
                   icon: const Icon(Icons.restart_alt),
-                  label: const Text('Ripristina'),
+                  label: Text(context.uiText('Ripristina', 'Reset')),
                 ),
               ),
             _buildFilterControls(),
             const SizedBox(height: 12),
-            const _FilterGroupTitle(
+            _FilterGroupTitle(
               icon: Icons.visibility_outlined,
-              label: 'Mostra',
+              label: context.uiText('Mostra', 'Show'),
             ),
             const SizedBox(height: 6),
             _ViewFilterSelector(
@@ -779,8 +789,11 @@ class _RegionFilterSelector extends StatelessWidget {
     final seen = region == null ? null : progressBuilder(region, false);
     final caught = region == null ? null : progressBuilder(region, true);
     final subtitle = region == null
-        ? 'Tutte'
-        : 'Visti ${seen!['count']}/${seen['total']} · Presi ${caught!['count']}/${caught['total']}';
+        ? context.uiText('Tutte', 'All')
+        : context.uiText(
+            'Visti ${seen!['count']}/${seen['total']} · Presi ${caught!['count']}/${caught['total']}',
+            'Seen ${seen['count']}/${seen['total']} · Caught ${caught['count']}/${caught['total']}',
+          );
 
     return OutlinedButton.icon(
       icon: const Icon(Icons.public),
@@ -788,7 +801,7 @@ class _RegionFilterSelector extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(region ?? 'Regione'),
+          Text(region ?? context.uiText('Regione', 'Region')),
           Text(
             subtitle,
             maxLines: 1,
@@ -846,7 +859,7 @@ class _RegionFilterDialogState extends State<_RegionFilterDialog> {
           shrinkWrap: true,
           children: [
             _RegionOptionTile(
-              title: 'Tutte',
+              title: context.uiText('Tutte', 'All'),
               selected: _selectedRegion == _RegionFilterDialog.allValue,
               onTap: () => setState(
                 () => _selectedRegion = _RegionFilterDialog.allValue,
@@ -869,16 +882,16 @@ class _RegionFilterDialogState extends State<_RegionFilterDialog> {
         TextButton(
           onPressed: () =>
               Navigator.of(context).pop(_RegionFilterDialog.cancelValue),
-          child: const Text('Annulla'),
+          child: Text(context.uiText('Annulla', 'Cancel')),
         ),
         TextButton(
           onPressed: () =>
               Navigator.of(context).pop(_RegionFilterDialog.allValue),
-          child: const Text('Tutte'),
+          child: Text(context.uiText('Tutte', 'All')),
         ),
         FilledButton(
           onPressed: () => Navigator.of(context).pop(_selectedRegion),
-          child: const Text('Applica'),
+          child: Text(context.uiText('Applica', 'Apply')),
         ),
       ],
     );
@@ -921,7 +934,10 @@ class _RegionProgressText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(
-      'Visti ${seen['count']}/${seen['total']} · Presi ${caught['count']}/${caught['total']}',
+      context.uiText(
+        'Visti ${seen['count']}/${seen['total']} · Presi ${caught['count']}/${caught['total']}',
+        'Seen ${seen['count']}/${seen['total']} · Caught ${caught['count']}/${caught['total']}',
+      ),
     );
   }
 }
@@ -1057,15 +1073,15 @@ class _TypeFilterDialogState extends State<_TypeFilterDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Annulla'),
+          child: Text(context.uiText('Annulla', 'Cancel')),
         ),
         TextButton(
           onPressed: () => Navigator.of(context).pop(<String>{}),
-          child: const Text('Cancella'),
+          child: Text(context.uiText('Cancella', 'Clear')),
         ),
         FilledButton(
           onPressed: () => Navigator.of(context).pop(_selectedTypes),
-          child: const Text('Applica'),
+          child: Text(context.uiText('Applica', 'Apply')),
         ),
       ],
     );

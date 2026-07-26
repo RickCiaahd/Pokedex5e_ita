@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../localization/ui_text.dart';
 import '../../models/generated_pokemon.dart';
 import '../../models/pokemon.dart';
 import '../../models/pokemon_type_localization.dart';
@@ -38,13 +39,22 @@ class PokemonGeneratorCandidateSelector extends StatelessWidget {
         initiallyExpanded: true,
         maintainState: true,
         title: Text(
-          'POKÉMON COMPATIBILI — ${candidates.length}',
+          context.uiText(
+            'POKÉMON COMPATIBILI — ${candidates.length}',
+            'MATCHING POKÉMON — ${candidates.length}',
+          ),
           style: const TextStyle(fontWeight: FontWeight.w900),
         ),
         subtitle: Text(
           selectedVisible == 0
-              ? 'Apri l’elenco e scegli una o più specie.'
-              : '$selectedVisible selezionati',
+              ? context.uiText(
+                  'Apri l’elenco e scegli una o più specie.',
+                  'Open the list and choose one or more species.',
+                )
+              : context.uiText(
+                  '$selectedVisible selezionati',
+                  '$selectedVisible selected',
+                ),
         ),
         children: [
           Padding(
@@ -54,13 +64,13 @@ class PokemonGeneratorCandidateSelector extends StatelessWidget {
                 TextButton.icon(
                   onPressed: candidates.isEmpty ? null : onSelectAll,
                   icon: const Icon(Icons.select_all),
-                  label: const Text('Seleziona tutti'),
+                  label: Text(context.uiText('Seleziona tutti', 'Select all')),
                 ),
                 const SizedBox(width: 6),
                 TextButton.icon(
                   onPressed: selectedVisible == 0 ? null : onClearSelection,
                   icon: const Icon(Icons.deselect),
-                  label: const Text('Deseleziona'),
+                  label: Text(context.uiText('Deseleziona', 'Clear selection')),
                 ),
                 const Spacer(),
                 Text(
@@ -73,10 +83,13 @@ class PokemonGeneratorCandidateSelector extends StatelessWidget {
             ),
           ),
           if (candidates.isEmpty)
-            const Padding(
+            Padding(
               padding: EdgeInsets.fromLTRB(18, 4, 18, 20),
               child: Text(
-                'Nessun Pokémon corrisponde ai filtri selezionati.',
+                context.uiText(
+                  'Nessun Pokémon corrisponde ai filtri selezionati.',
+                  'No Pokémon match the selected filters.',
+                ),
                 textAlign: TextAlign.center,
               ),
             )
@@ -204,7 +217,10 @@ class _CandidateRow extends StatelessWidget {
                   ),
                   const SizedBox(height: 3),
                   Text(
-                    'Forme compatibili: $formLabel',
+                    context.uiText(
+                      'Forme compatibili: $formLabel',
+                      'Matching forms: $formLabel',
+                    ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.bodySmall,

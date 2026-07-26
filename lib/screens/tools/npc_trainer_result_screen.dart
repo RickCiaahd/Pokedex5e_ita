@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../localization/ui_text.dart';
 import '../../models/bag_item.dart';
 import '../../models/generated_npc_trainer.dart';
 import '../../models/generated_pokemon.dart';
@@ -97,14 +98,19 @@ class _NpcTrainerResultScreenState extends State<NpcTrainerResultScreen> {
       );
       if (generated == null) {
         setState(() {
-          _message =
-              'Non è stato possibile rigenerare una squadra completa con questi parametri.';
+          _message = context.uiText(
+            'Non è stato possibile rigenerare una squadra completa con questi parametri.',
+            'A complete team could not be regenerated with these parameters.',
+          );
         });
         return;
       }
       setState(() {
         _trainer = generated;
-        _message = 'Allenatore e squadra rigenerati.';
+        _message = context.uiText(
+          'Allenatore e squadra rigenerati.',
+          'Trainer and team regenerated.',
+        );
       });
       await _loadMoves();
     } finally {
@@ -142,8 +148,14 @@ class _NpcTrainerResultScreenState extends State<NpcTrainerResultScreen> {
         final wasUpdate = _savedTrainer != null;
         _savedTrainer = saved;
         _message = wasUpdate
-            ? 'Allenatore aggiornato nella libreria.'
-            : 'Allenatore salvato nella libreria.';
+            ? context.uiText(
+                'Allenatore aggiornato nella libreria.',
+                'Trainer updated in the library.',
+              )
+            : context.uiText(
+                'Allenatore salvato nella libreria.',
+                'Trainer saved in the library.',
+              );
       });
     } catch (error) {
       if (!mounted) return;
@@ -161,7 +173,12 @@ class _NpcTrainerResultScreenState extends State<NpcTrainerResultScreen> {
   Future<void> _copySummary() async {
     await Clipboard.setData(ClipboardData(text: _summaryText()));
     if (!mounted) return;
-    setState(() => _message = 'Riepilogo copiato negli appunti.');
+    setState(
+      () => _message = context.uiText(
+        'Riepilogo copiato negli appunti.',
+        'Summary copied to the clipboard.',
+      ),
+    );
   }
 
   Future<void> _openDetails(GeneratedPokemon generated) async {
@@ -181,24 +198,69 @@ class _NpcTrainerResultScreenState extends State<NpcTrainerResultScreen> {
     final buffer = StringBuffer()
       ..writeln(_trainer.displayName)
       ..writeln(
-        'Allenatore Lv. ${_trainer.trainerLevel} · ${_trainer.rank.label}',
+        context.uiText(
+          'Allenatore Lv. ${_trainer.trainerLevel} · ${_trainer.rank.label}',
+          'Trainer Lv. ${_trainer.trainerLevel} · ${_trainer.rank.englishLabel}',
+        ),
       )
-      ..writeln('Origine: ${_trainer.origin}')
-      ..writeln('Path: ${_trainer.path}')
-      ..writeln('Specializzazioni: ${_trainer.specializations.join(', ')}')
-      ..writeln('Personalità: ${_trainer.personality}')
-      ..writeln('Motivazione: ${_trainer.motivation}')
-      ..writeln('Particolarità: ${_trainer.quirk}')
-      ..writeln('Battuta: ${_trainer.openingLine}')
-      ..writeln('Tattiche: ${_trainer.tactics}')
-      ..writeln('Squadra:');
+      ..writeln(
+        context.uiText(
+          'Origine: ${_trainer.origin}',
+          'Origin: ${_trainer.origin}',
+        ),
+      )
+      ..writeln(
+        context.uiText('Percorso: ${_trainer.path}', 'Path: ${_trainer.path}'),
+      )
+      ..writeln(
+        context.uiText(
+          'Specializzazioni: ${_trainer.specializations.join(', ')}',
+          'Specializations: ${_trainer.specializations.join(', ')}',
+        ),
+      )
+      ..writeln(
+        context.uiText(
+          'Personalità: ${_trainer.personality}',
+          'Personality: ${_trainer.personality}',
+        ),
+      )
+      ..writeln(
+        context.uiText(
+          'Motivazione: ${_trainer.motivation}',
+          'Motivation: ${_trainer.motivation}',
+        ),
+      )
+      ..writeln(
+        context.uiText(
+          'Particolarità: ${_trainer.quirk}',
+          'Quirk: ${_trainer.quirk}',
+        ),
+      )
+      ..writeln(
+        context.uiText(
+          'Battuta: ${_trainer.openingLine}',
+          'Opening line: ${_trainer.openingLine}',
+        ),
+      )
+      ..writeln(
+        context.uiText(
+          'Tattiche: ${_trainer.tactics}',
+          'Tactics: ${_trainer.tactics}',
+        ),
+      )
+      ..writeln(context.uiText('Squadra:', 'Team:'));
     for (final pokemon in _trainer.team) {
       buffer.writeln(
         '- ${pokemon.basePokemon.name} (${pokemon.formLabel}) Lv. ${pokemon.level}: '
         '${pokemon.selectedMoves.join(', ')}',
       );
     }
-    buffer.writeln('Ricompensa: ${_formatMoney(_trainer.rewardMoney)}');
+    buffer.writeln(
+      context.uiText(
+        'Ricompensa: ${_formatMoney(_trainer.rewardMoney)}',
+        'Reward: ${_formatMoney(_trainer.rewardMoney)}',
+      ),
+    );
     if (_trainer.rewards.isNotEmpty) {
       buffer.writeln('Oggetti: ${_trainer.rewards.join(', ')}');
     }
@@ -226,14 +288,19 @@ class _NpcTrainerResultScreenState extends State<NpcTrainerResultScreen> {
       appBar: AppBar(
         leading: const HomeLeadingButton(),
         title: Text(
-          _savedTrainer == null ? 'Allenatore generato' : _savedTrainer!.name,
+          _savedTrainer == null
+              ? context.uiText('Allenatore generato', 'Generated Trainer')
+              : _savedTrainer!.name,
         ),
         actions: [
           IconButton(
             onPressed: _isSaving || _isWorking ? null : _saveTrainer,
             tooltip: _savedTrainer == null
-                ? 'Salva nella libreria'
-                : 'Aggiorna allenatore salvato',
+                ? context.uiText('Salva nella libreria', 'Save to library')
+                : context.uiText(
+                    'Aggiorna allenatore salvato',
+                    'Update saved Trainer',
+                  ),
             icon: _isSaving
                 ? const SizedBox(
                     width: 20,
@@ -248,12 +315,12 @@ class _NpcTrainerResultScreenState extends State<NpcTrainerResultScreen> {
           ),
           IconButton(
             onPressed: _copySummary,
-            tooltip: 'Copia riepilogo',
+            tooltip: context.uiText('Copia riepilogo', 'Copy summary'),
             icon: const Icon(Icons.content_copy_outlined),
           ),
           IconButton(
             onPressed: _isWorking ? null : _regenerate,
-            tooltip: 'Rigenera tutto',
+            tooltip: context.uiText('Rigenera tutto', 'Regenerate all'),
             icon: const Icon(Icons.casino_outlined),
           ),
         ],
@@ -279,11 +346,23 @@ class _NpcTrainerResultScreenState extends State<NpcTrainerResultScreen> {
           const SizedBox(height: 12),
           _InformationCard(
             icon: Icons.psychology_alt_outlined,
-            title: 'Personalità e motivazione',
+            title: context.uiText(
+              'Personalità e motivazione',
+              'Personality and motivation',
+            ),
             children: [
-              _LabeledText(label: 'Personalità', value: _trainer.personality),
-              _LabeledText(label: 'Obiettivo', value: _trainer.motivation),
-              _LabeledText(label: 'Particolarità', value: _trainer.quirk),
+              _LabeledText(
+                label: context.uiText('Personalità', 'Personality'),
+                value: _trainer.personality,
+              ),
+              _LabeledText(
+                label: context.uiText('Obiettivo', 'Goal'),
+                value: _trainer.motivation,
+              ),
+              _LabeledText(
+                label: context.uiText('Particolarità', 'Quirk'),
+                value: _trainer.quirk,
+              ),
             ],
           ),
           const SizedBox(height: 12),
@@ -305,7 +384,7 @@ class _NpcTrainerResultScreenState extends State<NpcTrainerResultScreen> {
           const SizedBox(height: 12),
           _InformationCard(
             icon: Icons.route_outlined,
-            title: 'Tattiche',
+            title: context.uiText('Tattiche', 'Tactics'),
             children: [Text(_trainer.tactics)],
           ),
           const SizedBox(height: 16),
@@ -313,7 +392,10 @@ class _NpcTrainerResultScreenState extends State<NpcTrainerResultScreen> {
             children: [
               Expanded(
                 child: Text(
-                  'SQUADRA · ${_trainer.team.length}',
+                  context.uiText(
+                    'SQUADRA · ${_trainer.team.length}',
+                    'TEAM · ${_trainer.team.length}',
+                  ),
                   style: Theme.of(
                     context,
                   ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
@@ -336,7 +418,7 @@ class _NpcTrainerResultScreenState extends State<NpcTrainerResultScreen> {
           ],
           _InformationCard(
             icon: Icons.workspace_premium_outlined,
-            title: 'Ricompensa',
+            title: context.uiText('Ricompensa', 'Reward'),
             children: [
               Text(
                 _formatMoney(_trainer.rewardMoney),
@@ -356,7 +438,12 @@ class _NpcTrainerResultScreenState extends State<NpcTrainerResultScreen> {
                 ),
               ] else ...[
                 const SizedBox(height: 4),
-                const Text('Nessun oggetto aggiuntivo.'),
+                Text(
+                  context.uiText(
+                    'Nessun oggetto aggiuntivo.',
+                    'No additional items.',
+                  ),
+                ),
               ],
             ],
           ),
@@ -370,8 +457,11 @@ class _NpcTrainerResultScreenState extends State<NpcTrainerResultScreen> {
             ),
             label: Text(
               _savedTrainer == null
-                  ? 'SALVA NELLA LIBRERIA'
-                  : 'AGGIORNA ALLENATORE SALVATO',
+                  ? context.uiText('SALVA NELLA LIBRERIA', 'SAVE TO LIBRARY')
+                  : context.uiText(
+                      'AGGIORNA ALLENATORE SALVATO',
+                      'UPDATE SAVED TRAINER',
+                    ),
             ),
           ),
           const SizedBox(height: 8),
@@ -385,20 +475,27 @@ class _NpcTrainerResultScreenState extends State<NpcTrainerResultScreen> {
                   )
                 : const Icon(Icons.casino_outlined),
             label: Text(
-              _isWorking ? 'RIGENERAZIONE...' : 'RIGENERA ALLENATORE E SQUADRA',
+              _isWorking
+                  ? context.uiText('RIGENERAZIONE...', 'REGENERATING...')
+                  : context.uiText(
+                      'RIGENERA ALLENATORE E SQUADRA',
+                      'REGENERATE TRAINER AND TEAM',
+                    ),
             ),
           ),
           const SizedBox(height: 8),
           OutlinedButton.icon(
             onPressed: () => Navigator.of(context).pop(),
             icon: const Icon(Icons.tune),
-            label: const Text('MODIFICA PARAMETRI'),
+            label: Text(
+              context.uiText('MODIFICA PARAMETRI', 'EDIT PARAMETERS'),
+            ),
           ),
           const SizedBox(height: 8),
           TextButton.icon(
             onPressed: _copySummary,
             icon: const Icon(Icons.content_copy_outlined),
-            label: const Text('COPIA RIEPILOGO'),
+            label: Text(context.uiText('COPIA RIEPILOGO', 'COPY SUMMARY')),
           ),
         ],
       ),
@@ -447,7 +544,12 @@ class _NpcSaveDialogState extends State<_NpcSaveDialog> {
   void _confirm() {
     final name = _nameController.text.trim();
     if (name.isEmpty) {
-      setState(() => _error = 'Inserisci un nome valido.');
+      setState(
+        () => _error = context.uiText(
+          'Inserisci un nome valido.',
+          'Enter a valid name.',
+        ),
+      );
       return;
     }
     Navigator.of(
@@ -459,7 +561,9 @@ class _NpcSaveDialogState extends State<_NpcSaveDialog> {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text(
-        widget.isUpdate ? 'Aggiorna Allenatore PNG' : 'Salva Allenatore PNG',
+        widget.isUpdate
+            ? context.uiText('Aggiorna Allenatore PNG', 'Update NPC Trainer')
+            : context.uiText('Salva Allenatore PNG', 'Save NPC Trainer'),
       ),
       content: Column(
         mainAxisSize: MainAxisSize.min,
@@ -467,18 +571,18 @@ class _NpcSaveDialogState extends State<_NpcSaveDialog> {
           TextField(
             controller: _nameController,
             autofocus: true,
-            decoration: const InputDecoration(
-              labelText: 'Nome',
-              border: OutlineInputBorder(),
+            decoration: InputDecoration(
+              labelText: context.uiText('Nome', 'Name'),
+              border: const OutlineInputBorder(),
             ),
           ),
           const SizedBox(height: 10),
           TextField(
             controller: _notesController,
             maxLines: 3,
-            decoration: const InputDecoration(
-              labelText: 'Note facoltative',
-              border: OutlineInputBorder(),
+            decoration: InputDecoration(
+              labelText: context.uiText('Note facoltative', 'Optional notes'),
+              border: const OutlineInputBorder(),
             ),
           ),
           if (_error != null) ...[
@@ -493,11 +597,15 @@ class _NpcSaveDialogState extends State<_NpcSaveDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Annulla'),
+          child: Text(context.uiText('Annulla', 'Cancel')),
         ),
         FilledButton(
           onPressed: _confirm,
-          child: Text(widget.isUpdate ? 'Aggiorna' : 'Salva'),
+          child: Text(
+            widget.isUpdate
+                ? context.uiText('Aggiorna', 'Update')
+                : context.uiText('Salva', 'Save'),
+          ),
         ),
       ],
     );
@@ -700,8 +808,12 @@ class _NpcPokemonCard extends StatelessWidget {
           style: const TextStyle(fontWeight: FontWeight.w900),
         ),
         subtitle: Text(
-          '${generated.formLabel} · Livello ${generated.level} · '
-          'SR ${pokemon.sr} · PF ${generated.maxHp} · CA $armorClass',
+          context.uiText(
+            '${generated.formLabel} · Livello ${generated.level} · '
+                'SR ${pokemon.sr} · PF ${generated.maxHp} · CA $armorClass',
+            '${generated.formLabel} · Level ${generated.level} · '
+                'SR ${pokemon.sr} · HP ${generated.maxHp} · AC $armorClass',
+          ),
         ),
         childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 14),
         children: [
@@ -739,7 +851,7 @@ class _NpcPokemonCard extends StatelessWidget {
             child: TextButton.icon(
               onPressed: onOpenDetails,
               icon: const Icon(Icons.description_outlined),
-              label: const Text('SCHEDA'),
+              label: Text(context.uiText('SCHEDA', 'SHEET')),
             ),
           ),
         ],

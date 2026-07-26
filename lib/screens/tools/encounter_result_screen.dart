@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../localization/ui_text.dart';
 import '../../models/generated_encounter.dart';
 import '../../models/generated_pokemon.dart';
 import '../../models/move_data.dart';
@@ -204,8 +205,14 @@ class _EncounterResultScreenState extends State<EncounterResultScreen> {
         _savedEncounter = saved;
         _encounter = _encounter.copyWith(title: saved.name);
         _message = wasUpdate
-            ? 'Incontro aggiornato nella libreria.'
-            : 'Incontro salvato nella libreria.';
+            ? context.uiText(
+                'Incontro aggiornato nella libreria.',
+                'Encounter updated in the library.',
+              )
+            : context.uiText(
+                'Incontro salvato nella libreria.',
+                'Encounter saved in the library.',
+              );
       });
     } catch (error) {
       if (!mounted) return;
@@ -242,8 +249,10 @@ class _EncounterResultScreenState extends State<EncounterResultScreen> {
       );
       if (!mounted || !launched) return;
       setState(() {
-        _message =
-            'Il fight selvatico è stato salvato e può essere ripreso dagli Strumenti del Master.';
+        _message = context.uiText(
+          'Il fight selvatico è stato salvato e può essere ripreso dagli Strumenti del Master.',
+          'The wild battle was saved and can be resumed from Game Master Tools.',
+        );
       });
     } catch (error) {
       if (!mounted) return;
@@ -290,8 +299,11 @@ class _EncounterResultScreenState extends State<EncounterResultScreen> {
                   ? null
                   : _saveEncounter,
               tooltip: _savedEncounter == null
-                  ? 'Salva nella libreria'
-                  : 'Aggiorna incontro salvato',
+                  ? context.uiText('Salva nella libreria', 'Save to library')
+                  : context.uiText(
+                      'Aggiorna incontro salvato',
+                      'Update saved encounter',
+                    ),
               icon: _isSaving
                   ? const SizedBox(
                       width: 20,
@@ -308,7 +320,10 @@ class _EncounterResultScreenState extends State<EncounterResultScreen> {
             onPressed: _encounter.members.isEmpty || _isWorking
                 ? null
                 : _regenerateUnlocked,
-            tooltip: 'Rigenera i non bloccati',
+            tooltip: context.uiText(
+              'Rigenera i non bloccati',
+              'Regenerate unlocked opponents',
+            ),
             icon: const Icon(Icons.casino_outlined),
           ),
         ],
@@ -329,7 +344,10 @@ class _EncounterResultScreenState extends State<EncounterResultScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    'DIFFICOLTÀ STIMATA: ${estimate.difficulty.label.toUpperCase()}',
+                    context.uiText(
+                      'DIFFICOLTÀ STIMATA: ${estimate.difficulty.label.toUpperCase()}',
+                      'ESTIMATED DIFFICULTY: ${estimate.difficulty.englishLabel.toUpperCase()}',
+                    ),
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.w900,
                       color: Theme.of(context).colorScheme.onPrimaryContainer,
@@ -337,18 +355,28 @@ class _EncounterResultScreenState extends State<EncounterResultScreen> {
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    'Obiettivo ${_encounter.targetDifficulty.label} · '
-                    'budget gruppo ${_format(estimate.partyBudget)} · '
-                    'costo incontro ${_format(estimate.encounterCost)}',
+                    context.uiText(
+                      'Obiettivo ${_encounter.targetDifficulty.label} · '
+                          'budget gruppo ${_format(estimate.partyBudget)} · '
+                          'costo incontro ${_format(estimate.encounterCost)}',
+                      'Target ${_encounter.targetDifficulty.englishLabel} · '
+                          'party budget ${_format(estimate.partyBudget)} · '
+                          'encounter cost ${_format(estimate.encounterCost)}',
+                    ),
                     style: TextStyle(
                       color: Theme.of(context).colorScheme.onPrimaryContainer,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '${_encounter.party.activePokemon} Pokémon alleati · '
-                    'livello medio ${_encounter.party.averageLevel} · '
-                    '${_encounter.members.length} avversari',
+                    context.uiText(
+                      '${_encounter.party.activePokemon} Pokémon alleati · '
+                          'livello medio ${_encounter.party.averageLevel} · '
+                          '${_encounter.members.length} avversari',
+                      '${_encounter.party.activePokemon} allied Pokémon · '
+                          'average level ${_encounter.party.averageLevel} · '
+                          '${_encounter.members.length} opponents',
+                    ),
                     style: TextStyle(
                       color: Theme.of(context).colorScheme.onPrimaryContainer,
                     ),
@@ -391,11 +419,14 @@ class _EncounterResultScreenState extends State<EncounterResultScreen> {
           ],
           const SizedBox(height: 14),
           if (_encounter.members.isEmpty)
-            const Card(
+            Card(
               child: Padding(
-                padding: EdgeInsets.all(24),
+                padding: const EdgeInsets.all(24),
                 child: Text(
-                  'Non ci sono più avversari in questo incontro.',
+                  context.uiText(
+                    'Non ci sono più avversari in questo incontro.',
+                    'There are no opponents left in this encounter.',
+                  ),
                   textAlign: TextAlign.center,
                 ),
               ),
@@ -422,7 +453,12 @@ class _EncounterResultScreenState extends State<EncounterResultScreen> {
                   ? null
                   : _startMasterFight,
               icon: const Icon(Icons.sports_mma_outlined),
-              label: const Text('AVVIA NEL FIGHT DEL MASTER'),
+              label: Text(
+                context.uiText(
+                  'AVVIA NEL FIGHT DEL MASTER',
+                  'START IN GAME MASTER BATTLE',
+                ),
+              ),
             ),
             const SizedBox(height: 8),
             OutlinedButton.icon(
@@ -436,8 +472,11 @@ class _EncounterResultScreenState extends State<EncounterResultScreen> {
               ),
               label: Text(
                 _savedEncounter == null
-                    ? 'SALVA NELLA LIBRERIA'
-                    : 'AGGIORNA INCONTRO SALVATO',
+                    ? context.uiText('SALVA NELLA LIBRERIA', 'SAVE TO LIBRARY')
+                    : context.uiText(
+                        'AGGIORNA INCONTRO SALVATO',
+                        'UPDATE SAVED ENCOUNTER',
+                      ),
               ),
             ),
             const SizedBox(height: 8),
@@ -453,11 +492,19 @@ class _EncounterResultScreenState extends State<EncounterResultScreen> {
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
                 : const Icon(Icons.casino_outlined),
-            label: const Text('RIGENERA TUTTI I NON BLOCCATI'),
+            label: Text(
+              context.uiText(
+                'RIGENERA TUTTI I NON BLOCCATI',
+                'REGENERATE ALL UNLOCKED',
+              ),
+            ),
           ),
           const SizedBox(height: 8),
-          const Text(
-            'L’incontro è temporaneo: non modifica Squadra, PC o Pokédex.',
+          Text(
+            context.uiText(
+              'L’incontro è temporaneo: non modifica Squadra, PC o Pokédex.',
+              'This encounter is temporary: it does not change the Team, PC or Pokédex.',
+            ),
             textAlign: TextAlign.center,
           ),
         ],
@@ -517,7 +564,11 @@ class _EncounterSaveDialogState extends State<_EncounterSaveDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(widget.isUpdate ? 'Aggiorna incontro' : 'Salva incontro'),
+      title: Text(
+        widget.isUpdate
+            ? context.uiText('Aggiorna incontro', 'Update encounter')
+            : context.uiText('Salva incontro', 'Save encounter'),
+      ),
       content: SizedBox(
         width: 440,
         child: Column(
@@ -526,9 +577,9 @@ class _EncounterSaveDialogState extends State<_EncounterSaveDialog> {
             TextField(
               controller: _nameController,
               autofocus: true,
-              decoration: const InputDecoration(
-                labelText: 'Nome incontro',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: context.uiText('Nome incontro', 'Encounter name'),
+                border: const OutlineInputBorder(),
               ),
               onSubmitted: (_) => _submit(),
             ),
@@ -536,9 +587,9 @@ class _EncounterSaveDialogState extends State<_EncounterSaveDialog> {
             TextField(
               controller: _notesController,
               maxLines: 3,
-              decoration: const InputDecoration(
-                labelText: 'Note facoltative',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: context.uiText('Note facoltative', 'Optional notes'),
+                border: const OutlineInputBorder(),
               ),
             ),
           ],
@@ -547,11 +598,15 @@ class _EncounterSaveDialogState extends State<_EncounterSaveDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Annulla'),
+          child: Text(context.uiText('Annulla', 'Cancel')),
         ),
         FilledButton(
           onPressed: _submit,
-          child: Text(widget.isUpdate ? 'Aggiorna' : 'Salva'),
+          child: Text(
+            widget.isUpdate
+                ? context.uiText('Aggiorna', 'Update')
+                : context.uiText('Salva', 'Save'),
+          ),
         ),
       ],
     );
@@ -618,8 +673,12 @@ class _EncounterMemberCard extends StatelessWidget {
           ],
         ),
         subtitle: Text(
-          '${generated.formLabel} · Livello ${generated.level} · '
-          'SR ${pokemon.sr} · PF ${generated.maxHp} · CA $armorClass',
+          context.uiText(
+            '${generated.formLabel} · Livello ${generated.level} · '
+                'SR ${pokemon.sr} · PF ${generated.maxHp} · CA $armorClass',
+            '${generated.formLabel} · Level ${generated.level} · '
+                'SR ${pokemon.sr} · HP ${generated.maxHp} · AC $armorClass',
+          ),
         ),
         childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 14),
         children: [
@@ -670,7 +729,7 @@ class _EncounterMemberCard extends StatelessWidget {
               TextButton.icon(
                 onPressed: isWorking ? null : onRemove,
                 icon: const Icon(Icons.close),
-                label: const Text('Rimuovi'),
+                label: Text(context.uiText('Rimuovi', 'Remove')),
               ),
             ],
           ),

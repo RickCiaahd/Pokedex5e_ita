@@ -10,6 +10,13 @@ extension NpcTrainerRankLabel on NpcTrainerRank {
     NpcTrainerRank.boss => 'Boss',
   };
 
+  String get englishLabel => switch (this) {
+    NpcTrainerRank.common => 'Common',
+    NpcTrainerRank.expert => 'Expert',
+    NpcTrainerRank.elite => 'Elite',
+    NpcTrainerRank.boss => 'Boss',
+  };
+
   String get description => switch (this) {
     NpcTrainerRank.common =>
       'Un allenatore ordinario, adatto a incontri rapidi o introduttivi.',
@@ -19,6 +26,17 @@ extension NpcTrainerRankLabel on NpcTrainerRank {
       'Un avversario importante, con Pokémon forti e ricompense migliori.',
     NpcTrainerRank.boss =>
       'Un rivale, Capopalestra o antagonista pensato come scontro principale.',
+  };
+
+  String get englishDescription => switch (this) {
+    NpcTrainerRank.common =>
+      'An ordinary Trainer suited to quick or introductory encounters.',
+    NpcTrainerRank.expert =>
+      'A prepared challenge with a more selective team and precise tactics.',
+    NpcTrainerRank.elite =>
+      'An important opponent with strong Pokémon and better rewards.',
+    NpcTrainerRank.boss =>
+      'A rival, Gym Leader or antagonist designed as a major battle.',
   };
 
   double get rewardMultiplier => switch (this) {
@@ -45,6 +63,12 @@ extension NpcTeamCompositionLabel on NpcTeamComposition {
     NpcTeamComposition.varied => 'Variegata',
   };
 
+  String get englishLabel => switch (this) {
+    NpcTeamComposition.themed => 'Themed',
+    NpcTeamComposition.mixed => 'Mixed',
+    NpcTeamComposition.varied => 'Varied',
+  };
+
   String get description => switch (this) {
     NpcTeamComposition.themed =>
       'Tutti i Pokémon condividono il tipo della specializzazione.',
@@ -52,6 +76,15 @@ extension NpcTeamCompositionLabel on NpcTeamComposition {
       'La maggioranza segue il tema, con alcune coperture differenti.',
     NpcTeamComposition.varied =>
       'La squadra privilegia varietà di specie e tipi.',
+  };
+
+  String get englishDescription => switch (this) {
+    NpcTeamComposition.themed =>
+      'Every Pokémon shares the specialization type.',
+    NpcTeamComposition.mixed =>
+      'Most of the team follows the theme, with a few different coverage options.',
+    NpcTeamComposition.varied =>
+      'The team favors a variety of species and types.',
   };
 }
 

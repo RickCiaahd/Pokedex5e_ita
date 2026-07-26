@@ -719,7 +719,10 @@ class _BattleScreenState extends State<BattleScreen> {
     await _reload(
       message:
           result?.message ??
-          '${heldItem.name} è stata consumata. Applica manualmente il suo effetto se necessario.',
+          context.uiText(
+            '${heldItem.name} è stato consumato. Applica manualmente il suo effetto se necessario.',
+            '${heldItem.name} was consumed. Apply its effect manually if needed.',
+          ),
     );
   }
 
@@ -836,8 +839,10 @@ class _BattleScreenState extends State<BattleScreen> {
     }
 
     await _reload(
-      message:
-          '${item.name} è stata consumata. Applica manualmente il suo effetto se necessario.',
+      message: context.uiText(
+        '${item.name} è stato consumato. Applica manualmente il suo effetto se necessario.',
+        '${item.name} was consumed. Apply its effect manually if needed.',
+      ),
     );
   }
 
@@ -858,7 +863,7 @@ class _BattleScreenState extends State<BattleScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: Text('Annulla'),
+            child: Text(context.uiText('Annulla', 'Cancel')),
           ),
           OutlinedButton(
             onPressed: () => Navigator.of(context).pop(false),
@@ -1135,7 +1140,10 @@ class _BattleScreenState extends State<BattleScreen> {
     if (!mounted || result == null) return;
     setState(() {
       _environment = result;
-      _message = 'Meteo e terreno aggiornati.';
+      _message = context.uiText(
+        'Meteo e terreno aggiornati.',
+        'Weather and terrain updated.',
+      );
     });
     _scheduleSessionSave(data);
   }
@@ -1283,11 +1291,11 @@ class _BattleScreenState extends State<BattleScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: Text('ANNULLA'),
+            child: Text(context.uiText('ANNULLA', 'CANCEL')),
           ),
           FilledButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: Text('TERMINA'),
+            child: Text(context.uiText('TERMINA', 'END')),
           ),
         ],
       ),
@@ -1503,7 +1511,7 @@ class _BattleScreenState extends State<BattleScreen> {
                             'Error loading battle',
                           ),
                           message: snapshot.error.toString(),
-                          actionLabel: 'Riprova',
+                          actionLabel: context.uiText('Riprova', 'Retry'),
                           onAction: () => _reload(),
                         );
                       }
@@ -2378,13 +2386,14 @@ class _InitiativeTracker extends StatelessWidget {
                         onPressed: onRollTrainer,
                         icon: const Icon(Icons.casino_outlined),
                         label: Text(
-                          'RITIRA TRAINER (${trainerInitiativeBonus >= 0 ? '+' : ''}$trainerInitiativeBonus)',
+                          '${context.uiText('RITIRA ALLENATORE', 'REROLL TRAINER')} '
+                          '(${trainerInitiativeBonus >= 0 ? '+' : ''}$trainerInitiativeBonus)',
                         ),
                       ),
                       OutlinedButton.icon(
                         onPressed: onAddEntry,
                         icon: const Icon(Icons.add),
-                        label: Text('AGGIUNGI'),
+                        label: Text(context.uiText('AGGIUNGI', 'ADD')),
                       ),
                     ],
                   ),
@@ -2449,7 +2458,7 @@ class _InitiativeTile extends StatelessWidget {
           trailing: onRemove == null
               ? null
               : IconButton(
-                  tooltip: 'Rimuovi',
+                  tooltip: context.uiText('Rimuovi', 'Remove'),
                   onPressed: onRemove,
                   icon: const Icon(Icons.close),
                 ),
@@ -2509,7 +2518,9 @@ class _InitiativeEntryDialogState extends State<_InitiativeEntryDialog> {
           TextField(
             controller: _initiativeController,
             keyboardType: TextInputType.number,
-            decoration: const InputDecoration(labelText: 'Iniziativa'),
+            decoration: InputDecoration(
+              labelText: context.uiText('Iniziativa', 'Initiative'),
+            ),
             onSubmitted: (_) => _submit(),
           ),
         ],
@@ -2517,9 +2528,12 @@ class _InitiativeEntryDialogState extends State<_InitiativeEntryDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: Text('Annulla'),
+          child: Text(context.uiText('Annulla', 'Cancel')),
         ),
-        FilledButton(onPressed: _submit, child: Text('Aggiungi')),
+        FilledButton(
+          onPressed: _submit,
+          child: Text(context.uiText('Aggiungi', 'Add')),
+        ),
       ],
     );
   }
@@ -2915,8 +2929,8 @@ class _ArmorClassBadge extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
           child: Text(
             hasBonus
-                ? 'CA $effectiveArmorClass ($signedBonus)'
-                : 'CA $effectiveArmorClass',
+                ? '${context.uiText('CA', 'AC')} $effectiveArmorClass ($signedBonus)'
+                : '${context.uiText('CA', 'AC')} $effectiveArmorClass',
             style: Theme.of(
               context,
             ).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w900),
@@ -2961,7 +2975,7 @@ class _StatusPanel extends StatelessWidget {
                   runSpacing: 6,
                   crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
-                    Text('STATUS:'),
+                    Text(context.uiText('STATUS:', 'CONDITIONS:')),
                     if (nonVolatileStatus != null)
                       _StatusChip(
                         status: nonVolatileStatus!,
@@ -3066,7 +3080,7 @@ class _StatusPickerSheetState extends State<_StatusPickerSheet> {
               runSpacing: 8,
               children: [
                 ChoiceChip(
-                  label: Text('NESSUNO'),
+                  label: Text(context.uiText('NESSUNO', 'NONE')),
                   selected: _nonVolatileStatus == null,
                   onSelected: (_) => _selectNonVolatile(null),
                 ),
@@ -3178,9 +3192,15 @@ class _HeldItemPanel extends StatelessWidget {
             ),
             const SizedBox(width: 8),
             if (item?.type == 'berry')
-              OutlinedButton(onPressed: onUseHeldBerry, child: Text('USA')),
+              OutlinedButton(
+                onPressed: onUseHeldBerry,
+                child: Text(context.uiText('USA', 'USE')),
+              ),
             const SizedBox(width: 6),
-            FilledButton(onPressed: onOpenBag, child: Text('ZAINO')),
+            FilledButton(
+              onPressed: onOpenBag,
+              child: Text(context.uiText('ZAINO', 'BAG')),
+            ),
           ],
         ),
       ),
@@ -3519,11 +3539,11 @@ class _HpInputDialogState extends State<_HpInputDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: Text('Annulla'),
+          child: Text(context.uiText('Annulla', 'Cancel')),
         ),
         FilledButton(
           onPressed: () => Navigator.of(context).pop(_controller.text),
-          child: Text('Salva'),
+          child: Text(context.uiText('Salva', 'Save')),
         ),
       ],
     );

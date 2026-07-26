@@ -149,7 +149,7 @@ class _PokemonPcScreenState extends State<PokemonPcScreen> {
     return _pcEggs
         .where((egg) {
           final pokemon = _pokemonById(egg.speciesId);
-          return 'uovo'.contains(query) ||
+          return context.uiText('uovo', 'egg').contains(query) ||
               (pokemon?.name.toLowerCase().contains(query) ?? false) ||
               egg.parentNames.any((name) => name.toLowerCase().contains(query));
         })
@@ -191,17 +191,20 @@ class _PokemonPcScreenState extends State<PokemonPcScreen> {
               'Deposit the Egg in the PC?',
             ),
           ),
-          content: const Text(
-            'L’uovo libererà il Pokéslot. Nel PC l’incubazione resterà in pausa e il bonus di Lealtà +2 non sarà più disponibile.',
+          content: Text(
+            context.uiText(
+              'L’uovo libererà il Pokéslot. Nel PC l’incubazione resterà in pausa e il bonus di Lealtà +2 non sarà più disponibile.',
+              'The Egg will free the Pokéslot. Incubation remains paused in the PC and the +2 Loyalty bonus will no longer be available.',
+            ),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
-              child: const Text('Annulla'),
+              child: Text(context.uiText('Annulla', 'Cancel')),
             ),
             FilledButton(
               onPressed: () => Navigator.of(context).pop(true),
-              child: const Text('Deposita'),
+              child: Text(context.uiText('Deposita', 'Deposit')),
             ),
           ],
         ),
@@ -221,7 +224,12 @@ class _PokemonPcScreenState extends State<PokemonPcScreen> {
       );
       await _loadPc(clearMessages: false);
       if (!mounted) return;
-      setState(() => _successMessage = 'Uovo depositato nel PC.');
+      setState(
+        () => _successMessage = context.uiText(
+          'Uovo depositato nel PC.',
+          'Egg deposited in the PC.',
+        ),
+      );
       return;
     }
 
@@ -241,11 +249,11 @@ class _PokemonPcScreenState extends State<PokemonPcScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Annulla'),
+            child: Text(context.uiText('Annulla', 'Cancel')),
           ),
           FilledButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Deposita'),
+            child: Text(context.uiText('Deposita', 'Deposit')),
           ),
         ],
       ),
@@ -265,7 +273,12 @@ class _PokemonPcScreenState extends State<PokemonPcScreen> {
 
     await _loadPc(clearMessages: false);
     if (!mounted) return;
-    setState(() => _successMessage = '$displayName depositato nel PC.');
+    setState(
+      () => _successMessage = context.uiText(
+        '$displayName depositato nel PC.',
+        '$displayName deposited in the PC.',
+      ),
+    );
   }
 
   Future<void> _moveToTeam(PcPokemon pcPokemon) async {
@@ -310,7 +323,10 @@ class _PokemonPcScreenState extends State<PokemonPcScreen> {
         : null;
     setState(() {
       _successMessage = replacedName == null
-          ? '$pcName spostato nello slot ${targetSlot.slotIndex + 1}.'
+          ? context.uiText(
+              '$pcName spostato nello slot ${targetSlot.slotIndex + 1}.',
+              '$pcName moved to slot ${targetSlot.slotIndex + 1}.',
+            )
           : context.uiText(
               '$pcName è entrato in squadra. $replacedName è stato depositato nel PC.',
               '$pcName joined the team. $replacedName was deposited in the PC.',
@@ -374,11 +390,11 @@ class _PokemonPcScreenState extends State<PokemonPcScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Annulla'),
+            child: Text(context.uiText('Annulla', 'Cancel')),
           ),
           FilledButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Rilascia'),
+            child: Text(context.uiText('Rilascia', 'Release')),
           ),
         ],
       ),
@@ -392,7 +408,12 @@ class _PokemonPcScreenState extends State<PokemonPcScreen> {
     );
     await _loadPc(clearMessages: false);
     if (!mounted) return;
-    setState(() => _successMessage = '$name rimosso dal PC.');
+    setState(
+      () => _successMessage = context.uiText(
+        '$name rimosso dal PC.',
+        '$name removed from the PC.',
+      ),
+    );
   }
 
   void _togglePcSearch() {
@@ -412,13 +433,15 @@ class _PokemonPcScreenState extends State<PokemonPcScreen> {
 
   String _pcDisplayName(PcPokemon pcPokemon, Pokemon? pokemon) {
     return pcPokemon.displayName.isEmpty
-        ? pokemon?.name ?? 'Pokémon sconosciuto'
+        ? pokemon?.name ??
+              context.uiText('Pokémon sconosciuto', 'Unknown Pokémon')
         : pcPokemon.displayName;
   }
 
   @override
   Widget build(BuildContext context) {
-    final profileName = _profile?.name ?? 'Allenatore';
+    final profileName =
+        _profile?.name ?? context.uiText('Allenatore', 'Trainer');
     final visibleTeam = _visibleTeam;
     final filteredPcPokemon = _filteredPcPokemon;
     final filteredPcEggs = _filteredPcEggs;
@@ -431,7 +454,7 @@ class _PokemonPcScreenState extends State<PokemonPcScreen> {
         title: Text(context.uiText('PC Pokémon', 'Pokémon PC')),
         actions: [
           IconButton(
-            tooltip: 'Ricarica',
+            tooltip: context.uiText('Ricarica', 'Refresh'),
             onPressed: () => _loadPc(clearMessages: false),
             icon: const Icon(Icons.refresh),
           ),
@@ -471,9 +494,11 @@ class _PokemonPcScreenState extends State<PokemonPcScreen> {
                           ],
                           const SizedBox(height: 10),
                           _SectionTitle(
-                            title: 'Squadra',
-                            subtitle:
-                                'Fissa: deposita o scegli chi sostituire quando ritiri dal PC.',
+                            title: context.uiText('Squadra', 'Team'),
+                            subtitle: context.uiText(
+                              'Fissa: deposita o scegli chi sostituire quando ritiri dal PC.',
+                              'Fixed: deposit a member or choose who to replace when withdrawing from the PC.',
+                            ),
                           ),
                           const SizedBox(height: 8),
                           _FixedTeamPanel(
@@ -628,7 +653,7 @@ class _PcHeader extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'PC di $profileName',
+                    context.uiText('PC di $profileName', '$profileName’s PC'),
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       color: colorScheme.onSecondaryContainer,
                       fontWeight: FontWeight.w900,
@@ -636,7 +661,10 @@ class _PcHeader extends StatelessWidget {
                   ),
                   const SizedBox(height: 3),
                   Text(
-                    '$storedCount nel PC • $filledTeamSlots/$totalTeamSlots Pokéslot occupati',
+                    context.uiText(
+                      '$storedCount nel PC • $filledTeamSlots/$totalTeamSlots Pokéslot occupati',
+                      '$storedCount in PC • $filledTeamSlots/$totalTeamSlots Pokéslots occupied',
+                    ),
                     style: TextStyle(color: colorScheme.onSecondaryContainer),
                   ),
                 ],
@@ -755,7 +783,7 @@ class _TeamMiniCard extends StatelessWidget {
     final pokemon = this.pokemon;
     final nickname = slot.nickname?.trim() ?? '';
     final name = slot.isEgg
-        ? 'Uovo'
+        ? context.uiText('Uovo', 'Egg')
         : pokemon == null
         ? 'Slot ${slot.slotIndex + 1}'
         : nickname.isEmpty
@@ -808,9 +836,9 @@ class _TeamMiniCard extends StatelessWidget {
                       const SizedBox(height: 1),
                       Text(
                         slot.isEgg
-                            ? 'In incubazione'
+                            ? context.uiText('In incubazione', 'Incubating')
                             : pokemon == null
-                            ? 'Vuoto'
+                            ? context.uiText('Vuoto', 'Empty')
                             : '#${pokemon.id.toString().padLeft(3, '0')}',
                         style: Theme.of(context).textTheme.labelSmall,
                       ),
@@ -823,7 +851,7 @@ class _TeamMiniCard extends StatelessWidget {
                             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                             textStyle: Theme.of(context).textTheme.labelSmall,
                           ),
-                          child: const Text('Deposita'),
+                          child: Text(context.uiText('Deposita', 'Deposit')),
                         ),
                     ],
                   ),
@@ -862,7 +890,7 @@ class _PcToolbar extends StatelessWidget {
           children: [
             Expanded(
               child: Text(
-                'PC BOX',
+                context.uiText('PC BOX', 'PC BOX'),
                 style: Theme.of(
                   context,
                 ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
@@ -915,7 +943,7 @@ class _PcGridCell extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final pokemon = this.pokemon;
     final selectedName = pcPokemon.displayName.isEmpty
-        ? pokemon?.name ?? 'Sconosciuto'
+        ? pokemon?.name ?? context.uiText('Sconosciuto', 'Unknown')
         : pcPokemon.displayName;
 
     return Material(
@@ -1057,7 +1085,7 @@ class _PcPokemonActionSheet extends StatelessWidget {
             OutlinedButton.icon(
               onPressed: () => Navigator.of(context).pop(_PcAction.release),
               icon: const Icon(Icons.delete_outline),
-              label: const Text('RILASCIA'),
+              label: Text(context.uiText('RILASCIA', 'RELEASE')),
             ),
           ],
         ),
@@ -1093,7 +1121,7 @@ class _ReplacementSlotSheet extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 18),
         children: [
           Text(
-            'Sostituisci chi?',
+            context.uiText('Sostituisci chi?', 'Who should be replaced?'),
             style: Theme.of(
               context,
             ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
@@ -1151,7 +1179,12 @@ class _ReplacementSlotTile extends StatelessWidget {
                 isShiny: slot.isShiny,
               ),
         title: Text(
-          pokemon == null ? 'Slot ${slot.slotIndex + 1} vuoto' : displayName,
+          pokemon == null
+              ? context.uiText(
+                  'Slot ${slot.slotIndex + 1} vuoto',
+                  'Empty slot ${slot.slotIndex + 1}',
+                )
+              : displayName,
           style: const TextStyle(fontWeight: FontWeight.w900),
         ),
         subtitle: pokemon == null
@@ -1258,7 +1291,10 @@ class _PcErrorState extends StatelessWidget {
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 16),
-          FilledButton(onPressed: onRetry, child: const Text('Riprova')),
+          FilledButton(
+            onPressed: onRetry,
+            child: Text(context.uiText('Riprova', 'Retry')),
+          ),
         ],
       ),
     );

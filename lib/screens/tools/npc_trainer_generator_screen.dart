@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../localization/ui_text.dart';
+
 import '../../models/bag_item.dart';
 import '../../models/generated_npc_trainer.dart';
 import '../../models/pokemon.dart';
@@ -124,8 +126,10 @@ class _NpcTrainerGeneratorScreenState extends State<NpcTrainerGeneratorScreen> {
       );
       if (trainer == null) {
         setState(() {
-          _error =
-              'Nessuna squadra completa rispetta i parametri scelti. Amplia le generazioni, consenti duplicati oppure cambia composizione.';
+          _error = context.uiText(
+            'Nessuna squadra completa rispetta i parametri scelti. Amplia le generazioni, consenti duplicati oppure cambia composizione.',
+            'No complete team matches the selected parameters. Widen the generation range, allow duplicates or change the composition.',
+          );
         });
         return;
       }
@@ -152,10 +156,19 @@ class _NpcTrainerGeneratorScreenState extends State<NpcTrainerGeneratorScreen> {
 
   String get _specializationSummary {
     if (_specialization == _randomSpecialization) {
-      return 'L’app sceglierà casualmente una specializzazione e il relativo tipo preferito.';
+      return context.uiText(
+        'L’app sceglierà casualmente una specializzazione e il relativo tipo preferito.',
+        'The app will randomly choose a specialization and its preferred type.',
+      );
     }
     final type = _generatorService.preferredTypeFor(_specialization);
-    return 'Tipo preferito: ${PokemonTypeLocalization.italianLabel(type)}.';
+    final typeLabel = context.usesItalianUi
+        ? PokemonTypeLocalization.italianLabel(type)
+        : PokemonTypeLocalization.englishValue(type);
+    return context.uiText(
+      'Tipo preferito: $typeLabel.',
+      'Preferred type: $typeLabel.',
+    );
   }
 
   @override
@@ -163,7 +176,7 @@ class _NpcTrainerGeneratorScreenState extends State<NpcTrainerGeneratorScreen> {
     return Scaffold(
       appBar: AppBar(
         leading: const HomeLeadingButton(),
-        title: const Text('Allenatore PNG'),
+        title: Text(context.uiText('Allenatore PNG', 'NPC Trainer')),
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -180,20 +193,28 @@ class _NpcTrainerGeneratorScreenState extends State<NpcTrainerGeneratorScreen> {
                   _IntroCard(catalogSize: _catalog.length),
                   const SizedBox(height: 14),
                   _SectionCard(
-                    title: 'IDENTITÀ E GRADO',
+                    title: context.uiText(
+                      'IDENTITÀ E GRADO',
+                      'IDENTITY AND RANK',
+                    ),
                     children: [
                       DropdownButtonFormField<NpcTrainerRank>(
                         key: ValueKey(_rank),
                         initialValue: _rank,
-                        decoration: const InputDecoration(
-                          labelText: 'Grado dell’allenatore',
-                          border: OutlineInputBorder(),
+                        decoration: InputDecoration(
+                          labelText: context.uiText(
+                            'Grado dell’allenatore',
+                            'Trainer rank',
+                          ),
+                          border: const OutlineInputBorder(),
                         ),
                         items: [
                           for (final rank in NpcTrainerRank.values)
                             DropdownMenuItem(
                               value: rank,
-                              child: Text(rank.label),
+                              child: Text(
+                                context.uiText(rank.label, rank.englishLabel),
+                              ),
                             ),
                         ],
                         onChanged: (value) {
@@ -205,19 +226,27 @@ class _NpcTrainerGeneratorScreenState extends State<NpcTrainerGeneratorScreen> {
                         },
                       ),
                       const SizedBox(height: 6),
-                      Text(_rank.description),
+                      Text(
+                        context.uiText(
+                          _rank.description,
+                          _rank.englishDescription,
+                        ),
+                      ),
                       const SizedBox(height: 12),
                       DropdownButtonFormField<String>(
                         key: ValueKey(_specialization),
                         initialValue: _specialization,
-                        decoration: const InputDecoration(
-                          labelText: 'Specializzazione principale',
-                          border: OutlineInputBorder(),
+                        decoration: InputDecoration(
+                          labelText: context.uiText(
+                            'Specializzazione principale',
+                            'Primary specialization',
+                          ),
+                          border: const OutlineInputBorder(),
                         ),
                         items: [
-                          const DropdownMenuItem(
+                          DropdownMenuItem(
                             value: _randomSpecialization,
-                            child: Text('Casuale'),
+                            child: Text(context.uiText('Casuale', 'Random')),
                           ),
                           for (final specialization in _specializations)
                             DropdownMenuItem(
@@ -239,10 +268,16 @@ class _NpcTrainerGeneratorScreenState extends State<NpcTrainerGeneratorScreen> {
                   ),
                   const SizedBox(height: 12),
                   _SectionCard(
-                    title: 'LIVELLI E SQUADRA',
+                    title: context.uiText(
+                      'LIVELLI E SQUADRA',
+                      'LEVELS AND TEAM',
+                    ),
                     children: [
                       _NumberSlider(
-                        label: 'Livello allenatore',
+                        label: context.uiText(
+                          'Livello allenatore',
+                          'Trainer level',
+                        ),
                         value: _trainerLevel,
                         min: 1,
                         max: 20,
@@ -254,7 +289,10 @@ class _NpcTrainerGeneratorScreenState extends State<NpcTrainerGeneratorScreen> {
                         },
                       ),
                       _NumberSlider(
-                        label: 'Livello dei Pokémon',
+                        label: context.uiText(
+                          'Livello dei Pokémon',
+                          'Pokémon level',
+                        ),
                         value: _pokemonLevel,
                         min: 1,
                         max: 20,
@@ -266,7 +304,10 @@ class _NpcTrainerGeneratorScreenState extends State<NpcTrainerGeneratorScreen> {
                         },
                       ),
                       _NumberSlider(
-                        label: 'Pokémon in squadra',
+                        label: context.uiText(
+                          'Pokémon in squadra',
+                          'Pokémon on team',
+                        ),
                         value: _teamSize,
                         min: 1,
                         max: 6,
@@ -281,15 +322,23 @@ class _NpcTrainerGeneratorScreenState extends State<NpcTrainerGeneratorScreen> {
                       DropdownButtonFormField<NpcTeamComposition>(
                         key: ValueKey(_composition),
                         initialValue: _composition,
-                        decoration: const InputDecoration(
-                          labelText: 'Composizione della squadra',
-                          border: OutlineInputBorder(),
+                        decoration: InputDecoration(
+                          labelText: context.uiText(
+                            'Composizione della squadra',
+                            'Team composition',
+                          ),
+                          border: const OutlineInputBorder(),
                         ),
                         items: [
                           for (final composition in NpcTeamComposition.values)
                             DropdownMenuItem(
                               value: composition,
-                              child: Text(composition.label),
+                              child: Text(
+                                context.uiText(
+                                  composition.label,
+                                  composition.englishLabel,
+                                ),
+                              ),
                             ),
                         ],
                         onChanged: (value) {
@@ -301,20 +350,34 @@ class _NpcTrainerGeneratorScreenState extends State<NpcTrainerGeneratorScreen> {
                         },
                       ),
                       const SizedBox(height: 6),
-                      Text(_composition.description),
+                      Text(
+                        context.uiText(
+                          _composition.description,
+                          _composition.englishDescription,
+                        ),
+                      ),
                       const SizedBox(height: 8),
                       Text(
-                        'SR massimo controllabile: ${_generatorService.maxSrFor(_options).toStringAsFixed(0)}',
+                        context.uiText(
+                          'SR massimo controllabile: ${_generatorService.maxSrFor(_options).toStringAsFixed(0)}',
+                          'Maximum controllable SR: ${_generatorService.maxSrFor(_options).toStringAsFixed(0)}',
+                        ),
                         style: const TextStyle(fontWeight: FontWeight.w800),
                       ),
                     ],
                   ),
                   const SizedBox(height: 12),
                   _SectionCard(
-                    title: 'CATALOGO E VARIANTI',
+                    title: context.uiText(
+                      'CATALOGO E VARIANTI',
+                      'CATALOG AND VARIANTS',
+                    ),
                     children: [
                       Text(
-                        'Generazioni ${_generationRange.start.round()}–${_generationRange.end.round()}',
+                        context.uiText(
+                          'Generazioni ${_generationRange.start.round()}–${_generationRange.end.round()}',
+                          'Generations ${_generationRange.start.round()}–${_generationRange.end.round()}',
+                        ),
                         style: const TextStyle(fontWeight: FontWeight.w800),
                       ),
                       RangeSlider(
@@ -338,9 +401,14 @@ class _NpcTrainerGeneratorScreenState extends State<NpcTrainerGeneratorScreen> {
                       ),
                       SwitchListTile.adaptive(
                         contentPadding: EdgeInsets.zero,
-                        title: const Text('Forme permanenti'),
-                        subtitle: const Text(
-                          'Consente forme regionali e altre varianti permanenti.',
+                        title: Text(
+                          context.uiText('Forme permanenti', 'Permanent forms'),
+                        ),
+                        subtitle: Text(
+                          context.uiText(
+                            'Consente forme regionali e altre varianti permanenti.',
+                            'Allows regional forms and other permanent variants.',
+                          ),
                         ),
                         value: _includeForms,
                         onChanged: (value) {
@@ -352,9 +420,17 @@ class _NpcTrainerGeneratorScreenState extends State<NpcTrainerGeneratorScreen> {
                       ),
                       SwitchListTile.adaptive(
                         contentPadding: EdgeInsets.zero,
-                        title: const Text('Leggendari e misteriosi'),
-                        subtitle: const Text(
-                          'Da attivare soltanto per PNG o boss eccezionali.',
+                        title: Text(
+                          context.uiText(
+                            'Leggendari e misteriosi',
+                            'Legendary and Mythical Pokémon',
+                          ),
+                        ),
+                        subtitle: Text(
+                          context.uiText(
+                            'Da attivare soltanto per PNG o boss eccezionali.',
+                            'Enable only for exceptional NPCs or bosses.',
+                          ),
                         ),
                         value: _allowLegendary,
                         onChanged: (value) {
@@ -366,9 +442,17 @@ class _NpcTrainerGeneratorScreenState extends State<NpcTrainerGeneratorScreen> {
                       ),
                       SwitchListTile.adaptive(
                         contentPadding: EdgeInsets.zero,
-                        title: const Text('Specie duplicate'),
-                        subtitle: const Text(
-                          'Permette più esemplari della stessa specie nella squadra.',
+                        title: Text(
+                          context.uiText(
+                            'Specie duplicate',
+                            'Duplicate species',
+                          ),
+                        ),
+                        subtitle: Text(
+                          context.uiText(
+                            'Permette più esemplari della stessa specie nella squadra.',
+                            'Allows multiple members of the same species on the team.',
+                          ),
                         ),
                         value: _allowDuplicates,
                         onChanged: (value) {
@@ -409,8 +493,11 @@ class _NpcTrainerGeneratorScreenState extends State<NpcTrainerGeneratorScreen> {
                         : const Icon(Icons.groups_2_outlined),
                     label: Text(
                       _isGenerating
-                          ? 'GENERAZIONE...'
-                          : 'GENERA ALLENATORE PNG',
+                          ? context.uiText('GENERAZIONE...', 'GENERATING...')
+                          : context.uiText(
+                              'GENERA ALLENATORE PNG',
+                              'GENERATE NPC TRAINER',
+                            ),
                     ),
                   ),
                 ],
@@ -445,7 +532,10 @@ class _IntroCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Generatore di Allenatori PNG',
+                    context.uiText(
+                      'Generatore di Allenatori PNG',
+                      'NPC Trainer Generator',
+                    ),
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       color: colors.onPrimaryContainer,
                       fontWeight: FontWeight.w900,
@@ -453,7 +543,10 @@ class _IntroCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Crea identità, personalità, tattiche, ricompense e una squadra completa da $catalogSize specie disponibili.',
+                    context.uiText(
+                      'Crea identità, personalità, tattiche, ricompense e una squadra completa da $catalogSize specie disponibili.',
+                      'Create an identity, personality, tactics, rewards and a full team from $catalogSize available species.',
+                    ),
                     style: TextStyle(color: colors.onPrimaryContainer),
                   ),
                 ],

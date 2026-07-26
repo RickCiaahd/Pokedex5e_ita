@@ -113,8 +113,10 @@ class _BagScreenState extends State<BagScreen> {
       final totalCost = cost * quantity;
       if (data.profile.money < totalCost) {
         await _reload(
-          message:
-              'Pokédollari insufficienti per acquistare ${item.name} x$quantity.',
+          message: context.uiText(
+            'Pokédollari insufficienti per acquistare ${item.name} x$quantity.',
+            'Not enough Pokédollars to buy ${item.name} x$quantity.',
+          ),
         );
         return;
       }
@@ -129,12 +131,16 @@ class _BagScreenState extends State<BagScreen> {
     }
 
     final quantityText = quantity == 1 ? '' : ' x$quantity';
-    final actionText = action == _BagAction.buy ? 'acquistato' : 'aggiunto';
     await _reload(
-      message: context.uiText(
-        '${item.name}$quantityText $actionText e aggiunto allo zaino.',
-        '${item.name}$quantityText $actionText and added to the Bag.',
-      ),
+      message: action == _BagAction.buy
+          ? context.uiText(
+              '${item.name}$quantityText acquistato e aggiunto allo zaino.',
+              '${item.name}$quantityText purchased and added to the Bag.',
+            )
+          : context.uiText(
+              '${item.name}$quantityText aggiunto allo zaino.',
+              '${item.name}$quantityText added to the Bag.',
+            ),
     );
   }
 
@@ -172,8 +178,10 @@ class _BagScreenState extends State<BagScreen> {
   Future<void> _useBerry(_BagData data, _OwnedBagItem entry) async {
     if (!_berryMedicineItemIds.contains(entry.item.id)) {
       await _reload(
-        message:
-            '${entry.item.name} può essere data a un Pokémon, ma non usata direttamente.',
+        message: context.uiText(
+          '${entry.item.name} può essere data a un Pokémon, ma non usata direttamente.',
+          '${entry.item.name} can be given to a Pokémon, but cannot be used directly.',
+        ),
       );
       return;
     }
@@ -248,8 +256,10 @@ class _BagScreenState extends State<BagScreen> {
     }
 
     await _reload(
-      message:
-          '${candidate.displayName} ha consumato ${entry.item.name}, ma non ha avuto effetto.',
+      message: context.uiText(
+        '${candidate.displayName} ha consumato ${entry.item.name}, ma non ha avuto effetto.',
+        '${candidate.displayName} consumed ${entry.item.name}, but it had no effect.',
+      ),
     );
   }
 
@@ -342,8 +352,10 @@ class _BagScreenState extends State<BagScreen> {
             ' ${previousItem.name} was returned to the Bag.',
           );
     await _reload(
-      message:
-          '${candidate.displayName} ora tiene ${entry.item.name}.$replacementText',
+      message: context.uiText(
+        '${candidate.displayName} ora tiene ${entry.item.name}.$replacementText',
+        '${candidate.displayName} is now holding ${entry.item.name}.$replacementText',
+      ),
     );
   }
 
@@ -370,7 +382,10 @@ class _BagScreenState extends State<BagScreen> {
     if (tmNumber == null) {
       await _reload(
         message: context.uiText(
-          'Questa MT non è collegata a una mossa valida.',
+          context.uiText(
+            'Questa MT non è collegata a una mossa valida.',
+            'This TM is not linked to a valid move.',
+          ),
           'This TM is not linked to a valid move.',
         ),
       );
@@ -393,7 +408,10 @@ class _BagScreenState extends State<BagScreen> {
     if (move == null) {
       await _reload(
         message: context.uiText(
-          'Dati della mossa non disponibili.',
+          context.uiText(
+            'Dati della mossa non disponibili.',
+            'Move data is not available.',
+          ),
           'Move data is unavailable.',
         ),
       );
@@ -452,7 +470,10 @@ class _BagScreenState extends State<BagScreen> {
       final pokemonName = candidate.slot.nickname ?? candidate.pokemon.name;
       await _reload(
         message: context.uiText(
-          '$pokemonName conosce già ${move.name}.',
+          context.uiText(
+            '$pokemonName conosce già ${move.name}.',
+            '$pokemonName already knows ${move.name}.',
+          ),
           '$pokemonName already knows ${move.name}.',
         ),
       );
@@ -524,8 +545,10 @@ class _BagScreenState extends State<BagScreen> {
   Future<void> _useMedicine(_BagData data, _OwnedBagItem entry) async {
     if (!_isSupportedMedicine(entry.item.id)) {
       await _reload(
-        message:
-            '${entry.item.name} non è ancora utilizzabile automaticamente.',
+        message: context.uiText(
+          '${entry.item.name} non è ancora utilizzabile automaticamente.',
+          '${entry.item.name} cannot be used automatically yet.',
+        ),
       );
       return;
     }
@@ -770,7 +793,7 @@ class _BagScreenState extends State<BagScreen> {
     return Scaffold(
       appBar: AppBar(
         leading: const HomeLeadingButton(),
-        title: const Text('Zaino'),
+        title: Text(context.uiText('Zaino', 'Bag')),
       ),
       body: ResponsiveContent(
         maxWidth: 1180,
@@ -1237,7 +1260,7 @@ class _BagTypeFilters extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(right: 8),
             child: ChoiceChip(
-              label: const Text('Tutti'),
+              label: Text(context.uiText('Tutti', 'All')),
               selected: selectedType == null,
               onSelected: (_) => onTypeSelected(null),
             ),
@@ -1352,7 +1375,9 @@ class _BagItemCardState extends State<_BagItemCard> {
   @override
   Widget build(BuildContext context) {
     final item = widget.entry.item;
-    final costLabel = item.cost == null ? 'Non acquistabile' : '₽ ${item.cost}';
+    final costLabel = item.cost == null
+        ? context.uiText('Non acquistabile', 'Not for sale')
+        : '₽ ${item.cost}';
     final canUse =
         item.type == 'tm' ||
         item.type == 'medicine' ||
@@ -1398,7 +1423,10 @@ class _BagItemCardState extends State<_BagItemCard> {
                     alignment: Alignment.centerLeft,
                     child: Text(
                       context.uiText(
-                        'Dettagli mossa non disponibili.',
+                        context.uiText(
+                          'Dettagli mossa non disponibili.',
+                          'Move details are not available.',
+                        ),
                         'Move details are unavailable.',
                       ),
                     ),
@@ -1551,7 +1579,7 @@ class _HeldItemPokemonPickerSheet extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           children: [
             Text(
-              'Dai ${item.name}',
+              context.uiText('Dai ${item.name}', 'Give ${item.name}'),
               style: Theme.of(
                 context,
               ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
@@ -1576,7 +1604,7 @@ class _HeldItemPokemonPickerSheet extends StatelessWidget {
                     style: const TextStyle(fontWeight: FontWeight.w800),
                   ),
                   subtitle: Text(_heldItemCandidateSummary(candidate)),
-                  trailing: const Text('Scegli'),
+                  trailing: Text(context.uiText('Scegli', 'Choose')),
                   onTap: () => Navigator.of(context).pop(candidate),
                 ),
               ),
@@ -1616,7 +1644,7 @@ class _MedicinePokemonPickerSheet extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           children: [
             Text(
-              'Usa ${item.name}',
+              context.uiText('Usa ${item.name}', 'Use ${item.name}'),
               style: Theme.of(
                 context,
               ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
@@ -1641,7 +1669,7 @@ class _MedicinePokemonPickerSheet extends StatelessWidget {
                     style: const TextStyle(fontWeight: FontWeight.w800),
                   ),
                   subtitle: Text(_medicineCandidateSummary(candidate)),
-                  trailing: const Text('Scegli'),
+                  trailing: Text(context.uiText('Scegli', 'Choose')),
                   onTap: () => Navigator.of(context).pop(candidate),
                 ),
               ),
@@ -1683,7 +1711,7 @@ class _TmPokemonPickerSheet extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           children: [
             Text(
-              'Usa ${item.name}',
+              context.uiText('Usa ${item.name}', 'Use ${item.name}'),
               style: Theme.of(
                 context,
               ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
@@ -1699,7 +1727,10 @@ class _TmPokemonPickerSheet extends StatelessWidget {
             _MoveDetailsCard(
               move: move,
               title: context.uiText(
-                'Dettagli della nuova mossa',
+                context.uiText(
+                  'Dettagli della nuova mossa',
+                  'New move details',
+                ),
                 'New move details',
               ),
             ),
@@ -1718,7 +1749,7 @@ class _TmPokemonPickerSheet extends StatelessWidget {
                   subtitle: Text(
                     'Slot ${candidate.slot.slotIndex + 1} • ${candidate.pokemon.name}',
                   ),
-                  trailing: const Text('Scegli'),
+                  trailing: Text(context.uiText('Scegli', 'Choose')),
                   onTap: () => Navigator.of(context).pop(candidate),
                 ),
               ),
@@ -1759,7 +1790,10 @@ class _MoveReplaceSheet extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               context.uiText(
-                'Il moveset è pieno. Controlla la nuova mossa e scegli quale dimenticare.',
+                context.uiText(
+                  'Il moveset è pieno. Controlla la nuova mossa e scegli quale dimenticare.',
+                  'The moveset is full. Review the new move and choose one to forget.',
+                ),
                 'The moveset is full. Review the new move and choose one to forget.',
               ),
             ),
@@ -2081,11 +2115,17 @@ class _ItemPickerSheetState extends State<_ItemPickerSheet> {
                       item,
                     ).clamp(1, maxQuantity <= 0 ? 1 : maxQuantity).toInt();
                     final costLabel = item.cost == null
-                        ? 'Non acquistabile'
+                        ? context.uiText('Non acquistabile', 'Not for sale')
                         : '₽ ${item.cost}';
                     final totalLabel = _isBuy && item.cost != null
-                        ? 'Totale ₽ ${item.cost! * quantity}'
-                        : 'Quantità $quantity';
+                        ? context.uiText(
+                            'Totale ₽ ${item.cost! * quantity}',
+                            'Total ₽ ${item.cost! * quantity}',
+                          )
+                        : context.uiText(
+                            'Quantità $quantity',
+                            'Quantity $quantity',
+                          );
 
                     return Card(
                       child: ListTile(
@@ -2280,17 +2320,17 @@ String _typeLabel(String type) {
     case 'medicine':
       return 'Medicine';
     case 'vitamin':
-      return 'Vitamine';
+      return uiTextForLanguage('Vitamine', 'Vitamins');
     case 'berry':
-      return 'Bacche';
+      return uiTextForLanguage('Bacche', 'Berries');
     case 'held-item':
-      return 'Oggetti tenuti';
+      return uiTextForLanguage('Oggetti tenuti', 'Held items');
     case 'evolution':
-      return 'Evoluzione';
+      return uiTextForLanguage('Evoluzione', 'Evolution');
     case 'trainer-gear':
-      return 'Equipaggiamento';
+      return uiTextForLanguage('Equipaggiamento', 'Trainer gear');
     case 'key-item':
-      return 'Oggetti chiave';
+      return uiTextForLanguage('Oggetti chiave', 'Key items');
     case 'tm':
       return 'MT';
     default:

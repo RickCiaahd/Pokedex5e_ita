@@ -142,7 +142,12 @@ class _ProfilesScreenState extends State<ProfilesScreen> {
           context.uiText('Esportazione annullata.', 'Export cancelled.'),
         );
       } else {
-        _setStatus('Backup di ${profile.name} esportato correttamente.');
+        _setStatus(
+          context.uiText(
+            'Backup di ${profile.name} esportato correttamente.',
+            '${profile.name} backup exported successfully.',
+          ),
+        );
       }
     } catch (error) {
       _setStatus(_friendlyError(error), isError: true);
@@ -156,7 +161,10 @@ class _ProfilesScreenState extends State<ProfilesScreen> {
     setState(() => _isBusy = true);
     try {
       final result = await FilePicker.platform.pickFiles(
-        dialogTitle: 'Importa un backup Pokédex 5e',
+        dialogTitle: context.uiText(
+          'Importa un backup Trainer Atlas 5e',
+          'Import a Trainer Atlas 5e backup',
+        ),
         type: FileType.custom,
         allowedExtensions: const ['json'],
         allowMultiple: false,
@@ -249,7 +257,7 @@ class _ProfilesScreenState extends State<ProfilesScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Annulla'),
+            child: Text(context.uiText('Annulla', 'Cancel')),
           ),
           FilledButton(
             style: FilledButton.styleFrom(
@@ -257,7 +265,7 @@ class _ProfilesScreenState extends State<ProfilesScreen> {
               foregroundColor: Theme.of(context).colorScheme.onError,
             ),
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Elimina'),
+            child: Text(context.uiText('Elimina', 'Delete')),
           ),
         ],
       ),
@@ -292,12 +300,13 @@ class _ProfilesScreenState extends State<ProfilesScreen> {
   @override
   Widget build(BuildContext context) {
     final activeProfileId = _activeProfile?.id;
-    final activeProfileName = _activeProfile?.name ?? 'Allenatore';
+    final activeProfileName =
+        _activeProfile?.name ?? context.uiText('Allenatore', 'Trainer');
 
     return Scaffold(
       appBar: AppBar(
         leading: const HomeLeadingButton(),
-        title: const Text('Profili'),
+        title: Text(context.uiText('Profili', 'Profiles')),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _isBusy ? null : () => Navigator.of(context).pop(true),
@@ -514,12 +523,12 @@ class _ProfilesSectionHeader extends StatelessWidget {
         TextButton.icon(
           onPressed: isBusy ? null : onImportProfile,
           icon: const Icon(Icons.file_upload_outlined),
-          label: const Text('Importa'),
+          label: Text(context.uiText('Importa', 'Import')),
         ),
         TextButton.icon(
           onPressed: isBusy ? null : onCreateProfile,
           icon: const Icon(Icons.add),
-          label: const Text('Nuovo'),
+          label: Text(context.uiText('Nuovo', 'New')),
         ),
       ],
     );
@@ -611,7 +620,7 @@ class _ProfileTile extends StatelessWidget {
             if (!isActive)
               TextButton(
                 onPressed: isBusy ? null : onSelect,
-                child: const Text('Attiva'),
+                child: Text(context.uiText('Attiva', 'Activate')),
               )
             else
               Icon(Icons.check_circle, color: colorScheme.primary),
@@ -642,20 +651,20 @@ class _ProfileTile extends StatelessWidget {
                     contentPadding: EdgeInsets.zero,
                   ),
                 ),
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: _ProfileAction.duplicate,
                   child: ListTile(
-                    leading: Icon(Icons.copy_outlined),
-                    title: Text('Duplica'),
+                    leading: const Icon(Icons.copy_outlined),
+                    title: Text(context.uiText('Duplica', 'Duplicate')),
                     contentPadding: EdgeInsets.zero,
                   ),
                 ),
                 if (canDelete)
-                  const PopupMenuItem(
+                  PopupMenuItem(
                     value: _ProfileAction.delete,
                     child: ListTile(
-                      leading: Icon(Icons.delete_outline),
-                      title: Text('Elimina'),
+                      leading: const Icon(Icons.delete_outline),
+                      title: Text(context.uiText('Elimina', 'Delete')),
                       contentPadding: EdgeInsets.zero,
                     ),
                   ),
@@ -701,7 +710,7 @@ class _ActiveBadge extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         child: Text(
-          'Attivo',
+          context.uiText('Attivo', 'Active'),
           style: Theme.of(context).textTheme.labelSmall?.copyWith(
             color: colorScheme.onPrimaryContainer,
             fontWeight: FontWeight.bold,
@@ -749,9 +758,12 @@ class _CreateProfileDialogState extends State<_CreateProfileDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Annulla'),
+          child: Text(context.uiText('Annulla', 'Cancel')),
         ),
-        FilledButton(onPressed: _submit, child: const Text('Crea')),
+        FilledButton(
+          onPressed: _submit,
+          child: Text(context.uiText('Crea', 'Create')),
+        ),
       ],
     );
   }
@@ -980,12 +992,12 @@ class _ProfileImportDialogState extends State<_ProfileImportDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Annulla'),
+          child: Text(context.uiText('Annulla', 'Cancel')),
         ),
         FilledButton.icon(
           onPressed: _submit,
           icon: const Icon(Icons.file_download_done_outlined),
-          label: const Text('Importa'),
+          label: Text(context.uiText('Importa', 'Import')),
         ),
       ],
     );
@@ -1034,7 +1046,10 @@ class _ProfilesErrorState extends StatelessWidget {
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 16),
-          FilledButton(onPressed: onRetry, child: const Text('Riprova')),
+          FilledButton(
+            onPressed: onRetry,
+            child: Text(context.uiText('Riprova', 'Retry')),
+          ),
         ],
       ),
     );

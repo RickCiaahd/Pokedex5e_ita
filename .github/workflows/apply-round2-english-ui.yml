@@ -1,0 +1,99 @@
+name: Apply round 2 English UI fixes
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/apply-round2-english-ui.yml'
+      - 'tooling/round2_english_ui.patch.gz.b64.part*'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: round2-english-ui-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  apply:
+    if: github.head_ref == 'fix/english-ui-residuals-round2'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Check out correction branch
+        uses: actions/checkout@v4
+        with:
+          ref: fix/english-ui-residuals-round2
+          fetch-depth: 0
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Rebuild and apply prepared patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat tooling/round2_english_ui.patch.gz.b64.part* \
+            | base64 --decode \
+            | gzip --decompress \
+            > /tmp/round2-english-ui.patch
+          git apply --check /tmp/round2-english-ui.patch
+          git apply --whitespace=fix /tmp/round2-english-ui.patch
+
+      - name: Resolve dependencies and generate localizations
+        run: |
+          flutter pub get
+          flutter gen-l10n
+
+      - name: Format changed Dart sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t dart_files < <(git diff --name-only --diff-filter=ACM | grep '\.dart$' || true)
+          if ((${#dart_files[@]})); then
+            dart format "${dart_files[@]}"
+          fi
+
+      - name: Analyze source
+        run: flutter analyze
+
+      - name: Run focused localization test
+        run: flutter test test/english_ui_residuals_round2_test.dart --reporter expanded
+
+      - name: Run complete test suite
+        run: flutter test --reporter expanded
+
+      - name: Build Android debug APK
+        run: flutter build apk --debug
+
+      - name: Remove temporary transfer files
+        shell: bash
+        run: |
+          rm -f tooling/round2_english_ui.patch.gz.b64.part*
+          rm -f .github/workflows/export-round2-localization-snapshot.yml
+          rm -f .github/workflows/apply-round2-english-ui.yml
+
+      - name: Commit verified correction
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --check
+          if git diff --cached --quiet; then
+            echo "No changes to publish."
+            exit 0
+          fi
+          git commit -m "Corregge ulteriori residui italiani nella UI inglese"
+          git push origin HEAD:fix/english-ui-residuals-round2

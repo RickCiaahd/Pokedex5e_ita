@@ -89,7 +89,21 @@ jobs:
         run: flutter test test/english_ui_residuals_round2_test.dart --reporter expanded
 
       - name: Run complete test suite
-        run: flutter test --reporter expanded
+        shell: bash
+        run: |
+          set +e
+          flutter test --reporter expanded 2>&1 | tee /tmp/round2-full-tests.log
+          status=${PIPESTATUS[0]}
+          if [ "$status" -ne 0 ]; then
+            mkdir -p diagnostics
+            cp /tmp/round2-full-tests.log diagnostics/round2-english-ui-full-test-error.txt
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add diagnostics/round2-english-ui-full-test-error.txt
+            git commit -m "Registra l'errore della suite del secondo audit inglese" || true
+            git push origin HEAD:fix/english-ui-residuals-round2
+            exit "$status"
+          fi
 
       - name: Build Android debug APK
         run: flutter build apk --debug
@@ -102,6 +116,7 @@ jobs:
           rm -f .github/workflows/export-round2-localization-snapshot.yml
           rm -f .github/workflows/apply-round2-english-ui.yml
           rm -f diagnostics/round2-english-ui-analyze-error.txt
+          rm -f diagnostics/round2-english-ui-full-test-error.txt
 
       - name: Commit verified correction
         shell: bash

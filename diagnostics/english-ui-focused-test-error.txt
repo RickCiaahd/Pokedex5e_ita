@@ -71,14 +71,31 @@ Got dependencies!
 Try `flutter pub outdated` for more information.
 00:00 +0: loading /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_battle_attributes_card_test.dart
 00:00 +0: mostra tutte le caratteristiche e i modificatori
+══╡ EXCEPTION CAUGHT BY WIDGETS ╞═══════════════════════════════════════════════════════════════════
+The following message was thrown:
+Warning: This application's locale, it, is not supported by all of its localization delegates.
+
+• A MaterialLocalizations delegate that supports the it locale was not found.
+• A CupertinoLocalizations delegate that supports the it locale was not found.
+
+The declared supported locales for this app are: it
+
+See https://flutter.dev/to/internationalization/ for more information about configuring an app's
+locale, supportedLocales, and localizationsDelegates parameters.
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:00 +0 -1: mostra tutte le caratteristiche e i modificatori [E]
+  Test failed. See exception logs above.
+  The test description was: mostra tutte le caratteristiche e i modificatori
+  
+00:00 +0 -1: non genera vincoli negativi con larghezza quasi nulla
 ══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
 The following TestFailure was thrown running a test:
-Expected: exactly one matching candidate
-  Actual: _TextWidgetFinder:<Found 0 widgets with text "CARATTERISTICHE": []>
-   Which: means none were found but one was expected
+Expected: null
+  Actual: 'Warning: This application\'s locale, it, is not supported by all of its localization
+delegates.'
 
 When the exception was thrown, this was the stack:
-#4      main.<anonymous closure> (file:///home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_battle_attributes_card_test.dart:30:5)
+#4      main.<anonymous closure> (file:///home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_battle_attributes_card_test.dart:72:5)
 <asynchronous suspension>
 #5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
 <asynchronous suspension>
@@ -88,16 +105,16 @@ When the exception was thrown, this was the stack:
 (elided one frame from package:stack_trace)
 
 This was caught by the test expectation on the following line:
-  file:///home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_battle_attributes_card_test.dart line 30
+  file:///home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_battle_attributes_card_test.dart line 72
 The test description was:
-  mostra tutte le caratteristiche e i modificatori
+  non genera vincoli negativi con larghezza quasi nulla
 ════════════════════════════════════════════════════════════════════════════════════════════════════
-00:00 +0 -1: mostra tutte le caratteristiche e i modificatori [E]
+00:00 +0 -2: non genera vincoli negativi con larghezza quasi nulla [E]
   Test failed. See exception logs above.
-  The test description was: mostra tutte le caratteristiche e i modificatori
+  The test description was: non genera vincoli negativi con larghezza quasi nulla
   
-00:00 +0 -1: non genera vincoli negativi con larghezza quasi nulla
-00:00 +1 -1: Some tests failed.
+00:00 +0 -2: Some tests failed.
 
 Failing tests:
   /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_battle_attributes_card_test.dart: mostra tutte le caratteristiche e i modificatori
+  /home/runner/work/Pokedex5e_ita/Pokedex5e_ita/test/pokemon_battle_attributes_card_test.dart: non genera vincoli negativi con larghezza quasi nulla

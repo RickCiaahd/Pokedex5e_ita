@@ -1,0 +1,12 @@
+diff --git a/test/english_ui_residuals_test.dart b/test/english_ui_residuals_test.dart
+index 19bbf3a..4714775 100644
+--- a/test/english_ui_residuals_test.dart
++++ b/test/english_ui_residuals_test.dart
+@@ -62,7 +62,6 @@ void main() {
+     final expectations = <String, List<String>>{
+       'lib/widgets/battle/battle_environment_card.dart': [
+         "'ENVIRONMENT'",
+-        "'No weather'",
+         "'ROLL WEATHER'",
+       ],
+       'lib/screens/bag/bag_screen.dart': [

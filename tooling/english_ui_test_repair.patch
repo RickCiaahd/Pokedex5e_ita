@@ -26,24 +26,34 @@ index 19bbf3a..97f9886 100644
        'lib/screens/tools/encounter_library_screen.dart': [
          "'Encounter Library'",
 diff --git a/test/pokemon_battle_attributes_card_test.dart b/test/pokemon_battle_attributes_card_test.dart
-index eb8827a..76a5d3b 100644
+index eb8827a..9f0d77e 100644
 --- a/test/pokemon_battle_attributes_card_test.dart
 +++ b/test/pokemon_battle_attributes_card_test.dart
-@@ -16,6 +16,8 @@ void main() {
+@@ -1,6 +1,7 @@
+ import 'package:flutter/material.dart';
+ import 'package:flutter_test/flutter_test.dart';
+ 
++import 'package:pokedex_5e_ita/l10n/app_localizations.dart';
+ import 'package:pokedex_5e_ita/widgets/battle/pokemon_battle_attributes_card.dart';
+ 
+ void main() {
+@@ -16,6 +17,9 @@ void main() {
    testWidgets('mostra tutte le caratteristiche e i modificatori', (tester) async {
      await tester.pumpWidget(
        const MaterialApp(
 +        locale: Locale('it'),
-+        supportedLocales: [Locale('it')],
++        localizationsDelegates: AppLocalizations.localizationsDelegates,
++        supportedLocales: AppLocalizations.supportedLocales,
          home: Scaffold(
            body: SingleChildScrollView(
              child: PokemonBattleAttributesCard(attributes: attributes),
-@@ -49,6 +51,8 @@ void main() {
+@@ -49,6 +53,9 @@ void main() {
        (tester) async {
      await tester.pumpWidget(
        const MaterialApp(
 +        locale: Locale('it'),
-+        supportedLocales: [Locale('it')],
++        localizationsDelegates: AppLocalizations.localizationsDelegates,
++        supportedLocales: AppLocalizations.supportedLocales,
          home: Scaffold(
            body: Align(
              alignment: Alignment.topLeft,

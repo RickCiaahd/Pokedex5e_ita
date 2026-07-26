@@ -71,8 +71,8 @@ void main() {
       'lib/screens/trainer/trainer_sheet_screen.dart',
     ).readAsStringSync();
 
-    expect(pokemonDetail, contains("Tab(text: 'PRIVILEGI')"));
-    expect(pokemonDetail, contains("Tab(text: 'TRATTI')"));
+    expect(pokemonDetail, contains("context.uiText('PRIVILEGI', 'FEATURES')"));
+    expect(pokemonDetail, contains("context.uiText('TRATTI', 'TRAITS')"));
     expect(trainerSheet, contains("context.uiText('ALLENATORE', 'TRAINER')"));
     expect(trainerSheet, contains("context.uiText('ABILITÀ', 'SKILLS')"));
     expect(

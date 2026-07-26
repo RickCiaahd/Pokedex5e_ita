@@ -262,7 +262,12 @@ class _NpcTrainerResultScreenState extends State<NpcTrainerResultScreen> {
       ),
     );
     if (_trainer.rewards.isNotEmpty) {
-      buffer.writeln('Oggetti: ${_trainer.rewards.join(', ')}');
+      buffer.writeln(
+        context.uiText(
+          'Oggetti: ${_trainer.rewards.join(', ')}',
+          'Items: ${_trainer.rewards.join(', ')}',
+        ),
+      );
     }
     return buffer.toString().trim();
   }
@@ -281,9 +286,9 @@ class _NpcTrainerResultScreenState extends State<NpcTrainerResultScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final preferredType = PokemonTypeLocalization.italianLabel(
-      _trainer.preferredType,
-    );
+    final preferredType = context.usesItalianUi
+        ? PokemonTypeLocalization.italianLabel(_trainer.preferredType)
+        : PokemonTypeLocalization.englishValue(_trainer.preferredType);
     return Scaffold(
       appBar: AppBar(
         leading: const HomeLeadingButton(),
@@ -402,7 +407,9 @@ class _NpcTrainerResultScreenState extends State<NpcTrainerResultScreen> {
                 ),
               ),
               Text(
-                _trainer.options.composition.label,
+                context.usesItalianUi
+                    ? _trainer.options.composition.label
+                    : _trainer.options.composition.englishLabel,
                 style: const TextStyle(fontWeight: FontWeight.w800),
               ),
             ],
@@ -668,7 +675,11 @@ class _TrainerHeader extends StatelessWidget {
               runSpacing: 8,
               children: [
                 _HeaderChip(label: 'Lv. ${trainer.trainerLevel}'),
-                _HeaderChip(label: trainer.rank.label),
+                _HeaderChip(
+                  label: context.usesItalianUi
+                      ? trainer.rank.label
+                      : trainer.rank.englishLabel,
+                ),
                 _HeaderChip(label: preferredType),
                 _HeaderChip(label: trainer.origin),
                 _HeaderChip(label: trainer.path),
@@ -676,7 +687,10 @@ class _TrainerHeader extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             Text(
-              'Specializzazioni: ${trainer.specializations.join(' · ')}',
+              context.uiText(
+                'Specializzazioni: ${trainer.specializations.join(' · ')}',
+                'Specializations: ${trainer.specializations.join(' · ')}',
+              ),
               style: TextStyle(
                 color: colors.onPrimaryContainer,
                 fontWeight: FontWeight.w700,
@@ -787,10 +801,10 @@ class _NpcPokemonCard extends StatelessWidget {
     final natureModifiers = PokemonNature.forName(generated.nature);
     final armorClass = pokemon.armorClass + (natureModifiers['AC'] ?? 0);
     final gender = switch (generated.gender) {
-      'Male' => 'Maschio',
-      'Female' => 'Femmina',
-      'Genderless' => 'Senza sesso',
-      _ => 'Non specificato',
+      'Male' => context.uiText('Maschio', 'Male'),
+      'Female' => context.uiText('Femmina', 'Female'),
+      'Genderless' => context.uiText('Senza sesso', 'Genderless'),
+      _ => context.uiText('Non specificato', 'Not specified'),
     };
 
     return Card(
@@ -821,7 +835,7 @@ class _NpcPokemonCard extends StatelessWidget {
             alignment: Alignment.centerLeft,
             child: Text(
               '$gender · ${generated.nature} · '
-              '${generated.ability ?? 'Nessuna abilità'}',
+              '${generated.ability ?? context.uiText('Nessuna abilità', 'No ability')}',
             ),
           ),
           const SizedBox(height: 8),

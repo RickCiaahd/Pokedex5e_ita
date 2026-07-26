@@ -629,7 +629,7 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Squadra'),
+        title: Text(context.uiText('Squadra', 'Team')),
         actions: [
           IconButton(
             onPressed: _isBusy || _isLoading ? null : _shareTeam,
@@ -788,7 +788,10 @@ class _TeamHeader extends StatelessWidget {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  '$filledSlots/$totalSlots Pokéslot occupati',
+                  context.uiText(
+                    '$filledSlots/$totalSlots Pokéslot occupati',
+                    '$filledSlots/$totalSlots Poké Slots occupied',
+                  ),
                   style: Theme.of(
                     context,
                   ).textTheme.bodyMedium?.copyWith(color: Colors.white),
@@ -831,9 +834,9 @@ class _TeamSlotCard extends StatelessWidget {
         : '#${pokemon!.id.toString().padLeft(3, '0')}';
     final nickname = slot.nickname?.trim() ?? '';
     final title = slot.isEgg
-        ? 'Uovo in incubazione'
+        ? context.uiText('Uovo in incubazione', 'Incubating Egg')
         : nickname.isEmpty
-        ? pokemon?.name ?? 'Slot vuoto'
+        ? pokemon?.name ?? context.uiText('Slot vuoto', 'Empty slot')
         : nickname;
 
     return Card(
@@ -875,12 +878,18 @@ class _TeamSlotCard extends StatelessWidget {
                     const SizedBox(height: 6),
                     if (slot.isEgg)
                       Text(
-                        'Occupa un Pokéslot · Tocca per gestirlo',
+                        context.uiText(
+                          'Occupa un Pokéslot · Tocca per gestirlo',
+                          'Uses a Poké Slot · Tap to manage',
+                        ),
                         style: TextStyle(color: colorScheme.onSurfaceVariant),
                       )
                     else if (pokemon == null)
                       Text(
-                        'Tocca per scegliere un Pokémon',
+                        context.uiText(
+                          'Tocca per scegliere un Pokémon',
+                          'Tap to choose a Pokémon',
+                        ),
                         style: TextStyle(color: colorScheme.onSurfaceVariant),
                       )
                     else ...[
@@ -943,8 +952,14 @@ class _TeamSlotCard extends StatelessWidget {
                               value: _SlotAction.change,
                               child: Text(
                                 pokemon == null
-                                    ? 'Scegli Pokémon'
-                                    : 'Cambia Pokémon',
+                                    ? context.uiText(
+                                        'Scegli Pokémon',
+                                        'Choose Pokémon',
+                                      )
+                                    : context.uiText(
+                                        'Cambia Pokémon',
+                                        'Change Pokémon',
+                                      ),
                               ),
                             ),
                             if (pokemon != null)

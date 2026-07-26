@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../localization/ui_text.dart';
 import '../../models/bag_item.dart';
 import '../../models/evolution_data.dart';
 import '../../models/level_progression.dart';
@@ -501,7 +502,9 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
 
   String _heldItemDisplayLabel() {
     final heldItem = _teamSlot?.heldItem;
-    if (heldItem == null || heldItem.trim().isEmpty) return 'NESSUNO';
+    if (heldItem == null || heldItem.trim().isEmpty) {
+      return uiTextForLanguage('NESSUNO', 'NONE');
+    }
 
     return _itemByReference(heldItem)?.name.toUpperCase() ??
         heldItem.toUpperCase();
@@ -628,7 +631,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 10),
               child: Text(
-                'AGGIUNGI STATUS',
+                context.uiText('AGGIUNGI STATUS', 'ADD STATUS'),
                 style: Theme.of(
                   context,
                 ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
@@ -657,7 +660,12 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
             if (current.isNotEmpty)
               ListTile(
                 leading: const Icon(Icons.clear),
-                title: const Text('RIMUOVI TUTTI GLI STATUS'),
+                title: Text(
+                  context.uiText(
+                    'RIMUOVI TUTTI GLI STATUS',
+                    'REMOVE ALL STATUSES',
+                  ),
+                ),
                 onTap: () => Navigator.of(context).pop('__clear__'),
               ),
           ],
@@ -990,9 +998,16 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
     if (!_canShowEvolutionButton()) return null;
 
     final availableChoices = _availableEvolutionChoices();
-    if (availableChoices.isEmpty) return 'REQUISITI EVOLUZIONE';
-    if (availableChoices.length == 1) return 'FAI EVOLVERE';
-    return 'SCEGLI EVOLUZIONE';
+    if (availableChoices.isEmpty) {
+      return uiTextForLanguage(
+        'REQUISITI EVOLUZIONE',
+        'EVOLUTION REQUIREMENTS',
+      );
+    }
+    if (availableChoices.length == 1) {
+      return uiTextForLanguage('FAI EVOLVERE', 'EVOLVE');
+    }
+    return uiTextForLanguage('SCEGLI EVOLUZIONE', 'CHOOSE EVOLUTION');
   }
 
   Future<void> _evolveCurrentPokemon() async {
@@ -1209,11 +1224,11 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
       pokemon: pokemon,
       slot: _teamSlot,
     );
-    const tabBar = TabBar(
+    final tabBar = TabBar(
       tabs: [
-        Tab(text: 'MOSSE'),
-        Tab(text: 'PRIVILEGI'),
-        Tab(text: 'TRATTI'),
+        Tab(text: context.uiText('MOSSE', 'MOVES')),
+        Tab(text: context.uiText('PRIVILEGI', 'FEATURES')),
+        Tab(text: context.uiText('TRATTI', 'TRAITS')),
       ],
     );
 
@@ -1225,7 +1240,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
           actions: [
             if (_isPartyMode)
               IconButton(
-                tooltip: 'Modifica',
+                tooltip: context.uiText('Modifica', 'Edit'),
                 onPressed: _openEditScreen,
                 icon: const Icon(Icons.edit),
               ),
@@ -1283,7 +1298,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
                           ),
                         SliverPersistentHeader(
                           pinned: true,
-                          delegate: const _PokemonDetailTabBarDelegate(
+                          delegate: _PokemonDetailTabBarDelegate(
                             tabBar: tabBar,
                           ),
                         ),
@@ -1513,11 +1528,17 @@ class _Header extends StatelessWidget {
                     Row(
                       children: [
                         Expanded(
-                          child: _MetricBox(label: 'Liv.', value: '$level'),
+                          child: _MetricBox(
+                            label: context.uiText('Liv.', 'Lv.'),
+                            value: '$level',
+                          ),
                         ),
                         const SizedBox(width: 6),
                         Expanded(
-                          child: _MetricBox(label: 'CA:', value: '$armorClass'),
+                          child: _MetricBox(
+                            label: context.uiText('CA:', 'AC:'),
+                            value: '$armorClass',
+                          ),
                         ),
                       ],
                     ),
@@ -1562,7 +1583,12 @@ class _Header extends StatelessWidget {
                 child: InkWell(
                   onTap: isPartyMode ? onEditHeldItem : null,
                   borderRadius: BorderRadius.circular(8),
-                  child: _PanelButton(label: 'STRUMENTO: $heldItemLabel'),
+                  child: _PanelButton(
+                    label: context.uiText(
+                      'STRUMENTO: $heldItemLabel',
+                      'ITEM: $heldItemLabel',
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -1581,7 +1607,10 @@ class _Header extends StatelessWidget {
                     child: Row(
                       children: [
                         Text(
-                          'PF: $currentHp/$maxHp',
+                          context.uiText(
+                            'PF: $currentHp/$maxHp',
+                            'HP: $currentHp/$maxHp',
+                          ),
                           style: Theme.of(context).textTheme.titleLarge
                               ?.copyWith(fontWeight: FontWeight.w800),
                         ),
@@ -1867,7 +1896,12 @@ class _PokemonCenterDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: const Text('Pokémon Center'),
-      content: const Text('Vuoi curare completamente questo Pokémon?'),
+      content: Text(
+        context.uiText(
+          'Vuoi curare completamente questo Pokémon?',
+          'Fully heal this Pokémon?',
+        ),
+      ),
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(false),
@@ -1875,7 +1909,7 @@ class _PokemonCenterDialog extends StatelessWidget {
         ),
         FilledButton(
           onPressed: () => Navigator.of(context).pop(true),
-          child: const Text('SÌ'),
+          child: Text(context.uiText('SÌ', 'YES')),
         ),
       ],
     );
@@ -1914,7 +1948,7 @@ class _LoyaltyRow extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  'LEALTÀ',
+                  context.uiText('LEALTÀ', 'LOYALTY'),
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
                     fontWeight: FontWeight.w800,
                     height: 1,
@@ -2156,7 +2190,7 @@ class _SavingThrowsRow extends StatelessWidget {
     return Column(
       children: [
         Text(
-          'TIRI SALVEZZA',
+          context.uiText('TIRI SALVEZZA', 'SAVING THROWS'),
           style: Theme.of(context).textTheme.labelMedium?.copyWith(
             color: Theme.of(context).colorScheme.onSurfaceVariant,
             fontWeight: FontWeight.w800,
@@ -2241,7 +2275,7 @@ class _StatusPanelButton extends StatelessWidget {
         ),
         child: statuses.isEmpty
             ? Text(
-                '+ AGGIUNGI STATUS',
+                context.uiText('+ AGGIUNGI STATUS', '+ ADD STATUS'),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
@@ -2356,7 +2390,7 @@ class _MovesView extends StatelessWidget {
       padding: const EdgeInsets.all(12),
       children: [
         _MoveSection(
-          title: 'Mosse equipaggiate',
+          title: context.uiText('Mosse equipaggiate', 'Equipped moves'),
           names: [...selectedMoves, 'Struggle'],
           moves: moves,
           moveStatsBuilder: moveStatsBuilder,
@@ -2438,7 +2472,12 @@ class _MoveCard extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             if (move == null)
-              const Text('Dettagli mossa non disponibili.')
+              Text(
+                context.uiText(
+                  'Dettagli mossa non disponibili.',
+                  'Move details are unavailable.',
+                ),
+              )
             else ...[
               if (stats != null && stats!.isNotEmpty) Text(stats!),
               const SizedBox(height: 8),
@@ -2576,41 +2615,53 @@ class _TraitsView extends StatelessWidget {
           ),
         ),
         _InfoCard(
-          title: 'Dettagli',
+          title: context.uiText('Dettagli', 'Details'),
           child: Column(
             children: [
               _InfoRow(
-                label: 'Taglia',
+                label: context.uiText('Taglia', 'Size'),
                 value: TrainerUiLocalization.sizeName(pokemon.size),
               ),
-              _InfoRow(label: 'Velocità', value: '${pokemon.speed} piedi'),
-              _InfoRow(label: 'Dado vita', value: 'd${pokemon.hitDice}'),
-              _InfoRow(label: 'Competenza', value: '+$proficiency'),
               _InfoRow(
-                label: 'Livello minimo',
+                label: context.uiText('Velocità', 'Speed'),
+                value: context.uiText(
+                  '${pokemon.speed} piedi',
+                  '${pokemon.speed} feet',
+                ),
+              ),
+              _InfoRow(
+                label: context.uiText('Dado vita', 'Hit Die'),
+                value: 'd${pokemon.hitDice}',
+              ),
+              _InfoRow(
+                label: context.uiText('Competenza', 'Proficiency'),
+                value: '+$proficiency',
+              ),
+              _InfoRow(
+                label: context.uiText('Livello minimo', 'Minimum level'),
                 value: '${pokemon.minLevelFound}',
               ),
               _InfoRow(
-                label: 'Tiri salvezza',
+                label: context.uiText('Tiri salvezza', 'Saving throws'),
                 value: pokemon.savingThrows
                     .map(TrainerUiLocalization.abilityAbbreviation)
                     .join(', '),
               ),
               _InfoRow(
-                label: 'Competenze',
+                label: context.uiText('Competenze', 'Skills'),
                 value: [
                   ...pokemon.skills,
                   ...?slot?.extraSkills,
                 ].map(TrainerUiLocalization.skillName).join(', '),
               ),
               _InfoRow(
-                label: 'Natura',
+                label: context.uiText('Natura', 'Nature'),
                 value: TrainerUiLocalization.natureName(
                   slot?.nature ?? 'No Nature',
                 ),
               ),
               _InfoRow(
-                label: 'Forma',
+                label: context.uiText('Forma', 'Form'),
                 value: slot == null
                     ? '-'
                     : BattleFormChangeService.supports(basePokemon)
@@ -2621,11 +2672,13 @@ class _TraitsView extends StatelessWidget {
                     : slot?.formName ?? '-',
               ),
               _InfoRow(
-                label: 'Cromatico',
-                value: slot?.isShiny == true ? 'Sì' : 'No',
+                label: context.uiText('Cromatico', 'Shiny'),
+                value: slot?.isShiny == true
+                    ? context.uiText('Sì', 'Yes')
+                    : context.uiText('No', 'No'),
               ),
               _InfoRow(
-                label: 'Sesso',
+                label: context.uiText('Sesso', 'Gender'),
                 value: TrainerUiLocalization.genderName(slot?.gender ?? '-'),
               ),
             ],
@@ -2666,7 +2719,7 @@ class _PendingAsiCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'ASI DISPONIBILI',
+                    context.uiText('ASI DISPONIBILI', 'AVAILABLE ASI'),
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w900,
                       color: hasPoints ? colorScheme.onPrimaryContainer : null,
@@ -2675,8 +2728,14 @@ class _PendingAsiCard extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     hasPoints
-                        ? 'Hai $availablePoints punti accumulati da distribuire.'
-                        : 'Nessun punto ASI disponibile.',
+                        ? context.uiText(
+                            'Hai $availablePoints punti accumulati da distribuire.',
+                            'You have $availablePoints accumulated points to distribute.',
+                          )
+                        : context.uiText(
+                            'Nessun punto ASI disponibile.',
+                            'No ASI points available.',
+                          ),
                     style: TextStyle(
                       color: hasPoints ? colorScheme.onPrimaryContainer : null,
                     ),
@@ -2687,7 +2746,7 @@ class _PendingAsiCard extends StatelessWidget {
             const SizedBox(width: 12),
             FilledButton(
               onPressed: hasPoints ? onDistribute : null,
-              child: const Text('DISTRIBUISCI'),
+              child: Text(context.uiText('DISTRIBUISCI', 'DISTRIBUTE')),
             ),
           ],
         ),

@@ -222,8 +222,10 @@ class _CapturePokemonScreenState extends State<CapturePokemonScreen> {
         if (!consumed) {
           if (!mounted) return;
           setState(() {
-            _errorMessage =
-                'Non è stato possibile consumare ${selectedBall.item.name}.';
+            _errorMessage = context.uiText(
+              'Non è stato possibile consumare ${selectedBall.item.name}.',
+              'Could not consume ${selectedBall.item.name}.',
+            );
           });
           return;
         }
@@ -346,7 +348,7 @@ class _CapturePokemonScreenState extends State<CapturePokemonScreen> {
     );
 
     return teamSlot == null
-        ? 'inviato al PC'
+        ? context.uiText('inviato al PC', 'sent to the PC')
         : context.uiText(
             'aggiunto allo slot squadra ${teamSlot.slotIndex + 1}',
             'added to team slot ${teamSlot.slotIndex + 1}',
@@ -514,7 +516,10 @@ class _CaptureHeader extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '$destination Pokeslot sbloccati: $unlockedSlots.',
+                    context.uiText(
+                      '$destination Pokéslot sbloccati: $unlockedSlots.',
+                      '$destination Unlocked Poké Slots: $unlockedSlots.',
+                    ),
                     style: TextStyle(color: colorScheme.onPrimaryContainer),
                   ),
                   const SizedBox(height: 4),
@@ -724,7 +729,9 @@ class _RegisterCaughtSheetState extends State<_RegisterCaughtSheet> {
                 Expanded(
                   child: DropdownButtonFormField<String?>(
                     initialValue: _gender,
-                    decoration: const InputDecoration(labelText: 'Sesso'),
+                    decoration: InputDecoration(
+                      labelText: context.uiText('Sesso', 'Gender'),
+                    ),
                     items: [
                       for (final option in genderOptions)
                         DropdownMenuItem<String?>(
@@ -739,7 +746,9 @@ class _RegisterCaughtSheetState extends State<_RegisterCaughtSheet> {
                 Expanded(
                   child: DropdownButtonFormField<String>(
                     initialValue: _nature,
-                    decoration: const InputDecoration(labelText: 'Natura'),
+                    decoration: InputDecoration(
+                      labelText: context.uiText('Natura', 'Nature'),
+                    ),
                     items: [
                       for (final nature in PokemonNature.names)
                         DropdownMenuItem(value: nature, child: Text(nature)),
@@ -756,7 +765,9 @@ class _RegisterCaughtSheetState extends State<_RegisterCaughtSheet> {
               const SizedBox(height: 10),
               DropdownButtonFormField<String>(
                 initialValue: _formName,
-                decoration: const InputDecoration(labelText: 'Forma'),
+                decoration: InputDecoration(
+                  labelText: context.uiText('Forma', 'Form'),
+                ),
                 items: [
                   for (final form in formChoices)
                     DropdownMenuItem(value: form.name, child: Text(form.name)),
@@ -906,7 +917,7 @@ class _CapturePokemonCard extends StatelessWidget {
         ),
         trailing: FilledButton(
           onPressed: isSaving ? null : onSelect,
-          child: const Text('Scegli'),
+          child: Text(context.uiText('Scegli', 'Choose')),
         ),
       ),
     );

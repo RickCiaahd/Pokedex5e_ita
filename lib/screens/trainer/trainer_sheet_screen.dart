@@ -753,8 +753,8 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
         options: options,
         selected: current,
         descriptions: {
-          for (final entry in TrainerManualOptions.specializationNotes.entries)
-            entry.key: TrainerUiLocalization.visibleText(entry.value),
+          for (final option in options)
+            option: TrainerManualOptions.specializationNote(option),
         },
         displayNames: TrainerUiLocalization.specializationLabels,
       ),
@@ -797,10 +797,7 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
       SnackBar(
         content: Text(
           context.uiText(
-            context.uiText(
-              '${starter.name} aggiunto alla squadra.',
-              '${starter.name} added to the team.',
-            ),
+            '${starter.name} aggiunto alla squadra.',
             '${starter.name} added to the team.',
           ),
         ),
@@ -1965,9 +1962,7 @@ class _TrainerProgressionColumn extends StatelessWidget {
       );
     }
 
-    return TrainerUiLocalization.visibleText(
-      TrainerManualOptions.specializationNotes[specialization] ?? '',
-    );
+    return TrainerManualOptions.specializationNote(specialization);
   }
 
   TrainerPathFeature? _trainerPathFeatureFor(int level) {

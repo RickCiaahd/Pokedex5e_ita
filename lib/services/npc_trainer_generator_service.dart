@@ -1,5 +1,8 @@
 import 'dart:math';
 
+import '../localization/game_catalog_locale.dart';
+import '../localization/ui_text.dart';
+
 import '../models/bag_item.dart';
 import '../models/generated_npc_trainer.dart';
 import '../models/generated_pokemon.dart';
@@ -75,12 +78,24 @@ class NpcTrainerGeneratorService {
     if (team == null || team.isEmpty) return null;
 
     final name = _pick(_names, rng);
-    final origin = origins.isEmpty ? 'Viaggiatore' : _pick(origins, rng).name;
-    final path = paths.isEmpty ? 'Allenatore' : _pick(paths, rng).name;
-    final personality = _pick(_personalities, rng);
-    final motivation = _pick(_motivations, rng);
-    final quirk = _pick(_quirks, rng);
-    final typeLabel = PokemonTypeLocalization.italianLabel(preferredType);
+    final origin = origins.isEmpty
+        ? uiTextForLanguage('Viaggiatore', 'Traveler')
+        : _pick(origins, rng).name;
+    final path = paths.isEmpty
+        ? uiTextForLanguage('Allenatore', 'Trainer')
+        : _pick(paths, rng).name;
+    final personality = _pick(
+      GameCatalogLocale.isItalian ? _personalities : _personalitiesEn,
+      rng,
+    );
+    final motivation = _pick(
+      GameCatalogLocale.isItalian ? _motivations : _motivationsEn,
+      rng,
+    );
+    final quirk = _pick(GameCatalogLocale.isItalian ? _quirks : _quirksEn, rng);
+    final typeLabel = GameCatalogLocale.isItalian
+        ? PokemonTypeLocalization.italianLabel(preferredType)
+        : PokemonTypeLocalization.englishValue(preferredType);
     final epithet = _epithetFor(
       rank: options.rank,
       specialization: primarySpecialization,
@@ -271,18 +286,43 @@ class NpcTrainerGeneratorService {
   }) {
     return switch (rank) {
       NpcTrainerRank.common => specialization,
-      NpcTrainerRank.expert => 'Esperto $typeLabel',
-      NpcTrainerRank.elite => '$specialization d’élite',
-      NpcTrainerRank.boss => 'Maestro del tipo $typeLabel',
+      NpcTrainerRank.expert => uiTextForLanguage(
+        'Esperto $typeLabel',
+        '$typeLabel Expert',
+      ),
+      NpcTrainerRank.elite => uiTextForLanguage(
+        '$specialization d’élite',
+        'Elite $specialization',
+      ),
+      NpcTrainerRank.boss => uiTextForLanguage(
+        'Maestro del tipo $typeLabel',
+        '$typeLabel Master',
+      ),
     };
   }
 
   String _openingLine(String name, NpcTrainerRank rank, Random random) {
     final line = switch (rank) {
-      NpcTrainerRank.common => _pick(_commonOpeningLines, random),
-      NpcTrainerRank.expert => _pick(_expertOpeningLines, random),
-      NpcTrainerRank.elite => _pick(_eliteOpeningLines, random),
-      NpcTrainerRank.boss => _pick(_bossOpeningLines, random),
+      NpcTrainerRank.common => _pick(
+        GameCatalogLocale.isItalian
+            ? _commonOpeningLines
+            : _commonOpeningLinesEn,
+        random,
+      ),
+      NpcTrainerRank.expert => _pick(
+        GameCatalogLocale.isItalian
+            ? _expertOpeningLines
+            : _expertOpeningLinesEn,
+        random,
+      ),
+      NpcTrainerRank.elite => _pick(
+        GameCatalogLocale.isItalian ? _eliteOpeningLines : _eliteOpeningLinesEn,
+        random,
+      ),
+      NpcTrainerRank.boss => _pick(
+        GameCatalogLocale.isItalian ? _bossOpeningLines : _bossOpeningLinesEn,
+        random,
+      ),
     };
     return line.replaceAll('{name}', name);
   }
@@ -294,18 +334,36 @@ class NpcTrainerGeneratorService {
     required Random random,
   }) {
     final compositionTactic = switch (composition) {
-      NpcTeamComposition.themed =>
+      NpcTeamComposition.themed => uiTextForLanguage(
         'Costruisce sinergie attorno al tipo $preferredTypeLabel e cerca di imporre subito il proprio terreno ideale.',
-      NpcTeamComposition.mixed =>
+        'Builds synergy around the $preferredTypeLabel type and tries to establish ideal field conditions immediately.',
+      ),
+      NpcTeamComposition.mixed => uiTextForLanguage(
         'Apre con un Pokémon del proprio tema e conserva le coperture per rispondere alle debolezze più evidenti.',
-      NpcTeamComposition.varied =>
+        'Opens with a Pokémon that fits the theme and keeps coverage options for the most obvious weaknesses.',
+      ),
+      NpcTeamComposition.varied => uiTextForLanguage(
         'Cambia spesso approccio e usa la varietà della squadra per costringere l’avversario a reagire.',
+        'Frequently changes approach and uses team variety to force the opponent to react.',
+      ),
     };
     final rankTactic = switch (rank) {
-      NpcTrainerRank.common => _pick(_commonTactics, random),
-      NpcTrainerRank.expert => _pick(_expertTactics, random),
-      NpcTrainerRank.elite => _pick(_eliteTactics, random),
-      NpcTrainerRank.boss => _pick(_bossTactics, random),
+      NpcTrainerRank.common => _pick(
+        GameCatalogLocale.isItalian ? _commonTactics : _commonTacticsEn,
+        random,
+      ),
+      NpcTrainerRank.expert => _pick(
+        GameCatalogLocale.isItalian ? _expertTactics : _expertTacticsEn,
+        random,
+      ),
+      NpcTrainerRank.elite => _pick(
+        GameCatalogLocale.isItalian ? _eliteTactics : _eliteTacticsEn,
+        random,
+      ),
+      NpcTrainerRank.boss => _pick(
+        GameCatalogLocale.isItalian ? _bossTactics : _bossTacticsEn,
+        random,
+      ),
     };
     return '$compositionTactic $rankTactic';
   }
@@ -454,5 +512,76 @@ class NpcTrainerGeneratorService {
   static const List<String> _bossTactics = [
     'Tratta la lotta come uno scontro a fasi: apre per leggere il gruppo, poi accelera con il proprio asso.',
     'Usa cambi, condizioni e coperture per isolare il bersaglio più pericoloso prima del colpo decisivo.',
+  ];
+
+  static const List<String> _personalitiesEn = [
+    'Calm and observant: speaks little, but carefully studies every choice.',
+    'Enthusiastic and competitive: treats every battle as a chance to improve.',
+    'Friendly outside battle, ruthlessly methodical once the challenge begins.',
+    'Proud of the team and sensitive to any criticism of their Pokémon.',
+    'Witty and theatrical: comments on every move as though performing for an audience.',
+    'Pragmatic and direct: wastes neither words nor turns.',
+  ];
+
+  static const List<String> _motivationsEn = [
+    'Wants to prove that preparation matters more than natural talent.',
+    'Is looking for an opponent capable of truly testing their ace.',
+    'Protects the territory and distrusts strangers passing through it.',
+    'Collects data to perfect a strategy that is still incomplete.',
+    'Needs the promised reward for an important victory.',
+    'Wants redemption after a defeat they never accepted.',
+  ];
+
+  static const List<String> _quirksEn = [
+    'Takes notes in a notebook after every turn.',
+    'Calls every Pokémon by a grandiose nickname.',
+    'Throws each Poké Ball with the same carefully practiced motion.',
+    'Apologizes to their Pokémon even when giving the correct order.',
+    'Quietly counts turns and spent resources.',
+    'Keeps a lucky charm tied to their first catch.',
+  ];
+
+  static const List<String> _commonOpeningLinesEn = [
+    '“I am {name}. Let us see what you can really do.”',
+    '“A quick battle? I promise my team will not hold back.”',
+    '“You do not need to be famous to battle well.”',
+  ];
+
+  static const List<String> _expertOpeningLinesEn = [
+    '“{name}. Remember the name: after this battle, you will understand why.”',
+    '“I have already studied your style. Now let us see whether you can adapt.”',
+    '“Every team has a weakness. I will find yours.”',
+  ];
+
+  static const List<String> _eliteOpeningLinesEn = [
+    '“You made it this far. Now face {name} without hesitation.”',
+    '“Strength is not enough: you must earn every single turn.”',
+    '“My team does not offer second chances.”',
+  ];
+
+  static const List<String> _bossOpeningLinesEn = [
+    '“I am {name}. This battle will decide far more than a simple victory.”',
+    '“You passed the lesser trials. Now only my team remains.”',
+    '“From this moment on, every choice will have a price.”',
+  ];
+
+  static const List<String> _commonTacticsEn = [
+    'Prefers reliable moves and rarely switches Pokémon without a reason.',
+    'Tends to focus on an already weakened target.',
+  ];
+
+  static const List<String> _expertTacticsEn = [
+    'Uses conditions and resistances before sending out the ace.',
+    'Keeps at least one answer to the type that threatens the team most.',
+  ];
+
+  static const List<String> _eliteTacticsEn = [
+    'Alternates offensive pressure and control without revealing every resource immediately.',
+    'Protects the most important Pokémon until it can enter with a concrete advantage.',
+  ];
+
+  static const List<String> _bossTacticsEn = [
+    'Treats the battle as a phased encounter: opens by reading the group, then accelerates with the ace.',
+    'Uses switches, conditions, and coverage to isolate the most dangerous target before the decisive blow.',
   ];
 }

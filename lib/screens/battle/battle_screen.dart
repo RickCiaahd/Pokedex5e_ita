@@ -3352,7 +3352,10 @@ class _MoveCard extends StatelessWidget {
             Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                'Tempo: ${move.moveTime}  |  Durata: ${move.duration}',
+                context.uiText(
+                  'Tempo: ${move.moveTime}  |  Durata: ${move.duration}',
+                  'Time: ${move.moveTime}  |  Duration: ${move.duration}',
+                ),
               ),
             ),
             const SizedBox(height: 8),

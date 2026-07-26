@@ -1,3 +1,5 @@
+import '../localization/game_catalog_locale.dart';
+
 class TrainerSkillDefinition {
   const TrainerSkillDefinition({required this.name, required this.ability});
 
@@ -149,4 +151,50 @@ class TrainerManualOptions {
     'Gardener':
         'Ottieni competenza in Nature. I tuoi Pokémon Erba aggiungono +1 alle prove di abilita.',
   };
+
+  static const Map<String, String> specializationNotesEn = {
+    'Bird Keeper':
+        'Gain proficiency in Perception. Your Flying-type Pokémon add +1 to all skill checks.',
+    'Bug Maniac':
+        'Gain proficiency in Nature. Your Bug-type Pokémon add +1 to all skill checks.',
+    'Camper':
+        'Gain proficiency in Survival. Your Ground-type Pokémon add +1 to all skill checks.',
+    'Dragon Tamer':
+        'Increase WIS by +1. Your Dragon-type Pokémon add +1 to all skill checks.',
+    'Engineer':
+        'Increase INT by +1. Your Electric-type Pokémon add +1 to all skill checks.',
+    'Martial Artist':
+        'Increase STR, CON, or DEX by +1. Your Fighting-type Pokémon add +1 to all skill checks.',
+    'Mountaineer':
+        'Increase STR, CON, or DEX by +1. Your Rock-type Pokémon add +1 to all skill checks.',
+    'Mystic':
+        'Gain proficiency in Arcana. Your Ghost-type Pokémon add +1 to all skill checks.',
+    'Steel Worker':
+        'Increase STR or CON by +1. Your Steel-type Pokémon add +1 to all skill checks.',
+    'Psychic':
+        'You can use Telepathy on one of your Pokémon once per day. Your Psychic-type Pokémon add +1 to all skill checks.',
+    'Swimmer':
+        'Gain a swim speed equal to your movement speed. Your Water-type Pokémon add +1 to all skill checks.',
+    'Charmer':
+        'Increase CHA by +1. Your Fairy-type Pokémon add +1 to all skill checks.',
+    'Shadow':
+        'Gain proficiency in Deception or Stealth. Your Dark-type Pokémon add +1 to all skill checks.',
+    'Alchemist':
+        'Gain proficiency in Medicine or Deception. Your Poison-type Pokémon add +1 to all skill checks.',
+    'Team Player':
+        'Increase one ability score by +1. Your Normal-type Pokémon add +1 to all skill checks.',
+    'Ice Skater':
+        'Gain proficiency in Performance or Persuasion. Your Ice-type Pokémon add +1 to all skill checks.',
+    'Pyromaniac':
+        'Increase CON by +1. Your Fire-type Pokémon add +1 to all skill checks.',
+    'Gardener':
+        'Gain proficiency in Nature. Your Grass-type Pokémon add +1 to all skill checks.',
+  };
+
+  static String specializationNote(String name) {
+    if (GameCatalogLocale.isItalian) {
+      return specializationNotes[name] ?? '';
+    }
+    return specializationNotesEn[name] ?? specializationNotes[name] ?? '';
+  }
 }

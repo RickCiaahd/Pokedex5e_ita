@@ -26,22 +26,24 @@ index 19bbf3a..97f9886 100644
        'lib/screens/tools/encounter_library_screen.dart': [
          "'Encounter Library'",
 diff --git a/test/pokemon_battle_attributes_card_test.dart b/test/pokemon_battle_attributes_card_test.dart
-index eb8827a..f3b2714 100644
+index eb8827a..76a5d3b 100644
 --- a/test/pokemon_battle_attributes_card_test.dart
 +++ b/test/pokemon_battle_attributes_card_test.dart
-@@ -16,6 +16,7 @@ void main() {
+@@ -16,6 +16,8 @@ void main() {
    testWidgets('mostra tutte le caratteristiche e i modificatori', (tester) async {
      await tester.pumpWidget(
        const MaterialApp(
 +        locale: Locale('it'),
++        supportedLocales: [Locale('it')],
          home: Scaffold(
            body: SingleChildScrollView(
              child: PokemonBattleAttributesCard(attributes: attributes),
-@@ -49,6 +50,7 @@ void main() {
+@@ -49,6 +51,8 @@ void main() {
        (tester) async {
      await tester.pumpWidget(
        const MaterialApp(
 +        locale: Locale('it'),
++        supportedLocales: [Locale('it')],
          home: Scaffold(
            body: Align(
              alignment: Alignment.topLeft,

@@ -39,7 +39,7 @@ diff --git a/lib/screens/trainer/trainer_sheet_screen.dart b/lib/screens/trainer
 diff --git a/test/trainer_ui_localization_test.dart b/test/trainer_ui_localization_test.dart
 --- a/test/trainer_ui_localization_test.dart
 +++ b/test/trainer_ui_localization_test.dart
-@@ -68,8 +68,12 @@ void main() {
+@@ -68,8 +68,11 @@ void main() {
        'lib/screens/trainer/trainer_sheet_screen.dart',
      ).readAsStringSync();
  

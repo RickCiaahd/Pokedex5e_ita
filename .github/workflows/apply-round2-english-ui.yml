@@ -7,6 +7,7 @@ on:
     paths:
       - '.github/workflows/apply-round2-english-ui.yml'
       - 'tooling/round2_english_ui.patch.gz.b64.part*'
+      - 'tooling/round2_english_ui_repair.patch'
 
 permissions:
   contents: write
@@ -40,7 +41,7 @@ jobs:
           channel: stable
           cache: true
 
-      - name: Rebuild and apply prepared patch
+      - name: Rebuild and apply prepared patches
         shell: bash
         run: |
           set -euo pipefail
@@ -50,6 +51,8 @@ jobs:
             > /tmp/round2-english-ui.patch
           git apply --check /tmp/round2-english-ui.patch
           git apply --whitespace=fix /tmp/round2-english-ui.patch
+          git apply --check tooling/round2_english_ui_repair.patch
+          git apply --whitespace=fix tooling/round2_english_ui_repair.patch
 
       - name: Resolve dependencies and generate localizations
         run: |
@@ -95,6 +98,7 @@ jobs:
         shell: bash
         run: |
           rm -f tooling/round2_english_ui.patch.gz.b64.part*
+          rm -f tooling/round2_english_ui_repair.patch
           rm -f .github/workflows/export-round2-localization-snapshot.yml
           rm -f .github/workflows/apply-round2-english-ui.yml
           rm -f diagnostics/round2-english-ui-analyze-error.txt

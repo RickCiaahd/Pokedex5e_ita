@@ -1,0 +1,102 @@
+name: Apply English UI residual fixes
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/apply-english-ui-residuals.yml'
+      - 'tooling/english_ui_residuals.patch.b64.part*'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: english-ui-residuals-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  apply:
+    if: github.head_ref == 'fix/english-ui-residuals'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Check out correction branch
+        uses: actions/checkout@v4
+        with:
+          ref: fix/english-ui-residuals
+          fetch-depth: 0
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Rebuild and apply prepared patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat tooling/english_ui_residuals.patch.b64.part* \
+            | base64 --decode \
+            | gzip --decompress \
+            > /tmp/english-ui-residuals.patch
+          git apply --check /tmp/english-ui-residuals.patch
+          git apply --whitespace=fix /tmp/english-ui-residuals.patch
+
+      - name: Resolve dependencies and generate localizations
+        run: |
+          flutter pub get
+          flutter gen-l10n
+
+      - name: Format changed Dart sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t dart_files < <(git diff --name-only --diff-filter=ACM | grep '\.dart$' || true)
+          if ((${#dart_files[@]})); then
+            dart format "${dart_files[@]}"
+          fi
+
+      - name: Analyze source
+        run: flutter analyze
+
+      - name: Run focused localization tests
+        run: |
+          flutter test test/english_ui_residuals_test.dart --reporter expanded
+          flutter test test/secondary_ui_localization_test.dart --reporter expanded
+          flutter test test/pokemon_battle_attributes_card_test.dart --reporter expanded
+
+      - name: Run complete test suite
+        run: flutter test --reporter expanded
+
+      - name: Build Android debug APK
+        run: flutter build apk --debug
+
+      - name: Remove temporary transfer files
+        shell: bash
+        run: |
+          rm -f tooling/english_ui_residuals.patch.b64.part*
+          rm -f .github/workflows/export-english-ui-snapshot.yml
+          rm -f .github/workflows/apply-english-ui-residuals.yml
+
+      - name: Commit verified correction
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --check
+          if git diff --cached --quiet; then
+            echo "Nessuna modifica da pubblicare."
+            exit 0
+          fi
+          git commit -m "Corregge i residui italiani nell’interfaccia inglese"
+          git push origin HEAD:fix/english-ui-residuals

@@ -1,0 +1,72 @@
+name: Diagnose Trainer Atlas 1.3.2 runs
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/diagnose-v1.3.2-runs.yml'
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      GH_TOKEN: ${{ github.token }}
+      RELEASE_SHA: cfdf0a93bf082536f9a24d158cb026995772aa9b
+
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Collect all runs for the release commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p diagnostics
+          report='diagnostics/release-v1.3.2.txt'
+          : > "$report"
+          echo 'Trainer Atlas 1.3.2 release diagnostics' >> "$report"
+          echo "Collected at: $(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> "$report"
+          echo "Release SHA: $RELEASE_SHA" >> "$report"
+          echo >> "$report"
+
+          gh api \
+            -H 'Accept: application/vnd.github+json' \
+            "/repos/${{ github.repository }}/actions/runs?head_sha=$RELEASE_SHA&per_page=100" \
+            > /tmp/v132-runs.json
+
+          jq '{total_count, workflow_runs: [.workflow_runs[] | {id, name, event, status, conclusion, head_branch, head_sha, html_url, workflow_id, run_number}]}' \
+            /tmp/v132-runs.json >> "$report"
+
+          mapfile -t run_ids < <(jq -r '.workflow_runs[].id' /tmp/v132-runs.json)
+          for run_id in "${run_ids[@]}"; do
+            echo >> "$report"
+            echo "===== RUN $run_id =====" >> "$report"
+            gh api "/repos/${{ github.repository }}/actions/runs/$run_id/jobs?per_page=100" \
+              | jq '{total_count, jobs: [.jobs[] | {id, name, status, conclusion, html_url, steps}]}' \
+              >> "$report" || true
+            echo >> "$report"
+            echo '----- FAILED LOGS -----' >> "$report"
+            gh run view "$run_id" --log-failed >> "$report" 2>&1 || true
+          done
+
+      - name: Remove temporary diagnostic workflow
+        run: git rm .github/workflows/diagnose-v1.3.2-runs.yml
+
+      - name: Commit diagnostics
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add diagnostics/release-v1.3.2.txt
+          git commit -m 'Approfondisce diagnosi release 1.3.2'
+          git push origin HEAD:main

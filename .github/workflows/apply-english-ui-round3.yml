@@ -1,0 +1,109 @@
+name: Apply English UI residual fixes round 3
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/apply-english-ui-round3.yml'
+      - 'tooling/apply_english_ui_residuals_round3.py'
+      - 'tooling/english_ui_round3_translations.json'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: apply-english-ui-round3-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  apply:
+    if: github.head_ref == 'fix/english-ui-residuals-round3'
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+
+    steps:
+      - name: Check out correction branch
+        uses: actions/checkout@v4
+        with:
+          ref: fix/english-ui-residuals-round3
+          fetch-depth: 0
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Validate and apply prepared corrections
+        run: |
+          python -m py_compile tooling/apply_english_ui_residuals_round3.py
+          python tooling/apply_english_ui_residuals_round3.py
+
+      - name: Resolve dependencies and generate localizations
+        run: |
+          flutter pub get
+          flutter gen-l10n
+
+      - name: Format changed Dart sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t dart_files < <(git diff --name-only --diff-filter=ACM | grep '\.dart$' || true)
+          if ((${#dart_files[@]})); then
+            dart format "${dart_files[@]}"
+          fi
+
+      - name: Analyze source
+        run: flutter analyze
+
+      - name: Run focused localization test
+        run: flutter test test/english_ui_residuals_round3_test.dart --reporter expanded
+
+      - name: Run complete test suite
+        run: flutter test --reporter expanded
+
+      - name: Build Android debug APK
+        run: flutter build apk --debug
+
+      - name: Run post-fix localization audit
+        run: python tooling/audit_english_ui_residuals_round3.py
+
+      - name: Upload post-fix audit
+        uses: actions/upload-artifact@v4
+        with:
+          name: english-ui-round3-post-fix-audit
+          path: diagnostics/english-ui-residuals-round3.*
+          retention-days: 14
+
+      - name: Remove temporary transfer and workflow files
+        shell: bash
+        run: |
+          rm -f tooling/.english_ui_round3_applied
+          rm -f tooling/apply_english_ui_residuals_round3.py
+          rm -f tooling/english_ui_round3_translations.json
+          rm -f tooling/audit_english_ui_residuals_round3.py
+          rm -f diagnostics/english-ui-residuals-round3.json
+          rm -f diagnostics/english-ui-residuals-round3.md
+          rm -f .github/workflows/audit-english-ui-round3.yml
+          rm -f .github/workflows/apply-english-ui-round3.yml
+
+      - name: Commit verified correction
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --check
+          if git diff --cached --quiet; then
+            echo "No changes to publish."
+            exit 0
+          fi
+          git commit -m "Completa il terzo audit dei residui italiani nella UI inglese"
+          git push origin HEAD:fix/english-ui-residuals-round3

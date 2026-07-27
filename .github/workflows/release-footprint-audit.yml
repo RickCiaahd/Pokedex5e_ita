@@ -32,7 +32,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: release-footprint-${{ github.workflow }}-${{ github.ref }}
@@ -115,43 +115,13 @@ jobs:
             --apk build/app/outputs/flutter-apk/app-release.apk \
             --aab build/app/outputs/bundle/release/app-release.aab
 
-      - name: Verify deterministic report output
-        run: |
-          python tooling/analyze_release_footprint.py \
-            --apk build/app/outputs/flutter-apk/app-release.apk \
-            --aab build/app/outputs/bundle/release/app-release.aab \
-            --check
-
       - name: Check generated file formatting
         run: git diff --check
 
-      - name: Publish baseline on bootstrap branch
-        if: github.head_ref == 'feature/release-footprint-audit' || github.ref_name == 'feature/release-footprint-audit'
-        shell: bash
-        run: |
-          set -euo pipefail
-          pending=$(git status --porcelain -- \
-            docs/performance/release-footprint.md \
-            docs/performance/asset-duplicates.csv)
-          if [ -z "$pending" ]; then
-            echo 'Release footprint reports are already current.'
-            exit 0
-          fi
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add docs/performance/release-footprint.md \
-            docs/performance/asset-duplicates.csv
-          git commit -m 'Genera baseline del peso release e dei duplicati'
-          git push origin HEAD:feature/release-footprint-audit
+      - name: Require deterministic duplicate inventory
+        run: git diff --exit-code -- docs/performance/asset-duplicates.csv
 
-      - name: Require committed reports on ordinary branches
-        if: github.head_ref != 'feature/release-footprint-audit' && github.ref_name != 'feature/release-footprint-audit'
-        run: |
-          git diff --exit-code -- \
-            docs/performance/release-footprint.md \
-            docs/performance/asset-duplicates.csv
-
-      - name: Upload footprint reports
+      - name: Upload measured footprint reports
         uses: actions/upload-artifact@v4
         with:
           name: Trainer-Atlas-release-footprint

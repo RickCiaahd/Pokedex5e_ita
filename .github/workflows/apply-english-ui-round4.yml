@@ -1,0 +1,152 @@
+name: Apply English UI residual fixes round 4
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/apply-english-ui-round4.yml'
+      - 'tooling/apply_english_ui_residuals_round4.py'
+      - 'tooling/audit_english_ui_residuals_round4.py'
+      - 'tooling/english_ui_round4_translations.json'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: apply-english-ui-round4-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  apply:
+    if: github.head_ref == 'fix/english-ui-residuals-round3'
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+
+    steps:
+      - name: Check out correction branch
+        uses: actions/checkout@v4
+        with:
+          ref: fix/english-ui-residuals-round3
+          fetch-depth: 0
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Validate and apply prepared corrections
+        run: |
+          python -m py_compile tooling/apply_english_ui_residuals_round4.py
+          python -m py_compile tooling/audit_english_ui_residuals_round4.py
+          python tooling/apply_english_ui_residuals_round4.py
+
+      - name: Resolve dependencies and generate localizations
+        run: |
+          flutter pub get
+          flutter gen-l10n
+
+      - name: Format changed Dart sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t dart_files < <(git diff --name-only --diff-filter=ACM | grep '\.dart$' || true)
+          if ((${#dart_files[@]})); then
+            dart format "${dart_files[@]}"
+          fi
+
+      - name: Analyze source
+        shell: bash
+        run: |
+          set +e
+          flutter analyze 2>&1 | tee /tmp/english-ui-round4-analyze.log
+          status=${PIPESTATUS[0]}
+          if [ "$status" -ne 0 ]; then
+            mkdir -p diagnostics
+            cp /tmp/english-ui-round4-analyze.log diagnostics/english-ui-round4-analyze-error.txt
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add diagnostics/english-ui-round4-analyze-error.txt
+            git commit -m "Registra errore analisi del quarto audit inglese" || true
+            git push origin HEAD:fix/english-ui-residuals-round3
+            exit "$status"
+          fi
+
+      - name: Run focused localization test
+        run: flutter test test/english_ui_residuals_round4_test.dart --reporter expanded
+
+      - name: Run complete test suite
+        shell: bash
+        run: |
+          set +e
+          flutter test --reporter expanded 2>&1 | tee /tmp/english-ui-round4-test.log
+          status=${PIPESTATUS[0]}
+          if [ "$status" -ne 0 ]; then
+            mkdir -p diagnostics
+            cp /tmp/english-ui-round4-test.log diagnostics/english-ui-round4-test-error.txt
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add diagnostics/english-ui-round4-test-error.txt
+            git commit -m "Registra errore test del quarto audit inglese" || true
+            git push origin HEAD:fix/english-ui-residuals-round3
+            exit "$status"
+          fi
+
+      - name: Build Android debug APK
+        run: flutter build apk --debug
+
+      - name: Run refined post-fix localization audit
+        shell: bash
+        run: |
+          set +e
+          python tooling/audit_english_ui_residuals_round4.py
+          status=$?
+          if [ "$status" -ne 0 ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add diagnostics/english-ui-residuals-round4.json diagnostics/english-ui-residuals-round4.md
+            git commit -m "Registra residui del quarto audit inglese" || true
+            git push origin HEAD:fix/english-ui-residuals-round3
+            exit "$status"
+          fi
+
+      - name: Upload post-fix audit
+        uses: actions/upload-artifact@v4
+        with:
+          name: english-ui-round4-post-fix-audit
+          path: diagnostics/english-ui-residuals-round4.*
+          retention-days: 14
+
+      - name: Remove temporary workflow files
+        shell: bash
+        run: |
+          rm -f tooling/.english_ui_round4_applied
+          rm -f tooling/apply_english_ui_residuals_round4.py
+          rm -f tooling/audit_english_ui_residuals_round4.py
+          rm -f tooling/english_ui_round4_translations.json
+          rm -f diagnostics/english-ui-residuals-round4.json
+          rm -f diagnostics/english-ui-residuals-round4.md
+          rm -f diagnostics/english-ui-round4-analyze-error.txt
+          rm -f diagnostics/english-ui-round4-test-error.txt
+          rm -f .github/workflows/apply-english-ui-round4.yml
+
+      - name: Commit verified correction
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --check
+          if git diff --cached --quiet; then
+            echo "No changes to publish."
+            exit 0
+          fi
+          git commit -m "Completa il controllo generale della UI inglese"
+          git push origin HEAD:fix/english-ui-residuals-round3

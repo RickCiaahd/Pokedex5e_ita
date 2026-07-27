@@ -1,0 +1,563 @@
+{
+  "candidate_count": 93,
+  "candidates": [
+    {
+      "path": "lib/screens/team/team_selection_screen.dart",
+      "line": 256,
+      "value": "$displayName esportato correttamente.",
+      "source": ": '$displayName esportato correttamente.',"
+    },
+    {
+      "path": "lib/screens/team/team_selection_screen.dart",
+      "line": 573,
+      "value": "${uiTextForLanguage('Stai importando ${bundle.pokemon.length} Pokémon$source. ', \"\"\"You are importing ${bundle.pokemon.length} Pokémon$source. \"\"\")}${replaced > 0 ? 'I $replaced Pokémon attualmente in squadra verranno spostati nel PC. ' : ''}${uiTextForLanguage('Le uova resteranno nei loro slot. ', \"\"\"Eggs will remain in their slots. \"\"\")}${overflow > 0 ? '$overflow Pokémon importati finiranno nel PC perché non ci sono abbastanza Pokéslot disponibili.' : ''}",
+      "source": "'${uiTextForLanguage('Stai importando ${bundle.pokemon.length} Pokémon$source. ', \"\"\"You are importing ${bundle.pokemon.length} Pokémon$source. \"\"\")}${replaced > 0 ? 'I $replaced Pokémon attualmente in squadra verranno spostati nel PC. ' : ''}${uiTextForLanguage('Le uova resteranno nei loro slot. ', \"\"\"Eggs will remain in their slots. \"\"\")}${overflow > 0 ? '$overflow Pokémon importati finiranno nel PC perché non ci sono abbastanza Pokéslot disponibili.' : ''}',"
+    },
+    {
+      "path": "lib/screens/onboarding/first_launch_onboarding_screen.dart",
+      "line": 184,
+      "value": "Origine 5e approvata dal DM",
+      "source": "return origin.name == 'Origine 5e approvata dal DM'"
+    },
+    {
+      "path": "lib/screens/onboarding/first_launch_onboarding_screen.dart",
+      "line": 199,
+      "value": "Origine 5e approvata dal DM",
+      "source": "'Origine 5e approvata dal DM' =>"
+    },
+    {
+      "path": "lib/screens/trainer/trainer_sheet_screen.dart",
+      "line": 327,
+      "value": "Origine 5e approvata dal DM",
+      "source": "return origin.name == 'Origine 5e approvata dal DM'"
+    },
+    {
+      "path": "lib/screens/trainer/trainer_sheet_screen.dart",
+      "line": 343,
+      "value": "Origine 5e approvata dal DM",
+      "source": "'Origine 5e approvata dal DM' =>"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 95,
+      "value": "${saved.name} salvato nel catalogo Fakemon.",
+      "source": "_setMessage('${saved.name} salvato nel catalogo Fakemon.');"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 230,
+      "value": "Esporta catalogo Fakemon",
+      "source": "dialogTitle: 'Esporta catalogo Fakemon',"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 238,
+      "value": "Esportazione catalogo annullata.",
+      "source": "? 'Esportazione catalogo annullata.'"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 253,
+      "value": "Importa catalogo Fakemon",
+      "source": "dialogTitle: 'Importa catalogo Fakemon',"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 260,
+      "value": "Importazione catalogo annullata.",
+      "source": "_setMessage('Importazione catalogo annullata.');"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 272,
+      "value": "Catalogo importato: ${imported.installed} installati, ",
+      "source": "'Catalogo importato: ${imported.installed} installati, '"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 293,
+      "value": "Il pacchetto segreto non mostra nome, immagine o dati nell’app del giocatore prima della scoperta.",
+      "source": "'Il pacchetto segreto non mostra nome, immagine o dati nell’app del giocatore prima della scoperta.',"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 316,
+      "value": "Esporta contenuto segreto",
+      "source": "? 'Esporta contenuto segreto'"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 326,
+      "value": "${definition.name} esportato correttamente.",
+      "source": ": '${definition.name} esportato correttamente.',"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 421,
+      "value": "${imported.definition.name} importato.",
+      "source": ": '${imported.definition.name} importato.',"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 460,
+      "value": "Importa catalogo",
+      "source": "child: Text('Importa catalogo'),"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 464,
+      "value": "Esporta catalogo",
+      "source": "child: Text('Esporta catalogo'),"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 750,
+      "value": "Scegli immagine shiny del Fakemon",
+      "source": "? 'Scegli immagine shiny del Fakemon'"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 751,
+      "value": "Scegli immagine Fakemon",
+      "source": ": 'Scegli immagine Fakemon',"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 840,
+      "value": "Rimuovi",
+      "source": "label: Text('Rimuovi'),"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 1012,
+      "value": "MODIFICA FAKEMON",
+      "source": "widget.definition == null ? 'NUOVO FAKEMON' : 'MODIFICA FAKEMON',"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 1048,
+      "value": "Nome",
+      "source": "_RequiredTextField(controller: _name, label: 'Nome'),"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 1221,
+      "value": "DAL CATALOGO",
+      "source": "label: Text('DAL CATALOGO'),"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 1236,
+      "value": "Rimuovi",
+      "source": "tooltip: 'Rimuovi',"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 1245,
+      "value": "Evoluzioni, forme e segreti",
+      "source": "title: 'Evoluzioni, forme e segreti',"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 1250,
+      "value": "${_advanced.forms.length} forme",
+      "source": "'${_advanced.forms.length} forme',"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 1256,
+      "value": "Esportazione segreta disponibile",
+      "source": "title: Text('Esportazione segreta disponibile'),"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 1421,
+      "value": "Rimuovi",
+      "source": "tooltip: 'Rimuovi',"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 1464,
+      "value": "Nessuno",
+      "source": "const DropdownMenuItem<String?>(value: null, child: Text('Nessuno')),"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 1576,
+      "value": "CONTENUTO SEGRETO",
+      "source": "label: Text('CONTENUTO SEGRETO'),"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 1604,
+      "value": "MODIFICA",
+      "source": "label: Text('MODIFICA'),"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 1612,
+      "value": "Altre azioni",
+      "source": "tooltip: 'Altre azioni',"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 1722,
+      "value": "Scegli dal catalogo",
+      "source": "tooltip: 'Scegli dal catalogo',"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 1763,
+      "value": "Cerca",
+      "source": "labelText: 'Cerca',"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 1833,
+      "value": "Cerca",
+      "source": "labelText: 'Cerca',"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 1899,
+      "value": "Nome",
+      "source": "decoration: InputDecoration(labelText: 'Nome'),"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_library_screen.dart",
+      "line": 1986,
+      "value": "Nome",
+      "source": "decoration: InputDecoration(labelText: 'Nome'),"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_edit_screen.dart",
+      "line": 483,
+      "value": "Scegli feat",
+      "source": "title: 'Scegli feat',"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_edit_screen.dart",
+      "line": 1262,
+      "value": "Catalogo completo",
+      "source": "'catalog' => 'Catalogo completo',"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_edit_screen.dart",
+      "line": 1263,
+      "value": "Disponibile ora",
+      "source": "_ => 'Disponibile ora',"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_edit_screen.dart",
+      "line": 1586,
+      "value": "Cerca",
+      "source": "searchLabel: 'Cerca',"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_edit_screen.dart",
+      "line": 1591,
+      "value": "Nessuno",
+      "source": "label: 'Nessuno',"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_edit_screen.dart",
+      "line": 1605,
+      "value": "Catalogo completo",
+      "source": "const _PickerGroupLabel(label: 'Catalogo completo'),"
+    },
+    {
+      "path": "lib/screens/pokemon/evolution_selector_sheet.dart",
+      "line": 29,
+      "value": "Scegli evoluzione",
+      "source": "final title = isSingleEvolution ? 'Evoluzione' : 'Scegli evoluzione';"
+    },
+    {
+      "path": "lib/screens/pokemon/evolution_selector_sheet.dart",
+      "line": 66,
+      "value": "Scegli",
+      "source": "actionLabel: isSingleEvolution ? 'Evolvi' : 'Scegli',"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_advanced_editor_screen.dart",
+      "line": 184,
+      "value": "Contenuto segreto",
+      "source": "title: 'Contenuto segreto',"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_advanced_editor_screen.dart",
+      "line": 188,
+      "value": "Segreto fino alla scoperta",
+      "source": "title: Text('Segreto fino alla scoperta'),"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_advanced_editor_screen.dart",
+      "line": 258,
+      "value": "Permanente",
+      "source": "child: Text('Permanente'),"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_advanced_editor_screen.dart",
+      "line": 262,
+      "value": "Momentanea di battaglia",
+      "source": "child: Text('Momentanea di battaglia'),"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_advanced_editor_screen.dart",
+      "line": 311,
+      "value": "RIMUOVI COLLEGAMENTO",
+      "source": "label: Text('RIMUOVI COLLEGAMENTO'),"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_advanced_editor_screen.dart",
+      "line": 392,
+      "value": "Rimuovi",
+      "source": "tooltip: 'Rimuovi',"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_advanced_editor_screen.dart",
+      "line": 468,
+      "value": "Rimuovi",
+      "source": "tooltip: 'Rimuovi',"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_advanced_editor_screen.dart",
+      "line": 724,
+      "value": "Nessuno",
+      "source": "DropdownMenuItem(value: null, child: Text('Nessuno')),"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_advanced_editor_screen.dart",
+      "line": 725,
+      "value": "Maschio",
+      "source": "DropdownMenuItem(value: 'male', child: Text('Maschio')),"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_advanced_editor_screen.dart",
+      "line": 726,
+      "value": "Femmina",
+      "source": "DropdownMenuItem(value: 'female', child: Text('Femmina')),"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_advanced_editor_screen.dart",
+      "line": 1045,
+      "value": "Scegli artwork shiny",
+      "source": "? 'Scegli artwork shiny'"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_advanced_editor_screen.dart",
+      "line": 1188,
+      "value": "Permanente",
+      "source": "child: Text('Permanente'),"
+    },
+    {
+      "path": "lib/screens/pokemon/custom_pokemon_advanced_editor_screen.dart",
+      "line": 1192,
+      "value": "Momentanea, solo battaglia",
+      "source": "child: Text('Momentanea, solo battaglia'),"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_detail_screen_legacy.dart",
+      "line": 836,
+      "value": "Punti disponibili: $remainingPoints",
+      "source": "Text('Punti disponibili: $remainingPoints'),"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_detail_screen_legacy.dart",
+      "line": 1831,
+      "value": "Strumento tenuto",
+      "source": "'Strumento tenuto',"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_detail_screen_legacy.dart",
+      "line": 1896,
+      "value": "Bacca",
+      "source": "return 'Bacca';"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_detail_screen_legacy.dart",
+      "line": 1947,
+      "value": "POKÉMON CENTER",
+      "source": "'POKÉMON CENTER',"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_detail_screen_legacy.dart",
+      "line": 1972,
+      "value": "Pokémon Center",
+      "source": "title: Text('Pokémon Center'),"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_detail_screen_legacy.dart",
+      "line": 3040,
+      "value": "Modifica esperienza",
+      "source": "title: Text('Modifica esperienza'),"
+    },
+    {
+      "path": "lib/screens/pokemon/pokemon_detail_screen_legacy.dart",
+      "line": 3092,
+      "value": "Modifica PF",
+      "source": "title: Text('Modifica PF'),"
+    },
+    {
+      "path": "lib/screens/battle/battle_screen.dart",
+      "line": 2394,
+      "value": "${context.uiText('RITIRA ALLENATORE', 'REROLL TRAINER')} ",
+      "source": "'${context.uiText('RITIRA ALLENATORE', 'REROLL TRAINER')} '"
+    },
+    {
+      "path": "lib/screens/battle/battle_screen.dart",
+      "line": 3576,
+      "value": "STRUGGLE DISPONIBILE",
+      "source": "'STRUGGLE DISPONIBILE',"
+    },
+    {
+      "path": "lib/screens/battle/npc_battle_screen.dart",
+      "line": 393,
+      "value": "Nome",
+      "source": "decoration: InputDecoration(labelText: 'Nome'),"
+    },
+    {
+      "path": "lib/screens/battle/npc_battle_screen.dart",
+      "line": 506,
+      "value": "Riepilogo del fight esportato correttamente.",
+      "source": ": 'Riepilogo del fight esportato correttamente.';"
+    },
+    {
+      "path": "lib/screens/battle/npc_battle_screen.dart",
+      "line": 539,
+      "value": "Riepilogo esportato da Trainer Atlas 5e.",
+      "source": "text: 'Riepilogo esportato da Trainer Atlas 5e.',"
+    },
+    {
+      "path": "lib/screens/battle/npc_battle_screen.dart",
+      "line": 1158,
+      "value": "Rimuovi dagli attivi",
+      "source": "? 'Rimuovi dagli attivi'"
+    },
+    {
+      "path": "lib/screens/battle/npc_battle_screen.dart",
+      "line": 1282,
+      "value": "MODIFICA",
+      "source": "OutlinedButton(onPressed: onEditHp, child: Text('MODIFICA')),"
+    },
+    {
+      "path": "lib/screens/battle/npc_battle_screen.dart",
+      "line": 1429,
+      "value": "Modifica PF",
+      "source": "title: Text('Modifica PF'),"
+    },
+    {
+      "path": "lib/screens/battle/npc_battle_screen.dart",
+      "line": 1435,
+      "value": "PF o modifica",
+      "source": "labelText: 'PF o modifica',"
+    },
+    {
+      "path": "lib/screens/battle/npc_battle_screen.dart",
+      "line": 1489,
+      "value": "Nessuno",
+      "source": "child: Text('Nessuno'),"
+    },
+    {
+      "path": "lib/screens/tools/pokemon_generator_screen.dart",
+      "line": 1368,
+      "value": "Maschio",
+      "source": "return 'Maschio';"
+    },
+    {
+      "path": "lib/screens/tools/pokemon_generator_screen.dart",
+      "line": 1370,
+      "value": "Femmina",
+      "source": "return 'Femmina';"
+    },
+    {
+      "path": "lib/screens/tools/pokemon_generator_screen.dart",
+      "line": 1420,
+      "value": "Dettagli non disponibili",
+      "source": "? 'Dettagli non disponibili'"
+    },
+    {
+      "path": "lib/screens/tools/encounter_generator_screen.dart",
+      "line": 57,
+      "value": "Qualsiasi",
+      "source": "String _habitat = 'Qualsiasi';"
+    },
+    {
+      "path": "lib/screens/tools/npc_trainer_result_screen.dart",
+      "line": 838,
+      "value": "${generated.ability ?? context.uiText('Nessuna abilità', 'No ability')}",
+      "source": "'${generated.ability ?? context.uiText('Nessuna abilità', 'No ability')}',"
+    },
+    {
+      "path": "lib/screens/tools/encounter_result_screen.dart",
+      "line": 642,
+      "value": "Maschio",
+      "source": "'Male' => 'Maschio',"
+    },
+    {
+      "path": "lib/screens/tools/encounter_result_screen.dart",
+      "line": 643,
+      "value": "Femmina",
+      "source": "'Female' => 'Femmina',"
+    },
+    {
+      "path": "lib/screens/tools/encounter_result_screen.dart",
+      "line": 689,
+      "value": "${generated.ability ?? 'Nessuna abilità'}",
+      "source": "'${generated.ability ?? 'Nessuna abilità'}',"
+    },
+    {
+      "path": "lib/screens/bag/bag_screen.dart",
+      "line": 1623,
+      "value": "Slot ${candidate.slot.slotIndex + 1} • Tiene: ${heldItem?.name ?? 'nessuno strumento'}",
+      "source": "return 'Slot ${candidate.slot.slotIndex + 1} • Tiene: ${heldItem?.name ?? 'nessuno strumento'}';"
+    },
+    {
+      "path": "lib/widgets/trainer/trainer_path_automation_panel.dart",
+      "line": 103,
+      "value": "Completa ${missingChoices.length == 1 ? 'la scelta richiesta' : 'le ${missingChoices.length} scelte richieste'} prima di considerare il percorso configurato.",
+      "source": "'Completa ${missingChoices.length == 1 ? 'la scelta richiesta' : 'le ${missingChoices.length} scelte richieste'} prima di considerare il percorso configurato.',"
+    },
+    {
+      "path": "lib/widgets/trainer/trainer_path_automation_panel.dart",
+      "line": 113,
+      "value": "RISORSE DISPONIBILI",
+      "source": "'RISORSE DISPONIBILI',"
+    },
+    {
+      "path": "lib/widgets/pokemon/pokemon_gender_asset_paths.dart",
+      "line": 166,
+      "value": "maschio",
+      "source": "case 'maschio':"
+    },
+    {
+      "path": "lib/widgets/pokemon/pokemon_gender_asset_paths.dart",
+      "line": 170,
+      "value": "femmina",
+      "source": "case 'femmina':"
+    },
+    {
+      "path": "lib/widgets/battle/battle_status_assistance_card.dart",
+      "line": 102,
+      "value": "EFFETTI SEMPRE ATTIVI",
+      "source": "title: 'EFFETTI SEMPRE ATTIVI',"
+    },
+    {
+      "path": "lib/widgets/battle/battle_environment_card.dart",
+      "line": 130,
+      "value": "${context.uiText('Velocità', 'Speed')} $baseSpeed ft",
+      "source": "? '${context.uiText('Velocità', 'Speed')} $baseSpeed ft'"
+    },
+    {
+      "path": "lib/widgets/battle/battle_environment_card.dart",
+      "line": 131,
+      "value": "${context.uiText('Velocità', 'Speed')} $baseSpeed → $speed ft",
+      "source": ": '${context.uiText('Velocità', 'Speed')} $baseSpeed → $speed ft',"
+    },
+    {
+      "path": "lib/widgets/battle/battle_environment_card.dart",
+      "line": 163,
+      "value": "${context.uiText('TIRA METEO', 'ROLL WEATHER')} · ${context.uiText(environment.season.label, environment.season.englishLabel)}",
+      "source": "'${context.uiText('TIRA METEO', 'ROLL WEATHER')} · ${context.uiText(environment.season.label, environment.season.englishLabel)}',"
+    }
+  ]
+}

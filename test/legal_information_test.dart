@@ -32,10 +32,15 @@ void main() {
   test('release compliance documents are present', () {
     final expectedFiles = <String>[
       'LICENSE',
+      'NOTICE.md',
       'docs/privacy-policy.md',
       'docs/google-play-data-safety-draft.md',
       'docs/compliance/code-and-license-audit.md',
       'docs/compliance/asset-inventory.md',
+      'docs/compliance/dependency-licenses.md',
+      'docs/compliance/dependency-licenses.csv',
+      'docs/compliance/asset-audit-summary.md',
+      'docs/compliance/asset-manifest.csv',
     ];
 
     for (final path in expectedFiles) {
@@ -45,8 +50,30 @@ void main() {
     }
 
     final license = File('LICENSE').readAsStringSync();
-    expect(license, contains('SPDX-License-Identifier: GPL-3.0-only'));
-    expect(license, contains('Jerakin/Pokedex5E'));
+    expect(license, contains('GNU GENERAL PUBLIC LICENSE'));
+    expect(license, contains('Version 3, 29 June 2007'));
+    expect(license, contains('END OF TERMS AND CONDITIONS'));
+    expect(
+      license,
+      contains('How to Apply These Terms to Your New Programs'),
+    );
+
+    final notice = File('NOTICE.md').readAsStringSync();
+    expect(notice, contains('GPL-3.0-only'));
+    expect(notice, contains('Jerakin/Pokedex5E'));
+    expect(notice, contains('corresponding source code'));
+
+    final dependencyReport = File(
+      'docs/compliance/dependency-licenses.md',
+    ).readAsStringSync();
+    expect(dependencyReport, contains('Packages in lockfile'));
+    expect(dependencyReport, contains('Detected licence families'));
+
+    final assetReport = File(
+      'docs/compliance/asset-audit-summary.md',
+    ).readAsStringSync();
+    expect(assetReport, contains('Asset files'));
+    expect(assetReport, contains('Machine-readable inventory'));
 
     final audit = File(
       'docs/compliance/code-and-license-audit.md',

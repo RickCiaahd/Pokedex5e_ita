@@ -12,22 +12,24 @@ Questa checklist serve a preparare la dichiarazione nel Play Console. Le rispost
 - nessuna pubblicità;
 - nessun SDK analytics o Crashlytics dichiarato nelle dipendenze correnti;
 - esportazione e condivisione avviate volontariamente dall'utente;
-- permesso Android `INTERNET` presente;
-- fallback remoti per alcune immagini ancora da eliminare o censire.
+- permesso Android `INTERNET` assente;
+- fallback remoti delle immagini eliminati;
+- immagini e dati di gioco risolti dagli asset inclusi nel pacchetto;
+- test automatico dedicato al funzionamento locale e all'AssetManifest.
 
 ## Domanda: l'app raccoglie o condivide dati utente?
 
 **Risposta finale sospesa.**
 
-L'obiettivo è poter dichiarare che lo sviluppatore non raccoglie dati, ma questa risposta non va selezionata finché non sono stati completati:
+L'audit statico del codice applicativo ha eliminato i loader e gli host remoti noti e la build Android non richiede il permesso Internet. L'obiettivo resta poter dichiarare che lo sviluppatore non raccoglie dati, ma la risposta finale non va selezionata finché non sono stati completati:
 
-1. audit di tutte le chiamate di rete;
-2. rimozione o documentazione dei fallback remoti delle immagini;
-3. audit delle dipendenze transitive;
-4. verifica della build release con traffico di rete osservato;
-5. conferma che nessun servizio di terzi riceva identificatori o telemetria.
+1. audit delle dipendenze transitive e dei plugin di piattaforma;
+2. verifica della build AAB release con traffico di rete osservato;
+3. conferma che nessun servizio di terzi riceva identificatori o telemetria;
+4. classificazione corretta nel Play Console delle operazioni di esportazione e condivisione avviate dall'utente;
+5. verifica finale dei permessi e del manifest risultante dalla build caricata.
 
-Le richieste tecniche a host esterni possono costituire trasmissione fuori dal dispositivo anche quando non esiste un backend dello sviluppatore.
+L'assenza di richieste automatiche nel codice verificato è un'evidenza importante, ma non sostituisce il controllo runtime della build definitiva.
 
 ## Dati inseriti e conservati localmente
 
@@ -54,14 +56,17 @@ Queste operazioni sono avviate dall'utente e la destinazione viene scelta esplic
 
 ## Sicurezza
 
-Elementi da confermare prima dell'invio:
+Elementi verificati o da confermare prima dell'invio:
 
-- [ ] traffico di rete cifrato esclusivamente tramite HTTPS;
-- [ ] nessun endpoint HTTP non cifrato;
+- [x] permesso Android `INTERNET` rimosso dal manifest principale;
+- [x] loader e host remoti noti eliminati dal codice applicativo verificato;
+- [x] immagini degli oggetti incluse nell'AssetManifest;
+- [ ] audit completo delle dipendenze transitive;
 - [ ] nessun segreto incluso nell'app;
 - [ ] backup esportati chiaramente identificati come file potenzialmente sensibili;
 - [ ] test di cancellazione completa dei dati locali;
-- [ ] verifica del comportamento dei backup di sistema Android.
+- [ ] verifica del comportamento dei backup di sistema Android;
+- [ ] osservazione del traffico della build AAB release su dispositivo reale.
 
 ## Cancellazione dati
 
@@ -88,17 +93,18 @@ Da definire prima della pubblicazione:
 | Pubblicità | No | Nessun SDK o contenuto pubblicitario nella build |
 | Analytics | No | Audit dipendenze e traffico completato |
 | Account | No | Nessuna autenticazione o profilo server |
-| Raccolta dallo sviluppatore | Probabilmente no | Rimozione/audit rete completati |
-| Condivisione automatica | Probabilmente no | Verifica di `share_plus`, file picker e fallback remoti |
+| Raccolta dallo sviluppatore | Probabilmente no | Verifica runtime della build AAB completata |
+| Condivisione automatica | No nel codice verificato | Classificazione finale delle azioni avviate dall'utente |
 | Dati locali | Sì, sul dispositivo | Privacy policy e funzioni di cancellazione verificate |
-| Cifratura in transito | Da verificare | Nessuna richiesta HTTP e controllo runtime |
+| Cifratura in transito | Non applicabile alle funzioni ordinarie verificate | Conferma tramite osservazione della build release |
 | Cancellazione | Disponibile localmente | Test end-to-end e documentazione utente |
 
 ## Evidenze da allegare alla release
 
 - report delle dipendenze e delle licenze;
-- lista dei permessi Android;
+- lista dei permessi Android della build finale;
 - report statico delle URL nel codice e negli asset;
+- audit del funzionamento offline e test AssetManifest;
 - cattura del traffico della build release durante i flussi principali;
 - test di esportazione, importazione e cancellazione;
 - URL pubblico definitivo della privacy policy;

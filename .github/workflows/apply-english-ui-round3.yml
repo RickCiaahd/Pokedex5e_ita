@@ -69,19 +69,30 @@ jobs:
           python -m py_compile tooling/apply_english_ui_residuals_round3.py
           python tooling/apply_english_ui_residuals_round3.py
 
-      - name: Repair transformed breeding source
+      - name: Repair transformed source and tests
         shell: bash
         run: |
           python - <<'PY'
           from pathlib import Path
 
-          path = Path('lib/screens/breeding/breeding_screen.dart')
-          text = path.read_text(encoding='utf-8')
+          breeding_path = Path('lib/screens/breeding/breeding_screen.dart')
+          breeding = breeding_path.read_text(encoding='utf-8')
           old = '"""placed in team slot ${freeSlot!.slotIndex + 1}"""'
           new = '"""placed in team slot ${freeSlot.slotIndex + 1}"""'
-          if old not in text:
+          if old not in breeding:
               raise RuntimeError('Expected English freeSlot expression not found')
-          path.write_text(text.replace(old, new, 1), encoding='utf-8')
+          breeding_path.write_text(breeding.replace(old, new, 1), encoding='utf-8')
+
+          test_path = Path('test/navigation_and_percentage_test.dart')
+          test_source = test_path.read_text(encoding='utf-8')
+          old_finder = "find.byTooltip('Indietro')"
+          new_finder = "find.byTooltip('Back')"
+          if old_finder not in test_source:
+              raise RuntimeError('Expected Italian back tooltip finder not found')
+          test_path.write_text(
+              test_source.replace(old_finder, new_finder, 1),
+              encoding='utf-8',
+          )
           PY
 
       - name: Resolve dependencies and generate localizations

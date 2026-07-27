@@ -85,6 +85,11 @@ jobs:
       - name: Verify deterministic output
         run: python tooling/generate_compliance_reports.py --check
 
+      - name: Prepare embedded GPL and NOTICE
+        run: |
+          python tooling/prepare_release_legal_assets.py
+          python tooling/prepare_release_legal_assets.py --check
+
       - name: Check generated file formatting
         run: git diff --check
 

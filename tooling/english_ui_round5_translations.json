@@ -1,6 +1,7 @@
 {
   "lib/screens/team/team_selection_screen.dart": {
-    "$displayName esportato correttamente.": "$displayName exported successfully."
+    "$displayName esportato correttamente.": "$displayName exported successfully.",
+    "Esporta $displayName": "Export $displayName"
   },
   "lib/screens/pokemon/custom_pokemon_library_screen.dart": {
     "${saved.name} salvato nel catalogo Fakemon.": "${saved.name} saved to the Fakemon catalog.",
@@ -32,7 +33,17 @@
     "Cerca": "Search",
     "IMPORTA COPIA": "IMPORT COPY",
     "AGGIORNA": "UPDATE",
-    "Elenco numerico non valido.": "Invalid numeric list."
+    "Elenco numerico non valido.": "Invalid numeric list.",
+    "Esporta ${definition.name}": "Export ${definition.name}",
+    "Esportazione annullata.": "Export cancelled.",
+    "Condividi ${definition.name}": "Share ${definition.name}",
+    "Importa Fakemon": "Import Fakemon",
+    "Importazione annullata.": "Import cancelled.",
+    "Importa ed esporta": "Import and export",
+    "NUOVO FAKEMON": "NEW FAKEMON",
+    "Nuovo Fakemon": "New Fakemon",
+    "CONDIVIDI": "SHARE",
+    "Esporta file": "Export file"
   },
   "lib/screens/pokemon/pokemon_edit_screen.dart": {
     "Scegli feat": "Choose feat",
@@ -67,6 +78,9 @@
     "Modifica esperienza": "Edit experience",
     "Modifica PF": "Edit HP"
   },
+  "lib/screens/battle/battle_screen.dart": {
+    "STRUGGLE DISPONIBILE": "STRUGGLE AVAILABLE"
+  },
   "lib/screens/battle/npc_battle_screen.dart": {
     "Nome": "Name",
     "Riepilogo del fight esportato correttamente.": "Fight summary exported successfully.",
@@ -79,7 +93,18 @@
     "Condividi riepilogo": "Share summary",
     "Azioni del fight": "Fight actions",
     "Azzera fight": "Reset fight",
-    "Termina fight": "End fight"
+    "Termina fight": "End fight",
+    "Azzera il fight?": "Reset the fight?",
+    "Azzera": "Reset",
+    "Esporta riepilogo del Fight del Master": "Export Master Fight summary",
+    "Esportazione annullata.": "Export cancelled.",
+    "Condividi il riepilogo del Fight del Master": "Share the Master Fight summary",
+    "Riepilogo Fight del Master · Trainer Atlas 5e": "Master Fight Summary · Trainer Atlas 5e",
+    "Riepilogo del fight condiviso correttamente.": "Fight summary shared successfully.",
+    "Esporta o condividi riepilogo": "Export or share summary",
+    "ATTIVO": "ACTIVE",
+    "Rendi attivo (massimo $activeLimit)": "Make active (maximum $activeLimit)",
+    "RENDI ATTIVO": "MAKE ACTIVE"
   },
   "lib/screens/tools/pokemon_generator_screen.dart": {
     "Maschio": "Male",
@@ -89,16 +114,22 @@
   "lib/screens/tools/encounter_result_screen.dart": {
     "Maschio": "Male",
     "Femmina": "Female",
-    "Nessuna abilità": "No ability"
+    "Nessuna abilità": "No ability",
+    "${generated.ability ?? 'Nessuna abilità'}": "${generated.ability ?? 'No ability'}"
   },
   "lib/screens/bag/bag_screen.dart": {
     "Slot ${candidate.slot.slotIndex + 1} • Tiene: ${heldItem?.name ?? 'nessuno strumento'}": "Slot ${candidate.slot.slotIndex + 1} • Holding: ${heldItem?.name ?? 'no item'}"
   },
   "lib/widgets/trainer/trainer_path_automation_panel.dart": {
     "Completa ${missingChoices.length == 1 ? 'la scelta richiesta' : 'le ${missingChoices.length} scelte richieste'} prima di considerare il percorso configurato.": "Complete ${missingChoices.length == 1 ? 'the required choice' : 'the ${missingChoices.length} required choices'} before considering the path configured.",
-    "RISORSE DISPONIBILI": "AVAILABLE RESOURCES"
+    "RISORSE DISPONIBILI": "AVAILABLE RESOURCES",
+    "SCELTE DEI PRIVILEGI": "FEATURE CHOICES"
   },
   "lib/widgets/battle/battle_status_assistance_card.dart": {
     "EFFETTI SEMPRE ATTIVI": "ALWAYS-ACTIVE EFFECTS"
+  },
+  "lib/widgets/battle/wild_master_fight_launcher.dart": {
+    "Sostituire il fight attivo?": "Replace the active fight?",
+    "Nuovo fight": "New fight"
   }
 }

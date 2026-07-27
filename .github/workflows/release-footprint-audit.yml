@@ -1,0 +1,150 @@
+name: Release footprint audit
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'assets/**'
+      - 'android/**'
+      - 'LICENSE'
+      - 'NOTICE.md'
+      - 'pubspec.yaml'
+      - 'pubspec.lock'
+      - 'tooling/analyze_release_footprint.py'
+      - 'docs/performance/**'
+      - '.github/workflows/release-footprint-audit.yml'
+  pull_request:
+    paths:
+      - 'assets/**'
+      - 'android/**'
+      - 'LICENSE'
+      - 'NOTICE.md'
+      - 'pubspec.yaml'
+      - 'pubspec.lock'
+      - 'tooling/analyze_release_footprint.py'
+      - 'docs/performance/**'
+      - '.github/workflows/release-footprint-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-footprint-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  audit:
+    name: Build and measure release archives
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+
+    steps:
+      - name: Check out repository branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
+          fetch-depth: 0
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up pinned Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.4'
+          cache: true
+
+      - name: Show pinned toolchain
+        run: flutter --version
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Verify compliance inventories
+        run: python tooling/generate_compliance_reports.py --check
+
+      - name: Analyze source
+        run: flutter analyze
+
+      - name: Run release legal asset test
+        run: flutter test test/release_legal_assets_test.dart --reporter expanded
+
+      - name: Create temporary CI signing key
+        shell: bash
+        run: |
+          set -euo pipefail
+          keytool -genkeypair -v \
+            -keystore android/ci-footprint.jks \
+            -storepass footprint-pass \
+            -keypass footprint-pass \
+            -alias footprint \
+            -keyalg RSA \
+            -keysize 2048 \
+            -validity 10000 \
+            -dname 'CN=Trainer Atlas CI, OU=Build, O=Trainer Atlas, L=CI, S=CI, C=IT'
+          cat > android/key.properties <<'EOF'
+          storePassword=footprint-pass
+          keyPassword=footprint-pass
+          keyAlias=footprint
+          storeFile=../ci-footprint.jks
+          EOF
+
+      - name: Build release APK
+        run: flutter build apk --release
+
+      - name: Build release AAB
+        run: flutter build appbundle --release
+
+      - name: Generate release footprint reports
+        run: |
+          python tooling/analyze_release_footprint.py \
+            --apk build/app/outputs/flutter-apk/app-release.apk \
+            --aab build/app/outputs/bundle/release/app-release.aab
+
+      - name: Verify deterministic report output
+        run: |
+          python tooling/analyze_release_footprint.py \
+            --apk build/app/outputs/flutter-apk/app-release.apk \
+            --aab build/app/outputs/bundle/release/app-release.aab \
+            --check
+
+      - name: Check generated file formatting
+        run: git diff --check
+
+      - name: Publish baseline on bootstrap branch
+        if: github.head_ref == 'feature/release-footprint-audit' || github.ref_name == 'feature/release-footprint-audit'
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet; then
+            echo 'Release footprint reports are already current.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/performance/release-footprint.md \
+            docs/performance/asset-duplicates.csv
+          git commit -m 'Genera baseline del peso release e dei duplicati'
+          git push origin HEAD:feature/release-footprint-audit
+
+      - name: Require committed reports on ordinary branches
+        if: github.head_ref != 'feature/release-footprint-audit' && github.ref_name != 'feature/release-footprint-audit'
+        run: |
+          git diff --exit-code -- \
+            docs/performance/release-footprint.md \
+            docs/performance/asset-duplicates.csv
+
+      - name: Upload footprint reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: Trainer-Atlas-release-footprint
+          path: |
+            docs/performance/release-footprint.md
+            docs/performance/asset-duplicates.csv
+          if-no-files-found: error
+          retention-days: 14

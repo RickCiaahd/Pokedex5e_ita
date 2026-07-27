@@ -1,0 +1,127 @@
+name: Compliance audit
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'LICENSE'
+      - 'NOTICE.md'
+      - 'pubspec.yaml'
+      - 'pubspec.lock'
+      - 'assets/**'
+      - 'docs/compliance/**'
+      - 'tooling/generate_compliance_reports.py'
+      - '.github/workflows/compliance-audit.yml'
+  pull_request:
+    paths:
+      - 'LICENSE'
+      - 'NOTICE.md'
+      - 'pubspec.yaml'
+      - 'pubspec.lock'
+      - 'assets/**'
+      - 'docs/compliance/**'
+      - 'tooling/generate_compliance_reports.py'
+      - '.github/workflows/compliance-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: compliance-audit-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  audit:
+    name: Generate, verify and test compliance reports
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+
+    steps:
+      - name: Check out repository branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
+          fetch-depth: 0
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Install the complete GPLv3 text
+        shell: bash
+        run: |
+          set -euo pipefail
+          temporary_license="$(mktemp)"
+          if ! curl --fail --silent --show-error --location --retry 3 \
+            https://www.gnu.org/licenses/gpl-3.0.txt \
+            --output "$temporary_license"; then
+            curl --fail --silent --show-error --location --retry 3 \
+              https://raw.githubusercontent.com/spdx/license-list-data/main/text/GPL-3.0-only.txt \
+              --output "$temporary_license"
+          fi
+          grep -q 'GNU GENERAL PUBLIC LICENSE' "$temporary_license"
+          grep -q 'END OF TERMS AND CONDITIONS' "$temporary_license"
+          grep -q 'How to Apply These Terms to Your New Programs' "$temporary_license"
+          mv "$temporary_license" LICENSE
+
+      - name: Generate compliance inventories
+        run: python tooling/generate_compliance_reports.py
+
+      - name: Verify deterministic output
+        run: python tooling/generate_compliance_reports.py --check
+
+      - name: Check generated file formatting
+        run: git diff --check
+
+      - name: Analyze source
+        run: flutter analyze
+
+      - name: Run legal information tests
+        run: flutter test test/legal_information_test.dart --reporter expanded
+
+      - name: Run complete test suite
+        run: flutter test --reporter expanded
+
+      - name: Build Android debug APK
+        run: flutter build apk --debug
+
+      - name: Publish generated baseline on bootstrap branch
+        if: github.head_ref == 'feature/compliance-reports' || github.ref_name == 'feature/compliance-reports'
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet; then
+            echo 'Compliance reports are already current.'
+            exit 0
+          fi
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add LICENSE docs/compliance/dependency-licenses.csv \
+            docs/compliance/dependency-licenses.md \
+            docs/compliance/asset-manifest.csv \
+            docs/compliance/asset-audit-summary.md
+          git commit -m 'Genera inventari riproducibili di licenze e asset'
+          git push origin HEAD:feature/compliance-reports
+
+      - name: Require committed reports on ordinary branches
+        if: github.head_ref != 'feature/compliance-reports' && github.ref_name != 'feature/compliance-reports'
+        run: |
+          git diff --exit-code -- LICENSE \
+            docs/compliance/dependency-licenses.csv \
+            docs/compliance/dependency-licenses.md \
+            docs/compliance/asset-manifest.csv \
+            docs/compliance/asset-audit-summary.md

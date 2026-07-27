@@ -1,4 +1,4 @@
-name: Apply English UI residual fixes round 4
+name: Apply English UI residual fixes round 5
 
 on:
   pull_request:
@@ -9,12 +9,15 @@ on:
       - 'tooling/apply_english_ui_residuals_round4.py'
       - 'tooling/audit_english_ui_residuals_round4.py'
       - 'tooling/english_ui_round4_translations.json'
+      - 'tooling/apply_english_ui_residuals_round5.py'
+      - 'tooling/audit_english_ui_residuals_round5.py'
+      - 'tooling/english_ui_round5_translations.json'
 
 permissions:
   contents: write
 
 concurrency:
-  group: apply-english-ui-round4-${{ github.ref }}
+  group: apply-english-ui-round5-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -62,13 +65,17 @@ jobs:
           )
           PY
 
-      - name: Validate and apply prepared corrections
+      - name: Validate prepared scripts
         run: |
           python -m py_compile tooling/apply_english_ui_residuals_round4.py
           python -m py_compile tooling/audit_english_ui_residuals_round4.py
-          python tooling/apply_english_ui_residuals_round4.py
+          python -m py_compile tooling/apply_english_ui_residuals_round5.py
+          python -m py_compile tooling/audit_english_ui_residuals_round5.py
 
-      - name: Repair transformed Dart contexts
+      - name: Apply round 4 corrections
+        run: python tooling/apply_english_ui_residuals_round4.py
+
+      - name: Repair round 4 transformed Dart contexts
         shell: bash
         run: |
           python - <<'PY'
@@ -150,6 +157,9 @@ jobs:
               path.write_text(source, encoding='utf-8')
           PY
 
+      - name: Apply round 5 corrections
+        run: python tooling/apply_english_ui_residuals_round5.py
+
       - name: Resolve dependencies and generate localizations
         run: |
           flutter pub get
@@ -164,18 +174,18 @@ jobs:
           set +e
           mapfile -t dart_files < <(git diff --name-only --diff-filter=ACM | grep '\.dart$' || true)
           if ((${#dart_files[@]})); then
-            dart format "${dart_files[@]}" 2>&1 | tee /tmp/english-ui-round4-format.log
+            dart format "${dart_files[@]}" 2>&1 | tee /tmp/english-ui-round5-format.log
             status=${PIPESTATUS[0]}
           else
             status=0
           fi
           if [ "$status" -ne 0 ]; then
             mkdir -p diagnostics
-            cp /tmp/english-ui-round4-format.log diagnostics/english-ui-round4-format-error.txt
+            cp /tmp/english-ui-round5-format.log diagnostics/english-ui-round5-format-error.txt
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add diagnostics/english-ui-round4-format-error.txt
-            git commit -m "Registra errore formattazione del quarto audit inglese" || true
+            git add diagnostics/english-ui-round5-format-error.txt
+            git commit -m "Registra errore formattazione del quinto audit inglese" || true
             git push origin HEAD:fix/english-ui-residuals-round3
             exit "$status"
           fi
@@ -184,35 +194,36 @@ jobs:
         shell: bash
         run: |
           set +e
-          flutter analyze 2>&1 | tee /tmp/english-ui-round4-analyze.log
+          flutter analyze 2>&1 | tee /tmp/english-ui-round5-analyze.log
           status=${PIPESTATUS[0]}
           if [ "$status" -ne 0 ]; then
             mkdir -p diagnostics
-            cp /tmp/english-ui-round4-analyze.log diagnostics/english-ui-round4-analyze-error.txt
+            cp /tmp/english-ui-round5-analyze.log diagnostics/english-ui-round5-analyze-error.txt
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add diagnostics/english-ui-round4-analyze-error.txt
-            git commit -m "Registra errore analisi del quarto audit inglese" || true
+            git add diagnostics/english-ui-round5-analyze-error.txt
+            git commit -m "Registra errore analisi del quinto audit inglese" || true
             git push origin HEAD:fix/english-ui-residuals-round3
             exit "$status"
           fi
 
-      - name: Run focused localization test
-        run: flutter test test/english_ui_residuals_round4_test.dart --reporter expanded
+      - name: Run focused localization tests
+        run: |
+          flutter test test/english_ui_residuals_round4_test.dart --reporter expanded
 
       - name: Run complete test suite
         shell: bash
         run: |
           set +e
-          flutter test --reporter expanded 2>&1 | tee /tmp/english-ui-round4-test.log
+          flutter test --reporter expanded 2>&1 | tee /tmp/english-ui-round5-test.log
           status=${PIPESTATUS[0]}
           if [ "$status" -ne 0 ]; then
             mkdir -p diagnostics
-            cp /tmp/english-ui-round4-test.log diagnostics/english-ui-round4-test-error.txt
+            cp /tmp/english-ui-round5-test.log diagnostics/english-ui-round5-test-error.txt
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add diagnostics/english-ui-round4-test-error.txt
-            git commit -m "Registra errore test del quarto audit inglese" || true
+            git add diagnostics/english-ui-round5-test-error.txt
+            git commit -m "Registra errore test del quinto audit inglese" || true
             git push origin HEAD:fix/english-ui-residuals-round3
             exit "$status"
           fi
@@ -220,40 +231,49 @@ jobs:
       - name: Build Android debug APK
         run: flutter build apk --debug
 
-      - name: Run refined post-fix localization audit
+      - name: Run final post-fix localization audit
         shell: bash
         run: |
           set +e
-          python tooling/audit_english_ui_residuals_round4.py
+          python tooling/audit_english_ui_residuals_round5.py
           status=$?
           if [ "$status" -ne 0 ]; then
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add diagnostics/english-ui-residuals-round4.json diagnostics/english-ui-residuals-round4.md
-            git commit -m "Registra residui del quarto audit inglese" || true
+            git add diagnostics/english-ui-residuals-round5.json diagnostics/english-ui-residuals-round5.md
+            git commit -m "Registra residui del quinto audit inglese" || true
             git push origin HEAD:fix/english-ui-residuals-round3
             exit "$status"
           fi
 
-      - name: Upload post-fix audit
+      - name: Upload final audit
         uses: actions/upload-artifact@v4
         with:
-          name: english-ui-round4-post-fix-audit
-          path: diagnostics/english-ui-residuals-round4.*
+          name: english-ui-round5-post-fix-audit
+          path: diagnostics/english-ui-residuals-round5.*
           retention-days: 14
 
       - name: Remove temporary workflow files
         shell: bash
         run: |
           rm -f tooling/.english_ui_round4_applied
+          rm -f tooling/.english_ui_round5_applied
           rm -f tooling/apply_english_ui_residuals_round4.py
           rm -f tooling/audit_english_ui_residuals_round4.py
           rm -f tooling/english_ui_round4_translations.json
+          rm -f tooling/apply_english_ui_residuals_round5.py
+          rm -f tooling/audit_english_ui_residuals_round5.py
+          rm -f tooling/english_ui_round5_translations.json
           rm -f diagnostics/english-ui-residuals-round4.json
           rm -f diagnostics/english-ui-residuals-round4.md
+          rm -f diagnostics/english-ui-residuals-round5.json
+          rm -f diagnostics/english-ui-residuals-round5.md
           rm -f diagnostics/english-ui-round4-format-error.txt
           rm -f diagnostics/english-ui-round4-analyze-error.txt
           rm -f diagnostics/english-ui-round4-test-error.txt
+          rm -f diagnostics/english-ui-round5-format-error.txt
+          rm -f diagnostics/english-ui-round5-analyze-error.txt
+          rm -f diagnostics/english-ui-round5-test-error.txt
           rm -f .github/workflows/apply-english-ui-round4.yml
 
       - name: Commit verified correction

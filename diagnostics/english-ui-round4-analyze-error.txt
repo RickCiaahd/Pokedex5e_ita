@@ -1,0 +1,41 @@
+Resolving dependencies...
+Downloading packages...
+  file_picker 10.3.10 (11.0.2 available)
+  hooks 2.0.2 (2.1.0 available)
+  intl 0.20.2 (0.20.3 available)
+  matcher 0.12.19 (0.12.20 available)
+  meta 1.18.0 (1.19.0 available)
+  package_config 2.2.0 (3.0.0 available)
+  record_use 0.6.0 (1.0.0 available)
+  share_plus 12.0.2 (13.3.0 available)
+  share_plus_platform_interface 6.1.0 (7.2.0 available)
+  test_api 0.7.11 (0.7.13 available)
+  uuid 4.5.3 (4.6.0 available)
+  vector_math 2.2.0 (2.4.1 available)
+  win32 5.15.0 (6.3.0 available)
+  xml 6.6.1 (7.0.1 available)
+Got dependencies!
+14 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.
+Analyzing Pokedex5e_ita...                                      
+
+   info • Statements in an if should be enclosed in a block. Try wrapping the statement in a block • lib/screens/battle/npc_battle_screen.dart:145:7 • curly_braces_in_flow_control_structures
+   info • Statements in an if should be enclosed in a block. Try wrapping the statement in a block • lib/screens/battle/npc_battle_screen.dart:149:7 • curly_braces_in_flow_control_structures
+   info • Statements in an if should be enclosed in a block. Try wrapping the statement in a block • lib/screens/battle/npc_battle_screen.dart:154:7 • curly_braces_in_flow_control_structures
+  error • Methods can't be invoked in constant expressions • lib/screens/battle/npc_battle_screen.dart:673:19 • const_eval_method_invocation
+  error • uiTextForLanguage isn't a type. Try correcting the name to match an existing type • lib/screens/onboarding/first_launch_onboarding_screen.dart:204:7 • not_a_type
+  error • Object patterns can only use named fields. Try specifying the field name • lib/screens/onboarding/first_launch_onboarding_screen.dart:205:9 • positional_field_in_object_pattern
+  error • Object patterns can only use named fields. Try specifying the field name • lib/screens/onboarding/first_launch_onboarding_screen.dart:206:9 • positional_field_in_object_pattern
+  error • Methods can't be invoked in constant expressions • lib/screens/pokemon/custom_pokemon_library_screen.dart:1638:31 • const_eval_method_invocation
+   info • Statements in an if should be enclosed in a block. Try wrapping the statement in a block • lib/screens/pokemon/custom_pokemon_library_screen.dart:2226:7 • curly_braces_in_flow_control_structures
+  error • Methods can't be invoked in constant expressions • lib/screens/pokemon/pokemon_detail_screen_legacy.dart:2643:15 • const_eval_method_invocation
+   info • Use interpolation to compose strings and values. Try using string interpolation to build the composite string • lib/screens/team/team_selection_screen.dart:573:13 • prefer_interpolation_to_compose_strings
+   info • Unnecessary use of string interpolation. Try replacing the string literal with the variable name • lib/screens/team/team_selection_screen.dart:577:17 • unnecessary_string_interpolations
+   info • Use interpolation to compose strings and values. Try using string interpolation to build the composite string • lib/screens/team/team_selection_screen.dart:578:17 • prefer_interpolation_to_compose_strings
+   info • Unnecessary use of string interpolation. Try replacing the string literal with the variable name • lib/screens/team/team_selection_screen.dart:582:17 • unnecessary_string_interpolations
+  error • uiTextForLanguage isn't a type. Try correcting the name to match an existing type • lib/screens/trainer/trainer_sheet_screen.dart:347:7 • not_a_type
+  error • Object patterns can only use named fields. Try specifying the field name • lib/screens/trainer/trainer_sheet_screen.dart:348:9 • positional_field_in_object_pattern
+  error • Object patterns can only use named fields. Try specifying the field name • lib/screens/trainer/trainer_sheet_screen.dart:349:9 • positional_field_in_object_pattern
+  error • Methods can't be invoked in constant expressions • lib/widgets/battle/wild_master_fight_launcher.dart:18:7 • const_eval_method_invocation
+
+18 issues found. (ran in 14.8s)

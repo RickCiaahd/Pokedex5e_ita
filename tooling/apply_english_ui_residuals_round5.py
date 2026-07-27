@@ -112,6 +112,21 @@ def repair_custom_library_composites() -> None:
     path.write_text(text, encoding='utf-8')
 
 
+def repair_encounter_result_ability() -> None:
+    path = Path('lib/screens/tools/encounter_result_screen.dart')
+    text = path.read_text(encoding='utf-8')
+    old = """'$gender · ${generated.nature} · '
+              '${generated.ability ?? 'Nessuna abilità'}'"""
+    new = """'$gender · ${generated.nature} · ' +
+                  uiTextForLanguage(
+                    "${generated.ability ?? 'Nessuna abilità'}",
+                    "${generated.ability ?? 'No ability'}",
+                  )"""
+    if old not in text:
+        raise RuntimeError('Encounter result ability summary not found')
+    path.write_text(text.replace(old, new, 1), encoding='utf-8')
+
+
 def repair_remaining_const_contexts() -> None:
     npc_path = Path('lib/screens/battle/npc_battle_screen.dart')
     npc = npc_path.read_text(encoding='utf-8')
@@ -151,6 +166,7 @@ def main() -> None:
 
     repair_team_import_dialog()
     repair_custom_library_composites()
+    repair_encounter_result_ability()
     repair_remaining_const_contexts()
     MARKER.write_text('applied\n', encoding='utf-8')
     print(f'Applied {sum(len(values) for values in configured.values())} round 5 translations')

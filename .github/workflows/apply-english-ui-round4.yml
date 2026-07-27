@@ -42,20 +42,42 @@ jobs:
           channel: stable
           cache: true
 
+      - name: Exclude canonical internal keys from translation
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path('tooling/english_ui_round4_translations.json')
+          data = json.loads(path.read_text(encoding='utf-8'))
+          for file_name in (
+              'lib/screens/onboarding/first_launch_onboarding_screen.dart',
+              'lib/screens/trainer/trainer_sheet_screen.dart',
+          ):
+              data.get(file_name, {}).pop('Origine 5e approvata dal DM', None)
+          path.write_text(
+              json.dumps(data, ensure_ascii=False, indent=2) + '\n',
+              encoding='utf-8',
+          )
+          PY
+
       - name: Validate and apply prepared corrections
         run: |
           python -m py_compile tooling/apply_english_ui_residuals_round4.py
           python -m py_compile tooling/audit_english_ui_residuals_round4.py
           python tooling/apply_english_ui_residuals_round4.py
 
-      - name: Repair localized team string concatenations
+      - name: Repair transformed Dart contexts
         shell: bash
         run: |
           python - <<'PY'
+          import json
+          import re
           from pathlib import Path
 
-          path = Path('lib/screens/team/team_selection_screen.dart')
-          text = path.read_text(encoding='utf-8')
+          team_path = Path('lib/screens/team/team_selection_screen.dart')
+          team = team_path.read_text(encoding='utf-8')
           replacements = {
               "\n                      uiTextForLanguage('$replacedName": "\n                      + uiTextForLanguage('$replacedName",
               "\n            '${replaced > 0 ?": "\n            + '${replaced > 0 ?",
@@ -63,16 +85,41 @@ jobs:
               "\n            '${overflow > 0 ?": "\n            + '${overflow > 0 ?",
           }
           for old, new in replacements.items():
-              if old not in text:
+              if old not in team:
                   raise RuntimeError(f'Expected team concatenation fragment not found: {old!r}')
-              text = text.replace(old, new, 1)
-          path.write_text(text, encoding='utf-8')
+              team = team.replace(old, new, 1)
+          team_path.write_text(team, encoding='utf-8')
+
+          npc_path = Path('lib/screens/battle/npc_battle_screen.dart')
+          npc = npc_path.read_text(encoding='utf-8')
+          pattern = re.compile(
+              r"^(    if \([^\n]+\)) return (uiTextForLanguage\('Allenatore PNG', [^\n]+\));$",
+              re.MULTILINE,
+          )
+          npc, count = pattern.subn(r"\1 {\n      return \2;\n    }", npc)
+          if count != 3:
+              raise RuntimeError(f'Expected 3 NPC initiative returns, found {count}')
+          npc_path.write_text(npc, encoding='utf-8')
+
+          config = json.loads(
+              Path('tooling/english_ui_round4_translations.json').read_text(encoding='utf-8')
+          )
+          for file_name in config:
+              path = Path(file_name)
+              source = path.read_text(encoding='utf-8')
+              source = source.replace('=> const [', '=> [')
+              source = re.sub(r'=> const <[^>]+>\[', '=> [', source)
+              source = source.replace('const SnackBar(', 'SnackBar(')
+              path.write_text(source, encoding='utf-8')
           PY
 
       - name: Resolve dependencies and generate localizations
         run: |
           flutter pub get
           flutter gen-l10n
+
+      - name: Apply safe analyzer fixes
+        run: dart fix --apply
 
       - name: Format changed Dart sources
         shell: bash

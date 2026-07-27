@@ -29,6 +29,18 @@ jobs:
           ref: feature/offline-local-assets
           fetch-depth: 0
 
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
       - name: Apply local-only asset migration
         run: python tooling/apply_offline_local_assets.py
 
@@ -41,18 +53,6 @@ jobs:
             lib/screens/pokemon/pokemon_detail_screen_legacy.dart \
             lib/screens/settings/legal_information_screen.dart \
             test/offline_operation_test.dart
-
-      - name: Set up Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: '17'
-
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-          cache: true
 
       - name: Install dependencies
         run: flutter pub get

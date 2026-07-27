@@ -124,8 +124,7 @@ def repair_remaining_const_contexts() -> None:
     library_path = Path('lib/screens/pokemon/custom_pokemon_library_screen.dart')
     library = library_path.read_text(encoding='utf-8')
     library = library.replace('const PopupMenuItem(', 'PopupMenuItem(')
-    library = library.replace('=> const [', '=> [')
-    library = re.sub(r'=>\s+const\s+<[^>]+>\[', '=> [', library)
+    library = re.sub(r'\bconst\s+(?=(?:<[^[]+>)?\[)', '', library)
     library = library.replace('throw const FormatException(', 'throw FormatException(')
     library_path.write_text(library, encoding='utf-8')
 

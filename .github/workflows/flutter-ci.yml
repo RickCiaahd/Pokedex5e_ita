@@ -45,6 +45,11 @@ jobs:
       - name: Verify compliance reports
         run: python tooling/generate_compliance_reports.py --check
 
+      - name: Prepare embedded GPL and NOTICE
+        run: |
+          python tooling/prepare_release_legal_assets.py
+          python tooling/prepare_release_legal_assets.py --check
+
       - name: Analyze source
         run: flutter analyze
 

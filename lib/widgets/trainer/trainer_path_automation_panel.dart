@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../models/trainer_ui_localization.dart';
 import '../../services/trainer_path_automation_service.dart';
+import '../../localization/ui_text.dart';
 
 class TrainerPathAutomationPanel extends StatelessWidget {
   const TrainerPathAutomationPanel({
@@ -54,7 +55,10 @@ class TrainerPathAutomationPanel extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'GESTIONE PERCORSO ALLENATORE',
+                        uiTextForLanguage(
+                          'GESTIONE PERCORSO ALLENATORE',
+                          """TRAINER PATH MANAGEMENT""",
+                        ),
                         style: Theme.of(context).textTheme.titleMedium
                             ?.copyWith(fontWeight: FontWeight.w900),
                       ),
@@ -71,13 +75,19 @@ class TrainerPathAutomationPanel extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 8),
-            const Text(
-              'Le risorse massime vengono calcolate dal livello e dalle caratteristiche. Le quantità rimaste e le scelte vengono salvate nella scheda.',
+            Text(
+              uiTextForLanguage(
+                'Le risorse massime vengono calcolate dal livello e dalle caratteristiche. Le quantità rimaste e le scelte vengono salvate nella scheda.',
+                """Maximum resources are calculated from level and ability scores. Remaining amounts and choices are saved in the sheet.""",
+              ),
             ),
             if (choices.isNotEmpty) ...[
               const SizedBox(height: 16),
               Text(
-                'SCELTE DEI PRIVILEGI',
+                uiTextForLanguage(
+                  'SCELTE DEI PRIVILEGI',
+                  """FEATURE CHOICES""",
+                ),
                 style: Theme.of(
                   context,
                 ).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w900),
@@ -93,7 +103,10 @@ class TrainerPathAutomationPanel extends StatelessWidget {
               ],
               if (missingChoices.isNotEmpty)
                 Text(
-                  'Completa ${missingChoices.length == 1 ? 'la scelta richiesta' : 'le ${missingChoices.length} scelte richieste'} prima di considerare il percorso configurato.',
+                  uiTextForLanguage(
+                    'Completa ${missingChoices.length == 1 ? 'la scelta richiesta' : 'le ${missingChoices.length} scelte richieste'} prima di considerare il percorso configurato.',
+                    """Complete ${missingChoices.length == 1 ? 'the required choice' : 'the ${missingChoices.length} required choices'} before considering the path configured.""",
+                  ),
                   style: TextStyle(
                     color: colors.error,
                     fontWeight: FontWeight.w700,
@@ -103,7 +116,10 @@ class TrainerPathAutomationPanel extends StatelessWidget {
             if (resources.isNotEmpty) ...[
               const SizedBox(height: 16),
               Text(
-                'RISORSE DISPONIBILI',
+                uiTextForLanguage(
+                  'RISORSE DISPONIBILI',
+                  """AVAILABLE RESOURCES""",
+                ),
                 style: Theme.of(
                   context,
                 ).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w900),
@@ -128,19 +144,22 @@ class TrainerPathAutomationPanel extends StatelessWidget {
                   OutlinedButton.icon(
                     onPressed: onShortRest,
                     icon: const Icon(Icons.bedtime_outlined),
-                    label: const Text('RIPOSO BREVE'),
+                    label: Text('RIPOSO BREVE'),
                   ),
                   FilledButton.tonalIcon(
                     onPressed: onLongRest,
                     icon: const Icon(Icons.hotel_outlined),
-                    label: const Text('RIPOSO LUNGO'),
+                    label: Text('RIPOSO LUNGO'),
                   ),
                 ],
               ),
             ] else ...[
               const SizedBox(height: 14),
-              const Text(
-                'A questo livello il percorso non ha ancora risorse numeriche da consumare.',
+              Text(
+                uiTextForLanguage(
+                  'A questo livello il percorso non ha ancora risorse numeriche da consumare.',
+                  """At this level, the path does not yet have numerical resources to spend.""",
+                ),
                 style: TextStyle(fontStyle: FontStyle.italic),
               ),
             ],
@@ -185,7 +204,10 @@ class _PathChoiceField extends StatelessWidget {
           ),
           hint: Text(
             options.isEmpty
-                ? 'Nessuna opzione disponibile'
+                ? uiTextForLanguage(
+                    'Nessuna opzione disponibile',
+                    """No options available""",
+                  )
                 : TrainerUiLocalization.visibleText(definition.label),
           ),
           items: [

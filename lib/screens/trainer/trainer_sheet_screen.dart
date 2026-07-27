@@ -837,7 +837,7 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
                     ),
                     children: [
                       if (_isLoading)
-                        const Padding(
+                        Padding(
                           padding: EdgeInsets.only(top: 120),
                           child: Center(child: CircularProgressIndicator()),
                         )
@@ -2115,7 +2115,7 @@ class _SheetChoiceBox extends StatelessWidget {
                   detailMaxLines: detailMaxLines,
                 ),
               ),
-              const Padding(
+              Padding(
                 padding: EdgeInsets.only(top: 4),
                 child: Icon(Icons.expand_more, size: 18),
               ),
@@ -2284,7 +2284,7 @@ class _StarterSheetBox extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Padding(
+                Padding(
                   padding: EdgeInsets.only(top: 18),
                   child: Icon(Icons.catching_pokemon),
                 ),
@@ -2303,7 +2303,7 @@ class _StarterSheetBox extends StatelessWidget {
                         : '${selectedPokemon.types.join(' / ')} | SR ${selectedPokemon.sr} | HP ${selectedPokemon.hitPoints} | CA ${selectedPokemon.armorClass}',
                   ),
                 ),
-                const Padding(
+                Padding(
                   padding: EdgeInsets.only(top: 4),
                   child: Icon(Icons.expand_more, size: 18),
                 ),

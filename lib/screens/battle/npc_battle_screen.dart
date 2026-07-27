@@ -22,6 +22,7 @@ import '../../widgets/layout/responsive_content.dart';
 import '../../widgets/navigation/home_leading_button.dart';
 import '../../widgets/pokemon/pokemon_asset_image.dart';
 import '../pokemon/pokemon_detail_screen.dart';
+import '../../localization/ui_text.dart';
 
 class NpcBattleScreen extends StatefulWidget {
   const NpcBattleScreen({
@@ -140,14 +141,20 @@ class _NpcBattleScreenState extends State<NpcBattleScreen> {
     String entryId,
     Map<String, MasterBattleParticipant> participants,
   ) {
-    if (!entryId.startsWith('npc:')) return 'Allenatore PNG';
+    if (!entryId.startsWith('npc:')) {
+      return uiTextForLanguage('Allenatore PNG', """NPC Trainer""");
+    }
     final raw = entryId.substring(4);
     final separator = raw.lastIndexOf(':');
-    if (separator <= 0) return 'Allenatore PNG';
+    if (separator <= 0) {
+      return uiTextForLanguage('Allenatore PNG', """NPC Trainer""");
+    }
     final trainerId = raw.substring(0, separator);
     final slotIndex = int.tryParse(raw.substring(separator + 1));
     final participant = participants[trainerId];
-    if (participant == null || slotIndex == null) return 'Allenatore PNG';
+    if (participant == null || slotIndex == null) {
+      return uiTextForLanguage('Allenatore PNG', """NPC Trainer""");
+    }
     MasterBattlePokemonState? state;
     for (final candidate in participant.team) {
       if (candidate.slotIndex == slotIndex) {
@@ -188,7 +195,10 @@ class _NpcBattleScreenState extends State<NpcBattleScreen> {
     if (active.contains(slotIndex)) {
       if (active.length == 1) {
         setState(() {
-          _message = 'Ogni allenatore deve avere almeno un Pokémon attivo.';
+          _message = uiTextForLanguage(
+            'Ogni allenatore deve avere almeno un Pokémon attivo.',
+            """Every trainer must have at least one active Pokémon.""",
+          );
         });
         return;
       }
@@ -270,7 +280,10 @@ class _NpcBattleScreenState extends State<NpcBattleScreen> {
         nonVolatileStatus: null,
         volatileStatuses: const {},
       ),
-      message: 'Pokémon ripristinato completamente.',
+      message: uiTextForLanguage(
+        'Pokémon ripristinato completamente.',
+        """Pokémon fully restored.""",
+      ),
     );
   }
 
@@ -349,7 +362,10 @@ class _NpcBattleScreenState extends State<NpcBattleScreen> {
     ]..sort((a, b) => b.initiative.compareTo(a.initiative));
     await _commit(
       _session.copyWith(initiativeEntries: entries, turnIndex: 0),
-      message: 'Iniziativa rilanciata.',
+      message: uiTextForLanguage(
+        'Iniziativa rilanciata.',
+        """Initiative rerolled.""",
+      ),
     );
   }
 
@@ -362,26 +378,35 @@ class _NpcBattleScreenState extends State<NpcBattleScreen> {
       context: context,
       builder: (_) => AlertDialog(
         scrollable: true,
-        title: const Text('Aggiungi partecipante esterno'),
+        title: Text(
+          uiTextForLanguage(
+            'Aggiungi partecipante esterno',
+            """Add external participant""",
+          ),
+        ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
               controller: nameController,
               autofocus: true,
-              decoration: const InputDecoration(labelText: 'Nome'),
+              decoration: InputDecoration(
+                labelText: uiTextForLanguage('Nome', """Name"""),
+              ),
             ),
             TextField(
               controller: initiativeController,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(labelText: 'Iniziativa'),
+              decoration: InputDecoration(
+                labelText: uiTextForLanguage('Iniziativa', """Initiative"""),
+              ),
             ),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Annulla'),
+            child: Text(uiTextForLanguage('Annulla', """Cancel""")),
           ),
           FilledButton(
             onPressed: () {
@@ -392,7 +417,7 @@ class _NpcBattleScreenState extends State<NpcBattleScreen> {
                 context,
               ).pop(_InitiativeInput(name: name, initiative: initiative));
             },
-            child: const Text('Aggiungi'),
+            child: Text(uiTextForLanguage('Aggiungi', """Add""")),
           ),
         ],
       ),
@@ -433,18 +458,23 @@ class _NpcBattleScreenState extends State<NpcBattleScreen> {
       context: context,
       builder: (_) => AlertDialog(
         scrollable: true,
-        title: const Text('Azzera il fight?'),
-        content: const Text(
-          'PF, PP, status, Pokémon attivi, iniziativa e round verranno riportati allo stato iniziale.',
+        title: Text(
+          uiTextForLanguage('Azzera il fight?', """Reset the fight?"""),
+        ),
+        content: Text(
+          uiTextForLanguage(
+            'PF, PP, status, Pokémon attivi, iniziativa e round verranno riportati allo stato iniziale.',
+            """HP, PP, statuses, active Pokémon, initiative and round will be reset to their initial state.""",
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Annulla'),
+            child: Text(uiTextForLanguage('Annulla', """Cancel""")),
           ),
           FilledButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Azzera'),
+            child: Text(uiTextForLanguage('Azzera', """Reset""")),
           ),
         ],
       ),
@@ -467,7 +497,10 @@ class _NpcBattleScreenState extends State<NpcBattleScreen> {
         exportedAt: exportedAt,
       );
       final path = await FilePicker.platform.saveFile(
-        dialogTitle: 'Esporta riepilogo del Fight del Master',
+        dialogTitle: uiTextForLanguage(
+          'Esporta riepilogo del Fight del Master',
+          """Export Master Fight summary""",
+        ),
         fileName: _summaryService.fileName(_session, exportedAt: exportedAt),
         type: FileType.custom,
         allowedExtensions: const ['txt'],
@@ -476,8 +509,14 @@ class _NpcBattleScreenState extends State<NpcBattleScreen> {
       if (!mounted) return;
       setState(() {
         _message = path == null
-            ? 'Esportazione annullata.'
-            : 'Riepilogo del fight esportato correttamente.';
+            ? uiTextForLanguage(
+                'Esportazione annullata.',
+                """Export cancelled.""",
+              )
+            : uiTextForLanguage(
+                'Riepilogo del fight esportato correttamente.',
+                """Fight summary exported successfully.""",
+              );
       });
     } catch (error) {
       if (!mounted) return;
@@ -508,15 +547,27 @@ class _NpcBattleScreenState extends State<NpcBattleScreen> {
         content: summary,
         fileName: _summaryService.fileName(_session, exportedAt: exportedAt),
         mimeType: 'text/plain',
-        title: 'Condividi il riepilogo del Fight del Master',
-        subject: 'Riepilogo Fight del Master · Trainer Atlas 5e',
-        text: 'Riepilogo esportato da Trainer Atlas 5e.',
+        title: uiTextForLanguage(
+          'Condividi il riepilogo del Fight del Master',
+          """Share the Master Fight summary""",
+        ),
+        subject: uiTextForLanguage(
+          'Riepilogo Fight del Master · Trainer Atlas 5e',
+          """Master Fight Summary · Trainer Atlas 5e""",
+        ),
+        text: uiTextForLanguage(
+          'Riepilogo esportato da Trainer Atlas 5e.',
+          """Summary exported by Trainer Atlas 5e.""",
+        ),
       );
       if (!mounted) return;
       setState(() {
         _message = _shareService.feedback(
           outcome,
-          successMessage: 'Riepilogo del fight condiviso correttamente.',
+          successMessage: uiTextForLanguage(
+            'Riepilogo del fight condiviso correttamente.',
+            """Fight summary shared successfully.""",
+          ),
         );
       });
     } catch (error) {
@@ -538,18 +589,21 @@ class _NpcBattleScreenState extends State<NpcBattleScreen> {
       context: context,
       builder: (_) => AlertDialog(
         scrollable: true,
-        title: const Text('Terminare il fight?'),
-        content: const Text(
-          'La sessione del Master verrà eliminata. Gli Allenatori PNG salvati rimarranno intatti nella libreria.',
+        title: Text('Terminare il fight?'),
+        content: Text(
+          uiTextForLanguage(
+            'La sessione del Master verrà eliminata. Gli Allenatori PNG salvati rimarranno intatti nella libreria.',
+            """The Master session will be deleted. Saved NPC Trainers will remain in the library.""",
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Annulla'),
+            child: Text(uiTextForLanguage('Annulla', """Cancel""")),
           ),
           FilledButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Termina fight'),
+            child: Text(uiTextForLanguage('Termina fight', """End fight""")),
           ),
         ],
       ),
@@ -564,7 +618,12 @@ class _NpcBattleScreenState extends State<NpcBattleScreen> {
   GeneratedPokemon _generatedFor(MasterBattlePokemonState state) {
     final base = _pokemonById[state.pokemon.pokemonId];
     if (base == null) {
-      throw StateError('Pokémon #${state.pokemon.pokemonId} non disponibile.');
+      throw StateError(
+        uiTextForLanguage(
+          'Pokémon #${state.pokemon.pokemonId} non disponibile.',
+          """Pokémon #${state.pokemon.pokemonId} is unavailable.""",
+        ),
+      );
     }
     return GeneratedPokemon(
       basePokemon: base,
@@ -618,12 +677,15 @@ class _NpcBattleScreenState extends State<NpcBattleScreen> {
     return Scaffold(
       appBar: AppBar(
         leading: const HomeLeadingButton(),
-        title: const Text('Fight del Master'),
+        title: Text('Fight del Master'),
         actions: [
           const HomeAppBarAction(),
           PopupMenuButton<_FightSummaryAction>(
             enabled: !_isWorking,
-            tooltip: 'Esporta o condividi riepilogo',
+            tooltip: uiTextForLanguage(
+              'Esporta o condividi riepilogo',
+              """Export or share summary""",
+            ),
             icon: const Icon(Icons.ios_share_outlined),
             onSelected: (action) {
               switch (action) {
@@ -635,20 +697,24 @@ class _NpcBattleScreenState extends State<NpcBattleScreen> {
                   break;
               }
             },
-            itemBuilder: (_) => const [
+            itemBuilder: (_) => [
               PopupMenuItem(
                 value: _FightSummaryAction.export,
-                child: Text('Salva riepilogo'),
+                child: Text(
+                  uiTextForLanguage('Salva riepilogo', """Save summary"""),
+                ),
               ),
               PopupMenuItem(
                 value: _FightSummaryAction.share,
-                child: Text('Condividi riepilogo'),
+                child: Text(
+                  uiTextForLanguage('Condividi riepilogo', """Share summary"""),
+                ),
               ),
             ],
           ),
           PopupMenuButton<_FightSessionAction>(
             enabled: !_isWorking,
-            tooltip: 'Azioni del fight',
+            tooltip: uiTextForLanguage('Azioni del fight', """Fight actions"""),
             onSelected: (action) {
               switch (action) {
                 case _FightSessionAction.reset:
@@ -659,13 +725,15 @@ class _NpcBattleScreenState extends State<NpcBattleScreen> {
                   break;
               }
             },
-            itemBuilder: (_) => const [
+            itemBuilder: (_) => [
               PopupMenuItem(
                 value: _FightSessionAction.reset,
                 child: ListTile(
                   contentPadding: EdgeInsets.zero,
                   leading: Icon(Icons.restart_alt),
-                  title: Text('Azzera fight'),
+                  title: Text(
+                    uiTextForLanguage('Azzera fight', """Reset fight"""),
+                  ),
                 ),
               ),
               PopupMenuItem(
@@ -673,7 +741,9 @@ class _NpcBattleScreenState extends State<NpcBattleScreen> {
                 child: ListTile(
                   contentPadding: EdgeInsets.zero,
                   leading: Icon(Icons.stop_circle_outlined),
-                  title: Text('Termina fight'),
+                  title: Text(
+                    uiTextForLanguage('Termina fight', """End fight"""),
+                  ),
                 ),
               ),
             ],
@@ -732,7 +802,10 @@ class _NpcBattleScreenState extends State<NpcBattleScreen> {
             ),
             const SizedBox(height: 14),
             Text(
-              'SQUADRA DI ${participant.name.toUpperCase()}',
+              uiTextForLanguage(
+                'SQUADRA DI ${participant.name.toUpperCase()}',
+                """${participant.name.toUpperCase()}'S TEAM""",
+              ),
               style: Theme.of(
                 context,
               ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
@@ -785,7 +858,7 @@ class _NpcBattleScreenState extends State<NpcBattleScreen> {
             ),
             const SizedBox(height: 12),
             Text(
-              'MOSSE DA COMBATTIMENTO',
+              uiTextForLanguage('MOSSE DA COMBATTIMENTO', """BATTLE MOVES"""),
               style: Theme.of(
                 context,
               ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
@@ -808,10 +881,15 @@ class _NpcBattleScreenState extends State<NpcBattleScreen> {
                     _changePp(reference, _moveForState(state, reference), 1),
               ),
             if (state.pokemon.selectedMoves.isEmpty)
-              const Card(
+              Card(
                 child: Padding(
                   padding: EdgeInsets.all(14),
-                  child: Text('Nessuna mossa selezionata.'),
+                  child: Text(
+                    uiTextForLanguage(
+                      'Nessuna mossa selezionata.',
+                      """No moves selected.""",
+                    ),
+                  ),
                 ),
               ),
           ],
@@ -857,7 +935,7 @@ class _FightHeader extends StatelessWidget {
                 ),
                 IconButton(
                   onPressed: onEnd,
-                  tooltip: 'Termina fight',
+                  tooltip: uiTextForLanguage('Termina fight', """End fight"""),
                   icon: Icon(
                     Icons.stop_circle_outlined,
                     color: colors.onPrimaryContainer,
@@ -866,7 +944,10 @@ class _FightHeader extends StatelessWidget {
               ],
             ),
             Text(
-              '$trainerCount Allenatori PNG · $activePokemonCount Pokémon attivi · nessun avversario gestito dall’app',
+              uiTextForLanguage(
+                '$trainerCount Allenatori PNG · $activePokemonCount Pokémon attivi · nessun avversario gestito dall’app',
+                """$trainerCount NPC Trainers · $activePokemonCount active Pokémon · no app-managed opponent""",
+              ),
               style: TextStyle(color: colors.onPrimaryContainer),
             ),
           ],
@@ -896,11 +977,19 @@ class _TrainerFightCard extends StatelessWidget {
               ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
             ),
             Text(
-              '${participant.rank} · ${participant.activeLimit} Pokémon attivi contemporaneamente',
+              uiTextForLanguage(
+                '${participant.rank} · ${participant.activeLimit} Pokémon attivi contemporaneamente',
+                """${participant.rank} · ${participant.activeLimit} Pokémon active at the same time""",
+              ),
             ),
             if (participant.personality.trim().isNotEmpty) ...[
               const SizedBox(height: 8),
-              Text('Personalità: ${participant.personality}'),
+              Text(
+                uiTextForLanguage(
+                  'Personalità: ${participant.personality}',
+                  """Personality: ${participant.personality}""",
+                ),
+              ),
             ],
             if (participant.tactics.trim().isNotEmpty) ...[
               const SizedBox(height: 6),
@@ -945,26 +1034,40 @@ class _InitiativeCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                const Expanded(
+                Expanded(
                   child: Text(
-                    'INIZIATIVA COMUNE',
+                    uiTextForLanguage(
+                      'INIZIATIVA COMUNE',
+                      """SHARED INITIATIVE""",
+                    ),
                     style: TextStyle(fontWeight: FontWeight.w900),
                   ),
                 ),
                 IconButton(
                   onPressed: onReroll,
-                  tooltip: 'Rilancia iniziativa',
+                  tooltip: uiTextForLanguage(
+                    'Rilancia iniziativa',
+                    """Reroll initiative""",
+                  ),
                   icon: const Icon(Icons.casino_outlined),
                 ),
                 IconButton(
                   onPressed: onAdd,
-                  tooltip: 'Aggiungi voce esterna',
+                  tooltip: uiTextForLanguage(
+                    'Aggiungi voce esterna',
+                    """Add external entry""",
+                  ),
                   icon: const Icon(Icons.person_add_alt_1_outlined),
                 ),
               ],
             ),
             if (entries.isEmpty)
-              const Text('Nessuna voce nell’iniziativa.')
+              Text(
+                uiTextForLanguage(
+                  'Nessuna voce nell’iniziativa.',
+                  """No initiative entries.""",
+                ),
+              )
             else
               for (var index = 0; index < entries.length; index++)
                 ListTile(
@@ -976,7 +1079,10 @@ class _InitiativeCard extends StatelessWidget {
                   title: Text(entries[index].name),
                   subtitle: Text(
                     entries[index].isTrainerGroup
-                        ? 'Pokémon controllato dal Master'
+                        ? uiTextForLanguage(
+                            'Pokémon controllato dal Master',
+                            """Master-controlled Pokémon""",
+                          )
                         : 'Partecipante esterno non gestito',
                   ),
                   trailing: entries[index].isTrainerGroup
@@ -990,7 +1096,12 @@ class _InitiativeCard extends StatelessWidget {
             OutlinedButton.icon(
               onPressed: entries.isEmpty ? null : onNextTurn,
               icon: const Icon(Icons.skip_next),
-              label: Text('PROSSIMO TURNO · ROUND $round'),
+              label: Text(
+                uiTextForLanguage(
+                  'PROSSIMO TURNO · ROUND $round',
+                  """NEXT TURN · ROUND $round""",
+                ),
+              ),
             ),
           ],
         ),
@@ -1056,9 +1167,11 @@ class _TeamMemberCard extends StatelessWidget {
                           ),
                         ),
                         if (active)
-                          const Chip(
+                          Chip(
                             visualDensity: VisualDensity.compact,
-                            label: Text('ATTIVO'),
+                            label: Text(
+                              uiTextForLanguage('ATTIVO', """ACTIVE"""),
+                            ),
                           ),
                       ],
                     ),
@@ -1078,8 +1191,14 @@ class _TeamMemberCard extends StatelessWidget {
               IconButton(
                 onPressed: onToggleActive,
                 tooltip: active
-                    ? 'Rimuovi dagli attivi'
-                    : 'Rendi attivo (massimo $activeLimit)',
+                    ? uiTextForLanguage(
+                        'Rimuovi dagli attivi',
+                        """Remove from active""",
+                      )
+                    : uiTextForLanguage(
+                        'Rendi attivo (massimo $activeLimit)',
+                        """Make active (maximum $activeLimit)""",
+                      ),
                 icon: Icon(
                   active ? Icons.visibility : Icons.visibility_outlined,
                 ),
@@ -1159,13 +1278,22 @@ class _FocusedPokemonCard extends StatelessWidget {
                       Text(
                         'Lv. ${generated.level} · SR ${pokemon.sr} · ${generated.nature}',
                       ),
-                      Text(generated.ability ?? 'Nessuna abilità'),
+                      Text(
+                        generated.ability ??
+                            uiTextForLanguage(
+                              'Nessuna abilità',
+                              """No abilities""",
+                            ),
+                      ),
                     ],
                   ),
                 ),
                 IconButton(
                   onPressed: onDetails,
-                  tooltip: 'Scheda completa',
+                  tooltip: uiTextForLanguage(
+                    'Scheda completa',
+                    """Full sheet""",
+                  ),
                   icon: const Icon(Icons.open_in_new),
                 ),
               ],
@@ -1191,14 +1319,14 @@ class _FocusedPokemonCard extends StatelessWidget {
               spacing: 6,
               runSpacing: 6,
               children: [
-                OutlinedButton(onPressed: onMinusFive, child: const Text('-5')),
-                OutlinedButton(onPressed: onMinusOne, child: const Text('-1')),
+                OutlinedButton(onPressed: onMinusFive, child: Text('-5')),
+                OutlinedButton(onPressed: onMinusOne, child: Text('-1')),
                 OutlinedButton(
                   onPressed: onEditHp,
-                  child: const Text('MODIFICA'),
+                  child: Text(uiTextForLanguage('MODIFICA', """EDIT""")),
                 ),
-                OutlinedButton(onPressed: onPlusOne, child: const Text('+1')),
-                OutlinedButton(onPressed: onPlusFive, child: const Text('+5')),
+                OutlinedButton(onPressed: onPlusOne, child: Text('+1')),
+                OutlinedButton(onPressed: onPlusFive, child: Text('+5')),
               ],
             ),
             const SizedBox(height: 8),
@@ -1212,12 +1340,12 @@ class _FocusedPokemonCard extends StatelessWidget {
                     Icons.health_and_safety_outlined,
                     size: 18,
                   ),
-                  label: const Text('STATUS'),
+                  label: Text('STATUS'),
                   onPressed: onStatus,
                 ),
                 ActionChip(
                   avatar: const Icon(Icons.favorite, size: 18),
-                  label: const Text('RIPRISTINA'),
+                  label: Text('RIPRISTINA'),
                   onPressed: onHeal,
                 ),
                 ActionChip(
@@ -1225,7 +1353,11 @@ class _FocusedPokemonCard extends StatelessWidget {
                     active ? Icons.visibility : Icons.visibility_outlined,
                     size: 18,
                   ),
-                  label: Text(active ? 'ATTIVO' : 'RENDI ATTIVO'),
+                  label: Text(
+                    active
+                        ? uiTextForLanguage('ATTIVO', """ACTIVE""")
+                        : uiTextForLanguage('RENDI ATTIVO', """MAKE ACTIVE"""),
+                  ),
                   onPressed: onToggleActive,
                 ),
               ],
@@ -1292,7 +1424,7 @@ class _NpcMoveCard extends StatelessWidget {
                 children: [
                   IconButton(
                     onPressed: remainingPp <= 0 ? null : onUse,
-                    tooltip: 'Usa mossa',
+                    tooltip: uiTextForLanguage('Usa mossa', """Use move"""),
                     icon: const Icon(Icons.remove_circle_outline),
                   ),
                   IconButton(
@@ -1343,13 +1475,13 @@ class _NpcHpInputDialogState extends State<_NpcHpInputDialog> {
   Widget build(BuildContext context) {
     return AlertDialog(
       scrollable: true,
-      title: const Text('Modifica PF'),
+      title: Text(uiTextForLanguage('Modifica PF', """Edit HP""")),
       content: TextField(
         controller: _controller,
         autofocus: true,
         keyboardType: const TextInputType.numberWithOptions(signed: true),
         decoration: InputDecoration(
-          labelText: 'PF o modifica',
+          labelText: uiTextForLanguage('PF o modifica', """HP or adjustment"""),
           helperText:
               'Esempi: -12, +8 oppure 35. Attuali ${widget.currentHp}/${widget.maxHp}',
         ),
@@ -1358,11 +1490,11 @@ class _NpcHpInputDialogState extends State<_NpcHpInputDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Annulla'),
+          child: Text(uiTextForLanguage('Annulla', """Cancel""")),
         ),
         FilledButton(
           onPressed: () => Navigator.of(context).pop(_controller.text),
-          child: const Text('Conferma'),
+          child: Text(uiTextForLanguage('Conferma', """Confirm""")),
         ),
       ],
     );
@@ -1387,21 +1519,23 @@ class _StatusDialogState extends State<_StatusDialog> {
   Widget build(BuildContext context) {
     return AlertDialog(
       scrollable: true,
-      title: const Text('Status del Pokémon'),
+      title: Text(
+        uiTextForLanguage('Status del Pokémon', """Pokémon Status"""),
+      ),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           DropdownButtonFormField<String?>(
             initialValue: _nonVolatile,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               labelText: 'Status persistente',
               border: OutlineInputBorder(),
             ),
             items: [
-              const DropdownMenuItem<String?>(
+              DropdownMenuItem<String?>(
                 value: null,
-                child: Text('Nessuno'),
+                child: Text(uiTextForLanguage('Nessuno', """None""")),
               ),
               for (final status in _nonVolatileStatuses)
                 DropdownMenuItem<String?>(value: status, child: Text(status)),
@@ -1409,7 +1543,7 @@ class _StatusDialogState extends State<_StatusDialog> {
             onChanged: (value) => setState(() => _nonVolatile = value),
           ),
           const SizedBox(height: 12),
-          const Text(
+          Text(
             'Status temporanei',
             style: TextStyle(fontWeight: FontWeight.w900),
           ),
@@ -1438,19 +1572,19 @@ class _StatusDialogState extends State<_StatusDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Annulla'),
+          child: Text(uiTextForLanguage('Annulla', """Cancel""")),
         ),
         TextButton(
           onPressed: () => Navigator.of(
             context,
           ).pop(const _StatusResult(nonVolatile: null, volatile: {})),
-          child: const Text('Pulisci'),
+          child: Text('Pulisci'),
         ),
         FilledButton(
           onPressed: () => Navigator.of(
             context,
           ).pop(_StatusResult(nonVolatile: _nonVolatile, volatile: _volatile)),
-          child: const Text('Conferma'),
+          child: Text(uiTextForLanguage('Conferma', """Confirm""")),
         ),
       ],
     );

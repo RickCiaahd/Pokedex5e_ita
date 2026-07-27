@@ -401,7 +401,12 @@ class _PokedexScreenState extends State<PokedexScreen> {
     try {
       await _profileStorageService.savePokedexEntries(_entries);
     } catch (error, stackTrace) {
-      debugPrint('POKEDEX SCREEN: errore save: $error');
+      debugPrint(
+        uiTextForLanguage(
+          'POKEDEX SCREEN: errore save: $error',
+          """POKEDEX SCREEN: save error: $error""",
+        ),
+      );
       debugPrint(stackTrace.toString());
     }
   }
@@ -595,7 +600,7 @@ class _PokedexScreenState extends State<PokedexScreen> {
     Widget content;
 
     if (_isLoading) {
-      content = const Center(child: CircularProgressIndicator());
+      content = Center(child: CircularProgressIndicator());
     } else if (_errorMessage != null) {
       content = Center(
         child: Text(

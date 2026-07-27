@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../models/pokemon.dart';
 import '../../services/evolution_service.dart';
 import '../../widgets/pokemon/pokemon_asset_image.dart';
+import '../../localization/ui_text.dart';
 
 class EvolutionSelectorSheet extends StatelessWidget {
   const EvolutionSelectorSheet({
@@ -25,10 +26,15 @@ class EvolutionSelectorSheet extends StatelessWidget {
         )
         .toList(growable: false);
     final isSingleEvolution = choices.length == 1;
-    final title = isSingleEvolution ? 'Evoluzione' : 'Scegli evoluzione';
+    final title = isSingleEvolution
+        ? 'Evoluzione'
+        : uiTextForLanguage('Scegli evoluzione', """Choose evolution""");
     final description = isSingleEvolution
         ? 'Controlla i requisiti per far evolvere ${currentPokemon.name}.'
-        : '${currentPokemon.name} può evolversi in ${choices.length} forme.';
+        : uiTextForLanguage(
+            '${currentPokemon.name} può evolversi in ${choices.length} forme.',
+            """${currentPokemon.name} can evolve into ${choices.length} forms.""",
+          );
 
     return SafeArea(
       child: SizedBox(
@@ -47,7 +53,10 @@ class EvolutionSelectorSheet extends StatelessWidget {
             if (availableChoices.isEmpty) ...[
               const SizedBox(height: 8),
               Text(
-                'Nessuna evoluzione soddisfa ancora tutte le condizioni gestibili.',
+                uiTextForLanguage(
+                  'Nessuna evoluzione soddisfa ancora tutte le condizioni gestibili.',
+                  """No evolution currently meets all supported conditions.""",
+                ),
                 style: TextStyle(color: Theme.of(context).colorScheme.error),
               ),
             ],
@@ -56,7 +65,9 @@ class EvolutionSelectorSheet extends StatelessWidget {
               _EvolutionChoiceTile(
                 choice: choice,
                 targetPokemon: pokemonByName(choice.option.toName),
-                actionLabel: isSingleEvolution ? 'Evolvi' : 'Scegli',
+                actionLabel: isSingleEvolution
+                    ? 'Evolvi'
+                    : uiTextForLanguage('Scegli', """Choose"""),
               ),
           ],
         ),
@@ -129,7 +140,10 @@ class _EvolutionChoiceTile extends StatelessWidget {
               if (targetPokemon == null) ...[
                 const SizedBox(height: 6),
                 Text(
-                  'Pokémon non presente nel catalogo attuale.',
+                  uiTextForLanguage(
+                    'Pokémon non presente nel catalogo attuale.',
+                    """Pokémon is not available in the current catalog.""",
+                  ),
                   style: TextStyle(color: colorScheme.error),
                 ),
               ] else if (choice.missingRequirements.isNotEmpty) ...[

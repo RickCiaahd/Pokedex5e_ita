@@ -1500,7 +1500,7 @@ class _BattleScreenState extends State<BattleScreen> {
                     future: _future,
                     builder: (context, snapshot) {
                       if (snapshot.connectionState != ConnectionState.done) {
-                        return const Center(child: CircularProgressIndicator());
+                        return Center(child: CircularProgressIndicator());
                       }
 
                       if (snapshot.hasError) {
@@ -3573,7 +3573,10 @@ class _StruggleWarning extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'STRUGGLE DISPONIBILE',
+              uiTextForLanguage(
+                'STRUGGLE DISPONIBILE',
+                """STRUGGLE AVAILABLE""",
+              ),
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 color: Theme.of(context).colorScheme.onErrorContainer,
                 fontWeight: FontWeight.w900,

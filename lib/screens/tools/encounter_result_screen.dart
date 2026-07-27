@@ -393,7 +393,7 @@ class _EncounterResultScreenState extends State<EncounterResultScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'ATTENZIONE',
                       style: TextStyle(fontWeight: FontWeight.w900),
                     ),
@@ -639,9 +639,9 @@ class _EncounterMemberCard extends StatelessWidget {
     final natureModifiers = PokemonNature.forName(generated.nature);
     final armorClass = pokemon.armorClass + (natureModifiers['AC'] ?? 0);
     final gender = switch (generated.gender) {
-      'Male' => 'Maschio',
-      'Female' => 'Femmina',
-      'Genderless' => 'Senza sesso',
+      'Male' => uiTextForLanguage('Maschio', """Male"""),
+      'Female' => uiTextForLanguage('Femmina', """Female"""),
+      'Genderless' => uiTextForLanguage('Senza sesso', """Genderless"""),
       _ => 'Non specificato',
     };
 
@@ -685,8 +685,7 @@ class _EncounterMemberCard extends StatelessWidget {
           Align(
             alignment: Alignment.centerLeft,
             child: Text(
-              '$gender · ${generated.nature} · '
-              '${generated.ability ?? 'Nessuna abilità'}',
+              '$gender · ${generated.nature} · ${uiTextForLanguage(generated.ability ?? 'Nessuna abilità', generated.ability ?? 'No ability')}',
             ),
           ),
           const SizedBox(height: 8),
@@ -719,12 +718,12 @@ class _EncounterMemberCard extends StatelessWidget {
               TextButton.icon(
                 onPressed: isWorking || member.isLocked ? null : onRegenerate,
                 icon: const Icon(Icons.casino_outlined),
-                label: const Text('Rigenera'),
+                label: Text('Rigenera'),
               ),
               TextButton.icon(
                 onPressed: onOpenDetails,
                 icon: const Icon(Icons.description_outlined),
-                label: const Text('Scheda'),
+                label: Text(uiTextForLanguage('Scheda', """Sheet""")),
               ),
               TextButton.icon(
                 onPressed: isWorking ? null : onRemove,

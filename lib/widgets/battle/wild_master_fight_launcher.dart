@@ -5,6 +5,7 @@ import '../../models/pokemon.dart';
 import '../../repositories/master_battle_session_repository.dart';
 import '../../services/master_battle_service.dart';
 import '../../screens/battle/npc_battle_screen.dart';
+import '../../localization/ui_text.dart';
 
 Future<bool> launchWildMasterFight({
   required BuildContext context,
@@ -13,8 +14,11 @@ Future<bool> launchWildMasterFight({
   required List<Pokemon> catalog,
 }) async {
   if (encounter.members.isEmpty) {
-    throw const FormatException(
-      'L’incontro non contiene Pokémon da aggiungere al fight.',
+    throw FormatException(
+      uiTextForLanguage(
+        'L’incontro non contiene Pokémon da aggiungere al fight.',
+        """The encounter contains no Pokémon to add to the fight.""",
+      ),
     );
   }
 
@@ -26,18 +30,26 @@ Future<bool> launchWildMasterFight({
     final replace = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Sostituire il fight attivo?'),
-        content: const Text(
-          'È già presente una sessione del Master. Avviandone una nuova perderai PF, PP, status, round e iniziativa della sessione corrente.',
+        title: Text(
+          uiTextForLanguage(
+            'Sostituire il fight attivo?',
+            """Replace the active fight?""",
+          ),
+        ),
+        content: Text(
+          uiTextForLanguage(
+            'È già presente una sessione del Master. Avviandone una nuova perderai PF, PP, status, round e iniziativa della sessione corrente.',
+            """A Master session already exists. Starting a new one will discard the current session's HP, PP, statuses, round and initiative.""",
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Annulla'),
+            child: Text(uiTextForLanguage('Annulla', """Cancel""")),
           ),
           FilledButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Nuovo fight'),
+            child: Text(uiTextForLanguage('Nuovo fight', """New fight""")),
           ),
         ],
       ),
@@ -84,7 +96,7 @@ Future<int?> _showWildFightSetupDialog({
     context: context,
     builder: (dialogContext) => StatefulBuilder(
       builder: (context, setDialogState) => AlertDialog(
-        title: const Text('Prepara il fight selvatico'),
+        title: Text('Prepara il fight selvatico'),
         content: SizedBox(
           width: 420,
           child: Column(
@@ -92,17 +104,23 @@ Future<int?> _showWildFightSetupDialog({
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(
-                '$memberCount Pokémon verranno copiati nel Fight del Master. L’incontro e la Libreria Allenatori PNG non saranno modificati.',
+                uiTextForLanguage(
+                  '$memberCount Pokémon verranno copiati nel Fight del Master. L’incontro e la Libreria Allenatori PNG non saranno modificati.',
+                  """$memberCount Pokémon will be copied to the Master Fight. The encounter and NPC Trainer Library will not be changed.""",
+                ),
               ),
               const SizedBox(height: 18),
-              const Text(
-                'Pokémon attivi contemporaneamente',
+              Text(
+                uiTextForLanguage(
+                  'Pokémon attivi contemporaneamente',
+                  """Pokémon active at the same time""",
+                ),
                 style: TextStyle(fontWeight: FontWeight.w800),
               ),
               const SizedBox(height: 8),
               DropdownButtonFormField<int>(
                 initialValue: activeCount,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   border: OutlineInputBorder(),
                   isDense: true,
                 ),
@@ -121,12 +139,12 @@ Future<int?> _showWildFightSetupDialog({
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(),
-            child: const Text('Annulla'),
+            child: Text(uiTextForLanguage('Annulla', """Cancel""")),
           ),
           FilledButton.icon(
             onPressed: () => Navigator.of(dialogContext).pop(activeCount),
             icon: const Icon(Icons.sports_mma_outlined),
-            label: const Text('Avvia fight'),
+            label: Text('Avvia fight'),
           ),
         ],
       ),

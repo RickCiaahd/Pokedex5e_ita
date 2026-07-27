@@ -1512,7 +1512,7 @@ class _EggCard extends StatelessWidget {
                 ),
                 title: Text(
                   egg.isInPc
-                      ? 'PC Pokémon'
+                      ? uiTextForLanguage('PC Pokémon', """Pokémon PC""")
                       : teamSlotIndex == null
                       ? uiTextForLanguage(
                           'Pensione Pokémon',

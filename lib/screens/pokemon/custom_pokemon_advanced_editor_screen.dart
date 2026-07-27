@@ -14,6 +14,7 @@ import '../../repositories/move_repository.dart';
 import '../../repositories/pokemon_repository.dart';
 import '../../services/custom_pokemon_runtime_registry.dart';
 import '../../widgets/layout/responsive_content.dart';
+import '../../localization/ui_text.dart';
 
 class CustomPokemonAdvancedEditorScreen extends StatefulWidget {
   const CustomPokemonAdvancedEditorScreen({
@@ -114,7 +115,9 @@ class _CustomPokemonAdvancedEditorScreenState
     final link = await showDialog<CustomPokemonEvolutionLink>(
       context: context,
       builder: (_) => _EvolutionLinkDialog(
-        title: evolvesFrom ? 'Si evolve da' : 'Può evolversi in',
+        title: evolvesFrom
+            ? 'Si evolve da'
+            : uiTextForLanguage('Può evolversi in', """Can evolve into"""),
         catalog: _catalog,
         itemCatalog: _itemCatalog,
         moveCatalog: _moveCatalog,
@@ -173,18 +176,29 @@ class _CustomPokemonAdvancedEditorScreenState
       body: ResponsiveContent(
         maxWidth: 900,
         child: _loading
-            ? const Center(child: CircularProgressIndicator())
+            ? Center(child: CircularProgressIndicator())
             : ListView(
                 padding: const EdgeInsets.fromLTRB(16, 12, 16, 100),
                 children: [
                   _AdvancedSection(
-                    title: 'Contenuto segreto',
+                    title: uiTextForLanguage(
+                      'Contenuto segreto',
+                      """Secret content""",
+                    ),
                     children: [
                       SwitchListTile(
                         contentPadding: EdgeInsets.zero,
-                        title: const Text('Segreto fino alla scoperta'),
-                        subtitle: const Text(
-                          'L’esportazione per i giocatori può essere sigillata: nome, immagine e dati non saranno mostrati prima della cattura o dell’evoluzione.',
+                        title: Text(
+                          uiTextForLanguage(
+                            'Segreto fino alla scoperta',
+                            """Secret until discovery""",
+                          ),
+                        ),
+                        subtitle: Text(
+                          uiTextForLanguage(
+                            'L’esportazione per i giocatori può essere sigillata: nome, immagine e dati non saranno mostrati prima della cattura o dell’evoluzione.',
+                            """Player exports can be sealed: name, image and data will not be shown before capture or evolution.""",
+                          ),
                         ),
                         value: _secretUntilDiscovered,
                         onChanged: (value) =>
@@ -194,29 +208,44 @@ class _CustomPokemonAdvancedEditorScreenState
                         controller: _secretHint,
                         minLines: 2,
                         maxLines: 4,
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
                           labelText: 'Indizio facoltativo',
-                          helperText:
-                              'Può essere mostrato senza rivelare nome e aspetto.',
+                          helperText: uiTextForLanguage(
+                            'Può essere mostrato senza rivelare nome e aspetto.',
+                            """It can be shown without revealing its name and appearance.""",
+                          ),
                         ),
                       ),
                     ],
                   ),
                   _AdvancedSection(
-                    title: 'Forma alternativa di una specie esistente',
+                    title: uiTextForLanguage(
+                      'Forma alternativa di una specie esistente',
+                      """Alternative form of an existing species""",
+                    ),
                     children: [
-                      const Text(
-                        'Collega questo Fakemon a un Pokémon già presente: apparirà nel selettore delle forme di quella specie, senza creare una voce separata nel Pokédex.',
+                      Text(
+                        uiTextForLanguage(
+                          'Collega questo Fakemon a un Pokémon già presente: apparirà nel selettore delle forme di quella specie, senza creare una voce separata nel Pokédex.',
+                          """Link this Fakemon to an existing Pokémon: it will appear in that species' form selector without creating a separate Pokédex entry.""",
+                        ),
                       ),
                       ListTile(
                         contentPadding: EdgeInsets.zero,
                         leading: const Icon(Icons.hub_outlined),
                         title: Text(
-                          _alternateFormOf?.name ?? 'Nessuna specie collegata',
+                          _alternateFormOf?.name ??
+                              uiTextForLanguage(
+                                'Nessuna specie collegata',
+                                """No linked species""",
+                              ),
                         ),
                         subtitle: _alternateFormOf == null
-                            ? const Text(
-                                'Tocca per scegliere Pokémon o Fakemon',
+                            ? Text(
+                                uiTextForLanguage(
+                                  'Tocca per scegliere Pokémon o Fakemon',
+                                  """Tap to choose a Pokémon or Fakemon""",
+                                ),
                               )
                             : Text('#${_alternateFormOf!.pokemonId ?? '-'}'),
                         trailing: const Icon(Icons.search),
@@ -225,17 +254,30 @@ class _CustomPokemonAdvancedEditorScreenState
                       if (_alternateFormOf != null) ...[
                         DropdownButtonFormField<CustomPokemonFormDuration>(
                           initialValue: _alternateFormDuration,
-                          decoration: const InputDecoration(
-                            labelText: 'Durata della forma',
+                          decoration: InputDecoration(
+                            labelText: uiTextForLanguage(
+                              'Durata della forma',
+                              """Form duration""",
+                            ),
                           ),
-                          items: const [
+                          items: [
                             DropdownMenuItem(
                               value: CustomPokemonFormDuration.permanent,
-                              child: Text('Permanente'),
+                              child: Text(
+                                uiTextForLanguage(
+                                  'Permanente',
+                                  """Permanent""",
+                                ),
+                              ),
                             ),
                             DropdownMenuItem(
                               value: CustomPokemonFormDuration.battle,
-                              child: Text('Momentanea di battaglia'),
+                              child: Text(
+                                uiTextForLanguage(
+                                  'Momentanea di battaglia',
+                                  """Temporary battle form""",
+                                ),
+                              ),
                             ),
                           ],
                           onChanged: (value) {
@@ -246,7 +288,7 @@ class _CustomPokemonAdvancedEditorScreenState
                         ),
                         SwitchListTile(
                           contentPadding: EdgeInsets.zero,
-                          title: const Text('Segreta fino all’attivazione'),
+                          title: Text('Segreta fino all’attivazione'),
                           value: _alternateFormSecretUntilActivated,
                           onChanged: (value) => setState(
                             () => _alternateFormSecretUntilActivated = value,
@@ -254,8 +296,11 @@ class _CustomPokemonAdvancedEditorScreenState
                         ),
                         SwitchListTile(
                           contentPadding: EdgeInsets.zero,
-                          title: const Text(
-                            'Registra questa forma nel Pokédex',
+                          title: Text(
+                            uiTextForLanguage(
+                              'Registra questa forma nel Pokédex',
+                              """Register this form in the Pokédex""",
+                            ),
                           ),
                           value: _alternateFormTrackInPokedex,
                           onChanged: (value) => setState(
@@ -266,8 +311,11 @@ class _CustomPokemonAdvancedEditorScreenState
                           controller: _alternateFormHint,
                           minLines: 2,
                           maxLines: 4,
-                          decoration: const InputDecoration(
-                            labelText: 'Indizio sulla forma, facoltativo',
+                          decoration: InputDecoration(
+                            labelText: uiTextForLanguage(
+                              'Indizio sulla forma, facoltativo',
+                              """Optional form hint""",
+                            ),
                           ),
                         ),
                         Align(
@@ -278,7 +326,12 @@ class _CustomPokemonAdvancedEditorScreenState
                               _alternateFormHint.clear();
                             }),
                             icon: const Icon(Icons.link_off),
-                            label: const Text('RIMUOVI COLLEGAMENTO'),
+                            label: Text(
+                              uiTextForLanguage(
+                                'RIMUOVI COLLEGAMENTO',
+                                """REMOVE LINK""",
+                              ),
+                            ),
                           ),
                         ),
                       ],
@@ -296,8 +349,10 @@ class _CustomPokemonAdvancedEditorScreenState
                   ),
                   _EvolutionSection(
                     title: 'Evoluzioni successive',
-                    description:
-                        '${widget.currentName} può evolversi nelle specie elencate, comprese specie ufficiali o altri Fakemon.',
+                    description: uiTextForLanguage(
+                      '${widget.currentName} può evolversi nelle specie elencate, comprese specie ufficiali o altri Fakemon.',
+                      """${widget.currentName} can evolve into the listed species, including official species or other Fakemon.""",
+                    ),
                     links: _evolvesTo,
                     onAdd: () => _addEvolution(evolvesFrom: false),
                     onDelete: (index) => setState(
@@ -307,16 +362,26 @@ class _CustomPokemonAdvancedEditorScreenState
                   _AdvancedSection(
                     title: 'Sottoforme del Fakemon',
                     children: [
-                      const Text(
-                        'Se questo Fakemon possiede a sua volta più aspetti, puoi aggiungerli qui. Per collegare il Fakemon come forma di una specie esistente usa la sezione precedente.',
+                      Text(
+                        uiTextForLanguage(
+                          'Se questo Fakemon possiede a sua volta più aspetti, puoi aggiungerli qui. Per collegare il Fakemon come forma di una specie esistente usa la sezione precedente.',
+                          """If this Fakemon has multiple appearances, add them here. To link it as a form of an existing species, use the previous section.""",
+                        ),
                       ),
                       FilledButton.tonalIcon(
                         onPressed: () => _addForm(),
                         icon: const Icon(Icons.add),
-                        label: const Text('AGGIUNGI FORMA'),
+                        label: Text(
+                          uiTextForLanguage('AGGIUNGI FORMA', """ADD FORM"""),
+                        ),
                       ),
                       if (_forms.isEmpty)
-                        const Text('Nessuna forma personalizzata.')
+                        Text(
+                          uiTextForLanguage(
+                            'Nessuna forma personalizzata.',
+                            """No custom forms.""",
+                          ),
+                        )
                       else
                         for (final entry in _forms.indexed)
                           Card(
@@ -336,12 +401,21 @@ class _CustomPokemonAdvancedEditorScreenState
                               subtitle: Text(
                                 entry.$2.duration ==
                                         CustomPokemonFormDuration.battle
-                                    ? 'Forma momentanea di battaglia'
-                                    : 'Forma permanente',
+                                    ? uiTextForLanguage(
+                                        'Forma momentanea di battaglia',
+                                        """Temporary battle form""",
+                                      )
+                                    : uiTextForLanguage(
+                                        'Forma permanente',
+                                        """Permanent form""",
+                                      ),
                               ),
                               onTap: () => _addForm(entry.$2),
                               trailing: IconButton(
-                                tooltip: 'Rimuovi',
+                                tooltip: uiTextForLanguage(
+                                  'Rimuovi',
+                                  """Remove""",
+                                ),
                                 onPressed: () => setState(
                                   () =>
                                       _forms = [..._forms]..removeAt(entry.$1),
@@ -361,7 +435,12 @@ class _CustomPokemonAdvancedEditorScreenState
           child: FilledButton.icon(
             onPressed: _save,
             icon: const Icon(Icons.save_outlined),
-            label: const Text('SALVA DATI AVANZATI'),
+            label: Text(
+              uiTextForLanguage(
+                'SALVA DATI AVANZATI',
+                """SAVE ADVANCED DATA""",
+              ),
+            ),
           ),
         ),
       ),
@@ -393,10 +472,17 @@ class _EvolutionSection extends StatelessWidget {
         FilledButton.tonalIcon(
           onPressed: onAdd,
           icon: const Icon(Icons.account_tree_outlined),
-          label: const Text('AGGIUNGI COLLEGAMENTO'),
+          label: Text(
+            uiTextForLanguage('AGGIUNGI COLLEGAMENTO', """ADD LINK"""),
+          ),
         ),
         if (links.isEmpty)
-          const Text('Nessun collegamento configurato.')
+          Text(
+            uiTextForLanguage(
+              'Nessun collegamento configurato.',
+              """No links configured.""",
+            ),
+          )
         else
           for (final entry in links.indexed)
             Card(
@@ -405,7 +491,7 @@ class _EvolutionSection extends StatelessWidget {
                 title: Text(entry.$2.pokemon.name),
                 subtitle: Text(_evolutionSummary(entry.$2)),
                 trailing: IconButton(
-                  tooltip: 'Rimuovi',
+                  tooltip: uiTextForLanguage('Rimuovi', """Remove"""),
                   onPressed: () => onDelete(entry.$1),
                   icon: const Icon(Icons.delete_outline),
                 ),
@@ -575,7 +661,13 @@ class _EvolutionLinkDialogState extends State<_EvolutionLinkDialog> {
               ListTile(
                 contentPadding: EdgeInsets.zero,
                 leading: const Icon(Icons.catching_pokemon),
-                title: Text(_selected?.name ?? 'Scegli Pokémon o Fakemon'),
+                title: Text(
+                  _selected?.name ??
+                      uiTextForLanguage(
+                        'Scegli Pokémon o Fakemon',
+                        """Choose a Pokémon or Fakemon""",
+                      ),
+                ),
                 subtitle: _selected == null
                     ? null
                     : Text('#${_selected!.pokemonId ?? '-'}'),
@@ -584,16 +676,29 @@ class _EvolutionLinkDialogState extends State<_EvolutionLinkDialog> {
               ),
               TextField(
                 controller: _form,
-                decoration: const InputDecoration(
-                  labelText: 'Forma specifica, facoltativa',
+                decoration: InputDecoration(
+                  labelText: uiTextForLanguage(
+                    'Forma specifica, facoltativa',
+                    """Optional specific form""",
+                  ),
                 ),
               ),
               const SizedBox(height: 10),
               Row(
                 children: [
-                  Expanded(child: _numberField(_level, 'Livello minimo')),
+                  Expanded(
+                    child: _numberField(
+                      _level,
+                      uiTextForLanguage('Livello minimo', """Minimum level"""),
+                    ),
+                  ),
                   const SizedBox(width: 8),
-                  Expanded(child: _numberField(_loyalty, 'Lealtà minima')),
+                  Expanded(
+                    child: _numberField(
+                      _loyalty,
+                      uiTextForLanguage('Lealtà minima', """Minimum Loyalty"""),
+                    ),
+                  ),
                   const SizedBox(width: 8),
                   Expanded(child: _numberField(_asi, 'Punti ASI')),
                 ],
@@ -603,9 +708,15 @@ class _EvolutionLinkDialogState extends State<_EvolutionLinkDialog> {
                 controller: _item,
                 readOnly: true,
                 onTap: _pickItem,
-                decoration: const InputDecoration(
-                  labelText: 'Oggetto richiesto',
-                  helperText: 'Seleziona dal catalogo degli oggetti',
+                decoration: InputDecoration(
+                  labelText: uiTextForLanguage(
+                    'Oggetto richiesto',
+                    """Required item""",
+                  ),
+                  helperText: uiTextForLanguage(
+                    'Seleziona dal catalogo degli oggetti',
+                    """Choose from the item catalog""",
+                  ),
                   suffixIcon: Icon(Icons.search),
                 ),
               ),
@@ -614,23 +725,45 @@ class _EvolutionLinkDialogState extends State<_EvolutionLinkDialog> {
                 controller: _move,
                 readOnly: true,
                 onTap: _pickMove,
-                decoration: const InputDecoration(
-                  labelText: 'Mossa richiesta',
-                  helperText: 'Seleziona dal catalogo delle mosse',
+                decoration: InputDecoration(
+                  labelText: uiTextForLanguage(
+                    'Mossa richiesta',
+                    """Required move""",
+                  ),
+                  helperText: uiTextForLanguage(
+                    'Seleziona dal catalogo delle mosse',
+                    """Choose from the move catalog""",
+                  ),
                   suffixIcon: Icon(Icons.search),
                 ),
               ),
               const SizedBox(height: 10),
               DropdownButtonFormField<String?>(
                 initialValue: _gender,
-                decoration: const InputDecoration(labelText: 'Sesso richiesto'),
-                items: const [
-                  DropdownMenuItem(value: null, child: Text('Nessuno')),
-                  DropdownMenuItem(value: 'male', child: Text('Maschio')),
-                  DropdownMenuItem(value: 'female', child: Text('Femmina')),
+                decoration: InputDecoration(
+                  labelText: uiTextForLanguage(
+                    'Sesso richiesto',
+                    """Required gender""",
+                  ),
+                ),
+                items: [
+                  DropdownMenuItem(
+                    value: null,
+                    child: Text(uiTextForLanguage('Nessuno', """None""")),
+                  ),
+                  DropdownMenuItem(
+                    value: 'male',
+                    child: Text(uiTextForLanguage('Maschio', """Male""")),
+                  ),
+                  DropdownMenuItem(
+                    value: 'female',
+                    child: Text(uiTextForLanguage('Femmina', """Female""")),
+                  ),
                   DropdownMenuItem(
                     value: 'genderless',
-                    child: Text('Senza sesso'),
+                    child: Text(
+                      uiTextForLanguage('Senza sesso', """Genderless"""),
+                    ),
                   ),
                 ],
                 onChanged: (value) => setState(() => _gender = value),
@@ -640,7 +773,7 @@ class _EvolutionLinkDialogState extends State<_EvolutionLinkDialog> {
                 controller: _hint,
                 minLines: 2,
                 maxLines: 4,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Indizio evolutivo facoltativo',
                 ),
               ),
@@ -651,11 +784,11 @@ class _EvolutionLinkDialogState extends State<_EvolutionLinkDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('ANNULLA'),
+          child: Text(uiTextForLanguage('ANNULLA', """CANCEL""")),
         ),
         FilledButton(
           onPressed: _selected == null ? null : _submit,
-          child: const Text('AGGIUNGI'),
+          child: Text(uiTextForLanguage('AGGIUNGI', """ADD""")),
         ),
       ],
     );
@@ -678,7 +811,7 @@ class _PokemonSearchDelegate extends SearchDelegate<Pokemon?> {
 
   @override
   Widget? buildLeading(BuildContext context) => IconButton(
-    tooltip: 'Indietro',
+    tooltip: uiTextForLanguage('Indietro', """Back"""),
     onPressed: () => close(context, null),
     icon: const Icon(Icons.arrow_back),
   );
@@ -731,7 +864,7 @@ class _ItemSearchDelegate extends SearchDelegate<BagItem?> {
 
   @override
   Widget? buildLeading(BuildContext context) => IconButton(
-    tooltip: 'Indietro',
+    tooltip: uiTextForLanguage('Indietro', """Back"""),
     onPressed: () => close(context, null),
     icon: const Icon(Icons.arrow_back),
   );
@@ -789,7 +922,7 @@ class _MoveSearchDelegate extends SearchDelegate<MoveData?> {
 
   @override
   Widget? buildLeading(BuildContext context) => IconButton(
-    tooltip: 'Indietro',
+    tooltip: uiTextForLanguage('Indietro', """Back"""),
     onPressed: () => close(context, null),
     icon: const Icon(Icons.arrow_back),
   );
@@ -944,8 +1077,14 @@ class _CustomFormEditorScreenState extends State<_CustomFormEditorScreen> {
   Future<void> _pickImage({required bool shiny}) async {
     final result = await FilePicker.platform.pickFiles(
       dialogTitle: shiny
-          ? 'Scegli artwork shiny'
-          : 'Scegli artwork della forma',
+          ? uiTextForLanguage(
+              'Scegli artwork shiny',
+              """Choose shiny artwork""",
+            )
+          : uiTextForLanguage(
+              'Scegli artwork della forma',
+              """Choose form artwork""",
+            ),
       type: FileType.custom,
       allowedExtensions: const ['png', 'jpg', 'jpeg', 'webp'],
       withData: true,
@@ -982,7 +1121,7 @@ class _CustomFormEditorScreenState extends State<_CustomFormEditorScreen> {
     final hasScores = scoreValues.values.any((value) => value != null);
     if (hasScores && scoreValues.values.any((value) => value == null)) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text(
             'Compila tutte le caratteristiche oppure lasciale vuote.',
           ),
@@ -1041,7 +1180,11 @@ class _CustomFormEditorScreenState extends State<_CustomFormEditorScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('FORMA PERSONALIZZATA')),
+      appBar: AppBar(
+        title: Text(
+          uiTextForLanguage('FORMA PERSONALIZZATA', """CUSTOM FORM"""),
+        ),
+      ),
       body: ResponsiveContent(
         maxWidth: 800,
         child: ListView(
@@ -1069,20 +1212,27 @@ class _CustomFormEditorScreenState extends State<_CustomFormEditorScreen> {
             const SizedBox(height: 12),
             TextField(
               controller: _name,
-              decoration: const InputDecoration(labelText: 'Nome forma'),
+              decoration: InputDecoration(
+                labelText: uiTextForLanguage('Nome forma', """Form name"""),
+              ),
             ),
             const SizedBox(height: 12),
             DropdownButtonFormField<CustomPokemonFormDuration>(
               initialValue: _duration,
-              decoration: const InputDecoration(labelText: 'Durata'),
-              items: const [
+              decoration: InputDecoration(labelText: 'Durata'),
+              items: [
                 DropdownMenuItem(
                   value: CustomPokemonFormDuration.permanent,
-                  child: Text('Permanente'),
+                  child: Text(uiTextForLanguage('Permanente', """Permanent""")),
                 ),
                 DropdownMenuItem(
                   value: CustomPokemonFormDuration.battle,
-                  child: Text('Momentanea, solo battaglia'),
+                  child: Text(
+                    uiTextForLanguage(
+                      'Momentanea, solo battaglia',
+                      """Temporary, battle only""",
+                    ),
+                  ),
                 ),
               ],
               onChanged: (value) {
@@ -1091,21 +1241,24 @@ class _CustomFormEditorScreenState extends State<_CustomFormEditorScreen> {
             ),
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
-              title: const Text('Segreta fino alla prima attivazione'),
+              title: Text('Segreta fino alla prima attivazione'),
               value: _secret,
               onChanged: (value) => setState(() => _secret = value),
             ),
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
-              title: const Text('Registra nel Pokédex'),
+              title: Text(
+                uiTextForLanguage(
+                  'Registra nel Pokédex',
+                  """Register in the Pokédex""",
+                ),
+              ),
               value: _trackInPokedex,
               onChanged: (value) => setState(() => _trackInPokedex = value),
             ),
             TextField(
               controller: _hint,
-              decoration: const InputDecoration(
-                labelText: 'Indizio / attivazione',
-              ),
+              decoration: InputDecoration(labelText: 'Indizio / attivazione'),
             ),
             const SizedBox(height: 12),
             Row(
@@ -1135,7 +1288,12 @@ class _CustomFormEditorScreenState extends State<_CustomFormEditorScreen> {
                 const SizedBox(width: 8),
                 Expanded(child: _numberField(_hp, 'PF')),
                 const SizedBox(width: 8),
-                Expanded(child: _numberField(_speed, 'Velocità')),
+                Expanded(
+                  child: _numberField(
+                    _speed,
+                    uiTextForLanguage('Velocità', """Speed"""),
+                  ),
+                ),
               ],
             ),
             const SizedBox(height: 12),
@@ -1153,21 +1311,34 @@ class _CustomFormEditorScreenState extends State<_CustomFormEditorScreen> {
             const SizedBox(height: 12),
             TextField(
               controller: _abilities,
-              decoration: const InputDecoration(
-                labelText: 'Abilità sostitutive, separate da virgole',
+              decoration: InputDecoration(
+                labelText: uiTextForLanguage(
+                  'Abilità sostitutive, separate da virgole',
+                  """Replacement abilities, comma-separated""",
+                ),
               ),
             ),
             const SizedBox(height: 12),
             TextField(
               controller: _hiddenAbility,
-              decoration: const InputDecoration(labelText: 'Abilità nascosta'),
+              decoration: InputDecoration(
+                labelText: uiTextForLanguage(
+                  'Abilità nascosta',
+                  """Hidden ability""",
+                ),
+              ),
             ),
             const SizedBox(height: 12),
             TextField(
               controller: _description,
               minLines: 3,
               maxLines: 7,
-              decoration: const InputDecoration(labelText: 'Descrizione forma'),
+              decoration: InputDecoration(
+                labelText: uiTextForLanguage(
+                  'Descrizione forma',
+                  """Form description""",
+                ),
+              ),
             ),
           ],
         ),
@@ -1178,7 +1349,7 @@ class _CustomFormEditorScreenState extends State<_CustomFormEditorScreen> {
           child: FilledButton.icon(
             onPressed: _save,
             icon: const Icon(Icons.save_outlined),
-            label: const Text('SALVA FORMA'),
+            label: Text(uiTextForLanguage('SALVA FORMA', """SAVE FORM""")),
           ),
         ),
       ),
@@ -1194,7 +1365,7 @@ class _CustomFormEditorScreenState extends State<_CustomFormEditorScreen> {
       initialValue: value,
       decoration: InputDecoration(labelText: label),
       items: [
-        const DropdownMenuItem(value: null, child: Text('Eredita')),
+        DropdownMenuItem(value: null, child: Text('Eredita')),
         for (final type in _types)
           DropdownMenuItem(value: type, child: Text(type)),
       ],
@@ -1289,11 +1460,19 @@ String _evolutionSummary(CustomPokemonEvolutionLink link) {
       .map((condition) => condition.toEvolutionRule().displayLabel)
       .toList();
   if (link.pokemon.formName != null) {
-    labels.insert(0, 'Forma: ${link.pokemon.formName}');
+    labels.insert(
+      0,
+      uiTextForLanguage(
+        'Forma: ${link.pokemon.formName}',
+        """Form: ${link.pokemon.formName}""",
+      ),
+    );
   }
   if (link.asiPoints > 0) labels.add('ASI +${link.asiPoints}');
   if (link.hint != null) labels.add('Indizio: ${link.hint}');
-  return labels.isEmpty ? 'Nessuna condizione' : labels.join(' · ');
+  return labels.isEmpty
+      ? uiTextForLanguage('Nessuna condizione', """No conditions""")
+      : labels.join(' · ');
 }
 
 List<String> _csv(String value) => value

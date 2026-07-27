@@ -64,13 +64,15 @@ class _StatusEffectInfo {
   final List<String> assetCandidates;
 }
 
-const _statusEffectInfos = [
+final _statusEffectInfos = [
   _StatusEffectInfo(
     name: 'Asleep',
     displayName: 'Addormentato',
     shortLabel: 'SLP',
-    description:
-        'È incapacitato e trattenuto e ha svantaggio a tutti i tiri salvezza. Dura tre round. Quando subisce un movimento forzato e alla fine di ciascun suo turno, tira 1d20: con 11 o più la condizione termina.',
+    description: uiTextForLanguage(
+      'È incapacitato e trattenuto e ha svantaggio a tutti i tiri salvezza. Dura tre round. Quando subisce un movimento forzato e alla fine di ciascun suo turno, tira 1d20: con 11 o più la condizione termina.',
+      """It is incapacitated and restrained and has disadvantage on all saving throws. It lasts three rounds. When it is forcibly moved and at the end of each of its turns, roll 1d20: on 11 or higher, the condition ends.""",
+    ),
     assetCandidates: [
       'assets/textures/gui/status/sleep_down.png',
       'assets/textures/gui/status/sleep_up.png',
@@ -80,8 +82,10 @@ const _statusEffectInfos = [
     name: 'Burned',
     displayName: 'Scottato',
     shortLabel: 'BRN',
-    description:
-        'Tira due volte tutti i dadi di danno e usa il risultato inferiore. Finché non viene curato o perde i sensi, subisce danni pari al proprio bonus di competenza alla fine di ciascun turno. I Pokémon di tipo Fuoco sono immuni.',
+    description: uiTextForLanguage(
+      'Tira due volte tutti i dadi di danno e usa il risultato inferiore. Finché non viene curato o perde i sensi, subisce danni pari al proprio bonus di competenza alla fine di ciascun turno. I Pokémon di tipo Fuoco sono immuni.',
+      """Roll all damage dice twice and use the lower result. Until cured or unconscious, it takes damage equal to its proficiency bonus at the end of each turn. Fire-type Pokémon are immune.""",
+    ),
     assetCandidates: [
       'assets/textures/gui/status/burn_down.png',
       'assets/textures/gui/status/burn_up.png',
@@ -91,8 +95,10 @@ const _statusEffectInfos = [
     name: 'Confused',
     displayName: 'Confuso',
     shortLabel: 'CNF',
-    description:
-        "Non può effettuare reazioni. Dura tre round. All'inizio del suo turno tira 1d8 per determinarne il comportamento; con 8 la condizione termina.",
+    description: uiTextForLanguage(
+      "Non può effettuare reazioni. Dura tre round. All'inizio del suo turno tira 1d8 per determinarne il comportamento; con 8 la condizione termina.",
+      """It cannot take reactions. It lasts three rounds. At the start of its turn, roll 1d8 to determine its behavior; on 8, the condition ends.""",
+    ),
     assetCandidates: [
       'assets/textures/gui/status/confuse_down.png',
       'assets/textures/gui/status/confuse_up.png',
@@ -102,16 +108,20 @@ const _statusEffectInfos = [
     name: 'Flinched',
     displayName: 'Tentennamento',
     shortLabel: 'FLN',
-    description:
-        'Ha svantaggio a tutti i tiri per colpire, alle prove di caratteristica e ai tiri salvezza fino alla fine del suo prossimo turno. È mostrato solo come riferimento e non può essere selezionato manualmente.',
+    description: uiTextForLanguage(
+      'Ha svantaggio a tutti i tiri per colpire, alle prove di caratteristica e ai tiri salvezza fino alla fine del suo prossimo turno. È mostrato solo come riferimento e non può essere selezionato manualmente.',
+      """It has disadvantage on all attack rolls, ability checks and saving throws until the end of its next turn. It is shown for reference only and cannot be selected manually.""",
+    ),
     assetCandidates: [],
   ),
   _StatusEffectInfo(
     name: 'Frozen',
     displayName: 'Congelato',
     shortLabel: 'FRZ',
-    description:
-        'È incapacitato e trattenuto. La condizione termina se si libera, subisce danni di tipo Fuoco o viene colpito da una mossa che può provocare Scottatura. I Pokémon di tipo Ghiaccio sono immuni.',
+    description: uiTextForLanguage(
+      'È incapacitato e trattenuto. La condizione termina se si libera, subisce danni di tipo Fuoco o viene colpito da una mossa che può provocare Scottatura. I Pokémon di tipo Ghiaccio sono immuni.',
+      """It is incapacitated and restrained. The condition ends if it breaks free, takes Fire-type damage or is hit by a move that can cause Burn. Ice-type Pokémon are immune.""",
+    ),
     assetCandidates: [
       'assets/textures/gui/status/frozen_down.png',
       'assets/textures/gui/status/frozen_up.png',
@@ -121,8 +131,10 @@ const _statusEffectInfos = [
     name: 'Paralyzed',
     displayName: 'Paralizzato',
     shortLabel: 'PAR',
-    description:
-        'Ha svantaggio ai tiri salvezza su FOR e DES e si muove a velocità dimezzata. All’inizio del suo turno tira 1d4: con 1 è incapacitato e trattenuto fino all’inizio del turno successivo. I Pokémon di tipo Elettro sono immuni.',
+    description: uiTextForLanguage(
+      'Ha svantaggio ai tiri salvezza su FOR e DES e si muove a velocità dimezzata. All’inizio del suo turno tira 1d4: con 1 è incapacitato e trattenuto fino all’inizio del turno successivo. I Pokémon di tipo Elettro sono immuni.',
+      """It has disadvantage on STR and DEX saving throws and moves at half speed. At the start of its turn, roll 1d4: on 1, it is incapacitated and restrained until the start of its next turn. Electric-type Pokémon are immune.""",
+    ),
     assetCandidates: [
       'assets/textures/gui/status/paralyze_down.png',
       'assets/textures/gui/status/paralyze_up.png',
@@ -132,8 +144,10 @@ const _statusEffectInfos = [
     name: 'Poisoned',
     displayName: 'Avvelenato',
     shortLabel: 'PSN',
-    description:
-        'Ha svantaggio a tutte le prove di caratteristica e ai tiri per colpire. Finché non viene curato o perde i sensi, subisce danni pari al proprio bonus di competenza alla fine di ciascun turno. I Pokémon di tipo Veleno e Acciaio sono immuni.',
+    description: uiTextForLanguage(
+      'Ha svantaggio a tutte le prove di caratteristica e ai tiri per colpire. Finché non viene curato o perde i sensi, subisce danni pari al proprio bonus di competenza alla fine di ciascun turno. I Pokémon di tipo Veleno e Acciaio sono immuni.',
+      """It has disadvantage on all ability checks and attack rolls. Until cured or unconscious, it takes damage equal to its proficiency bonus at the end of each turn. Poison- and Steel-type Pokémon are immune.""",
+    ),
     assetCandidates: [
       'assets/textures/gui/status/poisoned_down.png',
       'assets/textures/gui/status/poisoned_up.png',
@@ -497,7 +511,12 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
     if (!mounted || shouldHeal != true) return;
 
     _saveTeamSlot(slot.copyWith(currentHp: _maxHp, statusEffects: const []));
-    _showMessage('${_pokemon.name} è stato curato al Pokémon Center.');
+    _showMessage(
+      uiTextForLanguage(
+        '${_pokemon.name} è stato curato al Pokémon Center.',
+        """${_pokemon.name} was healed at the Pokémon Center.""",
+      ),
+    );
   }
 
   String _heldItemDisplayLabel() {
@@ -577,7 +596,12 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
       }
 
       _saveTeamSlot(slot.copyWith(heldItem: null));
-      _showMessage('${_pokemon.name} non tiene più strumenti.');
+      _showMessage(
+        uiTextForLanguage(
+          '${_pokemon.name} non tiene più strumenti.',
+          """${_pokemon.name} is no longer holding an item.""",
+        ),
+      );
       await _loadData();
       return;
     }
@@ -586,7 +610,12 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
     if (selectedItem == null) return;
 
     if (currentItem?.id == selectedItem.id) {
-      _showMessage('${_pokemon.name} tiene già ${selectedItem.name}.');
+      _showMessage(
+        uiTextForLanguage(
+          '${_pokemon.name} tiene già ${selectedItem.name}.',
+          """${_pokemon.name} is already holding ${selectedItem.name}.""",
+        ),
+      );
       return;
     }
 
@@ -595,7 +624,12 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
       itemId: selectedItem.id,
     );
     if (!consumed) {
-      _showMessage('Non hai più ${selectedItem.name} nello zaino.');
+      _showMessage(
+        uiTextForLanguage(
+          'Non hai più ${selectedItem.name} nello zaino.',
+          """You no longer have ${selectedItem.name} in the Bag.""",
+        ),
+      );
       return;
     }
 
@@ -609,7 +643,10 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
     _saveTeamSlot(slot.copyWith(heldItem: selectedItem.id));
     final replacementText = currentItem == null
         ? ''
-        : ' ${currentItem.name} è tornato nello zaino.';
+        : uiTextForLanguage(
+            ' ${currentItem.name} è tornato nello zaino.',
+            """ ${currentItem.name} was returned to the Bag.""",
+          );
     _showMessage(
       '${_pokemon.name} ora tiene ${selectedItem.name}.$replacementText',
     );
@@ -791,12 +828,17 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
     return showDialog<String>(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Aumento di Caratteristica'),
+        title: Text('Aumento di Caratteristica'),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text('Punti disponibili: $remainingPoints'),
+              Text(
+                uiTextForLanguage(
+                  'Punti disponibili: $remainingPoints',
+                  """Available points: $remainingPoints""",
+                ),
+              ),
               const SizedBox(height: 8),
               for (final label in labels)
                 ListTile(
@@ -815,7 +857,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Più tardi'),
+            child: Text(uiTextForLanguage('Più tardi', """Later""")),
           ),
         ],
       ),
@@ -877,8 +919,11 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
                 stats: moveData == null ? null : _moveStats(moveData),
               ),
               const SizedBox(height: 8),
-              const Text(
-                'Il moveset è già pieno. Scegli una mossa da dimenticare.',
+              Text(
+                uiTextForLanguage(
+                  'Il moveset è già pieno. Scegli una mossa da dimenticare.',
+                  """The move set is full. Choose a move to forget.""",
+                ),
               ),
             ],
           ),
@@ -1024,7 +1069,12 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
     setState(() => _evolutionChoices = choices);
 
     if (choices.isEmpty) {
-      _showMessage('Nessuna evoluzione disponibile per ${_pokemon.name}.');
+      _showMessage(
+        uiTextForLanguage(
+          'Nessuna evoluzione disponibile per ${_pokemon.name}.',
+          """No evolution is available for ${_pokemon.name}.""",
+        ),
+      );
       return;
     }
 
@@ -1053,7 +1103,10 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
     final evolvedPokemon = _pokemonForEvolutionOption(selected.option);
     if (evolvedPokemon == null) {
       _showMessage(
-        '${selected.option.toName} non è presente nel catalogo attuale.',
+        uiTextForLanguage(
+          '${selected.option.toName} non è presente nel catalogo attuale.',
+          """${selected.option.toName} is not available in the current catalog.""",
+        ),
       );
       return null;
     }
@@ -1066,7 +1119,12 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
         itemId: requiredItemId,
       );
       if (!consumed) {
-        _showMessage('Oggetto evolutivo non disponibile nello zaino.');
+        _showMessage(
+          uiTextForLanguage(
+            'Oggetto evolutivo non disponibile nello zaino.',
+            """The required evolution item is not available in the Bag.""",
+          ),
+        );
         return null;
       }
     }
@@ -1091,7 +1149,10 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
       _teamSlot = updatedSlot;
       _replaceTeamSlot(updatedSlot);
       _isLoading = true;
-      _message = '$oldName si è evoluto in ${selected.option.toName}!';
+      _message = uiTextForLanguage(
+        '$oldName si è evoluto in ${selected.option.toName}!',
+        """$oldName evolved into ${selected.option.toName}!""",
+      );
     });
 
     widget.onTeamSlotChanged?.call(updatedSlot);
@@ -1101,7 +1162,10 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
     if (revealed) {
       PokemonRepository.clearCache();
       _showMessage(
-        '$oldName si è evoluto in ${selected.option.toName}! Nuova specie scoperta.',
+        uiTextForLanguage(
+          '$oldName si è evoluto in ${selected.option.toName}! Nuova specie scoperta.',
+          """$oldName evolved into ${selected.option.toName}! New species discovered.""",
+        ),
       );
     }
     await _loadData();
@@ -1247,7 +1311,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
           ],
         ),
         body: _isLoading
-            ? const Center(child: CircularProgressIndicator())
+            ? Center(child: CircularProgressIndicator())
             : Column(
                 children: [
                   Expanded(
@@ -1769,20 +1833,30 @@ class _HeldItemPickerSheet extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           children: [
             Text(
-              'Strumento tenuto',
+              uiTextForLanguage('Strumento tenuto', """Held item"""),
               style: Theme.of(
                 context,
               ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
             ),
             const SizedBox(height: 4),
-            const Text('Scegli solo tra gli oggetti presenti nello zaino.'),
+            Text(
+              uiTextForLanguage(
+                'Scegli solo tra gli oggetti presenti nello zaino.',
+                """Choose only from items available in the Bag.""",
+              ),
+            ),
             if (currentItem != null) ...[
               const SizedBox(height: 12),
               Card(
                 child: ListTile(
                   leading: const Icon(Icons.remove_circle_outline),
                   title: Text('Togli ${currentItem!.name}'),
-                  subtitle: const Text('Lo strumento torna nello zaino.'),
+                  subtitle: Text(
+                    uiTextForLanguage(
+                      'Lo strumento torna nello zaino.',
+                      """The item is returned to the Bag.""",
+                    ),
+                  ),
                   onTap: () => Navigator.of(
                     context,
                   ).pop(const _HeldItemSelection.clear()),
@@ -1791,9 +1865,14 @@ class _HeldItemPickerSheet extends StatelessWidget {
             ],
             const SizedBox(height: 12),
             if (options.isEmpty)
-              const Padding(
+              Padding(
                 padding: EdgeInsets.all(16),
-                child: Text('Non hai strumenti tenuti o bacche nello zaino.'),
+                child: Text(
+                  uiTextForLanguage(
+                    'Non hai strumenti tenuti o bacche nello zaino.',
+                    """You do not have held items or berries in the Bag.""",
+                  ),
+                ),
               )
             else
               for (final option in options)
@@ -1819,9 +1898,9 @@ class _HeldItemPickerSheet extends StatelessWidget {
 String _detailItemTypeLabel(String type) {
   switch (type) {
     case 'berry':
-      return 'Bacca';
+      return uiTextForLanguage('Bacca', """Berry""");
     case 'held-item':
-      return 'Oggetto tenuto';
+      return uiTextForLanguage('Oggetto tenuto', """Held item""");
     default:
       return type;
   }
@@ -1870,7 +1949,7 @@ class _PokemonCenterButton extends StatelessWidget {
                   child: RotatedBox(
                     quarterTurns: 3,
                     child: Text(
-                      'POKÉMON CENTER',
+                      uiTextForLanguage('POKÉMON CENTER', """POKÉMON CENTER"""),
                       maxLines: 1,
                       style: TextStyle(
                         color: colorScheme.primary,
@@ -1895,7 +1974,7 @@ class _PokemonCenterDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Pokémon Center'),
+      title: Text(uiTextForLanguage('Pokémon Center', """Pokémon Center""")),
       content: Text(
         context.uiText(
           'Vuoi curare completamente questo Pokémon?',
@@ -1905,7 +1984,7 @@ class _PokemonCenterDialog extends StatelessWidget {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(false),
-          child: const Text('NO'),
+          child: Text('NO'),
         ),
         FilledButton(
           onPressed: () => Navigator.of(context).pop(true),
@@ -2545,20 +2624,32 @@ class _FeaturesView extends StatelessWidget {
             title: lookup(abilityDisplayNames, ability) ?? ability,
             child: Text(
               lookup(abilityDescriptions, ability) ??
-                  'Descrizione non disponibile.',
+                  uiTextForLanguage(
+                    'Descrizione non disponibile.',
+                    """Description unavailable.""",
+                  ),
             ),
           ),
         for (final feat in feats)
           _InfoCard(
             title: feat,
             child: Text(
-              featDescriptions[feat] ?? 'Descrizione non disponibile.',
+              featDescriptions[feat] ??
+                  uiTextForLanguage(
+                    'Descrizione non disponibile.',
+                    """Description unavailable.""",
+                  ),
             ),
           ),
         if (abilities.isEmpty && feats.isEmpty)
-          const _InfoCard(
+          _InfoCard(
             title: 'Features',
-            child: Text('Nessuna feature disponibile.'),
+            child: Text(
+              uiTextForLanguage(
+                'Nessuna feature disponibile.',
+                """No features available.""",
+              ),
+            ),
           ),
       ],
     );
@@ -2951,13 +3042,18 @@ class _ExperienceDialogState extends State<_ExperienceDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Modifica esperienza'),
+      title: Text(
+        uiTextForLanguage('Modifica esperienza', """Edit experience"""),
+      ),
       content: TextField(
         controller: _controller,
         autofocus: true,
         decoration: InputDecoration(
           labelText: 'Esperienza',
-          helperText: 'Usa +2000 per aggiungere, 2000 per impostare.',
+          helperText: uiTextForLanguage(
+            'Usa +2000 per aggiungere, 2000 per impostare.',
+            """Use +2000 to add, or 2000 to set.""",
+          ),
           hintText: widget.currentExperience.toString(),
         ),
         onSubmitted: (_) => _submit(),
@@ -2965,9 +3061,12 @@ class _ExperienceDialogState extends State<_ExperienceDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Annulla'),
+          child: Text(uiTextForLanguage('Annulla', """Cancel""")),
         ),
-        FilledButton(onPressed: _submit, child: const Text('Salva')),
+        FilledButton(
+          onPressed: _submit,
+          child: Text(uiTextForLanguage('Salva', """Save""")),
+        ),
       ],
     );
   }
@@ -2997,13 +3096,16 @@ class _HpDialogState extends State<_HpDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Modifica PF'),
+      title: Text(uiTextForLanguage('Modifica PF', """Edit HP""")),
       content: TextField(
         controller: _controller,
         autofocus: true,
         decoration: InputDecoration(
           labelText: 'PF',
-          helperText: 'Usa +5 per curare, -5 per danneggiare, 5 per impostare.',
+          helperText: uiTextForLanguage(
+            'Usa +5 per curare, -5 per danneggiare, 5 per impostare.',
+            """Use +5 to heal, -5 to damage, or 5 to set.""",
+          ),
           hintText: widget.currentHp.toString(),
           suffixText: '/ ${widget.maxHp}',
         ),
@@ -3012,9 +3114,12 @@ class _HpDialogState extends State<_HpDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Annulla'),
+          child: Text(uiTextForLanguage('Annulla', """Cancel""")),
         ),
-        FilledButton(onPressed: _submit, child: const Text('Salva')),
+        FilledButton(
+          onPressed: _submit,
+          child: Text(uiTextForLanguage('Salva', """Save""")),
+        ),
       ],
     );
   }

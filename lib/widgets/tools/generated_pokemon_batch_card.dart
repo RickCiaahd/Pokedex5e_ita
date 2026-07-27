@@ -41,7 +41,10 @@ class GeneratedPokemonBatchCard extends StatelessWidget {
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    'GRUPPO GENERATO — ${generated.length}',
+                    uiTextForLanguage(
+                      'GRUPPO GENERATO — ${generated.length}',
+                      """GENERATED GROUP — ${generated.length}""",
+                    ),
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w900,
                     ),
@@ -146,7 +149,7 @@ class _GeneratedBatchTile extends StatelessWidget {
             ),
           ),
           if (generated.isShiny)
-            const Padding(
+            Padding(
               padding: EdgeInsets.only(left: 6),
               child: Icon(Icons.auto_awesome, size: 18),
             ),
@@ -221,12 +224,12 @@ class _GeneratedBatchTile extends StatelessWidget {
             TextButton.icon(
               onPressed: onRegenerate,
               icon: const Icon(Icons.casino_outlined),
-              label: const Text('Rigenera'),
+              label: Text('Rigenera'),
             ),
             TextButton.icon(
               onPressed: onOpenDetails,
               icon: const Icon(Icons.description_outlined),
-              label: const Text('Scheda'),
+              label: Text(uiTextForLanguage('Scheda', """Sheet""")),
             ),
             TextButton.icon(
               onPressed: onRemove,

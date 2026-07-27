@@ -649,7 +649,7 @@ class _PokemonGeneratorScreenState extends State<PokemonGeneratorScreen> {
           ),
           children: [
             if (_isLoading)
-              const Padding(
+              Padding(
                 padding: EdgeInsets.only(top: 120),
                 child: Center(child: CircularProgressIndicator()),
               )
@@ -1275,7 +1275,7 @@ class _GeneratedSummary extends StatelessWidget {
               ),
             ),
             if (generated.isShiny)
-              const Chip(
+              Chip(
                 avatar: Icon(Icons.auto_awesome, size: 18),
                 label: Text('SHINY'),
               ),
@@ -1365,11 +1365,11 @@ class _GeneratedSummary extends StatelessWidget {
   static String _genderLabel(String? gender) {
     switch (gender) {
       case 'Male':
-        return 'Maschio';
+        return uiTextForLanguage('Maschio', """Male""");
       case 'Female':
-        return 'Femmina';
+        return uiTextForLanguage('Femmina', """Female""");
       case 'Genderless':
-        return 'Senza sesso';
+        return uiTextForLanguage('Senza sesso', """Genderless""");
       default:
         return 'Non specificato';
     }
@@ -1417,7 +1417,10 @@ class _GeneratedMoveChip extends StatelessWidget {
           const SizedBox(height: 2),
           Text(
             resolved == null
-                ? 'Dettagli non disponibili'
+                ? uiTextForLanguage(
+                    'Dettagli non disponibili',
+                    """Details unavailable""",
+                  )
                 : '${resolved.type} · PP ${resolved.pp}',
             style: Theme.of(context).textTheme.bodySmall,
           ),

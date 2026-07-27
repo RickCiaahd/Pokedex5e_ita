@@ -47,11 +47,13 @@ I file esportati possono contenere nomi, progressi e contenuti di gioco inseriti
 
 ## Accesso alla rete
 
-Il manifest Android dichiara attualmente il permesso `INTERNET`.
+La build Android corrente non dichiara il permesso `INTERNET`.
 
-Alcune schermate conservano fallback remoti usati quando un'immagine locale non è disponibile. Una richiesta HTTP a un host esterno può comunicare al gestore del servizio informazioni tecniche ordinarie, come indirizzo IP, data e ora della richiesta e user agent.
+Le immagini e i dati di gioco usati durante il normale funzionamento vengono caricati esclusivamente dagli asset inclusi nel pacchetto. I fallback remoti delle immagini sono stati eliminati e un controllo automatico impedisce di reintrodurre i relativi host o loader di rete nel codice applicativo verificato.
 
-La roadmap prevede di eliminare o limitare questi fallback e di verificare il funzionamento completamente offline prima della beta. Fino al completamento di tale audit, non deve essere dichiarato in modo definitivo che l'app non effettua alcuna comunicazione di rete.
+I riferimenti al repository e alla documentazione sono mostrati come testo consultabile dall'utente e non vengono contattati automaticamente dall'app. Eventuali operazioni di condivisione o apertura effettuate tramite altre applicazioni dipendono da una scelta esplicita dell'utente.
+
+Prima della beta pubblica resta comunque necessario verificare la build release effettiva, le dipendenze transitive e il traffico osservato su dispositivi reali.
 
 ## Conservazione e sicurezza
 
@@ -81,7 +83,7 @@ Trainer Atlas 5e non è progettato come servizio rivolto specificamente ai minor
 
 ## Contenuti e servizi di terzi
 
-L'app è un progetto non ufficiale. Marchi, personaggi, immagini e contenuti di terzi appartengono ai rispettivi titolari. Eventuali collegamenti o richieste verso servizi esterni sono soggetti alle condizioni dei rispettivi gestori.
+L'app è un progetto non ufficiale. Marchi, personaggi, immagini e contenuti di terzi appartengono ai rispettivi titolari. I servizi esterni scelti volontariamente dall'utente per esportazione, condivisione o apertura di file sono soggetti alle condizioni dei rispettivi gestori.
 
 ## Modifiche all'informativa
 

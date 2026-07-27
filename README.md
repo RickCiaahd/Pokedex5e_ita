@@ -3,7 +3,7 @@
 [![Flutter CI](https://github.com/RickCiaahd/Pokedex5e_ita/actions/workflows/flutter-ci.yml/badge.svg)](https://github.com/RickCiaahd/Pokedex5e_ita/actions/workflows/flutter-ci.yml)
 [![Windows release](https://github.com/RickCiaahd/Pokedex5e_ita/actions/workflows/windows-release.yml/badge.svg)](https://github.com/RickCiaahd/Pokedex5e_ita/actions/workflows/windows-release.yml)
 
-Companion non ufficiale in italiano per campagne Pokémon 5e, sviluppato con Flutter per Web, Windows e Android.
+Companion non ufficiale bilingue italiano/inglese per campagne Pokémon 5e, sviluppato con Flutter per Web, Windows e Android.
 
 L'app raccoglie in un unico progetto gli strumenti principali per giocatori e Master:
 
@@ -30,6 +30,8 @@ flutter build windows --release
 ```
 
 Il test di integrità verifica i file sorgente del catalogo, gli identificatori, le statistiche minime, le forme e la presenza di almeno un'immagine utilizzabile per ogni specie. Le pipeline verificano inoltre che il progetto continui a compilare come applicazione Android e Windows.
+
+La roadmap per internazionalizzazione, conformità, qualità e pubblicazione è tracciata nella issue #129.
 
 ## Requisiti
 
@@ -93,6 +95,21 @@ I dati applicativi sono salvati localmente tramite Hive. La schermata Profili pe
 
 Dalla schermata Squadra è inoltre possibile esportare, importare e condividere singoli Pokémon o una formazione completa senza sostituire l’intero profilo; i Pokémon rimpiazzati e gli eventuali esuberi vengono conservati nel PC. Le librerie del Master supportano file portabili e condivisione diretta per incontri e Allenatori PNG, mentre il Fight del Master può salvare o condividere un riepilogo testuale con round, iniziativa, PF, status e PP. Sul Web, quando il menu nativo non è disponibile, il file viene scaricato dal browser.
 
+## Licenza e conformità
+
+Il codice licenziabile di Trainer Atlas 5e è dichiarato **GPL-3.0-only**, in continuità con il progetto a monte [`Jerakin/Pokedex5E`](https://github.com/Jerakin/Pokedex5E). Consulta il file [`LICENSE`](LICENSE).
+
+La licenza del software non concede diritti su marchi, personaggi, artwork, regole o altri contenuti appartenenti a terzi. La pubblicazione pubblica resta bloccata finché non saranno risolti gli asset privi di una licenza di ridistribuzione verificata.
+
+Documenti di lavoro:
+
+- [audit di codice e licenze](docs/compliance/code-and-license-audit.md);
+- [inventario preliminare degli asset](docs/compliance/asset-inventory.md);
+- [Privacy Policy](docs/privacy-policy.md);
+- [bozza Google Play Data Safety](docs/google-play-data-safety-draft.md).
+
+Questi documenti sono preliminari e non costituiscono consulenza legale.
+
 ## Avvertenza
 
-Questo è un progetto amatoriale e non ufficiale. Pokémon e i relativi nomi, personaggi e immagini appartengono ai rispettivi titolari. Il progetto non è affiliato, sponsorizzato o approvato da Nintendo, Game Freak, Creatures Inc. o The Pokémon Company.
+Questo è un progetto amatoriale e non ufficiale. Pokémon e i relativi nomi, personaggi e immagini appartengono ai rispettivi titolari. Il progetto non è affiliato, sponsorizzato o approvato da Nintendo, Game Freak, Creatures Inc. o The Pokémon Company. Dungeons & Dragons e i relativi materiali appartengono ai rispettivi titolari.

@@ -1,0 +1,96 @@
+# Privacy Policy — Trainer Atlas 5e
+
+Versione della bozza: 27 luglio 2026
+
+> Questa informativa descrive il comportamento tecnico della versione corrente del progetto. Deve essere revisionata e pubblicata su un URL stabile prima della distribuzione tramite Google Play.
+
+## Titolare e contatti
+
+Trainer Atlas 5e è un progetto amatoriale e non ufficiale mantenuto tramite il repository GitHub:
+
+`https://github.com/RickCiaahd/Pokedex5e_ita`
+
+Per segnalazioni relative alla privacy è possibile aprire una issue nel repository. Prima della beta pubblica dovrà essere definito anche un indirizzo di contatto dedicato.
+
+## Dati salvati sul dispositivo
+
+L'app salva localmente, tramite Hive, le informazioni necessarie alle sue funzioni, tra cui:
+
+- nome e dati del profilo Allenatore inseriti dall'utente;
+- scheda, livello, denaro e progressione;
+- squadra, Pokémon nel PC e stato del Pokédex;
+- inventario e impostazioni;
+- incontri, Allenatori PNG, raccolte e sessioni di combattimento;
+- preferenza della lingua e stato dei tour guidati.
+
+Questi dati non richiedono un account online e, nella versione corrente, non vengono inviati a un server gestito dallo sviluppatore.
+
+## Pubblicità, analytics e profilazione
+
+La versione corrente non integra:
+
+- pubblicità;
+- sistemi analytics;
+- Firebase Analytics o Crashlytics;
+- account cloud;
+- sistemi di profilazione o marketing gestiti dallo sviluppatore.
+
+Ogni futura introduzione di uno di questi servizi richiederà un aggiornamento preventivo dell'informativa e della dichiarazione Google Play Data Safety.
+
+## Esportazione, importazione e condivisione
+
+L'utente può esportare backup e altri file, importarli o condividerli tramite il selettore file e il menu di condivisione del sistema operativo.
+
+Quando l'utente sceglie un'app, un servizio cloud, un'email o un'altra destinazione esterna, il file viene trattato dal servizio selezionato secondo le sue condizioni e la sua informativa privacy. Trainer Atlas 5e non controlla il trattamento effettuato da tali servizi.
+
+I file esportati possono contenere nomi, progressi e contenuti di gioco inseriti dall'utente. Prima di condividerli è opportuno verificarne il contenuto.
+
+## Accesso alla rete
+
+Il manifest Android dichiara attualmente il permesso `INTERNET`.
+
+Alcune schermate conservano fallback remoti usati quando un'immagine locale non è disponibile. Una richiesta HTTP a un host esterno può comunicare al gestore del servizio informazioni tecniche ordinarie, come indirizzo IP, data e ora della richiesta e user agent.
+
+La roadmap prevede di eliminare o limitare questi fallback e di verificare il funzionamento completamente offline prima della beta. Fino al completamento di tale audit, non deve essere dichiarato in modo definitivo che l'app non effettua alcuna comunicazione di rete.
+
+## Conservazione e sicurezza
+
+I dati restano sul dispositivo finché l'utente:
+
+- elimina il relativo profilo;
+- cancella i dati dell'app dalle impostazioni del sistema;
+- disinstalla l'app;
+- sovrascrive o ripristina dati tramite una funzione di importazione.
+
+La protezione fisica e logica dei dati locali dipende anche dal sistema operativo, dal blocco del dispositivo e dai backup configurati dall'utente.
+
+## Esportazione e cancellazione
+
+Dalla schermata Profili l'utente può:
+
+- esportare un backup JSON;
+- importare un backup;
+- duplicare un profilo;
+- eliminare completamente un profilo non attivo e i relativi dati supportati.
+
+Non essendoci un account remoto, non è prevista una procedura separata di cancellazione account.
+
+## Minori
+
+Trainer Atlas 5e non è progettato come servizio rivolto specificamente ai minori e non raccoglie consapevolmente dati tramite un server dello sviluppatore. La classificazione del pubblico e gli adempimenti per famiglie e minori devono essere verificati prima della pubblicazione sul Play Store.
+
+## Contenuti e servizi di terzi
+
+L'app è un progetto non ufficiale. Marchi, personaggi, immagini e contenuti di terzi appartengono ai rispettivi titolari. Eventuali collegamenti o richieste verso servizi esterni sono soggetti alle condizioni dei rispettivi gestori.
+
+## Modifiche all'informativa
+
+Questa informativa verrà aggiornata quando cambieranno:
+
+- raccolta o trasmissione dei dati;
+- dipendenze e servizi di terzi;
+- funzioni di rete;
+- esportazione o condivisione;
+- modalità di pubblicazione e assistenza.
+
+La data della versione sarà aggiornata nel documento e nella schermata interna Privacy.

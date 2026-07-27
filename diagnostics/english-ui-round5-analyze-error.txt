@@ -19,9 +19,6 @@ Got dependencies!
 Try `flutter pub outdated` for more information.
 Analyzing Pokedex5e_ita...                                      
 
-  error • Methods can't be invoked in constant expressions • lib/screens/battle/npc_battle_screen.dart:1509:29 • const_eval_method_invocation
   error • Methods can't be invoked in constant expressions • lib/screens/pokemon/custom_pokemon_library_screen.dart:1531:25 • const_eval_method_invocation
-  error • Methods can't be invoked in constant expressions • lib/screens/pokemon/custom_pokemon_library_screen.dart:2296:9 • const_eval_method_invocation
-  error • Methods can't be invoked in constant expressions • lib/screens/pokemon/pokemon_edit_screen.dart:1606:20 • const_eval_method_invocation
 
-4 issues found. (ran in 7.7s)
+1 issue found. (ran in 8.1s)

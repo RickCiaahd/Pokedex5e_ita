@@ -21,6 +21,7 @@ import '../../widgets/layout/responsive_content.dart';
 import '../../widgets/navigation/home_leading_button.dart';
 import '../../widgets/pokemon/pokemon_asset_image.dart';
 import 'custom_pokemon_advanced_editor_screen.dart';
+import '../../localization/ui_text.dart';
 
 enum _ImportChoice { update, copy }
 
@@ -37,7 +38,7 @@ class _CustomPokemonLibraryScreenState
   final CustomPokemonRepository _repository = CustomPokemonRepository();
   final CustomPokemonTransferService _transferService =
       CustomPokemonTransferService();
-  final NativeShareService _shareService = const NativeShareService();
+  final NativeShareService _shareService = NativeShareService();
   final CustomPokemonCatalogService _catalogService =
       CustomPokemonCatalogService();
   final CustomPokemonReferenceService _referenceService =
@@ -45,7 +46,7 @@ class _CustomPokemonLibraryScreenState
   final CustomPokemonDiscoveryService _discoveryService =
       CustomPokemonDiscoveryService();
 
-  List<CustomPokemonDefinition> _definitions = const [];
+  List<CustomPokemonDefinition> _definitions = [];
   bool _isLoading = true;
   bool _isBusy = false;
   String? _message;
@@ -91,7 +92,12 @@ class _CustomPokemonLibraryScreenState
     if (!mounted || saved == null) return;
     PokemonRepository.clearCache();
     await _load();
-    _setMessage('${saved.name} salvato nel catalogo Fakemon.');
+    _setMessage(
+      uiTextForLanguage(
+        '${saved.name} salvato nel catalogo Fakemon.',
+        """${saved.name} saved to the Fakemon catalog.""",
+      ),
+    );
   }
 
   Future<void> _duplicate(CustomPokemonDefinition source) async {
@@ -143,12 +149,15 @@ class _CustomPokemonLibraryScreenState
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'La specie è ancora utilizzata. Rimuovi prima tutti i riferimenti elencati:',
+                Text(
+                  uiTextForLanguage(
+                    'La specie è ancora utilizzata. Rimuovi prima tutti i riferimenti elencati:',
+                    """This species is still in use. Remove all listed references first:""",
+                  ),
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 ConstrainedBox(
-                  constraints: const BoxConstraints(maxHeight: 420),
+                  constraints: BoxConstraints(maxHeight: 420),
                   child: ListView.builder(
                     shrinkWrap: true,
                     itemCount: report.references.length,
@@ -156,7 +165,7 @@ class _CustomPokemonLibraryScreenState
                       final reference = report.references[index];
                       return ListTile(
                         dense: true,
-                        leading: const Icon(Icons.link),
+                        leading: Icon(Icons.link),
                         title: Text(reference.location),
                         subtitle: Text(
                           '${reference.profileName} · ${reference.detail}',
@@ -171,7 +180,7 @@ class _CustomPokemonLibraryScreenState
           actions: [
             FilledButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('OK'),
+              child: Text('OK'),
             ),
           ],
         ),
@@ -183,17 +192,20 @@ class _CustomPokemonLibraryScreenState
       context: context,
       builder: (_) => AlertDialog(
         title: Text('Eliminare ${definition.name}?'),
-        content: const Text(
-          'La specie non è utilizzata da nessun profilo e verrà rimossa dal catalogo globale.',
+        content: Text(
+          uiTextForLanguage(
+            'La specie non è utilizzata da nessun profilo e verrà rimossa dal catalogo globale.',
+            """This species is not used by any profile and will be removed from the global catalog.""",
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('ANNULLA'),
+            child: Text(uiTextForLanguage('ANNULLA', """CANCEL""")),
           ),
           FilledButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('ELIMINA'),
+            child: Text(uiTextForLanguage('ELIMINA', """DELETE""")),
           ),
         ],
       ),
@@ -220,15 +232,21 @@ class _CustomPokemonLibraryScreenState
       final bundle = await _catalogService.createBundle();
       final encoded = _catalogService.encode(bundle);
       final result = await FilePicker.platform.saveFile(
-        dialogTitle: 'Esporta catalogo Fakemon',
+        dialogTitle: uiTextForLanguage(
+          'Esporta catalogo Fakemon',
+          """Export Fakemon catalog""",
+        ),
         fileName: _catalogService.fileNameFor(bundle),
         type: FileType.custom,
-        allowedExtensions: const ['p5fakemonpack'],
+        allowedExtensions: ['p5fakemonpack'],
         bytes: Uint8List.fromList(utf8.encode(encoded)),
       );
       _setMessage(
         result == null
-            ? 'Esportazione catalogo annullata.'
+            ? uiTextForLanguage(
+                'Esportazione catalogo annullata.',
+                """Catalog export cancelled.""",
+              )
             : '${bundle.definitions.length} Fakemon esportati.',
       );
     } catch (error) {
@@ -243,14 +261,22 @@ class _CustomPokemonLibraryScreenState
     setState(() => _isBusy = true);
     try {
       final result = await FilePicker.platform.pickFiles(
-        dialogTitle: 'Importa catalogo Fakemon',
+        dialogTitle: uiTextForLanguage(
+          'Importa catalogo Fakemon',
+          """Import Fakemon catalog""",
+        ),
         type: FileType.custom,
-        allowedExtensions: const ['p5fakemonpack', 'json'],
+        allowedExtensions: ['p5fakemonpack', 'json'],
         allowMultiple: false,
         withData: true,
       );
       if (result == null || result.files.isEmpty) {
-        _setMessage('Importazione catalogo annullata.');
+        _setMessage(
+          uiTextForLanguage(
+            'Importazione catalogo annullata.',
+            """Catalog import cancelled.""",
+          ),
+        );
         return;
       }
       final picked = result.files.single;
@@ -262,8 +288,12 @@ class _CustomPokemonLibraryScreenState
       PokemonRepository.clearCache();
       await _load();
       _setMessage(
-        'Catalogo importato: ${imported.installed} installati, '
-        '${imported.updated} aggiornati, ${imported.remapped} rimappati.',
+        uiTextForLanguage(
+          'Catalogo importato: ${imported.installed} installati, '
+              '${imported.updated} aggiornati, ${imported.remapped} rimappati.',
+          'Catalog imported: ${imported.installed} installed, '
+              '${imported.updated} updated, ${imported.remapped} remapped.',
+        ),
       );
     } catch (error) {
       _setMessage(_friendlyError(error), isError: true);
@@ -279,19 +309,24 @@ class _CustomPokemonLibraryScreenState
       final choice = await showDialog<bool>(
         context: context,
         builder: (_) => AlertDialog(
-          title: const Text('Modalità esportazione'),
-          content: const Text(
-            'Il pacchetto segreto non mostra nome, immagine o dati nell’app del giocatore prima della scoperta.',
+          title: Text(
+            uiTextForLanguage('Modalità esportazione', """Export mode"""),
+          ),
+          content: Text(
+            uiTextForLanguage(
+              'Il pacchetto segreto non mostra nome, immagine o dati nell’app del giocatore prima della scoperta.',
+              """The secret package does not show its name, image or data in the player app before discovery.""",
+            ),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
-              child: const Text('NORMALE'),
+              child: Text('NORMALE'),
             ),
             FilledButton.icon(
               onPressed: () => Navigator.of(context).pop(true),
-              icon: const Icon(Icons.lock_outline),
-              label: const Text('SEGRETA'),
+              icon: Icon(Icons.lock_outline),
+              label: Text('SEGRETA'),
             ),
           ],
         ),
@@ -304,17 +339,29 @@ class _CustomPokemonLibraryScreenState
       final encoded = _transferService.encode(definition, sealed: sealed);
       final result = await FilePicker.platform.saveFile(
         dialogTitle: sealed
-            ? 'Esporta contenuto segreto'
-            : 'Esporta ${definition.name}',
+            ? uiTextForLanguage(
+                'Esporta contenuto segreto',
+                """Export secret content""",
+              )
+            : uiTextForLanguage(
+                'Esporta ${definition.name}',
+                """Export ${definition.name}""",
+              ),
         fileName: _transferService.fileNameFor(definition, sealed: sealed),
         type: FileType.custom,
-        allowedExtensions: sealed ? const ['p5secret'] : const ['p5fakemon'],
+        allowedExtensions: sealed ? ['p5secret'] : ['p5fakemon'],
         bytes: Uint8List.fromList(utf8.encode(encoded)),
       );
       _setMessage(
         result == null
-            ? 'Esportazione annullata.'
-            : '${definition.name} esportato correttamente.',
+            ? uiTextForLanguage(
+                'Esportazione annullata.',
+                """Export cancelled.""",
+              )
+            : uiTextForLanguage(
+                '${definition.name} esportato correttamente.',
+                """${definition.name} exported successfully.""",
+              ),
       );
     } catch (error) {
       _setMessage(_friendlyError(error), isError: true);
@@ -338,7 +385,10 @@ class _CustomPokemonLibraryScreenState
           sealed: definition.advanced.secretUntilDiscovered,
         ),
         mimeType: 'application/json',
-        title: 'Condividi ${definition.name}',
+        title: uiTextForLanguage(
+          'Condividi ${definition.name}',
+          """Share ${definition.name}""",
+        ),
         subject: 'Fakemon ${definition.name}',
         text: 'Fakemon creato con Trainer Atlas 5e.',
       );
@@ -360,14 +410,16 @@ class _CustomPokemonLibraryScreenState
     setState(() => _isBusy = true);
     try {
       final result = await FilePicker.platform.pickFiles(
-        dialogTitle: 'Importa Fakemon',
+        dialogTitle: uiTextForLanguage('Importa Fakemon', """Import Fakemon"""),
         type: FileType.custom,
-        allowedExtensions: const ['p5fakemon', 'p5secret', 'json'],
+        allowedExtensions: ['p5fakemon', 'p5secret', 'json'],
         allowMultiple: false,
         withData: true,
       );
       if (result == null || result.files.isEmpty) {
-        _setMessage('Importazione annullata.');
+        _setMessage(
+          uiTextForLanguage('Importazione annullata.', """Import cancelled."""),
+        );
         return;
       }
       final picked = result.files.single;
@@ -389,7 +441,12 @@ class _CustomPokemonLibraryScreenState
           ),
         );
         if (choice == null) {
-          _setMessage('Importazione annullata.');
+          _setMessage(
+            uiTextForLanguage(
+              'Importazione annullata.',
+              """Import cancelled.""",
+            ),
+          );
           return;
         }
         duplicate = choice == _ImportChoice.copy;
@@ -403,10 +460,16 @@ class _CustomPokemonLibraryScreenState
       await _load();
       _setMessage(
         bundle.sealed
-            ? 'Contenuto segreto installato. Sarà rivelato al momento della cattura o dell’evoluzione.'
+            ? uiTextForLanguage(
+                'Contenuto segreto installato. Sarà rivelato al momento della cattura o dell’evoluzione.',
+                """Secret content installed. It will be revealed upon capture or evolution.""",
+              )
             : imported.updatedExisting
             ? '${imported.definition.name} aggiornato.'
-            : '${imported.definition.name} importato.',
+            : uiTextForLanguage(
+                '${imported.definition.name} importato.',
+                """${imported.definition.name} imported.""",
+              ),
       );
     } catch (error) {
       _setMessage(_friendlyError(error), isError: true);
@@ -419,11 +482,14 @@ class _CustomPokemonLibraryScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: const HomeLeadingButton(),
-        title: const Text('I MIEI FAKEMON'),
+        leading: HomeLeadingButton(),
+        title: Text('I MIEI FAKEMON'),
         actions: [
           PopupMenuButton<String>(
-            tooltip: 'Importa ed esporta',
+            tooltip: uiTextForLanguage(
+              'Importa ed esporta',
+              """Import and export""",
+            ),
             enabled: !_isBusy,
             onSelected: (value) {
               switch (value) {
@@ -438,18 +504,24 @@ class _CustomPokemonLibraryScreenState
                   break;
               }
             },
-            itemBuilder: (_) => const [
+            itemBuilder: (_) => [
               PopupMenuItem(
                 value: 'import-single',
-                child: Text('Importa Fakemon'),
+                child: Text(
+                  uiTextForLanguage('Importa Fakemon', """Import Fakemon"""),
+                ),
               ),
               PopupMenuItem(
                 value: 'import-catalog',
-                child: Text('Importa catalogo'),
+                child: Text(
+                  uiTextForLanguage('Importa catalogo', """Import catalog"""),
+                ),
               ),
               PopupMenuItem(
                 value: 'export-catalog',
-                child: Text('Esporta catalogo'),
+                child: Text(
+                  uiTextForLanguage('Esporta catalogo', """Export catalog"""),
+                ),
               ),
             ],
           ),
@@ -457,19 +529,19 @@ class _CustomPokemonLibraryScreenState
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _isBusy ? null : () => _openEditor(),
-        icon: const Icon(Icons.add),
-        label: const Text('NUOVO FAKEMON'),
+        icon: Icon(Icons.add),
+        label: Text(uiTextForLanguage('NUOVO FAKEMON', """NEW FAKEMON""")),
       ),
       body: ResponsiveContent(
         maxWidth: 980,
         child: Column(
           children: [
-            if (_isBusy) const LinearProgressIndicator(),
+            if (_isBusy) LinearProgressIndicator(),
             if (_message != null)
               Container(
                 width: double.infinity,
-                margin: const EdgeInsets.fromLTRB(12, 10, 12, 0),
-                padding: const EdgeInsets.all(10),
+                margin: EdgeInsets.fromLTRB(12, 10, 12, 0),
+                padding: EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   color: _messageIsError
                       ? Theme.of(context).colorScheme.errorContainer
@@ -480,13 +552,13 @@ class _CustomPokemonLibraryScreenState
               ),
             Expanded(
               child: _isLoading
-                  ? const Center(child: CircularProgressIndicator())
+                  ? Center(child: CircularProgressIndicator())
                   : _definitions.isEmpty
-                  ? const _EmptyFakemonState()
+                  ? _EmptyFakemonState()
                   : RefreshIndicator(
                       onRefresh: _load,
                       child: ListView.builder(
-                        padding: const EdgeInsets.fromLTRB(12, 8, 12, 100),
+                        padding: EdgeInsets.fromLTRB(12, 8, 12, 100),
                         itemCount: _definitions.length,
                         itemBuilder: (context, index) {
                           final definition = _definitions[index];
@@ -520,7 +592,7 @@ class CustomPokemonEditorScreen extends StatefulWidget {
 }
 
 class _CustomPokemonEditorScreenState extends State<CustomPokemonEditorScreen> {
-  static const _types = [
+  static final _types = [
     'Bug',
     'Dark',
     'Dragon',
@@ -540,8 +612,8 @@ class _CustomPokemonEditorScreenState extends State<CustomPokemonEditorScreen> {
     'Steel',
     'Water',
   ];
-  static const _sizes = ['Tiny', 'Small', 'Medium', 'Large', 'Huge'];
-  static const _eggGroups = [
+  static final _sizes = ['Tiny', 'Small', 'Medium', 'Large', 'Huge'];
+  static final _eggGroups = [
     'Monster',
     'Water 1',
     'Bug',
@@ -599,9 +671,9 @@ class _CustomPokemonEditorScreenState extends State<CustomPokemonEditorScreen> {
   String? _shinyImageMimeType;
   List<CustomPokemonMoveDefinition> _localMoves = [];
   List<CustomPokemonAbilityDefinition> _localAbilities = [];
-  CustomPokemonAdvancedData _advanced = const CustomPokemonAdvancedData();
-  List<MoveData> _globalMoves = const [];
-  Map<String, String> _globalAbilities = const {};
+  CustomPokemonAdvancedData _advanced = CustomPokemonAdvancedData();
+  List<MoveData> _globalMoves = [];
+  Map<String, String> _globalAbilities = {};
   bool _loadingCatalogs = true;
   bool _saving = false;
 
@@ -683,7 +755,7 @@ class _CustomPokemonEditorScreenState extends State<CustomPokemonEditorScreen> {
     _shinyImageMimeType = definition?.shinyImageMimeType;
     _localMoves = [...?definition?.localMoves];
     _localAbilities = [...?definition?.localAbilities];
-    _advanced = definition?.advanced ?? const CustomPokemonAdvancedData();
+    _advanced = definition?.advanced ?? CustomPokemonAdvancedData();
     _loadCatalogs();
   }
 
@@ -735,10 +807,16 @@ class _CustomPokemonEditorScreenState extends State<CustomPokemonEditorScreen> {
   Future<void> _pickImage({bool shiny = false}) async {
     final result = await FilePicker.platform.pickFiles(
       dialogTitle: shiny
-          ? 'Scegli immagine shiny del Fakemon'
-          : 'Scegli immagine Fakemon',
+          ? uiTextForLanguage(
+              'Scegli immagine shiny del Fakemon',
+              """Choose Fakemon shiny image""",
+            )
+          : uiTextForLanguage(
+              'Scegli immagine Fakemon',
+              """Choose Fakemon image""",
+            ),
       type: FileType.custom,
-      allowedExtensions: const ['png', 'jpg', 'jpeg', 'webp'],
+      allowedExtensions: ['png', 'jpg', 'jpeg', 'webp'],
       allowMultiple: false,
       withData: true,
     );
@@ -780,7 +858,7 @@ class _CustomPokemonEditorScreenState extends State<CustomPokemonEditorScreen> {
     return Column(
       children: [
         Text(label, style: Theme.of(context).textTheme.labelLarge),
-        const SizedBox(height: 6),
+        SizedBox(height: 6),
         InkWell(
           borderRadius: BorderRadius.circular(18),
           onTap: () => _pickImage(shiny: shiny),
@@ -798,9 +876,16 @@ class _CustomPokemonEditorScreenState extends State<CustomPokemonEditorScreen> {
                 ? Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(Icons.add_photo_alternate_outlined, size: 44),
-                      const SizedBox(height: 8),
-                      Text(shiny ? 'AGGIUNGI SHINY' : 'CARICA IMMAGINE'),
+                      Icon(Icons.add_photo_alternate_outlined, size: 44),
+                      SizedBox(height: 8),
+                      Text(
+                        shiny
+                            ? uiTextForLanguage(
+                                'AGGIUNGI SHINY',
+                                """ADD SHINY""",
+                              )
+                            : 'CARICA IMMAGINE',
+                      ),
                     ],
                   )
                 : Image.memory(bytes, fit: BoxFit.contain),
@@ -817,8 +902,8 @@ class _CustomPokemonEditorScreenState extends State<CustomPokemonEditorScreen> {
                 _imageMimeType = null;
               }
             }),
-            icon: const Icon(Icons.delete_outline),
-            label: const Text('Rimuovi'),
+            icon: Icon(Icons.delete_outline),
+            label: Text(uiTextForLanguage('Rimuovi', """Remove""")),
           ),
       ],
     );
@@ -857,7 +942,7 @@ class _CustomPokemonEditorScreenState extends State<CustomPokemonEditorScreen> {
   Future<void> _addLocalAbility() async {
     final definition = await showDialog<CustomPokemonAbilityDefinition>(
       context: context,
-      builder: (_) => const _LocalAbilityDialog(),
+      builder: (_) => _LocalAbilityDialog(),
     );
     if (definition == null) return;
     setState(() {
@@ -874,7 +959,7 @@ class _CustomPokemonEditorScreenState extends State<CustomPokemonEditorScreen> {
         builder: (_) => CustomPokemonAdvancedEditorScreen(
           initial: _advanced,
           currentName: _name.text.trim().isEmpty
-              ? 'Nuovo Fakemon'
+              ? uiTextForLanguage('Nuovo Fakemon', """New Fakemon""")
               : _name.text.trim(),
           currentPokemonId: widget.definition?.pokemonId,
         ),
@@ -887,7 +972,7 @@ class _CustomPokemonEditorScreenState extends State<CustomPokemonEditorScreen> {
   Future<void> _addLocalMove() async {
     final definition = await showDialog<CustomPokemonMoveDefinition>(
       context: context,
-      builder: (_) => const _LocalMoveDialog(),
+      builder: (_) => _LocalMoveDialog(),
     );
     if (definition == null) return;
     setState(() {
@@ -990,7 +1075,9 @@ class _CustomPokemonEditorScreenState extends State<CustomPokemonEditorScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          widget.definition == null ? 'NUOVO FAKEMON' : 'MODIFICA FAKEMON',
+          widget.definition == null
+              ? uiTextForLanguage('NUOVO FAKEMON', """NEW FAKEMON""")
+              : uiTextForLanguage('MODIFICA FAKEMON', """EDIT FAKEMON"""),
         ),
       ),
       body: Form(
@@ -998,10 +1085,13 @@ class _CustomPokemonEditorScreenState extends State<CustomPokemonEditorScreen> {
         child: ResponsiveContent(
           maxWidth: 900,
           child: ListView(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 100),
+            padding: EdgeInsets.fromLTRB(16, 12, 16, 100),
             children: [
               _EditorSection(
-                title: 'Identità e immagine',
+                title: uiTextForLanguage(
+                  'Identità e immagine',
+                  """Identity and image""",
+                ),
                 children: [
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -1013,7 +1103,7 @@ class _CustomPokemonEditorScreenState extends State<CustomPokemonEditorScreen> {
                           shiny: false,
                         ),
                       ),
-                      const SizedBox(width: 12),
+                      SizedBox(width: 12),
                       Expanded(
                         child: _imagePickerCard(
                           label: 'SHINY (FACOLTATIVA)',
@@ -1023,11 +1113,14 @@ class _CustomPokemonEditorScreenState extends State<CustomPokemonEditorScreen> {
                       ),
                     ],
                   ),
-                  _RequiredTextField(controller: _name, label: 'Nome'),
+                  _RequiredTextField(
+                    controller: _name,
+                    label: uiTextForLanguage('Nome', """Name"""),
+                  ),
                   _RequiredTextField(controller: _author, label: 'Autore'),
                   TextFormField(
                     controller: _genus,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       labelText: 'Categoria / genere',
                     ),
                   ),
@@ -1035,15 +1128,18 @@ class _CustomPokemonEditorScreenState extends State<CustomPokemonEditorScreen> {
                     controller: _description,
                     minLines: 3,
                     maxLines: 6,
-                    decoration: const InputDecoration(labelText: 'Descrizione'),
+                    decoration: InputDecoration(
+                      labelText: uiTextForLanguage(
+                        'Descrizione',
+                        """Description""",
+                      ),
+                    ),
                   ),
                   TextFormField(
                     controller: _notes,
                     minLines: 2,
                     maxLines: 5,
-                    decoration: const InputDecoration(
-                      labelText: 'Note del creatore',
-                    ),
+                    decoration: InputDecoration(labelText: 'Note del creatore'),
                   ),
                 ],
               ),
@@ -1059,7 +1155,7 @@ class _CustomPokemonEditorScreenState extends State<CustomPokemonEditorScreen> {
                           (value) => setState(() => _primaryType = value!),
                         ),
                       ),
-                      const SizedBox(width: 10),
+                      SizedBox(width: 10),
                       Expanded(
                         child: _typeDropdown(
                           'Tipo secondario',
@@ -1072,7 +1168,7 @@ class _CustomPokemonEditorScreenState extends State<CustomPokemonEditorScreen> {
                   ),
                   DropdownButtonFormField<String>(
                     initialValue: _size,
-                    decoration: const InputDecoration(labelText: 'Taglia'),
+                    decoration: InputDecoration(labelText: 'Taglia'),
                     items: [
                       for (final size in _sizes)
                         DropdownMenuItem(value: size, child: Text(size)),
@@ -1086,15 +1182,21 @@ class _CustomPokemonEditorScreenState extends State<CustomPokemonEditorScreen> {
                       Expanded(
                         child: _optionalNumber(_height, 'Altezza (decimetri)'),
                       ),
-                      const SizedBox(width: 10),
+                      SizedBox(width: 10),
                       Expanded(
-                        child: _optionalNumber(_weight, 'Peso (ettogrammi)'),
+                        child: _optionalNumber(
+                          _weight,
+                          uiTextForLanguage(
+                            'Peso (ettogrammi)',
+                            """Weight (hectograms)""",
+                          ),
+                        ),
                       ),
                     ],
                   ),
                   TextFormField(
                     controller: _genderRatio,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       labelText: 'Rapporto tra i sessi',
                     ),
                   ),
@@ -1109,17 +1211,28 @@ class _CustomPokemonEditorScreenState extends State<CustomPokemonEditorScreen> {
                     children: [
                       _numberBox(_ac, 'CA', min: 1),
                       _numberBox(_hp, 'PF', min: 1),
-                      _numberBox(_speed, 'Velocità', min: 0),
+                      _numberBox(
+                        _speed,
+                        uiTextForLanguage('Velocità', """Speed"""),
+                        min: 0,
+                      ),
                       _numberBox(_hitDice, 'Dadi Vita', min: 1),
                       _decimalBox(_sr, 'SR', min: 0),
-                      _numberBox(_minLevel, 'Livello minimo', min: 1),
+                      _numberBox(
+                        _minLevel,
+                        uiTextForLanguage(
+                          'Livello minimo',
+                          """Minimum level""",
+                        ),
+                        min: 1,
+                      ),
                     ],
                   ),
                   Wrap(
                     spacing: 10,
                     runSpacing: 10,
                     children: [
-                      for (final key in const [
+                      for (final key in [
                         'STR',
                         'DEX',
                         'CON',
@@ -1132,33 +1245,42 @@ class _CustomPokemonEditorScreenState extends State<CustomPokemonEditorScreen> {
                   ),
                   TextFormField(
                     controller: _skills,
-                    decoration: const InputDecoration(
-                      labelText: 'Competenze, separate da virgole',
+                    decoration: InputDecoration(
+                      labelText: uiTextForLanguage(
+                        'Competenze, separate da virgole',
+                        """Proficiencies, comma-separated""",
+                      ),
                     ),
                   ),
                   TextFormField(
                     controller: _savingThrows,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       labelText: 'Tiri salvezza, separati da virgole',
                     ),
                   ),
                 ],
               ),
               _EditorSection(
-                title: 'Abilità',
+                title: uiTextForLanguage('Abilità', """Abilities"""),
                 children: [
                   TextFormField(
                     controller: _abilities,
                     minLines: 2,
                     maxLines: 4,
-                    decoration: const InputDecoration(
-                      labelText: 'Abilità disponibili, separate da virgole',
+                    decoration: InputDecoration(
+                      labelText: uiTextForLanguage(
+                        'Abilità disponibili, separate da virgole',
+                        """Available abilities, comma-separated""",
+                      ),
                     ),
                   ),
                   TextFormField(
                     controller: _hiddenAbility,
-                    decoration: const InputDecoration(
-                      labelText: 'Abilità nascosta',
+                    decoration: InputDecoration(
+                      labelText: uiTextForLanguage(
+                        'Abilità nascosta',
+                        """Hidden ability""",
+                      ),
                     ),
                   ),
                   Wrap(
@@ -1166,13 +1288,15 @@ class _CustomPokemonEditorScreenState extends State<CustomPokemonEditorScreen> {
                     children: [
                       OutlinedButton.icon(
                         onPressed: _loadingCatalogs ? null : _pickGlobalAbility,
-                        icon: const Icon(Icons.search),
-                        label: const Text('DAL CATALOGO'),
+                        icon: Icon(Icons.search),
+                        label: Text(
+                          uiTextForLanguage('DAL CATALOGO', """FROM CATALOG"""),
+                        ),
                       ),
                       FilledButton.tonalIcon(
                         onPressed: _addLocalAbility,
-                        icon: const Icon(Icons.add),
-                        label: const Text('NUOVA ESCLUSIVA'),
+                        icon: Icon(Icons.add),
+                        label: Text('NUOVA ESCLUSIVA'),
                       ),
                     ],
                   ),
@@ -1180,58 +1304,90 @@ class _CustomPokemonEditorScreenState extends State<CustomPokemonEditorScreen> {
                     ListTile(
                       title: Text(entry.$2.name),
                       subtitle: Text(entry.$2.description),
-                      leading: const Icon(Icons.auto_awesome),
+                      leading: Icon(Icons.auto_awesome),
                       trailing: IconButton(
-                        tooltip: 'Rimuovi',
+                        tooltip: uiTextForLanguage('Rimuovi', """Remove"""),
                         onPressed: () =>
                             setState(() => _localAbilities.removeAt(entry.$1)),
-                        icon: const Icon(Icons.delete_outline),
+                        icon: Icon(Icons.delete_outline),
                       ),
                     ),
                 ],
               ),
               _EditorSection(
-                title: 'Evoluzioni, forme e segreti',
+                title: uiTextForLanguage(
+                  'Evoluzioni, forme e segreti',
+                  """Evolutions, forms and secrets""",
+                ),
                 children: [
                   Text(
-                    '${_advanced.evolvesFrom.length} pre-evoluzioni · '
-                    '${_advanced.evolvesTo.length} evoluzioni · '
-                    '${_advanced.forms.length} forme',
+                    uiTextForLanguage(
+                      '${_advanced.evolvesFrom.length} pre-evoluzioni · '
+                          '${_advanced.evolvesTo.length} evoluzioni · '
+                          '${_advanced.forms.length} forme',
+                      '${_advanced.evolvesFrom.length} pre-evolutions · '
+                          '${_advanced.evolvesTo.length} evolutions · '
+                          '${_advanced.forms.length} forms',
+                    ),
                   ),
                   if (_advanced.secretUntilDiscovered)
-                    const ListTile(
+                    ListTile(
                       contentPadding: EdgeInsets.zero,
                       leading: Icon(Icons.lock_outline),
-                      title: Text('Esportazione segreta disponibile'),
+                      title: Text(
+                        uiTextForLanguage(
+                          'Esportazione segreta disponibile',
+                          """Secret export available""",
+                        ),
+                      ),
                       subtitle: Text(
-                        'Il giocatore non vedrà il contenuto prima della scoperta.',
+                        uiTextForLanguage(
+                          'Il giocatore non vedrà il contenuto prima della scoperta.',
+                          """The player will not see the content before discovery.""",
+                        ),
                       ),
                     ),
                   FilledButton.tonalIcon(
                     onPressed: _openAdvancedEditor,
-                    icon: const Icon(Icons.account_tree_outlined),
-                    label: const Text('APRI EDITOR AVANZATO'),
+                    icon: Icon(Icons.account_tree_outlined),
+                    label: Text(
+                      uiTextForLanguage(
+                        'APRI EDITOR AVANZATO',
+                        """OPEN ADVANCED EDITOR""",
+                      ),
+                    ),
                   ),
                 ],
               ),
               _EditorSection(
-                title: 'Allevamento',
+                title: uiTextForLanguage('Allevamento', """Breeding"""),
                 children: [
                   TextFormField(
                     controller: _eggGroupsController,
-                    decoration: const InputDecoration(
-                      labelText: 'Gruppi Uova, separati da virgole',
-                      helperText:
-                          'Lascia vuoto per rendere la specie non disponibile all’allevamento.',
+                    decoration: InputDecoration(
+                      labelText: uiTextForLanguage(
+                        'Gruppi Uova, separati da virgole',
+                        """Egg Groups, comma-separated""",
+                      ),
+                      helperText: uiTextForLanguage(
+                        'Lascia vuoto per rendere la specie non disponibile all’allevamento.',
+                        """Leave blank to make the species unavailable for breeding.""",
+                      ),
                     ),
                     validator: (value) {
                       final groups = _csv(value ?? '');
                       if (groups.length > 2) {
-                        return 'Scegli al massimo due Gruppi Uova.';
+                        return uiTextForLanguage(
+                          'Scegli al massimo due Gruppi Uova.',
+                          """Choose at most two Egg Groups.""",
+                        );
                       }
                       for (final group in groups) {
                         if (!_eggGroups.contains(group)) {
-                          return 'Gruppo Uova non riconosciuto: $group';
+                          return uiTextForLanguage(
+                            'Gruppo Uova non riconosciuto: $group',
+                            """Unrecognized Egg Group: $group""",
+                          );
                         }
                       }
                       return null;
@@ -1240,10 +1396,15 @@ class _CustomPokemonEditorScreenState extends State<CustomPokemonEditorScreen> {
                   TextFormField(
                     controller: _baseSpeciesId,
                     keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(
-                      labelText: 'ID specie base per la schiusa',
-                      helperText:
-                          'Facoltativo. Se vuoto, dall’uovo nascerà questa specie.',
+                    decoration: InputDecoration(
+                      labelText: uiTextForLanguage(
+                        'ID specie base per la schiusa',
+                        """Base species ID for hatching""",
+                      ),
+                      helperText: uiTextForLanguage(
+                        'Facoltativo. Se vuoto, dall’uovo nascerà questa specie.',
+                        """Optional. If blank, this species will hatch from the egg.""",
+                      ),
                     ),
                     validator: (value) {
                       final text = (value ?? '').trim();
@@ -1272,21 +1433,29 @@ class _CustomPokemonEditorScreenState extends State<CustomPokemonEditorScreen> {
                 ],
               ),
               _EditorSection(
-                title: 'Mosse',
+                title: uiTextForLanguage('Mosse', """Moves"""),
                 children: [
                   _MoveListField(
                     controller: _startingMoves,
-                    label: 'Mosse iniziali',
+                    label: uiTextForLanguage(
+                      'Mosse iniziali',
+                      """Starting moves""",
+                    ),
                     onPick: () => _pickGlobalMove(_startingMoves),
                   ),
                   TextFormField(
                     controller: _levelMoves,
                     minLines: 3,
                     maxLines: 8,
-                    decoration: const InputDecoration(
-                      labelText: 'Mosse per livello',
-                      helperText:
-                          'Una riga per livello, ad esempio: 5: Tuonoshock, Agilità',
+                    decoration: InputDecoration(
+                      labelText: uiTextForLanguage(
+                        'Mosse per livello',
+                        """Moves by level""",
+                      ),
+                      helperText: uiTextForLanguage(
+                        'Una riga per livello, ad esempio: 5: Tuonoshock, Agilità',
+                        """One line per level, for example: 5: Thunder Shock, Agility""",
+                      ),
                     ),
                     validator: (value) {
                       try {
@@ -1299,7 +1468,7 @@ class _CustomPokemonEditorScreenState extends State<CustomPokemonEditorScreen> {
                   ),
                   TextFormField(
                     controller: _tmMoves,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       labelText: 'Numeri MT, separati da virgole',
                     ),
                     validator: (value) {
@@ -1318,22 +1487,27 @@ class _CustomPokemonEditorScreenState extends State<CustomPokemonEditorScreen> {
                   ),
                   FilledButton.tonalIcon(
                     onPressed: _addLocalMove,
-                    icon: const Icon(Icons.add),
-                    label: const Text('CREA MOSSA ESCLUSIVA'),
+                    icon: Icon(Icons.add),
+                    label: Text(
+                      uiTextForLanguage(
+                        'CREA MOSSA ESCLUSIVA',
+                        """CREATE EXCLUSIVE MOVE""",
+                      ),
+                    ),
                   ),
                   for (final entry in _localMoves.indexed)
                     ListTile(
-                      leading: const Icon(Icons.auto_awesome),
+                      leading: Icon(Icons.auto_awesome),
                       title: Text(entry.$2.name),
                       subtitle: Text(
                         '${entry.$2.type} · ${entry.$2.moveTime}\n${entry.$2.description}',
                       ),
                       isThreeLine: true,
                       trailing: IconButton(
-                        tooltip: 'Rimuovi',
+                        tooltip: uiTextForLanguage('Rimuovi', """Remove"""),
                         onPressed: () =>
                             setState(() => _localMoves.removeAt(entry.$1)),
-                        icon: const Icon(Icons.delete_outline),
+                        icon: Icon(Icons.delete_outline),
                       ),
                     ),
                 ],
@@ -1344,17 +1518,17 @@ class _CustomPokemonEditorScreenState extends State<CustomPokemonEditorScreen> {
       ),
       bottomNavigationBar: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(12),
+          padding: EdgeInsets.all(12),
           child: FilledButton.icon(
             onPressed: _saving ? null : _save,
             icon: _saving
-                ? const SizedBox(
+                ? SizedBox(
                     width: 18,
                     height: 18,
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
-                : const Icon(Icons.save_outlined),
-            label: const Text('SALVA FAKEMON'),
+                : Icon(Icons.save_outlined),
+            label: Text(uiTextForLanguage('SALVA FAKEMON', """SAVE FAKEMON""")),
           ),
         ),
       ),
@@ -1373,7 +1547,10 @@ class _CustomPokemonEditorScreenState extends State<CustomPokemonEditorScreen> {
       decoration: InputDecoration(labelText: label),
       items: [
         if (optional)
-          const DropdownMenuItem<String?>(value: null, child: Text('Nessuno')),
+          DropdownMenuItem<String?>(
+            value: null,
+            child: Text(uiTextForLanguage('Nessuno', """None""")),
+          ),
         for (final type in _types)
           DropdownMenuItem<String?>(value: type, child: Text(type)),
       ],
@@ -1413,7 +1590,7 @@ class _CustomPokemonEditorScreenState extends State<CustomPokemonEditorScreen> {
       width: 130,
       child: TextFormField(
         controller: controller,
-        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+        keyboardType: TextInputType.numberWithOptions(decimal: true),
         decoration: InputDecoration(labelText: label),
         validator: (value) {
           final number = double.tryParse((value ?? '').replaceAll(',', '.'));
@@ -1459,7 +1636,7 @@ class _FakemonCard extends StatelessWidget {
     final pokemon = definition.toPokemon();
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: EdgeInsets.all(12),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -1468,7 +1645,7 @@ class _FakemonCard extends StatelessWidget {
               size: 104,
               useLargeArtwork: true,
             ),
-            const SizedBox(width: 12),
+            SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -1481,14 +1658,19 @@ class _FakemonCard extends StatelessWidget {
                   ),
                   Text('di ${definition.author} · ID ${definition.pokemonId}'),
                   if (definition.advanced.secretUntilDiscovered)
-                    const Padding(
+                    Padding(
                       padding: EdgeInsets.only(top: 4),
                       child: Chip(
                         avatar: Icon(Icons.lock_outline, size: 18),
-                        label: Text('CONTENUTO SEGRETO'),
+                        label: Text(
+                          uiTextForLanguage(
+                            'CONTENUTO SEGRETO',
+                            """SECRET CONTENT""",
+                          ),
+                        ),
                       ),
                     ),
-                  const SizedBox(height: 6),
+                  SizedBox(height: 6),
                   Wrap(
                     spacing: 6,
                     runSpacing: 6,
@@ -1498,30 +1680,35 @@ class _FakemonCard extends StatelessWidget {
                     ],
                   ),
                   if (definition.description != null) ...[
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8),
                     Text(
                       definition.description!,
                       maxLines: 3,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ],
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
                   Wrap(
                     spacing: 6,
                     runSpacing: 6,
                     children: [
                       OutlinedButton.icon(
                         onPressed: onEdit,
-                        icon: const Icon(Icons.edit_outlined),
-                        label: const Text('MODIFICA'),
+                        icon: Icon(Icons.edit_outlined),
+                        label: Text(uiTextForLanguage('MODIFICA', """EDIT""")),
                       ),
                       OutlinedButton.icon(
                         onPressed: onShare,
-                        icon: const Icon(Icons.share_outlined),
-                        label: const Text('CONDIVIDI'),
+                        icon: Icon(Icons.share_outlined),
+                        label: Text(
+                          uiTextForLanguage('CONDIVIDI', """SHARE"""),
+                        ),
                       ),
                       PopupMenuButton<String>(
-                        tooltip: 'Altre azioni',
+                        tooltip: uiTextForLanguage(
+                          'Altre azioni',
+                          """More actions""",
+                        ),
                         onSelected: (value) {
                           switch (value) {
                             case 'export':
@@ -1535,10 +1722,15 @@ class _FakemonCard extends StatelessWidget {
                               break;
                           }
                         },
-                        itemBuilder: (_) => const [
+                        itemBuilder: (_) => [
                           PopupMenuItem(
                             value: 'export',
-                            child: Text('Esporta file'),
+                            child: Text(
+                              uiTextForLanguage(
+                                'Esporta file',
+                                """Export file""",
+                              ),
+                            ),
                           ),
                           PopupMenuItem(
                             value: 'duplicate',
@@ -1546,7 +1738,9 @@ class _FakemonCard extends StatelessWidget {
                           ),
                           PopupMenuItem(
                             value: 'delete',
-                            child: Text('Elimina'),
+                            child: Text(
+                              uiTextForLanguage('Elimina', """Delete"""),
+                            ),
                           ),
                         ],
                       ),
@@ -1570,9 +1764,9 @@ class _EditorSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: EdgeInsets.only(bottom: 12),
       child: Padding(
-        padding: const EdgeInsets.all(14),
+        padding: EdgeInsets.all(14),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -1582,9 +1776,9 @@ class _EditorSection extends StatelessWidget {
                 context,
               ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             for (final entry in children.indexed) ...[
-              if (entry.$1 > 0) const SizedBox(height: 10),
+              if (entry.$1 > 0) SizedBox(height: 10),
               entry.$2,
             ],
           ],
@@ -1629,9 +1823,12 @@ class _MoveListField extends StatelessWidget {
       decoration: InputDecoration(
         labelText: '$label, separate da virgole',
         suffixIcon: IconButton(
-          tooltip: 'Scegli dal catalogo',
+          tooltip: uiTextForLanguage(
+            'Scegli dal catalogo',
+            """Choose from catalog""",
+          ),
           onPressed: onPick,
-          icon: const Icon(Icons.search),
+          icon: Icon(Icons.search),
         ),
       ),
     );
@@ -1661,20 +1858,20 @@ class _MoveCatalogDialogState extends State<_MoveCatalogDialog> {
         )
         .toList(growable: false);
     return AlertDialog(
-      title: const Text('Scegli mossa'),
+      title: Text(uiTextForLanguage('Scegli mossa', """Choose move""")),
       content: SizedBox(
         width: 560,
         height: 520,
         child: Column(
           children: [
             TextField(
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 prefixIcon: Icon(Icons.search),
-                labelText: 'Cerca',
+                labelText: uiTextForLanguage('Cerca', """Search"""),
               ),
               onChanged: (value) => setState(() => _query = value),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             Expanded(
               child: ListView.builder(
                 itemCount: moves.length,
@@ -1699,7 +1896,7 @@ class _MoveCatalogDialogState extends State<_MoveCatalogDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('ANNULLA'),
+          child: Text(uiTextForLanguage('ANNULLA', """CANCEL""")),
         ),
       ],
     );
@@ -1731,20 +1928,20 @@ class _AbilityCatalogDialogState extends State<_AbilityCatalogDialog> {
             .toList()
           ..sort();
     return AlertDialog(
-      title: const Text('Scegli abilità'),
+      title: Text(uiTextForLanguage('Scegli abilità', """Choose ability""")),
       content: SizedBox(
         width: 560,
         height: 520,
         child: Column(
           children: [
             TextField(
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 prefixIcon: Icon(Icons.search),
-                labelText: 'Cerca',
+                labelText: uiTextForLanguage('Cerca', """Search"""),
               ),
               onChanged: (value) => setState(() => _query = value),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             Expanded(
               child: ListView.builder(
                 itemCount: names.length,
@@ -1768,7 +1965,7 @@ class _AbilityCatalogDialogState extends State<_AbilityCatalogDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('ANNULLA'),
+          child: Text(uiTextForLanguage('ANNULLA', """CANCEL""")),
         ),
       ],
     );
@@ -1795,27 +1992,36 @@ class _LocalAbilityDialogState extends State<_LocalAbilityDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Nuova abilità esclusiva'),
+      title: Text(
+        uiTextForLanguage(
+          'Nuova abilità esclusiva',
+          """New exclusive ability""",
+        ),
+      ),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           TextField(
             controller: _name,
-            decoration: const InputDecoration(labelText: 'Nome'),
+            decoration: InputDecoration(
+              labelText: uiTextForLanguage('Nome', """Name"""),
+            ),
           ),
-          const SizedBox(height: 10),
+          SizedBox(height: 10),
           TextField(
             controller: _description,
             minLines: 3,
             maxLines: 7,
-            decoration: const InputDecoration(labelText: 'Descrizione'),
+            decoration: InputDecoration(
+              labelText: uiTextForLanguage('Descrizione', """Description"""),
+            ),
           ),
         ],
       ),
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('ANNULLA'),
+          child: Text(uiTextForLanguage('ANNULLA', """CANCEL""")),
         ),
         FilledButton(
           onPressed: () {
@@ -1830,7 +2036,7 @@ class _LocalAbilityDialogState extends State<_LocalAbilityDialog> {
               ),
             );
           },
-          child: const Text('AGGIUNGI'),
+          child: Text(uiTextForLanguage('AGGIUNGI', """ADD""")),
         ),
       ],
     );
@@ -1875,7 +2081,9 @@ class _LocalMoveDialogState extends State<_LocalMoveDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Nuova mossa esclusiva'),
+      title: Text(
+        uiTextForLanguage('Nuova mossa esclusiva', """New exclusive move"""),
+      ),
       content: SizedBox(
         width: 620,
         child: SingleChildScrollView(
@@ -1884,12 +2092,14 @@ class _LocalMoveDialogState extends State<_LocalMoveDialog> {
             children: [
               TextField(
                 controller: _name,
-                decoration: const InputDecoration(labelText: 'Nome'),
+                decoration: InputDecoration(
+                  labelText: uiTextForLanguage('Nome', """Name"""),
+                ),
               ),
-              const SizedBox(height: 10),
+              SizedBox(height: 10),
               DropdownButtonFormField<String>(
                 initialValue: _type,
-                decoration: const InputDecoration(labelText: 'Tipo'),
+                decoration: InputDecoration(labelText: 'Tipo'),
                 items: [
                   for (final type in _CustomPokemonEditorScreenState._types)
                     DropdownMenuItem(value: type, child: Text(type)),
@@ -1898,68 +2108,74 @@ class _LocalMoveDialogState extends State<_LocalMoveDialog> {
                   if (value != null) setState(() => _type = value);
                 },
               ),
-              const SizedBox(height: 10),
+              SizedBox(height: 10),
               Row(
                 children: [
                   Expanded(
                     child: TextField(
                       controller: _pp,
-                      decoration: const InputDecoration(labelText: 'PP'),
+                      decoration: InputDecoration(labelText: 'PP'),
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  SizedBox(width: 8),
                   Expanded(
                     child: TextField(
                       controller: _time,
-                      decoration: const InputDecoration(labelText: 'Tempo'),
+                      decoration: InputDecoration(labelText: 'Tempo'),
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 10),
+              SizedBox(height: 10),
               Row(
                 children: [
                   Expanded(
                     child: TextField(
                       controller: _range,
-                      decoration: const InputDecoration(labelText: 'Gittata'),
+                      decoration: InputDecoration(labelText: 'Gittata'),
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  SizedBox(width: 8),
                   Expanded(
                     child: TextField(
                       controller: _duration,
-                      decoration: const InputDecoration(labelText: 'Durata'),
+                      decoration: InputDecoration(labelText: 'Durata'),
                     ),
                   ),
                 ],
               ),
               SwitchListTile(
                 contentPadding: EdgeInsets.zero,
-                title: const Text('Richiede tiro per colpire'),
+                title: Text('Richiede tiro per colpire'),
                 value: _isAttack,
                 onChanged: (value) => setState(() => _isAttack = value),
               ),
               TextField(
                 controller: _save,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Tiro salvezza, se previsto',
                 ),
               ),
-              const SizedBox(height: 10),
+              SizedBox(height: 10),
               TextField(
                 controller: _damage,
-                decoration: const InputDecoration(
-                  labelText: 'Danno al livello 1, es. 2d6',
+                decoration: InputDecoration(
+                  labelText: uiTextForLanguage(
+                    'Danno al livello 1, es. 2d6',
+                    """Damage at level 1, e.g. 2d6""",
+                  ),
                 ),
               ),
-              const SizedBox(height: 10),
+              SizedBox(height: 10),
               TextField(
                 controller: _description,
                 minLines: 4,
                 maxLines: 9,
-                decoration: const InputDecoration(
-                  labelText: 'Descrizione completa',
+                decoration: InputDecoration(
+                  labelText: uiTextForLanguage(
+                    'Descrizione completa',
+                    """Full description""",
+                  ),
                 ),
               ),
             ],
@@ -1969,7 +2185,7 @@ class _LocalMoveDialogState extends State<_LocalMoveDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('ANNULLA'),
+          child: Text(uiTextForLanguage('ANNULLA', """CANCEL""")),
         ),
         FilledButton(
           onPressed: () {
@@ -1991,12 +2207,12 @@ class _LocalMoveDialogState extends State<_LocalMoveDialog> {
                 isAttack: _isAttack,
                 save: _nullable(_save.text),
                 damageByLevel: _damage.text.trim().isEmpty
-                    ? const {}
+                    ? {}
                     : {1: _damage.text.trim()},
               ),
             );
           },
-          child: const Text('AGGIUNGI'),
+          child: Text(uiTextForLanguage('AGGIUNGI', """ADD""")),
         ),
       ],
     );
@@ -2011,22 +2227,30 @@ class _FakemonImportDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('${incoming.name} è già presente'),
+      title: Text(
+        uiTextForLanguage(
+          '${incoming.name} è già presente',
+          """${incoming.name} already exists""",
+        ),
+      ),
       content: Text(
-        'La definizione locale è stata aggiornata il ${existing.updatedAt.toLocal()}. Vuoi aggiornarla mantenendo gli esemplari esistenti, oppure importare una copia separata?',
+        uiTextForLanguage(
+          'La definizione locale è stata aggiornata il ${existing.updatedAt.toLocal()}. Vuoi aggiornarla mantenendo gli esemplari esistenti, oppure importare una copia separata?',
+          """The local definition was updated on ${existing.updatedAt.toLocal()}. Update it while keeping existing specimens, or import a separate copy?""",
+        ),
       ),
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('ANNULLA'),
+          child: Text(uiTextForLanguage('ANNULLA', """CANCEL""")),
         ),
         OutlinedButton(
           onPressed: () => Navigator.of(context).pop(_ImportChoice.copy),
-          child: const Text('IMPORTA COPIA'),
+          child: Text(uiTextForLanguage('IMPORTA COPIA', """IMPORT COPY""")),
         ),
         FilledButton(
           onPressed: () => Navigator.of(context).pop(_ImportChoice.update),
-          child: const Text('AGGIORNA'),
+          child: Text(uiTextForLanguage('AGGIORNA', """UPDATE""")),
         ),
       ],
     );
@@ -2037,7 +2261,7 @@ class _EmptyFakemonState extends StatelessWidget {
   const _EmptyFakemonState();
   @override
   Widget build(BuildContext context) {
-    return const Center(
+    return Center(
       child: Padding(
         padding: EdgeInsets.all(32),
         child: Column(
@@ -2046,12 +2270,18 @@ class _EmptyFakemonState extends StatelessWidget {
             Icon(Icons.auto_awesome, size: 72),
             SizedBox(height: 16),
             Text(
-              'Nessun Fakemon creato',
+              uiTextForLanguage(
+                'Nessun Fakemon creato',
+                """No Fakemon created""",
+              ),
               style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900),
             ),
             SizedBox(height: 8),
             Text(
-              'Crea una nuova specie completa oppure importa un file .p5fakemon.',
+              uiTextForLanguage(
+                'Crea una nuova specie completa oppure importa un file .p5fakemon.',
+                """Create a complete new species or import a .p5fakemon file.""",
+              ),
               textAlign: TextAlign.center,
             ),
           ],
@@ -2090,7 +2320,12 @@ List<int> _intCsv(String value) {
   for (final entry in _csv(value)) {
     final number = int.tryParse(entry);
     if (number == null) {
-      throw const FormatException('Elenco numerico non valido.');
+      throw FormatException(
+        uiTextForLanguage(
+          'Elenco numerico non valido.',
+          """Invalid numeric list.""",
+        ),
+      );
     }
     result.add(number);
   }
@@ -2101,13 +2336,27 @@ Map<int, List<String>> _parseLevelMoves(String value) {
   final result = <int, List<String>>{};
   for (final rawLine in value.split('\n')) {
     final line = rawLine.trim();
-    if (line.isEmpty) continue;
+    if (line.isEmpty) {
+      continue;
+    }
     final separator = line.indexOf(':');
-    if (separator <= 0) throw FormatException('Riga mosse non valida: $line');
+    if (separator <= 0) {
+      throw FormatException(
+        uiTextForLanguage(
+          'Riga mosse non valida: $line',
+          """Invalid move row: $line""",
+        ),
+      );
+    }
     final level = int.tryParse(line.substring(0, separator).trim());
     final moves = _csv(line.substring(separator + 1));
     if (level == null || level <= 0 || moves.isEmpty) {
-      throw FormatException('Riga mosse non valida: $line');
+      throw FormatException(
+        uiTextForLanguage(
+          'Riga mosse non valida: $line',
+          """Invalid move row: $line""",
+        ),
+      );
     }
     result[level] = moves;
   }

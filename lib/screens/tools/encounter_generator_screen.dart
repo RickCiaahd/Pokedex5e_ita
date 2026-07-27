@@ -935,7 +935,14 @@ class _EncounterGeneratorScreenState extends State<EncounterGeneratorScreen> {
             ),
             items: [
               for (final habitat in PokemonHabitatService.habitats)
-                DropdownMenuItem(value: habitat, child: Text(habitat)),
+                DropdownMenuItem(
+                  value: habitat,
+                  child: Text(
+                    context.usesItalianUi
+                        ? habitat
+                        : PokemonHabitatService.englishLabel(habitat),
+                  ),
+                ),
             ],
             onChanged: (value) {
               if (value != null) setState(() => _habitat = value);

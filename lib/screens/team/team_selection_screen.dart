@@ -241,7 +241,10 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
       final json = await _transferService.encodePortable(bundle);
       final displayName = _displayNameForSlot(slot);
       final path = await FilePicker.platform.saveFile(
-        dialogTitle: 'Esporta $displayName',
+        dialogTitle: uiTextForLanguage(
+          'Esporta $displayName',
+          """Export $displayName""",
+        ),
         fileName: _transferService.fileNameForPokemon(
           bundle,
           displayName: displayName,
@@ -253,7 +256,10 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
       _setStatus(
         path == null
             ? context.uiText('Esportazione annullata.', 'Export cancelled.')
-            : '$displayName esportato correttamente.',
+            : uiTextForLanguage(
+                '$displayName esportato correttamente.',
+                """$displayName exported successfully.""",
+              ),
       );
     } catch (error) {
       _setStatus(_friendlyError(error), isError: true);
@@ -331,12 +337,18 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
         mimeType: 'application/json',
         title: context.uiText('Condividi $displayName', 'Share $displayName'),
         subject: '$displayName · Trainer Atlas 5e',
-        text: 'Pokémon esportato da Trainer Atlas 5e.',
+        text: uiTextForLanguage(
+          'Pokémon esportato da Trainer Atlas 5e.',
+          """Pokémon exported by Trainer Atlas 5e.""",
+        ),
       );
       _setStatus(
         _shareService.feedback(
           outcome,
-          successMessage: '$displayName condiviso correttamente.',
+          successMessage: uiTextForLanguage(
+            '$displayName condiviso correttamente.',
+            """$displayName shared successfully.""",
+          ),
         ),
       );
     } catch (error) {
@@ -430,7 +442,10 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
       );
       if (importedPokemon == null) {
         throw FormatException(
-          'Il Pokémon #${importedSlot.pokemonId} non è presente nel catalogo.',
+          uiTextForLanguage(
+            'Il Pokémon #${importedSlot.pokemonId} non è presente nel catalogo.',
+            """Pokémon #${importedSlot.pokemonId} is not available in the catalog.""",
+          ),
         );
       }
       if (!mounted) return;
@@ -446,18 +461,27 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
           title: Text(context.uiText('Importare Pokémon?', 'Import Pokémon?')),
           content: Text(
             replacedName == null
-                ? 'Vuoi inserire $importedName nello slot ${target.slotIndex + 1}?'
-                : 'Vuoi inserire $importedName nello slot ${target.slotIndex + 1}? '
-                      '$replacedName verrà spostato nel PC Pokémon.',
+                ? uiTextForLanguage(
+                    'Vuoi inserire $importedName nello slot ${target.slotIndex + 1}?',
+                    """Add $importedName to slot ${target.slotIndex + 1}?""",
+                  )
+                : uiTextForLanguage(
+                        'Vuoi inserire $importedName nello slot ${target.slotIndex + 1}? ',
+                        """Add $importedName to slot ${target.slotIndex + 1}? """,
+                      ) +
+                      uiTextForLanguage(
+                        '$replacedName verrà spostato nel PC Pokémon.',
+                        """$replacedName will be moved to the Pokémon PC.""",
+                      ),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
-              child: const Text('ANNULLA'),
+              child: Text(uiTextForLanguage('ANNULLA', """CANCEL""")),
             ),
             FilledButton(
               onPressed: () => Navigator.of(context).pop(true),
-              child: const Text('IMPORTA'),
+              child: Text(uiTextForLanguage('IMPORTA', """IMPORT""")),
             ),
           ],
         ),
@@ -477,8 +501,14 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
       await _loadTeam();
       _setStatus(
         result.replacedPokemon > 0
-            ? '$importedName importato. Il Pokémon sostituito è stato spostato nel PC.'
-            : '$importedName importato nello slot ${target.slotIndex + 1}.',
+            ? uiTextForLanguage(
+                '$importedName importato. Il Pokémon sostituito è stato spostato nel PC.',
+                """$importedName imported. The replaced Pokémon was moved to the PC.""",
+              )
+            : uiTextForLanguage(
+                '$importedName importato nello slot ${target.slotIndex + 1}.',
+                """$importedName imported into slot ${target.slotIndex + 1}.""",
+              ),
       );
     } catch (error) {
       _setStatus(_friendlyError(error), isError: true);
@@ -514,14 +544,20 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
       };
       if (unknownIds.isNotEmpty) {
         throw FormatException(
-          'Il catalogo non contiene i Pokémon: ${unknownIds.join(', ')}.',
+          uiTextForLanguage(
+            'Il catalogo non contiene i Pokémon: ${unknownIds.join(', ')}.',
+            'The catalog does not contain these Pokémon: ${unknownIds.join(', ')}.',
+          ),
         );
       }
 
       final availableSlots = _visibleTeam.where((slot) => !slot.isEgg).length;
       if (availableSlots == 0) {
         throw StateError(
-          'Non ci sono Pokéslot disponibili: gli slot sbloccati contengono uova.',
+          uiTextForLanguage(
+            'Non ci sono Pokéslot disponibili: gli slot sbloccati contengono uova.',
+            """No Poké Slots are available: the unlocked slots contain eggs.""",
+          ),
         );
       }
       final replaced = _visibleTeam.where((slot) => slot.isPokemon).length;
@@ -531,21 +567,30 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
       if (!mounted) return;
       final source = bundle.sourceTrainerName.isEmpty
           ? ''
-          : ' di ${bundle.sourceTrainerName}';
+          : uiTextForLanguage(
+              ' di ${bundle.sourceTrainerName}',
+              """ from ${bundle.sourceTrainerName}""",
+            );
       final confirmed = await showDialog<bool>(
         context: context,
         builder: (_) => AlertDialog(
           title: Text(context.uiText('Importare squadra?', 'Import team?')),
           content: Text(
-            'Stai importando ${bundle.pokemon.length} Pokémon$source. '
-            '${replaced > 0 ? 'I $replaced Pokémon attualmente in squadra verranno spostati nel PC. ' : ''}'
-            'Le uova resteranno nei loro slot. '
-            '${overflow > 0 ? '$overflow Pokémon importati finiranno nel PC perché non ci sono abbastanza Pokéslot disponibili.' : ''}',
+            uiTextForLanguage(
+              'Stai importando ${bundle.pokemon.length} Pokémon$source. '
+                  '${replaced > 0 ? 'I $replaced Pokémon attualmente in squadra verranno spostati nel PC. ' : ''}'
+                  'Le uova resteranno nei loro slot. '
+                  '${overflow > 0 ? '$overflow Pokémon importati finiranno nel PC perché non ci sono abbastanza Pokéslot disponibili.' : ''}',
+              'You are importing ${bundle.pokemon.length} Pokémon$source. '
+                  '${replaced > 0 ? 'The $replaced Pokémon currently in the team will be moved to the PC. ' : ''}'
+                  'Eggs will remain in their slots. '
+                  '${overflow > 0 ? '$overflow imported Pokémon will be sent to the PC because there are not enough Poké Slots available.' : ''}',
+            ),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
-              child: const Text('ANNULLA'),
+              child: Text(uiTextForLanguage('ANNULLA', """CANCEL""")),
             ),
             FilledButton(
               onPressed: () => Navigator.of(context).pop(true),
@@ -695,7 +740,7 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
             children: [
               if (_isBusy) const LinearProgressIndicator(),
               if (_isLoading)
-                const Padding(
+                Padding(
                   padding: EdgeInsets.only(top: 120),
                   child: Center(child: CircularProgressIndicator()),
                 )
@@ -953,7 +998,10 @@ class _TeamSlotCard extends StatelessWidget {
                               child: Text(
                                 pokemon == null
                                     ? context.uiText(
-                                        'Scegli Pokémon',
+                                        uiTextForLanguage(
+                                          'Scegli Pokémon',
+                                          """Choose Pokémon""",
+                                        ),
                                         'Choose Pokémon',
                                       )
                                     : context.uiText(
@@ -1130,7 +1178,7 @@ class _PokemonPickerSheetState extends State<_PokemonPickerSheet> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Scegli Pokémon',
+                    uiTextForLanguage('Scegli Pokémon', """Choose Pokémon"""),
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.w900,
                     ),
@@ -1261,7 +1309,7 @@ class _TeamStatusBanner extends StatelessWidget {
         ),
         title: Text(message, style: TextStyle(color: foreground)),
         trailing: IconButton(
-          tooltip: 'Chiudi',
+          tooltip: uiTextForLanguage('Chiudi', """Close"""),
           onPressed: onDismiss,
           icon: Icon(Icons.close, color: foreground),
         ),
@@ -1288,7 +1336,10 @@ class _TeamErrorState extends StatelessWidget {
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 16),
-          FilledButton(onPressed: onRetry, child: const Text('Riprova')),
+          FilledButton(
+            onPressed: onRetry,
+            child: Text(uiTextForLanguage('Riprova', """Retry""")),
+          ),
         ],
       ),
     );

@@ -10,6 +10,7 @@ import '../models/team_slot.dart';
 import '../models/user_profile.dart';
 import 'pokemon_generator_service.dart';
 import 'trainer_path_passive_service.dart';
+import '../localization/ui_text.dart';
 
 class BreedingCompatibility {
   const BreedingCompatibility({
@@ -58,22 +59,45 @@ class BreedingService {
     final secondData = speciesData[second.pokemonId];
 
     if (first.key == second.key) {
-      errors.add('Seleziona due Pokémon diversi.');
+      errors.add(
+        uiTextForLanguage(
+          'Seleziona due Pokémon diversi.',
+          """Select two different Pokémon.""",
+        ),
+      );
     }
     if (first.loyalty < 2 || second.loyalty < 2) {
-      errors.add('Entrambi i Pokémon devono avere Lealtà almeno +2.');
+      errors.add(
+        uiTextForLanguage(
+          'Entrambi i Pokémon devono avere Lealtà almeno +2.',
+          """Both Pokémon must have at least Loyalty +2.""",
+        ),
+      );
     }
     if (firstData == null || secondData == null) {
       errors.add(
-        'I dati dei Gruppi Uova non sono disponibili per uno dei genitori.',
+        uiTextForLanguage(
+          'I dati dei Gruppi Uova non sono disponibili per uno dei genitori.',
+          """Egg Group data is not available for one of the parents.""",
+        ),
       );
       return BreedingCompatibility(errors: errors, sharedEggGroups: const []);
     }
     if (firstData.isUndiscovered || secondData.isUndiscovered) {
-      errors.add('I Pokémon del gruppo Undiscovered non possono riprodursi.');
+      errors.add(
+        uiTextForLanguage(
+          'I Pokémon del gruppo Undiscovered non possono riprodursi.',
+          """Pokémon in the Undiscovered group cannot breed.""",
+        ),
+      );
     }
     if (firstData.isDitto && secondData.isDitto) {
-      errors.add('Due Ditto non possono produrre un uovo.');
+      errors.add(
+        uiTextForLanguage(
+          'Due Ditto non possono produrre un uovo.',
+          """Two Ditto cannot produce an egg.""",
+        ),
+      );
     }
 
     final hasDitto = firstData.isDitto || secondData.isDitto;
@@ -82,7 +106,12 @@ class BreedingService {
           (first.isMale && second.isFemale) ||
           (first.isFemale && second.isMale);
       if (!oppositeGender) {
-        errors.add('Senza Ditto servono un Pokémon maschio e uno femmina.');
+        errors.add(
+          uiTextForLanguage(
+            'Senza Ditto servono un Pokémon maschio e uno femmina.',
+            """Without Ditto, one male and one female Pokémon are required.""",
+          ),
+        );
       }
     }
 
@@ -98,7 +127,12 @@ class BreedingService {
             .toList()
           ..sort();
     if (!hasDitto && shared.isEmpty) {
-      errors.add('I due Pokémon non condividono alcun Gruppo Uova.');
+      errors.add(
+        uiTextForLanguage(
+          'I due Pokémon non condividono alcun Gruppo Uova.',
+          """The two Pokémon do not share an Egg Group.""",
+        ),
+      );
     }
 
     final source = firstData.isDitto
@@ -236,13 +270,23 @@ class BreedingService {
     Random? random,
   }) {
     if (!compatibility.isCompatible) {
-      throw StateError('I genitori selezionati non sono compatibili.');
+      throw StateError(
+        uiTextForLanguage(
+          'I genitori selezionati non sono compatibili.',
+          """The selected parents are not compatible.""",
+        ),
+      );
     }
     final rng = random ?? Random();
     final speciesId = compatibility.childSpeciesId!;
     final basePokemon = catalog[speciesId];
     if (basePokemon == null) {
-      throw StateError('La specie risultante non è presente nel catalogo.');
+      throw StateError(
+        uiTextForLanguage(
+          'La specie risultante non è presente nel catalogo.',
+          """The resulting species is not in the catalog.""",
+        ),
+      );
     }
     final formPokemon = basePokemon.resolveVariant(
       formName: compatibility.childFormName,
@@ -263,7 +307,12 @@ class BreedingService {
       random: rng,
     );
     if (generated == null) {
-      throw StateError('Impossibile generare il contenuto dell’uovo.');
+      throw StateError(
+        uiTextForLanguage(
+          'Impossibile generare il contenuto dell’uovo.',
+          """The egg contents could not be generated.""",
+        ),
+      );
     }
 
     final genderOptions = availableGenders(formPokemon);

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../localization/ui_text.dart';
 
 /// Pulsante principale di navigazione delle schermate interne.
 ///
@@ -11,7 +12,7 @@ class HomeLeadingButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return IconButton(
-      tooltip: 'Indietro',
+      tooltip: context.uiText('Indietro', 'Back'),
       icon: const Icon(Icons.arrow_back),
       onPressed: () {
         final navigator = Navigator.of(context);

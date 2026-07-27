@@ -24,6 +24,7 @@ import '../../services/trainer_path_passive_service.dart';
 import '../../widgets/breeding/breeder_trait_dialogs.dart';
 import '../../widgets/navigation/home_leading_button.dart';
 import '../../widgets/pokemon/egg_asset_image.dart';
+import '../../localization/ui_text.dart';
 
 class BreedingScreen extends StatefulWidget {
   const BreedingScreen({super.key});
@@ -205,7 +206,10 @@ class _BreedingScreenState extends State<BreedingScreen> {
             pokemon: pokemon,
             formName: slot.formName,
           ),
-          location: 'Squadra ${slot.slotIndex + 1}',
+          location: uiTextForLanguage(
+            'Squadra ${slot.slotIndex + 1}',
+            """Team ${slot.slotIndex + 1}""",
+          ),
           gender: slot.gender,
           loyalty: slot.loyalty,
           selectedMoves: _knownMoves(
@@ -316,15 +320,22 @@ class _BreedingScreenState extends State<BreedingScreen> {
     );
     if (!_useDayCare && freeSlot == null) {
       setState(() {
-        _message =
-            'Non hai un Pokéslot libero. Libera uno slot oppure usa la Pensione Pokémon.';
+        _message = uiTextForLanguage(
+          'Non hai un Pokéslot libero. Libera uno slot oppure usa la Pensione Pokémon.',
+          """You do not have a free Poké Slot. Free a slot or use the Pokémon Day Care.""",
+        );
       });
       return;
     }
 
     final roll = manualRoll ?? _random.nextInt(20) + 1;
     if (roll < 1 || roll > 20) {
-      setState(() => _message = 'Il risultato del d20 deve essere tra 1 e 20.');
+      setState(
+        () => _message = uiTextForLanguage(
+          'Il risultato del d20 deve essere tra 1 e 20.',
+          """The d20 result must be between 1 and 20.""",
+        ),
+      );
       return;
     }
     final modifier = _breedingService.breedingRollModifier(data.profile);
@@ -332,8 +343,10 @@ class _BreedingScreenState extends State<BreedingScreen> {
     final total = roll + modifier;
     if (total < dc) {
       setState(() {
-        _message =
-            'Tentativo fallito: d20 $roll ${_signed(modifier)} = $total contro CD $dc.';
+        _message = uiTextForLanguage(
+          'Tentativo fallito: d20 $roll ${_signed(modifier)} = $total contro CD $dc.',
+          """Attempt failed: d20 $roll ${_signed(modifier)} = $total against DC $dc.""",
+        );
       });
       return;
     }
@@ -389,15 +402,23 @@ class _BreedingScreenState extends State<BreedingScreen> {
         );
       }
       final destination = _useDayCare
-          ? 'affidato alla Pensione Pokémon'
-          : 'inserito nello slot squadra ${freeSlot!.slotIndex + 1}';
+          ? uiTextForLanguage(
+              'affidato alla Pensione Pokémon',
+              """placed in the Pokémon Day Care""",
+            )
+          : uiTextForLanguage(
+              'inserito nello slot squadra ${freeSlot!.slotIndex + 1}',
+              """placed in team slot ${freeSlot.slotIndex + 1}""",
+            );
       _manualRollController.clear();
       _firstKey = null;
       _secondKey = null;
       _useDayCare = false;
       await _reload(
-        message:
-            'Successo: d20 $roll ${_signed(modifier)} = $total contro CD $dc. Uovo creato e $destination.',
+        message: uiTextForLanguage(
+          'Successo: d20 $roll ${_signed(modifier)} = $total contro CD $dc. Uovo creato e $destination.',
+          """Success: d20 $roll ${_signed(modifier)} = $total against DC $dc. Egg created and $destination.""",
+        ),
       );
     } catch (error) {
       setState(() => _message = error.toString());
@@ -427,7 +448,12 @@ class _BreedingScreenState extends State<BreedingScreen> {
         carriedEntireIncubation: false,
       ),
     );
-    await _reload(message: 'Uovo affidato alla Pensione Pokémon.');
+    await _reload(
+      message: uiTextForLanguage(
+        'Uovo affidato alla Pensione Pokémon.',
+        """Egg placed in the Pokémon Day Care.""",
+      ),
+    );
   }
 
   Future<void> _moveEggToPc(_BreedingScreenData data, BreedingEgg egg) async {
@@ -447,7 +473,10 @@ class _BreedingScreenState extends State<BreedingScreen> {
       ),
     );
     await _reload(
-      message: 'Uovo depositato nel PC. L’incubazione resta in pausa.',
+      message: uiTextForLanguage(
+        'Uovo depositato nel PC. L’incubazione resta in pausa.',
+        """Egg deposited in the PC. Incubation is paused.""",
+      ),
     );
   }
 
@@ -461,7 +490,10 @@ class _BreedingScreenState extends State<BreedingScreen> {
     );
     if (freeSlot == null) {
       setState(
-        () => _message = 'Non hai un Pokéslot libero per ritirare l’uovo.',
+        () => _message = uiTextForLanguage(
+          'Non hai un Pokéslot libero per ritirare l’uovo.',
+          """You do not have a free Poké Slot for the egg.""",
+        ),
       );
       return;
     }
@@ -475,15 +507,20 @@ class _BreedingScreenState extends State<BreedingScreen> {
       egg.copyWith(isInDayCare: false, isInPc: false),
     );
     await _reload(
-      message: 'Uovo ritirato nello slot squadra ${freeSlot.slotIndex + 1}.',
+      message: uiTextForLanguage(
+        'Uovo ritirato nello slot squadra ${freeSlot.slotIndex + 1}.',
+        """Egg moved to team slot ${freeSlot.slotIndex + 1}.""",
+      ),
     );
   }
 
   Future<void> _advanceEgg(_BreedingScreenData data, BreedingEgg egg) async {
     if (egg.isInPc) {
       setState(() {
-        _message =
-            'Nel PC l’incubazione è in pausa. Ritira l’uovo in squadra oppure affidalo alla Pensione.';
+        _message = uiTextForLanguage(
+          'Nel PC l’incubazione è in pausa. Ritira l’uovo in squadra oppure affidalo alla Pensione.',
+          """Incubation is paused in the PC. Move the egg to the team or to the Day Care.""",
+        );
       });
       return;
     }
@@ -496,10 +533,15 @@ class _BreedingScreenState extends State<BreedingScreen> {
     final baseRoll = result.d100Rolls.join(' / ');
     final incubator = result.incubatorRolls.isEmpty
         ? ''
-        : ' + incubatore ${result.incubatorRolls.join(' + ')}';
+        : uiTextForLanguage(
+            ' + incubatore ${result.incubatorRolls.join(' + ')}',
+            """ + incubator ${result.incubatorRolls.join(' + ')}""",
+          );
     await _reload(
-      message:
-          'Incubazione: d100 $baseRoll$incubator. Contatore ridotto di ${result.reduction}.',
+      message: uiTextForLanguage(
+        'Incubazione: d100 $baseRoll$incubator. Contatore ridotto di ${result.reduction}.',
+        """Incubation: d100 $baseRoll$incubator. Counter reduced by ${result.reduction}.""",
+      ),
     );
   }
 
@@ -511,8 +553,10 @@ class _BreedingScreenState extends State<BreedingScreen> {
     if (incubator == EggIncubator.none || incubator == egg.incubator) return;
     if (egg.incubator != EggIncubator.none) {
       setState(() {
-        _message =
-            'L’incubatore è già stato usato per questo uovo e non può essere trasferito.';
+        _message = uiTextForLanguage(
+          'L’incubatore è già stato usato per questo uovo e non può essere trasferito.',
+          """The incubator has already been used for this egg and cannot be transferred.""",
+        );
       });
       return;
     }
@@ -524,7 +568,10 @@ class _BreedingScreenState extends State<BreedingScreen> {
     );
     if (!consumed) {
       setState(() {
-        _message = 'Non possiedi un Incubatore ${incubator.label} nello zaino.';
+        _message = uiTextForLanguage(
+          'Non possiedi un Incubatore ${incubator.label} nello zaino.',
+          """You do not have a ${incubator.label} Incubator in the Bag.""",
+        );
       });
       return;
     }
@@ -533,8 +580,10 @@ class _BreedingScreenState extends State<BreedingScreen> {
       egg.copyWith(incubator: incubator),
     );
     await _reload(
-      message:
-          'Incubatore ${incubator.label} applicato e consumato: aggiunge ${incubator.extraD20}d20 a ogni avanzamento.',
+      message: uiTextForLanguage(
+        'Incubatore ${incubator.label} applicato e consumato: aggiunge ${incubator.extraD20}d20 a ogni avanzamento.',
+        """${incubator.label} Incubator applied and consumed: it adds ${incubator.extraD20}d20 to each incubation advance.""",
+      ),
     );
   }
 
@@ -550,18 +599,23 @@ class _BreedingScreenState extends State<BreedingScreen> {
       final confirmed = await showDialog<bool>(
         context: context,
         builder: (_) => AlertDialog(
-          title: const Text('Distruggere l’uovo?'),
-          content: const Text(
-            'Secondo il manuale un uovo è distrutto quando raggiunge 0 PF. Questa operazione non può essere annullata.',
+          title: Text(
+            uiTextForLanguage('Distruggere l’uovo?', """Destroy the egg?"""),
+          ),
+          content: Text(
+            uiTextForLanguage(
+              'Secondo il manuale un uovo è distrutto quando raggiunge 0 PF. Questa operazione non può essere annullata.',
+              """According to the manual, an egg is destroyed when it reaches 0 HP. This cannot be undone.""",
+            ),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
-              child: const Text('ANNULLA'),
+              child: Text(uiTextForLanguage('ANNULLA', """CANCEL""")),
             ),
             FilledButton(
               onPressed: () => Navigator.of(context).pop(true),
-              child: const Text('PORTA A 0 PF'),
+              child: Text(uiTextForLanguage('PORTA A 0 PF', """SET TO 0 HP""")),
             ),
           ],
         ),
@@ -575,7 +629,12 @@ class _BreedingScreenState extends State<BreedingScreen> {
         );
       }
       await _eggRepository.deleteEgg(data.profile.id, egg.id);
-      await _reload(message: 'L’uovo ha raggiunto 0 PF ed è stato distrutto.');
+      await _reload(
+        message: uiTextForLanguage(
+          'L’uovo ha raggiunto 0 PF ed è stato distrutto.',
+          """The egg reached 0 HP and was destroyed.""",
+        ),
+      );
       return;
     }
 
@@ -583,25 +642,35 @@ class _BreedingScreenState extends State<BreedingScreen> {
       data.profile.id,
       egg.copyWith(currentHp: nextHp),
     );
-    await _reload(message: 'PF dell’uovo aggiornati a $nextHp/10.');
+    await _reload(
+      message: uiTextForLanguage(
+        'PF dell’uovo aggiornati a $nextHp/10.',
+        """Egg HP updated to $nextHp/10.""",
+      ),
+    );
   }
 
   Future<void> _deleteEgg(_BreedingScreenData data, BreedingEgg egg) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Eliminare l’uovo?'),
-        content: const Text(
-          'Il progresso di incubazione e i dati del Pokémon contenuto andranno persi.',
+        title: Text(
+          uiTextForLanguage('Eliminare l’uovo?', """Delete the egg?"""),
+        ),
+        content: Text(
+          uiTextForLanguage(
+            'Il progresso di incubazione e i dati del Pokémon contenuto andranno persi.',
+            """Incubation progress and the contained Pokémon data will be lost.""",
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('ANNULLA'),
+            child: Text(uiTextForLanguage('ANNULLA', """CANCEL""")),
           ),
           FilledButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('ELIMINA'),
+            child: Text(uiTextForLanguage('ELIMINA', """DELETE""")),
           ),
         ],
       ),
@@ -615,21 +684,30 @@ class _BreedingScreenState extends State<BreedingScreen> {
       );
     }
     await _eggRepository.deleteEgg(data.profile.id, egg.id);
-    await _reload(message: 'Uovo eliminato.');
+    await _reload(
+      message: uiTextForLanguage('Uovo eliminato.', """Egg deleted."""),
+    );
   }
 
   Future<void> _hatchEgg(_BreedingScreenData data, BreedingEgg egg) async {
     if (!egg.isReady) return;
     if (egg.isInPc) {
       setState(() {
-        _message =
-            'Un uovo depositato nel PC non può schiudersi. Ritiralo in squadra oppure spostalo in Pensione.';
+        _message = uiTextForLanguage(
+          'Un uovo depositato nel PC non può schiudersi. Ritiralo in squadra oppure spostalo in Pensione.',
+          """An egg stored in the PC cannot hatch. Move it to the team or to the Day Care.""",
+        );
       });
       return;
     }
     final base = data.catalogById[egg.speciesId];
     if (base == null) {
-      setState(() => _message = 'La specie dell’uovo non è nel catalogo.');
+      setState(
+        () => _message = uiTextForLanguage(
+          'La specie dell’uovo non è nel catalogo.',
+          """The egg species is not in the catalog.""",
+        ),
+      );
       return;
     }
 
@@ -697,9 +775,15 @@ class _BreedingScreenState extends State<BreedingScreen> {
       );
     } else {
       final notes = <String>[
-        'Nato da un uovo nella Pensione Pokémon.',
+        uiTextForLanguage(
+          'Nato da un uovo nella Pensione Pokémon.',
+          """Hatched from an egg in the Pokémon Day Care.""",
+        ),
         if (hatchEgg.inheritedMoves.isNotEmpty)
-          'Mosse ereditate: ${hatchEgg.inheritedMoves.join(', ')}.',
+          uiTextForLanguage(
+            'Mosse ereditate: ${hatchEgg.inheritedMoves.join(', ')}.',
+            """Inherited moves: ${hatchEgg.inheritedMoves.join(', ')}.""",
+          ),
         if (hatchEgg.goodGenesAbilityBonuses.isNotEmpty)
           'Good Genes: ${hatchEgg.goodGenesAbilityBonuses.entries.map((entry) => '${entry.key} +${entry.value}').join(', ')}.',
         if (hatchEgg.goodGenesFeat != null)
@@ -724,16 +808,30 @@ class _BreedingScreenState extends State<BreedingScreen> {
     }
     await _eggRepository.deleteEgg(data.profile.id, hatchEgg.id);
     final destination = eggSlot == null
-        ? 'è stato inviato al PC dalla Pensione Pokémon'
-        : 'ha sostituito l’uovo nello slot squadra ${eggSlot.slotIndex + 1}';
+        ? uiTextForLanguage(
+            'è stato inviato al PC dalla Pensione Pokémon',
+            """was sent to the PC from the Pokémon Day Care""",
+          )
+        : uiTextForLanguage(
+            'ha sostituito l’uovo nello slot squadra ${eggSlot.slotIndex + 1}',
+            """replaced the egg in team slot ${eggSlot.slotIndex + 1}""",
+          );
     final goodGenes = hatchEgg.hasGoodGenesSelection
         ? hatchEgg.goodGenesFeat != null
-              ? ' Good Genes ha assegnato il talento ${hatchEgg.goodGenesFeat}.'
-              : ' Good Genes ha applicato ${hatchEgg.goodGenesAbilityBonuses.entries.map((entry) => '${entry.key} +${entry.value}').join(', ')}.'
+              ? uiTextForLanguage(
+                  ' Good Genes ha assegnato il talento ${hatchEgg.goodGenesFeat}.',
+                  """ Good Genes granted the ${hatchEgg.goodGenesFeat} feat.""",
+                )
+              : uiTextForLanguage(
+                  ' Good Genes ha applicato ${hatchEgg.goodGenesAbilityBonuses.entries.map((entry) => '${entry.key} +${entry.value}').join(', ')}.',
+                  """ Good Genes applied ${hatchEgg.goodGenesAbilityBonuses.entries.map((entry) => '${entry.key} +${entry.value}').join(', ')}.""",
+                )
         : '';
     await _reload(
-      message:
-          '${_displayName(pokemon: pokemon, formName: hatchEgg.formName)} si è schiuso, $destination, con Lealtà +$loyalty.$goodGenes',
+      message: uiTextForLanguage(
+        '${_displayName(pokemon: pokemon, formName: hatchEgg.formName)} si è schiuso, $destination, con Lealtà +$loyalty.$goodGenes',
+        """${_displayName(pokemon: pokemon, formName: hatchEgg.formName)} hatched, $destination, with Loyalty +$loyalty.$goodGenes""",
+      ),
     );
   }
 
@@ -742,20 +840,27 @@ class _BreedingScreenState extends State<BreedingScreen> {
     return Scaffold(
       appBar: AppBar(
         leading: const HomeLeadingButton(),
-        title: const Text('Allevamento e uova'),
-        actions: const [HomeAppBarAction()],
+        title: Text(
+          uiTextForLanguage('Allevamento e uova', """Breeding and Eggs"""),
+        ),
+        actions: [HomeAppBarAction()],
       ),
       body: FutureBuilder<_BreedingScreenData>(
         future: _future,
         builder: (context, snapshot) {
           if (snapshot.connectionState != ConnectionState.done) {
-            return const Center(child: CircularProgressIndicator());
+            return Center(child: CircularProgressIndicator());
           }
           if (snapshot.hasError) {
             return Center(
               child: Padding(
                 padding: const EdgeInsets.all(24),
-                child: Text('Errore: ${snapshot.error}'),
+                child: Text(
+                  uiTextForLanguage(
+                    'Errore: ${snapshot.error}',
+                    """Error: ${snapshot.error}""",
+                  ),
+                ),
               ),
             );
           }
@@ -796,17 +901,26 @@ class _BreedingScreenState extends State<BreedingScreen> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         Text(
-                          'NUOVO TENTATIVO',
+                          uiTextForLanguage(
+                            'NUOVO TENTATIVO',
+                            """NEW ATTEMPT""",
+                          ),
                           style: Theme.of(context).textTheme.titleMedium
                               ?.copyWith(fontWeight: FontWeight.w900),
                         ),
                         const SizedBox(height: 4),
-                        const Text(
-                          'Seleziona due Pokémon posseduti. L’app controlla Lealtà, sesso, Ditto e Gruppi Uova.',
+                        Text(
+                          uiTextForLanguage(
+                            'Seleziona due Pokémon posseduti. L’app controlla Lealtà, sesso, Ditto e Gruppi Uova.',
+                            """Select two owned Pokémon. The app checks Loyalty, gender, Ditto and Egg Groups.""",
+                          ),
                         ),
                         const SizedBox(height: 12),
                         _CandidateDropdown(
-                          label: 'Primo genitore',
+                          label: uiTextForLanguage(
+                            'Primo genitore',
+                            """First parent""",
+                          ),
                           value: _firstKey,
                           candidates: data.candidates,
                           onChanged: (value) => setState(() {
@@ -816,7 +930,10 @@ class _BreedingScreenState extends State<BreedingScreen> {
                         ),
                         const SizedBox(height: 10),
                         _CandidateDropdown(
-                          label: 'Secondo genitore',
+                          label: uiTextForLanguage(
+                            'Secondo genitore',
+                            """Second parent""",
+                          ),
                           value: _secondKey,
                           candidates: data.candidates,
                           onChanged: (value) => setState(() {
@@ -826,13 +943,27 @@ class _BreedingScreenState extends State<BreedingScreen> {
                         ),
                         SwitchListTile(
                           contentPadding: EdgeInsets.zero,
-                          title: const Text('Usa Pensione Pokémon'),
+                          title: Text(
+                            uiTextForLanguage(
+                              'Usa Pensione Pokémon',
+                              """Use Pokémon Day Care""",
+                            ),
+                          ),
                           subtitle: Text(
                             _useDayCare
-                                ? 'L’uovo non occupa un Pokéslot e alla schiusa il Pokémon andrà nel PC.'
+                                ? uiTextForLanguage(
+                                    'L’uovo non occupa un Pokéslot e alla schiusa il Pokémon andrà nel PC.',
+                                    """The egg does not occupy a Poké Slot and the Pokémon will go to the PC when it hatches.""",
+                                  )
                                 : freeSlot == null
-                                ? 'Nessun Pokéslot libero: attiva la Pensione per poter ottenere l’uovo.'
-                                : 'L’uovo occuperà lo slot squadra ${freeSlot.slotIndex + 1}.',
+                                ? uiTextForLanguage(
+                                    'Nessun Pokéslot libero: attiva la Pensione per poter ottenere l’uovo.',
+                                    """No free Poké Slot: enable the Day Care to receive the egg.""",
+                                  )
+                                : uiTextForLanguage(
+                                    'L’uovo occuperà lo slot squadra ${freeSlot.slotIndex + 1}.',
+                                    """The egg will occupy team slot ${freeSlot.slotIndex + 1}.""",
+                                  ),
                           ),
                           value: _useDayCare,
                           onChanged: (value) => setState(() {
@@ -865,15 +996,23 @@ class _BreedingScreenState extends State<BreedingScreen> {
                                   ? () => _attemptBreeding(data)
                                   : null,
                               icon: const Icon(Icons.casino_outlined),
-                              label: const Text('TIRA IL D20'),
+                              label: Text(
+                                uiTextForLanguage(
+                                  'TIRA IL D20',
+                                  """ROLL D20""",
+                                ),
+                              ),
                             ),
                             SizedBox(
                               width: 145,
                               child: TextField(
                                 controller: _manualRollController,
                                 keyboardType: TextInputType.number,
-                                decoration: const InputDecoration(
-                                  labelText: 'Risultato d20',
+                                decoration: InputDecoration(
+                                  labelText: uiTextForLanguage(
+                                    'Risultato d20',
+                                    """d20 result""",
+                                  ),
                                   border: OutlineInputBorder(),
                                   isDense: true,
                                 ),
@@ -889,15 +1028,22 @@ class _BreedingScreenState extends State<BreedingScreen> {
                                       );
                                       if (roll == null) {
                                         setState(() {
-                                          _message =
-                                              'Inserisci il risultato del d20.';
+                                          _message = uiTextForLanguage(
+                                            'Inserisci il risultato del d20.',
+                                            """Enter the d20 result.""",
+                                          );
                                         });
                                         return;
                                       }
                                       _attemptBreeding(data, manualRoll: roll);
                                     }
                                   : null,
-                              child: const Text('USA IL TIRO'),
+                              child: Text(
+                                uiTextForLanguage(
+                                  'USA IL TIRO',
+                                  """USE ROLL""",
+                                ),
+                              ),
                             ),
                           ],
                         ),
@@ -917,22 +1063,31 @@ class _BreedingScreenState extends State<BreedingScreen> {
                 ],
                 const SizedBox(height: 18),
                 Text(
-                  'UOVA IN INCUBAZIONE (${data.eggs.length})',
+                  uiTextForLanguage(
+                    'UOVA IN INCUBAZIONE (${data.eggs.length})',
+                    """INCUBATING EGGS (${data.eggs.length})""",
+                  ),
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w900,
                   ),
                 ),
                 const SizedBox(height: 4),
-                const Text(
-                  'Un uovo trasportato occupa davvero un Pokéslot. Un uovo affidato alla Pensione resta fuori dalla squadra e alla schiusa il Pokémon viene inviato al PC.',
+                Text(
+                  uiTextForLanguage(
+                    'Un uovo trasportato occupa davvero un Pokéslot. Un uovo affidato alla Pensione resta fuori dalla squadra e alla schiusa il Pokémon viene inviato al PC.',
+                    """A carried egg occupies a Poké Slot. An egg placed in the Day Care stays outside the team and the Pokémon is sent to the PC when it hatches.""",
+                  ),
                 ),
                 const SizedBox(height: 8),
                 if (data.eggs.isEmpty)
-                  const Card(
+                  Card(
                     child: Padding(
                       padding: EdgeInsets.all(20),
                       child: Text(
-                        'Non ci sono uova. Completa con successo un tentativo di allevamento.',
+                        uiTextForLanguage(
+                          'Non ci sono uova. Completa con successo un tentativo di allevamento.',
+                          """There are no eggs. Complete a breeding attempt successfully.""",
+                        ),
                         textAlign: TextAlign.center,
                       ),
                     ),
@@ -1024,23 +1179,41 @@ class _RulesCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              'ALLEVAMENTO POKÉMON',
+              uiTextForLanguage('ALLEVAMENTO POKÉMON', """POKÉMON BREEDING"""),
               style: Theme.of(
                 context,
               ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
             ),
             const SizedBox(height: 6),
-            const Text(
-              'Servono Lealtà +2, sesso compatibile e un Gruppo Uova condiviso. Ditto ignora sesso e Gruppo Uova; Undiscovered non può riprodursi.',
+            Text(
+              uiTextForLanguage(
+                'Servono Lealtà +2, sesso compatibile e un Gruppo Uova condiviso. Ditto ignora sesso e Gruppo Uova; Undiscovered non può riprodursi.',
+                """Requires Loyalty +2, compatible genders and a shared Egg Group. Ditto ignores gender and Egg Groups; Undiscovered Pokémon cannot breed.""",
+              ),
             ),
             if (breeder || rollModifier != 0 || incubationAdvantage) ...[
               const SizedBox(height: 10),
               Text(
                 [
-                  'Pokémon Breeder: tiro di accoppiamento ${rollModifier >= 0 ? '+' : ''}$rollModifier',
-                  if (incubationAdvantage) 'vantaggio ai d100 di incubazione',
-                  if (goodGenes) 'Good Genes alla schiusa',
-                  if (masterOfTraits) 'Master of Traits sulle uova future',
+                  uiTextForLanguage(
+                    'Pokémon Breeder: tiro di accoppiamento ${rollModifier >= 0 ? '+' : ''}$rollModifier',
+                    """Pokémon Breeder: breeding check ${rollModifier >= 0 ? '+' : ''}$rollModifier""",
+                  ),
+                  if (incubationAdvantage)
+                    uiTextForLanguage(
+                      'vantaggio ai d100 di incubazione',
+                      """advantage on incubation d100 rolls""",
+                    ),
+                  if (goodGenes)
+                    uiTextForLanguage(
+                      'Good Genes alla schiusa',
+                      """Good Genes when hatching""",
+                    ),
+                  if (masterOfTraits)
+                    uiTextForLanguage(
+                      'Master of Traits sulle uova future',
+                      """Master of Traits on future eggs""",
+                    ),
                 ].join(' · '),
                 style: const TextStyle(fontWeight: FontWeight.w800),
               ),
@@ -1081,7 +1254,10 @@ class _CandidateDropdown extends StatelessWidget {
           DropdownMenuItem(
             value: candidate.key,
             child: Text(
-              '${candidate.displayName} · ${candidate.genderLabel} · Lealtà ${candidate.loyalty >= 0 ? '+' : ''}${candidate.loyalty} · ${candidate.location}',
+              uiTextForLanguage(
+                '${candidate.displayName} · ${candidate.genderLabel} · Lealtà ${candidate.loyalty >= 0 ? '+' : ''}${candidate.loyalty} · ${candidate.location}',
+                """${candidate.displayName} · ${candidate.genderLabel} · Loyalty ${candidate.loyalty >= 0 ? '+' : ''}${candidate.loyalty} · ${candidate.location}""",
+              ),
               overflow: TextOverflow.ellipsis,
             ),
           ),
@@ -1119,17 +1295,25 @@ class _CompatibilityCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              compatible ? 'COMPATIBILI' : 'NON COMPATIBILI',
+              compatible
+                  ? uiTextForLanguage('COMPATIBILI', """COMPATIBLE""")
+                  : uiTextForLanguage('NON COMPATIBILI', """NOT COMPATIBLE"""),
               style: const TextStyle(fontWeight: FontWeight.w900),
             ),
             const SizedBox(height: 4),
             if (compatible) ...[
               Text(
-                'Gruppo: ${compatibility.sharedEggGroups.join(', ')} · Risultato: ${resultPokemon?.name ?? '#${compatibility.childSpeciesId}'}',
+                uiTextForLanguage(
+                  'Gruppo: ${compatibility.sharedEggGroups.join(', ')} · Risultato: ${resultPokemon?.name ?? '#${compatibility.childSpeciesId}'}',
+                  """Group: ${compatibility.sharedEggGroups.join(', ')} · Result: ${resultPokemon?.name ?? '#${compatibility.childSpeciesId}'}""",
+                ),
               ),
               if (dc != null)
                 Text(
-                  'Prova: d20 ${modifier >= 0 ? '+' : ''}$modifier contro CD $dc.',
+                  uiTextForLanguage(
+                    'Prova: d20 ${modifier >= 0 ? '+' : ''}$modifier contro CD $dc.',
+                    """Check: d20 ${modifier >= 0 ? '+' : ''}$modifier against DC $dc.""",
+                  ),
                 ),
             ] else
               for (final error in compatibility.errors) Text('• $error'),
@@ -1192,22 +1376,39 @@ class _EggCard extends StatelessWidget {
                     children: [
                       Text(
                         egg.isReady
-                            ? 'Uovo pronto a schiudersi'
-                            : 'Uovo di ${pokemon?.name ?? '#${egg.speciesId}'}',
+                            ? uiTextForLanguage(
+                                'Uovo pronto a schiudersi',
+                                """Egg ready to hatch""",
+                              )
+                            : uiTextForLanguage(
+                                'Uovo di ${pokemon?.name ?? '#${egg.speciesId}'}',
+                                """${pokemon?.name ?? '#${egg.speciesId}'} Egg""",
+                              ),
                         style: Theme.of(context).textTheme.titleMedium
                             ?.copyWith(fontWeight: FontWeight.w900),
                       ),
-                      Text('Genitori: ${egg.parentNames.join(' + ')}'),
+                      Text(
+                        uiTextForLanguage(
+                          'Genitori: ${egg.parentNames.join(' + ')}',
+                          """Parents: ${egg.parentNames.join(' + ')}""",
+                        ),
+                      ),
                       Text(
                         egg.isReady
-                            ? 'Incubazione completata'
-                            : '${egg.incubationRemaining}/${egg.hatchTime} punti rimanenti',
+                            ? uiTextForLanguage(
+                                'Incubazione completata',
+                                """Incubation complete""",
+                              )
+                            : uiTextForLanguage(
+                                '${egg.incubationRemaining}/${egg.hatchTime} punti rimanenti',
+                                """${egg.incubationRemaining}/${egg.hatchTime} points remaining""",
+                              ),
                       ),
                     ],
                   ),
                 ),
                 IconButton(
-                  tooltip: 'Elimina uovo',
+                  tooltip: uiTextForLanguage('Elimina uovo', """Delete egg"""),
                   onPressed: onDelete,
                   icon: const Icon(Icons.delete_outline),
                 ),
@@ -1223,20 +1424,33 @@ class _EggCard extends StatelessWidget {
                 Chip(label: Text(egg.nature)),
                 if (egg.gender != null) Chip(label: Text(egg.gender!)),
                 if (egg.ability != null) Chip(label: Text(egg.ability!)),
-                const Chip(label: Text('CA ${BreedingEgg.armorClass}')),
                 Chip(
                   label: Text(
-                    'PF ${egg.currentHp}/${BreedingEgg.maxHitPoints}',
+                    uiTextForLanguage(
+                      'CA ${BreedingEgg.armorClass}',
+                      """AC ${BreedingEgg.armorClass}""",
+                    ),
+                  ),
+                ),
+                Chip(
+                  label: Text(
+                    uiTextForLanguage(
+                      'PF ${egg.currentHp}/${BreedingEgg.maxHitPoints}',
+                      """HP ${egg.currentHp}/${BreedingEgg.maxHitPoints}""",
+                    ),
                   ),
                 ),
                 if (egg.masterOfTraitsApplied)
-                  const Chip(label: Text('MASTER OF TRAITS')),
+                  Chip(label: Text('MASTER OF TRAITS')),
               ],
             ),
             if (egg.inheritedMoves.isNotEmpty) ...[
               const SizedBox(height: 6),
               Text(
-                'Mosse ereditate: ${egg.inheritedMoves.join(', ')}',
+                uiTextForLanguage(
+                  'Mosse ereditate: ${egg.inheritedMoves.join(', ')}',
+                  """Inherited moves: ${egg.inheritedMoves.join(', ')}""",
+                ),
                 style: const TextStyle(fontWeight: FontWeight.w700),
               ),
             ],
@@ -1244,12 +1458,18 @@ class _EggCard extends StatelessWidget {
             DropdownButtonFormField<EggIncubator>(
               value: egg.incubator,
               decoration: InputDecoration(
-                labelText: 'Incubatore',
+                labelText: uiTextForLanguage('Incubatore', """Incubator"""),
                 border: const OutlineInputBorder(),
                 isDense: true,
                 helperText: egg.incubator == EggIncubator.none
-                    ? 'Viene consumato quando lo assegni all’uovo.'
-                    : 'Già consumato per questo uovo; non è trasferibile.',
+                    ? uiTextForLanguage(
+                        'Viene consumato quando lo assegni all’uovo.',
+                        """It is consumed when assigned to the egg.""",
+                      )
+                    : uiTextForLanguage(
+                        'Già consumato per questo uovo; non è trasferibile.',
+                        """Already consumed for this egg; it cannot be transferred.""",
+                      ),
               ),
               items: [
                 for (final incubator in EggIncubator.values)
@@ -1275,7 +1495,9 @@ class _EggCard extends StatelessWidget {
             OutlinedButton.icon(
               onPressed: onEditHp,
               icon: const Icon(Icons.shield_outlined),
-              label: const Text('MODIFICA PF UOVO'),
+              label: Text(
+                uiTextForLanguage('MODIFICA PF UOVO', """EDIT EGG HP"""),
+              ),
             ),
             Card(
               margin: EdgeInsets.zero,
@@ -1290,18 +1512,33 @@ class _EggCard extends StatelessWidget {
                 ),
                 title: Text(
                   egg.isInPc
-                      ? 'PC Pokémon'
+                      ? uiTextForLanguage('PC Pokémon', """Pokémon PC""")
                       : teamSlotIndex == null
-                      ? 'Pensione Pokémon'
-                      : 'Squadra · Slot ${teamSlotIndex! + 1}',
+                      ? uiTextForLanguage(
+                          'Pensione Pokémon',
+                          """Pokémon Day Care""",
+                        )
+                      : uiTextForLanguage(
+                          'Squadra · Slot ${teamSlotIndex! + 1}',
+                          """Team · Slot ${teamSlotIndex! + 1}""",
+                        ),
                   style: const TextStyle(fontWeight: FontWeight.w900),
                 ),
                 subtitle: Text(
                   egg.isInPc
-                      ? 'L’incubazione è in pausa e l’uovo non occupa un Pokéslot.'
+                      ? uiTextForLanguage(
+                          'L’incubazione è in pausa e l’uovo non occupa un Pokéslot.',
+                          """Incubation is paused and the egg does not occupy a Poké Slot.""",
+                        )
                       : egg.carriedEntireIncubation
-                      ? 'Occupa un Pokéslot e nascerà con Lealtà +2.'
-                      : 'Non ha trascorso tutta l’incubazione in squadra: Lealtà +1.',
+                      ? uiTextForLanguage(
+                          'Occupa un Pokéslot e nascerà con Lealtà +2.',
+                          """Occupies a Poké Slot and will hatch with Loyalty +2.""",
+                        )
+                      : uiTextForLanguage(
+                          'Non ha trascorso tutta l’incubazione in squadra: Lealtà +1.',
+                          """It did not spend the entire incubation in the team: Loyalty +1.""",
+                        ),
                 ),
               ),
             ),
@@ -1316,21 +1553,34 @@ class _EggCard extends StatelessWidget {
                     icon: const Icon(Icons.login),
                     label: Text(
                       canMoveToTeam
-                          ? 'RITIRA IN SQUADRA'
-                          : 'NESSUN POKÉSLOT LIBERO',
+                          ? uiTextForLanguage(
+                              'RITIRA IN SQUADRA',
+                              """MOVE TO TEAM""",
+                            )
+                          : uiTextForLanguage(
+                              'NESSUN POKÉSLOT LIBERO',
+                              """NO FREE POKÉ SLOT""",
+                            ),
                     ),
                   ),
                 if (teamSlotIndex != null || egg.isInDayCare)
                   OutlinedButton.icon(
                     onPressed: onMoveToPc,
                     icon: const Icon(Icons.computer_outlined),
-                    label: const Text('DEPOSITA NEL PC'),
+                    label: Text(
+                      uiTextForLanguage('DEPOSITA NEL PC', """DEPOSIT IN PC"""),
+                    ),
                   ),
                 if (teamSlotIndex != null || egg.isInPc)
                   OutlinedButton.icon(
                     onPressed: onMoveToDayCare,
                     icon: const Icon(Icons.home_work_outlined),
-                    label: const Text('SPOSTA IN PENSIONE'),
+                    label: Text(
+                      uiTextForLanguage(
+                        'SPOSTA IN PENSIONE',
+                        """MOVE TO DAY CARE""",
+                      ),
+                    ),
                   ),
               ],
             ),
@@ -1341,15 +1591,23 @@ class _EggCard extends StatelessWidget {
                 icon: const Icon(Icons.pause_circle_outline),
                 label: Text(
                   egg.isReady
-                      ? 'RITIRA L’UOVO PER SCHIUDERLO'
-                      : 'INCUBAZIONE IN PAUSA NEL PC',
+                      ? uiTextForLanguage(
+                          'RITIRA L’UOVO PER SCHIUDERLO',
+                          """MOVE THE EGG TO HATCH IT""",
+                        )
+                      : uiTextForLanguage(
+                          'INCUBAZIONE IN PAUSA NEL PC',
+                          """INCUBATION PAUSED IN PC""",
+                        ),
                 ),
               )
             else if (egg.isReady)
               FilledButton.icon(
                 onPressed: onHatch,
                 icon: const Icon(Icons.egg_alt_outlined),
-                label: const Text('FAI SCHIUDERE'),
+                label: Text(
+                  uiTextForLanguage('FAI SCHIUDERE', """HATCH EGG"""),
+                ),
               )
             else
               FilledButton.icon(
@@ -1357,18 +1615,33 @@ class _EggCard extends StatelessWidget {
                 icon: const Icon(Icons.calendar_today_outlined),
                 label: Text(
                   incubationAdvantage
-                      ? 'AVANZA INCUBAZIONE (2d100, migliore)'
-                      : 'AVANZA INCUBAZIONE (1d100)',
+                      ? uiTextForLanguage(
+                          'AVANZA INCUBAZIONE (2d100, migliore)',
+                          """ADVANCE INCUBATION (2d100, best)""",
+                        )
+                      : uiTextForLanguage(
+                          'AVANZA INCUBAZIONE (1d100)',
+                          """ADVANCE INCUBATION (1d100)""",
+                        ),
                 ),
               ),
             if (egg.isReady) ...[
               const SizedBox(height: 6),
               Text(
                 egg.isInPc
-                    ? 'Nel PC l’uovo resta conservato ma non può schiudersi.'
+                    ? uiTextForLanguage(
+                        'Nel PC l’uovo resta conservato ma non può schiudersi.',
+                        """The egg is safely stored in the PC but cannot hatch there.""",
+                      )
                     : teamSlotIndex == null
-                    ? 'Alla schiusa il Pokémon verrà inviato al PC dalla Pensione.'
-                    : 'Alla schiusa il Pokémon sostituirà l’uovo nello stesso Pokéslot.',
+                    ? uiTextForLanguage(
+                        'Alla schiusa il Pokémon verrà inviato al PC dalla Pensione.',
+                        """When it hatches, the Pokémon will be sent to the PC from the Day Care.""",
+                      )
+                    : uiTextForLanguage(
+                        'Alla schiusa il Pokémon sostituirà l’uovo nello stesso Pokéslot.',
+                        """When it hatches, the Pokémon will replace the egg in the same Poké Slot.""",
+                      ),
                 textAlign: TextAlign.center,
                 style: TextStyle(color: colors.onSurfaceVariant),
               ),

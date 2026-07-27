@@ -801,7 +801,7 @@ class _BagScreenState extends State<BagScreen> {
           future: _dataFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState != ConnectionState.done) {
-              return const Center(child: CircularProgressIndicator());
+              return Center(child: CircularProgressIndicator());
             }
 
             if (snapshot.hasError) {
@@ -1550,7 +1550,7 @@ class _EquippedHeldItemsSection extends StatelessWidget {
               ),
               trailing: OutlinedButton(
                 onPressed: () => onRemove(equipped),
-                child: const Text('TOGLI'),
+                child: Text('TOGLI'),
               ),
             ),
           ),
@@ -1620,7 +1620,10 @@ class _HeldItemPokemonPickerSheet extends StatelessWidget {
         ? null
         : itemByReference(heldItemReference);
 
-    return 'Slot ${candidate.slot.slotIndex + 1} • Tiene: ${heldItem?.name ?? 'nessuno strumento'}';
+    return uiTextForLanguage(
+      'Slot ${candidate.slot.slotIndex + 1} • Tiene: ${heldItem?.name ?? 'nessuno strumento'}',
+      """Slot ${candidate.slot.slotIndex + 1} • Holding: ${heldItem?.name ?? 'no item'}""",
+    );
   }
 }
 
@@ -1850,7 +1853,7 @@ class _MoveReplacementTile extends StatelessWidget {
             : PokemonTypeBadge(type: move.type, height: 24),
         title: Text((move?.name ?? reference).toUpperCase()),
         subtitle: move == null ? null : _MoveCompactInfo(move: move),
-        trailing: const Text('Sostituisci'),
+        trailing: Text('Sostituisci'),
         onTap: () => Navigator.of(context).pop(index),
       ),
     );

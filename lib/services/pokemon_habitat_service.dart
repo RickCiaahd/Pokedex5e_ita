@@ -4,6 +4,23 @@ import '../models/pokemon_type_localization.dart';
 class PokemonHabitatService {
   const PokemonHabitatService();
 
+  static const Map<String, String> _englishLabels = {
+    'Qualsiasi': 'Any',
+    'Prateria': 'Grassland',
+    'Foresta': 'Forest',
+    'Grotta': 'Cave',
+    'Montagna': 'Mountain',
+    'Deserto': 'Desert',
+    'Palude': 'Swamp',
+    'Costa e fiumi': 'Coasts and rivers',
+    'Mare': 'Sea',
+    'Città': 'City',
+    'Neve e ghiaccio': 'Snow and ice',
+  };
+
+  static String englishLabel(String habitat) =>
+      _englishLabels[habitat] ?? habitat;
+
   static const List<String> habitats = [
     'Qualsiasi',
     'Prateria',

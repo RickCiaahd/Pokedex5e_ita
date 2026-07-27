@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../services/app_launch_service.dart';
 import '../home/home_screen.dart';
 import 'first_launch_onboarding_screen.dart';
+import '../../localization/ui_text.dart';
 
 class AppBootstrapScreen extends StatefulWidget {
   const AppBootstrapScreen({super.key});
@@ -49,9 +50,7 @@ class _AppBootstrapScreenState extends State<AppBootstrapScreen> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     if (_errorMessage != null) {
@@ -68,7 +67,7 @@ class _AppBootstrapScreenState extends State<AppBootstrapScreen> {
                 const SizedBox(height: 16),
                 FilledButton(
                   onPressed: _resolveLaunchDestination,
-                  child: const Text('RIPROVA'),
+                  child: Text(uiTextForLanguage('RIPROVA', """RETRY""")),
                 ),
               ],
             ),

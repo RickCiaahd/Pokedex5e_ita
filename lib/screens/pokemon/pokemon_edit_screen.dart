@@ -15,6 +15,8 @@ import '../../services/battle_environment_service.dart';
 import '../../services/battle_form_change_service.dart';
 import '../../services/custom_pokemon_runtime_registry.dart';
 import '../../widgets/pokemon/pokemon_asset_image.dart';
+import '../../localization/ui_text.dart';
+import '../../localization/game_catalog_locale.dart';
 
 class PokemonEditResult {
   const PokemonEditResult({required this.slot});
@@ -80,6 +82,10 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
     'Stealth',
     'Survival',
   ];
+
+  Map<String, String> get _localizedSkillLabels => GameCatalogLocale.isItalian
+      ? _skillLabels
+      : {for (final skill in _skills) skill: skill};
 
   final AbilityRepository _abilityRepository = AbilityRepository();
   final FeatRepository _featRepository = FeatRepository();
@@ -474,7 +480,7 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
     final result = await Navigator.of(context).push<String>(
       MaterialPageRoute(
         builder: (_) => _ChoicePickerScreen(
-          title: 'Scegli feat',
+          title: uiTextForLanguage('Scegli feat', """Choose feat"""),
           options: _featDescriptions.keys.toList()..sort(),
           blockedOptions: blocked,
           descriptions: _featDescriptions,
@@ -517,13 +523,16 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
     final result = await Navigator.of(context).push<String>(
       MaterialPageRoute(
         builder: (_) => _ChoicePickerScreen(
-          title: 'Scegli abilità',
+          title: uiTextForLanguage('Scegli abilità', """Choose ability"""),
           options: _availableAbilities(),
           pinnedOptions: _naturalAbilities().toSet(),
           blockedOptions: blocked,
           descriptions: _abilityDescriptions,
           labels: _abilityDisplayNames,
-          pinnedLabel: 'Abilità naturali del Pokémon',
+          pinnedLabel: uiTextForLanguage(
+            'Abilità naturali del Pokémon',
+            """Pokémon natural abilities""",
+          ),
         ),
       ),
     );
@@ -550,10 +559,13 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
     final result = await Navigator.of(context).push<String>(
       MaterialPageRoute(
         builder: (_) => _ChoicePickerScreen(
-          title: 'Scegli competenza',
+          title: uiTextForLanguage(
+            'Scegli competenza',
+            """Choose proficiency""",
+          ),
           options: _skills,
           blockedOptions: blocked,
-          labels: _skillLabels,
+          labels: _localizedSkillLabels,
         ),
       ),
     );
@@ -575,20 +587,23 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Modifica $title'),
+        title: Text(uiTextForLanguage('Modifica $title', """Edit $title""")),
         backgroundColor: Colors.orange,
         foregroundColor: Colors.white,
       ),
       body: _isLoadingChoices
-          ? const Center(child: CircularProgressIndicator())
+          ? Center(child: CircularProgressIndicator())
           : ListView(
               padding: const EdgeInsets.all(16),
               children: [
                 TextField(
                   controller: _nicknameController,
                   textAlign: TextAlign.center,
-                  decoration: const InputDecoration(
-                    labelText: 'Nome / nickname',
+                  decoration: InputDecoration(
+                    labelText: uiTextForLanguage(
+                      'Nome / nickname',
+                      """Name / nickname""",
+                    ),
                     border: OutlineInputBorder(),
                   ),
                 ),
@@ -598,8 +613,8 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
                     Expanded(
                       child: DropdownButtonFormField<String>(
                         initialValue: _nature,
-                        decoration: const InputDecoration(
-                          labelText: 'Natura',
+                        decoration: InputDecoration(
+                          labelText: uiTextForLanguage('Natura', 'Nature'),
                           border: OutlineInputBorder(),
                         ),
                         items: [
@@ -619,26 +634,37 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
                     Expanded(
                       child: DropdownButtonFormField<String?>(
                         initialValue: _gender,
-                        decoration: const InputDecoration(
-                          labelText: 'Sesso',
+                        decoration: InputDecoration(
+                          labelText: uiTextForLanguage('Sesso', """Gender"""),
                           border: OutlineInputBorder(),
                         ),
-                        items: const [
+                        items: [
                           DropdownMenuItem<String?>(
                             value: null,
-                            child: Text('Qualsiasi'),
+                            child: Text(
+                              uiTextForLanguage('Qualsiasi', """Any"""),
+                            ),
                           ),
                           DropdownMenuItem<String?>(
                             value: 'male',
-                            child: Text('Maschio'),
+                            child: Text(
+                              uiTextForLanguage('Maschio', """Male"""),
+                            ),
                           ),
                           DropdownMenuItem<String?>(
                             value: 'female',
-                            child: Text('Femmina'),
+                            child: Text(
+                              uiTextForLanguage('Femmina', """Female"""),
+                            ),
                           ),
                           DropdownMenuItem<String?>(
                             value: 'genderless',
-                            child: Text('Senza sesso'),
+                            child: Text(
+                              uiTextForLanguage(
+                                'Senza sesso',
+                                """Genderless""",
+                              ),
+                            ),
                           ),
                         ],
                         onChanged: (value) {
@@ -650,13 +676,13 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
                 ),
                 SwitchListTile(
                   contentPadding: EdgeInsets.zero,
-                  title: const Text('Shiny'),
+                  title: Text('Shiny'),
                   value: _isShiny,
                   onChanged: (value) => setState(() => _isShiny = value),
                 ),
                 if (_formChoices.length > 1)
                   _CollapsibleEditSection(
-                    title: 'Forma',
+                    title: uiTextForLanguage('Forma', """Form"""),
                     isOpen: _formOpen,
                     onToggle: () => setState(() => _formOpen = !_formOpen),
                     child: _FormSelector(
@@ -668,7 +694,7 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
                     ),
                   ),
                 _CollapsibleEditSection(
-                  title: 'Mosse',
+                  title: uiTextForLanguage('Mosse', """Moves"""),
                   isOpen: _movesOpen,
                   onToggle: () => setState(() => _movesOpen = !_movesOpen),
                   child: _MoveSlotGrid(
@@ -685,7 +711,7 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
                   ),
                 ),
                 _CollapsibleEditSection(
-                  title: 'Abilità',
+                  title: uiTextForLanguage('Abilità', """Abilities"""),
                   isOpen: _abilitiesOpen,
                   onToggle: () =>
                       setState(() => _abilitiesOpen = !_abilitiesOpen),
@@ -695,7 +721,7 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
                       _ChipSlots(
                         values: _abilities,
                         labels: _abilityDisplayNames,
-                        emptyLabel: 'ABILITÀ',
+                        emptyLabel: uiTextForLanguage('ABILITÀ', """ABILITY"""),
                         onAdd: _abilities.length >= 2
                             ? null
                             : () => _pickAbility(),
@@ -706,19 +732,22 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Puoi scegliere tra le abilità naturali del Pokémon o dal catalogo completo. Le abilità deprecated non sono selezionabili.',
+                        uiTextForLanguage(
+                          'Puoi scegliere tra le abilità naturali del Pokémon o dal catalogo completo. Le abilità deprecated non sono selezionabili.',
+                          """You can choose from the Pokémon’s natural abilities or the full catalog. Deprecated abilities cannot be selected.""",
+                        ),
                         style: Theme.of(context).textTheme.bodySmall,
                       ),
                     ],
                   ),
                 ),
                 _CollapsibleEditSection(
-                  title: 'Privilegi',
+                  title: uiTextForLanguage('Privilegi', """Features"""),
                   isOpen: _featsOpen,
                   onToggle: () => setState(() => _featsOpen = !_featsOpen),
                   child: _ChipSlots(
                     values: _feats,
-                    emptyLabel: 'PRIVILEGIO',
+                    emptyLabel: uiTextForLanguage('PRIVILEGIO', """FEATURE"""),
                     onAdd: () => _pickFeat(),
                     onPick: _pickFeat,
                     onRemove: (index) {
@@ -727,13 +756,16 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
                   ),
                 ),
                 _CollapsibleEditSection(
-                  title: 'Competenze',
+                  title: uiTextForLanguage('Competenze', """Proficiencies"""),
                   isOpen: _skillsOpen,
                   onToggle: () => setState(() => _skillsOpen = !_skillsOpen),
                   child: _ChipSlots(
                     values: _extraSkills,
-                    labels: _skillLabels,
-                    emptyLabel: 'COMPETENZA',
+                    labels: _localizedSkillLabels,
+                    emptyLabel: uiTextForLanguage(
+                      'COMPETENZA',
+                      """PROFICIENCY""",
+                    ),
                     onAdd: () => _pickSkill(),
                     onPick: _pickSkill,
                     onRemove: (index) {
@@ -743,7 +775,10 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
                 ),
 
                 _CollapsibleEditSection(
-                  title: 'Punteggi caratteristica extra',
+                  title: uiTextForLanguage(
+                    'Punteggi caratteristica extra',
+                    """Extra ability scores""",
+                  ),
                   isOpen: _extraAsiOpen,
                   onToggle: () =>
                       setState(() => _extraAsiOpen = !_extraAsiOpen),
@@ -765,7 +800,10 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
       bottomNavigationBar: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(12),
-          child: FilledButton(onPressed: _save, child: const Text('SALVA')),
+          child: FilledButton(
+            onPressed: _save,
+            child: Text(uiTextForLanguage('SALVA', """SAVE""")),
+          ),
         ),
       ),
     );
@@ -799,11 +837,11 @@ class _TerrainAdeptDialogState extends State<_TerrainAdeptDialog> {
         .where((terrain) => terrain != BattleNaturalTerrain.none)
         .toList(growable: false);
     return AlertDialog(
-      title: const Text('Esperto del terreno'),
+      title: Text('Esperto del terreno'),
       content: DropdownButtonFormField<BattleNaturalTerrain>(
         initialValue: _terrain,
         isExpanded: true,
-        decoration: const InputDecoration(labelText: 'Terreno scelto'),
+        decoration: InputDecoration(labelText: 'Terreno scelto'),
         items: [
           for (final terrain in terrains)
             DropdownMenuItem(value: terrain, child: Text(terrain.label)),
@@ -815,11 +853,11 @@ class _TerrainAdeptDialogState extends State<_TerrainAdeptDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('ANNULLA'),
+          child: Text(uiTextForLanguage('ANNULLA', """CANCEL""")),
         ),
         FilledButton(
           onPressed: () => Navigator.of(context).pop(_terrain),
-          child: const Text('CONFERMA'),
+          child: Text(uiTextForLanguage('CONFERMA', """CONFIRM""")),
         ),
       ],
     );
@@ -830,7 +868,9 @@ String _localizedFormLabel(Pokemon pokemon, String? formName) {
   if (BattleFormChangeService.supports(pokemon)) {
     return BattleFormChangeService.formLabel(pokemon, formName);
   }
-  return formName?.trim().isNotEmpty == true ? formName! : 'Forma base';
+  return formName?.trim().isNotEmpty == true
+      ? formName!
+      : uiTextForLanguage('Forma base', """Base form""");
 }
 
 class _FormSelector extends StatelessWidget {
@@ -860,7 +900,12 @@ class _FormSelector extends StatelessWidget {
           size: 52,
         ),
         title: Text(_localizedFormLabel(pokemon, formName).toUpperCase()),
-        subtitle: const Text('Tocca per cambiare forma.'),
+        subtitle: Text(
+          uiTextForLanguage(
+            'Tocca per cambiare forma.',
+            """Tap to change form.""",
+          ),
+        ),
         trailing: const Icon(Icons.swap_horiz),
         onTap: onTap,
       ),
@@ -892,7 +937,7 @@ class _FormPickerSheet extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           children: [
             Text(
-              'Scegli forma',
+              uiTextForLanguage('Scegli forma', """Choose form"""),
               style: Theme.of(
                 context,
               ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
@@ -1214,8 +1259,8 @@ class _MovePickerScreenState extends State<_MovePickerScreen> {
   String get _sourceLabel {
     return switch (_source) {
       'learnset' => 'Learnset completo',
-      'catalog' => 'Catalogo completo',
-      _ => 'Disponibile ora',
+      'catalog' => uiTextForLanguage('Catalogo completo', """Full catalog"""),
+      _ => uiTextForLanguage('Disponibile ora', """Available now"""),
     };
   }
 
@@ -1223,7 +1268,7 @@ class _MovePickerScreenState extends State<_MovePickerScreen> {
     return switch (value) {
       'attack' => 'Attacchi',
       'save' => 'Tiri salvezza',
-      'other' => 'Altre mosse',
+      'other' => uiTextForLanguage('Altre mosse', """Other moves"""),
       _ => 'Tutte le categorie',
     };
   }
@@ -1279,7 +1324,7 @@ class _MovePickerScreenState extends State<_MovePickerScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('SCEGLI MOSSA'),
+        title: Text(uiTextForLanguage('SCEGLI MOSSA', """CHOOSE MOVE""")),
         backgroundColor: Colors.orange,
         foregroundColor: Colors.white,
       ),
@@ -1320,8 +1365,11 @@ class _MovePickerScreenState extends State<_MovePickerScreen> {
                         TextField(
                           textAlign: TextAlign.center,
                           textInputAction: TextInputAction.search,
-                          decoration: const InputDecoration(
-                            labelText: 'Cerca per nome, tipo o descrizione',
+                          decoration: InputDecoration(
+                            labelText: uiTextForLanguage(
+                              'Cerca per nome, tipo o descrizione',
+                              """Search by name, type or description""",
+                            ),
                             prefixIcon: Icon(Icons.search),
                             border: OutlineInputBorder(),
                           ),
@@ -1337,7 +1385,7 @@ class _MovePickerScreenState extends State<_MovePickerScreen> {
                               child: DropdownButtonFormField<String?>(
                                 initialValue: _selectedType,
                                 isExpanded: true,
-                                decoration: const InputDecoration(
+                                decoration: InputDecoration(
                                   labelText: 'Tipo',
                                   border: OutlineInputBorder(),
                                 ),
@@ -1361,7 +1409,7 @@ class _MovePickerScreenState extends State<_MovePickerScreen> {
                               child: DropdownButtonFormField<String>(
                                 initialValue: _category,
                                 isExpanded: true,
-                                decoration: const InputDecoration(
+                                decoration: InputDecoration(
                                   labelText: 'Categoria',
                                   border: OutlineInputBorder(),
                                 ),
@@ -1392,7 +1440,7 @@ class _MovePickerScreenState extends State<_MovePickerScreen> {
                             color: Theme.of(
                               context,
                             ).colorScheme.secondaryContainer,
-                            child: const Padding(
+                            child: Padding(
                               padding: EdgeInsets.all(10),
                               child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -1401,7 +1449,10 @@ class _MovePickerScreenState extends State<_MovePickerScreen> {
                                   SizedBox(width: 8),
                                   Expanded(
                                     child: Text(
-                                      'Scelta manuale: la compatibilità con la specie non viene verificata.',
+                                      uiTextForLanguage(
+                                        'Scelta manuale: la compatibilità con la specie non viene verificata.',
+                                        """Manual selection: species compatibility is not checked.""",
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -1412,7 +1463,10 @@ class _MovePickerScreenState extends State<_MovePickerScreen> {
                         Padding(
                           padding: const EdgeInsets.only(top: 6),
                           child: Text(
-                            '$_sourceLabel · ${moves.length} mosse',
+                            uiTextForLanguage(
+                              '$_sourceLabel · ${moves.length} mosse',
+                              """$_sourceLabel · ${moves.length} moves""",
+                            ),
                             style: Theme.of(context).textTheme.labelLarge,
                           ),
                         ),
@@ -1421,8 +1475,13 @@ class _MovePickerScreenState extends State<_MovePickerScreen> {
                   ),
                   Expanded(
                     child: moves.isEmpty
-                        ? const Center(
-                            child: Text('Nessuna mossa disponibile.'),
+                        ? Center(
+                            child: Text(
+                              uiTextForLanguage(
+                                'Nessuna mossa disponibile.',
+                                """No moves available.""",
+                              ),
+                            ),
                           )
                         : ListView.builder(
                             keyboardDismissBehavior:
@@ -1524,12 +1583,12 @@ class _ChoicePickerScreenState extends State<_ChoicePickerScreen> {
 
     return _ChoiceShell(
       title: widget.title,
-      searchLabel: 'Cerca',
+      searchLabel: uiTextForLanguage('Cerca', """Search"""),
       onSearchChanged: (value) => setState(() => _search = value),
       children: [
         if (widget.includeNone)
           _PickerTile(
-            label: 'Nessuno',
+            label: uiTextForLanguage('Nessuno', """None"""),
             onTap: () =>
                 Navigator.of(context).pop(_ChoicePickerScreen.noneValue),
           ),
@@ -1543,7 +1602,9 @@ class _ChoicePickerScreenState extends State<_ChoicePickerScreen> {
             onTap: () => Navigator.of(context).pop(option),
           ),
         if (pinnedOptions.isNotEmpty && otherOptions.isNotEmpty)
-          const _PickerGroupLabel(label: 'Catalogo completo'),
+          _PickerGroupLabel(
+            label: uiTextForLanguage('Catalogo completo', """Full catalog"""),
+          ),
         for (final option in otherOptions)
           _PickerTile(
             label: widget.labels[option] ?? option,
@@ -1551,9 +1612,14 @@ class _ChoicePickerScreenState extends State<_ChoicePickerScreen> {
             onTap: () => Navigator.of(context).pop(option),
           ),
         if (options.isEmpty && !widget.includeNone)
-          const Padding(
+          Padding(
             padding: EdgeInsets.all(24),
-            child: Text('Nessun elemento disponibile.'),
+            child: Text(
+              uiTextForLanguage(
+                'Nessun elemento disponibile.',
+                """No items available.""",
+              ),
+            ),
           ),
       ],
     );

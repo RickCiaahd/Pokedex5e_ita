@@ -370,7 +370,7 @@ class _CapturePokemonScreenState extends State<CapturePokemonScreen> {
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
           children: [
             if (_isLoading)
-              const Padding(
+              Padding(
                 padding: EdgeInsets.only(top: 120),
                 child: Center(child: CircularProgressIndicator()),
               )
@@ -791,7 +791,7 @@ class _RegisterCaughtSheetState extends State<_RegisterCaughtSheet> {
                 Expanded(
                   child: SwitchListTile(
                     contentPadding: EdgeInsets.zero,
-                    title: const Text('Shiny'),
+                    title: Text('Shiny'),
                     value: _isShiny,
                     onChanged: (value) => setState(() => _isShiny = value),
                   ),
@@ -973,7 +973,10 @@ class _CaptureErrorState extends StatelessWidget {
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 16),
-          FilledButton(onPressed: onRetry, child: const Text('Riprova')),
+          FilledButton(
+            onPressed: onRetry,
+            child: Text(uiTextForLanguage('Riprova', """Retry""")),
+          ),
         ],
       ),
     );

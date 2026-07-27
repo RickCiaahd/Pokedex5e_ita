@@ -368,7 +368,7 @@ class _FirstLaunchOnboardingScreenState
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     if (_isLoading) {
-      return const Scaffold(
+      return Scaffold(
         backgroundColor: _OnboardingPalette.page,
         body: SafeArea(child: Center(child: CircularProgressIndicator())),
       );
@@ -776,7 +776,7 @@ class _WelcomeStage extends StatelessWidget {
             fit: BoxFit.cover,
             fallback: _WelcomeBackgroundPlaceholder(),
           ),
-          const DecoratedBox(
+          DecoratedBox(
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
@@ -816,7 +816,7 @@ class _WelcomeStage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 20),
-                const Text(
+                Text(
                   'TRAINER ATLAS',
                   textAlign: TextAlign.center,
                   style: TextStyle(
@@ -946,7 +946,7 @@ class _ProfessorScene extends StatelessWidget {
                     alignment: Alignment.topCenter,
                     fallback: _LaboratoryBackgroundPlaceholder(),
                   ),
-                  const DecoratedBox(
+                  DecoratedBox(
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         begin: Alignment.topCenter,
@@ -1063,7 +1063,7 @@ class _ProfessorAssetPlaceholder extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               'onboarding_professor.png',
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 11),

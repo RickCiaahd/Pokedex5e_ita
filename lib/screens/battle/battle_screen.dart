@@ -1500,7 +1500,7 @@ class _BattleScreenState extends State<BattleScreen> {
                     future: _future,
                     builder: (context, snapshot) {
                       if (snapshot.connectionState != ConnectionState.done) {
-                        return const Center(child: CircularProgressIndicator());
+                        return Center(child: CircularProgressIndicator());
                       }
 
                       if (snapshot.hasError) {
@@ -1528,7 +1528,7 @@ class _BattleScreenState extends State<BattleScreen> {
                             'Aggiungi almeno un Pokémon alla squadra prima di aprire il tracker.',
                             'Add at least one Pokémon to the team before opening the tracker.',
                           ),
-                          actionLabel: 'Ricarica',
+                          actionLabel: context.uiText('Ricarica', 'Reload'),
                           onAction: () => _reload(),
                         );
                       }
@@ -2072,22 +2072,24 @@ String _fallbackStatusLabel(String value) {
 String _itemTypeLabel(String type) {
   switch (type) {
     case 'berry':
-      return 'Bacca';
+      return uiTextForLanguage('Bacca', 'Berry');
     case 'held-item':
       return uiTextForLanguage('Strumento tenuto', 'Held item');
     case 'medicine':
-      return 'Medicina';
+      return uiTextForLanguage('Medicina', 'Medicine');
     case 'pokeball':
       return 'Poké Ball';
     case 'tm':
-      return 'MT';
+      return uiTextForLanguage('MT', 'TM');
     default:
       return type;
   }
 }
 
 String _quickItemActionLabel(BagItem item) {
-  return BattleQuickItemService.isPokeball(item) ? 'LANCIA' : 'USA';
+  return BattleQuickItemService.isPokeball(item)
+      ? uiTextForLanguage('LANCIA', 'THROW')
+      : uiTextForLanguage('USA', 'USE');
 }
 
 String _quickItemDescription(BagItem item) {
@@ -2137,7 +2139,10 @@ class _BattleHeader extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    '${profile.name} · INIZ. ${trainerInitiativeBonus >= 0 ? '+' : ''}$trainerInitiativeBonus',
+                    context.uiText(
+                      '${profile.name} · INIZ. ${trainerInitiativeBonus >= 0 ? '+' : ''}$trainerInitiativeBonus',
+                      '${profile.name} · INIT. ${trainerInitiativeBonus >= 0 ? '+' : ''}$trainerInitiativeBonus',
+                    ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -2746,7 +2751,7 @@ class _ActivePokemonCard extends StatelessWidget {
                 children: [
                   Chip(
                     avatar: const Icon(Icons.change_circle_outlined, size: 18),
-                    label: Text(formLabel ?? 'Forma'),
+                    label: Text(formLabel ?? context.uiText('Forma', 'Form')),
                   ),
                   OutlinedButton.icon(
                     onPressed: onChangeForm,
@@ -3568,7 +3573,10 @@ class _StruggleWarning extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'STRUGGLE DISPONIBILE',
+              uiTextForLanguage(
+                'STRUGGLE DISPONIBILE',
+                """STRUGGLE AVAILABLE""",
+              ),
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 color: Theme.of(context).colorScheme.onErrorContainer,
                 fontWeight: FontWeight.w900,

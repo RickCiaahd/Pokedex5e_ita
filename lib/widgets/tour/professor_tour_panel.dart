@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 import '../../l10n/app_localizations.dart';
+import '../../localization/ui_text.dart';
 
 /// Pannello condiviso dai tour della Home e dei principali sottomenu.
 ///
@@ -151,10 +152,7 @@ class _TourSpeechCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = Localizations.of<AppLocalizations>(
-      context,
-      AppLocalizations,
-    );
+    final l10n = Localizations.of<AppLocalizations>(context, AppLocalizations);
     final colors = Theme.of(context).colorScheme;
     final compact = MediaQuery.sizeOf(context).width < 430;
 
@@ -219,7 +217,10 @@ class _TourSpeechCard extends StatelessWidget {
                 if (onBack != null)
                   OutlinedButton(
                     onPressed: onBack,
-                    child: Text(l10n?.backAction ?? 'INDIETRO'),
+                    child: Text(
+                      l10n?.backAction ??
+                          uiTextForLanguage('INDIETRO', """BACK"""),
+                    ),
                   ),
                 FilledButton(
                   onPressed: onNext,

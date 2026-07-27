@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../services/battle_status_rules.dart';
+import '../../localization/ui_text.dart';
 
 class BattleStatusAssistanceCard extends StatelessWidget {
   const BattleStatusAssistanceCard({
@@ -63,10 +64,11 @@ class BattleStatusAssistanceCard extends StatelessWidget {
                     children: [
                       Text(
                         'ASSISTENZA STATUS',
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: colors.onTertiaryContainer,
-                          fontWeight: FontWeight.w900,
-                        ),
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(
+                              color: colors.onTertiaryContainer,
+                              fontWeight: FontWeight.w900,
+                            ),
                       ),
                       const SizedBox(height: 2),
                       Text(
@@ -97,9 +99,15 @@ class BattleStatusAssistanceCard extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             _ReminderSection(
-              title: 'EFFETTI SEMPRE ATTIVI',
+              title: uiTextForLanguage(
+                'EFFETTI SEMPRE ATTIVI',
+                """ALWAYS-ACTIVE EFFECTS""",
+              ),
               reminders: passive,
-              emptyMessage: 'Nessun effetto passivo da ricordare.',
+              emptyMessage: uiTextForLanguage(
+                'Nessun effetto passivo da ricordare.',
+                """No passive effects to remember.""",
+              ),
             ),
             const SizedBox(height: 12),
             Text(
@@ -117,11 +125,17 @@ class BattleStatusAssistanceCard extends StatelessWidget {
             const SizedBox(height: 8),
             _ReminderSection(
               reminders: contextual,
-              emptyMessage: 'Nessun tiro o danno richiesto in questa fase.',
+              emptyMessage: uiTextForLanguage(
+                'Nessun tiro o danno richiesto in questa fase.',
+                """No roll or damage is required at this stage.""",
+              ),
             ),
             const SizedBox(height: 10),
             Text(
-              'Le durate e il periodo di protezione dopo la guarigione restano manuali: il pannello non tira dadi e non rimuove automaticamente gli status.',
+              uiTextForLanguage(
+                'Le durate e il periodo di protezione dopo la guarigione restano manuali: il pannello non tira dadi e non rimuove automaticamente gli status.',
+                """Durations and the protection period after healing remain manual: the panel does not roll dice or remove statuses automatically.""",
+              ),
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 color: colors.onTertiaryContainer,
                 fontStyle: FontStyle.italic,

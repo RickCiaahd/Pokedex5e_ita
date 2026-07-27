@@ -12,9 +12,9 @@ void main() {
           builder: (context) => Scaffold(
             body: Center(
               child: FilledButton(
-                onPressed: () => Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const _FirstScreen()),
-                ),
+                onPressed: () => Navigator.of(
+                  context,
+                ).push(MaterialPageRoute(builder: (_) => const _FirstScreen())),
                 child: const Text('APRI PRIMO LIVELLO'),
               ),
             ),
@@ -28,23 +28,25 @@ void main() {
     await tester.tap(find.text('APRI SECONDO LIVELLO'));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byTooltip('Indietro'));
+    await tester.tap(find.byTooltip('Back'));
     await tester.pumpAndSettle();
 
     expect(find.text('PRIMO LIVELLO'), findsOneWidget);
     expect(find.text('SECONDO LIVELLO'), findsNothing);
   });
 
-  testWidgets('il pulsante Home torna direttamente alla radice', (tester) async {
+  testWidgets('il pulsante Home torna direttamente alla radice', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       MaterialApp(
         home: Builder(
           builder: (context) => Scaffold(
             body: Center(
               child: FilledButton(
-                onPressed: () => Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const _FirstScreen()),
-                ),
+                onPressed: () => Navigator.of(
+                  context,
+                ).push(MaterialPageRoute(builder: (_) => const _FirstScreen())),
                 child: const Text('APRI PRIMO LIVELLO'),
               ),
             ),
@@ -117,9 +119,9 @@ class _FirstScreen extends StatelessWidget {
       ),
       body: Center(
         child: FilledButton(
-          onPressed: () => Navigator.of(context).push(
-            MaterialPageRoute(builder: (_) => const _SecondScreen()),
-          ),
+          onPressed: () => Navigator.of(
+            context,
+          ).push(MaterialPageRoute(builder: (_) => const _SecondScreen())),
           child: const Text('APRI SECONDO LIVELLO'),
         ),
       ),

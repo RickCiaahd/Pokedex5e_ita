@@ -42,6 +42,9 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
+      - name: Verify compliance reports
+        run: python tooling/generate_compliance_reports.py --check
+
       - name: Analyze source
         run: flutter analyze
 

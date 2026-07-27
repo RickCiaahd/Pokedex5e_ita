@@ -1,6 +1,6 @@
 # Audit preliminare di codice e licenze
 
-Stato: **blocco P0 in corso**  
+Stato: **blocco P0 avanzato, ma ancora bloccante per gli asset**  
 Ultimo aggiornamento: 27 luglio 2026
 
 > Questo documento è un inventario tecnico e non costituisce consulenza legale. Prima della pubblicazione sul Play Store è necessaria una verifica professionale dei diritti sui contenuti e delle condizioni di distribuzione.
@@ -28,16 +28,15 @@ Il repository `Jerakin/Pokedex5E` dichiara la **GNU General Public License v3.0*
 
 Per mantenere compatibilità con la provenienza GPLv3, il codice licenziabile di Trainer Atlas 5e viene dichiarato **GPL-3.0-only**.
 
-Azioni introdotte da questo blocco:
+Azioni completate:
 
-- file `LICENSE` nel repository;
-- avviso GPL e collegamento al codice sorgente nell'interfaccia;
-- pagina interna Licenze e attribuzioni;
-- accesso alle licenze dei pacchetti Flutter tramite `showLicensePage`.
+- `LICENSE` contiene il testo integrale e non modificato della GNU GPLv3;
+- `NOTICE.md` separa gli avvisi del progetto, la provenienza a monte e i limiti relativi ai contenuti di terzi;
+- l'interfaccia espone licenza, codice sorgente e attribuzioni;
+- la pagina interna delle licenze mostra gli avvisi registrati da Flutter tramite `showLicensePage`;
+- il workflow `Compliance audit` verifica che il testo GPL sia completo.
 
-### Requisito ancora bloccante
-
-Il file `LICENSE` contiene per ora la dichiarazione e il collegamento al testo canonico. Prima di qualsiasi distribuzione pubblica deve essere sostituito o affiancato da una copia **integrale e verbatim** della GPLv3 inclusa anche nel pacchetto distribuito.
+Il requisito del testo integrale GPL non è più aperto. Resta necessario assicurarsi che ogni pacchetto binario distribuito contenga o accompagni effettivamente `LICENSE` e `NOTICE.md` e colleghi il tag o commit del codice sorgente corrispondente.
 
 ## 4. Obblighi operativi da rispettare
 
@@ -57,9 +56,34 @@ La possibile applicazione degli obblighi GPLv3 relativi alle informazioni di ins
 
 Le dipendenze dirette dichiarate comprendono Flutter, `flutter_localizations`, `intl`, Hive, `file_picker`, `share_plus`, `scrollable_positioned_list` e `cupertino_icons`.
 
-Le licenze dei pacchetti vengono raccolte dal registro licenze di Flutter e mostrate nell'app. Prima della release va generato anche un report riproducibile delle dipendenze dirette e transitive con nome, versione e licenza.
+Il generatore `tooling/generate_compliance_reports.py` legge `pubspec.lock` e i file di licenza installati da `flutter pub get`, quindi produce:
 
-## 6. Contenuti non risolti dalla GPL
+- `docs/compliance/dependency-licenses.md`;
+- `docs/compliance/dependency-licenses.csv`.
+
+Il report corrente censisce **74 pacchetti**: 58 rilevati come BSD-3-Clause, 6 Apache-2.0, 6 MIT, 1 MPL-2.0 e 3 pacchetti SDK senza un file di licenza nella radice specifica del package. Questi ultimi sono `flutter_localizations`, `flutter_test` e `flutter_web_plugins`; devono essere ricondotti e verificati rispetto alla licenza del Flutter SDK durante la revisione finale.
+
+La classificazione è euristica. I testi originali delle licenze, gli hash registrati e la pagina licenze runtime restano le evidenze da confrontare.
+
+## 6. Censimento degli asset
+
+Il generatore produce inoltre:
+
+- `docs/compliance/asset-audit-summary.md`;
+- `docs/compliance/asset-manifest.csv`.
+
+Il manifest corrente censisce **8.539 file per 332,1 MiB**. Soltanto 2 file risultano coperti da un'evidenza di attribuzione o licenza trovata nella cartella o in una cartella antenata. La presenza di tale evidenza non dimostra comunque il diritto di redistribuzione.
+
+La classificazione prudenziale corrente è:
+
+- 6.441 file `not-cleared`;
+- 1.643 file `mixed`;
+- 432 file `unverified`;
+- 23 file `project-created-pending-proof`.
+
+Questi numeri rendono gli asset il principale blocco residuo per una build pubblica.
+
+## 7. Contenuti non risolti dalla GPL
 
 Restano separati e potenzialmente bloccanti:
 
@@ -72,23 +96,23 @@ Restano separati e potenzialmente bloccanti:
 
 Un disclaimer di non affiliazione non equivale a un'autorizzazione alla redistribuzione.
 
-## 7. Esito preliminare
+## 8. Esito preliminare
 
 | Area | Stato | Decisione |
 |---|---|---|
 | Codice derivato da Jerakin/Pokedex5E | Compatibile in via prudenziale con GPLv3 | Distribuire il codice corrente come GPL-3.0-only |
-| Testo completo GPL nel pacchetto | Non completato | Bloccante prima della beta pubblica |
+| Testo completo GPL nel repository | Completato | Verificare l'inclusione nei pacchetti finali |
 | Codice sorgente corrispondente | Repository pubblico presente | Collegare ogni release a tag/commit esatto |
-| Dipendenze Flutter | Licenze runtime consultabili | Generare inventario versionato prima della release |
+| Dipendenze Flutter | Inventario versionato generato | Rivedere i 3 package SDK e confrontare gli avvisi runtime |
 | Dati di gioco | Provenienza mista | Verificare licenza per ogni catalogo |
 | Artwork e sprite Pokémon | Diritti non verificati | Sostituire, ottenere autorizzazione o escludere dalla build pubblica |
 | Marchi e nomi | Proprietà di terzi | Uso da sottoporre a valutazione legale |
 
-## 8. Prossimi passi
+## 9. Prossimi passi
 
-1. includere il testo integrale GPLv3;
-2. generare SBOM/licence report delle dipendenze;
-3. completare l'inventario per file o famiglia di asset;
-4. eliminare i fallback remoti e verificare il funzionamento offline;
-5. definire una build pubblicabile priva di asset non autorizzati;
+1. verificare manualmente le tre dipendenze SDK senza evidenza locale specifica;
+2. collegare ciascuna famiglia o singolo asset a fonte, autore e licenza verificabile;
+3. misurare l'impatto delle famiglie di asset sull'AAB e progettare una variante pubblicabile;
+4. includere automaticamente `LICENSE`, `NOTICE.md` e i report rilevanti nei pacchetti release;
+5. definire una build priva di asset non autorizzati;
 6. effettuare una revisione legale prima di caricare materiale sul Play Store.

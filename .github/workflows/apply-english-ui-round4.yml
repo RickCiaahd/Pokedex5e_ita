@@ -101,6 +101,43 @@ jobs:
               raise RuntimeError(f'Expected 3 NPC initiative returns, found {count}')
           npc_path.write_text(npc, encoding='utf-8')
 
+          custom_path = Path('lib/screens/pokemon/custom_pokemon_library_screen.dart')
+          custom = custom_path.read_text(encoding='utf-8')
+          custom = custom.replace(
+              '    if (line.isEmpty) continue;',
+              '    if (line.isEmpty) {\n      continue;\n    }',
+              1,
+          )
+          separator_pattern = re.compile(
+              r"    if \(separator <= 0\) throw (FormatException\([^\n]+\));"
+          )
+          custom, separator_count = separator_pattern.subn(
+              r"    if (separator <= 0) {\n      throw \1;\n    }",
+              custom,
+              count=1,
+          )
+          if separator_count != 1:
+              raise RuntimeError('Expected custom move separator guard not found')
+          custom_path.write_text(custom, encoding='utf-8')
+
+          legacy_path = Path('lib/screens/pokemon/pokemon_detail_screen_legacy.dart')
+          legacy = legacy_path.read_text(encoding='utf-8')
+          if 'const _InfoCard(' not in legacy:
+              raise RuntimeError('Expected const legacy InfoCard not found')
+          legacy_path.write_text(
+              legacy.replace('const _InfoCard(', '_InfoCard(', 1),
+              encoding='utf-8',
+          )
+
+          wild_path = Path('lib/widgets/battle/wild_master_fight_launcher.dart')
+          wild = wild_path.read_text(encoding='utf-8')
+          if 'throw const FormatException(' not in wild:
+              raise RuntimeError('Expected const wild FormatException not found')
+          wild_path.write_text(
+              wild.replace('throw const FormatException(', 'throw FormatException(', 1),
+              encoding='utf-8',
+          )
+
           config = json.loads(
               Path('tooling/english_ui_round4_translations.json').read_text(encoding='utf-8')
           )

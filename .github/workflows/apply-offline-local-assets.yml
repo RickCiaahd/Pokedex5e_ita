@@ -44,6 +44,30 @@ jobs:
       - name: Apply local-only asset migration
         run: python tooling/apply_offline_local_assets.py
 
+      - name: Normalize local image fallbacks
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          replacements = {
+              Path('lib/screens/bag/bag_screen.dart'): (
+                  "if (assetPath == null || !assetPath.startsWith('assets/')) return Icon(_iconForType(item.type));",
+                  "if (assetPath == null || !assetPath.startsWith('assets/')) {\n      return Icon(_iconForType(item.type));\n    }",
+              ),
+              Path('lib/screens/battle/battle_screen.dart'): (
+                  "if (assetPath == null || !assetPath.startsWith('assets/')) return Icon(Icons.inventory_2_outlined, size: size);",
+                  "if (assetPath == null || !assetPath.startsWith('assets/')) {\n      return Icon(Icons.inventory_2_outlined, size: size);\n    }",
+              ),
+          }
+
+          for path, (old, new) in replacements.items():
+              text = path.read_text(encoding='utf-8')
+              if text.count(old) != 1:
+                  raise RuntimeError(f'{path}: fallback inline inatteso')
+              path.write_text(text.replace(old, new, 1), encoding='utf-8')
+          PY
+
       - name: Format changed Dart files
         run: |
           dart format \

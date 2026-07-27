@@ -113,9 +113,7 @@
   },
   "lib/screens/tools/encounter_result_screen.dart": {
     "Maschio": "Male",
-    "Femmina": "Female",
-    "Nessuna abilità": "No ability",
-    "${generated.ability ?? 'Nessuna abilità'}": "${generated.ability ?? 'No ability'}"
+    "Femmina": "Female"
   },
   "lib/screens/bag/bag_screen.dart": {
     "Slot ${candidate.slot.slotIndex + 1} • Tiene: ${heldItem?.name ?? 'nessuno strumento'}": "Slot ${candidate.slot.slotIndex + 1} • Holding: ${heldItem?.name ?? 'no item'}"

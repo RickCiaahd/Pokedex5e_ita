@@ -65,10 +65,12 @@ jobs:
         run: |
           set -euo pipefail
           temporary_license="$(mktemp)"
-          if ! curl --fail --silent --show-error --location --retry 3 \
+          if ! curl --fail --silent --show-error --location --retry 2 \
+            --connect-timeout 10 --max-time 30 \
             https://www.gnu.org/licenses/gpl-3.0.txt \
             --output "$temporary_license"; then
-            curl --fail --silent --show-error --location --retry 3 \
+            curl --fail --silent --show-error --location --retry 2 \
+              --connect-timeout 10 --max-time 30 \
               https://raw.githubusercontent.com/spdx/license-list-data/main/text/GPL-3.0-only.txt \
               --output "$temporary_license"
           fi

@@ -69,6 +69,22 @@ jobs:
           python -m py_compile tooling/apply_english_ui_residuals_round3.py
           python tooling/apply_english_ui_residuals_round3.py
 
+      - name: Repair transformed breeding source
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('lib/screens/breeding/breeding_screen.dart')
+          text = path.read_text(encoding='utf-8')
+          if 'freeSlot!.slotIndex' not in text:
+              raise RuntimeError('Expected promoted freeSlot expression not found')
+          path.write_text(
+              text.replace('freeSlot!.slotIndex', 'freeSlot.slotIndex'),
+              encoding='utf-8',
+          )
+          PY
+
       - name: Resolve dependencies and generate localizations
         run: |
           flutter pub get

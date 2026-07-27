@@ -1,0 +1,85 @@
+name: Apply offline local assets
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'tooling/apply_offline_local_assets.py'
+      - '.github/workflows/apply-offline-local-assets.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: offline-local-assets-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  migrate_validate_publish:
+    if: github.head_ref == 'feature/offline-local-assets' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+
+    steps:
+      - name: Check out offline branch
+        uses: actions/checkout@v4
+        with:
+          ref: feature/offline-local-assets
+          fetch-depth: 0
+
+      - name: Apply local-only asset migration
+        run: python tooling/apply_offline_local_assets.py
+
+      - name: Format changed Dart files
+        run: |
+          dart format \
+            lib/models/bag_item.dart \
+            lib/screens/bag/bag_screen.dart \
+            lib/screens/battle/battle_screen.dart \
+            lib/screens/pokemon/pokemon_detail_screen_legacy.dart \
+            lib/screens/settings/legal_information_screen.dart \
+            test/offline_operation_test.dart
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze source
+        run: flutter analyze
+
+      - name: Validate offline behavior
+        run: flutter test test/offline_operation_test.dart --reporter expanded
+
+      - name: Validate application data
+        run: flutter test test/data_integrity_test.dart --reporter expanded
+
+      - name: Run complete test suite
+        run: flutter test --reporter expanded
+
+      - name: Build Android debug APK
+        run: flutter build apk --debug
+
+      - name: Publish migrated sources
+        shell: bash
+        run: |
+          rm -f .github/workflows/apply-offline-local-assets.yml
+          rm -f tooling/apply_offline_local_assets.py
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Rende immagini e dati di gioco completamente locali"
+          git push origin HEAD:feature/offline-local-assets

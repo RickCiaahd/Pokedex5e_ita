@@ -77,12 +77,11 @@ jobs:
 
           path = Path('lib/screens/breeding/breeding_screen.dart')
           text = path.read_text(encoding='utf-8')
-          if 'freeSlot!.slotIndex' not in text:
-              raise RuntimeError('Expected promoted freeSlot expression not found')
-          path.write_text(
-              text.replace('freeSlot!.slotIndex', 'freeSlot.slotIndex'),
-              encoding='utf-8',
-          )
+          old = '"""placed in team slot ${freeSlot!.slotIndex + 1}"""'
+          new = '"""placed in team slot ${freeSlot.slotIndex + 1}"""'
+          if old not in text:
+              raise RuntimeError('Expected English freeSlot expression not found')
+          path.write_text(text.replace(old, new, 1), encoding='utf-8')
           PY
 
       - name: Resolve dependencies and generate localizations

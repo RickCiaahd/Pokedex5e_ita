@@ -19,6 +19,7 @@ Got dependencies!
 Try `flutter pub outdated` for more information.
 Analyzing Pokedex5e_ita...                                      
 
-warning • The '!' will have no effect because the receiver can't be null. Try removing the '!' operator • lib/screens/breeding/breeding_screen.dart:411:48 • unnecessary_non_null_assertion
+  error • The property 'slotIndex' can't be unconditionally accessed because the receiver can be 'null'. Try making the access conditional (using '?.') or adding a null check to the target ('!') • lib/screens/breeding/breeding_screen.dart:410:55 • unchecked_use_of_nullable_value
+  error • The property 'slotIndex' can't be unconditionally accessed because the receiver can be 'null'. Try making the access conditional (using '?.') or adding a null check to the target ('!') • lib/screens/breeding/breeding_screen.dart:411:49 • unchecked_use_of_nullable_value
 
-1 issue found. (ran in 15.4s)
+2 issues found. (ran in 16.8s)

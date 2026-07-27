@@ -60,6 +60,9 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
+      - name: Require committed compliance reports
+        run: python tooling/generate_compliance_reports.py --check
+
       - name: Install the complete GPLv3 text
         shell: bash
         run: |
@@ -123,12 +126,3 @@ jobs:
             docs/compliance/asset-audit-summary.md
           git commit -m 'Genera inventari riproducibili di licenze e asset'
           git push origin HEAD:feature/compliance-reports
-
-      - name: Require committed reports on ordinary branches
-        if: github.head_ref != 'feature/compliance-reports' && github.ref_name != 'feature/compliance-reports'
-        run: |
-          git diff --exit-code -- LICENSE \
-            docs/compliance/dependency-licenses.csv \
-            docs/compliance/dependency-licenses.md \
-            docs/compliance/asset-manifest.csv \
-            docs/compliance/asset-audit-summary.md

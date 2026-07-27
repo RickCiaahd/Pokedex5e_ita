@@ -1,3 +1,5 @@
+import '../localization/ui_text.dart';
+
 class BreedingCandidate {
   const BreedingCandidate({
     required this.key,
@@ -26,9 +28,9 @@ class BreedingCandidate {
   bool get isGenderless => gender?.toLowerCase() == 'genderless';
 
   String get genderLabel => switch (gender?.toLowerCase()) {
-    'male' => 'Maschio',
-    'female' => 'Femmina',
-    'genderless' => 'Senza sesso',
-    _ => 'Sesso non impostato',
+    'male' => uiTextForLanguage('Maschio', """Male"""),
+    'female' => uiTextForLanguage('Femmina', """Female"""),
+    'genderless' => uiTextForLanguage('Senza sesso', """Genderless"""),
+    _ => uiTextForLanguage('Sesso non impostato', """Gender not set"""),
   };
 }

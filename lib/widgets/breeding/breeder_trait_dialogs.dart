@@ -4,6 +4,7 @@ import '../../models/battle_environment.dart';
 import '../../models/pokemon.dart';
 import '../../models/pokemon_nature.dart';
 import '../../services/battle_environment_service.dart';
+import '../../localization/ui_text.dart';
 
 class MasterOfTraitsSelection {
   const MasterOfTraitsSelection({
@@ -73,7 +74,7 @@ class _MasterOfTraitsDialogState extends State<_MasterOfTraitsDialog> {
     final eggMoves = widget.pokemon.moves.eggMoves.toSet().toList()..sort();
 
     return AlertDialog(
-      title: const Text('Master of Traits'),
+      title: Text('Master of Traits'),
       content: SizedBox(
         width: 520,
         child: SingleChildScrollView(
@@ -82,25 +83,31 @@ class _MasterOfTraitsDialogState extends State<_MasterOfTraitsDialog> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(
-                'Per ${widget.pokemon.name} puoi ignorare i tiri e scegliere sesso, natura e abilità tra le opzioni disponibili. Lascia Casuale per usare le normali regole di schiusa.',
+                uiTextForLanguage(
+                  'Per ${widget.pokemon.name} puoi ignorare i tiri e scegliere sesso, natura e abilità tra le opzioni disponibili. Lascia Casuale per usare le normali regole di schiusa.',
+                  """For ${widget.pokemon.name}, you may ignore the rolls and choose gender, nature and ability from the available options. Leave Random to use the normal hatching rules.""",
+                ),
               ),
               const SizedBox(height: 14),
               _TraitDropdown(
-                label: 'Sesso',
+                label: uiTextForLanguage('Sesso', """Gender"""),
                 value: _gender,
                 options: widget.genders,
                 onChanged: (value) => setState(() => _gender = value),
               ),
               const SizedBox(height: 10),
               _TraitDropdown(
-                label: 'Natura',
+                label: uiTextForLanguage('Natura', """Nature"""),
                 value: _nature,
                 options: natures,
                 onChanged: (value) => setState(() => _nature = value),
               ),
               const SizedBox(height: 10),
               _TraitDropdown(
-                label: 'Abilità non nascosta',
+                label: uiTextForLanguage(
+                  'Abilità non nascosta',
+                  """Non-hidden ability""",
+                ),
                 value: _ability,
                 options: widget.abilities,
                 onChanged: (value) => setState(() => _ability = value),
@@ -109,12 +116,18 @@ class _MasterOfTraitsDialogState extends State<_MasterOfTraitsDialog> {
                   eggMoves.isNotEmpty) ...[
                 const SizedBox(height: 18),
                 Text(
-                  'Egg Moves sostitutive (${_replacementMoves.length}/${widget.replaceableEggMoveCount})',
+                  uiTextForLanguage(
+                    'Egg Moves sostitutive (${_replacementMoves.length}/${widget.replaceableEggMoveCount})',
+                    """Replacement Egg Moves (${_replacementMoves.length}/${widget.replaceableEggMoveCount})""",
+                  ),
                   style: const TextStyle(fontWeight: FontWeight.w900),
                 ),
                 const SizedBox(height: 4),
-                const Text(
-                  'Puoi sostituire fino allo stesso numero di Egg Moves ereditate. Le selezioni non usate mantengono le mosse ereditate originali.',
+                Text(
+                  uiTextForLanguage(
+                    'Puoi sostituire fino allo stesso numero di Egg Moves ereditate. Le selezioni non usate mantengono le mosse ereditate originali.',
+                    """You may replace up to the same number of inherited Egg Moves. Unused selections keep the original inherited moves.""",
+                  ),
                 ),
                 const SizedBox(height: 8),
                 Wrap(
@@ -148,7 +161,7 @@ class _MasterOfTraitsDialogState extends State<_MasterOfTraitsDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('ANNULLA'),
+          child: Text(uiTextForLanguage('ANNULLA', """CANCEL""")),
         ),
         FilledButton(
           onPressed: () {
@@ -161,7 +174,7 @@ class _MasterOfTraitsDialogState extends State<_MasterOfTraitsDialog> {
               ),
             );
           },
-          child: const Text('CONFERMA'),
+          child: Text(uiTextForLanguage('CONFERMA', """CONFIRM""")),
         ),
       ],
     );
@@ -188,9 +201,14 @@ class _TraitDropdown extends StatelessWidget {
       isExpanded: true,
       decoration: InputDecoration(labelText: label),
       items: [
-        const DropdownMenuItem(
+        DropdownMenuItem(
           value: _MasterOfTraitsDialogState._random,
-          child: Text('Casuale secondo il manuale'),
+          child: Text(
+            uiTextForLanguage(
+              'Casuale secondo il manuale',
+              """Random according to the manual""",
+            ),
+          ),
         ),
         for (final option in options)
           DropdownMenuItem(value: option, child: Text(option)),
@@ -257,7 +275,7 @@ class _GoodGenesDialogState extends State<_GoodGenesDialog> {
         : _spent == 2;
 
     return AlertDialog(
-      title: const Text('Good Genes'),
+      title: Text('Good Genes'),
       content: SizedBox(
         width: 520,
         child: SingleChildScrollView(
@@ -266,7 +284,10 @@ class _GoodGenesDialogState extends State<_GoodGenesDialog> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(
-                '${widget.pokemonName} sta per schiudersi. Il privilegio assegna 2 punti alle caratteristiche oppure un talento.',
+                uiTextForLanguage(
+                  '${widget.pokemonName} sta per schiudersi. Il privilegio assegna 2 punti alle caratteristiche oppure un talento.',
+                  """${widget.pokemonName} is about to hatch. This feature grants 2 ability points or one feat.""",
+                ),
               ),
               const SizedBox(height: 12),
               Wrap(
@@ -274,12 +295,19 @@ class _GoodGenesDialogState extends State<_GoodGenesDialog> {
                 runSpacing: 8,
                 children: [
                   ChoiceChip(
-                    label: const Text('2 punti caratteristica'),
+                    label: Text(
+                      uiTextForLanguage(
+                        '2 punti caratteristica',
+                        """2 ability points""",
+                      ),
+                    ),
                     selected: !_useFeat,
                     onSelected: (_) => setState(() => _useFeat = false),
                   ),
                   ChoiceChip(
-                    label: const Text('Un talento'),
+                    label: Text(
+                      uiTextForLanguage('Un talento', """One feat"""),
+                    ),
                     selected: _useFeat,
                     onSelected: (_) => setState(() => _useFeat = true),
                   ),
@@ -288,7 +316,10 @@ class _GoodGenesDialogState extends State<_GoodGenesDialog> {
               const SizedBox(height: 10),
               if (!_useFeat) ...[
                 Text(
-                  'Punti spesi: $_spent/2',
+                  uiTextForLanguage(
+                    'Punti spesi: $_spent/2',
+                    """Points spent: $_spent/2""",
+                  ),
                   style: const TextStyle(fontWeight: FontWeight.w900),
                 ),
                 const SizedBox(height: 6),
@@ -332,7 +363,9 @@ class _GoodGenesDialogState extends State<_GoodGenesDialog> {
                 DropdownButtonFormField<String>(
                   initialValue: feats.contains(_feat) ? _feat : null,
                   isExpanded: true,
-                  decoration: const InputDecoration(labelText: 'Talento'),
+                  decoration: InputDecoration(
+                    labelText: uiTextForLanguage('Talento', """Feat"""),
+                  ),
                   items: [
                     for (final feat in feats)
                       DropdownMenuItem(value: feat, child: Text(feat)),
@@ -347,8 +380,11 @@ class _GoodGenesDialogState extends State<_GoodGenesDialog> {
                   DropdownButtonFormField<BattleNaturalTerrain>(
                     initialValue: _terrainAdept,
                     isExpanded: true,
-                    decoration: const InputDecoration(
-                      labelText: 'Terreno di Terrain Adept',
+                    decoration: InputDecoration(
+                      labelText: uiTextForLanguage(
+                        'Terreno di Terrain Adept',
+                        """Terrain for Terrain Adept""",
+                      ),
                     ),
                     items: [
                       for (final terrain in BattleNaturalTerrain.values)
@@ -373,7 +409,7 @@ class _GoodGenesDialogState extends State<_GoodGenesDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('ANNULLA'),
+          child: Text(uiTextForLanguage('ANNULLA', """CANCEL""")),
         ),
         FilledButton(
           onPressed: valid
@@ -397,7 +433,9 @@ class _GoodGenesDialogState extends State<_GoodGenesDialog> {
                   );
                 }
               : null,
-          child: const Text('APPLICA E SCHIUDI'),
+          child: Text(
+            uiTextForLanguage('APPLICA E SCHIUDI', """APPLY AND HATCH"""),
+          ),
         ),
       ],
     );
@@ -413,25 +451,30 @@ Future<int?> showEggHpDialog({
   final raw = await showDialog<String>(
     context: context,
     builder: (_) => AlertDialog(
-      title: const Text('PF dell’uovo'),
+      title: Text(uiTextForLanguage('PF dell’uovo', """Egg HP""")),
       content: TextField(
         controller: controller,
         autofocus: true,
         keyboardType: const TextInputType.numberWithOptions(signed: true),
         decoration: InputDecoration(
-          labelText: 'Nuovi PF oppure modifica (+/-)',
-          helperText:
-              'Il manuale assegna CA 8 e $maxHp PF. A 0 PF l’uovo è distrutto.',
+          labelText: uiTextForLanguage(
+            'Nuovi PF oppure modifica (+/-)',
+            """New HP or adjustment (+/-)""",
+          ),
+          helperText: uiTextForLanguage(
+            'Il manuale assegna CA 8 e $maxHp PF. A 0 PF l’uovo è distrutto.',
+            """The manual gives the egg AC 8 and $maxHp HP. At 0 HP the egg is destroyed.""",
+          ),
         ),
       ),
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('ANNULLA'),
+          child: Text(uiTextForLanguage('ANNULLA', """CANCEL""")),
         ),
         FilledButton(
           onPressed: () => Navigator.of(context).pop(controller.text),
-          child: const Text('APPLICA'),
+          child: Text(uiTextForLanguage('APPLICA', """APPLY""")),
         ),
       ],
     ),

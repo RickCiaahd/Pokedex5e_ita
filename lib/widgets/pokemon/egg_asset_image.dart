@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../localization/ui_text.dart';
 
 class EggAssetImage extends StatelessWidget {
   const EggAssetImage({
@@ -9,7 +10,8 @@ class EggAssetImage extends StatelessWidget {
   });
 
   static const String assetPath = 'assets/textures/sprites/egg.png';
-  static const String semanticLabel = 'Uovo Pokémon';
+  static String get semanticLabel =>
+      uiTextForLanguage('Uovo Pokémon', 'Pokémon Egg');
 
   final double size;
   final BoxFit fit;

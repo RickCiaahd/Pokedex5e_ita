@@ -1,8 +1,10 @@
+import '../localization/ui_text.dart';
+
 enum EggIncubator { none, basic, plus, superIncubator }
 
 extension EggIncubatorDetails on EggIncubator {
   String get label => switch (this) {
-    EggIncubator.none => 'Nessuno',
+    EggIncubator.none => uiTextForLanguage('Nessuno', """None"""),
     EggIncubator.basic => 'Basic',
     EggIncubator.plus => 'Plus',
     EggIncubator.superIncubator => 'Super',

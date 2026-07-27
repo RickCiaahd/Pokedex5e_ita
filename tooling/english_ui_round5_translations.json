@@ -1,0 +1,104 @@
+{
+  "lib/screens/team/team_selection_screen.dart": {
+    "$displayName esportato correttamente.": "$displayName exported successfully."
+  },
+  "lib/screens/pokemon/custom_pokemon_library_screen.dart": {
+    "${saved.name} salvato nel catalogo Fakemon.": "${saved.name} saved to the Fakemon catalog.",
+    "Esporta catalogo Fakemon": "Export Fakemon catalog",
+    "Esportazione catalogo annullata.": "Catalog export cancelled.",
+    "Importa catalogo Fakemon": "Import Fakemon catalog",
+    "Importazione catalogo annullata.": "Catalog import cancelled.",
+    "Catalogo importato: ${imported.installed} installati, ": "Catalog imported: ${imported.installed} installed, ",
+    "Il pacchetto segreto non mostra nome, immagine o dati nell’app del giocatore prima della scoperta.": "The secret package does not show its name, image or data in the player app before discovery.",
+    "Esporta contenuto segreto": "Export secret content",
+    "${definition.name} esportato correttamente.": "${definition.name} exported successfully.",
+    "${imported.definition.name} importato.": "${imported.definition.name} imported.",
+    "Importa catalogo": "Import catalog",
+    "Esporta catalogo": "Export catalog",
+    "Scegli immagine shiny del Fakemon": "Choose Fakemon shiny image",
+    "Scegli immagine Fakemon": "Choose Fakemon image",
+    "Rimuovi": "Remove",
+    "MODIFICA FAKEMON": "EDIT FAKEMON",
+    "Nome": "Name",
+    "DAL CATALOGO": "FROM CATALOG",
+    "Evoluzioni, forme e segreti": "Evolutions, forms and secrets",
+    "${_advanced.forms.length} forme": "${_advanced.forms.length} forms",
+    "Esportazione segreta disponibile": "Secret export available",
+    "Nessuno": "None",
+    "CONTENUTO SEGRETO": "SECRET CONTENT",
+    "MODIFICA": "EDIT",
+    "Altre azioni": "More actions",
+    "Scegli dal catalogo": "Choose from catalog",
+    "Cerca": "Search",
+    "IMPORTA COPIA": "IMPORT COPY",
+    "AGGIORNA": "UPDATE",
+    "Elenco numerico non valido.": "Invalid numeric list."
+  },
+  "lib/screens/pokemon/pokemon_edit_screen.dart": {
+    "Scegli feat": "Choose feat",
+    "Catalogo completo": "Full catalog",
+    "Disponibile ora": "Available now",
+    "Cerca": "Search",
+    "Nessuno": "None"
+  },
+  "lib/screens/pokemon/evolution_selector_sheet.dart": {
+    "Scegli evoluzione": "Choose evolution",
+    "Scegli": "Choose"
+  },
+  "lib/screens/pokemon/custom_pokemon_advanced_editor_screen.dart": {
+    "Contenuto segreto": "Secret content",
+    "Segreto fino alla scoperta": "Secret until discovery",
+    "Permanente": "Permanent",
+    "Momentanea di battaglia": "Temporary battle form",
+    "RIMUOVI COLLEGAMENTO": "REMOVE LINK",
+    "Rimuovi": "Remove",
+    "Nessuno": "None",
+    "Maschio": "Male",
+    "Femmina": "Female",
+    "Scegli artwork shiny": "Choose shiny artwork",
+    "Momentanea, solo battaglia": "Temporary, battle only"
+  },
+  "lib/screens/pokemon/pokemon_detail_screen_legacy.dart": {
+    "Punti disponibili: $remainingPoints": "Available points: $remainingPoints",
+    "Strumento tenuto": "Held item",
+    "Bacca": "Berry",
+    "POKÉMON CENTER": "POKÉMON CENTER",
+    "Pokémon Center": "Pokémon Center",
+    "Modifica esperienza": "Edit experience",
+    "Modifica PF": "Edit HP"
+  },
+  "lib/screens/battle/npc_battle_screen.dart": {
+    "Nome": "Name",
+    "Riepilogo del fight esportato correttamente.": "Fight summary exported successfully.",
+    "Riepilogo esportato da Trainer Atlas 5e.": "Summary exported by Trainer Atlas 5e.",
+    "Rimuovi dagli attivi": "Remove from active",
+    "MODIFICA": "EDIT",
+    "Modifica PF": "Edit HP",
+    "PF o modifica": "HP or adjustment",
+    "Nessuno": "None",
+    "Condividi riepilogo": "Share summary",
+    "Azioni del fight": "Fight actions",
+    "Azzera fight": "Reset fight",
+    "Termina fight": "End fight"
+  },
+  "lib/screens/tools/pokemon_generator_screen.dart": {
+    "Maschio": "Male",
+    "Femmina": "Female",
+    "Dettagli non disponibili": "Details unavailable"
+  },
+  "lib/screens/tools/encounter_result_screen.dart": {
+    "Maschio": "Male",
+    "Femmina": "Female",
+    "Nessuna abilità": "No ability"
+  },
+  "lib/screens/bag/bag_screen.dart": {
+    "Slot ${candidate.slot.slotIndex + 1} • Tiene: ${heldItem?.name ?? 'nessuno strumento'}": "Slot ${candidate.slot.slotIndex + 1} • Holding: ${heldItem?.name ?? 'no item'}"
+  },
+  "lib/widgets/trainer/trainer_path_automation_panel.dart": {
+    "Completa ${missingChoices.length == 1 ? 'la scelta richiesta' : 'le ${missingChoices.length} scelte richieste'} prima di considerare il percorso configurato.": "Complete ${missingChoices.length == 1 ? 'the required choice' : 'the ${missingChoices.length} required choices'} before considering the path configured.",
+    "RISORSE DISPONIBILI": "AVAILABLE RESOURCES"
+  },
+  "lib/widgets/battle/battle_status_assistance_card.dart": {
+    "EFFETTI SEMPRE ATTIVI": "ALWAYS-ACTIVE EFFECTS"
+  }
+}

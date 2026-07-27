@@ -48,6 +48,27 @@ jobs:
           python -m py_compile tooling/audit_english_ui_residuals_round4.py
           python tooling/apply_english_ui_residuals_round4.py
 
+      - name: Repair localized team string concatenations
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('lib/screens/team/team_selection_screen.dart')
+          text = path.read_text(encoding='utf-8')
+          replacements = {
+              "\n                      uiTextForLanguage('$replacedName": "\n                      + uiTextForLanguage('$replacedName",
+              "\n            '${replaced > 0 ?": "\n            + '${replaced > 0 ?",
+              "\n            uiTextForLanguage('Le uova": "\n            + uiTextForLanguage('Le uova",
+              "\n            '${overflow > 0 ?": "\n            + '${overflow > 0 ?",
+          }
+          for old, new in replacements.items():
+              if old not in text:
+                  raise RuntimeError(f'Expected team concatenation fragment not found: {old!r}')
+              text = text.replace(old, new, 1)
+          path.write_text(text, encoding='utf-8')
+          PY
+
       - name: Resolve dependencies and generate localizations
         run: |
           flutter pub get

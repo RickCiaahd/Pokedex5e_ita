@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import re
 from pathlib import Path
+from textwrap import dedent
 
 
 def replace_once(text: str, old: str, new: str, label: str) -> str:
@@ -46,10 +47,14 @@ def update_bag_item_model() -> None:
     if count != 1:
         raise RuntimeError("bag_item.dart: mappe fallback remote non trovate")
 
-    forbidden = ("poke5e.app", "raw.githubusercontent.com", "remoteSpriteUrl", "spriteUrls")
-    for token in forbidden:
+    for token in (
+        "poke5e.app",
+        "raw.githubusercontent.com",
+        "remoteSpriteUrl",
+        "spriteUrls",
+    ):
         if token in text:
-            raise RuntimeError(f"bag_item.dart conserva ancora il riferimento remoto {token}")
+            raise RuntimeError(f"bag_item.dart conserva ancora {token}")
 
     path.write_text(text, encoding="utf-8")
 
@@ -61,17 +66,10 @@ def localize_item_images() -> None:
         Path("lib/screens/pokemon/pokemon_detail_screen_legacy.dart"),
     ]
 
-    total_network_images = 0
-    total_loading_builders = 0
-
     for path in paths:
         text = path.read_text(encoding="utf-8")
-        network_count = text.count("Image.network(")
-        if network_count != 1:
-            raise RuntimeError(
-                f"{path}: attesa una sola immagine remota, trovate {network_count}"
-            )
-        total_network_images += network_count
+        if text.count("Image.network(") != 1:
+            raise RuntimeError(f"{path}: loader remoto inatteso")
 
         text = replace_once(
             text,
@@ -102,15 +100,11 @@ def localize_item_images() -> None:
         )
         if loading_count != 1:
             raise RuntimeError(f"{path}: loadingBuilder remoto non trovato")
-        total_loading_builders += loading_count
 
         if "Image.network(" in text or "remoteSpriteUrl" in text:
             raise RuntimeError(f"{path}: riferimenti remoti residui")
 
         path.write_text(text, encoding="utf-8")
-
-    if total_network_images != 3 or total_loading_builders != 3:
-        raise RuntimeError("numero inatteso di loader remoti migrati")
 
 
 def remove_android_internet_permission() -> None:
@@ -158,79 +152,97 @@ def update_readme() -> None:
 
 def write_offline_audit() -> None:
     Path("docs/compliance").mkdir(parents=True, exist_ok=True)
-    Path("docs/compliance/offline-audit.md").write_text(
-        """# Audit del funzionamento offline\n\n"
-        "Stato: controllo tecnico automatico introdotto per la roadmap #129.\n\n"
-        "## Risultato del blocco\n\n"
-        "- gli sprite degli oggetti vengono caricati esclusivamente da `spriteAssetPath` e da asset inclusi nel bundle;\n"
-        "- sono stati rimossi i fallback verso `poke5e.app` e `raw.githubusercontent.com`;\n"
-        "- `Image.network` non viene più usato dal codice applicativo;\n"
-        "- il manifest Android principale non richiede `android.permission.INTERNET`;\n"
-        "- un test verifica che ogni percorso locale dichiarato per gli sprite degli oggetti sia incluso nell'AssetManifest;\n"
-        "- un controllo sorgente impedisce di reintrodurre loader di immagini remote o host di fallback noti.\n\n"
-        "## Funzioni che possono coinvolgere applicazioni esterne\n\n"
-        "Esportazione, condivisione e selezione di file avvengono soltanto su iniziativa dell'utente tramite i picker o il menu di condivisione del sistema operativo. Trainer Atlas 5e non invia automaticamente profili, backup o telemetria a un server dello sviluppatore.\n\n"
-        "## Verifiche manuali ancora consigliate\n\n"
-        "1. installare una build release su un dispositivo in modalità aereo;\n"
-        "2. aprire Pokédex, squadra, PC, Zaino, allevamento e strumenti del Master;\n"
-        "3. verificare artwork, sprite, tipi e icone di stato;\n"
-        "4. creare, chiudere e riprendere una battaglia;\n"
-        "5. riavviare l'app e verificare la persistenza dei dati;\n"
-        "6. controllare che soltanto condivisione ed esportazione richiedano un'app esterna scelta dall'utente.\n\n"
-        "Il test manuale su dispositivi reali resta necessario prima della beta pubblica.\n"
-        """,
-        encoding="utf-8",
+    content = dedent(
+        """\
+        # Audit del funzionamento offline
+
+        Stato: controllo tecnico automatico introdotto per la roadmap #129.
+
+        ## Risultato del blocco
+
+        - gli sprite degli oggetti vengono caricati esclusivamente da `spriteAssetPath` e da asset inclusi nel bundle;
+        - sono stati rimossi i fallback verso `poke5e.app` e `raw.githubusercontent.com`;
+        - `Image.network` non viene più usato dal codice applicativo;
+        - il manifest Android principale non richiede `android.permission.INTERNET`;
+        - un test verifica che ogni percorso locale dichiarato per gli sprite degli oggetti sia incluso nell'AssetManifest;
+        - un controllo sorgente impedisce di reintrodurre loader di immagini remote o host di fallback noti.
+
+        ## Funzioni che possono coinvolgere applicazioni esterne
+
+        Esportazione, condivisione e selezione di file avvengono soltanto su iniziativa dell'utente tramite i picker o il menu di condivisione del sistema operativo. Trainer Atlas 5e non invia automaticamente profili, backup o telemetria a un server dello sviluppatore.
+
+        ## Verifiche manuali ancora consigliate
+
+        1. installare una build release su un dispositivo in modalità aereo;
+        2. aprire Pokédex, squadra, PC, Zaino, allevamento e strumenti del Master;
+        3. verificare artwork, sprite, tipi e icone di stato;
+        4. creare, chiudere e riprendere una battaglia;
+        5. riavviare l'app e verificare la persistenza dei dati;
+        6. controllare che soltanto condivisione ed esportazione richiedano un'app esterna scelta dall'utente.
+
+        Il test manuale su dispositivi reali resta necessario prima della beta pubblica.
+        """
     )
+    Path("docs/compliance/offline-audit.md").write_text(content, encoding="utf-8")
 
 
 def write_offline_test() -> None:
-    Path("test/offline_operation_test.dart").write_text(
-        """import 'dart:io';\n\n"
-        "import 'package:flutter/services.dart';\n"
-        "import 'package:flutter_test/flutter_test.dart';\n"
-        "import 'package:pokedex_5e_ita/repositories/item_repository.dart';\n\n"
-        "void main() {\n"
-        "  TestWidgetsFlutterBinding.ensureInitialized();\n\n"
-        "  test('il codice applicativo non usa loader di immagini remoti', () {\n"
-        "    const sourcePaths = <String>[\n"
-        "      'lib/models/bag_item.dart',\n"
-        "      'lib/screens/bag/bag_screen.dart',\n"
-        "      'lib/screens/battle/battle_screen.dart',\n"
-        "      'lib/screens/pokemon/pokemon_detail_screen_legacy.dart',\n"
-        "    ];\n\n"
-        "    for (final path in sourcePaths) {\n"
-        "      final source = File(path).readAsStringSync();\n"
-        "      expect(source, isNot(contains('Image.network(')), reason: path);\n"
-        "      expect(source, isNot(contains('NetworkImage(')), reason: path);\n"
-        "      expect(source, isNot(contains('poke5e.app')), reason: path);\n"
-        "      expect(source, isNot(contains('raw.githubusercontent.com')), reason: path);\n"
-        "      expect(source, isNot(contains('remoteSpriteUrl')), reason: path);\n"
-        "    }\n\n"
-        "    final manifest = File(\n"
-        "      'android/app/src/main/AndroidManifest.xml',\n"
-        "    ).readAsStringSync();\n"
-        "    expect(manifest, isNot(contains('android.permission.INTERNET')));\n"
-        "  });\n\n"
-        "  test('gli sprite locali degli oggetti sono inclusi nel bundle', () async {\n"
-        "    final assetManifest = await AssetManifest.loadFromAssetBundle(rootBundle);\n"
-        "    final bundledAssets = assetManifest.listAssets().toSet();\n"
-        "    final items = await ItemRepository().getWebItems();\n"
-        "    final errors = <String>[];\n\n"
-        "    for (final item in items) {\n"
-        "      final path = item.spriteAssetPath;\n"
-        "      if (path == null || path.trim().isEmpty) continue;\n"
-        "      if (!path.startsWith('assets/')) {\n"
-        "        errors.add('${item.id}: percorso non locale $path');\n"
-        "      } else if (!bundledAssets.contains(path)) {\n"
-        "        errors.add('${item.id}: asset non incluso $path');\n"
-        "      }\n"
-        "    }\n\n"
-        "    expect(errors, isEmpty, reason: errors.join('\\n'));\n"
-        "  });\n"
-        "}\n"
-        """,
-        encoding="utf-8",
+    content = dedent(
+        """\
+        import 'dart:io';
+
+        import 'package:flutter/services.dart';
+        import 'package:flutter_test/flutter_test.dart';
+        import 'package:pokedex_5e_ita/repositories/item_repository.dart';
+
+        void main() {
+          TestWidgetsFlutterBinding.ensureInitialized();
+
+          test('il codice applicativo non usa loader di immagini remoti', () {
+            const sourcePaths = <String>[
+              'lib/models/bag_item.dart',
+              'lib/screens/bag/bag_screen.dart',
+              'lib/screens/battle/battle_screen.dart',
+              'lib/screens/pokemon/pokemon_detail_screen_legacy.dart',
+            ];
+
+            for (final path in sourcePaths) {
+              final source = File(path).readAsStringSync();
+              expect(source, isNot(contains('Image.network(')), reason: path);
+              expect(source, isNot(contains('NetworkImage(')), reason: path);
+              expect(source, isNot(contains('poke5e.app')), reason: path);
+              expect(source, isNot(contains('raw.githubusercontent.com')), reason: path);
+              expect(source, isNot(contains('remoteSpriteUrl')), reason: path);
+            }
+
+            final manifest = File(
+              'android/app/src/main/AndroidManifest.xml',
+            ).readAsStringSync();
+            expect(manifest, isNot(contains('android.permission.INTERNET')));
+          });
+
+          test('gli sprite locali degli oggetti sono inclusi nel bundle', () async {
+            final assetManifest = await AssetManifest.loadFromAssetBundle(rootBundle);
+            final bundledAssets = assetManifest.listAssets().toSet();
+            final items = await ItemRepository().getWebItems();
+            final errors = <String>[];
+
+            for (final item in items) {
+              final path = item.spriteAssetPath;
+              if (path == null || path.trim().isEmpty) continue;
+              if (!path.startsWith('assets/')) {
+                errors.add('${item.id}: percorso non locale $path');
+              } else if (!bundledAssets.contains(path)) {
+                errors.add('${item.id}: asset non incluso $path');
+              }
+            }
+
+            expect(errors, isEmpty, reason: errors.join('\n'));
+          });
+        }
+        """
     )
+    Path("test/offline_operation_test.dart").write_text(content, encoding="utf-8")
 
 
 def main() -> None:

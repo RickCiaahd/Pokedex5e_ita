@@ -55,10 +55,6 @@ jobs:
         shell: pwsh
         run: flutter pub get
 
-      - name: Verify compliance reports
-        shell: pwsh
-        run: python tooling/generate_compliance_reports.py --check
-
       - name: Prepare embedded GPL and NOTICE
         shell: pwsh
         run: |

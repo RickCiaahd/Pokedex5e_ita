@@ -130,7 +130,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if git diff --quiet; then
+          pending=$(git status --porcelain -- \
+            docs/performance/release-footprint.md \
+            docs/performance/asset-duplicates.csv)
+          if [ -z "$pending" ]; then
             echo 'Release footprint reports are already current.'
             exit 0
           fi

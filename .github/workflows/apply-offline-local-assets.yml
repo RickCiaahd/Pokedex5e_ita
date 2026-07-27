@@ -68,6 +68,31 @@ jobs:
               path.write_text(text.replace(old, new, 1), encoding='utf-8')
           PY
 
+      - name: Register local item asset directories
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          pubspec = Path('pubspec.yaml')
+          root = Path('assets/textures/textures_webapp/items')
+          text = pubspec.read_text(encoding='utf-8')
+          marker = '    - assets/textures/textures_webapp/items/\n'
+          if text.count(marker) != 1:
+              raise RuntimeError('pubspec.yaml: dichiarazione radice degli oggetti inattesa')
+
+          directories = sorted(
+              {
+                  file.parent.as_posix() + '/'
+                  for file in root.rglob('*')
+                  if file.is_file() and file.parent != root
+              }
+          )
+          block = marker + ''.join(f'    - {directory}\n' for directory in directories)
+          pubspec.write_text(text.replace(marker, block, 1), encoding='utf-8')
+          print(f'Registrate {len(directories)} cartelle locali degli oggetti.')
+          PY
+
       - name: Format changed Dart files
         run: |
           dart format \

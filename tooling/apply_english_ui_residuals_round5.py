@@ -66,6 +66,51 @@ def repair_team_import_dialog() -> None:
     path.write_text(text, encoding='utf-8')
 
 
+def repair_custom_library_composites() -> None:
+    path = Path('lib/screens/pokemon/custom_pokemon_library_screen.dart')
+    text = path.read_text(encoding='utf-8')
+
+    catalog_start = text.find("uiTextForLanguage('Catalogo importato:")
+    if catalog_start < 0:
+        raise RuntimeError('Localized catalog import prefix not found')
+    catalog_call_end = _call_end(text, text.find('(', catalog_start))
+    next_literal_start = catalog_call_end
+    while next_literal_start < len(text) and text[next_literal_start].isspace():
+        next_literal_start += 1
+    if next_literal_start >= len(text) or text[next_literal_start] not in ("'", '"'):
+        raise RuntimeError('Catalog import suffix literal not found')
+    catalog_end = scan_string_end(text, next_literal_start)
+    catalog_replacement = """uiTextForLanguage(
+          'Catalogo importato: ${imported.installed} installati, '
+          '${imported.updated} aggiornati, ${imported.remapped} rimappati.',
+          'Catalog imported: ${imported.installed} installed, '
+          '${imported.updated} updated, ${imported.remapped} remapped.',
+        )"""
+    text = text[:catalog_start] + catalog_replacement + text[catalog_end:]
+
+    forms_start = text.find(
+        "'${_advanced.evolvesFrom.length} pre-evoluzioni · '"
+    )
+    if forms_start < 0:
+        raise RuntimeError('Advanced evolution summary start not found')
+    forms_call_start = text.find(
+        "uiTextForLanguage('${_advanced.forms.length} forme'", forms_start
+    )
+    if forms_call_start < 0:
+        raise RuntimeError('Localized advanced forms suffix not found')
+    forms_end = _call_end(text, text.find('(', forms_call_start))
+    forms_replacement = """uiTextForLanguage(
+                      '${_advanced.evolvesFrom.length} pre-evoluzioni · '
+                      '${_advanced.evolvesTo.length} evoluzioni · '
+                      '${_advanced.forms.length} forme',
+                      '${_advanced.evolvesFrom.length} pre-evolutions · '
+                      '${_advanced.evolvesTo.length} evolutions · '
+                      '${_advanced.forms.length} forms',
+                    )"""
+    text = text[:forms_start] + forms_replacement + text[forms_end:]
+    path.write_text(text, encoding='utf-8')
+
+
 def main() -> None:
     if MARKER.exists():
         print('Round 5 already applied')
@@ -80,6 +125,7 @@ def main() -> None:
         remove_invalid_const_widgets(path)
 
     repair_team_import_dialog()
+    repair_custom_library_composites()
     MARKER.write_text('applied\n', encoding='utf-8')
     print(f'Applied {sum(len(values) for values in configured.values())} round 5 translations')
 

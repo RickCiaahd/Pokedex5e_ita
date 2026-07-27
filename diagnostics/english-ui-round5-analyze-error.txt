@@ -21,4 +21,4 @@ Analyzing Pokedex5e_ita...
 
   error • Methods can't be invoked in constant expressions • lib/screens/pokemon/custom_pokemon_library_screen.dart:1531:25 • const_eval_method_invocation
 
-1 issue found. (ran in 8.1s)
+1 issue found. (ran in 6.9s)

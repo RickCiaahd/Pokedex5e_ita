@@ -8,6 +8,7 @@ import '../../models/pokemon.dart';
 import '../../models/pokemon_type_localization.dart';
 import '../../models/trainer_manual_content.dart';
 import '../../models/trainer_manual_options.dart';
+import '../../models/trainer_ui_localization.dart';
 import '../../repositories/item_repository.dart';
 import '../../repositories/pokemon_repository.dart';
 import '../../repositories/trainer_manual_repository.dart';
@@ -154,6 +155,16 @@ class _NpcTrainerGeneratorScreenState extends State<NpcTrainerGeneratorScreen> {
     }
   }
 
+  List<String> get _localizedSpecializations {
+    final values = [..._specializations];
+    values.sort(
+      (a, b) => TrainerUiLocalization.specializationName(
+        a,
+      ).compareTo(TrainerUiLocalization.specializationName(b)),
+    );
+    return values;
+  }
+
   String get _specializationSummary {
     if (_specialization == _randomSpecialization) {
       return context.uiText(
@@ -248,10 +259,15 @@ class _NpcTrainerGeneratorScreenState extends State<NpcTrainerGeneratorScreen> {
                             value: _randomSpecialization,
                             child: Text(context.uiText('Casuale', 'Random')),
                           ),
-                          for (final specialization in _specializations)
+                          for (final specialization in
+                              _localizedSpecializations)
                             DropdownMenuItem(
                               value: specialization,
-                              child: Text(specialization),
+                              child: Text(
+                                TrainerUiLocalization.specializationName(
+                                  specialization,
+                                ),
+                              ),
                             ),
                         ],
                         onChanged: (value) {

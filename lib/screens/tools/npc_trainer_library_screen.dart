@@ -13,6 +13,7 @@ import '../../models/pokemon_form_choice.dart';
 import '../../models/saved_npc_trainer.dart';
 import '../../models/trainer_manual_content.dart';
 import '../../models/trainer_manual_options.dart';
+import '../../models/trainer_ui_localization.dart';
 import '../../models/user_profile.dart';
 import '../../repositories/item_repository.dart';
 import '../../repositories/master_battle_session_repository.dart';
@@ -782,6 +783,9 @@ class _NpcTrainerCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final specializationLabels = trainer.specializations
+        .map(TrainerUiLocalization.specializationName)
+        .join(', ');
     return Card(
       clipBehavior: Clip.antiAlias,
       child: Padding(
@@ -811,7 +815,7 @@ class _NpcTrainerCard extends StatelessWidget {
                                 ?.copyWith(fontWeight: FontWeight.w900),
                           ),
                           Text(
-                            '${context.usesItalianUi ? trainer.rank.label : trainer.rank.englishLabel} · Lv. ${trainer.trainerLevel} · ${trainer.specializations.join(', ')}',
+                            '${context.usesItalianUi ? trainer.rank.label : trainer.rank.englishLabel} · Lv. ${trainer.trainerLevel} · $specializationLabels',
                           ),
                         ],
                       ),

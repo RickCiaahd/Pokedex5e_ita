@@ -11,6 +11,7 @@ import '../../models/pokemon_nature.dart';
 import '../../models/pokemon_type_localization.dart';
 import '../../models/saved_npc_trainer.dart';
 import '../../models/trainer_manual_content.dart';
+import '../../models/trainer_ui_localization.dart';
 import '../../repositories/move_repository.dart';
 import '../../repositories/profile_repository.dart';
 import '../../repositories/saved_npc_trainer_repository.dart';
@@ -195,6 +196,9 @@ class _NpcTrainerResultScreenState extends State<NpcTrainerResultScreen> {
   }
 
   String _summaryText() {
+    final specializationLabels = _trainer.specializations
+        .map(TrainerUiLocalization.specializationName)
+        .join(', ');
     final buffer = StringBuffer()
       ..writeln(_trainer.displayName)
       ..writeln(
@@ -214,8 +218,8 @@ class _NpcTrainerResultScreenState extends State<NpcTrainerResultScreen> {
       )
       ..writeln(
         context.uiText(
-          'Specializzazioni: ${_trainer.specializations.join(', ')}',
-          'Specializations: ${_trainer.specializations.join(', ')}',
+          'Specializzazioni: $specializationLabels',
+          'Specializations: $specializationLabels',
         ),
       )
       ..writeln(
@@ -628,6 +632,9 @@ class _TrainerHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
+    final specializationLabels = trainer.specializations
+        .map(TrainerUiLocalization.specializationName)
+        .join(' · ');
     return Card(
       color: colors.primaryContainer,
       child: Padding(
@@ -688,8 +695,8 @@ class _TrainerHeader extends StatelessWidget {
             const SizedBox(height: 10),
             Text(
               context.uiText(
-                'Specializzazioni: ${trainer.specializations.join(' · ')}',
-                'Specializations: ${trainer.specializations.join(' · ')}',
+                'Specializzazioni: $specializationLabels',
+                'Specializations: $specializationLabels',
               ),
               style: TextStyle(
                 color: colors.onPrimaryContainer,

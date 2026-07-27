@@ -119,7 +119,21 @@ jobs:
         run: flutter test test/english_ui_residuals_round3_test.dart --reporter expanded
 
       - name: Run complete test suite
-        run: flutter test --reporter expanded
+        shell: bash
+        run: |
+          set +e
+          flutter test --reporter expanded 2>&1 | tee /tmp/english-ui-round3-test.log
+          status=${PIPESTATUS[0]}
+          if [ "$status" -ne 0 ]; then
+            mkdir -p diagnostics
+            cp /tmp/english-ui-round3-test.log diagnostics/english-ui-round3-test-error.txt
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add diagnostics/english-ui-round3-test-error.txt
+            git commit -m "Registra errore test del terzo audit inglese" || true
+            git push origin HEAD:fix/english-ui-residuals-round3
+            exit "$status"
+          fi
 
       - name: Build Android debug APK
         run: flutter build apk --debug
@@ -144,6 +158,7 @@ jobs:
           rm -f diagnostics/english-ui-residuals-round3.json
           rm -f diagnostics/english-ui-residuals-round3.md
           rm -f diagnostics/english-ui-round3-analyze-error.txt
+          rm -f diagnostics/english-ui-round3-test-error.txt
           rm -f .github/workflows/audit-english-ui-round3.yml
           rm -f .github/workflows/apply-english-ui-round3.yml
 

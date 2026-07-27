@@ -27,6 +27,11 @@ FAMILY_PREFIXES = (
     "assets/textures/gui",
 )
 
+LEGAL_ASSET_KEYS = {
+    "assets/data/GPL-3.0.txt": "GPL-3.0.txt",
+    "assets/data/NOTICE.txt": "NOTICE.txt",
+}
+
 
 @dataclass(frozen=True)
 class ArchiveSummary:
@@ -95,8 +100,9 @@ def analyze_archive(path: Path, label: str) -> ArchiveSummary:
         for entry in entries:
             key = flutter_asset_key(entry.filename)
             if key is not None:
-                if key in {"LICENSE", "NOTICE.md"}:
-                    legal_files.add(key)
+                legal_name = LEGAL_ASSET_KEYS.get(key)
+                if legal_name is not None:
+                    legal_files.add(legal_name)
                 if key.startswith("assets/"):
                     family = asset_family(key)
                     row = family_stats[family]
@@ -125,7 +131,11 @@ def analyze_archive(path: Path, label: str) -> ArchiveSummary:
     )
 
 
-def duplicate_report() -> tuple[str, dict[str, int], tuple[tuple[int, int, str, tuple[str, ...]], ...]]:
+def duplicate_report() -> tuple[
+    str,
+    dict[str, int],
+    tuple[tuple[int, int, str, tuple[str, ...]], ...],
+]:
     assets_root = ROOT / "assets"
     groups: dict[tuple[str, int], list[str]] = defaultdict(list)
     total_files = 0
@@ -209,7 +219,8 @@ def archive_section(summary: ArchiveSummary) -> list[str]:
     ]
     for family, count, compressed, uncompressed in summary.family_rows:
         lines.append(
-            f"| `{family}` | {count} | {human_bytes(compressed)} | {human_bytes(uncompressed)} |"
+            f"| `{family}` | {count} | {human_bytes(compressed)} | "
+            f"{human_bytes(uncompressed)} |"
         )
 
     lines.extend(
@@ -223,7 +234,8 @@ def archive_section(summary: ArchiveSummary) -> list[str]:
     )
     for name, compressed, uncompressed in summary.top_entries:
         lines.append(
-            f"| `{name}` | {human_bytes(compressed)} | {human_bytes(uncompressed)} |"
+            f"| `{name}` | {human_bytes(compressed)} | "
+            f"{human_bytes(uncompressed)} |"
         )
     lines.append("")
     return lines
@@ -239,8 +251,10 @@ def build_markdown(
     lines = [
         "# Release footprint audit",
         "",
-        "This report is generated from release APK/AAB archives and an exact SHA-256 scan of every file below `assets/`.",
-        "It measures size and byte-identical duplication; it does not by itself prove that an asset is unused or safe to remove.",
+        "This report is generated from release APK/AAB archives and an exact "
+        "SHA-256 scan of every file below `assets/`.",
+        "It measures size and byte-identical duplication; it does not by itself "
+        "prove that an asset is unused or safe to remove.",
         "",
         "- Pinned Flutter version: **3.44.4**",
         f"- Flutter revision: `{flutter_revision}`",
@@ -248,10 +262,13 @@ def build_markdown(
         f"- Source asset size: **{human_bytes(duplicate_metrics['total_bytes'])}**",
         f"- Exact duplicate groups: **{duplicate_metrics['duplicate_groups']}**",
         f"- Redundant copies: **{duplicate_metrics['duplicate_files']}**",
-        f"- Theoretical maximum reclaimable bytes: **{human_bytes(duplicate_metrics['reclaimable_bytes'])}**",
-        f"- Duplicate groups spanning multiple policy families: **{duplicate_metrics['cross_family_groups']}**",
+        "- Theoretical maximum reclaimable bytes: "
+        f"**{human_bytes(duplicate_metrics['reclaimable_bytes'])}**",
+        "- Duplicate groups spanning multiple policy families: "
+        f"**{duplicate_metrics['cross_family_groups']}**",
         "",
-        "The theoretical saving assumes one copy per identical hash and ignores path compatibility, runtime lookup rules and compression effects.",
+        "The theoretical saving assumes one copy per identical hash and ignores "
+        "path compatibility, runtime lookup rules and compression effects.",
         "",
     ]
     lines.extend(archive_section(apk))
@@ -270,7 +287,8 @@ def build_markdown(
         if len(paths) > 4:
             examples += f"<br>… and {len(paths) - 4} more"
         lines.append(
-            f"| {human_bytes(reclaimable)} | {len(paths)} | {human_bytes(size)} | {families} | {examples} |"
+            f"| {human_bytes(reclaimable)} | {len(paths)} | "
+            f"{human_bytes(size)} | {families} | {examples} |"
         )
 
     lines.extend(
@@ -278,13 +296,20 @@ def build_markdown(
             "",
             "## Interpretation and next safe actions",
             "",
-            "1. Prioritise duplicate groups that cross legacy and web-app families, because they offer measurable savings without inventing new artwork.",
-            "2. Do not delete a path until all static and dynamically constructed references have been mapped and tested.",
-            "3. Measure a second release after each removal batch; ZIP compression means source-byte savings and AAB savings will differ.",
-            "4. Keep `LICENSE` and `NOTICE.md` embedded in Flutter assets and beside downloadable release archives.",
-            "5. Treat rights clearance separately from size optimisation: identical files can still have unverified redistribution terms.",
+            "1. Prioritise duplicate groups that cross legacy and web-app "
+            "families, because they offer measurable savings without inventing "
+            "new artwork.",
+            "2. Do not delete a path until all static and dynamically constructed "
+            "references have been mapped and tested.",
+            "3. Measure a second release after each removal batch; ZIP compression "
+            "means source-byte savings and AAB savings will differ.",
+            "4. Keep the generated GPL and NOTICE assets embedded in Flutter "
+            "archives and the source documents beside downloadable releases.",
+            "5. Treat rights clearance separately from size optimisation: "
+            "identical files can still have unverified redistribution terms.",
             "",
-            "The complete duplicate inventory is stored in `docs/performance/asset-duplicates.csv`.",
+            "The complete duplicate inventory is stored in "
+            "`docs/performance/asset-duplicates.csv`.",
             "",
         ]
     )
@@ -316,7 +341,10 @@ def main() -> int:
         write_or_check(DUPLICATES_PATH, duplicates_csv, args.check),
     ]
     if not all(results):
-        print("Release footprint reports are stale. Regenerate them with the pinned toolchain.")
+        print(
+            "Release footprint reports are stale. Regenerate them with the "
+            "pinned toolchain."
+        )
         return 1
     return 0
 

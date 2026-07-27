@@ -925,7 +925,7 @@ class _EncounterGeneratorScreenState extends State<EncounterGeneratorScreen> {
           context.uiText('FILTRI AVANZATI', 'ADVANCED FILTERS'),
           style: const TextStyle(fontWeight: FontWeight.w900),
         ),
-        childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+        childrenPadding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
         children: [
           DropdownButtonFormField<String>(
             initialValue: _habitat,

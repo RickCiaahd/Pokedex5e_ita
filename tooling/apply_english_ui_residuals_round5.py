@@ -111,6 +111,27 @@ def repair_custom_library_composites() -> None:
     path.write_text(text, encoding='utf-8')
 
 
+def repair_remaining_const_contexts() -> None:
+    npc_path = Path('lib/screens/battle/npc_battle_screen.dart')
+    npc = npc_path.read_text(encoding='utf-8')
+    npc = npc.replace(
+        'const DropdownMenuItem<String?>(',
+        'DropdownMenuItem<String?>(',
+    )
+    npc_path.write_text(npc, encoding='utf-8')
+
+    library_path = Path('lib/screens/pokemon/custom_pokemon_library_screen.dart')
+    library = library_path.read_text(encoding='utf-8')
+    library = library.replace('const PopupMenuItem(', 'PopupMenuItem(')
+    library = library.replace('throw const FormatException(', 'throw FormatException(')
+    library_path.write_text(library, encoding='utf-8')
+
+    edit_path = Path('lib/screens/pokemon/pokemon_edit_screen.dart')
+    edit = edit_path.read_text(encoding='utf-8')
+    edit = edit.replace('const _PickerGroupLabel(', '_PickerGroupLabel(')
+    edit_path.write_text(edit, encoding='utf-8')
+
+
 def main() -> None:
     if MARKER.exists():
         print('Round 5 already applied')
@@ -126,6 +147,7 @@ def main() -> None:
 
     repair_team_import_dialog()
     repair_custom_library_composites()
+    repair_remaining_const_contexts()
     MARKER.write_text('applied\n', encoding='utf-8')
     print(f'Applied {sum(len(values) for values in configured.values())} round 5 translations')
 

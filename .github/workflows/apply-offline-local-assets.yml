@@ -62,17 +62,15 @@ jobs:
         shell: bash
         run: |
           set -o pipefail
-          flutter analyze 2>&1 | tee tooling/offline-analyze.log
+          flutter analyze 2>&1 | tee tooling/offline-analyze.txt
 
-      - name: Publish analyzer diagnostics
+      - name: Upload analyzer diagnostics
         if: failure() && steps.analyze.outcome == 'failure'
-        shell: bash
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add tooling/offline-analyze.log
-          git commit -m "Registra diagnostica dell'audit offline"
-          git push origin HEAD:feature/offline-local-assets
+        uses: actions/upload-artifact@v4
+        with:
+          name: offline-analyze-diagnostics
+          path: tooling/offline-analyze.txt
+          if-no-files-found: error
 
       - name: Validate offline behavior
         run: flutter test test/offline_operation_test.dart --reporter expanded
@@ -89,7 +87,7 @@ jobs:
       - name: Publish migrated sources
         shell: bash
         run: |
-          rm -f tooling/offline-analyze.log
+          rm -f tooling/offline-analyze.txt
           rm -f .github/workflows/apply-offline-local-assets.yml
           rm -f tooling/apply_offline_local_assets.py
 

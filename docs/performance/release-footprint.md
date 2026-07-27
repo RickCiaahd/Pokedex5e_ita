@@ -64,7 +64,7 @@ The theoretical saving assumes one copy per identical hash and ignores path comp
 
 ## Android release AAB
 
-- Archive size: **384.8 MiB** (403457066 bytes)
+- Archive size: **384.8 MiB** (403457067 bytes)
 - ZIP entries: **8647**
 - Compressed payload: **382.9 MiB**
 - Uncompressed payload: **480.7 MiB**

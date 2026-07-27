@@ -3486,20 +3486,18 @@ class _ItemSprite extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final remoteUrl = item.remoteSpriteUrl;
-    if (remoteUrl == null) return Icon(Icons.inventory_2_outlined, size: size);
+    final assetPath = item.spriteAssetPath;
+    if (assetPath == null || !assetPath.startsWith('assets/')) {
+      return Icon(Icons.inventory_2_outlined, size: size);
+    }
 
     return SizedBox(
       width: size,
       height: size,
-      child: Image.network(
-        remoteUrl,
+      child: Image.asset(
+        assetPath,
         fit: BoxFit.contain,
         filterQuality: FilterQuality.none,
-        loadingBuilder: (context, child, loadingProgress) {
-          if (loadingProgress == null) return child;
-          return Icon(Icons.inventory_2_outlined, size: size);
-        },
         errorBuilder: (_, __, ___) =>
             Icon(Icons.inventory_2_outlined, size: size),
       ),

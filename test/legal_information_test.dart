@@ -21,7 +21,12 @@ void main() {
     expect(legalScreen, contains('GPL-3.0-only'));
     expect(legalScreen, contains('showLicensePage'));
     expect(legalScreen, contains('https://github.com/Jerakin/Pokedex5E'));
-    expect(legalScreen, contains('Android currently declares Internet permission'));
+    expect(
+      legalScreen,
+      contains(
+        'The current version does not load game images or data from remote hosts',
+      ),
+    );
   });
 
   test('release compliance documents are present', () {
@@ -53,6 +58,7 @@ void main() {
       'docs/google-play-data-safety-draft.md',
     ).readAsStringSync();
     expect(dataSafety, contains('Risposta finale sospesa'));
-    expect(dataSafety, contains('fallback remoti'));
+    expect(dataSafety, contains('permesso Android `INTERNET` assente'));
+    expect(dataSafety, contains('fallback remoti delle immagini eliminati'));
   });
 }

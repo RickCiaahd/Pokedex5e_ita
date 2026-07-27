@@ -34,10 +34,7 @@ class LegalInformationScreen extends StatelessWidget {
         'Licenze e attribuzioni',
         'Licenses and attributions',
       ),
-      LegalInformationSection.privacy => context.uiText(
-        'Privacy',
-        'Privacy',
-      ),
+      LegalInformationSection.privacy => context.uiText('Privacy', 'Privacy'),
     };
   }
 
@@ -139,7 +136,9 @@ class LegalInformationScreen extends StatelessWidget {
         ),
       ),
       const SizedBox(height: 16),
-      _SectionTitle(context.uiText('PACCHETTI OPEN SOURCE', 'OPEN-SOURCE PACKAGES')),
+      _SectionTitle(
+        context.uiText('PACCHETTI OPEN SOURCE', 'OPEN-SOURCE PACKAGES'),
+      ),
       _Paragraph(
         context.uiText(
           'Flutter e i pacchetti usati dall’app mantengono le rispettive licenze. Usa il pulsante seguente per consultare gli avvisi generati dal framework.',
@@ -202,7 +201,9 @@ class LegalInformationScreen extends StatelessWidget {
         ),
       ),
       const SizedBox(height: 16),
-      _SectionTitle(context.uiText('ESPORTAZIONE E CONDIVISIONE', 'EXPORT AND SHARING')),
+      _SectionTitle(
+        context.uiText('ESPORTAZIONE E CONDIVISIONE', 'EXPORT AND SHARING'),
+      ),
       _Paragraph(
         context.uiText(
           'Quando esporti o condividi un backup, un Pokémon, una squadra o un riepilogo, scegli volontariamente un’app o una destinazione esterna. Da quel momento il file è trattato dal servizio scelto e dalle sue condizioni.',
@@ -210,15 +211,19 @@ class LegalInformationScreen extends StatelessWidget {
         ),
       ),
       const SizedBox(height: 16),
-      _SectionTitle(context.uiText('CONNESSIONE DI RETE', 'NETWORK CONNECTION')),
+      _SectionTitle(
+        context.uiText('CONNESSIONE DI RETE', 'NETWORK CONNECTION'),
+      ),
       _Paragraph(
         context.uiText(
-          'Android dichiara attualmente il permesso Internet. Alcune schermate conservano fallback remoti per immagini mancanti: una richiesta a un host esterno può comunicare al gestore del servizio dati tecnici ordinari, come indirizzo IP e user agent. Questo comportamento deve essere eliminato o documentato definitivamente prima della beta.',
-          'Android currently declares Internet permission. Some screens retain remote fallbacks for missing images: a request to an external host may disclose ordinary technical data, such as IP address and user agent, to that service. This behaviour must be removed or fully documented before beta.',
+          'La versione corrente non carica immagini o dati di gioco da host remoti durante l’uso ordinario e la build Android non richiede il permesso Internet. I collegamenti a repository e documentazione sono riferimenti consultabili dall’utente e non vengono contattati automaticamente dall’app.',
+          'The current version does not load game images or data from remote hosts during normal use, and the Android build does not require Internet permission. Repository and documentation links are references that users may consult and are not contacted automatically by the app.',
         ),
       ),
       const SizedBox(height: 16),
-      _SectionTitle(context.uiText('CONTROLLO E CANCELLAZIONE', 'CONTROL AND DELETION')),
+      _SectionTitle(
+        context.uiText('CONTROLLO E CANCELLAZIONE', 'CONTROL AND DELETION'),
+      ),
       _Paragraph(
         context.uiText(
           'Puoi esportare i dati dalla schermata Profili ed eliminare completamente un profilo non attivo. La disinstallazione dell’app rimuove normalmente i dati locali secondo il comportamento del sistema operativo, salvo copie o backup creati dall’utente.',
@@ -226,7 +231,9 @@ class LegalInformationScreen extends StatelessWidget {
         ),
       ),
       const SizedBox(height: 16),
-      _SectionTitle(context.uiText('CONTATTI E AGGIORNAMENTI', 'CONTACT AND UPDATES')),
+      _SectionTitle(
+        context.uiText('CONTATTI E AGGIORNAMENTI', 'CONTACT AND UPDATES'),
+      ),
       _Paragraph(
         context.uiText(
           'Problemi e richieste possono essere aperti nel repository GitHub. Questa informativa verrà aggiornata prima della pubblicazione e ogni volta che cambieranno raccolta dati, servizi di rete o funzionalità di condivisione.',

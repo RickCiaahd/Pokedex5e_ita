@@ -1782,22 +1782,18 @@ class _DetailItemSprite extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final remoteUrl = item.remoteSpriteUrl;
-    if (remoteUrl == null) {
+    final assetPath = item.spriteAssetPath;
+    if (assetPath == null || !assetPath.startsWith('assets/')) {
       return Icon(_detailItemIconForType(item.type));
     }
 
     return SizedBox(
       width: 42,
       height: 42,
-      child: Image.network(
-        remoteUrl,
+      child: Image.asset(
+        assetPath,
         fit: BoxFit.contain,
         filterQuality: FilterQuality.none,
-        loadingBuilder: (context, child, loadingProgress) {
-          if (loadingProgress == null) return child;
-          return Icon(_detailItemIconForType(item.type));
-        },
         errorBuilder: (_, __, ___) => Icon(_detailItemIconForType(item.type)),
       ),
     );

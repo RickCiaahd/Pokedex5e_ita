@@ -123,9 +123,11 @@ def repair_remaining_const_contexts() -> None:
 
     library_path = Path('lib/screens/pokemon/custom_pokemon_library_screen.dart')
     library = library_path.read_text(encoding='utf-8')
-    library = library.replace('const PopupMenuItem(', 'PopupMenuItem(')
-    library = re.sub(r'\bconst\s+(?=(?:<[^[]+>)?\[)', '', library)
-    library = library.replace('throw const FormatException(', 'throw FormatException(')
+    # La migrazione introduce espressioni runtime in numerosi widget e collezioni.
+    # Rimuoviamo temporaneamente tutti i const da questo singolo file: il passaggio
+    # successivo con dart fix ripristina quelli realmente sicuri, evitando però di
+    # ricreare contesti const attorno a uiTextForLanguage().
+    library = library.replace('const ', '')
     library_path.write_text(library, encoding='utf-8')
 
     edit_path = Path('lib/screens/pokemon/pokemon_edit_screen.dart')

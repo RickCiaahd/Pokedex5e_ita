@@ -237,7 +237,7 @@ def write_offline_test() -> None:
               }
             }
 
-            expect(errors, isEmpty, reason: errors.join('\n'));
+            expect(errors, isEmpty, reason: errors.join('\\n'));
           });
         }
         """

@@ -56,10 +56,23 @@ jobs:
       - name: Format changed Dart sources
         shell: bash
         run: |
-          set -euo pipefail
+          set +e
           mapfile -t dart_files < <(git diff --name-only --diff-filter=ACM | grep '\.dart$' || true)
           if ((${#dart_files[@]})); then
-            dart format "${dart_files[@]}"
+            dart format "${dart_files[@]}" 2>&1 | tee /tmp/english-ui-round4-format.log
+            status=${PIPESTATUS[0]}
+          else
+            status=0
+          fi
+          if [ "$status" -ne 0 ]; then
+            mkdir -p diagnostics
+            cp /tmp/english-ui-round4-format.log diagnostics/english-ui-round4-format-error.txt
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add diagnostics/english-ui-round4-format-error.txt
+            git commit -m "Registra errore formattazione del quarto audit inglese" || true
+            git push origin HEAD:fix/english-ui-residuals-round3
+            exit "$status"
           fi
 
       - name: Analyze source
@@ -133,6 +146,7 @@ jobs:
           rm -f tooling/english_ui_round4_translations.json
           rm -f diagnostics/english-ui-residuals-round4.json
           rm -f diagnostics/english-ui-residuals-round4.md
+          rm -f diagnostics/english-ui-round4-format-error.txt
           rm -f diagnostics/english-ui-round4-analyze-error.txt
           rm -f diagnostics/english-ui-round4-test-error.txt
           rm -f .github/workflows/apply-english-ui-round4.yml

@@ -1,0 +1,132 @@
+name: Release footprint audit
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'assets/**'
+      - 'android/**'
+      - 'LICENSE'
+      - 'NOTICE.md'
+      - 'pubspec.yaml'
+      - 'pubspec.lock'
+      - 'test/release_legal_assets_test.dart'
+      - 'tooling/analyze_release_footprint.py'
+      - 'tooling/prepare_release_legal_assets.py'
+      - 'docs/performance/**'
+      - '.github/workflows/release-footprint-audit.yml'
+  pull_request:
+    paths:
+      - 'assets/**'
+      - 'android/**'
+      - 'LICENSE'
+      - 'NOTICE.md'
+      - 'pubspec.yaml'
+      - 'pubspec.lock'
+      - 'test/release_legal_assets_test.dart'
+      - 'tooling/analyze_release_footprint.py'
+      - 'tooling/prepare_release_legal_assets.py'
+      - 'docs/performance/**'
+      - '.github/workflows/release-footprint-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-footprint-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  audit:
+    name: Build and measure release archives
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+
+    steps:
+      - name: Check out repository branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
+          fetch-depth: 0
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up pinned Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.4'
+          cache: true
+
+      - name: Show pinned toolchain
+        run: flutter --version
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Verify compliance inventories
+        run: python tooling/generate_compliance_reports.py --check
+
+      - name: Prepare embedded GPL and NOTICE
+        run: |
+          python tooling/prepare_release_legal_assets.py
+          python tooling/prepare_release_legal_assets.py --check
+
+      - name: Analyze source
+        run: flutter analyze
+
+      - name: Run release legal asset test
+        run: flutter test test/release_legal_assets_test.dart --reporter expanded
+
+      - name: Create temporary CI signing key
+        shell: bash
+        run: |
+          set -euo pipefail
+          keytool -genkeypair -v \
+            -keystore android/ci-footprint.jks \
+            -storepass footprint-pass \
+            -keypass footprint-pass \
+            -alias footprint \
+            -keyalg RSA \
+            -keysize 2048 \
+            -validity 10000 \
+            -dname 'CN=Trainer Atlas CI, OU=Build, O=Trainer Atlas, L=CI, S=CI, C=IT'
+          cat > android/key.properties <<'EOF'
+          storePassword=footprint-pass
+          keyPassword=footprint-pass
+          keyAlias=footprint
+          storeFile=../ci-footprint.jks
+          EOF
+
+      - name: Build release APK
+        run: flutter build apk --release
+
+      - name: Build release AAB
+        run: flutter build appbundle --release
+
+      - name: Generate release footprint reports
+        run: |
+          python tooling/analyze_release_footprint.py \
+            --apk build/app/outputs/flutter-apk/app-release.apk \
+            --aab build/app/outputs/bundle/release/app-release.aab
+
+      - name: Check generated file formatting
+        run: git diff --check
+
+      - name: Require deterministic duplicate inventory
+        run: git diff --exit-code -- docs/performance/asset-duplicates.csv
+
+      - name: Upload measured footprint reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: Trainer-Atlas-release-footprint
+          path: |
+            docs/performance/release-footprint.md
+            docs/performance/asset-duplicates.csv
+          if-no-files-found: error
+          retention-days: 14

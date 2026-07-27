@@ -33,6 +33,10 @@ migrate_working_dir/
 /build/
 /coverage/
 
+# Generated release legal assets
+/assets/data/GPL-3.0.txt
+/assets/data/NOTICE.txt
+
 # Symbolication related
 app.*.symbols
 

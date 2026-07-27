@@ -7,6 +7,9 @@ on:
       - 'lib/**'
       - 'assets/**'
       - 'test/**'
+      - 'tooling/**'
+      - 'LICENSE'
+      - 'NOTICE.md'
       - 'pubspec.yaml'
       - 'pubspec.lock'
       - '.github/workflows/windows-release.yml'
@@ -32,10 +35,10 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Set up Flutter
+      - name: Set up pinned Flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: stable
+          flutter-version: '3.44.4'
           cache: true
 
       - name: Enable Windows desktop
@@ -51,6 +54,12 @@ jobs:
       - name: Install dependencies
         shell: pwsh
         run: flutter pub get
+
+      - name: Prepare embedded GPL and NOTICE
+        shell: pwsh
+        run: |
+          python tooling/prepare_release_legal_assets.py
+          python tooling/prepare_release_legal_assets.py --check
 
       - name: Analyze source
         shell: pwsh
@@ -105,6 +114,8 @@ jobs:
 
           New-Item -ItemType Directory -Force -Path $staging | Out-Null
           Copy-Item -Path (Join-Path $source '*') -Destination $staging -Recurse -Force
+          Copy-Item -Path 'LICENSE' -Destination (Join-Path $staging 'LICENSE') -Force
+          Copy-Item -Path 'NOTICE.md' -Destination (Join-Path $staging 'NOTICE.md') -Force
 
           @"
           Trainer Atlas $version — Windows x64
@@ -112,6 +123,7 @@ jobs:
           1. Estrarre interamente questa cartella.
           2. Avviare Pokedex5eITA.exe.
           3. Non spostare il solo file EXE: la cartella data e le DLL devono restare accanto all'eseguibile.
+          4. LICENSE e NOTICE.md contengono licenza, attribuzioni e collegamento al codice sorgente corrispondente.
 
           Se Windows segnala l'assenza di VCRUNTIME o MSVCP, installare Microsoft Visual C++ Redistributable 2015-2022 x64 dal sito Microsoft.
 

@@ -11,7 +11,9 @@ on:
       - 'NOTICE.md'
       - 'pubspec.yaml'
       - 'pubspec.lock'
+      - 'test/release_legal_assets_test.dart'
       - 'tooling/analyze_release_footprint.py'
+      - 'tooling/prepare_release_legal_assets.py'
       - 'docs/performance/**'
       - '.github/workflows/release-footprint-audit.yml'
   pull_request:
@@ -22,7 +24,9 @@ on:
       - 'NOTICE.md'
       - 'pubspec.yaml'
       - 'pubspec.lock'
+      - 'test/release_legal_assets_test.dart'
       - 'tooling/analyze_release_footprint.py'
+      - 'tooling/prepare_release_legal_assets.py'
       - 'docs/performance/**'
       - '.github/workflows/release-footprint-audit.yml'
   workflow_dispatch:
@@ -67,6 +71,11 @@ jobs:
 
       - name: Verify compliance inventories
         run: python tooling/generate_compliance_reports.py --check
+
+      - name: Prepare embedded GPL and NOTICE
+        run: |
+          python tooling/prepare_release_legal_assets.py
+          python tooling/prepare_release_legal_assets.py --check
 
       - name: Analyze source
         run: flutter analyze

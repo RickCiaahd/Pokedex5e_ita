@@ -7,6 +7,12 @@ on:
     paths:
       - 'tooling/manage_webp_lossless_batches.py'
       - '.github/workflows/apply-webp-lossless-batch-2.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'tooling/manage_webp_lossless_batches.py'
+      - '.github/workflows/apply-webp-lossless-batch-2.yml'
   workflow_dispatch:
 
 permissions:

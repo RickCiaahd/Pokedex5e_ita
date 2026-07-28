@@ -1,0 +1,46 @@
+name: Diagnose WebP compliance inventory
+
+on:
+  push:
+    branches:
+      - feature/webp-lossless-batch-2
+    paths:
+      - '.github/workflows/diagnose-webp-compliance.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/webp-lossless-batch-2
+      - name: Regenerate and show inventory difference
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp docs/compliance/asset-manifest.csv /tmp/asset-manifest.before.csv
+          cp docs/compliance/asset-audit-summary.md /tmp/asset-summary.before.md
+          python tooling/generate_compliance_reports.py
+          echo '--- changed files ---'
+          git diff --name-status
+          echo '--- manifest stat ---'
+          diff --stat /tmp/asset-manifest.before.csv docs/compliance/asset-manifest.csv || true
+          echo '--- removed paths ---'
+          comm -23 \
+            <(tail -n +2 /tmp/asset-manifest.before.csv | cut -d, -f1 | sort) \
+            <(tail -n +2 docs/compliance/asset-manifest.csv | cut -d, -f1 | sort) \
+            | head -100 || true
+          echo '--- added paths ---'
+          comm -13 \
+            <(tail -n +2 /tmp/asset-manifest.before.csv | cut -d, -f1 | sort) \
+            <(tail -n +2 docs/compliance/asset-manifest.csv | cut -d, -f1 | sort) \
+            | head -100 || true
+          echo '--- first changed rows ---'
+          diff -u /tmp/asset-manifest.before.csv docs/compliance/asset-manifest.csv | head -240 || true
+          echo '--- summary diff ---'
+          diff -u /tmp/asset-summary.before.md docs/compliance/asset-audit-summary.md | head -160 || true

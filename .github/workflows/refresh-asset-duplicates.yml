@@ -1,0 +1,68 @@
+name: Refresh asset duplicate inventory
+
+on:
+  push:
+    branches:
+      - fix/repair-unreadable-pokemon-images
+    paths:
+      - 'assets/**'
+      - 'tooling/generate_asset_duplicates.py'
+      - '.github/workflows/refresh-asset-duplicates.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: refresh-asset-duplicates-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    name: Generate deterministic duplicate inventory
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Check out repair branch
+        uses: actions/checkout@v4
+        with:
+          ref: fix/repair-unreadable-pokemon-images
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Validate generator
+        run: |
+          python -m py_compile \
+            tooling/analyze_release_footprint.py \
+            tooling/generate_asset_duplicates.py
+
+      - name: Refresh duplicate inventory
+        if: github.actor != 'github-actions[bot]'
+        run: |
+          python tooling/generate_asset_duplicates.py
+          python tooling/generate_asset_duplicates.py --check
+          git diff --check
+
+      - name: Require current duplicate inventory
+        if: github.actor == 'github-actions[bot]'
+        run: python tooling/generate_asset_duplicates.py --check
+
+      - name: Commit refreshed inventory
+        if: github.actor != 'github-actions[bot]'
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- docs/performance/asset-duplicates.csv; then
+            echo 'Duplicate inventory is already current.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/performance/asset-duplicates.csv
+          git commit -m 'Aggiorna l inventario dei duplicati degli asset'
+          git push origin HEAD:fix/repair-unreadable-pokemon-images

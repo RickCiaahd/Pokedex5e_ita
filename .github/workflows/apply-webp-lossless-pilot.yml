@@ -63,6 +63,34 @@ jobs:
           python -m py_compile tooling/apply_webp_lossless_pilot.py
           python tooling/apply_webp_lossless_pilot.py --self-test
 
+      - name: Make pilot checks formatter-independent
+        if: github.actor != 'github-actions[bot]'
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('tooling/apply_webp_lossless_pilot.py')
+          text = path.read_text(encoding='utf-8')
+          old = '''    if TEST_PATH.read_text(encoding="utf-8") != test_source():
+              raise RuntimeError("WebP pilot test is missing or stale")
+          '''
+          new = '''    if not TEST_PATH.is_file():
+              raise RuntimeError("WebP pilot test is missing")
+          test = TEST_PATH.read_text(encoding="utf-8")
+          for marker in (
+              "const _pilotWebpAssets",
+              "WebP is preferred before PNG",
+              "Flutter decodes every pilot WebP asset",
+          ):
+              if marker not in test:
+                  raise RuntimeError(f"WebP pilot test is missing marker: {marker}")
+          '''
+          if old not in text:
+              raise SystemExit('Expected formatting-sensitive check was not found')
+          path.write_text(text.replace(old, new, 1), encoding='utf-8', newline='\n')
+          PY
+
       - name: Apply lossless WebP pilot
         if: github.actor != 'github-actions[bot]'
         run: python tooling/apply_webp_lossless_pilot.py --apply

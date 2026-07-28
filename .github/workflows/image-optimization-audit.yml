@@ -1,0 +1,60 @@
+name: Image optimization audit
+
+on:
+  pull_request:
+    paths:
+      - 'assets/textures/textures_webapp/pokemon/**'
+      - 'tooling/audit_pokemon_images.py'
+      - '.github/workflows/image-optimization-audit.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'assets/textures/textures_webapp/pokemon/**'
+      - 'tooling/audit_pokemon_images.py'
+      - '.github/workflows/image-optimization-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: image-optimization-audit-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  audit:
+    name: Inspect complete Pokémon artwork bundle
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: Install pinned image tooling
+        run: python -m pip install Pillow==11.3.0
+
+      - name: Validate audit tool
+        run: |
+          python -m py_compile tooling/audit_pokemon_images.py
+          python tooling/audit_pokemon_images.py \
+            --self-test \
+            --sample-limit 120
+
+      - name: Verify that no source image changed
+        run: git diff --exit-code -- assets/textures/textures_webapp/pokemon
+
+      - name: Upload complete audit reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: Trainer-Atlas-image-optimization-audit
+          path: build/reports/image-optimization-audit/
+          if-no-files-found: error
+          retention-days: 30

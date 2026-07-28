@@ -341,6 +341,10 @@ class _PreferredAssetImage extends StatelessWidget {
   Future<String?> _resolve() async {
     final paths = await _paths();
     for (final candidate in candidates) {
+      if (candidate.endsWith('.png')) {
+        final webp = '${candidate.substring(0, candidate.length - 4)}.webp';
+        if (paths.contains(webp)) return webp;
+      }
       if (paths.contains(candidate)) return candidate;
     }
     return null;

@@ -212,7 +212,7 @@ class PokemonAssetPaths {
     }
 
     for (final assetPath in assetIndex.sortedPaths) {
-      if (!assetPath.endsWith('.png')) continue;
+      if (!_isSupportedImagePath(assetPath)) continue;
       if (!prefixes.any(
         (prefix) => _AssetLookup.matchesPrefix(assetPath, prefix),
       )) {
@@ -298,7 +298,28 @@ class PokemonAssetPaths {
       ),
     );
 
-    return candidates;
+    return _preferModernImageFormats(candidates);
+  }
+
+  static List<String> _preferModernImageFormats(Iterable<String> candidates) {
+    final resolved = <String>[];
+    for (final candidate in candidates) {
+      final isConvertible =
+          candidate.endsWith('.png') &&
+          (candidate.startsWith(_webPokemonRoot) ||
+              candidate.startsWith(_webTransformRoot));
+      if (isConvertible) {
+        final webp = '${candidate.substring(0, candidate.length - 4)}.webp';
+        if (!resolved.contains(webp)) resolved.add(webp);
+      }
+      if (!resolved.contains(candidate)) resolved.add(candidate);
+    }
+    return resolved;
+  }
+
+  static bool _isSupportedImagePath(String path) {
+    final lower = path.toLowerCase();
+    return lower.endsWith('.png') || lower.endsWith('.webp');
   }
 
   static List<String> imageCandidatePrefixes({
@@ -717,7 +738,7 @@ class PokemonAssetPaths {
 
   static String _formFromFileName(String fileName) {
     return fileName
-        .replaceFirst(RegExp(r'\.png$'), '')
+        .replaceFirst(RegExp(r'\.(?:png|webp)$'), '')
         .replaceFirst(
           RegExp(r'^(main|sprite)[-_\s]+', caseSensitive: false),
           '',
@@ -1283,7 +1304,7 @@ class _AssetLookup {
   }
 
   static bool matchesPrefix(String assetPath, String prefix) {
-    if (!assetPath.endsWith('.png')) return false;
+    if (!PokemonAssetPaths._isSupportedImagePath(assetPath)) return false;
     if (!assetPath.startsWith(prefix)) return false;
     if (assetPath.length <= prefix.length) return false;
 

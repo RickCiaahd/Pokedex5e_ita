@@ -72,7 +72,7 @@ void main() {
     );
 
     const shiny =
-        'assets/textures/textures_webapp/pokemon/abomasnow/main-shiny.png';
+        'assets/textures/textures_webapp/pokemon/abomasnow/main-shiny.webp';
     const normal = 'assets/textures/textures_webapp/pokemon/abomasnow/main.png';
 
     expect(candidates, contains(shiny));
@@ -88,7 +88,7 @@ void main() {
       expect(
         manifest.listAssets(),
         contains(
-          'assets/textures/textures_webapp/pokemon/abomasnow/main-shiny.png',
+          'assets/textures/textures_webapp/pokemon/abomasnow/main-shiny.webp',
         ),
       );
     },
@@ -103,7 +103,7 @@ void main() {
     );
 
     const alternateShiny =
-        'assets/textures/textures_webapp/pokemon/alolan-rattata/main-shiny.png';
+        'assets/textures/textures_webapp/pokemon/alolan-rattata/main-shiny.webp';
     const alternateNormal =
         'assets/textures/textures_webapp/pokemon/alolan-rattata/main.png';
     const baseShiny =
@@ -131,7 +131,7 @@ void main() {
     );
 
     const alternateShiny =
-        'assets/textures/textures_webapp/pokemon/dusk-mane-necrozma/main-shiny.png';
+        'assets/textures/textures_webapp/pokemon/dusk-mane-necrozma/main-shiny.webp';
     const baseShiny =
         'assets/textures/textures_webapp/pokemon/necrozma/main-shiny.png';
 
@@ -152,13 +152,13 @@ void main() {
     expect(
       assets,
       contains(
-        'assets/textures/textures_webapp/pokemon/alolan-rattata/main-shiny.png',
+        'assets/textures/textures_webapp/pokemon/alolan-rattata/main-shiny.webp',
       ),
     );
     expect(
       assets,
       contains(
-        'assets/textures/textures_webapp/pokemon/dusk-mane-necrozma/main-shiny.png',
+        'assets/textures/textures_webapp/pokemon/dusk-mane-necrozma/main-shiny.webp',
       ),
     );
   });

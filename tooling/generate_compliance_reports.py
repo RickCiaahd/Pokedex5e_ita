@@ -20,6 +20,11 @@ DEPENDENCY_MD = COMPLIANCE_DIR / "dependency-licenses.md"
 ASSET_CSV = COMPLIANCE_DIR / "asset-manifest.csv"
 ASSET_MD = COMPLIANCE_DIR / "asset-audit-summary.md"
 
+GENERATED_RELEASE_ASSETS = {
+    Path("assets/data/GPL-3.0.txt"),
+    Path("assets/data/NOTICE.txt"),
+}
+
 EVIDENCE_NAMES = {
     "attribution.txt",
     "attributions.txt",
@@ -287,7 +292,9 @@ def evidence_for(path: Path) -> list[str]:
         if current.exists():
             for child in current.iterdir():
                 if child.is_file() and child.name.lower() in EVIDENCE_NAMES:
-                    evidence.append(child.relative_to(ROOT).as_posix())
+                    relative = child.relative_to(ROOT)
+                    if relative not in GENERATED_RELEASE_ASSETS:
+                        evidence.append(relative.as_posix())
         if current == assets_root or assets_root not in current.parents:
             break
         current = current.parent
@@ -296,7 +303,15 @@ def evidence_for(path: Path) -> list[str]:
 
 def asset_reports() -> tuple[str, str]:
     assets_root = ROOT / "assets"
-    files = sorted((path for path in assets_root.rglob("*") if path.is_file()), key=lambda item: item.as_posix().lower())
+    files = sorted(
+        (
+            path
+            for path in assets_root.rglob("*")
+            if path.is_file()
+            and path.relative_to(ROOT) not in GENERATED_RELEASE_ASSETS
+        ),
+        key=lambda item: item.as_posix().lower(),
+    )
     if not files:
         raise RuntimeError("No assets found")
 

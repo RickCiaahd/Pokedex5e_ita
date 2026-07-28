@@ -4,16 +4,20 @@ on:
   pull_request:
     paths:
       - 'assets/textures/textures_webapp/pokemon/**'
+      - 'docs/performance/webp-lossless-pilot.*'
       - 'tooling/audit_pokemon_images.py'
       - 'tooling/repair_unreadable_pokemon_images.py'
+      - 'tooling/apply_webp_lossless_pilot.py'
       - '.github/workflows/image-optimization-audit.yml'
   push:
     branches:
       - main
     paths:
       - 'assets/textures/textures_webapp/pokemon/**'
+      - 'docs/performance/webp-lossless-pilot.*'
       - 'tooling/audit_pokemon_images.py'
       - 'tooling/repair_unreadable_pokemon_images.py'
+      - 'tooling/apply_webp_lossless_pilot.py'
       - '.github/workflows/image-optimization-audit.yml'
   workflow_dispatch:
 
@@ -46,11 +50,16 @@ jobs:
         run: |
           python -m py_compile \
             tooling/audit_pokemon_images.py \
-            tooling/repair_unreadable_pokemon_images.py
+            tooling/repair_unreadable_pokemon_images.py \
+            tooling/apply_webp_lossless_pilot.py
           python tooling/repair_unreadable_pokemon_images.py --self-test
+          python tooling/apply_webp_lossless_pilot.py --self-test
 
       - name: Require every bundled Pokémon image to be readable
         run: python tooling/repair_unreadable_pokemon_images.py --check-all
+
+      - name: Verify lossless WebP pilot invariants
+        run: python tooling/apply_webp_lossless_pilot.py --check
 
       - name: Generate non-destructive optimization audit
         shell: bash

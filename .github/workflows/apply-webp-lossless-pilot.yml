@@ -77,17 +77,20 @@ jobs:
               r'    if TEST_PATH\.read_text\(encoding="utf-8"\) != test_source\(\):\n'
               r'        raise RuntimeError\("WebP pilot test is missing or stale"\)\n'
           )
-          replacement = '''    if not TEST_PATH.is_file():
-              raise RuntimeError("WebP pilot test is missing")
-          test = TEST_PATH.read_text(encoding="utf-8")
-          for marker in (
-              "const _pilotWebpAssets",
-              "WebP is preferred before PNG",
-              "Flutter decodes every pilot WebP asset",
-          ):
-              if marker not in test:
-                  raise RuntimeError(f"WebP pilot test is missing marker: {marker}")
-          '''
+          replacement = (
+              '    if not TEST_PATH.is_file():\n'
+              '        raise RuntimeError("WebP pilot test is missing")\n'
+              '    test = TEST_PATH.read_text(encoding="utf-8")\n'
+              '    for marker in (\n'
+              '        "const _pilotWebpAssets",\n'
+              '        "WebP is preferred before PNG",\n'
+              '        "Flutter decodes every pilot WebP asset",\n'
+              '    ):\n'
+              '        if marker not in test:\n'
+              '            raise RuntimeError(\n'
+              '                f"WebP pilot test is missing marker: {marker}"\n'
+              '            )\n'
+          )
           text, count = pattern.subn(replacement, text, count=1)
           if count != 1:
               raise SystemExit(f'Expected one formatting-sensitive check, found {count}')

@@ -34,7 +34,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: public-safe-release-${{ github.ref }}
@@ -83,24 +83,11 @@ jobs:
       - name: Check generated formatting
         run: git diff --check
 
-      - name: Publish public profile baseline on bootstrap branch
-        if: github.head_ref == 'feature/public-safe-assets' || github.ref_name == 'feature/public-safe-assets'
-        shell: bash
+      - name: Require committed public profile
         run: |
-          set -euo pipefail
-          pending=$(git status --porcelain -- \
+          git diff --exit-code -- \
             docs/performance/public-asset-profile.md \
-            docs/performance/pokemon-artwork-references.csv)
-          if [ -z "$pending" ]; then
-            echo 'Public asset profile reports are already current.'
-            exit 0
-          fi
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add docs/performance/public-asset-profile.md \
             docs/performance/pokemon-artwork-references.csv
-          git commit -m 'Genera baseline del profilo asset pubblico'
-          git push origin HEAD:feature/public-safe-assets
 
       - name: Prepare embedded GPL and NOTICE
         run: |

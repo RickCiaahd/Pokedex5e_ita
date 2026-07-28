@@ -63,7 +63,7 @@ jobs:
           python -m py_compile tooling/apply_webp_lossless_pilot.py
           python tooling/apply_webp_lossless_pilot.py --self-test
 
-      - name: Make pilot checks formatter-independent
+      - name: Prepare deterministic pilot sources
         if: github.actor != 'github-actions[bot]'
         shell: bash
         run: |
@@ -73,6 +73,19 @@ jobs:
 
           path = Path('tooling/apply_webp_lossless_pilot.py')
           text = path.read_text(encoding='utf-8')
+
+          old_pilot = (
+              'assets/textures/textures_webapp/pokemon/'
+              'minior-core-blue/sprite-shiny.png'
+          )
+          new_pilot = (
+              'assets/textures/textures_webapp/pokemon/'
+              'alolan-rattata/sprite-shiny.png'
+          )
+          if text.count(old_pilot) != 1:
+              raise SystemExit('Expected the Minior pilot entry exactly once')
+          text = text.replace(old_pilot, new_pilot, 1)
+
           pattern = re.compile(
               r'    if TEST_PATH\.read_text\(encoding="utf-8"\) != test_source\(\):\n'
               r'        raise RuntimeError\("WebP pilot test is missing or stale"\)\n'
@@ -104,6 +117,17 @@ jobs:
               raise SystemExit(f'Expected one host decoder test, found {decode_count}')
 
           path.write_text(text, encoding='utf-8', newline='\n')
+
+          existing_test = Path('test/pokemon_asset_paths_test.dart')
+          test_text = existing_test.read_text(encoding='utf-8')
+          converted_expectations = (
+              'assets/textures/textures_webapp/pokemon/abomasnow/main-shiny',
+              'assets/textures/textures_webapp/pokemon/alolan-rattata/main-shiny',
+              'assets/textures/textures_webapp/pokemon/dusk-mane-necrozma/main-shiny',
+          )
+          for prefix in converted_expectations:
+              test_text = test_text.replace(f'{prefix}.png', f'{prefix}.webp')
+          existing_test.write_text(test_text, encoding='utf-8', newline='\n')
           PY
 
       - name: Apply lossless WebP pilot
@@ -121,6 +145,7 @@ jobs:
           dart format
           lib/widgets/pokemon/pokemon_asset_image.dart
           lib/widgets/pokemon/pokemon_asset_image_legacy.dart
+          test/pokemon_asset_paths_test.dart
           test/webp_lossless_pilot_test.dart
 
       - name: Verify pilot invariants

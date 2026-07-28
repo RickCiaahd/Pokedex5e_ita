@@ -30,7 +30,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: image-optimization-audit-${{ github.ref }}
@@ -40,11 +40,14 @@ jobs:
   audit:
     name: Inspect complete Pokémon artwork bundle
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: 120
 
     steps:
-      - name: Check out repository
+      - name: Check out repository branch
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -53,6 +56,110 @@ jobs:
 
       - name: Install pinned image tooling
         run: python -m pip install Pillow==11.3.0
+
+      - name: Set up Flutter for the WebP inventory refresh
+        if: github.head_ref == 'feature/webp-lossless-batch-2' || github.ref_name == 'feature/webp-lossless-batch-2'
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.4'
+          cache: true
+
+      - name: Install Flutter dependencies for the WebP inventory refresh
+        if: github.head_ref == 'feature/webp-lossless-batch-2' || github.ref_name == 'feature/webp-lossless-batch-2'
+        run: flutter pub get
+
+      - name: Stabilize generated release asset handling
+        if: github.head_ref == 'feature/webp-lossless-batch-2' || github.ref_name == 'feature/webp-lossless-batch-2'
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('tooling/generate_compliance_reports.py')
+          text = path.read_text(encoding='utf-8')
+
+          anchor = 'ASSET_MD = COMPLIANCE_DIR / "asset-audit-summary.md"\n\n'
+          addition = '''ASSET_MD = COMPLIANCE_DIR / "asset-audit-summary.md"
+
+GENERATED_RELEASE_ASSETS = {
+    Path("assets/data/GPL-3.0.txt"),
+    Path("assets/data/NOTICE.txt"),
+}
+
+'''
+          if 'GENERATED_RELEASE_ASSETS' not in text:
+              if text.count(anchor) != 1:
+                  raise SystemExit('Expected ASSET_MD anchor exactly once')
+              text = text.replace(anchor, addition, 1)
+
+          old_evidence = '''                if child.is_file() and child.name.lower() in EVIDENCE_NAMES:
+                    evidence.append(child.relative_to(ROOT).as_posix())
+'''
+          new_evidence = '''                relative = child.relative_to(ROOT)
+                if (
+                    child.is_file()
+                    and child.name.lower() in EVIDENCE_NAMES
+                    and relative not in GENERATED_RELEASE_ASSETS
+                ):
+                    evidence.append(relative.as_posix())
+'''
+          if old_evidence in text:
+              text = text.replace(old_evidence, new_evidence, 1)
+          elif new_evidence not in text:
+              raise SystemExit('Expected evidence discovery block exactly once')
+
+          old_files = '''    files = sorted((path for path in assets_root.rglob("*") if path.is_file()), key=lambda item: item.as_posix().lower())
+'''
+          new_files = '''    files = sorted(
+        (
+            path
+            for path in assets_root.rglob("*")
+            if path.is_file()
+            and path.relative_to(ROOT) not in GENERATED_RELEASE_ASSETS
+        ),
+        key=lambda item: item.as_posix().lower(),
+    )
+'''
+          if old_files in text:
+              text = text.replace(old_files, new_files, 1)
+          elif new_files not in text:
+              raise SystemExit('Expected asset scan block exactly once')
+
+          path.write_text(text, encoding='utf-8', newline='\n')
+          PY
+
+      - name: Refresh stable compliance inventories
+        if: github.head_ref == 'feature/webp-lossless-batch-2' || github.ref_name == 'feature/webp-lossless-batch-2'
+        run: |
+          python -m py_compile tooling/generate_compliance_reports.py
+          python tooling/generate_compliance_reports.py
+          python tooling/generate_asset_duplicates.py
+          python tooling/generate_compliance_reports.py --check
+          python tooling/generate_asset_duplicates.py --check
+          python tooling/prepare_release_legal_assets.py
+          python tooling/prepare_release_legal_assets.py --check
+          python tooling/generate_compliance_reports.py --check
+          git diff --check
+
+      - name: Commit stable WebP inventory
+        if: (github.head_ref == 'feature/webp-lossless-batch-2' || github.ref_name == 'feature/webp-lossless-batch-2') && github.actor != 'github-actions[bot]'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add tooling/generate_compliance_reports.py \
+            docs/compliance/dependency-licenses.csv \
+            docs/compliance/dependency-licenses.md \
+            docs/compliance/asset-manifest.csv \
+            docs/compliance/asset-audit-summary.md \
+            docs/performance/asset-duplicates.csv
+          if git diff --cached --quiet; then
+            echo 'WebP inventory is already stable.'
+          else
+            git commit -m 'Stabilizza l’inventario rispetto agli asset legali generati'
+            git push origin HEAD:feature/webp-lossless-batch-2
+          fi
 
       - name: Validate image tools
         run: |

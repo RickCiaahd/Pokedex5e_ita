@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import argparse
+from concurrent.futures import ProcessPoolExecutor
+from functools import partial
 import csv
 import hashlib
 import tempfile
@@ -116,11 +118,17 @@ def inspect(path: Path, min_bytes: int, min_percent: float) -> Entry:
 
 
 def scan(min_bytes: int, min_percent: float) -> list[Entry]:
+    paths = png_files()
+    worker = partial(inspect, min_bytes=min_bytes, min_percent=min_percent)
     result: list[Entry] = []
-    for index, path in enumerate(png_files(), 1):
-        result.append(inspect(path, min_bytes, min_percent))
-        if index % 250 == 0:
-            print(f'Inspected {index} remaining PNG files')
+    with ProcessPoolExecutor(max_workers=4) as executor:
+        for index, item in enumerate(
+            executor.map(worker, paths, chunksize=16),
+            1,
+        ):
+            result.append(item)
+            if index % 250 == 0:
+                print(f'Inspected {index} remaining PNG files')
     return result
 
 

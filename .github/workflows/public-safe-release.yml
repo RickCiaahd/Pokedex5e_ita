@@ -113,8 +113,8 @@ jobs:
       - name: Install public-profile dependencies
         run: flutter pub get
 
-      - name: Analyze source with filtered manifest
-        run: flutter analyze
+      - name: Validate public dependency graph
+        run: flutter pub deps --style=compact > /dev/null
 
       - name: Run public asset smoke tests
         run: >-

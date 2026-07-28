@@ -13,6 +13,10 @@ const _blockedRoots = <String>[
   'assets/textures/textures_webapp/pokemon_transforms/',
 ];
 
+const _publicSafeBuild = bool.fromEnvironment(
+  'TRAINER_ATLAS_PUBLIC_SAFE',
+);
+
 Pokemon _pokemon() {
   return const Pokemon(
     id: 1,
@@ -58,7 +62,7 @@ void main() {
 
     expect(assets, contains('assets/data/GPL-3.0.txt'));
     expect(assets, contains('assets/data/NOTICE.txt'));
-  });
+  }, skip: !_publicSafeBuild);
 
   testWidgets('missing creature artwork resolves to the in-app fallback', (
     tester,
@@ -80,5 +84,5 @@ void main() {
 
     expect(find.byType(Icon), findsOneWidget);
     expect(tester.takeException(), isNull);
-  });
+  }, skip: !_publicSafeBuild);
 }

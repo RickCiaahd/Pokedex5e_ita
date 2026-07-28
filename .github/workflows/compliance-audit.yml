@@ -61,7 +61,6 @@ jobs:
         run: flutter pub get
 
       - name: Require committed compliance reports
-        if: github.head_ref != 'fix/repair-unreadable-pokemon-images' && github.ref_name != 'fix/repair-unreadable-pokemon-images'
         run: python tooling/generate_compliance_reports.py --check
 
       - name: Install the complete GPLv3 text
@@ -110,7 +109,7 @@ jobs:
         run: flutter build apk --debug
 
       - name: Publish generated baseline on bootstrap branch
-        if: github.head_ref == 'feature/compliance-reports' || github.ref_name == 'feature/compliance-reports' || github.head_ref == 'fix/repair-unreadable-pokemon-images' || github.ref_name == 'fix/repair-unreadable-pokemon-images'
+        if: github.head_ref == 'feature/compliance-reports' || github.ref_name == 'feature/compliance-reports'
         shell: bash
         run: |
           set -euo pipefail
@@ -125,5 +124,5 @@ jobs:
             docs/compliance/dependency-licenses.md \
             docs/compliance/asset-manifest.csv \
             docs/compliance/asset-audit-summary.md
-          git commit -m 'Aggiorna gli inventari dopo la riparazione delle immagini'
-          git push origin HEAD:${{ github.event.pull_request.head.ref || github.ref_name }}
+          git commit -m 'Genera inventari riproducibili di licenze e asset'
+          git push origin HEAD:feature/compliance-reports

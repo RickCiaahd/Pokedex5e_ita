@@ -1,0 +1,39 @@
+name: Diagnose compliance manifest
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/diagnose-compliance-manifest.yml'
+      - 'assets/**'
+      - 'docs/compliance/**'
+      - 'tooling/generate_compliance_reports.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.4'
+          cache: true
+      - run: flutter pub get
+      - name: Regenerate and show exact difference
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp docs/compliance/asset-manifest.csv /tmp/asset-manifest.before.csv
+          python tooling/generate_compliance_reports.py
+          echo '--- changed files ---'
+          git diff --name-status
+          echo '--- manifest difference ---'
+          diff -u /tmp/asset-manifest.before.csv docs/compliance/asset-manifest.csv | head -200 || true
+          echo '--- generated checksums ---'
+          sha256sum /tmp/asset-manifest.before.csv docs/compliance/asset-manifest.csv

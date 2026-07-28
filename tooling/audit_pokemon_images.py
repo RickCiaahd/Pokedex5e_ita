@@ -79,6 +79,13 @@ class ImageRecord:
 
 
 @dataclass(frozen=True)
+class ImageFailure:
+    path: str
+    size_bytes: int
+    error: str
+
+
+@dataclass(frozen=True)
 class CompressionRecord:
     path: str
     role: str
@@ -101,6 +108,12 @@ class CompressionRecord:
     @property
     def webp_ratio(self) -> float:
         return self.webp_saved / self.original_bytes if self.original_bytes else 0.0
+
+
+@dataclass(frozen=True)
+class CompressionFailure:
+    path: str
+    error: str
 
 
 def human_bytes(value: int) -> str:
@@ -168,7 +181,9 @@ def read_image(path: Path, root: Path, repository_root: Path) -> ImageRecord:
     )
 
 
-def scan_images(root: Path) -> tuple[Path, list[ImageRecord]]:
+def scan_images(
+    root: Path,
+) -> tuple[Path, list[ImageRecord], list[ImageFailure]]:
     repository_root = repository_root_for(root)
     paths = sorted(
         (
@@ -183,19 +198,22 @@ def scan_images(root: Path) -> tuple[Path, list[ImageRecord]]:
         raise RuntimeError(f"No supported images found below {root}")
 
     records: list[ImageRecord] = []
-    failures: list[str] = []
+    failures: list[ImageFailure] = []
     for path in paths:
         try:
             records.append(read_image(path, root, repository_root))
-        except Exception as error:  # pragma: no cover - printed by the CI audit
-            failures.append(f"{path}: {error}")
+        except Exception as error:  # pragma: no cover - reported by the CI audit
+            failures.append(
+                ImageFailure(
+                    path=path.relative_to(repository_root).as_posix(),
+                    size_bytes=path.stat().st_size,
+                    error=str(error),
+                )
+            )
 
-    if failures:
-        preview = "\n".join(failures[:20])
-        raise RuntimeError(
-            f"Unable to inspect {len(failures)} image(s). First failures:\n{preview}"
-        )
-    return repository_root, records
+    if not records:
+        raise RuntimeError("No readable images found")
+    return repository_root, records, failures
 
 
 def deterministic_sample(records: list[ImageRecord], limit: int) -> list[ImageRecord]:
@@ -266,21 +284,24 @@ def compression_pilot(
     repository_root: Path,
     records: list[ImageRecord],
     sample_limit: int,
-) -> list[CompressionRecord]:
-    sample = deterministic_sample(records, sample_limit)
+) -> tuple[list[CompressionRecord], list[CompressionFailure]]:
     results: list[CompressionRecord] = []
-    for record in sample:
+    failures: list[CompressionFailure] = []
+    for record in deterministic_sample(records, sample_limit):
         source = repository_root / record.path
-        results.append(
-            CompressionRecord(
-                path=record.path,
-                role=record.primary_role,
-                original_bytes=record.size_bytes,
-                optimized_png_bytes=encode_size(source, "PNG"),
-                lossless_webp_bytes=encode_size(source, "WEBP"),
+        try:
+            results.append(
+                CompressionRecord(
+                    path=record.path,
+                    role=record.primary_role,
+                    original_bytes=record.size_bytes,
+                    optimized_png_bytes=encode_size(source, "PNG"),
+                    lossless_webp_bytes=encode_size(source, "WEBP"),
+                )
             )
-        )
-    return results
+        except Exception as error:  # pragma: no cover - reported by the CI audit
+            failures.append(CompressionFailure(path=record.path, error=str(error)))
+    return results, failures
 
 
 def write_inventory(path: Path, records: list[ImageRecord]) -> None:
@@ -332,6 +353,15 @@ def write_inventory(path: Path, records: list[ImageRecord]) -> None:
             )
 
 
+def write_failures(path: Path, failures: list[ImageFailure]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", encoding="utf-8", newline="") as handle:
+        writer = csv.writer(handle, lineterminator="\n")
+        writer.writerow(["path", "size_bytes", "error"])
+        for failure in failures:
+            writer.writerow([failure.path, failure.size_bytes, failure.error])
+
+
 def write_compression_csv(path: Path, records: list[CompressionRecord]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", encoding="utf-8", newline="") as handle:
@@ -363,6 +393,18 @@ def write_compression_csv(path: Path, records: list[CompressionRecord]) -> None:
                     f"{record.webp_ratio * 100:.4f}",
                 ]
             )
+
+
+def write_compression_failures(
+    path: Path,
+    failures: list[CompressionFailure],
+) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", encoding="utf-8", newline="") as handle:
+        writer = csv.writer(handle, lineterminator="\n")
+        writer.writerow(["path", "error"])
+        for failure in failures:
+            writer.writerow([failure.path, failure.error])
 
 
 def role_rows(records: list[ImageRecord]) -> list[tuple[str, int, int, int, int]]:
@@ -397,10 +439,14 @@ def compression_summary(
 
 def build_markdown(
     records: list[ImageRecord],
+    image_failures: list[ImageFailure],
     pilot: list[CompressionRecord],
+    compression_failures: list[CompressionFailure],
     root: Path,
 ) -> str:
-    total_size = sum(item.size_bytes for item in records)
+    total_size = sum(item.size_bytes for item in records) + sum(
+        item.size_bytes for item in image_failures
+    )
     alpha_count = sum(item.has_alpha for item in records)
     animated_count = sum(item.is_animated for item in records)
     dimensions = [item.max_dimension for item in records]
@@ -422,10 +468,12 @@ def build_markdown(
         "## Inventory",
         "",
         f"- Root: `{root.as_posix()}`",
-        f"- Images scanned: **{len(records)}**",
+        f"- Files discovered: **{len(records) + len(image_failures)}**",
+        f"- Readable images: **{len(records)}**",
+        f"- Unreadable or corrupt image files: **{len(image_failures)}**",
         f"- Source size: **{human_bytes(total_size)}** ({total_size} bytes)",
-        f"- Images with alpha/transparency: **{alpha_count}**",
-        f"- Animated images: **{animated_count}**",
+        f"- Readable images with alpha/transparency: **{alpha_count}**",
+        f"- Animated readable images: **{animated_count}**",
         f"- Median maximum dimension: **{statistics.median(dimensions):.0f}px**",
         f"- Maximum dimension found: **{max(dimensions)}px**",
         f"- Candidates above 512px: **{sum(item.max_dimension > 512 for item in records)}**",
@@ -445,7 +493,27 @@ def build_markdown(
     lines.extend(
         [
             "",
-            "### Largest source images",
+            "### Unreadable or corrupt files",
+            "",
+            "These files remain in the project and are reported for repair; the audit does not delete them.",
+            "",
+            "| Path | Size | Error |",
+            "|---|---:|---|",
+        ]
+    )
+    if image_failures:
+        for failure in image_failures:
+            safe_error = failure.error.replace("|", "\\|")
+            lines.append(
+                f"| `{failure.path}` | {human_bytes(failure.size_bytes)} | {safe_error} |"
+            )
+    else:
+        lines.append("| _None_ | 0 B | — |")
+
+    lines.extend(
+        [
+            "",
+            "### Largest readable source images",
             "",
             "| Path | Dimensions | Size | Role | Alpha |",
             "|---|---:|---:|---|---|",
@@ -463,8 +531,10 @@ def build_markdown(
             "",
             "## Deterministic lossless pilot",
             "",
-            f"- Sample files: **{len(pilot)}**",
-            f"- Original sample size: **{human_bytes(original)}**",
+            f"- Requested sample files: **{len(pilot) + len(compression_failures)}**",
+            f"- Successfully encoded sample files: **{len(pilot)}**",
+            f"- Compression failures: **{len(compression_failures)}**",
+            f"- Original successful sample size: **{human_bytes(original)}**",
             f"- Re-encoded optimized PNG size: **{human_bytes(png)}** ({percent(png_ratio)} smaller)",
             f"- Re-encoded lossless WebP size: **{human_bytes(webp)}** ({percent(webp_ratio)} smaller)",
             "",
@@ -488,11 +558,12 @@ def build_markdown(
             "",
             "## Safe next step",
             "",
-            "1. Keep the current complete PNG bundle as the reference baseline.",
-            "2. Select a small pilot batch covering standard, shiny, sprite, gender and form assets.",
-            "3. Compare optimized PNG and lossless WebP visually at native size and at the largest in-app render size.",
-            "4. Apply only a reversible batch with path compatibility tests and full Android/Windows/web builds.",
-            "5. Measure the complete APK/AAB again before expanding the conversion.",
+            "1. Repair or replace unreadable image files before any bulk conversion.",
+            "2. Keep the current complete PNG bundle as the reference baseline.",
+            "3. Select a small pilot batch covering standard, shiny, sprite, gender and form assets.",
+            "4. Compare optimized PNG and lossless WebP visually at native size and at the largest in-app render size.",
+            "5. Apply only a reversible batch with path compatibility tests and full Android/Windows/web builds.",
+            "6. Measure the complete APK/AAB again before expanding the conversion.",
             "",
         ]
     )
@@ -502,22 +573,31 @@ def build_markdown(
 def self_test() -> None:
     with tempfile.TemporaryDirectory() as temp_dir:
         repository_root = Path(temp_dir)
-        (repository_root / "pubspec.yaml").write_text("name: audit_test\n", encoding="utf-8")
+        (repository_root / "pubspec.yaml").write_text(
+            "name: audit_test\n",
+            encoding="utf-8",
+        )
         root = repository_root / DEFAULT_ROOT
-        image_path = root / "sample-form" / "main-f-shiny.png"
-        image_path.parent.mkdir(parents=True)
-        Image.new("RGBA", (64, 32), (255, 0, 0, 128)).save(image_path, format="PNG")
+        valid_path = root / "sample-form" / "main-f-shiny.png"
+        valid_path.parent.mkdir(parents=True)
+        Image.new("RGBA", (64, 32), (255, 0, 0, 128)).save(
+            valid_path,
+            format="PNG",
+        )
+        (root / "broken.png").write_bytes(b"not-a-png")
 
-        detected_root, records = scan_images(root)
+        detected_root, records, failures = scan_images(root)
         assert detected_root == repository_root
         assert len(records) == 1
+        assert len(failures) == 1
         record = records[0]
         assert record.width == 64 and record.height == 32
         assert record.has_alpha
         assert "shiny" in record.tags
         assert "gender" in record.tags
-        pilot = compression_pilot(repository_root, records, 1)
+        pilot, pilot_failures = compression_pilot(repository_root, records, 1)
         assert len(pilot) == 1
+        assert not pilot_failures
         assert pilot[0].optimized_png_bytes > 0
         assert pilot[0].lossless_webp_bytes > 0
 
@@ -538,13 +618,28 @@ def main() -> int:
 
     root = args.root.resolve()
     output_dir = args.output_dir.resolve()
-    repository_root, records = scan_images(root)
-    pilot = compression_pilot(repository_root, records, args.sample_limit)
+    repository_root, records, image_failures = scan_images(root)
+    pilot, compression_failures = compression_pilot(
+        repository_root,
+        records,
+        args.sample_limit,
+    )
 
-    write_inventory(output_dir / "image-inventory.csv", records)
-    write_compression_csv(output_dir / "compression-pilot.csv", pilot)
-    report = build_markdown(records, pilot, root.relative_to(repository_root))
     output_dir.mkdir(parents=True, exist_ok=True)
+    write_inventory(output_dir / "image-inventory.csv", records)
+    write_failures(output_dir / "unreadable-images.csv", image_failures)
+    write_compression_csv(output_dir / "compression-pilot.csv", pilot)
+    write_compression_failures(
+        output_dir / "compression-failures.csv",
+        compression_failures,
+    )
+    report = build_markdown(
+        records,
+        image_failures,
+        pilot,
+        compression_failures,
+        root.relative_to(repository_root),
+    )
     (output_dir / "image-optimization-audit.md").write_text(
         report,
         encoding="utf-8",

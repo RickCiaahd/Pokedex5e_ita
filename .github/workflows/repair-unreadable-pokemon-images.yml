@@ -1,0 +1,81 @@
+name: Repair unreadable Pokémon images
+
+on:
+  push:
+    branches:
+      - fix/repair-unreadable-pokemon-images
+    paths:
+      - 'assets/textures/textures_webapp/pokemon/**'
+      - 'docs/performance/unreadable-pokemon-images.csv'
+      - 'tooling/repair_unreadable_pokemon_images.py'
+      - '.github/workflows/repair-unreadable-pokemon-images.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: repair-unreadable-pokemon-images-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  repair:
+    name: Repair and validate unreadable PNG files
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Check out repair branch
+        uses: actions/checkout@v4
+        with:
+          ref: fix/repair-unreadable-pokemon-images
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install pinned image tooling
+        run: python -m pip install Pillow==11.3.0
+
+      - name: Validate repair utility
+        run: |
+          python -m py_compile tooling/repair_unreadable_pokemon_images.py
+          python tooling/repair_unreadable_pokemon_images.py --self-test
+
+      - name: Repair listed PNG files without changing decoded pixels
+        if: github.actor != 'github-actions[bot]'
+        run: >-
+          python tooling/repair_unreadable_pokemon_images.py
+          --repair-listed
+          --check-all
+
+      - name: Require all Pokémon images to be readable
+        run: python tooling/repair_unreadable_pokemon_images.py --check-all
+
+      - name: Verify generated changes
+        if: github.actor != 'github-actions[bot]'
+        run: |
+          git diff --check
+          test -f docs/performance/repaired-pokemon-images.csv
+          test "$(wc -l < docs/performance/repaired-pokemon-images.csv)" -eq 24
+          test "$(wc -l < docs/performance/unreadable-pokemon-images.csv)" -eq 1
+
+      - name: Commit repaired images and reports
+        if: github.actor != 'github-actions[bot]'
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet; then
+            echo 'No repair changes were produced.'
+            exit 1
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add \
+            assets/textures/textures_webapp/pokemon \
+            docs/performance/unreadable-pokemon-images.csv \
+            docs/performance/repaired-pokemon-images.csv
+          git commit -m 'Ripara i PNG Pokémon non leggibili'
+          git push origin HEAD:fix/repair-unreadable-pokemon-images

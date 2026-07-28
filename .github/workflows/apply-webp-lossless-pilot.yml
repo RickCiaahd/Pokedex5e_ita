@@ -7,6 +7,12 @@ on:
     paths:
       - 'tooling/apply_webp_lossless_pilot.py'
       - '.github/workflows/apply-webp-lossless-pilot.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'tooling/apply_webp_lossless_pilot.py'
+      - '.github/workflows/apply-webp-lossless-pilot.yml'
   workflow_dispatch:
 
 permissions:

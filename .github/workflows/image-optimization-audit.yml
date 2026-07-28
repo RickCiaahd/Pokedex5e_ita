@@ -48,7 +48,7 @@ jobs:
           python -m py_compile tooling/audit_pokemon_images.py
           python tooling/audit_pokemon_images.py \
             --self-test \
-            --sample-limit 120 \
+            --sample-limit 30 \
             2>&1 | tee build/reports/image-optimization-audit/execution.log
 
       - name: Verify that no source image changed

@@ -114,21 +114,22 @@ jobs:
           --min-saved-bytes 4096
           --min-saved-percent 5
 
-      - name: Refresh compliance and release inventories
+      - name: Refresh legal assets and inventories
         if: github.actor != 'github-actions[bot]'
         run: |
+          python tooling/prepare_release_legal_assets.py
           python tooling/generate_compliance_reports.py
           python tooling/generate_asset_duplicates.py
-          python tooling/prepare_release_legal_assets.py
+          python tooling/prepare_release_legal_assets.py --check
 
       - name: Verify image and report invariants
         run: |
           python tooling/manage_webp_lossless_batches.py --check
           python tooling/apply_webp_lossless_pilot.py --check
           python tooling/repair_unreadable_pokemon_images.py --check-all
+          python tooling/prepare_release_legal_assets.py --check
           python tooling/generate_compliance_reports.py --check
           python tooling/generate_asset_duplicates.py --check
-          python tooling/prepare_release_legal_assets.py --check
           git diff --check
 
       - name: Analyze source

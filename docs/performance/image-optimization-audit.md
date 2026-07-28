@@ -1,16 +1,15 @@
 # Audit di ottimizzazione delle immagini Pokémon
 
-Questo documento riassume l'audit non distruttivo eseguito sulla famiglia `assets/textures/textures_webapp/pokemon`.
+Questo documento riassume l'audit non distruttivo eseguito sulla famiglia `assets/textures/textures_webapp/pokemon` e il successivo intervento di riparazione lossless.
 
-L'audit non modifica, converte, ridimensiona, rinomina o elimina alcun file. APK, AAB e pacchetto Windows continuano a includere tutte le immagini previste dall'app.
+L'audit e la riparazione non eliminano, sostituiscono, ridimensionano o rinominano alcuna immagine. APK, AAB e pacchetto Windows continuano a includere tutte le immagini previste dall'app.
 
-## Risultati dell'inventario
+## Stato attuale dell'inventario
 
 - File individuati: **4.719**
-- Immagini leggibili: **4.696**
-- File PNG non leggibili o corrotti: **23**
-- Dimensione complessiva della famiglia: **304,9 MiB**
-- Immagini leggibili con trasparenza: **4.696**
+- Immagini leggibili: **4.719**
+- File non leggibili: **0**
+- Dimensione complessiva della famiglia: circa **304,8 MiB**
 - Immagini animate: **0**
 - Dimensione massima mediana: **475 px**
 - Dimensione massima assoluta: **894 px**
@@ -18,13 +17,28 @@ L'audit non modifica, converte, ridimensiona, rinomina o elimina alcun file. APK
 - Immagini sopra 768 px: **9**
 - Immagini sopra 1.024 px: **0**
 
-La riduzione generalizzata della risoluzione non appare quindi una strategia prioritaria: quasi tutto il catalogo principale è già intorno a 475 px. Le sole immagini nettamente più grandi sono alcune differenze di genere a 767 o 894 px e devono essere valutate individualmente.
+La riduzione generalizzata della risoluzione non appare una strategia prioritaria: quasi tutto il catalogo principale è già intorno a 475 px. Le sole immagini nettamente più grandi sono alcune differenze di genere a 767 o 894 px e devono essere valutate individualmente.
 
 La classificazione automatica per ruolo è basata sui nomi dei file e delle cartelle ed è soltanto indicativa; non sostituisce la verifica dei percorsi usati dall'app.
 
+## Riparazione dei 23 PNG problematici
+
+L'audit iniziale aveva individuato 23 PNG che Pillow non riusciva a decodificare rigorosamente. I file contenevano dati immagine recuperabili ma metadati o terminazioni non conformi.
+
+La riparazione ha:
+
+- caricato esclusivamente i 23 file censiti in modalità tollerante;
+- riscritto ciascun file come PNG lossless pulito;
+- mantenuto percorso e dimensioni originali di **96×96 px**;
+- confrontato l'hash SHA-256 dei pixel RGBA prima e dopo la riscrittura;
+- confermato che tutti i pixel decodificati sono rimasti identici;
+- ridotto complessivamente il peso di **114.632 byte** eliminando dati corrotti o superflui.
+
+Il dettaglio file-per-file, comprensivo degli hash originali, nuovi hash e hash dei pixel, è disponibile in `docs/performance/repaired-pokemon-images.csv`. L'elenco `docs/performance/unreadable-pokemon-images.csv` è ora vuoto, oltre all'intestazione.
+
 ## Lotto lossless misurato
 
-È stato selezionato un campione deterministico di **30 file**, privilegiando immagini pesanti e includendo categorie differenti.
+Prima della riparazione era stato selezionato un campione deterministico di **30 file**, privilegiando immagini pesanti e includendo categorie differenti.
 
 | Variante | Peso del campione | Riduzione |
 |---|---:|---:|
@@ -34,29 +48,23 @@ La classificazione automatica per ruolo è basata sui nomi dei file e delle cart
 
 Il risultato WebP è promettente, ma il campione è volutamente orientato verso file grandi e non deve essere moltiplicato automaticamente per tutto il catalogo. Prima di una conversione estesa servono verifiche visive e funzionali su Android, Windows e web.
 
-## File da riparare
+## Controllo permanente
 
-L'audit ha individuato **23 file con estensione PNG che Pillow non riesce a decodificare**. I file non sono stati eliminati e rimangono nel progetto. L'elenco stabile è disponibile in `docs/performance/unreadable-pokemon-images.csv`.
+La pipeline `Image optimization audit` ora:
 
-Questi file devono essere riparati o sostituiti con la corrispondente immagine valida prima di avviare una conversione globale.
+- richiede che tutte le immagini Pokémon siano decodificabili rigorosamente;
+- blocca la PR se viene introdotto un nuovo file corrotto o illeggibile;
+- esegue la scansione completa dei metadati;
+- genera un inventario CSV file-per-file;
+- misura un campione deterministico di compressione lossless;
+- verifica che l'audit non modifichi gli asset sorgente;
+- pubblica i report completi come artefatto GitHub Actions.
 
 ## Strategia consigliata
 
-1. Riparare i 23 PNG non leggibili mantenendo gli stessi percorsi e le stesse varianti.
-2. Conservare l'attuale bundle PNG completo come riferimento.
-3. Preparare un lotto pilota reversibile di immagini normali, shiny, sprite, forme e differenze di genere.
-4. Confrontare PNG ottimizzato e WebP lossless nell'interfaccia reale, comprese trasparenza, zoom e resa desktop.
-5. Applicare la strategia scelta a un lotto limitato e ricostruire APK, AAB, Windows e web.
-6. Confrontare peso e qualità con la baseline completa: APK 389,7 MiB e AAB 384,8 MiB.
-7. Estendere l'ottimizzazione soltanto dopo test automatici e controllo visivo.
-
-## Riproducibilità
-
-La pipeline `Image optimization audit` esegue:
-
-- scansione completa dei metadati;
-- inventario CSV file-per-file;
-- elenco dei file non leggibili;
-- campione deterministico di compressione lossless;
-- verifica che nessuna immagine sorgente sia stata modificata;
-- pubblicazione dei report completi come artefatto GitHub Actions.
+1. Conservare l'attuale bundle PNG completo come riferimento.
+2. Preparare un lotto pilota reversibile di immagini normali, shiny, sprite, forme e differenze di genere.
+3. Confrontare PNG ottimizzato e WebP lossless nell'interfaccia reale, comprese trasparenza, zoom e resa desktop.
+4. Applicare la strategia scelta a un lotto limitato e ricostruire APK, AAB, Windows e web.
+5. Confrontare peso e qualità con la baseline completa: APK 389,7 MiB e AAB 384,8 MiB.
+6. Estendere l'ottimizzazione soltanto dopo test automatici e controllo visivo.

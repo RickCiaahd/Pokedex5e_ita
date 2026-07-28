@@ -19,13 +19,10 @@ OLD_EVIDENCE = (
     '                    evidence.append(child.relative_to(ROOT).as_posix())\n'
 )
 NEW_EVIDENCE = (
-    '                relative = child.relative_to(ROOT)\n'
-    '                if (\n'
-    '                    child.is_file()\n'
-    '                    and child.name.lower() in EVIDENCE_NAMES\n'
-    '                    and relative not in GENERATED_RELEASE_ASSETS\n'
-    '                ):\n'
-    '                    evidence.append(relative.as_posix())\n'
+    '                if child.is_file() and child.name.lower() in EVIDENCE_NAMES:\n'
+    '                    relative = child.relative_to(ROOT)\n'
+    '                    if relative not in GENERATED_RELEASE_ASSETS:\n'
+    '                        evidence.append(relative.as_posix())\n'
 )
 
 OLD_FILES = (
@@ -72,7 +69,7 @@ def check() -> None:
     text = TARGET.read_text(encoding="utf-8")
     for marker in (
         "GENERATED_RELEASE_ASSETS = {",
-        "and relative not in GENERATED_RELEASE_ASSETS",
+        "if relative not in GENERATED_RELEASE_ASSETS",
         "and path.relative_to(ROOT) not in GENERATED_RELEASE_ASSETS",
     ):
         if marker not in text:

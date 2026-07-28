@@ -6,6 +6,11 @@ on:
       - feature/webp-lossless-batch-2
     paths:
       - '.github/workflows/diagnose-webp-compliance.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/diagnose-webp-compliance.yml'
   workflow_dispatch:
 
 permissions:

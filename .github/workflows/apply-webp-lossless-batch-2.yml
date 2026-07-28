@@ -1,0 +1,124 @@
+name: Apply WebP lossless batch 2
+
+on:
+  push:
+    branches:
+      - feature/webp-lossless-batch-2
+    paths:
+      - 'tooling/manage_webp_lossless_batches.py'
+      - '.github/workflows/apply-webp-lossless-batch-2.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: apply-webp-lossless-batch-2-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  convert:
+    name: Scan all remaining PNGs and apply a safe batch
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+
+    steps:
+      - name: Check out migration branch
+        uses: actions/checkout@v4
+        with:
+          ref: feature/webp-lossless-batch-2
+          fetch-depth: 0
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up pinned Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.4'
+          cache: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install pinned image tooling
+        run: python -m pip install Pillow==11.3.0
+
+      - name: Install Flutter dependencies
+        run: flutter pub get
+
+      - name: Validate migration utility
+        run: |
+          python -m py_compile tooling/manage_webp_lossless_batches.py
+          python tooling/manage_webp_lossless_batches.py --self-test
+
+      - name: Scan every remaining PNG and apply the highest-value block
+        if: github.actor != 'github-actions[bot]'
+        run: >-
+          python tooling/manage_webp_lossless_batches.py
+          --apply
+          --batch-label batch-2
+          --batch-size 150
+          --min-saved-bytes 4096
+          --min-saved-percent 5
+
+      - name: Refresh compliance and release inventories
+        if: github.actor != 'github-actions[bot]'
+        run: |
+          python tooling/generate_compliance_reports.py
+          python tooling/generate_asset_duplicates.py
+          python tooling/prepare_release_legal_assets.py
+
+      - name: Verify image and report invariants
+        run: |
+          python tooling/manage_webp_lossless_batches.py --check
+          python tooling/apply_webp_lossless_pilot.py --check
+          python tooling/repair_unreadable_pokemon_images.py --check-all
+          python tooling/generate_compliance_reports.py --check
+          python tooling/generate_asset_duplicates.py --check
+          python tooling/prepare_release_legal_assets.py --check
+          git diff --check
+
+      - name: Analyze source
+        run: flutter analyze
+
+      - name: Run complete test suite
+        run: flutter test --reporter expanded
+
+      - name: Build Android debug APK
+        run: flutter build apk --debug
+
+      - name: Build Web release
+        run: flutter build web --release
+
+      - name: Upload migration reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Trainer-Atlas-WebP-lossless-batch-2
+          path: |
+            docs/performance/webp-lossless-candidates.csv
+            docs/performance/webp-lossless-conversions.csv
+            docs/performance/webp-lossless-migration.md
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Commit verified batch
+        if: github.actor != 'github-actions[bot]'
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet && git diff --cached --quiet; then
+            echo 'No eligible image was converted.'
+            exit 1
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Converte il secondo lotto in WebP lossless'
+          git push origin HEAD:feature/webp-lossless-batch-2

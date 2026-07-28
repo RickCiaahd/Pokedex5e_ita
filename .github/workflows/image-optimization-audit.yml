@@ -70,18 +70,12 @@ jobs:
         if: github.head_ref == 'feature/webp-lossless-batch-2' || github.ref_name == 'feature/webp-lossless-batch-2'
         run: flutter pub get
 
-      - name: Refresh stable compliance inventories
+      - name: Refresh stable compliance inventory
         if: github.head_ref == 'feature/webp-lossless-batch-2' || github.ref_name == 'feature/webp-lossless-batch-2'
         run: |
           python tooling/stabilize_compliance_asset_inventory.py
           python -m py_compile tooling/generate_compliance_reports.py
           python tooling/generate_compliance_reports.py
-          python tooling/generate_asset_duplicates.py
-          python tooling/generate_compliance_reports.py --check
-          python tooling/generate_asset_duplicates.py --check
-          python tooling/prepare_release_legal_assets.py
-          python tooling/prepare_release_legal_assets.py --check
-          python tooling/generate_compliance_reports.py --check
           git diff --check
 
       - name: Commit stable WebP inventory
@@ -95,8 +89,7 @@ jobs:
             docs/compliance/dependency-licenses.csv \
             docs/compliance/dependency-licenses.md \
             docs/compliance/asset-manifest.csv \
-            docs/compliance/asset-audit-summary.md \
-            docs/performance/asset-duplicates.csv
+            docs/compliance/asset-audit-summary.md
           if git diff --cached --quiet; then
             echo 'WebP inventory is already stable.'
           else

@@ -12,6 +12,7 @@ on:
       - 'tooling/repair_unreadable_pokemon_images.py'
       - 'tooling/apply_webp_lossless_pilot.py'
       - 'tooling/manage_webp_lossless_batches.py'
+      - 'tooling/stabilize_compliance_asset_inventory.py'
       - '.github/workflows/image-optimization-audit.yml'
   push:
     branches:
@@ -26,6 +27,7 @@ on:
       - 'tooling/repair_unreadable_pokemon_images.py'
       - 'tooling/apply_webp_lossless_pilot.py'
       - 'tooling/manage_webp_lossless_batches.py'
+      - 'tooling/stabilize_compliance_asset_inventory.py'
       - '.github/workflows/image-optimization-audit.yml'
   workflow_dispatch:
 
@@ -68,69 +70,10 @@ jobs:
         if: github.head_ref == 'feature/webp-lossless-batch-2' || github.ref_name == 'feature/webp-lossless-batch-2'
         run: flutter pub get
 
-      - name: Stabilize generated release asset handling
-        if: github.head_ref == 'feature/webp-lossless-batch-2' || github.ref_name == 'feature/webp-lossless-batch-2'
-        shell: bash
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-
-          path = Path('tooling/generate_compliance_reports.py')
-          text = path.read_text(encoding='utf-8')
-
-          anchor = 'ASSET_MD = COMPLIANCE_DIR / "asset-audit-summary.md"\n\n'
-          addition = '''ASSET_MD = COMPLIANCE_DIR / "asset-audit-summary.md"
-
-GENERATED_RELEASE_ASSETS = {
-    Path("assets/data/GPL-3.0.txt"),
-    Path("assets/data/NOTICE.txt"),
-}
-
-'''
-          if 'GENERATED_RELEASE_ASSETS' not in text:
-              if text.count(anchor) != 1:
-                  raise SystemExit('Expected ASSET_MD anchor exactly once')
-              text = text.replace(anchor, addition, 1)
-
-          old_evidence = '''                if child.is_file() and child.name.lower() in EVIDENCE_NAMES:
-                    evidence.append(child.relative_to(ROOT).as_posix())
-'''
-          new_evidence = '''                relative = child.relative_to(ROOT)
-                if (
-                    child.is_file()
-                    and child.name.lower() in EVIDENCE_NAMES
-                    and relative not in GENERATED_RELEASE_ASSETS
-                ):
-                    evidence.append(relative.as_posix())
-'''
-          if old_evidence in text:
-              text = text.replace(old_evidence, new_evidence, 1)
-          elif new_evidence not in text:
-              raise SystemExit('Expected evidence discovery block exactly once')
-
-          old_files = '''    files = sorted((path for path in assets_root.rglob("*") if path.is_file()), key=lambda item: item.as_posix().lower())
-'''
-          new_files = '''    files = sorted(
-        (
-            path
-            for path in assets_root.rglob("*")
-            if path.is_file()
-            and path.relative_to(ROOT) not in GENERATED_RELEASE_ASSETS
-        ),
-        key=lambda item: item.as_posix().lower(),
-    )
-'''
-          if old_files in text:
-              text = text.replace(old_files, new_files, 1)
-          elif new_files not in text:
-              raise SystemExit('Expected asset scan block exactly once')
-
-          path.write_text(text, encoding='utf-8', newline='\n')
-          PY
-
       - name: Refresh stable compliance inventories
         if: github.head_ref == 'feature/webp-lossless-batch-2' || github.ref_name == 'feature/webp-lossless-batch-2'
         run: |
+          python tooling/stabilize_compliance_asset_inventory.py
           python -m py_compile tooling/generate_compliance_reports.py
           python tooling/generate_compliance_reports.py
           python tooling/generate_asset_duplicates.py

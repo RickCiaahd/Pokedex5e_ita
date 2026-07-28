@@ -61,7 +61,6 @@ jobs:
         run: flutter pub get
 
       - name: Require committed compliance reports
-        if: github.head_ref != 'feature/webp-lossless-pilot' && github.ref_name != 'feature/webp-lossless-pilot'
         run: python tooling/generate_compliance_reports.py --check
 
       - name: Install the complete GPLv3 text
@@ -83,33 +82,11 @@ jobs:
           grep -q 'How to Apply These Terms to Your New Programs' "$temporary_license"
           mv "$temporary_license" LICENSE
 
-      - name: Generate compliance and duplicate inventories
-        run: |
-          python tooling/generate_compliance_reports.py
-          python tooling/generate_asset_duplicates.py
+      - name: Generate compliance inventories
+        run: python tooling/generate_compliance_reports.py
 
       - name: Verify deterministic output
-        run: |
-          python tooling/generate_compliance_reports.py --check
-          python tooling/generate_asset_duplicates.py --check
-
-      - name: Publish refreshed pilot inventories
-        if: github.head_ref == 'feature/webp-lossless-pilot' || github.ref_name == 'feature/webp-lossless-pilot'
-        shell: bash
-        run: |
-          set -euo pipefail
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add \
-            docs/compliance/asset-manifest.csv \
-            docs/compliance/asset-audit-summary.md \
-            docs/performance/asset-duplicates.csv
-          if git diff --cached --quiet; then
-            echo 'Pilot inventories are already current.'
-          else
-            git commit -m 'Aggiorna gli inventari dopo il lotto WebP'
-            git push origin HEAD:feature/webp-lossless-pilot
-          fi
+        run: python tooling/generate_compliance_reports.py --check
 
       - name: Prepare embedded GPL and NOTICE
         run: |
@@ -130,3 +107,22 @@ jobs:
 
       - name: Build Android debug APK
         run: flutter build apk --debug
+
+      - name: Publish generated baseline on bootstrap branch
+        if: github.head_ref == 'feature/compliance-reports' || github.ref_name == 'feature/compliance-reports'
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet; then
+            echo 'Compliance reports are already current.'
+            exit 0
+          fi
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add LICENSE docs/compliance/dependency-licenses.csv \
+            docs/compliance/dependency-licenses.md \
+            docs/compliance/asset-manifest.csv \
+            docs/compliance/asset-audit-summary.md
+          git commit -m 'Genera inventari riproducibili di licenze e asset'
+          git push origin HEAD:feature/compliance-reports

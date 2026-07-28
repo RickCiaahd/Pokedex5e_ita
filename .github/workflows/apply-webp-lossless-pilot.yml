@@ -134,11 +134,13 @@ jobs:
         if: github.actor != 'github-actions[bot]'
         run: python tooling/apply_webp_lossless_pilot.py --apply
 
-      - name: Refresh compliance and duplicate inventories
+      - name: Refresh compliance and release inventories
         if: github.actor != 'github-actions[bot]'
         run: |
           python tooling/generate_compliance_reports.py
           python tooling/generate_asset_duplicates.py
+          python tooling/prepare_release_legal_assets.py
+          python tooling/prepare_release_legal_assets.py --check
 
       - name: Format generated Dart files
         run: >-
@@ -154,6 +156,7 @@ jobs:
           python tooling/repair_unreadable_pokemon_images.py --check-all
           python tooling/generate_compliance_reports.py --check
           python tooling/generate_asset_duplicates.py --check
+          python tooling/prepare_release_legal_assets.py --check
           git diff --check
 
       - name: Analyze source

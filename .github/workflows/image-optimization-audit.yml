@@ -142,7 +142,7 @@ GENERATED_RELEASE_ASSETS = {
           git diff --check
 
       - name: Commit stable WebP inventory
-        if: (github.head_ref == 'feature/webp-lossless-batch-2' || github.ref_name == 'feature/webp-lossless-batch-2') && github.actor != 'github-actions[bot]'
+        if: github.head_ref == 'feature/webp-lossless-batch-2' || github.ref_name == 'feature/webp-lossless-batch-2'
         shell: bash
         run: |
           set -euo pipefail

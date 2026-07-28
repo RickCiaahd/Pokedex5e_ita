@@ -1,8 +1,8 @@
 source_file,line,kind,prefixes,expression
-.github/workflows/public-safe-release.yml,116,build-pipeline,assets/textures/pokemons/,'assets/textures/pokemons/' \
-.github/workflows/public-safe-release.yml,117,build-pipeline,assets/textures/sprites/,'assets/textures/sprites/' \
-.github/workflows/public-safe-release.yml,118,build-pipeline,assets/textures/textures_webapp/pokemon/,'assets/textures/textures_webapp/pokemon/' \
-.github/workflows/public-safe-release.yml,119,build-pipeline,assets/textures/textures_webapp/pokemon_transforms/,'assets/textures/textures_webapp/pokemon_transforms/'; do
+.github/workflows/public-safe-release.yml,103,build-pipeline,assets/textures/pokemons/,'assets/textures/pokemons/' \
+.github/workflows/public-safe-release.yml,104,build-pipeline,assets/textures/sprites/,'assets/textures/sprites/' \
+.github/workflows/public-safe-release.yml,105,build-pipeline,assets/textures/textures_webapp/pokemon/,'assets/textures/textures_webapp/pokemon/' \
+.github/workflows/public-safe-release.yml,106,build-pipeline,assets/textures/textures_webapp/pokemon_transforms/,'assets/textures/textures_webapp/pokemon_transforms/'; do
 lib/widgets/pokemon/egg_asset_image.dart,12,runtime-static,assets/textures/sprites/,static const String assetPath = 'assets/textures/sprites/egg.png';
 lib/widgets/pokemon/pokemon_minior_asset_paths.dart,11,runtime-dynamic,assets/textures/textures_webapp/pokemon/,'assets/textures/textures_webapp/pokemon/minior-meteor-form';
 lib/widgets/pokemon/pokemon_minior_asset_paths.dart,13,runtime-dynamic,assets/textures/textures_webapp/pokemon/,'assets/textures/textures_webapp/pokemon/minior-core';
@@ -43,7 +43,7 @@ test/public_safe_asset_profile_test.dart,10,test-contract,assets/textures/pokemo
 test/public_safe_asset_profile_test.dart,11,test-contract,assets/textures/sprites/,"'assets/textures/sprites/',"
 test/public_safe_asset_profile_test.dart,12,test-contract,assets/textures/textures_webapp/pokemon/,"'assets/textures/textures_webapp/pokemon/',"
 test/public_safe_asset_profile_test.dart,13,test-contract,assets/textures/textures_webapp/pokemon_transforms/,"'assets/textures/textures_webapp/pokemon_transforms/',"
-tooling/verify_public_release.py,10,tooling,assets/textures/pokemons/,"""assets/textures/pokemons/"","
-tooling/verify_public_release.py,11,tooling,assets/textures/sprites/,"""assets/textures/sprites/"","
-tooling/verify_public_release.py,12,tooling,assets/textures/textures_webapp/pokemon/,"""assets/textures/textures_webapp/pokemon/"","
-tooling/verify_public_release.py,13,tooling,assets/textures/textures_webapp/pokemon_transforms/,"""assets/textures/textures_webapp/pokemon_transforms/"","
+tooling/verify_public_release.py,10,tooling,assets/textures/pokemons/,"""assets/textures/pokemons/""," 
+tooling/verify_public_release.py,11,tooling,assets/textures/sprites/,"""assets/textures/sprites/""," 
+tooling/verify_public_release.py,12,tooling,assets/textures/textures_webapp/pokemon/,"""assets/textures/textures_webapp/pokemon/""," 
+tooling/verify_public_release.py,13,tooling,assets/textures/textures_webapp/pokemon_transforms/,"""assets/textures/textures_webapp/pokemon_transforms/""," 

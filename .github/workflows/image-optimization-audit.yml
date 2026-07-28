@@ -5,6 +5,7 @@ on:
     paths:
       - 'assets/textures/textures_webapp/pokemon/**'
       - 'tooling/audit_pokemon_images.py'
+      - 'tooling/repair_unreadable_pokemon_images.py'
       - '.github/workflows/image-optimization-audit.yml'
   push:
     branches:
@@ -12,6 +13,7 @@ on:
     paths:
       - 'assets/textures/textures_webapp/pokemon/**'
       - 'tooling/audit_pokemon_images.py'
+      - 'tooling/repair_unreadable_pokemon_images.py'
       - '.github/workflows/image-optimization-audit.yml'
   workflow_dispatch:
 
@@ -40,19 +42,27 @@ jobs:
       - name: Install pinned image tooling
         run: python -m pip install Pillow==11.3.0
 
-      - name: Validate audit tool
+      - name: Validate image tools
+        run: |
+          python -m py_compile \
+            tooling/audit_pokemon_images.py \
+            tooling/repair_unreadable_pokemon_images.py
+          python tooling/repair_unreadable_pokemon_images.py --self-test
+
+      - name: Require every bundled Pokémon image to be readable
+        run: python tooling/repair_unreadable_pokemon_images.py --check-all
+
+      - name: Generate non-destructive optimization audit
         shell: bash
         run: |
           set -o pipefail
           mkdir -p build/reports/image-optimization-audit
-          python -m py_compile tooling/audit_pokemon_images.py
           python tooling/audit_pokemon_images.py \
             --self-test \
             --sample-limit 30 \
             2>&1 | tee build/reports/image-optimization-audit/execution.log
 
       - name: Verify that no source image changed
-        if: success()
         run: git diff --exit-code -- assets/textures/textures_webapp/pokemon
 
       - name: Upload audit reports and diagnostics

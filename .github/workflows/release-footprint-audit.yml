@@ -13,6 +13,7 @@ on:
       - 'pubspec.lock'
       - 'test/release_legal_assets_test.dart'
       - 'tooling/analyze_release_footprint.py'
+      - 'tooling/generate_asset_duplicates.py'
       - 'tooling/prepare_release_legal_assets.py'
       - 'docs/performance/**'
       - '.github/workflows/release-footprint-audit.yml'
@@ -26,6 +27,7 @@ on:
       - 'pubspec.lock'
       - 'test/release_legal_assets_test.dart'
       - 'tooling/analyze_release_footprint.py'
+      - 'tooling/generate_asset_duplicates.py'
       - 'tooling/prepare_release_legal_assets.py'
       - 'docs/performance/**'
       - '.github/workflows/release-footprint-audit.yml'
@@ -71,6 +73,9 @@ jobs:
 
       - name: Verify compliance inventories
         run: python tooling/generate_compliance_reports.py --check
+
+      - name: Require current exact duplicate inventory
+        run: python tooling/generate_asset_duplicates.py --check
 
       - name: Prepare embedded GPL and NOTICE
         run: |

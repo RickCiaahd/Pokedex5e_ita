@@ -1,4 +1,4 @@
-name: Repair unreadable Pokémon images
+name: Finalize repaired Pokémon images
 
 on:
   push:
@@ -6,7 +6,9 @@ on:
       - fix/repair-unreadable-pokemon-images
     paths:
       - 'assets/textures/textures_webapp/pokemon/**'
+      - 'docs/compliance/**'
       - 'docs/performance/unreadable-pokemon-images.csv'
+      - 'docs/performance/repaired-pokemon-images.csv'
       - 'tooling/repair_unreadable_pokemon_images.py'
       - '.github/workflows/repair-unreadable-pokemon-images.yml'
   workflow_dispatch:
@@ -15,12 +17,12 @@ permissions:
   contents: write
 
 concurrency:
-  group: repair-unreadable-pokemon-images-${{ github.ref }}
+  group: finalize-repaired-pokemon-images-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
-  repair:
-    name: Repair and validate unreadable PNG files
+  finalize:
+    name: Validate repaired PNG files and refresh inventories
     runs-on: ubuntu-latest
     timeout-minutes: 45
 
@@ -39,43 +41,34 @@ jobs:
       - name: Install pinned image tooling
         run: python -m pip install Pillow==11.3.0
 
-      - name: Validate repair utility
+      - name: Validate every Pokémon image
         run: |
           python -m py_compile tooling/repair_unreadable_pokemon_images.py
           python tooling/repair_unreadable_pokemon_images.py --self-test
+          python tooling/repair_unreadable_pokemon_images.py --check-all
 
-      - name: Repair listed PNG files without changing decoded pixels
-        if: github.actor != 'github-actions[bot]'
-        run: >-
-          python tooling/repair_unreadable_pokemon_images.py
-          --repair-listed
-          --check-all
-
-      - name: Require all Pokémon images to be readable
-        run: python tooling/repair_unreadable_pokemon_images.py --check-all
-
-      - name: Verify generated changes
+      - name: Refresh compliance inventories after binary repairs
         if: github.actor != 'github-actions[bot]'
         run: |
+          python tooling/generate_compliance_reports.py
+          python tooling/generate_compliance_reports.py --check
           git diff --check
-          test -f docs/performance/repaired-pokemon-images.csv
-          test "$(wc -l < docs/performance/repaired-pokemon-images.csv)" -eq 24
-          test "$(wc -l < docs/performance/unreadable-pokemon-images.csv)" -eq 1
 
-      - name: Commit repaired images and reports
+      - name: Commit refreshed compliance reports
         if: github.actor != 'github-actions[bot]'
         shell: bash
         run: |
           set -euo pipefail
-          if git diff --quiet; then
-            echo 'No repair changes were produced.'
-            exit 1
+          if git diff --quiet -- docs/compliance; then
+            echo 'Compliance reports are already current.'
+            exit 0
           fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add \
-            assets/textures/textures_webapp/pokemon \
-            docs/performance/unreadable-pokemon-images.csv \
-            docs/performance/repaired-pokemon-images.csv
-          git commit -m 'Ripara i PNG Pokémon non leggibili'
+            docs/compliance/dependency-licenses.csv \
+            docs/compliance/dependency-licenses.md \
+            docs/compliance/asset-manifest.csv \
+            docs/compliance/asset-audit-summary.md
+          git commit -m 'Aggiorna gli inventari dopo la riparazione delle immagini'
           git push origin HEAD:fix/repair-unreadable-pokemon-images

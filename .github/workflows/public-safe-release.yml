@@ -1,0 +1,173 @@
+name: Public-safe release
+
+on:
+  pull_request:
+    paths:
+      - 'assets/**'
+      - 'lib/widgets/pokemon/**'
+      - 'docs/compliance/asset-manifest.csv'
+      - 'docs/performance/public-asset-profile.md'
+      - 'docs/performance/pokemon-artwork-references.csv'
+      - 'pubspec.yaml'
+      - 'pubspec.lock'
+      - 'test/public_safe_asset_profile_test.dart'
+      - 'tooling/generate_public_asset_profile.py'
+      - 'tooling/prepare_release_legal_assets.py'
+      - 'tooling/verify_public_release.py'
+      - '.github/workflows/public-safe-release.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'assets/**'
+      - 'lib/widgets/pokemon/**'
+      - 'docs/compliance/asset-manifest.csv'
+      - 'docs/performance/public-asset-profile.md'
+      - 'docs/performance/pokemon-artwork-references.csv'
+      - 'pubspec.yaml'
+      - 'pubspec.lock'
+      - 'test/public_safe_asset_profile_test.dart'
+      - 'tooling/generate_public_asset_profile.py'
+      - 'tooling/prepare_release_legal_assets.py'
+      - 'tooling/verify_public_release.py'
+      - '.github/workflows/public-safe-release.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: public-safe-release-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build filtered Android archives
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+
+    steps:
+      - name: Check out repository branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
+          fetch-depth: 0
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up pinned Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.4'
+          cache: true
+
+      - name: Show pinned toolchain
+        run: flutter --version
+
+      - name: Install full-profile dependencies
+        run: flutter pub get
+
+      - name: Verify compliance inventory
+        run: python tooling/generate_compliance_reports.py --check
+
+      - name: Generate public asset profile
+        run: python tooling/generate_public_asset_profile.py
+
+      - name: Verify deterministic public profile
+        run: python tooling/generate_public_asset_profile.py --check
+
+      - name: Check generated formatting
+        run: git diff --check
+
+      - name: Require committed public profile
+        run: |
+          git diff --exit-code -- \
+            docs/performance/public-asset-profile.md \
+            docs/performance/pokemon-artwork-references.csv
+
+      - name: Prepare embedded GPL and NOTICE
+        run: |
+          python tooling/prepare_release_legal_assets.py
+          python tooling/prepare_release_legal_assets.py --check
+
+      - name: Activate temporary public pubspec
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp build/public/pubspec.yaml pubspec.yaml
+          for prefix in \
+            'assets/textures/pokemons/' \
+            'assets/textures/sprites/' \
+            'assets/textures/textures_webapp/pokemon/' \
+            'assets/textures/textures_webapp/pokemon_transforms/'; do
+            if grep -Fq -- "$prefix" pubspec.yaml; then
+              echo "Blocked asset declaration survived: $prefix"
+              exit 1
+            fi
+          done
+
+      - name: Install public-profile dependencies
+        run: flutter pub get
+
+      - name: Validate public dependency graph
+        run: flutter pub deps --style=compact > /dev/null
+
+      - name: Run public asset smoke tests
+        run: >-
+          flutter test test/public_safe_asset_profile_test.dart
+          --reporter expanded
+          --dart-define=TRAINER_ATLAS_PUBLIC_SAFE=true
+
+      - name: Create temporary CI signing key
+        shell: bash
+        run: |
+          set -euo pipefail
+          keytool -genkeypair -v \
+            -keystore android/ci-public-safe.jks \
+            -storepass public-safe-pass \
+            -keypass public-safe-pass \
+            -alias public-safe \
+            -keyalg RSA \
+            -keysize 2048 \
+            -validity 10000 \
+            -dname 'CN=Trainer Atlas Public CI, OU=Build, O=Trainer Atlas, L=CI, S=CI, C=IT'
+          cat > android/key.properties <<'EOF'
+          storePassword=public-safe-pass
+          keyPassword=public-safe-pass
+          keyAlias=public-safe
+          storeFile=../ci-public-safe.jks
+          EOF
+
+      - name: Build public-safe APK
+        run: >-
+          flutter build apk --release
+          --dart-define=TRAINER_ATLAS_PUBLIC_SAFE=true
+
+      - name: Build public-safe AAB
+        run: >-
+          flutter build appbundle --release
+          --dart-define=TRAINER_ATLAS_PUBLIC_SAFE=true
+
+      - name: Verify filtered release archives
+        run: |
+          python tooling/verify_public_release.py \
+            --apk build/app/outputs/flutter-apk/app-release.apk \
+            --aab build/app/outputs/bundle/release/app-release.aab \
+            --output build/reports/public-safe-release.md
+
+      - name: Upload public-safe release
+        uses: actions/upload-artifact@v4
+        with:
+          name: Trainer-Atlas-public-safe-Android
+          path: |
+            build/app/outputs/flutter-apk/app-release.apk
+            build/app/outputs/bundle/release/app-release.aab
+            build/reports/public-safe-release.md
+            docs/performance/public-asset-profile.md
+            docs/performance/pokemon-artwork-references.csv
+          if-no-files-found: error
+          retention-days: 14

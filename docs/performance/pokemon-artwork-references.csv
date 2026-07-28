@@ -1,0 +1,49 @@
+source_file,line,kind,prefixes,expression
+.github/workflows/public-safe-release.yml,103,build-pipeline,assets/textures/pokemons/,'assets/textures/pokemons/' \
+.github/workflows/public-safe-release.yml,104,build-pipeline,assets/textures/sprites/,'assets/textures/sprites/' \
+.github/workflows/public-safe-release.yml,105,build-pipeline,assets/textures/textures_webapp/pokemon/,'assets/textures/textures_webapp/pokemon/' \
+.github/workflows/public-safe-release.yml,106,build-pipeline,assets/textures/textures_webapp/pokemon_transforms/,'assets/textures/textures_webapp/pokemon_transforms/'; do
+lib/widgets/pokemon/egg_asset_image.dart,12,runtime-static,assets/textures/sprites/,static const String assetPath = 'assets/textures/sprites/egg.png';
+lib/widgets/pokemon/pokemon_minior_asset_paths.dart,11,runtime-dynamic,assets/textures/textures_webapp/pokemon/,'assets/textures/textures_webapp/pokemon/minior-meteor-form';
+lib/widgets/pokemon/pokemon_minior_asset_paths.dart,13,runtime-dynamic,assets/textures/textures_webapp/pokemon/,'assets/textures/textures_webapp/pokemon/minior-core';
+pubspec.yaml,0,build-declaration,assets/textures/pokemons/,All asset declarations rooted at assets/textures/pokemons/
+pubspec.yaml,0,build-declaration,assets/textures/sprites/,All asset declarations rooted at assets/textures/sprites/
+pubspec.yaml,0,build-declaration,assets/textures/textures_webapp/pokemon/,All asset declarations rooted at assets/textures/textures_webapp/pokemon/
+pubspec.yaml,0,build-declaration,assets/textures/textures_webapp/pokemon_transforms/,All asset declarations rooted at assets/textures/textures_webapp/pokemon_transforms/
+test/alolan_raichu_asset_test.dart,61,test-contract,assets/textures/textures_webapp/pokemon/,"'assets/textures/textures_webapp/pokemon/alolan-raichu/main.png',"
+test/minior_color_forms_test.dart,65,test-contract,assets/textures/textures_webapp/pokemon/,"'assets/textures/textures_webapp/pokemon/minior-meteor-form/main.png',"
+test/minior_color_forms_test.dart,69,test-contract,assets/textures/textures_webapp/pokemon/,"'assets/textures/textures_webapp/pokemon/minior-meteor-form/main-shiny.png',"
+test/minior_color_forms_test.dart,90,test-contract,assets/textures/textures_webapp/pokemon/,"'assets/textures/textures_webapp/pokemon/minior-core/main-indigo-shiny.png',"
+test/pokemon_asset_paths_test.dart,44,test-contract,assets/textures/pokemons/,const alternate = 'assets/textures/pokemons/19Alolan Rattata.png';
+test/pokemon_asset_paths_test.dart,45,test-contract,assets/textures/textures_webapp/pokemon/,const base = 'assets/textures/textures_webapp/pokemon/rattata/main.png';
+test/pokemon_asset_paths_test.dart,59,test-contract,assets/textures/sprites/,const alternate = 'assets/textures/sprites/800Dusk Mane Necrozma.png';
+test/pokemon_asset_paths_test.dart,60,test-contract,assets/textures/textures_webapp/pokemon/,const base = 'assets/textures/textures_webapp/pokemon/necrozma/sprite.png';
+test/pokemon_asset_paths_test.dart,75,test-contract,assets/textures/textures_webapp/pokemon/,'assets/textures/textures_webapp/pokemon/abomasnow/main-shiny.png';
+test/pokemon_asset_paths_test.dart,76,test-contract,assets/textures/textures_webapp/pokemon/,const normal = 'assets/textures/textures_webapp/pokemon/abomasnow/main.png';
+test/pokemon_asset_paths_test.dart,91,test-contract,assets/textures/textures_webapp/pokemon/,"'assets/textures/textures_webapp/pokemon/abomasnow/main-shiny.png',"
+test/pokemon_asset_paths_test.dart,106,test-contract,assets/textures/textures_webapp/pokemon/,'assets/textures/textures_webapp/pokemon/alolan-rattata/main-shiny.png';
+test/pokemon_asset_paths_test.dart,108,test-contract,assets/textures/textures_webapp/pokemon/,'assets/textures/textures_webapp/pokemon/alolan-rattata/main.png';
+test/pokemon_asset_paths_test.dart,110,test-contract,assets/textures/textures_webapp/pokemon/,'assets/textures/textures_webapp/pokemon/rattata/main-shiny.png';
+test/pokemon_asset_paths_test.dart,134,test-contract,assets/textures/textures_webapp/pokemon/,'assets/textures/textures_webapp/pokemon/dusk-mane-necrozma/main-shiny.png';
+test/pokemon_asset_paths_test.dart,136,test-contract,assets/textures/textures_webapp/pokemon/,'assets/textures/textures_webapp/pokemon/necrozma/main-shiny.png';
+test/pokemon_asset_paths_test.dart,155,test-contract,assets/textures/textures_webapp/pokemon/,"'assets/textures/textures_webapp/pokemon/alolan-rattata/main-shiny.png',"
+test/pokemon_asset_paths_test.dart,161,test-contract,assets/textures/textures_webapp/pokemon/,"'assets/textures/textures_webapp/pokemon/dusk-mane-necrozma/main-shiny.png',"
+test/pokemon_gender_asset_paths_test.dart,71,test-contract,assets/textures/textures_webapp/pokemon/,"contains('assets/textures/textures_webapp/pokemon/pikachu/main-f.png'),"
+test/pokemon_gender_asset_paths_test.dart,76,test-contract,assets/textures/textures_webapp/pokemon/,"'assets/textures/textures_webapp/pokemon/pikachu/main-female.png',"
+test/pokemon_gender_asset_paths_test.dart,90,test-contract,assets/textures/textures_webapp/pokemon/,'assets/textures/textures_webapp/pokemon/wobbuffet/sprite-shiny-f.png';
+test/pokemon_gender_asset_paths_test.dart,92,test-contract,assets/textures/textures_webapp/pokemon/,'assets/textures/textures_webapp/pokemon/wobbuffet/sprite-f.png';
+test/pokemon_gender_asset_paths_test.dart,115,test-contract,assets/textures/textures_webapp/pokemon/,"'assets/textures/textures_webapp/pokemon/meowstic-m/main.png',"
+test/pokemon_gender_asset_paths_test.dart,119,test-contract,assets/textures/textures_webapp/pokemon/,"'assets/textures/textures_webapp/pokemon/meowstic-f/main.png',"
+test/pokemon_gender_asset_paths_test.dart,133,test-contract,assets/textures/textures_webapp/pokemon/,"'assets/textures/textures_webapp/pokemon/pyroar-m/sprite-shiny.png',"
+test/pokemon_gender_asset_paths_test.dart,137,test-contract,assets/textures/textures_webapp/pokemon/,"contains('assets/textures/textures_webapp/pokemon/pyroar-m/sprite.png'),"
+test/pokemon_gender_asset_paths_test.dart,152,test-contract,assets/textures/textures_webapp/pokemon/,"'assets/textures/textures_webapp/pokemon/sneasel-hisuian/main-f.png',"
+test/pokemon_gender_asset_paths_test.dart,158,test-contract,assets/textures/textures_webapp/pokemon/,"'assets/textures/textures_webapp/pokemon/hisuian-sneasel/main-f.png',"
+test/pokemon_gender_asset_paths_test.dart,164,test-contract,assets/textures/textures_webapp/pokemon/,"'assets/textures/textures_webapp/pokemon/sneasel-hisui/main-f.png',"
+test/public_safe_asset_profile_test.dart,10,test-contract,assets/textures/pokemons/,"'assets/textures/pokemons/',"
+test/public_safe_asset_profile_test.dart,11,test-contract,assets/textures/sprites/,"'assets/textures/sprites/',"
+test/public_safe_asset_profile_test.dart,12,test-contract,assets/textures/textures_webapp/pokemon/,"'assets/textures/textures_webapp/pokemon/',"
+test/public_safe_asset_profile_test.dart,13,test-contract,assets/textures/textures_webapp/pokemon_transforms/,"'assets/textures/textures_webapp/pokemon_transforms/',"
+tooling/verify_public_release.py,10,tooling,assets/textures/pokemons/,"""assets/textures/pokemons/"","
+tooling/verify_public_release.py,11,tooling,assets/textures/sprites/,"""assets/textures/sprites/"","
+tooling/verify_public_release.py,12,tooling,assets/textures/textures_webapp/pokemon/,"""assets/textures/textures_webapp/pokemon/"","
+tooling/verify_public_release.py,13,tooling,assets/textures/textures_webapp/pokemon_transforms/,"""assets/textures/textures_webapp/pokemon_transforms/"","

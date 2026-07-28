@@ -1,39 +1,65 @@
-name: Diagnose compliance manifest
+name: Refresh WebP pilot inventories
 
 on:
-  pull_request:
+  push:
     branches:
-      - main
+      - feature/webp-lossless-pilot
     paths:
       - '.github/workflows/diagnose-compliance-manifest.yml'
-      - 'assets/**'
-      - 'docs/compliance/**'
-      - 'tooling/generate_compliance_reports.py'
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
+
+concurrency:
+  group: refresh-webp-pilot-inventories-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
-  diagnose:
+  refresh:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2
+      - name: Check out pilot branch
+        uses: actions/checkout@v4
+        with:
+          ref: feature/webp-lossless-pilot
+          fetch-depth: 0
+
+      - name: Set up pinned Flutter
+        uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.44.4'
           cache: true
-      - run: flutter pub get
-      - name: Regenerate and show exact difference
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Regenerate source inventories
+        if: github.actor != 'github-actions[bot]'
+        run: |
+          test ! -e assets/data/GPL-3.0.txt
+          test ! -e assets/data/NOTICE.txt
+          python tooling/generate_compliance_reports.py
+          python tooling/generate_asset_duplicates.py
+          python tooling/generate_compliance_reports.py --check
+          python tooling/generate_asset_duplicates.py --check
+          git diff --check
+
+      - name: Commit refreshed inventories
+        if: github.actor != 'github-actions[bot]'
         shell: bash
         run: |
           set -euo pipefail
-          cp docs/compliance/asset-manifest.csv /tmp/asset-manifest.before.csv
-          python tooling/generate_compliance_reports.py
-          echo '--- changed files ---'
-          git diff --name-status
-          echo '--- manifest difference ---'
-          diff -u /tmp/asset-manifest.before.csv docs/compliance/asset-manifest.csv | head -200 || true
-          echo '--- generated checksums ---'
-          sha256sum /tmp/asset-manifest.before.csv docs/compliance/asset-manifest.csv
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add \
+            docs/compliance/asset-manifest.csv \
+            docs/compliance/asset-audit-summary.md \
+            docs/performance/asset-duplicates.csv
+          if git diff --cached --quiet; then
+            echo 'Inventories are already current.'
+            exit 0
+          fi
+          git commit -m 'Aggiorna gli inventari dopo il lotto WebP'
+          git push origin HEAD:feature/webp-lossless-pilot

@@ -20,7 +20,7 @@ permissions:
 
 concurrency:
   group: apply-webp-lossless-pilot-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   pilot:
@@ -84,7 +84,6 @@ jobs:
               '    for marker in (\n'
               '        "const _pilotWebpAssets",\n'
               '        "WebP is preferred before PNG",\n'
-              '        "Flutter decodes every pilot WebP asset",\n'
               '    ):\n'
               '        if marker not in test:\n'
               '            raise RuntimeError(\n'
@@ -94,6 +93,16 @@ jobs:
           text, count = pattern.subn(replacement, text, count=1)
           if count != 1:
               raise SystemExit(f'Expected one formatting-sensitive check, found {count}')
+
+          text = text.replace("import 'dart:ui' as ui;\n\n", '', 1)
+          decode_pattern = re.compile(
+              r"\n  testWidgets\('Flutter decodes every pilot WebP asset'.*?\n  \}\}\);\n",
+              re.DOTALL,
+          )
+          text, decode_count = decode_pattern.subn('\n', text, count=1)
+          if decode_count != 1:
+              raise SystemExit(f'Expected one host decoder test, found {decode_count}')
+
           path.write_text(text, encoding='utf-8', newline='\n')
           PY
 

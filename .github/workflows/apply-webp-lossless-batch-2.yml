@@ -58,6 +58,47 @@ jobs:
       - name: Install Flutter dependencies
         run: flutter pub get
 
+      - name: Enable bounded parallel scan
+        if: github.actor != 'github-actions[bot]'
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('tooling/manage_webp_lossless_batches.py')
+          text = path.read_text(encoding='utf-8')
+          text = text.replace(
+              'import argparse\n',
+              'import argparse\nfrom concurrent.futures import ProcessPoolExecutor\nfrom functools import partial\n',
+              1,
+          )
+          old = '''def scan(min_bytes: int, min_percent: float) -> list[Entry]:
+              result: list[Entry] = []
+              for index, path in enumerate(png_files(), 1):
+                  result.append(inspect(path, min_bytes, min_percent))
+                  if index % 250 == 0:
+                      print(f'Inspected {index} remaining PNG files')
+              return result
+          '''
+          new = '''def scan(min_bytes: int, min_percent: float) -> list[Entry]:
+              paths = png_files()
+              worker = partial(inspect, min_bytes=min_bytes, min_percent=min_percent)
+              result: list[Entry] = []
+              with ProcessPoolExecutor(max_workers=4) as executor:
+                  for index, item in enumerate(
+                      executor.map(worker, paths, chunksize=16),
+                      1,
+                  ):
+                      result.append(item)
+                      if index % 250 == 0:
+                          print(f'Inspected {index} remaining PNG files')
+              return result
+          '''
+          if old not in text:
+              raise SystemExit('Expected the serial scan implementation exactly once')
+          path.write_text(text.replace(old, new, 1), encoding='utf-8', newline='\n')
+          PY
+
       - name: Validate migration utility
         run: |
           python -m py_compile tooling/manage_webp_lossless_batches.py

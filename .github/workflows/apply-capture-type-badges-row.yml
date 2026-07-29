@@ -6,6 +6,11 @@ on:
       - fix/capture-type-badges-row
     paths:
       - '.github/workflows/apply-capture-type-badges-row.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/apply-capture-type-badges-row.yml'
   workflow_dispatch:
 
 permissions:
@@ -81,6 +86,7 @@ jobs:
           git diff --check
 
       - name: Commit fix and remove temporary workflow
+        if: github.actor != 'github-actions[bot]'
         shell: bash
         run: |
           set -euo pipefail

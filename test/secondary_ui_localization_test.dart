@@ -27,14 +27,20 @@ void main() {
     expect(TrainerUiLocalization.trainerPathName('Ace Trainer'), 'Ace Trainer');
   });
 
-  test('type badges use English text instead of Italian image labels', () {
+  test('type badges select image labels in the effective language', () {
     GameCatalogLocale.setLanguageCode('en');
     expect(PokemonAssetPaths.localizedTypeLabel('fire'), 'Fire');
-    expect(PokemonAssetPaths.typeCandidates('fire'), isEmpty);
+    expect(
+      PokemonAssetPaths.typeCandidates('fire'),
+      contains('assets/textures/type_names/en/fire.png'),
+    );
 
     GameCatalogLocale.setLanguageCode('it');
     expect(PokemonAssetPaths.localizedTypeLabel('fire'), 'Fuoco');
-    expect(PokemonAssetPaths.typeCandidates('fire'), isNotEmpty);
+    expect(
+      PokemonAssetPaths.typeCandidates('fire'),
+      contains('assets/textures/type_names/fuoco.png'),
+    );
   });
 
   testWidgets('secondary UI helper follows the widget locale', (tester) async {

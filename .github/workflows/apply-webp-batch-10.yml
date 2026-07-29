@@ -1,0 +1,75 @@
+name: Apply WebP lossless final batch
+
+on:
+  push:
+    branches:
+      - feature/webp-lossless-batch-10
+    paths:
+      - '.github/workflows/apply-webp-batch-10.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - name: Check out batch branch
+        uses: actions/checkout@v4
+        with:
+          ref: feature/webp-lossless-batch-10
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install pinned image tooling
+        run: python -m pip install Pillow==11.3.0
+
+      - name: Set up pinned Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.4'
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Apply verified final WebP batch
+        run: |
+          python tooling/manage_webp_lossless_batches.py \
+            --apply \
+            --batch-label batch-10 \
+            --batch-size 124 \
+            --min-saved-bytes 4096 \
+            --min-saved-percent 5.0
+
+      - name: Refresh deterministic inventories
+        run: |
+          python tooling/generate_compliance_reports.py
+          python tooling/generate_asset_duplicates.py
+          python tooling/manage_webp_lossless_batches.py --check
+          python tooling/generate_compliance_reports.py --check
+          python tooling/generate_asset_duplicates.py --check
+          git diff --check
+
+      - name: Commit generated batch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A \
+            assets/textures/textures_webapp/pokemon \
+            docs/compliance \
+            docs/performance
+          if git diff --cached --quiet; then
+            echo 'No WebP conversions were produced.'
+            exit 1
+          fi
+          git commit -m 'Completa la migrazione WebP lossless sopra soglia'
+          git push origin HEAD:feature/webp-lossless-batch-10

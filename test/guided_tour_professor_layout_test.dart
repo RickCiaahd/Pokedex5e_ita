@@ -1,40 +1,57 @@
 import 'dart:io';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pokedex_5e_ita/widgets/tour/professor_tour_panel.dart';
 
 void main() {
-  test('i tour condividono il montaggio del Professore a tre quarti', () {
-    final panel = File(
-      'lib/widgets/tour/professor_tour_panel.dart',
-    ).readAsStringSync();
+  testWidgets('su telefono il fumetto non copre il Professore', (tester) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: ProfessorTourPanel(
+            icon: Icons.groups,
+            title: 'Allenatore e squadra',
+            description:
+                'Gestisci la scheda, cattura Pokémon e organizza la squadra.',
+            stepIndex: 1,
+            totalSteps: 5,
+            lastStep: false,
+            onBack: () {},
+            onNext: () {},
+            onSkip: () {},
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final professor = find.byKey(ProfessorTourPanel.professorImageKey);
+    final speechCard = find.byKey(ProfessorTourPanel.speechCardKey);
+
+    expect(professor, findsOneWidget);
+    expect(speechCard, findsOneWidget);
+    expect(
+      tester.getRect(professor).bottom,
+      lessThanOrEqualTo(tester.getRect(speechCard).top),
+    );
+  });
+
+  test('Home e sottomenu condividono lo stesso pannello del tour', () {
     final home = File(
       'lib/widgets/home/home_tour_overlay.dart',
     ).readAsStringSync();
     final guided = File('lib/widgets/tour/guided_tour.dart').readAsStringSync();
 
-    expect(panel, contains('alignment: Alignment.bottomRight'));
-    expect(panel, contains('right: 0'));
-    expect(panel, contains('bottom: 0'));
-    expect(panel, contains('fit: BoxFit.cover'));
-    expect(panel, contains("alignment: const Alignment(0, -1)"));
-    expect(panel, contains('clusterWidth * .68'));
     expect(home, contains('ProfessorTourPanel('));
     expect(guided, contains('ProfessorTourPanel('));
     expect(home, isNot(contains('class _ProfessorSpeechPanel')));
     expect(guided, isNot(contains('class _ProfessorSpeechPanel')));
-  });
-
-  test('il fumetto viene dipinto sopra il Professore', () {
-    final panel = File(
-      'lib/widgets/tour/professor_tour_panel.dart',
-    ).readAsStringSync();
-
-    final professorPosition = panel.indexOf('child: Image.asset(');
-    final speechCardPosition = panel.indexOf('child: _TourSpeechCard(');
-
-    expect(professorPosition, greaterThanOrEqualTo(0));
-    expect(speechCardPosition, greaterThan(professorPosition));
-    expect(panel, contains('opaco protegge sempre la leggibilità'));
   });
 
   test('le scrollbar desktop automatiche sono disattivate', () {

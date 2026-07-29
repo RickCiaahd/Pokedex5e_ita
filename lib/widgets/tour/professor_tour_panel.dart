@@ -7,10 +7,9 @@ import '../../localization/ui_text.dart';
 
 /// Pannello condiviso dai tour della Home e dei principali sottomenu.
 ///
-/// Il Professore è disposto come in una schermata dialogo: figura ampia a
-/// destra, ritagliata a tre quarti e appoggiata al bordo inferiore. Il fumetto
-/// viene dipinto sopra la porzione sovrapposta del personaggio, così il volto e
-/// il tablet restano ben visibili senza coprire testi o pulsanti.
+/// Sui telefoni il Professore viene disposto sopra il fumetto, così testo,
+/// pulsanti e illustrazione restano completamente leggibili senza sovrapporsi.
+/// Sugli schermi più larghi resta il montaggio a dialogo con la figura a destra.
 class ProfessorTourPanel extends StatelessWidget {
   const ProfessorTourPanel({
     super.key,
@@ -27,6 +26,8 @@ class ProfessorTourPanel extends StatelessWidget {
 
   static const professorAsset =
       'assets/textures/trainers/onboarding_professor.png';
+  static const professorImageKey = ValueKey<String>('tour-professor-image');
+  static const speechCardKey = ValueKey<String>('tour-speech-card');
 
   final IconData icon;
   final String title;
@@ -51,15 +52,61 @@ class ProfessorTourPanel extends StatelessWidget {
         final clusterWidth = compact
             ? availableWidth
             : math.min(760.0, availableWidth);
-        final panelWidth = compact
-            ? math.min(math.max(clusterWidth * .66, 276.0), clusterWidth * .78)
-            : math.min(460.0, clusterWidth * .66);
-        final professorWidth = compact
-            ? math.min(math.max(clusterWidth * .68, 238.0), 360.0)
-            : math.min(390.0, clusterWidth * .56);
-        final professorHeight = compact
-            ? math.min(math.max(professorWidth * .98, 285.0), 360.0)
-            : math.min(380.0, professorWidth * 1.02);
+
+        if (compact) {
+          final professorWidth = math.min(
+            math.max(clusterWidth * .46, 178.0),
+            230.0,
+          );
+          final professorHeight = math.min(
+            math.max(professorWidth * 1.08, 192.0),
+            250.0,
+          );
+
+          return Align(
+            alignment: Alignment.bottomCenter,
+            child: SizedBox(
+              width: clusterWidth,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Align(
+                    alignment: Alignment.bottomRight,
+                    child: SizedBox(
+                      key: professorImageKey,
+                      width: professorWidth,
+                      height: professorHeight,
+                      child: const _ProfessorImage(fit: BoxFit.contain),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
+                    child: SizedBox(
+                      key: speechCardKey,
+                      width: clusterWidth,
+                      child: _TourSpeechCard(
+                        icon: icon,
+                        title: title,
+                        description: description,
+                        stepIndex: stepIndex,
+                        totalSteps: totalSteps,
+                        lastStep: lastStep,
+                        onBack: onBack,
+                        onNext: onNext,
+                        onSkip: onSkip,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+
+        final panelWidth = math.min(460.0, clusterWidth * .66);
+        final professorWidth = math.min(390.0, clusterWidth * .56);
+        final professorHeight = math.min(380.0, professorWidth * 1.02);
 
         return Align(
           alignment: Alignment.bottomRight,
@@ -71,38 +118,20 @@ class ProfessorTourPanel extends StatelessWidget {
                 clipBehavior: Clip.none,
                 alignment: Alignment.bottomLeft,
                 children: [
-                  // Il personaggio viene disegnato per primo: il fumetto
-                  // opaco protegge sempre la leggibilità del testo nelle zone
-                  // in cui i due elementi si sovrappongono.
                   Positioned(
                     right: 0,
                     bottom: 0,
                     width: professorWidth,
                     height: professorHeight,
-                    child: IgnorePointer(
-                      child: ClipRect(
-                        child: Image.asset(
-                          professorAsset,
-                          fit: BoxFit.cover,
-                          alignment: const Alignment(0, -1),
-                          errorBuilder: (_, _, _) => const Align(
-                            alignment: Alignment.bottomRight,
-                            child: Icon(
-                              Icons.person,
-                              size: 110,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ),
+                    child: const SizedBox(
+                      key: professorImageKey,
+                      child: _ProfessorImage(fit: BoxFit.cover),
                     ),
                   ),
                   Padding(
-                    padding: EdgeInsets.only(
-                      left: compact ? 6 : 12,
-                      bottom: compact ? 8 : 12,
-                    ),
+                    padding: const EdgeInsets.only(left: 12, bottom: 12),
                     child: SizedBox(
+                      key: speechCardKey,
                       width: panelWidth,
                       child: _TourSpeechCard(
                         icon: icon,
@@ -123,6 +152,29 @@ class ProfessorTourPanel extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+}
+
+class _ProfessorImage extends StatelessWidget {
+  const _ProfessorImage({required this.fit});
+
+  final BoxFit fit;
+
+  @override
+  Widget build(BuildContext context) {
+    return IgnorePointer(
+      child: ClipRect(
+        child: Image.asset(
+          ProfessorTourPanel.professorAsset,
+          fit: fit,
+          alignment: const Alignment(0, -1),
+          errorBuilder: (_, _, _) => const Align(
+            alignment: Alignment.bottomRight,
+            child: Icon(Icons.person, size: 110, color: Colors.white),
+          ),
+        ),
+      ),
     );
   }
 }

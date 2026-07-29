@@ -49,6 +49,7 @@ flutter:
     - assets/textures/sprites/
     - assets/textures/trainers/
     - assets/textures/type_names/
+    - assets/textures/type_names/en/
     - assets/textures/textures_webapp/items/
     - assets/textures/textures_webapp/items/Fist-plate/
     - assets/textures/textures_webapp/items/Steelium-z/

@@ -1,9 +1,11 @@
 export 'pokemon_asset_image_legacy.dart'
-    hide PokemonAssetImage, PokemonAssetPaths;
+    hide PokemonAssetImage, PokemonAssetPaths, PokemonTypeBadge;
+export 'pokemon_type_badge.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../localization/game_catalog_locale.dart';
 import '../../models/pokedex_entry.dart';
 import '../../models/pokemon.dart';
 import '../../models/pokemon_evolution_alias_registry.dart';
@@ -130,11 +132,32 @@ class PokemonAssetPaths {
   }
 
   static List<String> typeCandidates(String type) {
-    return legacy.PokemonAssetPaths.typeCandidates(type);
+    final localized = localizedTypeLabel(type);
+    final assetName = _typeAssetName(localized);
+    final lowercaseAssetName = assetName.toLowerCase();
+    final root = GameCatalogLocale.isItalian
+        ? 'assets/textures/type_names'
+        : 'assets/textures/type_names/en';
+
+    return [
+      '$root/$lowercaseAssetName.png',
+      if (assetName != lowercaseAssetName) '$root/$assetName.png',
+    ];
   }
 
   static String localizedTypeLabel(String type) {
     return legacy.PokemonAssetPaths.localizedTypeLabel(type);
+  }
+
+  static String _typeAssetName(String value) {
+    return value
+        .trim()
+        .replaceAll(':', '')
+        .replaceAll('.', '')
+        .replaceAll("'", '')
+        .replaceAll('’', '')
+        .replaceAll(' ', '_')
+        .replaceAll('-', '_');
   }
 }
 

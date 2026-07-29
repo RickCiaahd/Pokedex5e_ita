@@ -5,9 +5,13 @@ on:
     paths:
       - 'assets/textures/textures_webapp/pokemon/**'
       - 'docs/performance/webp-lossless-pilot.*'
+      - 'docs/performance/webp-lossless-candidates.csv'
+      - 'docs/performance/webp-lossless-conversions.csv'
+      - 'docs/performance/webp-lossless-migration.md'
       - 'tooling/audit_pokemon_images.py'
       - 'tooling/repair_unreadable_pokemon_images.py'
       - 'tooling/apply_webp_lossless_pilot.py'
+      - 'tooling/manage_webp_lossless_batches.py'
       - '.github/workflows/image-optimization-audit.yml'
   push:
     branches:
@@ -15,9 +19,13 @@ on:
     paths:
       - 'assets/textures/textures_webapp/pokemon/**'
       - 'docs/performance/webp-lossless-pilot.*'
+      - 'docs/performance/webp-lossless-candidates.csv'
+      - 'docs/performance/webp-lossless-conversions.csv'
+      - 'docs/performance/webp-lossless-migration.md'
       - 'tooling/audit_pokemon_images.py'
       - 'tooling/repair_unreadable_pokemon_images.py'
       - 'tooling/apply_webp_lossless_pilot.py'
+      - 'tooling/manage_webp_lossless_batches.py'
       - '.github/workflows/image-optimization-audit.yml'
   workflow_dispatch:
 
@@ -32,7 +40,7 @@ jobs:
   audit:
     name: Inspect complete Pokémon artwork bundle
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: 120
 
     steps:
       - name: Check out repository
@@ -51,15 +59,19 @@ jobs:
           python -m py_compile \
             tooling/audit_pokemon_images.py \
             tooling/repair_unreadable_pokemon_images.py \
-            tooling/apply_webp_lossless_pilot.py
+            tooling/apply_webp_lossless_pilot.py \
+            tooling/manage_webp_lossless_batches.py
           python tooling/repair_unreadable_pokemon_images.py --self-test
           python tooling/apply_webp_lossless_pilot.py --self-test
+          python tooling/manage_webp_lossless_batches.py --self-test
 
       - name: Require every bundled Pokémon image to be readable
         run: python tooling/repair_unreadable_pokemon_images.py --check-all
 
-      - name: Verify lossless WebP pilot invariants
-        run: python tooling/apply_webp_lossless_pilot.py --check
+      - name: Verify lossless WebP invariants
+        run: |
+          python tooling/apply_webp_lossless_pilot.py --check
+          python tooling/manage_webp_lossless_batches.py --check
 
       - name: Generate non-destructive optimization audit
         shell: bash

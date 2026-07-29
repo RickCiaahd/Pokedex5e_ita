@@ -3,10 +3,10 @@
 This report scans every file below `assets/` and records path, size, SHA-256, policy family, and nearby attribution/licence evidence.
 The presence of an attribution file does not prove that redistribution is authorised.
 
-- Asset files: **8539**
-- Total asset size: **213.7 MiB**
+- Asset files: **8557**
+- Total asset size: **213.8 MiB**
 - Files with nearby attribution/licence evidence: **2**
-- Files without nearby evidence: **8537**
+- Files without nearby evidence: **8555**
 
 ## Policy status
 
@@ -15,7 +15,7 @@ The presence of an attribution file does not prove that redistribution is author
 | not-cleared | 6441 |
 | mixed | 1643 |
 | unverified | 432 |
-| project-created-pending-proof | 23 |
+| project-created-pending-proof | 41 |
 
 ## Families
 
@@ -30,7 +30,7 @@ The presence of an attribution file does not prove that redistribution is author
 | `assets/textures/textures_webapp/pokemon` | 4719 | 186.5 MiB | 0 |
 | `assets/textures/textures_webapp/pokemon_transforms` | 1 | 778 B | 0 |
 | `assets/textures/trainers` | 5 | 1.5 MiB | 0 |
-| `assets/textures/type_names` | 18 | 44.4 KiB | 0 |
+| `assets/textures/type_names` | 36 | 82.3 KiB | 0 |
 
 ## Machine-readable inventory
 

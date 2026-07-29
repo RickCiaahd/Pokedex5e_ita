@@ -6,6 +6,12 @@ on:
       - feature/webp-lossless-batch-3
     paths:
       - '.github/workflows/apply-webp-batch-3.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/apply-webp-batch-3.yml'
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -57,6 +63,7 @@ jobs:
           git diff --check
 
       - name: Commit generated batch
+        if: github.actor != 'github-actions[bot]'
         shell: bash
         run: |
           set -euo pipefail

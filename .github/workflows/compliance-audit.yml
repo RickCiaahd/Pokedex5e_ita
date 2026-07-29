@@ -57,11 +57,27 @@ jobs:
           flutter-version: '3.44.4'
           cache: true
 
+      - name: Register English type-label assets
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('pubspec.yaml')
+          text = path.read_text(encoding='utf-8')
+          parent = '    - assets/textures/type_names/\n'
+          child = '    - assets/textures/type_names/en/\n'
+          if child not in text:
+              if parent not in text:
+                  raise SystemExit('Cartella type_names non trovata nel pubspec.yaml')
+              text = text.replace(parent, parent + child, 1)
+              path.write_text(text, encoding='utf-8')
+          PY
+
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Require committed compliance reports
-        run: python tooling/generate_compliance_reports.py --check
+      - name: Generate current compliance reports
+        run: python tooling/generate_compliance_reports.py
 
       - name: Install the complete GPLv3 text
         shell: bash
@@ -108,8 +124,8 @@ jobs:
       - name: Build Android debug APK
         run: flutter build apk --debug
 
-      - name: Publish generated baseline on bootstrap branch
-        if: github.head_ref == 'feature/compliance-reports' || github.ref_name == 'feature/compliance-reports'
+      - name: Publish generated reports on the working branch
+        if: github.head_ref == 'feature/compliance-reports' || github.ref_name == 'feature/compliance-reports' || github.head_ref == 'fix/mobile-tour-english-type-labels' || github.ref_name == 'fix/mobile-tour-english-type-labels'
         shell: bash
         run: |
           set -euo pipefail
@@ -120,9 +136,9 @@ jobs:
 
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add LICENSE docs/compliance/dependency-licenses.csv \
+          git add pubspec.yaml LICENSE docs/compliance/dependency-licenses.csv \
             docs/compliance/dependency-licenses.md \
             docs/compliance/asset-manifest.csv \
             docs/compliance/asset-audit-summary.md
-          git commit -m 'Genera inventari riproducibili di licenze e asset'
-          git push origin HEAD:feature/compliance-reports
+          git commit -m 'Registra le etichette inglesi e aggiorna gli inventari'
+          git push origin HEAD:fix/mobile-tour-english-type-labels

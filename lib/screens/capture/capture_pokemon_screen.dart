@@ -22,6 +22,7 @@ import '../../services/custom_pokemon_discovery_service.dart';
 import '../../services/trainer_path_passive_service.dart';
 import '../../widgets/navigation/home_leading_button.dart';
 import '../../widgets/pokemon/pokemon_asset_image.dart';
+import '../../widgets/pokemon/pokemon_type_badge_row.dart';
 
 class CapturePokemonScreen extends StatefulWidget {
   const CapturePokemonScreen({super.key});
@@ -905,14 +906,13 @@ class _CapturePokemonCard extends StatelessWidget {
           pokemon.name,
           style: const TextStyle(fontWeight: FontWeight.w900),
         ),
-        subtitle: Wrap(
-          spacing: 6,
-          runSpacing: 4,
-          crossAxisAlignment: WrapCrossAlignment.center,
+        subtitle: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(number),
-            for (final type in pokemon.types)
-              PokemonTypeBadge(type: type, height: 18),
+            const SizedBox(height: 4),
+            PokemonTypeBadgeRow(types: pokemon.types),
           ],
         ),
         trailing: FilledButton(

@@ -58,7 +58,10 @@ void main() {
 
     expect(
       provider.assetName,
-      'assets/textures/textures_webapp/pokemon/alolan-raichu/main.png',
+      anyOf(
+        'assets/textures/textures_webapp/pokemon/alolan-raichu/main.webp',
+        'assets/textures/textures_webapp/pokemon/alolan-raichu/main.png',
+      ),
     );
   });
 }

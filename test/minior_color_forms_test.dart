@@ -18,6 +18,17 @@ void _expectSameBattleStats(Pokemon first, Pokemon second) {
   expect(first.attributes.charisma, second.attributes.charisma);
 }
 
+void _expectBundledCandidate(List<String> assets, String candidate) {
+  final webp = candidate.endsWith('.png')
+      ? '${candidate.substring(0, candidate.length - 4)}.webp'
+      : candidate;
+  expect(
+    assets,
+    anyOf(contains(webp), contains(candidate)),
+    reason: 'Expected the preferred WebP or PNG fallback for $candidate',
+  );
+}
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -71,8 +82,8 @@ void main() {
 
     final manifest = await AssetManifest.loadFromAssetBundle(rootBundle);
     final assets = manifest.listAssets();
-    expect(assets, contains(normal.first));
-    expect(assets, contains(shiny.first));
+    _expectBundledCandidate(assets, normal.first);
+    _expectBundledCandidate(assets, shiny.first);
   });
 
   test('Minior colour candidates point to the bundled shared folder', () async {
@@ -91,7 +102,7 @@ void main() {
     );
 
     final manifest = await AssetManifest.loadFromAssetBundle(rootBundle);
-    expect(manifest.listAssets(), contains(paths.first));
+    _expectBundledCandidate(manifest.listAssets(), paths.first);
   });
 
   test('gender-only textures do not create a Forma selector', () async {

@@ -5,22 +5,22 @@ identici dimensioni e pixel RGBA e viene applicata solo quando riduce il peso.
 
 ## Stato cumulativo
 
-- File convertiti: **762**
-- PNG originale equivalente: **122.77 MiB**
-- WebP lossless: **72.49 MiB**
-- Risparmio: **50.28 MiB (41.0%)**
+- File convertiti: **1062**
+- PNG originale equivalente: **162.22 MiB**
+- WebP lossless: **96.32 MiB**
+- Risparmio: **65.90 MiB (40.6%)**
 - Pixel RGBA modificati: **0**
 - Immagini o varianti eliminate: **0**
 
 ## Scansione completa dei PNG rimanenti
 
-- File controllati: **3957**
-- Candidati oltre soglia: **1624**
-- Risparmio teorico residuo: **67.97 MiB**
+- File controllati: **3657**
+- Candidati oltre soglia: **1324**
+- Risparmio teorico residuo: **52.35 MiB**
 
 ## Ultimo blocco
 
-- Etichetta: `batch-4`
+- Etichetta: `batch-5`
 - Limite: **300** file
 - Soglia: **4096 byte** e **5.0%**
 

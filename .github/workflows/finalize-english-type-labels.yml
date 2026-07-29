@@ -1,0 +1,87 @@
+name: Finalize English type labels
+
+on:
+  push:
+    branches:
+      - fix/mobile-tour-english-type-labels
+    paths:
+      - '.github/workflows/finalize-english-type-labels.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  finalize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v4
+        with:
+          ref: fix/mobile-tour-english-type-labels
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Register English type-label assets
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('pubspec.yaml')
+          text = path.read_text(encoding='utf-8')
+          parent = '    - assets/textures/type_names/\n'
+          child = '    - assets/textures/type_names/en/\n'
+          if child not in text:
+              if parent not in text:
+                  raise SystemExit('Cartella type_names non trovata nel pubspec.yaml')
+              text = text.replace(parent, parent + child, 1)
+              path.write_text(text, encoding='utf-8')
+          PY
+
+      - name: Verify all 18 English labels
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          expected = {
+              'bug.png', 'dark.png', 'dragon.png', 'electric.png',
+              'fairy.png', 'fighting.png', 'fire.png', 'flying.png',
+              'ghost.png', 'grass.png', 'ground.png', 'ice.png',
+              'normal.png', 'poison.png', 'psychic.png', 'rock.png',
+              'steel.png', 'water.png',
+          }
+          root = Path('assets/textures/type_names/en')
+          actual = {path.name for path in root.glob('*.png')}
+          missing = sorted(expected - actual)
+          extra = sorted(actual - expected)
+          if missing or extra:
+              raise SystemExit(f'Etichette non valide. Mancanti={missing}; extra={extra}')
+          print('Tutte le 18 etichette inglesi sono presenti.')
+          PY
+
+      - name: Refresh deterministic inventories
+        run: |
+          python tooling/generate_compliance_reports.py
+          python tooling/generate_asset_duplicates.py
+          python tooling/generate_compliance_reports.py --check
+          python tooling/generate_asset_duplicates.py --check
+          git diff --check
+
+      - name: Commit generated integration
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add pubspec.yaml docs/compliance docs/performance
+          if git diff --cached --quiet; then
+            echo 'No generated changes to commit.'
+            exit 0
+          fi
+          git commit -m 'Registra le etichette inglesi dei tipi'
+          git push origin HEAD:fix/mobile-tour-english-type-labels

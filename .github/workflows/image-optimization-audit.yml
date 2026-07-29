@@ -12,7 +12,6 @@ on:
       - 'tooling/repair_unreadable_pokemon_images.py'
       - 'tooling/apply_webp_lossless_pilot.py'
       - 'tooling/manage_webp_lossless_batches.py'
-      - 'tooling/stabilize_compliance_asset_inventory.py'
       - '.github/workflows/image-optimization-audit.yml'
   push:
     branches:
@@ -27,12 +26,11 @@ on:
       - 'tooling/repair_unreadable_pokemon_images.py'
       - 'tooling/apply_webp_lossless_pilot.py'
       - 'tooling/manage_webp_lossless_batches.py'
-      - 'tooling/stabilize_compliance_asset_inventory.py'
       - '.github/workflows/image-optimization-audit.yml'
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: image-optimization-audit-${{ github.ref }}
@@ -45,11 +43,8 @@ jobs:
     timeout-minutes: 120
 
     steps:
-      - name: Check out repository branch
+      - name: Check out repository
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
-          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -58,44 +53,6 @@ jobs:
 
       - name: Install pinned image tooling
         run: python -m pip install Pillow==11.3.0
-
-      - name: Set up Flutter for the WebP inventory refresh
-        if: github.head_ref == 'feature/webp-lossless-batch-2' || github.ref_name == 'feature/webp-lossless-batch-2'
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: '3.44.4'
-          cache: true
-
-      - name: Install Flutter dependencies for the WebP inventory refresh
-        if: github.head_ref == 'feature/webp-lossless-batch-2' || github.ref_name == 'feature/webp-lossless-batch-2'
-        run: flutter pub get
-
-      - name: Refresh stable compliance inventory
-        if: github.head_ref == 'feature/webp-lossless-batch-2' || github.ref_name == 'feature/webp-lossless-batch-2'
-        run: |
-          python tooling/stabilize_compliance_asset_inventory.py
-          python -m py_compile tooling/generate_compliance_reports.py
-          python tooling/generate_compliance_reports.py
-          git diff --check
-
-      - name: Commit stable WebP inventory
-        if: github.head_ref == 'feature/webp-lossless-batch-2' || github.ref_name == 'feature/webp-lossless-batch-2'
-        shell: bash
-        run: |
-          set -euo pipefail
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add tooling/generate_compliance_reports.py \
-            docs/compliance/dependency-licenses.csv \
-            docs/compliance/dependency-licenses.md \
-            docs/compliance/asset-manifest.csv \
-            docs/compliance/asset-audit-summary.md
-          if git diff --cached --quiet; then
-            echo 'WebP inventory is already stable.'
-          else
-            git commit -m 'Stabilizza l’inventario rispetto agli asset legali generati'
-            git push origin HEAD:feature/webp-lossless-batch-2
-          fi
 
       - name: Validate image tools
         run: |

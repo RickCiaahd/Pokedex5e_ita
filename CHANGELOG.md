@@ -10,7 +10,8 @@ Tutte le modifiche rilevanti al progetto vengono documentate in questo file.
 - controlli automatici per licenze, funzionamento offline, completezza delle release e integrità delle immagini;
 - etichette grafiche inglesi per tutti i 18 tipi Pokémon;
 - test di regressione per layout mobile, localizzazione delle origini, residui bilingui e messaggi d’errore;
-- scelta tra creazione rapida e creazione guidata dei nuovi profili dalla schermata Profili.
+- scelta tra creazione rapida e creazione guidata dei nuovi profili dalla schermata Profili;
+- riordino persistente dei Pokémon in squadra tramite trascinamento.
 
 ### Modificato
 
@@ -28,7 +29,8 @@ Tutte le modifiche rilevanti al progetto vengono documentate in questo file.
 - sovrapposizione tra Professore e fumetto nei tour su smartphone;
 - disposizione dei due tipi nella schermata Aggiungi Pokémon;
 - residui italiani nel flusso delle MT, nella sostituzione delle mosse e nella gestione degli strumenti tenuti;
-- possibili profili parziali o cambi di profilo attivo in caso di errore durante la creazione guidata.
+- possibili profili parziali o cambi di profilo attivo in caso di errore durante la creazione guidata;
+- overflow orizzontale dei titoli lunghi nella schermata Modifica Pokémon su smartphone.
 
 ## [1.3.2] - 2026-07-26
 

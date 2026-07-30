@@ -40,6 +40,7 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
   final TeamRepository _teamRepository = TeamRepository();
   final PokemonTransferService _transferService = PokemonTransferService();
   final NativeShareService _shareService = const NativeShareService();
+  final ScrollController _scrollController = ScrollController();
 
   UserProfile? _profile;
   List<Pokemon> _allPokemon = [];
@@ -55,6 +56,12 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
   void initState() {
     super.initState();
     _loadTeam();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadTeam() async {
@@ -147,6 +154,67 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
     await _teamRepository.updateSlot(profileId: profile.id, updatedSlot: slot);
 
     await _loadTeam();
+  }
+
+  Future<void> _reorderTeamSlot(
+    int fromSlotIndex,
+    int toSlotIndex,
+  ) async {
+    final profile = _profile;
+    if (_isBusy || profile == null || fromSlotIndex == toSlotIndex) return;
+
+    setState(() => _isBusy = true);
+    try {
+      final reordered = await _teamRepository.reorderSlots(
+        profileId: profile.id,
+        fromSlotIndex: fromSlotIndex,
+        toSlotIndex: toSlotIndex,
+      );
+      if (!mounted) return;
+      setState(() {
+        _team = reordered
+          ..sort((a, b) => a.slotIndex.compareTo(b.slotIndex));
+      });
+      _setStatus(
+        context.uiText(
+          'Ordine della squadra aggiornato.',
+          'Team order updated.',
+        ),
+      );
+    } catch (error) {
+      if (!mounted) return;
+      _setStatus(
+        context.userFacingError(error, action: UserFacingErrorAction.save),
+        isError: true,
+      );
+    } finally {
+      if (mounted) setState(() => _isBusy = false);
+    }
+  }
+
+  void _autoScrollDuringDrag(DragUpdateDetails details) {
+    if (!_scrollController.hasClients) return;
+
+    final screenHeight = MediaQuery.sizeOf(context).height;
+    const edgeSize = 96.0;
+    const scrollStep = 14.0;
+    final y = details.globalPosition.dy;
+    var nextOffset = _scrollController.offset;
+
+    if (y < edgeSize) {
+      nextOffset -= scrollStep;
+    } else if (y > screenHeight - edgeSize) {
+      nextOffset += scrollStep;
+    } else {
+      return;
+    }
+
+    final position = _scrollController.position;
+    _scrollController.jumpTo(
+      nextOffset
+          .clamp(position.minScrollExtent, position.maxScrollExtent)
+          .toDouble(),
+    );
   }
 
   Future<void> _openPokemonDetail(TeamSlot slot) async {
@@ -677,20 +745,69 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
           runSpacing: 0,
           children: [
             for (final slot in visibleTeam)
-              SizedBox(
-                width: cardWidth,
-                child: _TeamSlotCard(
-                  slot: slot,
-                  pokemon: _pokemonById(slot.pokemonId),
-                  onOpen: () => _openPokemonDetail(slot),
-                  onChange: () => _openPokemonPicker(slot),
-                  onExport: slot.isPokemon ? () => _exportPokemon(slot) : null,
-                  onShare: slot.isPokemon ? () => _sharePokemon(slot) : null,
-                  onImport: slot.isEgg ? null : () => _importPokemonInto(slot),
-                  onRemove: slot.isPokemon
-                      ? () => _setPokemonInSlot(slot.slotIndex, null)
-                      : null,
-                ),
+              DragTarget<int>(
+                key: ValueKey('team-slot-drop-${slot.slotIndex}'),
+                onWillAcceptWithDetails: (details) =>
+                    !_isBusy && details.data != slot.slotIndex,
+                onAcceptWithDetails: (details) {
+                  _reorderTeamSlot(details.data, slot.slotIndex);
+                },
+                builder: (context, candidateData, rejectedData) {
+                  final isDropTarget = candidateData.isNotEmpty;
+                  final card = SizedBox(
+                    width: cardWidth,
+                    child: _TeamSlotCard(
+                      slot: slot,
+                      pokemon: _pokemonById(slot.pokemonId),
+                      isDropTarget: isDropTarget,
+                      onOpen: () => _openPokemonDetail(slot),
+                      onChange: () => _openPokemonPicker(slot),
+                      onExport: slot.isPokemon
+                          ? () => _exportPokemon(slot)
+                          : null,
+                      onShare: slot.isPokemon
+                          ? () => _sharePokemon(slot)
+                          : null,
+                      onImport: slot.isEgg
+                          ? null
+                          : () => _importPokemonInto(slot),
+                      onRemove: slot.isPokemon
+                          ? () => _setPokemonInSlot(slot.slotIndex, null)
+                          : null,
+                    ),
+                  );
+
+                  if (!slot.isPokemon || _isBusy) return card;
+
+                  final feedbackWidth = cardWidth > 440 ? 440.0 : cardWidth;
+                  return LongPressDraggable<int>(
+                    data: slot.slotIndex,
+                    hapticFeedbackOnStart: true,
+                    onDragUpdate: _autoScrollDuringDrag,
+                    feedback: Material(
+                      color: Colors.transparent,
+                      elevation: 8,
+                      borderRadius: BorderRadius.circular(14),
+                      child: IgnorePointer(
+                        child: SizedBox(
+                          width: feedbackWidth,
+                          child: _TeamSlotCard(
+                            slot: slot,
+                            pokemon: _pokemonById(slot.pokemonId),
+                            onOpen: () {},
+                            onChange: () {},
+                            onExport: null,
+                            onShare: null,
+                            onImport: null,
+                            onRemove: null,
+                          ),
+                        ),
+                      ),
+                    ),
+                    childWhenDragging: Opacity(opacity: 0.3, child: card),
+                    child: card,
+                  );
+                },
               ),
           ],
         );
@@ -768,6 +885,7 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
         child: RefreshIndicator(
           onRefresh: _loadTeam,
           child: ListView(
+            controller: _scrollController,
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
             children: [
               if (_isBusy) const LinearProgressIndicator(),
@@ -793,6 +911,11 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
                   ),
                 ],
                 const SizedBox(height: 16),
+                if (visibleTeam.any((slot) => slot.isPokemon) &&
+                    visibleTeam.length > 1) ...[
+                  _TeamReorderHint(isBusy: _isBusy),
+                  const SizedBox(height: 8),
+                ],
                 _buildTeamSlots(visibleTeam),
               ],
             ],
@@ -882,6 +1005,45 @@ class _TeamHeader extends StatelessWidget {
   }
 }
 
+class _TeamReorderHint extends StatelessWidget {
+  const _TeamReorderHint({required this.isBusy});
+
+  final bool isBusy;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return Semantics(
+      liveRegion: false,
+      child: Row(
+        children: [
+          Icon(
+            Icons.drag_indicator,
+            color: isBusy
+                ? colorScheme.onSurfaceVariant.withValues(alpha: 0.45)
+                : colorScheme.primary,
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              context.uiText(
+                'Tieni premuto un Pokémon e trascinalo per cambiare l’ordine.',
+                'Press and hold a Pokémon, then drag it to change the order.',
+              ),
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: isBusy
+                    ? colorScheme.onSurfaceVariant.withValues(alpha: 0.45)
+                    : colorScheme.onSurfaceVariant,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _TeamSlotCard extends StatelessWidget {
   const _TeamSlotCard({
     required this.slot,
@@ -892,6 +1054,7 @@ class _TeamSlotCard extends StatelessWidget {
     required this.onShare,
     required this.onImport,
     required this.onRemove,
+    this.isDropTarget = false,
   });
 
   final TeamSlot slot;
@@ -902,6 +1065,7 @@ class _TeamSlotCard extends StatelessWidget {
   final VoidCallback? onShare;
   final VoidCallback? onImport;
   final VoidCallback? onRemove;
+  final bool isDropTarget;
 
   @override
   Widget build(BuildContext context) {
@@ -917,6 +1081,13 @@ class _TeamSlotCard extends StatelessWidget {
         : nickname;
 
     return Card(
+      color: isDropTarget ? colorScheme.primaryContainer : null,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(14),
+        side: isDropTarget
+            ? BorderSide(color: colorScheme.primary, width: 2)
+            : BorderSide.none,
+      ),
       child: InkWell(
         borderRadius: BorderRadius.circular(14),
         onTap: onOpen,

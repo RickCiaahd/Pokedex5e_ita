@@ -95,10 +95,10 @@ void main() {
         'final localizedNewMove = moveData?.name ?? _moveLabel(newMove);',
       ),
     );
-    expect(pokemonDetail, contains("'Vuoi imparare \\$localizedNewMove?'"));
-    expect(pokemonDetail, contains("'Non imparare \\$localizedNewMove'"));
-    expect(pokemonDetail, isNot(contains("'Vuoi imparare \\$newMove?'")));
-    expect(pokemonDetail, isNot(contains("'Non imparare \\$newMove'")));
+    expect(pokemonDetail, contains(r"'Vuoi imparare $localizedNewMove?'"));
+    expect(pokemonDetail, contains(r"'Non imparare $localizedNewMove'"));
+    expect(pokemonDetail, isNot(contains(r"'Vuoi imparare $newMove?'")));
+    expect(pokemonDetail, isNot(contains(r"'Non imparare $newMove'")));
   });
 
   test('le schermate migrate contengono entrambe le lingue', () {

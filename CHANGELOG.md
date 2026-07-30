@@ -19,6 +19,7 @@ Tutte le modifiche rilevanti al progetto vengono documentate in questo file.
 - 2.386 immagini convertite in WebP lossless, senza rimuovere varianti e con circa 118 MiB risparmiati;
 - tour guidati, scelta dello starter e tessere dei tipi adattati meglio agli schermi mobili;
 - nomi italiani delle origini regionali uniformati ai nomi delle regioni;
+- nomi e riferimenti tecnici nelle 330 abilità e nei 36 privilegi completamente localizzati in italiano, senza modificare le chiavi dei salvataggi;
 - Flutter bloccato alla versione 3.44.4 nei workflow di CI e release;
 - messaggi d’errore visibili centralizzati e localizzati, senza esporre eccezioni tecniche;
 - metadati delle mosse e azioni dello Zaino completati anche in inglese;

@@ -5,6 +5,8 @@ import 'package:flutter/services.dart';
 class AbilityLocalizationRepository {
   static const String nameAssetPath =
       'assets/data/ability_names_it_official.json';
+  static const String customNameAssetPath =
+      'assets/data/ability_names_it_custom.json';
 
   static const List<String> assetPaths = [
     'assets/data/ability_localization_it_001_010.json',
@@ -98,55 +100,70 @@ class AbilityLocalizationRepository {
       return Map<String, String>.unmodifiable(cached);
     }
 
-    final jsonString = await rootBundle.loadString(nameAssetPath);
-    final decoded = jsonDecode(jsonString);
-    if (decoded is! Map) {
-      throw FormatException('$nameAssetPath non contiene un oggetto JSON.');
+    final officialDocument = await _loadJsonDocument(nameAssetPath);
+    if (officialDocument['locale']?.toString() != 'it' ||
+        officialDocument['source']?.toString() !=
+            'https://wiki.pokemoncentral.it/Abilit%C3%A0' ||
+        _readInt(officialDocument['catalogCount']) != 330 ||
+        _readInt(officialDocument['matchedCount']) != 308 ||
+        _readInt(officialDocument['unmatchedCount']) != 22) {
+      throw FormatException('$nameAssetPath contiene metadati non validi.');
     }
 
-    final document = Map<String, dynamic>.from(decoded);
-    if (document['locale']?.toString() != 'it') {
-      throw FormatException('$nameAssetPath non dichiara la lingua italiana.');
-    }
-    if (document['source']?.toString() !=
-        'https://wiki.pokemoncentral.it/Abilit%C3%A0') {
-      throw FormatException('$nameAssetPath dichiara una sorgente non valida.');
-    }
-    if (_readInt(document['catalogCount']) != 330 ||
-        _readInt(document['matchedCount']) != 308 ||
-        _readInt(document['unmatchedCount']) != 22) {
-      throw FormatException('$nameAssetPath contiene conteggi non validi.');
-    }
-
-    final rawItems = document['items'];
-    if (rawItems is! Map) {
-      throw FormatException('$nameAssetPath non contiene la mappa items.');
+    final customDocument = await _loadJsonDocument(customNameAssetPath);
+    if (customDocument['locale']?.toString() != 'it' ||
+        customDocument['source']?.toString() !=
+            'assets/data_webapp/abilities.json' ||
+        _readInt(customDocument['catalogCount']) != 330 ||
+        _readInt(customDocument['localizedCount']) != 22) {
+      throw FormatException(
+        '$customNameAssetPath contiene metadati non validi.',
+      );
     }
 
     final result = <String, String>{};
-    for (final entry in rawItems.entries) {
-      final abilityId = entry.key.toString().trim();
-      if (abilityId.isEmpty || entry.value is! Map) {
-        throw FormatException('Nome abilità non valido in $nameAssetPath.');
+    void addNames(String path, Map<String, dynamic> document) {
+      final rawItems = document['items'];
+      if (rawItems is! Map) {
+        throw FormatException('$path non contiene la mappa items.');
       }
-      final item = Map<String, dynamic>.from(entry.value as Map);
-      final name = item['name']?.toString().trim() ?? '';
-      if (name.isEmpty) {
-        throw FormatException(
-          'Nome italiano mancante per l’abilità $abilityId.',
-        );
+      for (final entry in rawItems.entries) {
+        final abilityId = entry.key.toString().trim();
+        if (abilityId.isEmpty || entry.value is! Map) {
+          throw FormatException('Nome abilità non valido in $path.');
+        }
+        if (result.containsKey(abilityId)) {
+          throw FormatException('Nome abilità duplicato per $abilityId.');
+        }
+        final item = Map<String, dynamic>.from(entry.value as Map);
+        final sourceName = item['sourceName']?.toString().trim() ?? '';
+        final name = item['name']?.toString().trim() ?? '';
+        if (sourceName.isEmpty || name.isEmpty) {
+          throw FormatException('Nome italiano mancante per $abilityId.');
+        }
+        result[abilityId] = name;
       }
-      result[abilityId] = name;
     }
 
-    if (result.length != 308) {
+    addNames(nameAssetPath, officialDocument);
+    addNames(customNameAssetPath, customDocument);
+    if (result.length != 330) {
       throw FormatException(
-        '$nameAssetPath contiene ${result.length} nomi anziché 308.',
+        'I cataloghi contengono ${result.length} nomi anziché 330.',
       );
     }
 
     _nameCache = Map<String, String>.unmodifiable(result);
     return Map<String, String>.unmodifiable(result);
+  }
+
+  Future<Map<String, dynamic>> _loadJsonDocument(String path) async {
+    final jsonString = await rootBundle.loadString(path);
+    final decoded = jsonDecode(jsonString);
+    if (decoded is! Map) {
+      throw FormatException('$path non contiene un oggetto JSON.');
+    }
+    return Map<String, dynamic>.from(decoded);
   }
 
   Future<Map<String, dynamic>> _loadDocument(String path) async {

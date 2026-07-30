@@ -34,7 +34,7 @@
       "description": "Finché Terapagos possiede tutti i propri PF, ha resistenza a tutti i tipi di danno."
     },
     "tera-shift": {
-      "description": "Terapagos può assumere la Terastal Form come azione gratuita un numero di volte al giorno pari al proprio modificatore di COS. Torna alla forma normale dopo 10 minuti o quando lo desidera."
+      "description": "Terapagos può assumere la Forma Teracristal come azione gratuita un numero di volte al giorno pari al proprio modificatore di COS. Torna alla forma normale dopo 10 minuti o quando lo desidera."
     }
   }
 }

@@ -1,0 +1,152 @@
+{
+  "locale": "it",
+  "source": "assets/data/feats.json",
+  "manualReference": "Pokémon 5e Player Handbook, pag. 18",
+  "catalogCount": 36,
+  "items": {
+    "AC Up": {
+      "name": "Aumento della CA",
+      "description": "La CA di questo Pokémon aumenta di 1. Questo bonus si mantiene attraverso le evoluzioni del Pokémon."
+    },
+    "Able-Bodied": {
+      "name": "Fisico Resistente",
+      "description": "Il corpo di questo Pokémon è allenato a imparare dalle afflizioni e a combatterle per lunghi periodi. Dopo essersi ripreso da una condizione di stato, questo Pokémon diventa immune alla stessa condizione per 3 round."
+    },
+    "Acrobat": {
+      "name": "Acrobata",
+      "description": "Arcani Rivelati: Talenti per le abilità."
+    },
+    "Actor": {
+      "name": "Attore",
+      "description": "Pag. 165 del manuale del giocatore."
+    },
+    "Alert": {
+      "name": "Allerta",
+      "description": "Pag. 165 del manuale del giocatore (il bonus all’iniziativa si applica all’Allenatore mentre questo è il Pokémon attivo)."
+    },
+    "Athlete (DEX)": {
+      "name": "Atleta (DES)",
+      "description": "Pag. 165 del manuale del giocatore."
+    },
+    "Athlete (STR)": {
+      "name": "Atleta (FOR)",
+      "description": "Pag. 165 del manuale del giocatore."
+    },
+    "Brawny": {
+      "name": "Forzuto",
+      "description": "Arcani Rivelati: Talenti per le abilità."
+    },
+    "Charger": {
+      "name": "Carica",
+      "description": "Pag. 165 del manuale del giocatore (quando usa attacchi in mischia)."
+    },
+    "Combo Master": {
+      "name": "Maestro delle Combo",
+      "description": "Questo Pokémon è esperto nel combinare i colpi contro un avversario. Quando sceglie questo privilegio, le mosse Combo che possono colpire più volte dopo lo stesso tiro per colpire colpiscono garantitamente almeno due volte, come Sfuriate, Doppiasberla e Acqualame."
+    },
+    "Durable": {
+      "name": "Tenace",
+      "description": "Pag. 166 del manuale del giocatore."
+    },
+    "Elemental Adept": {
+      "name": "Adepto Elementale",
+      "description": "Pag. 166 del manuale del giocatore (scegliere uno dei tipi di danno Pokémon)."
+    },
+    "Extra Move": {
+      "name": "Mossa Extra",
+      "description": "Questo Pokémon può conoscere un totale di cinque mosse invece di quattro."
+    },
+    "Hidden Ability": {
+      "name": "Abilità Nascosta",
+      "description": "Questo Pokémon attinge alle proprie risorse interiori per scoprire una nuova abilità. Ottiene accesso all’Abilità Nascosta indicata nel proprio blocco statistiche."
+    },
+    "Melee Master": {
+      "name": "Maestro della Mischia",
+      "description": "Questo Pokémon è un maestro del combattimento ravvicinato.\n• Ottiene vantaggio su tutti gli attacchi di opportunità.\n• Prima di effettuare un attacco in mischia, può scegliere di subire una penalità di -5 al tiro per colpire. Se l’attacco colpisce, aggiunge +10 ai danni dell’attacco, una volta per mossa."
+    },
+    "Mobile": {
+      "name": "Mobilità",
+      "description": "Pag. 168 del manuale del giocatore."
+    },
+    "Observant": {
+      "name": "Osservatore",
+      "description": "Pag. 168 del manuale del giocatore."
+    },
+    "Perceptive": {
+      "name": "Percettivo",
+      "description": "Arcani Rivelati: Talenti per le abilità."
+    },
+    "Power Sculptor": {
+      "name": "Scultore del Potere",
+      "description": "Questo Pokémon può modellare il potere delle proprie mosse attorno agli alleati. Quando usa una mossa ad area, sceglie 1 + MOVE alleati nell’area: essi superano automaticamente il tiro salvezza contro i danni o gli effetti della mossa. Se un tiro salvezza riuscito dimezzerebbe i danni, non subiscono invece alcun danno."
+    },
+    "Quick-Fingered": {
+      "name": "Mani Leste",
+      "description": "Arcani Rivelati: Talenti per le abilità."
+    },
+    "Ranged Master": {
+      "name": "Maestro della Distanza",
+      "description": "Questo Pokémon è un tiratore scelto.\n• I suoi attacchi a distanza ignorano la copertura parziale e la copertura per tre quarti.\n• Prima di effettuare un attacco a distanza, può scegliere di subire una penalità di -5 al tiro per colpire. Se l’attacco colpisce, aggiunge +10 ai danni dell’attacco, una volta per mossa."
+    },
+    "Resilient (CHA)": {
+      "name": "Resiliente (CAR)",
+      "description": "Pag. 168 del manuale del giocatore."
+    },
+    "Resilient (CON)": {
+      "name": "Resiliente (COS)",
+      "description": "Pag. 168 del manuale del giocatore."
+    },
+    "Resilient (DEX)": {
+      "name": "Resiliente (DES)",
+      "description": "Pag. 168 del manuale del giocatore."
+    },
+    "Resilient (INT)": {
+      "name": "Resiliente (INT)",
+      "description": "Pag. 168 del manuale del giocatore."
+    },
+    "Resilient (STR)": {
+      "name": "Resiliente (FOR)",
+      "description": "Pag. 168 del manuale del giocatore."
+    },
+    "Resilient (WIS)": {
+      "name": "Resiliente (SAG)",
+      "description": "Pag. 168 del manuale del giocatore."
+    },
+    "Savage Attacker": {
+      "name": "Aggressore Selvaggio",
+      "description": "Pag. 169 del manuale del giocatore."
+    },
+    "Sentinel": {
+      "name": "Sentinella",
+      "description": "Pag. 169 del manuale del giocatore."
+    },
+    "Skilled": {
+      "name": "Abile",
+      "description": "Pag. 170 del manuale del giocatore."
+    },
+    "Skulker": {
+      "name": "Appostato",
+      "description": "Pag. 170 del manuale del giocatore."
+    },
+    "Stealthy": {
+      "name": "Furtivo",
+      "description": "Arcani Rivelati: Talenti per le abilità."
+    },
+    "Terrain Adept": {
+      "name": "Adepto del Terreno",
+      "description": "Questo Pokémon è particolarmente abile quando combatte su un terreno specifico. Quando sceglie questo privilegio, seleziona uno dei terreni seguenti. Su quel terreno ottiene +2 ai tiri per colpire. Terreni: Costa, Palude, Foresta, Artico, Deserto, Prateria, Collina, Montagna, Subacqueo."
+    },
+    "Tireless": {
+      "name": "Instancabile",
+      "description": "Questo Pokémon sopporta ore di allenamento rigoroso, che gli consentono di restare in lotta più a lungo della media. Ottiene +1 PP per ogni mossa."
+    },
+    "Tough": {
+      "name": "Robusto",
+      "description": "Pag. 170 del manuale del giocatore."
+    },
+    "Wrangler": {
+      "name": "Domatore",
+      "description": "Hai sviluppato una serie unica di capacità che ti permette di afferrare e trattenere un avversario con mani ferme e forti. Ottieni i benefici seguenti:\n• Hai vantaggio ai tiri per colpire contro una creatura che stai afferrando.\n• Puoi usare la tua azione per tentare di immobilizzare una creatura già afferrata da te. Effettua un’altra prova per afferrare: se riesci, tu e la creatura siete entrambi trattenuti finché la presa non termina.\n• Quando una creatura tenta di usare il proprio movimento per lasciare la tua portata senza Disimpegnarsi, puoi usare la tua reazione per tentare di afferrarla."
+    }
+  }
+}

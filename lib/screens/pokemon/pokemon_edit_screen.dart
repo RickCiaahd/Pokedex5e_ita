@@ -17,6 +17,7 @@ import '../../services/custom_pokemon_runtime_registry.dart';
 import '../../widgets/pokemon/pokemon_asset_image.dart';
 import '../../localization/ui_text.dart';
 import '../../localization/game_catalog_locale.dart';
+import '../../localization/feat_display_name.dart';
 
 class PokemonEditResult {
   const PokemonEditResult({required this.slot});
@@ -112,6 +113,7 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
   Map<String, String> _abilityDescriptions = {};
   Map<String, String> _abilityDisplayNames = {};
   Map<String, String> _featDescriptions = {};
+  Map<String, String> _featDisplayNames = {};
   Map<String, MoveData?> _moveData = {};
 
   bool _formOpen = true;
@@ -206,6 +208,7 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
     final deprecatedAbilitiesFuture = _abilityRepository
         .getDeprecatedAbilityNames();
     final featDescriptionsFuture = _featRepository.getFeatDescriptions();
+    final featDisplayNamesFuture = _featRepository.getFeatDisplayNames();
     final formChoicesFuture = PokemonAssetPaths.formChoices(widget.pokemon);
     final tmMapFuture = _tmRepository.getTmMap();
     final catalogMovesFuture = _moveRepository.getAllMoves();
@@ -215,6 +218,7 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
     final abilityDisplayNames = await abilityDisplayNamesFuture;
     final deprecatedAbilities = await deprecatedAbilitiesFuture;
     final featDescriptions = await featDescriptionsFuture;
+    final featDisplayNames = await featDisplayNamesFuture;
     final rawFormChoices = await formChoicesFuture;
     final persistentFormChoices = rawFormChoices
         .where(
@@ -269,6 +273,7 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
       _abilityDisplayNames = abilityDisplayNames;
       _deprecatedAbilityNames = deprecatedAbilities;
       _featDescriptions = featDescriptions;
+      _featDisplayNames = featDisplayNames;
       _moveData = moveData;
       _tmMoveNames = tmMoveNames;
       _catalogMoveNames = catalogMoveNames;
@@ -469,6 +474,9 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
     });
   }
 
+  String _localizedFeatName(String feat) =>
+      localizedFeatDisplayName(feat, _featDisplayNames);
+
   Future<void> _pickFeat([int? index]) async {
     final blocked = _feats
         .asMap()
@@ -480,10 +488,14 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
     final result = await Navigator.of(context).push<String>(
       MaterialPageRoute(
         builder: (_) => _ChoicePickerScreen(
-          title: uiTextForLanguage('Scegli feat', """Choose feat"""),
+          title: uiTextForLanguage(
+            'Scegli privilegio',
+            """Choose feat""",
+          ),
           options: _featDescriptions.keys.toList()..sort(),
           blockedOptions: blocked,
           descriptions: _featDescriptions,
+          labels: _featDisplayNames,
         ),
       ),
     );
@@ -761,6 +773,9 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
                   onToggle: () => setState(() => _featsOpen = !_featsOpen),
                   child: _ChipSlots(
                     values: _feats,
+                    labels: {
+                      for (final feat in _feats) feat: _localizedFeatName(feat),
+                    },
                     emptyLabel: uiTextForLanguage('PRIVILEGIO', """FEATURE"""),
                     onAdd: () => _pickFeat(),
                     onPick: _pickFeat,

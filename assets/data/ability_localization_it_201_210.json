@@ -7,13 +7,13 @@
   },
   "items": {
     "primordial-sea": {
-      "description": "Finché questo Pokémon è impegnato in lotta, il clima è Pioggia Battente e non può essere modificato. La Pioggia Battente funziona come la Pioggia, con l’effetto aggiuntivo di annullare i danni di tipo Fuoco. Se è attiva anche Desolate Land, il clima è contemporaneamente Luce Solare Estremamente Intensa e Pioggia Battente."
+      "description": "Finché questo Pokémon è impegnato in lotta, il clima è Pioggia Battente e non può essere modificato. La Pioggia Battente funziona come la Pioggia, con l’effetto aggiuntivo di annullare i danni di tipo Fuoco. Se è attiva anche Terra Estrema, il clima è contemporaneamente Luce Solare Estremamente Intensa e Pioggia Battente."
     },
     "prism-armor": {
       "description": "Quando questo Pokémon subisce danni di un tipo presente nella propria lista di vulnerabilità, tira due volte i dadi dei danni e usa il risultato più basso per calcolare i danni."
     },
     "propeller-tail": {
-      "description": "Questo Pokémon ignora gli effetti delle mosse che modificano i bersagli delle sue mosse, come Follow Me."
+      "description": "Questo Pokémon ignora gli effetti delle mosse che modificano i bersagli delle sue mosse, come Sonoqui."
     },
     "protean": {
       "description": "Subito prima di usare una mossa, il tipo di questo Pokémon diventa quello della mossa. Acquisisce resistenze, vulnerabilità e immunità del nuovo tipo."
@@ -22,7 +22,7 @@
       "description": "I punteggi di FOR e COS di questo Pokémon possono raggiungere 22. Sotto luce solare intensa, questo Pokémon ha vantaggio ai tiri salvezza su FOR e COS."
     },
     "psychic-surge": {
-      "description": "Se conosce la mossa, questo Pokémon può usare Psychic Terrain come azione bonus."
+      "description": "Se conosce la mossa, questo Pokémon può usare Campo Psichico come azione bonus."
     },
     "punk-rock": {
       "description": "Quando questo Pokémon usa una mossa basata sul suono, aggiunge il proprio bonus STAB ai danni. Inoltre, possiede resistenza alle mosse basate sul suono."
@@ -34,7 +34,7 @@
       "description": "Questo Pokémon ha resistenza ai danni di tipo Spettro e non può subire condizioni di stato non volatili."
     },
     "quark-drive": {
-      "description": "I punteggi di DES e SAG di questo Pokémon possono raggiungere 22. Su Electric Terrain, questo Pokémon ha vantaggio ai tiri salvezza su DES e SAG."
+      "description": "I punteggi di DES e SAG di questo Pokémon possono raggiungere 22. Su Campo Elettrico, questo Pokémon ha vantaggio ai tiri salvezza su DES e SAG."
     }
   }
 }

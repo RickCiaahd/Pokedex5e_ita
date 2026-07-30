@@ -13,7 +13,7 @@
       "description": "Questo Pokémon è particolarmente pesante. Una volta per riposo lungo, dopo essere stato bersagliato da un attacco, può aumentare la propria CA di 2 se ciò farebbe mancare l’attacco."
     },
     "honey-gather": {
-      "description": "Alla fine di ogni lotta, questo Pokémon può tirare d20 + il proprio bonus di competenza. Con un risultato di 20 o superiore, il suo Allenatore aggiunge un Honey al proprio inventario."
+      "description": "Alla fine di ogni lotta, questo Pokémon può tirare d20 + il proprio bonus di competenza. Con un risultato di 20 o superiore, il suo Allenatore aggiunge un Miele al proprio inventario."
     },
     "hospitality": {
       "description": "All’inizio del turno di questo Pokémon, tutti gli alleati entro 20 piedi ottengono 1d4 PF temporanei. Questi PF sostituiscono eventuali PF temporanei già posseduti."
@@ -22,7 +22,7 @@
       "description": "Una volta per riposo breve, questo Pokémon può raddoppiare i dadi dei danni di un singolo tiro per i danni. Il giocatore deve dichiarare l’uso dell’abilità prima del tiro per colpire."
     },
     "hunger-switch": {
-      "description": "All’inizio del proprio turno, questo Pokémon passa a Hangry Mode se si trovava in Full Belly Mode oppure passa a Full Belly Mode se si trovava in Hangry Mode."
+      "description": "All’inizio del proprio turno, questo Pokémon passa a Motivo Panciavuota se si trovava in Motivo Panciapiena oppure passa a Motivo Panciapiena se si trovava in Motivo Panciavuota."
     },
     "hustle": {
       "description": "Quando questo Pokémon mette a segno un colpo critico, può ottenere immediatamente un’azione aggiuntiva nel proprio turno. Se usa questa azione per effettuare un attacco, il tiro ha svantaggio. Non può mai ottenere più di una singola azione aggiuntiva per round."
@@ -31,7 +31,7 @@
       "description": "Questo Pokémon non subisce condizioni negative mentre si trova in acqua o durante la pioggia."
     },
     "hydro-pump": {
-      "description": "Questo Pokémon conosce Hydro Pump come quinta mossa. Dimentica la mossa se assume qualsiasi altra forma."
+      "description": "Questo Pokémon conosce Idropompa come quinta mossa. Dimentica la mossa se assume qualsiasi altra forma."
     },
     "hyper-cutter": {
       "description": "I bonus ai tiri per colpire o ai danni di questo Pokémon non possono essere ridotti dalle mosse degli avversari."

@@ -1,16 +1,37 @@
 {
   "locale": "it",
   "source": "assets/data_webapp/abilities.json",
-  "range": {"fromIndex": 61, "toIndex": 69},
+  "range": {
+    "fromIndex": 61,
+    "toIndex": 69
+  },
   "items": {
-    "electric-surge": {"description": "Se conosce la mossa, questo Pokémon può usare Electric Terrain come azione bonus."},
-    "electromorphosis": {"description": "Quando questo Pokémon subisce danni, può raddoppiare il modificatore MOVE ai danni della propria prossima mossa di tipo Elettro."},
-    "embody-aspect-cornerstone": {"description": "Questo Pokémon ottiene automaticamente questa abilità quando viene Teracristallizzato. Il suo punteggio di COS diventa 23, a meno che non sia già superiore."},
-    "embody-aspect-heartflame": {"description": "Questo Pokémon ottiene automaticamente questa abilità quando viene Teracristallizzato. Il suo punteggio di FOR diventa 23, a meno che non sia già superiore."},
-    "embody-aspect-teal": {"description": "Questo Pokémon ottiene automaticamente questa abilità quando viene Teracristallizzato. Il suo punteggio di DES diventa 23, a meno che non sia già superiore."},
-    "embody-aspect-wellspring": {"description": "Questo Pokémon ottiene automaticamente questa abilità quando viene Teracristallizzato. Il suo punteggio di CAR diventa 23, a meno che non sia già superiore."},
-    "emergency-exit": {"description": "Ogni volta che questo Pokémon subisce danni mentre si trova al 50% o meno dei propri PF massimi, il suo Allenatore può sostituirlo come azione gratuita."},
-    "fairy-aura": {"description": "Quando questo Pokémon è in lotta, tutte le mosse di tipo Folletto usate entro 100 piedi da lui infliggono il doppio dei danni."},
-    "filter": {"description": "Quando viene colpito da una mossa di un tipo a cui è vulnerabile, questo Pokémon può tirare d4. Con un risultato di 4, non subisce i danni aggiuntivi."}
+    "electric-surge": {
+      "description": "Se conosce la mossa, questo Pokémon può usare Campo Elettrico come azione bonus."
+    },
+    "electromorphosis": {
+      "description": "Quando questo Pokémon subisce danni, può raddoppiare il modificatore MOVE ai danni della propria prossima mossa di tipo Elettro."
+    },
+    "embody-aspect-cornerstone": {
+      "description": "Questo Pokémon ottiene automaticamente questa abilità quando viene Teracristallizzato. Il suo punteggio di COS diventa 23, a meno che non sia già superiore."
+    },
+    "embody-aspect-heartflame": {
+      "description": "Questo Pokémon ottiene automaticamente questa abilità quando viene Teracristallizzato. Il suo punteggio di FOR diventa 23, a meno che non sia già superiore."
+    },
+    "embody-aspect-teal": {
+      "description": "Questo Pokémon ottiene automaticamente questa abilità quando viene Teracristallizzato. Il suo punteggio di DES diventa 23, a meno che non sia già superiore."
+    },
+    "embody-aspect-wellspring": {
+      "description": "Questo Pokémon ottiene automaticamente questa abilità quando viene Teracristallizzato. Il suo punteggio di CAR diventa 23, a meno che non sia già superiore."
+    },
+    "emergency-exit": {
+      "description": "Ogni volta che questo Pokémon subisce danni mentre si trova al 50% o meno dei propri PF massimi, il suo Allenatore può sostituirlo come azione gratuita."
+    },
+    "fairy-aura": {
+      "description": "Quando questo Pokémon è in lotta, tutte le mosse di tipo Folletto usate entro 100 piedi da lui infliggono il doppio dei danni."
+    },
+    "filter": {
+      "description": "Quando viene colpito da una mossa di un tipo a cui è vulnerabile, questo Pokémon può tirare d4. Con un risultato di 4, non subisce i danni aggiuntivi."
+    }
   }
 }

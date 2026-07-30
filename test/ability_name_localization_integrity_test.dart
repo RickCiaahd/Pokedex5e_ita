@@ -71,10 +71,51 @@ void main() {
     expect(errors, isEmpty, reason: errors.join('\n'));
   });
 
+  test('le 22 voci specifiche del catalogo completano i nomi italiani', () async {
+    final sourceDocument = Map<String, dynamic>.from(
+      jsonDecode(
+        await rootBundle.loadString('assets/data_webapp/abilities.json'),
+      ),
+    );
+    final sourceItems = List<dynamic>.from(sourceDocument['items'] ?? const []);
+    final sourceById = <String, Map<String, dynamic>>{
+      for (final raw in sourceItems)
+        Map<String, dynamic>.from(raw as Map)['id'].toString():
+            Map<String, dynamic>.from(raw),
+    };
+    final officialDocument = Map<String, dynamic>.from(
+      jsonDecode(await rootBundle.loadString(AbilityLocalizationRepository.nameAssetPath)),
+    );
+    final officialIds = Map<String, dynamic>.from(
+      officialDocument['items'] as Map,
+    ).keys.toSet();
+    final customDocument = Map<String, dynamic>.from(
+      jsonDecode(
+        await rootBundle.loadString(
+          AbilityLocalizationRepository.customNameAssetPath,
+        ),
+      ),
+    );
+    final customItems = Map<String, dynamic>.from(
+      customDocument['items'] as Map,
+    );
+
+    expect(customDocument['locale'], 'it');
+    expect(customDocument['source'], 'assets/data_webapp/abilities.json');
+    expect(customDocument['catalogCount'], 330);
+    expect(customDocument['localizedCount'], 22);
+    expect(customItems.length, 22);
+    expect(customItems.keys.toSet(), sourceById.keys.toSet().difference(officialIds));
+    for (final entry in customItems.entries) {
+      final item = Map<String, dynamic>.from(entry.value as Map);
+      expect(item['sourceName'], sourceById[entry.key]?['name']);
+      expect(item['name']?.toString().trim(), isNotEmpty);
+    }
+  });
   test('i nomi verificati coincidono con le denominazioni italiane attese', () async {
     final names = await AbilityLocalizationRepository().getNames();
 
-    expect(names.length, 308);
+    expect(names.length, 330);
     expect(names['adaptability'], 'Adattabilità');
     expect(names['aftermath'], 'Scoppio');
     expect(names['air-lock'], 'Riparo');
@@ -96,10 +137,10 @@ void main() {
     expect(names['tera-shell'], 'Teraguscio');
     expect(names['teraform-zero'], 'Zeroformazione');
     expect(names['poison-puppeteer'], 'Malia Tossica');
-    expect(names['air-slash'], isNull);
-    expect(names['drifter'], isNull);
-    expect(names['paper-thin'], isNull);
-    expect(names['transformer'], isNull);
+    expect(names['air-slash'], 'Eterelama');
+    expect(names['drifter'], 'Fluttuante');
+    expect(names['paper-thin'], 'Fragile come Carta');
+    expect(names['transformer'], 'Trasformista');
   });
 
   test('il repository conserva il nome tecnico e localizza solo la UI', () async {
@@ -116,16 +157,16 @@ void main() {
     expect(byId['hospitality']?.name, 'Hospitality');
     expect(byId['hospitality']?.displayName, 'Ospitalità');
     expect(byId['air-slash']?.name, 'Air Slash');
-    expect(byId['air-slash']?.displayName, 'Air Slash');
+    expect(byId['air-slash']?.displayName, 'Eterelama');
     expect(byId['drifter']?.name, 'Drifter');
-    expect(byId['drifter']?.displayName, 'Drifter');
+    expect(byId['drifter']?.displayName, 'Fluttuante');
 
     final displayNames = await repository.getAbilityDisplayNames();
     expect(displayNames['Adaptability'], 'Adattabilità');
     expect(displayNames['Poison Point'], 'Velenopunte');
     expect(displayNames['Hospitality'], 'Ospitalità');
-    expect(displayNames['Air Slash'], 'Air Slash');
-    expect(displayNames['Drifter'], 'Drifter');
+    expect(displayNames['Air Slash'], 'Eterelama');
+    expect(displayNames['Drifter'], 'Fluttuante');
 
     final descriptions = await repository.getAbilityDescriptions();
     expect(descriptions, contains('Adaptability'));

@@ -13,7 +13,7 @@
       "description": "Quando questo Pokémon danneggia una creatura con una mossa superefficace, può tirare due volte i dadi dei danni e usare il risultato più alto."
     },
     "neutralizing-gas": {
-      "description": "Le abilità dei Pokémon entro 30 piedi da questo Pokémon vengono annullate e non possono attivarsi. L’annullamento non si applica a Neutralizing Gas né ai cambi di forma."
+      "description": "Le abilità dei Pokémon entro 30 piedi da questo Pokémon vengono annullate e non possono attivarsi. L’annullamento non si applica a Gas Reagente né ai cambi di forma."
     },
     "no-guard": {
       "description": "Ogni attacco effettuato da o contro questo Pokémon ha vantaggio."
@@ -31,7 +31,7 @@
       "description": "Come azione bonus, questo Pokémon può trasformare il clima in luce solare intensa per 5 round; può usare questa azione bonus due volte per riposo breve. Sotto luce solare intensa, ha vantaggio ai tiri per colpire delle mosse che usano FOR o COS come Caratteristica della mossa."
     },
     "overcoat": {
-      "description": "Questo Pokémon non subisce danni da mosse e fenomeni legati al clima, come Hail o Weather Ball."
+      "description": "Questo Pokémon non subisce danni da mosse e fenomeni legati al clima, come Grandine o Palla Clima."
     },
     "overgrow": {
       "description": "Questo Pokémon raddoppia il proprio bonus STAB quando possiede il 25% o meno dei suoi PF massimi."

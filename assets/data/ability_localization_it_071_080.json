@@ -1,17 +1,40 @@
 {
   "locale": "it",
   "source": "assets/data_webapp/abilities.json",
-  "range": {"fromIndex": 71, "toIndex": 80},
+  "range": {
+    "fromIndex": 71,
+    "toIndex": 80
+  },
   "items": {
-    "flare-boost": {"description": "Questo Pokémon aggiunge il proprio bonus di competenza ai tiri per i danni mentre è scottato."},
-    "flash-fire": {"description": "Questo Pokémon non subisce danni dal fuoco né dagli attacchi di tipo Fuoco. Subito dopo essere stato colpito da una mossa di tipo Fuoco o esposto a fiamme libere, raddoppia invece il bonus STAB della propria prossima mossa di tipo Fuoco."},
-    "flower-gift": {"description": "Sotto luce solare intensa, i Pokémon alleati entro 30 piedi da questo Pokémon aggiungono il proprio bonus di competenza ai tiri per i danni."},
-    "flower-veil": {"description": "Ogni alleato di tipo Erba entro 15 piedi da questo Pokémon è immune alle nuove condizioni di stato."},
-    "fluffy": {"description": "Questo Pokémon è vulnerabile alle mosse di tipo Fuoco, ma subisce la metà dei danni da qualsiasi attacco in mischia che non sia di tipo Fuoco."},
-    "forecast": {"description": "Questo Pokémon cambia forma in base al clima. Durante la pioggia diventa di tipo Acqua, sotto luce solare intensa diventa di tipo Fuoco e in condizioni fredde e nevose diventa di tipo Ghiaccio. In tutte le altre condizioni è di tipo Normale. STAB, resistenze, immunità e vulnerabilità cambiano per corrispondere alla forma assunta."},
-    "forewarn": {"description": "Quando questo Pokémon entra in lotta, sceglie un bersaglio che deve rivelare la mossa conosciuta con il maggior potenziale di danno. In caso di parità, il bersaglio sceglie quale mossa rivelare."},
-    "form-change-arceus": {"description": "Il tipo predefinito di Arceus è Normale. Può cambiarlo tenendo una Elemental Plate. Finché tiene la lastra, anche la sua mossa caratteristica Judgment cambia tipo per corrispondere ad Arceus."},
-    "form-change-cherrim": {"description": "L’aspetto di Cherrim cambia in base al clima. Sotto luce solare intensa, fiorisce assumendo Sunshine Form."},
-    "form-change-giratina": {"description": "La forma predefinita di Giratina è Altered Forme. Quando tiene una Griseous Orb oppure si trova nel proprio piano natale, il Distortion World, assume Origin Forme."}
+    "flare-boost": {
+      "description": "Questo Pokémon aggiunge il proprio bonus di competenza ai tiri per i danni mentre è scottato."
+    },
+    "flash-fire": {
+      "description": "Questo Pokémon non subisce danni dal fuoco né dagli attacchi di tipo Fuoco. Subito dopo essere stato colpito da una mossa di tipo Fuoco o esposto a fiamme libere, raddoppia invece il bonus STAB della propria prossima mossa di tipo Fuoco."
+    },
+    "flower-gift": {
+      "description": "Sotto luce solare intensa, i Pokémon alleati entro 30 piedi da questo Pokémon aggiungono il proprio bonus di competenza ai tiri per i danni."
+    },
+    "flower-veil": {
+      "description": "Ogni alleato di tipo Erba entro 15 piedi da questo Pokémon è immune alle nuove condizioni di stato."
+    },
+    "fluffy": {
+      "description": "Questo Pokémon è vulnerabile alle mosse di tipo Fuoco, ma subisce la metà dei danni da qualsiasi attacco in mischia che non sia di tipo Fuoco."
+    },
+    "forecast": {
+      "description": "Questo Pokémon cambia forma in base al clima. Durante la pioggia diventa di tipo Acqua, sotto luce solare intensa diventa di tipo Fuoco e in condizioni fredde e nevose diventa di tipo Ghiaccio. In tutte le altre condizioni è di tipo Normale. STAB, resistenze, immunità e vulnerabilità cambiano per corrispondere alla forma assunta."
+    },
+    "forewarn": {
+      "description": "Quando questo Pokémon entra in lotta, sceglie un bersaglio che deve rivelare la mossa conosciuta con il maggior potenziale di danno. In caso di parità, il bersaglio sceglie quale mossa rivelare."
+    },
+    "form-change-arceus": {
+      "description": "Il tipo predefinito di Arceus è Normale. Può cambiarlo tenendo una Lastra Elementale. Finché tiene la lastra, anche la sua mossa caratteristica Giudizio cambia tipo per corrispondere ad Arceus."
+    },
+    "form-change-cherrim": {
+      "description": "L’aspetto di Cherrim cambia in base al clima. Sotto luce solare intensa, fiorisce assumendo Forma Splendore."
+    },
+    "form-change-giratina": {
+      "description": "La forma predefinita di Giratina è Forma Alterata. Quando tiene una Grigiosfera oppure si trova nel proprio piano natale, il Mondo Distorto, assume Forma Originale."
+    }
   }
 }

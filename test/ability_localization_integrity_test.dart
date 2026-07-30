@@ -112,6 +112,45 @@ void main() {
     expect(errors, isEmpty, reason: errors.join('\n'));
   });
 
+  test('i riferimenti tecnici visibili usano i nomi italiani', () async {
+    final descriptions = await AbilityLocalizationRepository().getDescriptions();
+
+    expect(descriptions['skill-link'], contains('Sfuriate'));
+    expect(descriptions['skill-link'], contains('Doppiasberla'));
+    expect(descriptions['skill-link'], contains('Acqualame'));
+    expect(descriptions['stance-change'], contains('Scudo Reale'));
+    expect(descriptions['stance-change'], contains('Forma Scudo'));
+    expect(descriptions['stance-change'], contains('Forma Spada'));
+    expect(descriptions['electric-surge'], contains('Campo Elettrico'));
+    expect(descriptions['screen-cleaner'], contains('Schermoluce'));
+    expect(descriptions['screen-cleaner'], contains('Velaurora'));
+    expect(descriptions['wind-power'], contains('Tempesta Boreale'));
+    expect(descriptions['form-change-meloetta'], contains('Forma Canto'));
+    expect(descriptions['form-change-meloetta'], contains('Forma Danza'));
+
+    const forbidden = <String>[
+      'Fury Swipes',
+      'Double Slap',
+      'Water Shuriken',
+      'King’s Shield',
+      'Shield Forme',
+      'Blade Forme',
+      'Electric Terrain',
+      'Light Screen',
+      'Aurora Veil',
+      'Bleakwind Storm',
+      'Aria Forme',
+      'Pirouette Forme',
+    ];
+    final errors = <String>[];
+    for (final entry in descriptions.entries) {
+      for (final term in forbidden) {
+        if (entry.value.contains(term)) errors.add('${entry.key}: $term');
+      }
+    }
+    expect(errors, isEmpty, reason: errors.join('\n'));
+  });
+
   test('il repository applica 330 descrizioni senza cambiare i metadati', () async {
     final source = await _loadSourceItems();
     final localizedDescriptions =
@@ -143,7 +182,7 @@ void main() {
     );
     expect(
       abilitiesById['zero-to-hero']?.description,
-      contains('Hero Form'),
+      contains('Forma Possente'),
     );
   });
 }

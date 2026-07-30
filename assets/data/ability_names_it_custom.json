@@ -1,0 +1,96 @@
+{
+  "locale": "it",
+  "source": "assets/data_webapp/abilities.json",
+  "catalogCount": 330,
+  "localizedCount": 22,
+  "items": {
+    "air-slash": {
+      "sourceName": "Air Slash",
+      "name": "Eterelama"
+    },
+    "blizzard": {
+      "sourceName": "Blizzard",
+      "name": "Bora"
+    },
+    "drifter": {
+      "sourceName": "Drifter",
+      "name": "Fluttuante"
+    },
+    "form-change-arceus": {
+      "sourceName": "Form Change (Arceus)",
+      "name": "Cambio di Forma (Arceus)"
+    },
+    "form-change-cherrim": {
+      "sourceName": "Form Change (Cherrim)",
+      "name": "Cambio di Forma (Cherrim)"
+    },
+    "form-change-giratina": {
+      "sourceName": "Form Change (Giratina)",
+      "name": "Cambio di Forma (Giratina)"
+    },
+    "form-change-hoopa": {
+      "sourceName": "Form Change (Hoopa)",
+      "name": "Cambio di Forma (Hoopa)"
+    },
+    "form-change-keldeo": {
+      "sourceName": "Form Change (Keldeo)",
+      "name": "Cambio di Forma (Keldeo)"
+    },
+    "form-change-kyurem": {
+      "sourceName": "Form Change (Kyurem)",
+      "name": "Cambio di Forma (Kyurem)"
+    },
+    "form-change-meloetta": {
+      "sourceName": "Form Change (Meloetta)",
+      "name": "Cambio di Forma (Meloetta)"
+    },
+    "form-change-necrozma": {
+      "sourceName": "Form Change (Necrozma)",
+      "name": "Cambio di Forma (Necrozma)"
+    },
+    "form-change-ogerpon": {
+      "sourceName": "Form Change (Ogerpon)",
+      "name": "Cambio di Forma (Ogerpon)"
+    },
+    "form-change-oricorio": {
+      "sourceName": "Form Change (Oricorio)",
+      "name": "Cambio di Forma (Oricorio)"
+    },
+    "form-change-rotom": {
+      "sourceName": "Form Change (Rotom)",
+      "name": "Cambio di Forma (Rotom)"
+    },
+    "form-change-shaymin": {
+      "sourceName": "Form Change (Shaymin)",
+      "name": "Cambio di Forma (Shaymin)"
+    },
+    "form-change-terapagos": {
+      "sourceName": "Form Change (Terapagos)",
+      "name": "Cambio di Forma (Terapagos)"
+    },
+    "form-change-ultra-necrozma": {
+      "sourceName": "Form Change (Ultra Necrozma)",
+      "name": "Cambio di Forma (Ultra Necrozma)"
+    },
+    "hydro-pump": {
+      "sourceName": "Hydro Pump",
+      "name": "Idropompa"
+    },
+    "leaf-storm": {
+      "sourceName": "Leaf Storm",
+      "name": "Verdebufera"
+    },
+    "overheat": {
+      "sourceName": "Overheat",
+      "name": "Vampata"
+    },
+    "paper-thin": {
+      "sourceName": "Paper Thin",
+      "name": "Fragile come Carta"
+    },
+    "transformer": {
+      "sourceName": "Transformer",
+      "name": "Trasformista"
+    }
+  }
+}

@@ -16,7 +16,7 @@
       "description": "Quando una mossa che infligge danni fa scendere questo Pokémon sotto il 50% dei PF massimi, esso DEVE usare Disimpegno e muoversi come azione gratuita fino alla propria velocità in linea retta verso l’Allenatore. Se così entra nella portata necessaria per essere sostituito, deve essere sostituito con un’altra azione gratuita, purché sia disponibile un altro Pokémon."
     },
     "wind-power": {
-      "description": "Dopo che una mossa del vento che influenza questo Pokémon viene usata, il numero di dadi dei danni della sua prossima mossa di tipo Elettro raddoppia. Le mosse del vento comprendono Aeroblast, Air Cutter, Bleakwind Storm, Blizzard, Fairy Wind, Gust, Heat Wave, Hurricane, Icy Wind, Petal Blizzard, Sandsear Storm, Sandstorm, Springtide Storm, Tailwind, Twister, Whirlwind e Wildbolt Storm."
+      "description": "Dopo che una mossa del vento che influenza questo Pokémon viene usata, il numero di dadi dei danni della sua prossima mossa di tipo Elettro raddoppia. Le mosse del vento comprendono Aerocolpo, Aerasoio, Tempesta Boreale, Bora, Vento di Fata, Raffica, Ondacalda, Tifone, Ventogelato, Fiortempesta, Tempesta Ardente, Terrempesta, Tempesta Zefirea, Ventoincoda, Tornado, Turbine e Tempesta Tonante."
     },
     "wind-rider": {
       "description": "Questo Pokémon è immune ai danni inflitti dalle mosse del vento. Inoltre, la sua velocità di movimento raddoppia quando si muove nella direzione del vento e si dimezza quando si muove controvento."
@@ -34,7 +34,7 @@
       "description": "Quando Darmanitan di Galar scende al 50% o meno dei propri PF massimi, l’abilità Stato Zen gli fa assumere lo Stato Zen di Galar. In questa forma diventa di tipo Ghiaccio/Fuoco e i suoi punteggi di FOR e DES aumentano entrambi di +2."
     },
     "zero-to-hero": {
-      "description": "Supercambio consente a Palafin di assumere la Forma Possente (Hero Form). Nelle regole dell’app, durante la lotta la Forma Possente è di taglia Media, aumenta la CA di 4 e aumenta FOR e DES di 4, fino a un massimo di 22. Al termine della lotta Palafin torna automaticamente alla Forma Ingenua."
+      "description": "Supercambio consente a Palafin di assumere la Forma Possente. Nelle regole dell’app, durante la lotta la Forma Possente è di taglia Media, aumenta la CA di 4 e aumenta FOR e DES di 4, fino a un massimo di 22. Al termine della lotta Palafin torna automaticamente alla Forma Ingenua."
     }
   }
 }

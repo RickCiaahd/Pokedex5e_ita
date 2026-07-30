@@ -16,13 +16,13 @@
       "description": "Quando questo Pokémon colpisce con un attacco in mischia, tira d10. Con un risultato di 10, il bersaglio diventa avvelenato."
     },
     "power-construct-10": {
-      "description": "Quando Zygarde 10% viene ridotto a meno della metà dei propri PF massimi, si trasforma in Zygarde 50% Forme e recupera tutti i PF."
+      "description": "Quando Zygarde 10% viene ridotto a meno della metà dei propri PF massimi, si trasforma in Forma 50% di Zygarde e recupera tutti i PF."
     },
     "power-construct-50": {
-      "description": "Quando Zygarde 50% viene ridotto a meno della metà dei propri PF massimi, si trasforma in Complete Forme e recupera tutti i PF."
+      "description": "Quando Zygarde 50% viene ridotto a meno della metà dei propri PF massimi, si trasforma in Forma Perfetta e recupera tutti i PF."
     },
     "power-construct-100": {
-      "description": "Quando Zygarde viene ridotto a meno della metà dei propri PF massimi, si trasforma in Complete Forme e resta in quella forma indipendentemente dalle successive variazioni dei PF."
+      "description": "Quando Zygarde viene ridotto a meno della metà dei propri PF massimi, si trasforma in Forma Perfetta e resta in quella forma indipendentemente dalle successive variazioni dei PF."
     },
     "power-of-alchemy": {
       "description": "Quando entra in campo dopo che un alleato è svenuto, questo Pokémon copia l’abilità non nascosta dell’alleato svenuto finché non viene sostituito."

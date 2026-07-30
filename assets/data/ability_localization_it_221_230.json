@@ -25,16 +25,16 @@
       "description": "Questo Pokémon non può essere bersagliato da attacchi di opportunità."
     },
     "sand-force": {
-      "description": "Questo Pokémon è immune ai danni di Sandstorm. Durante una Sandstorm, può raddoppiare il proprio bonus STAB quando colpisce un avversario."
+      "description": "Questo Pokémon è immune ai danni di Terrempesta. Durante una Terrempesta, può raddoppiare il proprio bonus STAB quando colpisce un avversario."
     },
     "sand-rush": {
-      "description": "Questo Pokémon è immune ai danni di Sandstorm e la sua velocità raddoppia nei terreni desertici o durante una Sandstorm."
+      "description": "Questo Pokémon è immune ai danni di Terrempesta e la sua velocità raddoppia nei terreni desertici o durante una Terrempesta."
     },
     "sand-spit": {
-      "description": "Quando questo Pokémon subisce danni, può usare la propria reazione per generare una Sandstorm centrata su di sé con raggio di 30 piedi. La Sandstorm dura cinque round. Può farlo un numero di volte pari al proprio bonus di competenza e recupera tutti gli usi dopo un riposo lungo."
+      "description": "Quando questo Pokémon subisce danni, può usare la propria reazione per generare una Terrempesta centrata su di sé con raggio di 30 piedi. La Terrempesta dura cinque round. Può farlo un numero di volte pari al proprio bonus di competenza e recupera tutti gli usi dopo un riposo lungo."
     },
     "sand-stream": {
-      "description": "Quando questo Pokémon entra in una lotta all’aperto, il clima cambia immediatamente in Sandstorm per 5 round. Se è presente un altro Pokémon con un’abilità atmosferica simile, prevale il Pokémon con il punteggio di DES più alto."
+      "description": "Quando questo Pokémon entra in una lotta all’aperto, il clima cambia immediatamente in Terrempesta per 5 round. Se è presente un altro Pokémon con un’abilità atmosferica simile, prevale il Pokémon con il punteggio di DES più alto."
     }
   }
 }

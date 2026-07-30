@@ -7,7 +7,7 @@
   },
   "items": {
     "overheat": {
-      "description": "Questo Pokémon conosce Overheat come quinta mossa. Dimentica la mossa se assume qualsiasi altra forma."
+      "description": "Questo Pokémon conosce Vampata come quinta mossa. Dimentica la mossa se assume qualsiasi altra forma."
     },
     "own-tempo": {
       "description": "Questo Pokémon è immune alla condizione confuso."
@@ -31,7 +31,7 @@
       "description": "Tutte le mosse di tipo Normale di questo Pokémon diventano di tipo Folletto."
     },
     "plus": {
-      "description": "Questo Pokémon ottiene 2 ai tiri per colpire e ai tiri per i danni se un alleato possiede a sua volta l’abilità Plus o Minus."
+      "description": "Questo Pokémon ottiene 2 ai tiri per colpire e ai tiri per i danni se un alleato possiede a sua volta l’abilità Più o Meno."
     },
     "poison-heal": {
       "description": "Questo Pokémon non subisce lo svantaggio causato dalla condizione avvelenato. Inoltre, quando dovrebbe subire danni di tipo Veleno o danni dalla condizione avvelenato, recupera invece PF pari alla metà dei danni che avrebbe subito."

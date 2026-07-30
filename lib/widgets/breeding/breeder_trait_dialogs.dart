@@ -231,6 +231,7 @@ Future<GoodGenesSelection?> showGoodGenesDialog({
   required BuildContext context,
   required String pokemonName,
   required Map<String, String> featDescriptions,
+  required Map<String, String> featDisplayNames,
 }) {
   return showDialog<GoodGenesSelection>(
     context: context,
@@ -238,6 +239,7 @@ Future<GoodGenesSelection?> showGoodGenesDialog({
     builder: (_) => _GoodGenesDialog(
       pokemonName: pokemonName,
       featDescriptions: featDescriptions,
+      featDisplayNames: featDisplayNames,
     ),
   );
 }
@@ -246,10 +248,12 @@ class _GoodGenesDialog extends StatefulWidget {
   const _GoodGenesDialog({
     required this.pokemonName,
     required this.featDescriptions,
+    required this.featDisplayNames,
   });
 
   final String pokemonName;
   final Map<String, String> featDescriptions;
+  final Map<String, String> featDisplayNames;
 
   @override
   State<_GoodGenesDialog> createState() => _GoodGenesDialogState();
@@ -269,7 +273,12 @@ class _GoodGenesDialogState extends State<_GoodGenesDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final feats = widget.featDescriptions.keys.toList()..sort();
+    final feats = widget.featDescriptions.keys.toList()
+      ..sort(
+        (a, b) => (widget.featDisplayNames[a] ?? a).compareTo(
+          widget.featDisplayNames[b] ?? b,
+        ),
+      );
     final valid = _useFeat
         ? _feat != null && (_feat != 'Terrain Adept' || _terrainAdept != null)
         : _spent == 2;
@@ -306,7 +315,7 @@ class _GoodGenesDialogState extends State<_GoodGenesDialog> {
                   ),
                   ChoiceChip(
                     label: Text(
-                      uiTextForLanguage('Un talento', """One feat"""),
+                      uiTextForLanguage('Un privilegio', """One feat"""),
                     ),
                     selected: _useFeat,
                     onSelected: (_) => setState(() => _useFeat = true),
@@ -364,11 +373,14 @@ class _GoodGenesDialogState extends State<_GoodGenesDialog> {
                   initialValue: feats.contains(_feat) ? _feat : null,
                   isExpanded: true,
                   decoration: InputDecoration(
-                    labelText: uiTextForLanguage('Talento', """Feat"""),
+                    labelText: uiTextForLanguage('Privilegio', """Feat"""),
                   ),
                   items: [
                     for (final feat in feats)
-                      DropdownMenuItem(value: feat, child: Text(feat)),
+                      DropdownMenuItem(
+                        value: feat,
+                        child: Text(widget.featDisplayNames[feat] ?? feat),
+                      ),
                   ],
                   onChanged: (value) => setState(() {
                     _feat = value;

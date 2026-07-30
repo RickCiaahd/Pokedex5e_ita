@@ -1,17 +1,40 @@
 {
   "locale": "it",
   "source": "assets/data_webapp/abilities.json",
-  "range": {"fromIndex": 31, "toIndex": 40},
+  "range": {
+    "fromIndex": 31,
+    "toIndex": 40
+  },
   "items": {
-    "comatose": {"description": "Questo Pokémon si trova in uno stato continuo di sonnolenza. È immune alla condizione di sonno, ma viene considerato addormentato per tutte le mosse che richiedono che un Pokémon dorma per essere usate o per attivare effetti aggiuntivi, come Snore, Sleep Talk, Wake-Up Slap e Dream Eater."},
-    "commander": {"description": "Una volta per riposo lungo, questo Pokémon può usare la propria azione per saltare nella bocca di un Dondozo vicino. Finché si trova nella bocca, non può effettuare azioni che bersagliano creature o oggetti all’esterno del corpo di Dondozo e non può essere bersagliato. Durante questo periodo, Dondozo ottiene competenza nei tiri salvezza su SAG. Questo Pokémon può usare un’azione per uscire dalla bocca di Dondozo; se Dondozo sviene, viene espulso in uno spazio adiacente."},
-    "competitive": {"description": "Questo Pokémon aggiunge il proprio bonus di competenza ai tiri per i danni mentre è avvelenato, scottato, confuso o paralizzato."},
-    "compound-eyes": {"description": "Questo Pokémon ottiene un ulteriore +1 ai tiri per colpire."},
-    "contrary": {"description": "Le mosse che modificano le statistiche di questo Pokémon producono l’effetto opposto. Per esempio, Defense Curl ridurrebbe la CA di 4, mentre Growl aumenterebbe il suo tiro per colpire di +1."},
-    "corrosion": {"description": "Le mosse di questo Pokémon ignorano l’immunità al veleno concessa dal tipo Pokémon e possono infliggere la condizione avvelenato alle creature di tipo Veleno e Acciaio. Se il tipo secondario del bersaglio concede vulnerabilità o resistenza ai danni, per questo effetto si applica il tipo secondario."},
-    "costar": {"description": "Quando questo Pokémon si trova entro 5 piedi da un alleato, ha vantaggio ai propri tiri per colpire."},
-    "cotton-down": {"description": "Quando questo Pokémon subisce danni, il cotone si sparge ovunque. L’area entro 10 piedi da questo Pokémon diventa terreno difficile per tutte le creature eccetto i Pokémon esclusivamente di tipo Erba fino all’inizio del suo turno successivo."},
-    "cud-chew": {"description": "Dopo aver consumato una bacca, nel turno successivo questo Pokémon può consumarla una seconda volta, dopodiché la bacca viene consumata definitivamente."},
-    "curious-medicine": {"description": "Come azione bonus, questo Pokémon può annullare le modifiche ai punteggi di caratteristica, alla CA e al modificatore di attacco proprie o di un alleato entro 30 piedi. Può farlo un numero di volte pari al proprio modificatore di INT, con un minimo di una volta, e recupera tutti gli usi dopo un riposo lungo."}
+    "comatose": {
+      "description": "Questo Pokémon si trova in uno stato continuo di sonnolenza. È immune alla condizione di sonno, ma viene considerato addormentato per tutte le mosse che richiedono che un Pokémon dorma per essere usate o per attivare effetti aggiuntivi, come Russare, Sonnolalia, Svegliopacca e Mangiasogni."
+    },
+    "commander": {
+      "description": "Una volta per riposo lungo, questo Pokémon può usare la propria azione per saltare nella bocca di un Dondozo vicino. Finché si trova nella bocca, non può effettuare azioni che bersagliano creature o oggetti all’esterno del corpo di Dondozo e non può essere bersagliato. Durante questo periodo, Dondozo ottiene competenza nei tiri salvezza su SAG. Questo Pokémon può usare un’azione per uscire dalla bocca di Dondozo; se Dondozo sviene, viene espulso in uno spazio adiacente."
+    },
+    "competitive": {
+      "description": "Questo Pokémon aggiunge il proprio bonus di competenza ai tiri per i danni mentre è avvelenato, scottato, confuso o paralizzato."
+    },
+    "compound-eyes": {
+      "description": "Questo Pokémon ottiene un ulteriore +1 ai tiri per colpire."
+    },
+    "contrary": {
+      "description": "Le mosse che modificano le statistiche di questo Pokémon producono l’effetto opposto. Per esempio, Ricciolscudo ridurrebbe la CA di 4, mentre Ruggito aumenterebbe il suo tiro per colpire di +1."
+    },
+    "corrosion": {
+      "description": "Le mosse di questo Pokémon ignorano l’immunità al veleno concessa dal tipo Pokémon e possono infliggere la condizione avvelenato alle creature di tipo Veleno e Acciaio. Se il tipo secondario del bersaglio concede vulnerabilità o resistenza ai danni, per questo effetto si applica il tipo secondario."
+    },
+    "costar": {
+      "description": "Quando questo Pokémon si trova entro 5 piedi da un alleato, ha vantaggio ai propri tiri per colpire."
+    },
+    "cotton-down": {
+      "description": "Quando questo Pokémon subisce danni, il cotone si sparge ovunque. L’area entro 10 piedi da questo Pokémon diventa terreno difficile per tutte le creature eccetto i Pokémon esclusivamente di tipo Erba fino all’inizio del suo turno successivo."
+    },
+    "cud-chew": {
+      "description": "Dopo aver consumato una bacca, nel turno successivo questo Pokémon può consumarla una seconda volta, dopodiché la bacca viene consumata definitivamente."
+    },
+    "curious-medicine": {
+      "description": "Come azione bonus, questo Pokémon può annullare le modifiche ai punteggi di caratteristica, alla CA e al modificatore di attacco proprie o di un alleato entro 30 piedi. Può farlo un numero di volte pari al proprio modificatore di INT, con un minimo di una volta, e recupera tutti gli usi dopo un riposo lungo."
+    }
   }
 }

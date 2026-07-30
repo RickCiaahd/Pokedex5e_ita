@@ -214,36 +214,19 @@ class _FirstLaunchOnboardingScreenState
       case 5:
         return _background.trim().isNotEmpty;
       case 6:
-        return _DialogueCard(
-          speaker: l10n.onboardingProfessor,
-          title: l10n.onboardingStarterTitle,
-          body: l10n.onboardingStarterBody,
-          compact: true,
-          scrollable: false,
-          expandContent: true,
-          content: Column(
-            children: [
-              TextField(
-                key: const ValueKey('onboarding-starter-search'),
-                controller: _searchController,
-                decoration: InputDecoration(
-                  labelText: l10n.onboardingStarterSearchLabel,
-                  hintText: l10n.onboardingStarterSearchHint,
-                  prefixIcon: const Icon(Icons.search),
-                  isDense: true,
-                ),
-              ),
-              const SizedBox(height: 10),
-              Expanded(
-                child: _StarterGrid(
-                  pokemon: _filteredStarters,
-                  selectedId: _starter?.id,
-                  onSelected: (pokemon) => setState(() => _starter = pokemon),
-                ),
-              ),
-            ],
-          ),
-        );
+        return _starter != null;
+      case 8:
+        return !_isSaving && _errorMessage != null;
+      default:
+        return true;
+    }
+  }
+
+  String get _buttonLabel {
+    final l10n = AppLocalizations.of(context);
+    switch (_step) {
+      case 0:
+        return l10n.onboardingStartAdventure;
       case 7:
         return l10n.onboardingConfirm;
       case 8:
@@ -629,21 +612,28 @@ class _FirstLaunchOnboardingScreenState
           speaker: l10n.onboardingProfessor,
           title: l10n.onboardingStarterTitle,
           body: l10n.onboardingStarterBody,
+          compact: true,
+          scrollable: false,
+          expandContent: true,
           content: Column(
             children: [
               TextField(
+                key: const ValueKey('onboarding-starter-search'),
                 controller: _searchController,
                 decoration: InputDecoration(
                   labelText: l10n.onboardingStarterSearchLabel,
                   hintText: l10n.onboardingStarterSearchHint,
                   prefixIcon: const Icon(Icons.search),
+                  isDense: true,
                 ),
               ),
-              const SizedBox(height: 12),
-              _StarterGrid(
-                pokemon: _filteredStarters,
-                selectedId: _starter?.id,
-                onSelected: (pokemon) => setState(() => _starter = pokemon),
+              const SizedBox(height: 10),
+              Expanded(
+                child: _StarterGrid(
+                  pokemon: _filteredStarters,
+                  selectedId: _starter?.id,
+                  onSelected: (pokemon) => setState(() => _starter = pokemon),
+                ),
               ),
             ],
           ),

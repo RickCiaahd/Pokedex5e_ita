@@ -1,0 +1,533 @@
+name: Apply onboarding starter selection
+
+on:
+  push:
+    branches:
+      - improve/onboarding-starter-selection
+    paths:
+      - '.github/workflows/apply-onboarding-starter-selection.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v4
+        with:
+          ref: improve/onboarding-starter-selection
+          fetch-depth: 0
+
+      - name: Set up pinned Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.4'
+          cache: true
+
+      - name: Apply onboarding layout and localization
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('lib/screens/onboarding/first_launch_onboarding_screen.dart')
+          text = path.read_text(encoding='utf-8')
+
+          def replace_once(old: str, new: str, label: str) -> None:
+              global text
+              if old not in text:
+                  raise SystemExit(f'Blocco non trovato: {label}')
+              text = text.replace(old, new, 1)
+
+          replace_once(
+              "import '../../models/trainer_manual_options.dart';\n",
+              "import '../../models/trainer_manual_options.dart';\n"
+              "import '../../models/trainer_origin_name_localization.dart';\n",
+              'import localizzazione origini',
+          )
+
+          replace_once(
+              """  String _originDisplayName(TrainerOrigin origin, AppLocalizations l10n) {
+            return origin.name == 'Origine 5e approvata dal DM'
+                ? l10n.onboardingOriginDmApprovedName
+                : origin.name;
+          }
+          """,
+              """  String _originDisplayName(TrainerOrigin origin, AppLocalizations l10n) {
+            return trainerOriginDisplayName(
+              origin.name,
+              isItalian: Localizations.localeOf(context).languageCode == 'it',
+              dmApprovedLabel: l10n.onboardingOriginDmApprovedName,
+            );
+          }
+          """,
+              'nome origine localizzato',
+          )
+
+          replace_once(
+              "      6 => .46,\n",
+              "      6 => .30,\n",
+              'altezza intestazione starter',
+          )
+
+          replace_once(
+              """      case 6:
+                return _DialogueCard(
+                  speaker: l10n.onboardingProfessor,
+                  title: l10n.onboardingStarterTitle,
+                  body: l10n.onboardingStarterBody,
+                  content: Column(
+                    children: [
+                      TextField(
+                        controller: _searchController,
+                        decoration: InputDecoration(
+                          labelText: l10n.onboardingStarterSearchLabel,
+                          hintText: l10n.onboardingStarterSearchHint,
+                          prefixIcon: const Icon(Icons.search),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      _StarterGrid(
+                        pokemon: _filteredStarters,
+                        selectedId: _starter?.id,
+                        onSelected: (pokemon) => setState(() => _starter = pokemon),
+                      ),
+                    ],
+                  ),
+                );
+          """,
+              """      case 6:
+                return _DialogueCard(
+                  speaker: l10n.onboardingProfessor,
+                  title: l10n.onboardingStarterTitle,
+                  body: l10n.onboardingStarterBody,
+                  compact: true,
+                  scrollable: false,
+                  expandContent: true,
+                  content: Column(
+                    children: [
+                      TextField(
+                        key: const ValueKey('onboarding-starter-search'),
+                        controller: _searchController,
+                        decoration: InputDecoration(
+                          labelText: l10n.onboardingStarterSearchLabel,
+                          hintText: l10n.onboardingStarterSearchHint,
+                          prefixIcon: const Icon(Icons.search),
+                          isDense: true,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Expanded(
+                        child: _StarterGrid(
+                          pokemon: _filteredStarters,
+                          selectedId: _starter?.id,
+                          onSelected: (pokemon) =>
+                              setState(() => _starter = pokemon),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+          """,
+              'scelta starter con ricerca fissa',
+          )
+
+          old_dialogue = """class _DialogueCard extends StatelessWidget {
+            const _DialogueCard({
+              required this.speaker,
+              required this.title,
+              required this.body,
+              this.content,
+            });
+
+            final String speaker;
+            final String title;
+            final String body;
+            final Widget? content;
+
+            @override
+            Widget build(BuildContext context) {
+              return Container(
+                decoration: BoxDecoration(
+                  color: _OnboardingPalette.card,
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(color: _OnboardingPalette.border),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Color(0x33000000),
+                      blurRadius: 20,
+                      spreadRadius: -8,
+                      offset: Offset(0, 12),
+                    ),
+                  ],
+                ),
+                child: Scrollbar(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.all(22),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          speaker,
+                          style: const TextStyle(
+                            color: _OnboardingPalette.rust,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          title,
+                          style: const TextStyle(
+                            color: _OnboardingPalette.text,
+                            fontSize: 27,
+                            height: 1.08,
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          body,
+                          style: const TextStyle(
+                            color: _OnboardingPalette.text,
+                            fontSize: 16,
+                            height: 1.35,
+                          ),
+                        ),
+                        if (content != null) ...[const SizedBox(height: 18), content!],
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            }
+          }
+          """
+
+          new_dialogue = """class _DialogueCard extends StatelessWidget {
+            const _DialogueCard({
+              required this.speaker,
+              required this.title,
+              required this.body,
+              this.content,
+              this.compact = false,
+              this.scrollable = true,
+              this.expandContent = false,
+            });
+
+            final String speaker;
+            final String title;
+            final String body;
+            final Widget? content;
+            final bool compact;
+            final bool scrollable;
+            final bool expandContent;
+
+            @override
+            Widget build(BuildContext context) {
+              final padding = compact ? 16.0 : 22.0;
+              final column = Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    speaker,
+                    style: TextStyle(
+                      color: _OnboardingPalette.rust,
+                      fontSize: compact ? 13 : 15,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                  SizedBox(height: compact ? 5 : 8),
+                  Text(
+                    title,
+                    key: const ValueKey('onboarding-dialogue-title'),
+                    maxLines: compact ? 2 : null,
+                    overflow: compact ? TextOverflow.ellipsis : null,
+                    style: TextStyle(
+                      color: _OnboardingPalette.text,
+                      fontSize: compact ? 22 : 27,
+                      height: 1.08,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                  SizedBox(height: compact ? 6 : 10),
+                  Text(
+                    body,
+                    maxLines: compact ? 2 : null,
+                    overflow: compact ? TextOverflow.ellipsis : null,
+                    style: TextStyle(
+                      color: _OnboardingPalette.text,
+                      fontSize: compact ? 14 : 16,
+                      height: compact ? 1.25 : 1.35,
+                    ),
+                  ),
+                  if (content != null) ...[
+                    SizedBox(height: compact ? 10 : 18),
+                    if (expandContent) Expanded(child: content!) else content!,
+                  ],
+                ],
+              );
+
+              return Container(
+                decoration: BoxDecoration(
+                  color: _OnboardingPalette.card,
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(color: _OnboardingPalette.border),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Color(0x33000000),
+                      blurRadius: 20,
+                      spreadRadius: -8,
+                      offset: Offset(0, 12),
+                    ),
+                  ],
+                ),
+                child: scrollable
+                    ? Scrollbar(
+                        child: SingleChildScrollView(
+                          padding: EdgeInsets.all(padding),
+                          child: column,
+                        ),
+                      )
+                    : Padding(padding: EdgeInsets.all(padding), child: column),
+              );
+            }
+          }
+          """
+          replace_once(old_dialogue, new_dialogue, 'dialogue card compatta')
+
+          old_grid = """class _StarterGrid extends StatelessWidget {
+            const _StarterGrid({
+              required this.pokemon,
+              required this.selectedId,
+              required this.onSelected,
+            });
+
+            final List<Pokemon> pokemon;
+            final int? selectedId;
+            final ValueChanged<Pokemon> onSelected;
+
+            @override
+            Widget build(BuildContext context) {
+              final l10n = AppLocalizations.of(context);
+              final isItalian = Localizations.localeOf(context).languageCode == 'it';
+              if (pokemon.isEmpty) {
+                return _InfoBanner(
+                  icon: Icons.search_off,
+                  text: l10n.onboardingNoStarterResults,
+                );
+              }
+
+              return LayoutBuilder(
+                builder: (context, constraints) {
+                  final columns = constraints.maxWidth >= 680 ? 4 : 2;
+                  return SizedBox(
+                    height: 330,
+                    child: GridView.builder(
+                      primary: false,
+                      padding: EdgeInsets.zero,
+                      itemCount: pokemon.length,
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: columns,
+                        childAspectRatio: .78,
+                        crossAxisSpacing: 10,
+                        mainAxisSpacing: 10,
+                      ),
+                      itemBuilder: (context, index) {
+                        final entry = pokemon[index];
+                        final selected = selectedId == entry.id;
+                        return InkWell(
+                          onTap: () => onSelected(entry),
+                          borderRadius: BorderRadius.circular(18),
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 180),
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: selected
+                                  ? _OnboardingPalette.peach
+                                  : _OnboardingPalette.card,
+                              borderRadius: BorderRadius.circular(18),
+                              border: Border.all(
+                                color: selected
+                                    ? _OnboardingPalette.orange
+                                    : _OnboardingPalette.border,
+                                width: selected ? 2.5 : 1,
+                              ),
+                            ),
+                            child: Column(
+                              children: [
+                                Expanded(
+                                  child: PokemonAssetImage(
+                                    pokemon: entry,
+                                    useLargeArtwork: true,
+                                    size: 112,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  entry.name,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w900,
+                                  ),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  entry.types
+                                      .map(
+                                        isItalian
+                                            ? PokemonTypeLocalization.italianLabel
+                                            : PokemonTypeLocalization.englishValue,
+                                      )
+                                      .join(' / '),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(fontSize: 13),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  );
+                },
+              );
+            }
+          }
+          """
+
+          new_grid = """class _StarterGrid extends StatelessWidget {
+            const _StarterGrid({
+              required this.pokemon,
+              required this.selectedId,
+              required this.onSelected,
+            });
+
+            final List<Pokemon> pokemon;
+            final int? selectedId;
+            final ValueChanged<Pokemon> onSelected;
+
+            @override
+            Widget build(BuildContext context) {
+              final l10n = AppLocalizations.of(context);
+              final isItalian = Localizations.localeOf(context).languageCode == 'it';
+              if (pokemon.isEmpty) {
+                return _InfoBanner(
+                  icon: Icons.search_off,
+                  text: l10n.onboardingNoStarterResults,
+                );
+              }
+
+              return LayoutBuilder(
+                builder: (context, constraints) {
+                  final columns = constraints.maxWidth >= 680 ? 4 : 2;
+                  return GridView.builder(
+                    key: const ValueKey('onboarding-starter-grid'),
+                    primary: false,
+                    keyboardDismissBehavior:
+                        ScrollViewKeyboardDismissBehavior.onDrag,
+                    padding: EdgeInsets.zero,
+                    itemCount: pokemon.length,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: columns,
+                      childAspectRatio: 1,
+                      crossAxisSpacing: 8,
+                      mainAxisSpacing: 8,
+                    ),
+                    itemBuilder: (context, index) {
+                      final entry = pokemon[index];
+                      final selected = selectedId == entry.id;
+                      return InkWell(
+                        onTap: () => onSelected(entry),
+                        borderRadius: BorderRadius.circular(14),
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 180),
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: selected
+                                ? _OnboardingPalette.peach
+                                : _OnboardingPalette.card,
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(
+                              color: selected
+                                  ? _OnboardingPalette.orange
+                                  : _OnboardingPalette.border,
+                              width: selected ? 2.5 : 1,
+                            ),
+                          ),
+                          child: Column(
+                            children: [
+                              Expanded(
+                                child: PokemonAssetImage(
+                                  pokemon: entry,
+                                  useLargeArtwork: true,
+                                  size: 82,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                entry.name,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w900,
+                                ),
+                              ),
+                              Text(
+                                entry.types
+                                    .map(
+                                      isItalian
+                                          ? PokemonTypeLocalization.italianLabel
+                                          : PokemonTypeLocalization.englishValue,
+                                    )
+                                    .join(' / '),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(fontSize: 11),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
+              );
+            }
+          }
+          """
+          replace_once(old_grid, new_grid, 'griglia starter compatta')
+
+          path.write_text(text, encoding='utf-8')
+          PY
+
+      - name: Format and verify focused changes
+        run: |
+          dart format \
+            lib/screens/onboarding/first_launch_onboarding_screen.dart \
+            lib/models/trainer_origin_name_localization.dart \
+            test/trainer_origin_name_localization_test.dart
+          flutter pub get
+          flutter analyze
+          flutter test test/trainer_origin_name_localization_test.dart --reporter expanded
+          git diff --check
+
+      - name: Commit changes and remove temporary workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rm .github/workflows/apply-onboarding-starter-selection.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Compatta la scelta dello starter e localizza le origini'
+          git push origin HEAD:improve/onboarding-starter-selection

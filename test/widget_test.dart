@@ -49,4 +49,42 @@ void main() {
 
     expect(find.byType(FirstLaunchOnboardingScreen), findsOneWidget);
   });
+
+  testWidgets('onboarding adapts to the Android keyboard without overflow', (
+    WidgetTester tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(360, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    Widget buildApp({required double keyboardHeight}) {
+      return MaterialApp(
+        locale: const Locale('it'),
+        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        home: MediaQuery(
+          data: MediaQueryData(
+            size: const Size(360, 800),
+            viewInsets: EdgeInsets.only(bottom: keyboardHeight),
+          ),
+          child: FirstLaunchOnboardingScreen(onCompleted: () {}),
+        ),
+      );
+    }
+
+    await tester.pumpWidget(buildApp(keyboardHeight: 0));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('INIZIA LA TUA AVVENTURA'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('AVANTI'));
+    await tester.pumpAndSettle();
+    expect(find.byType(TextField), findsOneWidget);
+
+    await tester.pumpWidget(buildApp(keyboardHeight: 320));
+    await tester.pumpAndSettle();
+
+    expect(tester.takeException(), isNull);
+    expect(find.byType(TextField), findsOneWidget);
+    expect(find.text('AVANTI'), findsOneWidget);
+  });
 }

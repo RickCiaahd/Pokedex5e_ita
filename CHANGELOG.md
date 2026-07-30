@@ -4,7 +4,65 @@ Tutte le modifiche rilevanti al progetto vengono documentate in questo file.
 
 ## [Non rilasciato]
 
-Nessuna modifica successiva alla release 1.2.0.
+### Aggiunto
+
+- documentazione GPLv3, NOTICE, Privacy, Data Safety e inventari riproducibili di dipendenze, asset e duplicati;
+- controlli automatici per licenze, funzionamento offline, completezza delle release e integrità delle immagini;
+- etichette grafiche inglesi per tutti i 18 tipi Pokémon;
+- test di regressione per layout mobile, localizzazione delle origini, residui bilingui e messaggi d’errore.
+
+### Modificato
+
+- immagini e dati di gioco resi completamente local-first, con rimozione del permesso Internet Android;
+- 2.386 immagini convertite in WebP lossless, senza rimuovere varianti e con circa 118 MiB risparmiati;
+- tour guidati, scelta dello starter e tessere dei tipi adattati meglio agli schermi mobili;
+- nomi italiani delle origini regionali uniformati ai nomi delle regioni;
+- Flutter bloccato alla versione 3.44.4 nei workflow di CI e release;
+- messaggi d’errore visibili centralizzati e localizzati, senza esporre eccezioni tecniche;
+- metadati delle mosse e azioni dello Zaino completati anche in inglese.
+
+### Corretto
+
+- sovrapposizione tra Professore e fumetto nei tour su smartphone;
+- disposizione dei due tipi nella schermata Aggiungi Pokémon;
+- residui italiani nel flusso delle MT, nella sostituzione delle mosse e nella gestione degli strumenti tenuti.
+
+## [1.3.2] - 2026-07-26
+
+### Aggiunto
+
+- interfaccia bilingue italiano/inglese con selezione automatica o manuale della lingua;
+- cataloghi di Pokémon, mosse, abilità e oggetti sensibili alla lingua;
+- onboarding e schermate secondarie localizzati;
+- tour guidati per Home, Scheda Allenatore, Battle Companion e Strumenti del Master.
+
+### Modificato
+
+- nome pubblico uniformato a **Trainer Atlas 5e**;
+- Application ID Android impostato su `io.github.rickciaahd.traineratlas`;
+
+### Corretto
+
+- primi audit dei testi italiani residui nell’interfaccia inglese;
+- ripristino corretto delle schermate e dello scroll al termine dei tour guidati.
+
+## [1.3.1] - 2026-07-23
+
+### Modificato
+
+- onboarding iniziale ridisegnato con il Professore e layout mobile più compatto;
+- manifest degli asset ripristinato per mantenere completi i pacchetti distribuiti.
+
+## [1.3.0] - 2026-07-23
+
+### Aggiunto
+
+- onboarding al primo avvio per creare il profilo Allenatore e scegliere lo starter;
+- flusso di pubblicazione multipiattaforma aggiornato per Android e Windows.
+
+### Modificato
+
+- identità pubblica e nomi dei pacchetti di release aggiornati a **Trainer Atlas 5e**.
 
 ## [1.2.0] - 2026-07-22
 

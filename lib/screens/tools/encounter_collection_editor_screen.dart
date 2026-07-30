@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../localization/ui_text.dart';
+import '../../localization/user_facing_error.dart';
 import '../../models/encounter_collection.dart';
 import '../../models/generated_pokemon.dart';
 import '../../models/pokemon.dart';
@@ -222,7 +223,12 @@ class _EncounterCollectionEditorScreenState
       Navigator.of(context).pop(collection);
     } catch (error) {
       if (!mounted) return;
-      setState(() => _error = error.toString());
+      setState(
+        () => _error = context.userFacingError(
+          error,
+          action: UserFacingErrorAction.save,
+        ),
+      );
     } finally {
       if (mounted) setState(() => _isSaving = false);
     }

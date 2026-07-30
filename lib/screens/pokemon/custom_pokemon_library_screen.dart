@@ -4,6 +4,8 @@ import 'dart:typed_data';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
+import '../../localization/ui_text.dart';
+import '../../localization/user_facing_error.dart';
 import '../../models/custom_pokemon_advanced_data.dart';
 import '../../models/custom_pokemon_definition.dart';
 import '../../models/move_data.dart';
@@ -21,7 +23,6 @@ import '../../widgets/layout/responsive_content.dart';
 import '../../widgets/navigation/home_leading_button.dart';
 import '../../widgets/pokemon/pokemon_asset_image.dart';
 import 'custom_pokemon_advanced_editor_screen.dart';
-import '../../localization/ui_text.dart';
 
 enum _ImportChoice { update, copy }
 
@@ -70,7 +71,11 @@ class _CustomPokemonLibraryScreenState
         _isLoading = false;
       });
     } catch (error) {
-      _setMessage(_friendlyError(error), isError: true);
+      if (!mounted) return;
+      _setMessage(
+        context.userFacingError(error, action: UserFacingErrorAction.load),
+        isError: true,
+      );
       if (mounted) setState(() => _isLoading = false);
     }
   }
@@ -118,7 +123,11 @@ class _CustomPokemonLibraryScreenState
       await _load();
       _setMessage('${duplicate.name} creato.');
     } catch (error) {
-      _setMessage(_friendlyError(error), isError: true);
+      if (!mounted) return;
+      _setMessage(
+        context.userFacingError(error, action: UserFacingErrorAction.save),
+        isError: true,
+      );
     } finally {
       if (mounted) setState(() => _isBusy = false);
     }
@@ -131,7 +140,8 @@ class _CustomPokemonLibraryScreenState
     try {
       report = await _referenceService.findReferences(definition.pokemonId);
     } catch (error) {
-      _setMessage(_friendlyError(error), isError: true);
+      if (!mounted) return;
+      _setMessage(context.userFacingError(error), isError: true);
       if (mounted) setState(() => _isBusy = false);
       return;
     }
@@ -219,7 +229,11 @@ class _CustomPokemonLibraryScreenState
       await _load();
       _setMessage('${definition.name} eliminato.');
     } catch (error) {
-      _setMessage(_friendlyError(error), isError: true);
+      if (!mounted) return;
+      _setMessage(
+        context.userFacingError(error, action: UserFacingErrorAction.save),
+        isError: true,
+      );
     } finally {
       if (mounted) setState(() => _isBusy = false);
     }
@@ -250,7 +264,14 @@ class _CustomPokemonLibraryScreenState
             : '${bundle.definitions.length} Fakemon esportati.',
       );
     } catch (error) {
-      _setMessage(_friendlyError(error), isError: true);
+      if (!mounted) return;
+      _setMessage(
+        context.userFacingError(
+          error,
+          action: UserFacingErrorAction.exportFile,
+        ),
+        isError: true,
+      );
     } finally {
       if (mounted) setState(() => _isBusy = false);
     }
@@ -296,7 +317,14 @@ class _CustomPokemonLibraryScreenState
         ),
       );
     } catch (error) {
-      _setMessage(_friendlyError(error), isError: true);
+      if (!mounted) return;
+      _setMessage(
+        context.userFacingError(
+          error,
+          action: UserFacingErrorAction.importFile,
+        ),
+        isError: true,
+      );
     } finally {
       if (mounted) setState(() => _isBusy = false);
     }
@@ -364,7 +392,14 @@ class _CustomPokemonLibraryScreenState
               ),
       );
     } catch (error) {
-      _setMessage(_friendlyError(error), isError: true);
+      if (!mounted) return;
+      _setMessage(
+        context.userFacingError(
+          error,
+          action: UserFacingErrorAction.exportFile,
+        ),
+        isError: true,
+      );
     } finally {
       if (mounted) setState(() => _isBusy = false);
     }
@@ -399,7 +434,11 @@ class _CustomPokemonLibraryScreenState
         ),
       );
     } catch (error) {
-      _setMessage(_friendlyError(error), isError: true);
+      if (!mounted) return;
+      _setMessage(
+        context.userFacingError(error, action: UserFacingErrorAction.share),
+        isError: true,
+      );
     } finally {
       if (mounted) setState(() => _isBusy = false);
     }
@@ -472,7 +511,14 @@ class _CustomPokemonLibraryScreenState
               ),
       );
     } catch (error) {
-      _setMessage(_friendlyError(error), isError: true);
+      if (!mounted) return;
+      _setMessage(
+        context.userFacingError(
+          error,
+          action: UserFacingErrorAction.importFile,
+        ),
+        isError: true,
+      );
     } finally {
       if (mounted) setState(() => _isBusy = false);
     }
@@ -1057,7 +1103,10 @@ class _CustomPokemonEditorScreenState extends State<CustomPokemonEditorScreen> {
       if (!mounted) return;
       Navigator.of(context).pop(definition);
     } catch (error) {
-      _showError(_friendlyError(error));
+      if (!mounted) return;
+      _showError(
+        context.userFacingError(error, action: UserFacingErrorAction.save),
+      );
     } finally {
       if (mounted) setState(() => _saving = false);
     }
@@ -1461,8 +1510,11 @@ class _CustomPokemonEditorScreenState extends State<CustomPokemonEditorScreen> {
                       try {
                         _parseLevelMoves(value ?? '');
                         return null;
-                      } catch (error) {
-                        return _friendlyError(error);
+                      } catch (_) {
+                        return context.uiText(
+                          'Usa una riga per livello nel formato “5: Mossa, Mossa”.',
+                          'Use one line per level in the format “5: Move, Move”.',
+                        );
                       }
                     },
                   ),
@@ -2366,8 +2418,3 @@ Map<int, List<String>> _parseLevelMoves(String value) {
 String? _nullable(String value) => value.trim().isEmpty ? null : value.trim();
 int? _optionalInt(String value) =>
     value.trim().isEmpty ? null : int.parse(value.trim());
-String _friendlyError(Object error) => error
-    .toString()
-    .replaceFirst('FormatException: ', '')
-    .replaceFirst('Bad state: ', '')
-    .trim();

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../localization/ui_text.dart';
+import '../../localization/user_facing_error.dart';
 
 import '../../models/bag_item.dart';
 import '../../models/generated_npc_trainer.dart';
@@ -88,7 +89,10 @@ class _NpcTrainerGeneratorScreenState extends State<NpcTrainerGeneratorScreen> {
     } catch (error) {
       if (!mounted) return;
       setState(() {
-        _error = error.toString();
+        _error = context.userFacingError(
+          error,
+          action: UserFacingErrorAction.load,
+        );
         _isLoading = false;
       });
     }
@@ -149,7 +153,7 @@ class _NpcTrainerGeneratorScreenState extends State<NpcTrainerGeneratorScreen> {
       );
     } catch (error) {
       if (!mounted) return;
-      setState(() => _error = error.toString());
+      setState(() => _error = context.userFacingError(error));
     } finally {
       if (mounted) setState(() => _isGenerating = false);
     }

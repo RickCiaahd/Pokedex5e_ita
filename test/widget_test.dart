@@ -49,4 +49,31 @@ void main() {
 
     expect(find.byType(FirstLaunchOnboardingScreen), findsOneWidget);
   });
+
+  test('onboarding uses the compact layout when the keyboard is visible', () {
+    final source = File(
+      'lib/screens/onboarding/first_launch_onboarding_screen.dart',
+    ).readAsStringSync();
+
+    expect(
+      source,
+      contains('MediaQuery.viewInsetsOf(context).bottom > 0'),
+      reason: 'Il layout deve rilevare la tastiera prima dello Scaffold',
+    );
+    expect(
+      source,
+      contains('_buildStage(keyboardVisible: keyboardVisible)'),
+      reason: 'Lo stato della tastiera deve raggiungere la scena del professore',
+    );
+    expect(
+      source,
+      contains('keyboardCompact ? .22 : compactCardTopFactor'),
+      reason: 'Il dialogo deve salire quando la tastiera riduce lo spazio',
+    );
+    expect(
+      source,
+      contains('constraints.maxHeight - (keyboardCompact ? 220 : 140)'),
+      reason: 'Il dialogo deve conservare altezza sufficiente per lo scroll',
+    );
+  });
 }

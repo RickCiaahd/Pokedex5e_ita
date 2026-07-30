@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../l10n/app_localizations.dart';
+import '../../localization/user_facing_error.dart';
 
 import '../../models/pokedex_entry.dart';
 import '../../models/pokemon.dart';
@@ -140,11 +141,14 @@ class _HomeScreenState extends State<HomeScreen> {
         _isLoading = false;
       });
       _scheduleAutomaticTour();
-    } catch (e) {
+    } catch (error) {
       if (!mounted) return;
 
       setState(() {
-        _errorMessage = e.toString();
+        _errorMessage = context.userFacingError(
+          error,
+          action: UserFacingErrorAction.load,
+        );
         _isLoading = false;
       });
     }

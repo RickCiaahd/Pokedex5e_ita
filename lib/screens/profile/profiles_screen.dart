@@ -7,6 +7,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 import '../../localization/ui_text.dart';
+import '../../localization/user_facing_error.dart';
 
 import '../../models/profile_backup.dart';
 import '../../models/user_profile.dart';
@@ -62,7 +63,10 @@ class _ProfilesScreenState extends State<ProfilesScreen> {
     } catch (error) {
       if (!mounted) return;
       setState(() {
-        _errorMessage = error.toString();
+        _errorMessage = context.userFacingError(
+          error,
+          action: UserFacingErrorAction.load,
+        );
         _isLoading = false;
       });
     }
@@ -96,7 +100,11 @@ class _ProfilesScreenState extends State<ProfilesScreen> {
         ),
       );
     } catch (error) {
-      _setStatus(_friendlyError(error), isError: true);
+      if (!mounted) return;
+      _setStatus(
+        context.userFacingError(error, action: UserFacingErrorAction.save),
+        isError: true,
+      );
     } finally {
       if (mounted) setState(() => _isBusy = false);
     }
@@ -115,7 +123,11 @@ class _ProfilesScreenState extends State<ProfilesScreen> {
         ),
       );
     } catch (error) {
-      _setStatus(_friendlyError(error), isError: true);
+      if (!mounted) return;
+      _setStatus(
+        context.userFacingError(error, action: UserFacingErrorAction.save),
+        isError: true,
+      );
     } finally {
       if (mounted) setState(() => _isBusy = false);
     }
@@ -150,7 +162,14 @@ class _ProfilesScreenState extends State<ProfilesScreen> {
         );
       }
     } catch (error) {
-      _setStatus(_friendlyError(error), isError: true);
+      if (!mounted) return;
+      _setStatus(
+        context.userFacingError(
+          error,
+          action: UserFacingErrorAction.exportFile,
+        ),
+        isError: true,
+      );
     } finally {
       if (mounted) setState(() => _isBusy = false);
     }
@@ -217,7 +236,14 @@ class _ProfilesScreenState extends State<ProfilesScreen> {
               ),
       );
     } catch (error) {
-      _setStatus(_friendlyError(error), isError: true);
+      if (!mounted) return;
+      _setStatus(
+        context.userFacingError(
+          error,
+          action: UserFacingErrorAction.importFile,
+        ),
+        isError: true,
+      );
     } finally {
       if (mounted) setState(() => _isBusy = false);
     }
@@ -236,7 +262,11 @@ class _ProfilesScreenState extends State<ProfilesScreen> {
         ),
       );
     } catch (error) {
-      _setStatus(_friendlyError(error), isError: true);
+      if (!mounted) return;
+      _setStatus(
+        context.userFacingError(error, action: UserFacingErrorAction.save),
+        isError: true,
+      );
     } finally {
       if (mounted) setState(() => _isBusy = false);
     }
@@ -283,18 +313,14 @@ class _ProfilesScreenState extends State<ProfilesScreen> {
         ),
       );
     } catch (error) {
-      _setStatus(_friendlyError(error), isError: true);
+      if (!mounted) return;
+      _setStatus(
+        context.userFacingError(error, action: UserFacingErrorAction.save),
+        isError: true,
+      );
     } finally {
       if (mounted) setState(() => _isBusy = false);
     }
-  }
-
-  String _friendlyError(Object error) {
-    final text = error.toString();
-    return text
-        .replaceFirst('FormatException: ', '')
-        .replaceFirst('Bad state: ', '')
-        .trim();
   }
 
   @override

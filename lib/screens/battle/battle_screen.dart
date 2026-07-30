@@ -5,8 +5,9 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-import '../../models/bag_inventory_entry.dart';
 import '../../localization/ui_text.dart';
+import '../../localization/user_facing_error.dart';
+import '../../models/bag_inventory_entry.dart';
 import '../../models/bag_item.dart';
 import '../../models/battle_environment.dart';
 import '../../models/custom_pokemon_advanced_data.dart';
@@ -1510,7 +1511,10 @@ class _BattleScreenState extends State<BattleScreen> {
                             'Errore caricando il combattimento',
                             'Error loading battle',
                           ),
-                          message: snapshot.error.toString(),
+                          message: context.userFacingError(
+                            snapshot.error!,
+                            action: UserFacingErrorAction.load,
+                          ),
                           actionLabel: context.uiText('Riprova', 'Retry'),
                           onAction: () => _reload(),
                         );

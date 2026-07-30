@@ -5,6 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 import '../../localization/ui_text.dart';
+import '../../localization/user_facing_error.dart';
 import '../../models/bag_item.dart';
 import '../../models/campaign_transfer_bundle.dart';
 import '../../models/generated_npc_trainer.dart';
@@ -107,7 +108,10 @@ class _NpcTrainerLibraryScreenState extends State<NpcTrainerLibraryScreen> {
     } catch (error) {
       if (!mounted) return;
       setState(() {
-        _message = _friendlyError(error);
+        _message = context.userFacingError(
+          error,
+          action: UserFacingErrorAction.load,
+        );
         _messageIsError = true;
         _isLoading = false;
       });
@@ -143,7 +147,8 @@ class _NpcTrainerLibraryScreenState extends State<NpcTrainerLibraryScreen> {
       );
       await _load();
     } catch (error) {
-      _setMessage(_friendlyError(error), isError: true);
+      if (!mounted) return;
+      _setMessage(context.userFacingError(error), isError: true);
     } finally {
       if (mounted) setState(() => _isBusy = false);
     }
@@ -195,7 +200,14 @@ class _NpcTrainerLibraryScreenState extends State<NpcTrainerLibraryScreen> {
               ),
       );
     } catch (error) {
-      _setMessage(_friendlyError(error), isError: true);
+      if (!mounted) return;
+      _setMessage(
+        context.userFacingError(
+          error,
+          action: UserFacingErrorAction.exportFile,
+        ),
+        isError: true,
+      );
     } finally {
       if (mounted) setState(() => _isBusy = false);
     }
@@ -237,7 +249,11 @@ class _NpcTrainerLibraryScreenState extends State<NpcTrainerLibraryScreen> {
         ),
       );
     } catch (error) {
-      _setMessage(_friendlyError(error), isError: true);
+      if (!mounted) return;
+      _setMessage(
+        context.userFacingError(error, action: UserFacingErrorAction.share),
+        isError: true,
+      );
     } finally {
       if (mounted) setState(() => _isBusy = false);
     }
@@ -321,7 +337,14 @@ class _NpcTrainerLibraryScreenState extends State<NpcTrainerLibraryScreen> {
         ),
       );
     } catch (error) {
-      _setMessage(_friendlyError(error), isError: true);
+      if (!mounted) return;
+      _setMessage(
+        context.userFacingError(
+          error,
+          action: UserFacingErrorAction.importFile,
+        ),
+        isError: true,
+      );
     } finally {
       if (mounted) setState(() => _isBusy = false);
     }
@@ -348,7 +371,11 @@ class _NpcTrainerLibraryScreenState extends State<NpcTrainerLibraryScreen> {
         ),
       );
     } catch (error) {
-      _setMessage(_friendlyError(error), isError: true);
+      if (!mounted) return;
+      _setMessage(
+        context.userFacingError(error, action: UserFacingErrorAction.save),
+        isError: true,
+      );
     } finally {
       if (mounted) setState(() => _isBusy = false);
     }
@@ -398,7 +425,11 @@ class _NpcTrainerLibraryScreenState extends State<NpcTrainerLibraryScreen> {
         ),
       );
     } catch (error) {
-      _setMessage(_friendlyError(error), isError: true);
+      if (!mounted) return;
+      _setMessage(
+        context.userFacingError(error, action: UserFacingErrorAction.save),
+        isError: true,
+      );
     } finally {
       if (mounted) setState(() => _isBusy = false);
     }
@@ -502,7 +533,8 @@ class _NpcTrainerLibraryScreenState extends State<NpcTrainerLibraryScreen> {
       );
       await _load();
     } catch (error) {
-      _setMessage(_friendlyError(error), isError: true);
+      if (!mounted) return;
+      _setMessage(context.userFacingError(error), isError: true);
     } finally {
       if (mounted) setState(() => _isBusy = false);
     }
@@ -527,14 +559,6 @@ class _NpcTrainerLibraryScreenState extends State<NpcTrainerLibraryScreen> {
       if (pokemon.id == id) return pokemon;
     }
     return null;
-  }
-
-  String _friendlyError(Object error) {
-    return error
-        .toString()
-        .replaceFirst('Bad state: ', '')
-        .replaceFirst('FormatException: ', '')
-        .trim();
   }
 
   @override

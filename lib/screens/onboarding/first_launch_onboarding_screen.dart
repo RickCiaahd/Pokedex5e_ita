@@ -3,12 +3,14 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 import '../../l10n/app_localizations.dart';
+import '../../localization/user_facing_error.dart';
 import '../../models/pokemon.dart';
 import '../../models/pokemon_type_localization.dart';
 import '../../models/team_slot.dart';
 import '../../models/trainer_manual_content.dart';
 import '../../models/trainer_manual_options.dart';
 import '../../models/trainer_origin_name_localization.dart';
+import '../../models/trainer_ui_localization.dart';
 import '../../models/user_profile.dart';
 import '../../repositories/evolution_repository.dart';
 import '../../repositories/pokedex_repositry.dart';
@@ -122,7 +124,10 @@ class _FirstLaunchOnboardingScreenState
     } catch (error) {
       if (!mounted) return;
       setState(() {
-        _errorMessage = error.toString();
+        _errorMessage = context.userFacingError(
+          error,
+          action: UserFacingErrorAction.load,
+        );
         _isLoading = false;
       });
     }
@@ -190,7 +195,7 @@ class _FirstLaunchOnboardingScreenState
   }
 
   String _originDescription(TrainerOrigin origin, AppLocalizations l10n) {
-    return switch (origin.name) {
+    final description = switch (origin.name) {
       'Alolan' => l10n.onboardingOriginAlolanDescription,
       'Hoennian' => l10n.onboardingOriginHoennianDescription,
       'Johtoan' => l10n.onboardingOriginJohtoanDescription,
@@ -203,6 +208,7 @@ class _FirstLaunchOnboardingScreenState
         l10n.onboardingOriginDmApprovedDescription,
       _ => origin.description,
     };
+    return TrainerUiLocalization.visibleText(description);
   }
 
   bool get _canContinue {
@@ -287,7 +293,10 @@ class _FirstLaunchOnboardingScreenState
       return AppLocalizations.of(context).onboardingNoAutomaticBonuses;
     }
     return origin.abilityBonuses.entries
-        .map((entry) => '${entry.key.toUpperCase()} +${entry.value}')
+        .map(
+          (entry) =>
+              '${TrainerUiLocalization.abilityAbbreviation(entry.key)} +${entry.value}',
+        )
         .join(', ');
   }
 
@@ -361,7 +370,10 @@ class _FirstLaunchOnboardingScreenState
     } catch (error) {
       if (!mounted) return;
       setState(() {
-        _errorMessage = error.toString();
+        _errorMessage = context.userFacingError(
+          error,
+          action: UserFacingErrorAction.save,
+        );
         _isSaving = false;
       });
     }
@@ -370,6 +382,7 @@ class _FirstLaunchOnboardingScreenState
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final keyboardVisible = MediaQuery.viewInsetsOf(context).bottom > 0;
     if (_isLoading) {
       return Scaffold(
         backgroundColor: _OnboardingPalette.page,
@@ -396,7 +409,12 @@ class _FirstLaunchOnboardingScreenState
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 1080),
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 18),
+              padding: EdgeInsets.fromLTRB(
+                16,
+                keyboardVisible ? 8 : 12,
+                16,
+                keyboardVisible ? 8 : 18,
+              ),
               child: Column(
                 children: [
                   _ProgressHeader(
@@ -405,13 +423,13 @@ class _FirstLaunchOnboardingScreenState
                     canGoBack: _step > 0 && _step < 8,
                     onBack: _back,
                   ),
-                  const SizedBox(height: 14),
+                  SizedBox(height: keyboardVisible ? 6 : 14),
                   Expanded(
                     child: AnimatedSwitcher(
                       duration: const Duration(milliseconds: 280),
                       switchInCurve: Curves.easeOutCubic,
                       switchOutCurve: Curves.easeInCubic,
-                      child: _buildStage(),
+                      child: _buildStage(keyboardVisible: keyboardVisible),
                     ),
                   ),
                   if (_errorMessage != null && _step >= 8) ...[
@@ -425,11 +443,11 @@ class _FirstLaunchOnboardingScreenState
                       ),
                     ),
                   ],
-                  const SizedBox(height: 14),
+                  SizedBox(height: keyboardVisible ? 8 : 14),
                   if (_step != 8 || !_isSaving)
                     SizedBox(
                       width: double.infinity,
-                      height: 54,
+                      height: keyboardVisible ? 48 : 54,
                       child: FilledButton(
                         onPressed: _canContinue && !_isSaving ? _next : null,
                         style: FilledButton.styleFrom(
@@ -450,7 +468,7 @@ class _FirstLaunchOnboardingScreenState
                       ),
                     )
                   else
-                    const SizedBox(height: 54),
+                    SizedBox(height: keyboardVisible ? 48 : 54),
                 ],
               ),
             ),
@@ -460,7 +478,7 @@ class _FirstLaunchOnboardingScreenState
     );
   }
 
-  Widget _buildStage() {
+  Widget _buildStage({required bool keyboardVisible}) {
     if (_step == 0) {
       return const _WelcomeStage(key: ValueKey('welcome'));
     }
@@ -476,6 +494,7 @@ class _FirstLaunchOnboardingScreenState
     return _ProfessorScene(
       key: ValueKey('scene-$_step'),
       compactCardTopFactor: compactCardFactor,
+      keyboardVisible: keyboardVisible,
       child: dialogue,
     );
   }
@@ -915,21 +934,28 @@ class _ProfessorScene extends StatelessWidget {
     super.key,
     required this.child,
     required this.compactCardTopFactor,
+    required this.keyboardVisible,
   });
 
   final Widget child;
   final double compactCardTopFactor;
+  final bool keyboardVisible;
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
         final compact = constraints.maxWidth < 760;
-        final proposedCardTop = constraints.maxHeight * compactCardTopFactor;
-        final minimumCardTop = compact ? 170.0 : 210.0;
+        final keyboardCompact = compact && keyboardVisible;
+        final proposedCardTop =
+            constraints.maxHeight *
+            (keyboardCompact ? .22 : compactCardTopFactor);
+        final minimumCardTop = compact
+            ? (keyboardCompact ? 72.0 : 170.0)
+            : 210.0;
         final maximumCardTop = math.max(
           minimumCardTop,
-          constraints.maxHeight - 140,
+          constraints.maxHeight - (keyboardCompact ? 220 : 140),
         );
         final cardTop = math.min(
           maximumCardTop,
@@ -937,9 +963,23 @@ class _ProfessorScene extends StatelessWidget {
         );
         final horizontalInset = compact ? 8.0 : 28.0;
         final professorInset = compact ? 4.0 : 72.0;
-        final professorOverlap = compact
-            ? math.min(220.0, math.max(132.0, cardTop * .48))
-            : math.min(260.0, math.max(170.0, cardTop * .42));
+        final double professorOverlap;
+        if (keyboardCompact) {
+          professorOverlap = math.min(
+            120.0,
+            math.max(80.0, cardTop * .35),
+          );
+        } else if (compact) {
+          professorOverlap = math.min(
+            220.0,
+            math.max(132.0, cardTop * .48),
+          );
+        } else {
+          professorOverlap = math.min(
+            260.0,
+            math.max(170.0, cardTop * .42),
+          );
+        }
 
         return Align(
           alignment: Alignment.topCenter,

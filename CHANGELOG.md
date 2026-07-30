@@ -23,7 +23,8 @@ Tutte le modifiche rilevanti al progetto vengono documentate in questo file.
 - Flutter bloccato alla versione 3.44.4 nei workflow di CI e release;
 - messaggi d’errore visibili centralizzati e localizzati, senza esporre eccezioni tecniche;
 - metadati delle mosse e azioni dello Zaino completati anche in inglese;
-- creazione di profilo, starter, squadra e Pokédex resa atomica, con attivazione soltanto dopo il salvataggio completo.
+- creazione di profilo, starter, squadra e Pokédex resa atomica, con attivazione soltanto dopo il salvataggio completo;
+- rimandi alle pagine del Manuale del Giocatore sostituiti con le definizioni complete dei privilegi in italiano e inglese, mantenendo gli adattamenti previsti da Pokémon 5e.
 
 ### Corretto
 

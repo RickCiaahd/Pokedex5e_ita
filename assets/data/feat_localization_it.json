@@ -18,19 +18,19 @@
     },
     "Actor": {
       "name": "Attore",
-      "description": "Pag. 165 del manuale del giocatore."
+      "description": "Il punteggio di Carisma aumenta di 1, fino a un massimo di 20.\n• Ottiene vantaggio alle prove di Carisma (Inganno) e Carisma (Intrattenere) effettuate per spacciarsi per qualcun altro.\n• Dopo avere ascoltato una persona parlare o una creatura emettere un suono per almeno 1 minuto, può imitarla. Un ascoltatore riconosce l’imitazione come falsa superando una prova di Saggezza (Intuizione) contrapposta alla prova di Carisma (Inganno) del Pokémon."
     },
     "Alert": {
       "name": "Allerta",
-      "description": "Pag. 165 del manuale del giocatore (il bonus all’iniziativa si applica all’Allenatore mentre questo è il Pokémon attivo)."
+      "description": "Finché è cosciente, questo Pokémon non può essere sorpreso.\n• L’Allenatore ottiene un bonus di +5 all’iniziativa mentre questo è il Pokémon attivo. Il bonus non si cumula con un eventuale privilegio Allerta dell’Allenatore.\n• Le creature che questo Pokémon non vede non ottengono vantaggio ai tiri per colpire contro di lui soltanto perché non sono viste."
     },
     "Athlete (DEX)": {
       "name": "Atleta (DES)",
-      "description": "Pag. 165 del manuale del giocatore."
+      "description": "Il punteggio di Destrezza aumenta di 1, fino a un massimo di 20.\n• Rialzarsi da prono consuma soltanto 5 piedi di movimento.\n• Scalare non costa movimento extra.\n• Può effettuare un salto in lungo o in alto con rincorsa dopo essersi mosso a piedi di soli 5 piedi, anziché 10."
     },
     "Athlete (STR)": {
       "name": "Atleta (FOR)",
-      "description": "Pag. 165 del manuale del giocatore."
+      "description": "Il punteggio di Forza aumenta di 1, fino a un massimo di 20.\n• Rialzarsi da prono consuma soltanto 5 piedi di movimento.\n• Scalare non costa movimento extra.\n• Può effettuare un salto in lungo o in alto con rincorsa dopo essersi mosso a piedi di soli 5 piedi, anziché 10."
     },
     "Brawny": {
       "name": "Forzuto",
@@ -38,7 +38,7 @@
     },
     "Charger": {
       "name": "Carica",
-      "description": "Pag. 165 del manuale del giocatore (quando usa attacchi in mischia)."
+      "description": "Quando usa la propria azione per Scattare, questo Pokémon può usare un’azione bonus per effettuare un attacco in mischia o spingere una creatura. Se immediatamente prima di questa azione bonus si muove di almeno 10 piedi in linea retta, un attacco in mischia riuscito infligge +5 danni oppure una spinta riuscita allontana il bersaglio fino a 10 piedi."
     },
     "Combo Master": {
       "name": "Maestro delle Combo",
@@ -46,11 +46,11 @@
     },
     "Durable": {
       "name": "Tenace",
-      "description": "Pag. 166 del manuale del giocatore."
+      "description": "Il punteggio di Costituzione aumenta di 1, fino a un massimo di 20. Quando questo Pokémon tira un Dado Vita per recuperare punti ferita, il numero minimo di punti ferita recuperati con il tiro è pari al doppio del suo modificatore di Costituzione, con un minimo di 2."
     },
     "Elemental Adept": {
       "name": "Adepto Elementale",
-      "description": "Pag. 166 del manuale del giocatore (scegliere uno dei tipi di danno Pokémon)."
+      "description": "Quando ottiene questo privilegio, sceglie un tipo di danno Pokémon. Le mosse che attiva ignorano la resistenza ai danni del tipo scelto. Quando tira i danni di una mossa di quel tipo, può considerare ogni risultato di 1 su un dado di danno come un 2. Può scegliere questo privilegio più volte, selezionando ogni volta un tipo di danno diverso."
     },
     "Extra Move": {
       "name": "Mossa Extra",
@@ -66,11 +66,11 @@
     },
     "Mobile": {
       "name": "Mobilità",
-      "description": "Pag. 168 del manuale del giocatore."
+      "description": "La velocità di questo Pokémon aumenta di 10 piedi.\n• Quando usa l’azione Scatto, il terreno difficile non gli costa movimento extra in quel turno.\n• Dopo avere effettuato un attacco in mischia contro una creatura, non provoca attacchi di opportunità da quella creatura per il resto del turno, che l’attacco colpisca o manchi."
     },
     "Observant": {
       "name": "Osservatore",
-      "description": "Pag. 168 del manuale del giocatore."
+      "description": "Il punteggio di Intelligenza o Saggezza aumenta di 1, fino a un massimo di 20.\n• Se questo Pokémon vede la bocca di una creatura mentre parla una lingua che comprende, può interpretarne le parole leggendo le labbra.\n• Ottiene un bonus di +5 alla Saggezza (Percezione) passiva e all’Intelligenza (Indagare) passiva."
     },
     "Perceptive": {
       "name": "Percettivo",
@@ -90,43 +90,43 @@
     },
     "Resilient (CHA)": {
       "name": "Resiliente (CAR)",
-      "description": "Pag. 168 del manuale del giocatore."
+      "description": "Il punteggio di Carisma aumenta di 1, fino a un massimo di 20, e questo Pokémon ottiene competenza nei tiri salvezza su Carisma."
     },
     "Resilient (CON)": {
       "name": "Resiliente (COS)",
-      "description": "Pag. 168 del manuale del giocatore."
+      "description": "Il punteggio di Costituzione aumenta di 1, fino a un massimo di 20, e questo Pokémon ottiene competenza nei tiri salvezza su Costituzione."
     },
     "Resilient (DEX)": {
       "name": "Resiliente (DES)",
-      "description": "Pag. 168 del manuale del giocatore."
+      "description": "Il punteggio di Destrezza aumenta di 1, fino a un massimo di 20, e questo Pokémon ottiene competenza nei tiri salvezza su Destrezza."
     },
     "Resilient (INT)": {
       "name": "Resiliente (INT)",
-      "description": "Pag. 168 del manuale del giocatore."
+      "description": "Il punteggio di Intelligenza aumenta di 1, fino a un massimo di 20, e questo Pokémon ottiene competenza nei tiri salvezza su Intelligenza."
     },
     "Resilient (STR)": {
       "name": "Resiliente (FOR)",
-      "description": "Pag. 168 del manuale del giocatore."
+      "description": "Il punteggio di Forza aumenta di 1, fino a un massimo di 20, e questo Pokémon ottiene competenza nei tiri salvezza su Forza."
     },
     "Resilient (WIS)": {
       "name": "Resiliente (SAG)",
-      "description": "Pag. 168 del manuale del giocatore."
+      "description": "Il punteggio di Saggezza aumenta di 1, fino a un massimo di 20, e questo Pokémon ottiene competenza nei tiri salvezza su Saggezza."
     },
     "Savage Attacker": {
       "name": "Aggressore Selvaggio",
-      "description": "Pag. 169 del manuale del giocatore."
+      "description": "Una volta per turno, quando tira i danni di un attacco in mischia, questo Pokémon può ripetere il tiro dei dadi di danno dell’attacco e usare uno dei due totali."
     },
     "Sentinel": {
       "name": "Sentinella",
-      "description": "Pag. 169 del manuale del giocatore."
+      "description": "Quando questo Pokémon colpisce una creatura con un attacco di opportunità, la velocità della creatura diventa 0 per il resto del turno.\n• Le creature provocano attacchi di opportunità da questo Pokémon anche se effettuano l’azione Disimpegno prima di lasciare la sua portata.\n• Quando una creatura entro 5 piedi da questo Pokémon attacca un bersaglio diverso da lui, e quel bersaglio non possiede questo privilegio, questo Pokémon può usare la propria reazione per effettuare un attacco in mischia contro l’attaccante."
     },
     "Skilled": {
       "name": "Abile",
-      "description": "Pag. 170 del manuale del giocatore."
+      "description": "Questo Pokémon ottiene competenza in un’abilità a scelta diversa da Addestrare Animali."
     },
     "Skulker": {
       "name": "Appostato",
-      "description": "Pag. 170 del manuale del giocatore."
+      "description": "Prerequisito: Destrezza 13 o superiore.\n• Questo Pokémon può tentare di nascondersi quando è leggermente oscurato alla creatura da cui si nasconde.\n• Quando è nascosto a una creatura e la manca con un attacco a distanza, l’attacco non rivela la sua posizione.\n• La luce fioca non impone svantaggio alle prove di Saggezza (Percezione) basate sulla vista."
     },
     "Stealthy": {
       "name": "Furtivo",
@@ -142,7 +142,7 @@
     },
     "Tough": {
       "name": "Robusto",
-      "description": "Pag. 170 del manuale del giocatore."
+      "description": "Quando ottiene questo privilegio, i punti ferita massimi di questo Pokémon aumentano di un ammontare pari al doppio del suo livello. Ogni volta che sale di livello in seguito, i suoi punti ferita massimi aumentano di altri 2."
     },
     "Wrangler": {
       "name": "Domatore",

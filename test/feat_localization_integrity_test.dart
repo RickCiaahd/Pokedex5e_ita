@@ -61,16 +61,39 @@ void main() {
     expect(names['Alert'], 'Allerta');
     expect(names['Skilled'], 'Abile');
     expect(names['Skulker'], 'Appostato');
-    expect(descriptions['Actor'], 'Pag. 165 del manuale del giocatore.');
+    expect(descriptions['Actor'], contains('Carisma (Inganno)'));
+    expect(descriptions['Alert'], contains('bonus di +5 all’iniziativa'));
+    expect(descriptions['Elemental Adept'], contains('mosse che attiva'));
+    expect(descriptions['Skilled'], contains('diversa da Addestrare Animali'));
     expect(descriptions['Combo Master'], contains('Sfuriate'));
     expect(descriptions['Combo Master'], isNot(contains('Fury Swipes')));
+    expect(
+      descriptions.values.where(
+        (description) =>
+            description.contains('Pag.') ||
+            description.contains('manuale del giocatore') ||
+            description.contains('PHB:'),
+      ),
+      isEmpty,
+    );
 
     GameCatalogLocale.setLanguageCode('en');
     final englishDescriptions = await repository.getFeatDescriptions();
     final englishNames = await repository.getFeatDisplayNames();
     expect(englishNames['Actor'], 'Actor');
-    expect(englishDescriptions['Actor'], 'PHB:165');
+    expect(englishDescriptions['Actor'], contains('Charisma (Deception)'));
+    expect(englishDescriptions['Alert'], contains('+5 bonus to initiative'));
+    expect(englishDescriptions['Elemental Adept'], contains('Moves you activate'));
+    expect(englishDescriptions['Skilled'], contains('other than Animal Handling'));
     expect(englishDescriptions['AC Up'], startsWith('Your Pokémon'));
+    expect(
+      englishDescriptions.values.where(
+        (description) =>
+            description.contains('PHB:') ||
+            description.contains('Player’s Handbook page'),
+      ),
+      isEmpty,
+    );
   });
 }
 

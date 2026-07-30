@@ -496,6 +496,7 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
           blockedOptions: blocked,
           descriptions: _featDescriptions,
           labels: _featDisplayNames,
+          descriptionMaxLines: null,
         ),
       ),
     );
@@ -1563,6 +1564,7 @@ class _ChoicePickerScreen extends StatefulWidget {
     this.descriptions = const {},
     this.labels = const {},
     this.includeNone = false,
+    this.descriptionMaxLines = 5,
   });
 
   static const noneValue = '__none__';
@@ -1575,6 +1577,7 @@ class _ChoicePickerScreen extends StatefulWidget {
   final Map<String, String> descriptions;
   final Map<String, String> labels;
   final bool includeNone;
+  final int? descriptionMaxLines;
 
   @override
   State<_ChoicePickerScreen> createState() => _ChoicePickerScreenState();
@@ -1632,6 +1635,7 @@ class _ChoicePickerScreenState extends State<_ChoicePickerScreen> {
             label: widget.labels[option] ?? option,
             subtitle: widget.descriptions[option],
             pinned: true,
+            subtitleMaxLines: widget.descriptionMaxLines,
             onTap: () => Navigator.of(context).pop(option),
           ),
         if (pinnedOptions.isNotEmpty && otherOptions.isNotEmpty)
@@ -1642,6 +1646,7 @@ class _ChoicePickerScreenState extends State<_ChoicePickerScreen> {
           _PickerTile(
             label: widget.labels[option] ?? option,
             subtitle: widget.descriptions[option],
+            subtitleMaxLines: widget.descriptionMaxLines,
             onTap: () => Navigator.of(context).pop(option),
           ),
         if (options.isEmpty && !widget.includeNone)
@@ -1769,12 +1774,14 @@ class _PickerTile extends StatelessWidget {
     this.subtitle,
     this.type,
     this.pinned = false,
+    this.subtitleMaxLines = 5,
   });
 
   final String label;
   final String? subtitle;
   final String? type;
   final bool pinned;
+  final int? subtitleMaxLines;
   final VoidCallback onTap;
 
   @override
@@ -1795,7 +1802,13 @@ class _PickerTile extends StatelessWidget {
         title: Text(label.toUpperCase()),
         subtitle: subtitle == null || subtitle!.isEmpty
             ? null
-            : Text(subtitle!, maxLines: 5, overflow: TextOverflow.ellipsis),
+            : Text(
+                subtitle!,
+                maxLines: subtitleMaxLines,
+                overflow: subtitleMaxLines == null
+                    ? TextOverflow.visible
+                    : TextOverflow.ellipsis,
+              ),
         onTap: onTap,
       ),
     );

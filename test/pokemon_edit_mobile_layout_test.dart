@@ -43,4 +43,34 @@ void main() {
     expect(fieldsSource, contains('maxLines: 1'));
     expect(fieldsSource, contains('overflow: TextOverflow.ellipsis'));
   });
+
+  test('feat definitions are not truncated in the picker', () {
+    final source = File(
+      'lib/screens/pokemon/pokemon_edit_screen.dart',
+    ).readAsStringSync();
+    final featPickerStart = source.indexOf(
+      "title: uiTextForLanguage(\n            'Scegli privilegio',",
+    );
+    final featPickerEnd = source.indexOf(
+      '),\n      ),\n    );',
+      featPickerStart,
+    );
+
+    expect(featPickerStart, greaterThanOrEqualTo(0));
+    expect(featPickerEnd, greaterThan(featPickerStart));
+
+    final featPickerSource = source.substring(
+      featPickerStart,
+      featPickerEnd,
+    );
+    expect(featPickerSource, contains('descriptionMaxLines: null'));
+    expect(source, contains('maxLines: subtitleMaxLines'));
+    expect(
+      source,
+      contains(
+        'overflow: subtitleMaxLines == null\n'
+        '                    ? TextOverflow.visible',
+      ),
+    );
+  });
 }

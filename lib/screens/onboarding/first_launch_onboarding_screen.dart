@@ -8,6 +8,7 @@ import '../../models/pokemon_type_localization.dart';
 import '../../models/team_slot.dart';
 import '../../models/trainer_manual_content.dart';
 import '../../models/trainer_manual_options.dart';
+import '../../models/trainer_origin_name_localization.dart';
 import '../../models/user_profile.dart';
 import '../../repositories/evolution_repository.dart';
 import '../../repositories/pokedex_repositry.dart';
@@ -181,9 +182,11 @@ class _FirstLaunchOnboardingScreenState
   }
 
   String _originDisplayName(TrainerOrigin origin, AppLocalizations l10n) {
-    return origin.name == 'Origine 5e approvata dal DM'
-        ? l10n.onboardingOriginDmApprovedName
-        : origin.name;
+    return trainerOriginDisplayName(
+      origin.name,
+      isItalian: Localizations.localeOf(context).languageCode == 'it',
+      dmApprovedLabel: l10n.onboardingOriginDmApprovedName,
+    );
   }
 
   String _originDescription(TrainerOrigin origin, AppLocalizations l10n) {
@@ -464,7 +467,7 @@ class _FirstLaunchOnboardingScreenState
 
     final dialogue = _buildDialogue();
     final compactCardFactor = switch (_step) {
-      6 => .46,
+      6 => .30,
       7 => .36,
       8 || 9 => .50,
       _ => .48,
@@ -609,21 +612,28 @@ class _FirstLaunchOnboardingScreenState
           speaker: l10n.onboardingProfessor,
           title: l10n.onboardingStarterTitle,
           body: l10n.onboardingStarterBody,
+          compact: true,
+          scrollable: false,
+          expandContent: true,
           content: Column(
             children: [
               TextField(
+                key: const ValueKey('onboarding-starter-search'),
                 controller: _searchController,
                 decoration: InputDecoration(
                   labelText: l10n.onboardingStarterSearchLabel,
                   hintText: l10n.onboardingStarterSearchHint,
                   prefixIcon: const Icon(Icons.search),
+                  isDense: true,
                 ),
               ),
-              const SizedBox(height: 12),
-              _StarterGrid(
-                pokemon: _filteredStarters,
-                selectedId: _starter?.id,
-                onSelected: (pokemon) => setState(() => _starter = pokemon),
+              const SizedBox(height: 10),
+              Expanded(
+                child: _StarterGrid(
+                  pokemon: _filteredStarters,
+                  selectedId: _starter?.id,
+                  onSelected: (pokemon) => setState(() => _starter = pokemon),
+                ),
               ),
             ],
           ),
@@ -1109,15 +1119,64 @@ class _DialogueCard extends StatelessWidget {
     required this.title,
     required this.body,
     this.content,
+    this.compact = false,
+    this.scrollable = true,
+    this.expandContent = false,
   });
 
   final String speaker;
   final String title;
   final String body;
   final Widget? content;
+  final bool compact;
+  final bool scrollable;
+  final bool expandContent;
 
   @override
   Widget build(BuildContext context) {
+    final padding = compact ? 16.0 : 22.0;
+    final column = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          speaker,
+          style: TextStyle(
+            color: _OnboardingPalette.rust,
+            fontSize: compact ? 13 : 15,
+            fontWeight: FontWeight.w900,
+          ),
+        ),
+        SizedBox(height: compact ? 5 : 8),
+        Text(
+          title,
+          key: const ValueKey('onboarding-dialogue-title'),
+          maxLines: compact ? 2 : null,
+          overflow: compact ? TextOverflow.ellipsis : null,
+          style: TextStyle(
+            color: _OnboardingPalette.text,
+            fontSize: compact ? 22 : 27,
+            height: 1.08,
+            fontWeight: FontWeight.w900,
+          ),
+        ),
+        SizedBox(height: compact ? 6 : 10),
+        Text(
+          body,
+          maxLines: compact ? 2 : null,
+          overflow: compact ? TextOverflow.ellipsis : null,
+          style: TextStyle(
+            color: _OnboardingPalette.text,
+            fontSize: compact ? 14 : 16,
+            height: compact ? 1.25 : 1.35,
+          ),
+        ),
+        if (content != null) ...[
+          SizedBox(height: compact ? 10 : 18),
+          if (expandContent) Expanded(child: content!) else content!,
+        ],
+      ],
+    );
+
     return Container(
       decoration: BoxDecoration(
         color: _OnboardingPalette.card,
@@ -1132,44 +1191,14 @@ class _DialogueCard extends StatelessWidget {
           ),
         ],
       ),
-      child: Scrollbar(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(22),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                speaker,
-                style: const TextStyle(
-                  color: _OnboardingPalette.rust,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w900,
-                ),
+      child: scrollable
+          ? Scrollbar(
+              child: SingleChildScrollView(
+                padding: EdgeInsets.all(padding),
+                child: column,
               ),
-              const SizedBox(height: 8),
-              Text(
-                title,
-                style: const TextStyle(
-                  color: _OnboardingPalette.text,
-                  fontSize: 27,
-                  height: 1.08,
-                  fontWeight: FontWeight.w900,
-                ),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                body,
-                style: const TextStyle(
-                  color: _OnboardingPalette.text,
-                  fontSize: 16,
-                  height: 1.35,
-                ),
-              ),
-              if (content != null) ...[const SizedBox(height: 18), content!],
-            ],
-          ),
-        ),
-      ),
+            )
+          : Padding(padding: EdgeInsets.all(padding), child: column),
     );
   }
 }
@@ -1294,78 +1323,76 @@ class _StarterGrid extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final columns = constraints.maxWidth >= 680 ? 4 : 2;
-        return SizedBox(
-          height: 330,
-          child: GridView.builder(
-            primary: false,
-            padding: EdgeInsets.zero,
-            itemCount: pokemon.length,
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: columns,
-              childAspectRatio: .78,
-              crossAxisSpacing: 10,
-              mainAxisSpacing: 10,
-            ),
-            itemBuilder: (context, index) {
-              final entry = pokemon[index];
-              final selected = selectedId == entry.id;
-              return InkWell(
-                onTap: () => onSelected(entry),
-                borderRadius: BorderRadius.circular(18),
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 180),
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
+        return GridView.builder(
+          key: const ValueKey('onboarding-starter-grid'),
+          primary: false,
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+          padding: EdgeInsets.zero,
+          itemCount: pokemon.length,
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: columns,
+            childAspectRatio: 1,
+            crossAxisSpacing: 8,
+            mainAxisSpacing: 8,
+          ),
+          itemBuilder: (context, index) {
+            final entry = pokemon[index];
+            final selected = selectedId == entry.id;
+            return InkWell(
+              onTap: () => onSelected(entry),
+              borderRadius: BorderRadius.circular(14),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 180),
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: selected
+                      ? _OnboardingPalette.peach
+                      : _OnboardingPalette.card,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(
                     color: selected
-                        ? _OnboardingPalette.peach
-                        : _OnboardingPalette.card,
-                    borderRadius: BorderRadius.circular(18),
-                    border: Border.all(
-                      color: selected
-                          ? _OnboardingPalette.orange
-                          : _OnboardingPalette.border,
-                      width: selected ? 2.5 : 1,
-                    ),
-                  ),
-                  child: Column(
-                    children: [
-                      Expanded(
-                        child: PokemonAssetImage(
-                          pokemon: entry,
-                          useLargeArtwork: true,
-                          size: 112,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        entry.name,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w900,
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        entry.types
-                            .map(
-                              isItalian
-                                  ? PokemonTypeLocalization.italianLabel
-                                  : PokemonTypeLocalization.englishValue,
-                            )
-                            .join(' / '),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(fontSize: 13),
-                      ),
-                    ],
+                        ? _OnboardingPalette.orange
+                        : _OnboardingPalette.border,
+                    width: selected ? 2.5 : 1,
                   ),
                 ),
-              );
-            },
-          ),
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: PokemonAssetImage(
+                        pokemon: entry,
+                        useLargeArtwork: true,
+                        size: 82,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      entry.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                    Text(
+                      entry.types
+                          .map(
+                            isItalian
+                                ? PokemonTypeLocalization.italianLabel
+                                : PokemonTypeLocalization.englishValue,
+                          )
+                          .join(' / '),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(fontSize: 11),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
         );
       },
     );

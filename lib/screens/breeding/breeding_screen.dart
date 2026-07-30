@@ -2,6 +2,8 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
+import '../../localization/ui_text.dart';
+import '../../localization/user_facing_error.dart';
 import '../../models/breeding_candidate.dart';
 import '../../models/breeding_egg.dart';
 import '../../models/breeding_species_data.dart';
@@ -24,7 +26,6 @@ import '../../services/trainer_path_passive_service.dart';
 import '../../widgets/breeding/breeder_trait_dialogs.dart';
 import '../../widgets/navigation/home_leading_button.dart';
 import '../../widgets/pokemon/egg_asset_image.dart';
-import '../../localization/ui_text.dart';
 
 class BreedingScreen extends StatefulWidget {
   const BreedingScreen({super.key});
@@ -421,7 +422,13 @@ class _BreedingScreenState extends State<BreedingScreen> {
         ),
       );
     } catch (error) {
-      setState(() => _message = error.toString());
+      if (!mounted) return;
+      setState(
+        () => _message = context.userFacingError(
+          error,
+          action: UserFacingErrorAction.save,
+        ),
+      );
     }
   }
 

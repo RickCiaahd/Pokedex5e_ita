@@ -5,6 +5,8 @@ import 'dart:typed_data';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
+import '../../localization/ui_text.dart';
+import '../../localization/user_facing_error.dart';
 import '../../models/battle_session.dart';
 import '../../models/generated_pokemon.dart';
 import '../../models/master_battle_session.dart';
@@ -22,7 +24,6 @@ import '../../widgets/layout/responsive_content.dart';
 import '../../widgets/navigation/home_leading_button.dart';
 import '../../widgets/pokemon/pokemon_asset_image.dart';
 import '../pokemon/pokemon_detail_screen.dart';
-import '../../localization/ui_text.dart';
 
 class NpcBattleScreen extends StatefulWidget {
   const NpcBattleScreen({
@@ -521,11 +522,10 @@ class _NpcBattleScreenState extends State<NpcBattleScreen> {
     } catch (error) {
       if (!mounted) return;
       setState(() {
-        _message = error
-            .toString()
-            .replaceFirst('FormatException: ', '')
-            .replaceFirst('Bad state: ', '')
-            .trim();
+        _message = context.userFacingError(
+          error,
+          action: UserFacingErrorAction.exportFile,
+        );
       });
     } finally {
       if (mounted) setState(() => _isWorking = false);
@@ -573,11 +573,10 @@ class _NpcBattleScreenState extends State<NpcBattleScreen> {
     } catch (error) {
       if (!mounted) return;
       setState(() {
-        _message = error
-            .toString()
-            .replaceFirst('FormatException: ', '')
-            .replaceFirst('Bad state: ', '')
-            .trim();
+        _message = context.userFacingError(
+          error,
+          action: UserFacingErrorAction.share,
+        );
       });
     } finally {
       if (mounted) setState(() => _isWorking = false);

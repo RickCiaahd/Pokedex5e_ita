@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../localization/ui_text.dart';
+import '../../localization/user_facing_error.dart';
 import '../../models/bag_item.dart';
 import '../../models/generated_npc_trainer.dart';
 import '../../models/generated_pokemon.dart';
@@ -161,10 +162,10 @@ class _NpcTrainerResultScreenState extends State<NpcTrainerResultScreen> {
     } catch (error) {
       if (!mounted) return;
       setState(() {
-        _message = error
-            .toString()
-            .replaceFirst('FormatException: ', '')
-            .replaceFirst('Bad state: ', '');
+        _message = context.userFacingError(
+          error,
+          action: UserFacingErrorAction.save,
+        );
       });
     } finally {
       if (mounted) setState(() => _isSaving = false);

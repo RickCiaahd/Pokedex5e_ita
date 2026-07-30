@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
+import '../../localization/ui_text.dart';
+import '../../localization/user_facing_error.dart';
 import '../../services/app_launch_service.dart';
 import '../home/home_screen.dart';
 import 'first_launch_onboarding_screen.dart';
-import '../../localization/ui_text.dart';
 
 class AppBootstrapScreen extends StatefulWidget {
   const AppBootstrapScreen({super.key});
@@ -41,7 +42,10 @@ class _AppBootstrapScreenState extends State<AppBootstrapScreen> {
     } catch (error) {
       if (!mounted) return;
       setState(() {
-        _errorMessage = error.toString();
+        _errorMessage = context.userFacingError(
+          error,
+          action: UserFacingErrorAction.load,
+        );
         _isLoading = false;
       });
     }

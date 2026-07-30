@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../models/pokemon.dart';
 import '../../localization/ui_text.dart';
+import '../../localization/user_facing_error.dart';
+import '../../models/pokemon.dart';
 import '../../repositories/master_battle_session_repository.dart';
 import '../../repositories/pokemon_repository.dart';
 import '../../repositories/profile_repository.dart';
@@ -107,7 +108,10 @@ class _ToolsScreenState extends State<ToolsScreen> {
     } catch (error) {
       if (!mounted) return;
       setState(() {
-        _error = error.toString();
+        _error = context.userFacingError(
+          error,
+          action: UserFacingErrorAction.load,
+        );
         _isLoading = false;
       });
     }

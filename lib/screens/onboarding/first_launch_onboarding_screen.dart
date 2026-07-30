@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 import '../../l10n/app_localizations.dart';
+import '../../localization/user_facing_error.dart';
 import '../../models/pokemon.dart';
 import '../../models/pokemon_type_localization.dart';
 import '../../models/team_slot.dart';
@@ -122,7 +123,10 @@ class _FirstLaunchOnboardingScreenState
     } catch (error) {
       if (!mounted) return;
       setState(() {
-        _errorMessage = error.toString();
+        _errorMessage = context.userFacingError(
+          error,
+          action: UserFacingErrorAction.load,
+        );
         _isLoading = false;
       });
     }
@@ -361,7 +365,10 @@ class _FirstLaunchOnboardingScreenState
     } catch (error) {
       if (!mounted) return;
       setState(() {
-        _errorMessage = error.toString();
+        _errorMessage = context.userFacingError(
+          error,
+          action: UserFacingErrorAction.save,
+        );
         _isSaving = false;
       });
     }

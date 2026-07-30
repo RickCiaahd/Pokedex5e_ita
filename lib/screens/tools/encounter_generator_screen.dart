@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../localization/ui_text.dart';
+import '../../localization/user_facing_error.dart';
 
 import '../../models/encounter_collection.dart';
 import '../../models/generated_encounter.dart';
@@ -107,7 +108,10 @@ class _EncounterGeneratorScreenState extends State<EncounterGeneratorScreen> {
     } catch (error) {
       if (!mounted) return;
       setState(() {
-        _error = error.toString();
+        _error = context.userFacingError(
+          error,
+          action: UserFacingErrorAction.load,
+        );
         _isLoading = false;
       });
     }

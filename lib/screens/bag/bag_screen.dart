@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 import '../../localization/ui_text.dart';
+import '../../localization/user_facing_error.dart';
 
 import '../../models/bag_inventory_entry.dart';
 import '../../models/bag_item.dart';
@@ -805,7 +806,12 @@ class _BagScreenState extends State<BagScreen> {
             }
 
             if (snapshot.hasError) {
-              return _BagError(message: snapshot.error.toString());
+              return _BagError(
+                message: context.userFacingError(
+                  snapshot.error!,
+                  action: UserFacingErrorAction.load,
+                ),
+              );
             }
 
             final data = snapshot.data;
@@ -1544,11 +1550,14 @@ class _EquippedHeldItemsSection extends StatelessWidget {
                 style: const TextStyle(fontWeight: FontWeight.w800),
               ),
               subtitle: Text(
-                'Slot ${equipped.slot.slotIndex + 1} • Tiene ${equipped.item.name}',
+                context.uiText(
+                  'Slot ${equipped.slot.slotIndex + 1} • Tiene ${equipped.item.name}',
+                  'Slot ${equipped.slot.slotIndex + 1} • Holds ${equipped.item.name}',
+                ),
               ),
               trailing: OutlinedButton(
                 onPressed: () => onRemove(equipped),
-                child: Text('TOGLI'),
+                child: Text(context.uiText('TOGLI', 'REMOVE')),
               ),
             ),
           ),
@@ -1783,7 +1792,10 @@ class _MoveReplaceSheet extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           children: [
             Text(
-              '$pokemonName sta imparando ${newMove.name}',
+              context.uiText(
+                '$pokemonName sta imparando ${newMove.name}',
+                '$pokemonName is learning ${newMove.name}',
+              ),
               style: Theme.of(
                 context,
               ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
@@ -1791,10 +1803,7 @@ class _MoveReplaceSheet extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               context.uiText(
-                context.uiText(
-                  'Il moveset è pieno. Controlla la nuova mossa e scegli quale dimenticare.',
-                  'The moveset is full. Review the new move and choose one to forget.',
-                ),
+                'Il moveset è pieno. Controlla la nuova mossa e scegli quale dimenticare.',
                 'The moveset is full. Review the new move and choose one to forget.',
               ),
             ),
@@ -1851,7 +1860,7 @@ class _MoveReplacementTile extends StatelessWidget {
             : PokemonTypeBadge(type: move.type, height: 24),
         title: Text((move?.name ?? reference).toUpperCase()),
         subtitle: move == null ? null : _MoveCompactInfo(move: move),
-        trailing: Text('Sostituisci'),
+        trailing: Text(context.uiText('Sostituisci', 'Replace')),
         onTap: () => Navigator.of(context).pop(index),
       ),
     );
@@ -1868,9 +1877,14 @@ class _MoveCompactInfo extends StatelessWidget {
     final parts = <String>[
       'PP ${move.pp}',
       if (move.range.trim().isNotEmpty && move.range != '-')
-        'Raggio ${move.range}',
-      if (move.damageByLevel.isNotEmpty) 'Danni ${_damageSummary(move)}',
-      if (move.save != null) 'TS ${move.save}',
+        context.uiText('Raggio ${move.range}', 'Range ${move.range}'),
+      if (move.damageByLevel.isNotEmpty)
+        context.uiText(
+          'Danni ${_damageSummary(move)}',
+          'Damage ${_damageSummary(move)}',
+        ),
+      if (move.save != null)
+        context.uiText('TS ${move.save}', 'Save ${move.save}'),
     ];
 
     return Text(
@@ -1895,7 +1909,7 @@ class _MoveDetailsCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final details = _moveDetailRows(move);
+    final details = _moveDetailRows(context, move);
 
     return Card(
       color: theme.colorScheme.surfaceContainerHighest,
@@ -1953,18 +1967,22 @@ class _MoveInfoChip extends StatelessWidget {
   }
 }
 
-List<(String, String)> _moveDetailRows(MoveData move) {
+List<(String, String)> _moveDetailRows(BuildContext context, MoveData move) {
   return <(String, String)>[
-    ('Tipo', PokemonAssetPaths.localizedTypeLabel(move.type)),
+    (
+      context.uiText('Tipo', 'Type'),
+      PokemonAssetPaths.localizedTypeLabel(move.type),
+    ),
     ('PP', move.pp),
     if (move.moveTime.trim().isNotEmpty && move.moveTime != '-')
-      ('Tempo', move.moveTime),
+      (context.uiText('Tempo', 'Time'), move.moveTime),
     if (move.range.trim().isNotEmpty && move.range != '-')
-      ('Raggio', move.range),
+      (context.uiText('Raggio', 'Range'), move.range),
     if (move.duration.trim().isNotEmpty && move.duration != '-')
-      ('Durata', move.duration),
+      (context.uiText('Durata', 'Duration'), move.duration),
     if (move.movePowers.isNotEmpty) ('Power', move.movePowers.join('/')),
-    if (move.damageByLevel.isNotEmpty) ('Danni', _damageSummary(move)),
+    if (move.damageByLevel.isNotEmpty)
+      (context.uiText('Danni', 'Damage'), _damageSummary(move)),
     if (move.damageTypes.isNotEmpty)
       (
         uiTextForLanguage('Danno tipo', 'Damage type'),
@@ -1972,9 +1990,10 @@ List<(String, String)> _moveDetailRows(MoveData move) {
       ),
     if (move.damageModifier?.trim().isNotEmpty == true)
       ('Mod.', move.damageModifier!.trim()),
-    if (move.save?.trim().isNotEmpty == true) ('TS', move.save!.trim()),
+    if (move.save?.trim().isNotEmpty == true)
+      (context.uiText('TS', 'Save'), move.save!.trim()),
     if (move.attackScope?.trim().isNotEmpty == true)
-      ('Bersaglio', move.attackScope!.trim()),
+      (context.uiText('Bersaglio', 'Target'), move.attackScope!.trim()),
   ];
 }
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../localization/ui_text.dart';
+import '../../localization/user_facing_error.dart';
 
 import '../../models/generated_pokemon.dart';
 import '../../models/move_data.dart';
@@ -103,7 +104,10 @@ class _PokemonGeneratorScreenState extends State<PokemonGeneratorScreen> {
     } catch (error) {
       if (!mounted) return;
       setState(() {
-        _errorMessage = error.toString();
+        _errorMessage = context.userFacingError(
+          error,
+          action: UserFacingErrorAction.load,
+        );
         _isLoading = false;
       });
     }
@@ -167,7 +171,7 @@ class _PokemonGeneratorScreenState extends State<PokemonGeneratorScreen> {
       _scrollToResult(_singleResultKey);
     } catch (error) {
       if (!mounted) return;
-      setState(() => _errorMessage = error.toString());
+      setState(() => _errorMessage = context.userFacingError(error));
     } finally {
       if (mounted) setState(() => _isGenerating = false);
     }
@@ -311,7 +315,7 @@ class _PokemonGeneratorScreenState extends State<PokemonGeneratorScreen> {
       _scrollToResult(_batchResultKey);
     } catch (error) {
       if (!mounted) return;
-      setState(() => _errorMessage = error.toString());
+      setState(() => _errorMessage = context.userFacingError(error));
     } finally {
       if (mounted) setState(() => _isGenerating = false);
     }
@@ -350,7 +354,7 @@ class _PokemonGeneratorScreenState extends State<PokemonGeneratorScreen> {
       });
     } catch (error) {
       if (!mounted) return;
-      setState(() => _errorMessage = error.toString());
+      setState(() => _errorMessage = context.userFacingError(error));
     } finally {
       if (mounted) setState(() => _isGenerating = false);
     }
@@ -480,7 +484,12 @@ class _PokemonGeneratorScreenState extends State<PokemonGeneratorScreen> {
       });
     } catch (error) {
       if (!mounted) return;
-      setState(() => _errorMessage = error.toString());
+      setState(
+        () => _errorMessage = context.userFacingError(
+          error,
+          action: UserFacingErrorAction.save,
+        ),
+      );
     } finally {
       if (mounted) setState(() => _isSaving = false);
     }
@@ -602,7 +611,12 @@ class _PokemonGeneratorScreenState extends State<PokemonGeneratorScreen> {
       });
     } catch (error) {
       if (!mounted) return;
-      setState(() => _errorMessage = error.toString());
+      setState(
+        () => _errorMessage = context.userFacingError(
+          error,
+          action: UserFacingErrorAction.save,
+        ),
+      );
     } finally {
       if (mounted) setState(() => _isSaving = false);
     }

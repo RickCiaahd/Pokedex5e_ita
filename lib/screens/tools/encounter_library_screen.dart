@@ -5,6 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 import '../../localization/ui_text.dart';
+import '../../localization/user_facing_error.dart';
 
 import '../../models/campaign_transfer_bundle.dart';
 import '../../models/generated_encounter.dart';
@@ -72,7 +73,10 @@ class _EncounterLibraryScreenState extends State<EncounterLibraryScreen> {
     } catch (error) {
       if (!mounted) return;
       setState(() {
-        _message = _friendlyError(error);
+        _message = context.userFacingError(
+          error,
+          action: UserFacingErrorAction.load,
+        );
         _messageIsError = true;
         _isLoading = false;
       });
@@ -106,7 +110,8 @@ class _EncounterLibraryScreenState extends State<EncounterLibraryScreen> {
       );
       await _load();
     } catch (error) {
-      _setMessage(_friendlyError(error), isError: true);
+      if (!mounted) return;
+      _setMessage(context.userFacingError(error), isError: true);
     } finally {
       if (mounted) setState(() => _isBusy = false);
     }
@@ -132,7 +137,8 @@ class _EncounterLibraryScreenState extends State<EncounterLibraryScreen> {
         ),
       );
     } catch (error) {
-      _setMessage(_friendlyError(error), isError: true);
+      if (!mounted) return;
+      _setMessage(context.userFacingError(error), isError: true);
     } finally {
       if (mounted) setState(() => _isBusy = false);
     }
@@ -159,7 +165,11 @@ class _EncounterLibraryScreenState extends State<EncounterLibraryScreen> {
         ),
       );
     } catch (error) {
-      _setMessage(_friendlyError(error), isError: true);
+      if (!mounted) return;
+      _setMessage(
+        context.userFacingError(error, action: UserFacingErrorAction.save),
+        isError: true,
+      );
     } finally {
       if (mounted) setState(() => _isBusy = false);
     }
@@ -205,7 +215,11 @@ class _EncounterLibraryScreenState extends State<EncounterLibraryScreen> {
         uiTextForLanguage('${saved.name} eliminato.', '${saved.name} deleted.'),
       );
     } catch (error) {
-      _setMessage(_friendlyError(error), isError: true);
+      if (!mounted) return;
+      _setMessage(
+        context.userFacingError(error, action: UserFacingErrorAction.save),
+        isError: true,
+      );
     } finally {
       if (mounted) setState(() => _isBusy = false);
     }
@@ -257,7 +271,14 @@ class _EncounterLibraryScreenState extends State<EncounterLibraryScreen> {
               ),
       );
     } catch (error) {
-      _setMessage(_friendlyError(error), isError: true);
+      if (!mounted) return;
+      _setMessage(
+        context.userFacingError(
+          error,
+          action: UserFacingErrorAction.exportFile,
+        ),
+        isError: true,
+      );
     } finally {
       if (mounted) setState(() => _isBusy = false);
     }
@@ -299,7 +320,11 @@ class _EncounterLibraryScreenState extends State<EncounterLibraryScreen> {
         ),
       );
     } catch (error) {
-      _setMessage(_friendlyError(error), isError: true);
+      if (!mounted) return;
+      _setMessage(
+        context.userFacingError(error, action: UserFacingErrorAction.share),
+        isError: true,
+      );
     } finally {
       if (mounted) setState(() => _isBusy = false);
     }
@@ -376,7 +401,14 @@ class _EncounterLibraryScreenState extends State<EncounterLibraryScreen> {
         ),
       );
     } catch (error) {
-      _setMessage(_friendlyError(error), isError: true);
+      if (!mounted) return;
+      _setMessage(
+        context.userFacingError(
+          error,
+          action: UserFacingErrorAction.importFile,
+        ),
+        isError: true,
+      );
     } finally {
       if (mounted) setState(() => _isBusy = false);
     }
@@ -401,14 +433,6 @@ class _EncounterLibraryScreenState extends State<EncounterLibraryScreen> {
       if (pokemon.id == id) return pokemon;
     }
     return null;
-  }
-
-  String _friendlyError(Object error) {
-    return error
-        .toString()
-        .replaceFirst('Bad state: ', '')
-        .replaceFirst('FormatException: ', '')
-        .trim();
   }
 
   @override

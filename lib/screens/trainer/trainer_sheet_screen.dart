@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import '../../models/evolution_data.dart';
 import '../../l10n/app_localizations.dart';
 import '../../localization/ui_text.dart';
+import '../../localization/user_facing_error.dart';
 import '../../models/pokemon.dart';
 import '../../models/team_slot.dart';
 import '../../models/trainer_manual_content.dart';
@@ -197,11 +198,14 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
         _isLoading = false;
       });
       _tourController.showAutomaticallyIfNeeded(ready: true);
-    } catch (e) {
+    } catch (error) {
       if (!mounted) return;
 
       setState(() {
-        _errorMessage = e.toString();
+        _errorMessage = context.userFacingError(
+          error,
+          action: UserFacingErrorAction.load,
+        );
         _isLoading = false;
       });
     }
@@ -605,11 +609,14 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
           ),
         ),
       );
-    } catch (e) {
+    } catch (error) {
       if (!mounted) return;
 
       setState(() {
-        _errorMessage = e.toString();
+        _errorMessage = context.userFacingError(
+          error,
+          action: UserFacingErrorAction.save,
+        );
         _isSaving = false;
       });
     }

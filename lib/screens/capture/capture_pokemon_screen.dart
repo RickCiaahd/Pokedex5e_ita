@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 
 import '../../localization/ui_text.dart';
+import '../../localization/user_facing_error.dart';
 
 import '../../models/bag_inventory_entry.dart';
 import '../../models/bag_item.dart';
@@ -97,7 +98,10 @@ class _CapturePokemonScreenState extends State<CapturePokemonScreen> {
     } catch (error) {
       if (!mounted) return;
       setState(() {
-        _errorMessage = error.toString();
+        _errorMessage = context.userFacingError(
+          error,
+          action: UserFacingErrorAction.load,
+        );
         _isLoading = false;
       });
     }
@@ -255,7 +259,12 @@ class _CapturePokemonScreenState extends State<CapturePokemonScreen> {
       });
     } catch (error) {
       if (!mounted) return;
-      setState(() => _errorMessage = error.toString());
+      setState(
+        () => _errorMessage = context.userFacingError(
+          error,
+          action: UserFacingErrorAction.save,
+        ),
+      );
     } finally {
       if (mounted) setState(() => _isSaving = false);
     }

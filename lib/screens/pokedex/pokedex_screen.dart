@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../localization/ui_text.dart';
+import '../../localization/user_facing_error.dart';
 
 import '../../models/custom_pokemon_definition.dart';
 import '../../models/pokedex_entry.dart';
@@ -99,7 +100,10 @@ class _PokedexScreenState extends State<PokedexScreen> {
     } catch (error) {
       if (!mounted) return;
       setState(() {
-        _errorMessage = error.toString();
+        _errorMessage = context.userFacingError(
+          error,
+          action: UserFacingErrorAction.load,
+        );
         _isLoading = false;
       });
     }

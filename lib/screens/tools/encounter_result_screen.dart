@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../localization/ui_text.dart';
+import '../../localization/user_facing_error.dart';
 import '../../models/generated_encounter.dart';
 import '../../models/generated_pokemon.dart';
 import '../../models/move_data.dart';
@@ -217,10 +218,10 @@ class _EncounterResultScreenState extends State<EncounterResultScreen> {
     } catch (error) {
       if (!mounted) return;
       setState(() {
-        _message = error
-            .toString()
-            .replaceFirst('FormatException: ', '')
-            .replaceFirst('Bad state: ', '');
+        _message = context.userFacingError(
+          error,
+          action: UserFacingErrorAction.save,
+        );
       });
     } finally {
       if (mounted) setState(() => _isSaving = false);
@@ -256,12 +257,7 @@ class _EncounterResultScreenState extends State<EncounterResultScreen> {
       });
     } catch (error) {
       if (!mounted) return;
-      setState(() {
-        _message = error
-            .toString()
-            .replaceFirst('FormatException: ', '')
-            .replaceFirst('Bad state: ', '');
-      });
+      setState(() => _message = context.userFacingError(error));
     } finally {
       if (mounted) setState(() => _isWorking = false);
     }

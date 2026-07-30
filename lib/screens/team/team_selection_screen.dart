@@ -7,6 +7,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 import '../../localization/ui_text.dart';
+import '../../localization/user_facing_error.dart';
 
 import '../../models/pokemon.dart';
 import '../../models/pokemon_transfer_bundle.dart';
@@ -75,11 +76,14 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
         _team = team..sort((a, b) => a.slotIndex.compareTo(b.slotIndex));
         _isLoading = false;
       });
-    } catch (e) {
+    } catch (error) {
       if (!mounted) return;
 
       setState(() {
-        _errorMessage = e.toString();
+        _errorMessage = context.userFacingError(
+          error,
+          action: UserFacingErrorAction.load,
+        );
         _isLoading = false;
       });
     }
@@ -198,14 +202,6 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
     });
   }
 
-  String _friendlyError(Object error) {
-    return error
-        .toString()
-        .replaceFirst('FormatException: ', '')
-        .replaceFirst('Bad state: ', '')
-        .trim();
-  }
-
   String _displayNameForSlot(TeamSlot slot) {
     final nickname = slot.nickname?.trim() ?? '';
     if (nickname.isNotEmpty) return nickname;
@@ -262,7 +258,14 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
               ),
       );
     } catch (error) {
-      _setStatus(_friendlyError(error), isError: true);
+      if (!mounted) return;
+      _setStatus(
+        context.userFacingError(
+          error,
+          action: UserFacingErrorAction.exportFile,
+        ),
+        isError: true,
+      );
     } finally {
       if (mounted) setState(() => _isBusy = false);
     }
@@ -309,7 +312,14 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
               ),
       );
     } catch (error) {
-      _setStatus(_friendlyError(error), isError: true);
+      if (!mounted) return;
+      _setStatus(
+        context.userFacingError(
+          error,
+          action: UserFacingErrorAction.exportFile,
+        ),
+        isError: true,
+      );
     } finally {
       if (mounted) setState(() => _isBusy = false);
     }
@@ -352,7 +362,11 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
         ),
       );
     } catch (error) {
-      _setStatus(_friendlyError(error), isError: true);
+      if (!mounted) return;
+      _setStatus(
+        context.userFacingError(error, action: UserFacingErrorAction.share),
+        isError: true,
+      );
     } finally {
       if (mounted) setState(() => _isBusy = false);
     }
@@ -409,7 +423,11 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
         ),
       );
     } catch (error) {
-      _setStatus(_friendlyError(error), isError: true);
+      if (!mounted) return;
+      _setStatus(
+        context.userFacingError(error, action: UserFacingErrorAction.share),
+        isError: true,
+      );
     } finally {
       if (mounted) setState(() => _isBusy = false);
     }
@@ -511,7 +529,14 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
               ),
       );
     } catch (error) {
-      _setStatus(_friendlyError(error), isError: true);
+      if (!mounted) return;
+      _setStatus(
+        context.userFacingError(
+          error,
+          action: UserFacingErrorAction.importFile,
+        ),
+        isError: true,
+      );
     } finally {
       if (mounted) setState(() => _isBusy = false);
     }
@@ -625,7 +650,14 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
         ),
       );
     } catch (error) {
-      _setStatus(_friendlyError(error), isError: true);
+      if (!mounted) return;
+      _setStatus(
+        context.userFacingError(
+          error,
+          action: UserFacingErrorAction.importFile,
+        ),
+        isError: true,
+      );
     } finally {
       if (mounted) setState(() => _isBusy = false);
     }

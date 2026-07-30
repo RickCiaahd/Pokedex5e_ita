@@ -30,6 +30,7 @@ void main() {
   test('type badges select image labels in the effective language', () {
     GameCatalogLocale.setLanguageCode('en');
     expect(PokemonAssetPaths.localizedTypeLabel('fire'), 'Fire');
+    expect(PokemonAssetPaths.localizedTypeLabel('typeless'), 'Typeless');
     expect(
       PokemonAssetPaths.typeCandidates('fire'),
       contains('assets/textures/type_names/en/fire.png'),
@@ -37,6 +38,11 @@ void main() {
 
     GameCatalogLocale.setLanguageCode('it');
     expect(PokemonAssetPaths.localizedTypeLabel('fire'), 'Fuoco');
+    expect(PokemonAssetPaths.localizedTypeLabel('typeless'), 'Senza tipo');
+    expect(
+      PokemonAssetPaths.typeCandidates('typeless'),
+      contains('assets/textures/type_names/senza_tipo.png'),
+    );
     expect(
       PokemonAssetPaths.typeCandidates('fire'),
       contains('assets/textures/type_names/fuoco.png'),

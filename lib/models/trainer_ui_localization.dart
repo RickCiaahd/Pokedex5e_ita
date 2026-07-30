@@ -13,6 +13,12 @@ class TrainerUiLocalization {
     'AC': 'CA',
     'HP': 'PF',
     'DC': 'CD',
+    'STRENGTH': 'Forza',
+    'DEXTERITY': 'Destrezza',
+    'CONSTITUTION': 'Costituzione',
+    'INTELLIGENCE': 'Intelligenza',
+    'WISDOM': 'Saggezza',
+    'CHARISMA': 'Carisma',
   };
 
   static const Map<String, String> _skillLabelsIt = {
@@ -207,7 +213,17 @@ class TrainerUiLocalization {
 
   static String abilityAbbreviation(String value) {
     final normalized = value.trim().toUpperCase();
-    return _isItalian ? (_abilityLabelsIt[normalized] ?? value) : normalized;
+    if (_isItalian) return _abilityLabelsIt[normalized] ?? value.trim();
+
+    return const <String, String>{
+          'STRENGTH': 'Strength',
+          'DEXTERITY': 'Dexterity',
+          'CONSTITUTION': 'Constitution',
+          'INTELLIGENCE': 'Intelligence',
+          'WISDOM': 'Wisdom',
+          'CHARISMA': 'Charisma',
+        }[normalized] ??
+        normalized;
   }
 
   static String skillName(String value) =>

@@ -904,10 +904,17 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
     List<String> selectedMoves,
     MoveData? moveData,
   ) async {
+    final localizedNewMove = moveData?.name ?? _moveLabel(newMove);
+
     return showDialog<String?>(
       context: context,
       builder: (_) => AlertDialog(
-        title: Text('Vuoi imparare $newMove?'),
+        title: Text(
+          context.uiText(
+            'Vuoi imparare $localizedNewMove?',
+            'Do you want to learn $localizedNewMove?',
+          ),
+        ),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -932,11 +939,21 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
           for (final move in selectedMoves)
             TextButton(
               onPressed: () => Navigator.of(context).pop(move),
-              child: Text('Dimentica ${_moveLabel(move)}'),
+              child: Text(
+                context.uiText(
+                  'Dimentica ${_moveLabel(move)}',
+                  'Forget ${_moveLabel(move)}',
+                ),
+              ),
             ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: Text('Non imparare $newMove'),
+            child: Text(
+              context.uiText(
+                'Non imparare $localizedNewMove',
+                'Do not learn $localizedNewMove',
+              ),
+            ),
           ),
         ],
       ),

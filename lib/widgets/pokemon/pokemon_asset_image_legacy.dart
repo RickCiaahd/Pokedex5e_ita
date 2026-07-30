@@ -595,6 +595,9 @@ class PokemonAssetPaths {
         case 'acqua':
         case 'water':
           return 'Water';
+        case 'senza tipo':
+        case 'typeless':
+          return 'Typeless';
         default:
           return type;
       }
@@ -655,6 +658,9 @@ class PokemonAssetPaths {
       case 'water':
       case 'acqua':
         return 'Acqua';
+      case 'typeless':
+      case 'senza tipo':
+        return 'Senza tipo';
       default:
         return type;
     }

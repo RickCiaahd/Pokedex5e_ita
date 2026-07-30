@@ -29,6 +29,27 @@ void main() {
     );
   });
 
+  test('i tiri salvezza per esteso seguono la lingua selezionata', () {
+    expect(TrainerUiLocalization.abilityAbbreviation('Strength'), 'Forza');
+    expect(TrainerUiLocalization.abilityAbbreviation('Dexterity'), 'Destrezza');
+    expect(
+      TrainerUiLocalization.abilityAbbreviation('Constitution'),
+      'Costituzione',
+    );
+    expect(
+      TrainerUiLocalization.abilityAbbreviation('Intelligence'),
+      'Intelligenza',
+    );
+    expect(TrainerUiLocalization.abilityAbbreviation('Wisdom'), 'Saggezza');
+    expect(TrainerUiLocalization.abilityAbbreviation('Charisma'), 'Carisma');
+
+    GameCatalogLocale.setLanguageCode('en');
+    expect(
+      TrainerUiLocalization.abilityAbbreviation('Dexterity'),
+      'Dexterity',
+    );
+  });
+
   test('etichette tecniche rimangono inglesi con interfaccia inglese', () {
     GameCatalogLocale.setLanguageCode('en');
 
@@ -61,6 +82,23 @@ void main() {
     expect(TrainerUiLocalization.natureName('Adamant'), 'Decisa');
     expect(TrainerUiLocalization.sizeName('Medium'), 'Media');
     expect(TrainerUiLocalization.genderName('Female'), 'Femmina');
+  });
+
+  test('il dialogo di apprendimento usa il nome localizzato della mossa', () {
+    final pokemonDetail = File(
+      'lib/screens/pokemon/pokemon_detail_screen_legacy.dart',
+    ).readAsStringSync();
+
+    expect(
+      pokemonDetail,
+      contains(
+        'final localizedNewMove = moveData?.name ?? _moveLabel(newMove);',
+      ),
+    );
+    expect(pokemonDetail, contains("'Vuoi imparare \\$localizedNewMove?'"));
+    expect(pokemonDetail, contains("'Non imparare \\$localizedNewMove'"));
+    expect(pokemonDetail, isNot(contains("'Vuoi imparare \\$newMove?'")));
+    expect(pokemonDetail, isNot(contains("'Non imparare \\$newMove'")));
   });
 
   test('le schermate migrate contengono entrambe le lingue', () {

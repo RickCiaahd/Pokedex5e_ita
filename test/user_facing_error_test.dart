@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pokedex_5e_ita/l10n/app_localizations.dart';
 import 'package:pokedex_5e_ita/localization/user_facing_error.dart';
 
 void main() {
@@ -15,6 +16,8 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         locale: const Locale('it'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         home: Builder(
           builder: (context) {
             italianMessage = context.userFacingError(
@@ -30,6 +33,8 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         locale: const Locale('en'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         home: Builder(
           builder: (context) {
             englishMessage = context.userFacingError(

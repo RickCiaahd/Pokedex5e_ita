@@ -613,6 +613,7 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
                     Expanded(
                       child: DropdownButtonFormField<String>(
                         initialValue: _nature,
+                        isExpanded: true,
                         decoration: InputDecoration(
                           labelText: uiTextForLanguage('Natura', 'Nature'),
                           border: OutlineInputBorder(),
@@ -621,7 +622,11 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
                           for (final nature in PokemonNature.names)
                             DropdownMenuItem(
                               value: nature,
-                              child: Text(PokemonNature.labelFor(nature)),
+                              child: Text(
+                                PokemonNature.labelFor(nature),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
                         ],
                         onChanged: (value) {
@@ -634,6 +639,7 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
                     Expanded(
                       child: DropdownButtonFormField<String?>(
                         initialValue: _gender,
+                        isExpanded: true,
                         decoration: InputDecoration(
                           labelText: uiTextForLanguage('Sesso', """Gender"""),
                           border: OutlineInputBorder(),
@@ -643,18 +649,24 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
                             value: null,
                             child: Text(
                               uiTextForLanguage('Qualsiasi', """Any"""),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
                           DropdownMenuItem<String?>(
                             value: 'male',
                             child: Text(
                               uiTextForLanguage('Maschio', """Male"""),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
                           DropdownMenuItem<String?>(
                             value: 'female',
                             child: Text(
                               uiTextForLanguage('Femmina', """Female"""),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
                           DropdownMenuItem<String?>(
@@ -664,6 +676,8 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
                                 'Senza sesso',
                                 """Genderless""",
                               ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
                         ],

@@ -22,4 +22,25 @@ void main() {
     expect(sectionSource, contains('textAlign: TextAlign.center'));
     expect(sectionSource, contains('softWrap: true'));
   });
+
+  test('nature and gender dropdowns stay within their mobile columns', () {
+    final source = File(
+      'lib/screens/pokemon/pokemon_edit_screen.dart',
+    ).readAsStringSync();
+    final fieldsStart = source.indexOf(
+      'DropdownButtonFormField<String>(',
+    );
+    final fieldsEnd = source.indexOf(
+      'SwitchListTile(',
+      fieldsStart,
+    );
+
+    expect(fieldsStart, greaterThanOrEqualTo(0));
+    expect(fieldsEnd, greaterThan(fieldsStart));
+
+    final fieldsSource = source.substring(fieldsStart, fieldsEnd);
+    expect('isExpanded: true'.allMatches(fieldsSource), hasLength(2));
+    expect(fieldsSource, contains('maxLines: 1'));
+    expect(fieldsSource, contains('overflow: TextOverflow.ellipsis'));
+  });
 }

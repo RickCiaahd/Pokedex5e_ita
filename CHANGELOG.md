@@ -30,7 +30,7 @@ Tutte le modifiche rilevanti al progetto vengono documentate in questo file.
 - disposizione dei due tipi nella schermata Aggiungi Pokémon;
 - residui italiani nel flusso delle MT, nella sostituzione delle mosse e nella gestione degli strumenti tenuti;
 - possibili profili parziali o cambi di profilo attivo in caso di errore durante la creazione guidata;
-- overflow orizzontale dei titoli lunghi nella schermata Modifica Pokémon su smartphone.
+- overflow orizzontale dei titoli lunghi e dei selettori Natura/Sesso nella schermata Modifica Pokémon su smartphone.
 
 ## [1.3.2] - 2026-07-26
 

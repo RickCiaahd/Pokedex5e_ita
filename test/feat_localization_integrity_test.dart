@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pokedex_5e_ita/localization/feat_description_overrides.dart';
 import 'package:pokedex_5e_ita/localization/game_catalog_locale.dart';
 import 'package:pokedex_5e_ita/repositories/feat_repository.dart';
 
@@ -44,6 +45,36 @@ void main() {
       )..sort();
       if (!_sameList(sourceTokens, localizedTokens)) {
         errors.add('$key: valori meccanici non corrispondenti.');
+      }
+    }
+    expect(errors, isEmpty, reason: errors.join('\n'));
+  });
+
+  test('gli override coprono tutti e soli i rimandi al PHB', () async {
+    final source = Map<String, dynamic>.from(
+      jsonDecode(await rootBundle.loadString(FeatRepository.sourceAssetPath)),
+    );
+    final referencedFeats = source.entries
+        .where((entry) {
+          final item = Map<String, dynamic>.from(entry.value as Map);
+          return item['Description']?.toString().startsWith('PHB:') == true;
+        })
+        .map((entry) => entry.key)
+        .toSet();
+
+    expect(featDescriptionOverridesEn.keys.toSet(), referencedFeats);
+    expect(featDescriptionOverridesIt.keys.toSet(), referencedFeats);
+
+    final errors = <String>[];
+    for (final key in referencedFeats) {
+      final englishTokens = _mechanicalTokens(
+        featDescriptionOverridesEn[key] ?? '',
+      )..sort();
+      final italianTokens = _mechanicalTokens(
+        featDescriptionOverridesIt[key] ?? '',
+      )..sort();
+      if (!_sameList(englishTokens, italianTokens)) {
+        errors.add('$key: valori meccanici bilingui non corrispondenti.');
       }
     }
     expect(errors, isEmpty, reason: errors.join('\n'));

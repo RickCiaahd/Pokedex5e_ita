@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/services.dart';
 
+import '../localization/feat_description_overrides.dart';
 import '../localization/game_catalog_locale.dart';
 
 class FeatRepository {
@@ -16,10 +17,16 @@ class FeatRepository {
   Future<Map<String, String>> getFeatDescriptions() async {
     final source = await _loadSourceDescriptions();
     if (!GameCatalogLocale.isItalian) {
-      return Map<String, String>.unmodifiable(source);
+      return Map<String, String>.unmodifiable({
+        for (final entry in source.entries)
+          entry.key: featDescriptionOverridesEn[entry.key] ?? entry.value,
+      });
     }
     await _loadItalianLocalization(source.keys.toSet());
-    return Map<String, String>.unmodifiable(_localizedDescriptions!);
+    return Map<String, String>.unmodifiable({
+      for (final entry in _localizedDescriptions!.entries)
+        entry.key: featDescriptionOverridesIt[entry.key] ?? entry.value,
+    });
   }
 
   Future<Map<String, String>> getFeatDisplayNames() async {

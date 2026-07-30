@@ -9,31 +9,31 @@
 		"Description": "Unearthed Arcana: Feats for Skills"
 	},
 	"Actor": {
-		"Description": "Your Charisma score increases by 1, to a maximum of 20.\n• You have advantage on Charisma (Deception) and Charisma (Performance) checks made to pass yourself off as someone else.\n• After hearing a person speak or a creature make a sound for at least 1 minute, you can imitate it. A listener recognizes the imitation as false by succeeding on a Wisdom (Insight) check contested by your Charisma (Deception) check."
+		"Description": "PHB:165"
 	},
 	"Alert": {
-		"Description": "While conscious, you cannot be surprised.\n• The Trainer gains a +5 bonus to initiative while this is the active Pokémon. This bonus does not stack with the Trainer’s own Alert feat.\n• Creatures you cannot see do not gain advantage on attack rolls against you solely because they are unseen."
+		"Description": "PHB:165 (Initiative bonus applied to trainer while you are the active Pokémon)"
 	},
 	"Athlete (DEX)": {
-		"Description": "Your Dexterity score increases by 1, to a maximum of 20.\n• Standing up from being prone uses only 5 feet of your movement.\n• Climbing does not cost extra movement.\n• You can make a running long jump or high jump after moving only 5 feet on foot, rather than 10 feet."
+		"Description": "PHB:165"
 	},
 	"Athlete (STR)": {
-		"Description": "Your Strength score increases by 1, to a maximum of 20.\n• Standing up from being prone uses only 5 feet of your movement.\n• Climbing does not cost extra movement.\n• You can make a running long jump or high jump after moving only 5 feet on foot, rather than 10 feet."
+		"Description": "PHB:165"
 	},
 	"Brawny": {
 		"Description": "Unearthed Arcana: Feats for Skills"
 	},
 	"Charger": {
-		"Description": "When you use your action to Dash, you can use a bonus action to make one melee attack or shove a creature. If you move at least 10 feet in a straight line immediately before this bonus action, a successful melee attack deals +5 damage, or a successful shove pushes the target up to 10 feet away from you."
+		"Description": "PHB:165 (When using melee attacks)"
 	},
 	"Combo Master": {
 		"Description": "Your Pokémon is an expert in combining strikes against a foe. When this feature is selected, combo moves that have the ability to hit more than once are guaranteed to hit at least twice. (Fury Swipes, Double Slap, etc.)"
 	},
 	"Durable": {
-		"Description": "Your Constitution score increases by 1, to a maximum of 20. When you roll a Hit Die to regain hit points, the minimum number of hit points regained from the roll equals twice your Constitution modifier, with a minimum of 2."
+		"Description": "PHB:166"
 	},
 	"Elemental Adept": {
-		"Description": "Choose one Pokémon damage type when you gain this feat. Moves you activate ignore resistance to damage of the chosen type. When you roll damage for a move of that type, you can treat any 1 on a damage die as a 2. You can select this feat multiple times, choosing a different damage type each time."
+		"Description": "PHB:166 (Choose one of the Pokémon damage types)"
 	},
 	"Extra Move": {
 		"Description": "Your Pokémon can know five total moves instead of four."
@@ -45,10 +45,10 @@
 		"Description": "Your Pokemon is a master of close combat. Gain advantage on all attacks of opportunity. Before you make a melee attack, you can choose to take a -5 penalty to the attack roll. If the attack hits, you add +10 to the attack’s damage (Once per move)."
 	},
 	"Mobile": {
-		"Description": "Your speed increases by 10 feet.\n• When you use the Dash action, difficult terrain does not cost extra movement that turn.\n• After you make a melee attack against a creature, you do not provoke opportunity attacks from that creature for the rest of the turn, whether the attack hits or misses."
+		"Description": "PHB:168"
 	},
 	"Observant": {
-		"Description": "Your Intelligence or Wisdom score increases by 1, to a maximum of 20.\n• If you can see a creature’s mouth while it speaks a language you understand, you can interpret its words by reading its lips.\n• You gain a +5 bonus to passive Wisdom (Perception) and passive Intelligence (Investigation)."
+		"Description": "PHB:168"
 	},
 	"Perceptive": {
 		"Description": "Unearthed Arcana:Feats for Skills"
@@ -63,34 +63,34 @@
 		"Description": "Your Pokemon is a sharpshooter. Your ranged attacks ignore half and three-fourths cover, Before you make a ranged attack, you can choose to take a -5 penalty to the attack roll. If the attack hits, you add +10 to the attack’s damage (Once per move)."
 	},
 	"Resilient (CHA)": {
-		"Description": "Your Charisma score increases by 1, to a maximum of 20, and you gain proficiency in Charisma saving throws."
+		"Description": "PHB:168"
 	},
 	"Resilient (CON)": {
-		"Description": "Your Constitution score increases by 1, to a maximum of 20, and you gain proficiency in Constitution saving throws."
+		"Description": "PHB:168"
 	},
 	"Resilient (DEX)": {
-		"Description": "Your Dexterity score increases by 1, to a maximum of 20, and you gain proficiency in Dexterity saving throws."
+		"Description": "PHB:168"
 	},
 	"Resilient (INT)": {
-		"Description": "Your Intelligence score increases by 1, to a maximum of 20, and you gain proficiency in Intelligence saving throws."
+		"Description": "PHB:168"
 	},
 	"Resilient (STR)": {
-		"Description": "Your Strength score increases by 1, to a maximum of 20, and you gain proficiency in Strength saving throws."
+		"Description": "PHB:168"
 	},
 	"Resilient (WIS)": {
-		"Description": "Your Wisdom score increases by 1, to a maximum of 20, and you gain proficiency in Wisdom saving throws."
+		"Description": "PHB:168"
 	},
 	"Savage Attacker": {
-		"Description": "Once per turn when you roll damage for a melee attack, you can reroll the attack’s damage dice and use either total."
+		"Description": "PHB:169"
 	},
 	"Sentinel": {
-		"Description": "When you hit a creature with an opportunity attack, its speed becomes 0 for the rest of the turn.\n• Creatures provoke opportunity attacks from you even if they take the Disengage action before leaving your reach.\n• When a creature within 5 feet of you attacks a target other than you, and that target does not have this feat, you can use your reaction to make a melee attack against the attacker."
+		"Description": "PHB:169"
 	},
 	"Skilled": {
-		"Description": "You gain proficiency in one skill of your choice other than Animal Handling."
+		"Description": "PHB:170"
 	},
 	"Skulker": {
-		"Description": "Prerequisite: Dexterity 13 or higher.\n• You can try to hide when you are lightly obscured from the creature you are hiding from.\n• When you are hidden from a creature and miss it with a ranged attack, the attack does not reveal your position.\n• Dim light does not impose disadvantage on Wisdom (Perception) checks that rely on sight."
+		"Description": "PHB:170"
 	},
 	"Stealthy": {
 		"Description": "Unearthed Arcana:Feats for Skills"
@@ -102,7 +102,7 @@
 		"Description": "Your Pokémon endures hours of rigorous training which keep it in battle longer than the average Pokémon. Gain +1 PP for every move."
 	},
 	"Tough": {
-		"Description": "Your hit point maximum increases by an amount equal to twice your level when you gain this feat. Whenever you gain a level thereafter, your hit point maximum increases by 2 additional hit points."
+		"Description": "PHB:170"
 	},
 	"Wrangler": {
 		"Description": "You have developed a unique set of skills that give you the ability to grapple and hold an opponent down with steady and strong hands. You gain the following benefits:\n* You have advantage on attack rolls against a creature you are Grappling.\n* You can use your action to try to pin a creature already Grappled by you. To do so, make another grapple check. If you succeed, you and the creature are both Restrained until the grapple ends.\n* When a creature attempts to use their movement to leave your reach without disengaging, you may use your reaction to attempt to Grapple the target."

@@ -24,7 +24,7 @@ void main() {
         appLaunchService: launch,
       );
       final profile = _profile(id: 'guided', name: 'Misty');
-      const starterSlot = TeamSlot(slotIndex: 0, pokemonId: 7);
+      final starterSlot = TeamSlot(slotIndex: 0, pokemonId: 7);
 
       final created = await service.createGuidedProfile(
         profile: profile,
@@ -58,7 +58,7 @@ void main() {
       await expectLater(
         service.createGuidedProfile(
           profile: _profile(id: 'broken', name: 'Broken'),
-          starterSlot: const TeamSlot(slotIndex: 0, pokemonId: 4),
+          starterSlot: TeamSlot(slotIndex: 0, pokemonId: 4),
           starterPokemonId: 4,
           starterSpeciesName: 'Charmander',
         ),
@@ -86,7 +86,7 @@ void main() {
       await expectLater(
         service.createGuidedProfile(
           profile: _profile(id: 'first', name: 'First'),
-          starterSlot: const TeamSlot(slotIndex: 0, pokemonId: 1),
+          starterSlot: TeamSlot(slotIndex: 0, pokemonId: 1),
           starterPokemonId: 1,
           starterSpeciesName: 'Bulbasaur',
           markOnboardingCompleted: true,

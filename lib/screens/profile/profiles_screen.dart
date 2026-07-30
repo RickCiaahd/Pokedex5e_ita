@@ -13,8 +13,10 @@ import '../../models/profile_backup.dart';
 import '../../models/user_profile.dart';
 import '../../repositories/profile_repository.dart';
 import '../../services/profile_backup_service.dart';
+import '../../services/profile_creation_service.dart';
 import '../../widgets/layout/responsive_content.dart';
 import '../../widgets/navigation/home_leading_button.dart';
+import '../onboarding/first_launch_onboarding_screen.dart';
 
 class ProfilesScreen extends StatefulWidget {
   const ProfilesScreen({super.key});
@@ -26,6 +28,8 @@ class ProfilesScreen extends StatefulWidget {
 class _ProfilesScreenState extends State<ProfilesScreen> {
   final ProfileRepository _profileRepository = ProfileRepository();
   final ProfileBackupService _backupService = ProfileBackupService();
+  final ProfileCreationService _profileCreationService =
+      ProfileCreationService();
 
   UserProfile? _activeProfile;
   List<UserProfile> _profiles = [];
@@ -80,7 +84,23 @@ class _ProfilesScreenState extends State<ProfilesScreen> {
     });
   }
 
-  Future<void> _createProfile() async {
+  Future<void> _chooseProfileCreation() async {
+    if (_isBusy) return;
+    final mode = await showDialog<_ProfileCreationMode>(
+      context: context,
+      builder: (_) => const _ProfileCreationModeDialog(),
+    );
+    if (!mounted || mode == null) return;
+
+    switch (mode) {
+      case _ProfileCreationMode.quick:
+        return _createQuickProfile();
+      case _ProfileCreationMode.guided:
+        return _createGuidedProfile();
+    }
+  }
+
+  Future<void> _createQuickProfile() async {
     if (_isBusy) return;
     final name = await showDialog<String>(
       context: context,
@@ -90,8 +110,9 @@ class _ProfilesScreenState extends State<ProfilesScreen> {
 
     setState(() => _isBusy = true);
     try {
-      final profile = await _profileRepository.createProfile(name.trim());
-      await _profileRepository.setActiveProfile(profile.id);
+      final profile = await _profileCreationService.createEmptyProfile(
+        name.trim(),
+      );
       await _loadProfiles();
       _setStatus(
         context.uiText(
@@ -108,6 +129,32 @@ class _ProfilesScreenState extends State<ProfilesScreen> {
     } finally {
       if (mounted) setState(() => _isBusy = false);
     }
+  }
+
+  Future<void> _createGuidedProfile() async {
+    if (_isBusy) return;
+
+    final created = await Navigator.of(context).push<bool>(
+      MaterialPageRoute(
+        fullscreenDialog: true,
+        builder: (onboardingContext) => FirstLaunchOnboardingScreen(
+          markOnboardingCompleted: false,
+          onCancel: () => Navigator.of(onboardingContext).pop(false),
+          onCompleted: () => Navigator.of(onboardingContext).pop(true),
+        ),
+      ),
+    );
+    if (!mounted || created != true) return;
+
+    await _loadProfiles();
+    final profile = _activeProfile;
+    if (profile == null) return;
+    _setStatus(
+      context.uiText(
+        'Profilo guidato ${profile.name} creato e attivato.',
+        'Guided profile ${profile.name} created and activated.',
+      ),
+    );
   }
 
   Future<void> _setActiveProfile(UserProfile profile) async {
@@ -374,7 +421,7 @@ class _ProfilesScreenState extends State<ProfilesScreen> {
                 _ProfilesSectionHeader(
                   isBusy: _isBusy,
                   onImportProfile: _importProfile,
-                  onCreateProfile: _createProfile,
+                  onCreateProfile: _chooseProfileCreation,
                 ),
                 const SizedBox(height: 4),
                 Text(
@@ -791,6 +838,87 @@ class _CreateProfileDialogState extends State<_CreateProfileDialog> {
           child: Text(context.uiText('Crea', 'Create')),
         ),
       ],
+    );
+  }
+}
+
+enum _ProfileCreationMode { quick, guided }
+
+class _ProfileCreationModeDialog extends StatelessWidget {
+  const _ProfileCreationModeDialog();
+
+  @override
+  Widget build(BuildContext context) {
+    return SimpleDialog(
+      title: Text(context.uiText('Crea un profilo', 'Create a profile')),
+      children: [
+        _ProfileCreationModeOption(
+          key: const ValueKey('create-profile-quick'),
+          icon: Icons.bolt_outlined,
+          title: context.uiText('Crea profilo', 'Create profile'),
+          description: context.uiText(
+            'Inserisci soltanto il nome e completa la scheda Allenatore in seguito.',
+            'Enter only the name and complete the Trainer sheet later.',
+          ),
+          onTap: () => Navigator.of(
+            context,
+          ).pop(_ProfileCreationMode.quick),
+        ),
+        _ProfileCreationModeOption(
+          key: const ValueKey('create-profile-guided'),
+          icon: Icons.auto_stories_outlined,
+          title: context.uiText(
+            'Crea profilo guidato',
+            'Create guided profile',
+          ),
+          description: context.uiText(
+            'Segui il Professore e scegli nome, età, origine, background e starter.',
+            'Follow the Professor and choose name, age, origin, background and starter.',
+          ),
+          onTap: () => Navigator.of(
+            context,
+          ).pop(_ProfileCreationMode.guided),
+        ),
+        Align(
+          alignment: Alignment.centerRight,
+          child: Padding(
+            padding: const EdgeInsets.only(right: 16),
+            child: TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(context.uiText('Annulla', 'Cancel')),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _ProfileCreationModeOption extends StatelessWidget {
+  const _ProfileCreationModeOption({
+    super.key,
+    required this.icon,
+    required this.title,
+    required this.description,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String title;
+  final String description;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: Icon(icon),
+      title: Text(title, style: const TextStyle(fontWeight: FontWeight.w700)),
+      subtitle: Padding(
+        padding: const EdgeInsets.only(top: 4),
+        child: Text(description),
+      ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+      onTap: onTap,
     );
   }
 }

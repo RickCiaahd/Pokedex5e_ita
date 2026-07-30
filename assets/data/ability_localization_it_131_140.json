@@ -19,7 +19,7 @@
       "description": "Quando questo Pokémon viene colpito da un attacco in mischia, può tirare d4. Con un risultato di 4, infligge all’attaccante danni di tipo Acciaio pari al proprio modificatore di competenza."
     },
     "iron-fist": {
-      "description": "Quando attacca con una mossa basata sui pugni, come Mega Punch, Dynamic Punch, Ice Punch, Fire Punch o Thunder Punch, questo Pokémon può tirare due volte i dadi dei danni e scegliere uno dei due totali."
+      "description": "Quando attacca con una mossa basata sui pugni, come Megapugno, Dinamipugno, Gelopugno, Fuocopugno o Tuonopugno, questo Pokémon può tirare due volte i dadi dei danni e scegliere uno dei due totali."
     },
     "justified": {
       "description": "Quando questo Pokémon viene colpito da una mossa di tipo Buio, ha vantaggio al proprio attacco successivo."
@@ -34,7 +34,7 @@
       "description": "Questo Pokémon non subisce condizioni negative sotto luce solare intensa."
     },
     "leaf-storm": {
-      "description": "Questo Pokémon conosce Leaf Storm come quinta mossa. Dimentica la mossa se assume qualsiasi altra forma."
+      "description": "Questo Pokémon conosce Verdebufera come quinta mossa. Dimentica la mossa se assume qualsiasi altra forma."
     }
   }
 }

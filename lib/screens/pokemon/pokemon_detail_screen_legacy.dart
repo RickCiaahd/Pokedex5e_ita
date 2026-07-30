@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../localization/ui_text.dart';
+import '../../localization/feat_display_name.dart';
 import '../../models/bag_item.dart';
 import '../../models/evolution_data.dart';
 import '../../models/level_progression.dart';
@@ -181,6 +182,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
   Map<String, String> _abilities = {};
   Map<String, String> _abilityDisplayNames = {};
   Map<String, String> _featDescriptions = {};
+  Map<String, String> _featDisplayNames = {};
   Map<String, BagItem> _itemCatalog = {};
   Map<String, EvolutionData> _evolutions = {};
   List<EvolutionEligibility> _evolutionChoices = const [];
@@ -285,12 +287,13 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
       _abilityRepository.getAbilityDisplayNames(pokemonId: _pokemon.id),
       _evolutionRepository.getEvolutionData(),
       _featRepository.getFeatDescriptions(),
+      _featRepository.getFeatDisplayNames(),
       _itemRepository.getWebItems(),
       _profileRepository.getActiveProfile(),
     ]);
 
     final evolutions = results[3] as Map<String, EvolutionData>;
-    final items = results[5] as List<BagItem>;
+    final items = results[6] as List<BagItem>;
     final evolutionChoices = await _buildEvolutionChoices(
       evolution: _evolutionForPokemon(_pokemon, evolutions),
       slot: _teamSlot,
@@ -304,8 +307,9 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
       _abilityDisplayNames = results[2] as Map<String, String>;
       _evolutions = evolutions;
       _featDescriptions = results[4] as Map<String, String>;
+      _featDisplayNames = results[5] as Map<String, String>;
       _itemCatalog = {for (final item in items) item.id: item};
-      _profile = results[6] as UserProfile;
+      _profile = results[7] as UserProfile;
       _evolutionChoices = evolutionChoices;
       _isLoading = false;
     });
@@ -904,10 +908,17 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
     List<String> selectedMoves,
     MoveData? moveData,
   ) async {
+    final localizedNewMove = moveData?.name ?? _moveLabel(newMove);
+
     return showDialog<String?>(
       context: context,
       builder: (_) => AlertDialog(
-        title: Text('Vuoi imparare $newMove?'),
+        title: Text(
+          context.uiText(
+            'Vuoi imparare $localizedNewMove?',
+            'Do you want to learn $localizedNewMove?',
+          ),
+        ),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -932,11 +943,21 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
           for (final move in selectedMoves)
             TextButton(
               onPressed: () => Navigator.of(context).pop(move),
-              child: Text('Dimentica ${_moveLabel(move)}'),
+              child: Text(
+                context.uiText(
+                  'Dimentica ${_moveLabel(move)}',
+                  'Forget ${_moveLabel(move)}',
+                ),
+              ),
             ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: Text('Non imparare $newMove'),
+            child: Text(
+              context.uiText(
+                'Non imparare $localizedNewMove',
+                'Do not learn $localizedNewMove',
+              ),
+            ),
           ),
         ],
       ),
@@ -1380,6 +1401,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
                             abilityDescriptions: _abilities,
                             abilityDisplayNames: _abilityDisplayNames,
                             featDescriptions: _featDescriptions,
+                            featDisplayNames: _featDisplayNames,
                           ),
                           _TraitsView(
                             pokemon: pokemon,
@@ -2582,6 +2604,7 @@ class _FeaturesView extends StatelessWidget {
     required this.abilityDescriptions,
     required this.abilityDisplayNames,
     required this.featDescriptions,
+    required this.featDisplayNames,
   });
 
   final Pokemon pokemon;
@@ -2589,6 +2612,7 @@ class _FeaturesView extends StatelessWidget {
   final Map<String, String> abilityDescriptions;
   final Map<String, String> abilityDisplayNames;
   final Map<String, String> featDescriptions;
+  final Map<String, String> featDisplayNames;
 
   @override
   Widget build(BuildContext context) {
@@ -2628,9 +2652,9 @@ class _FeaturesView extends StatelessWidget {
           ),
         for (final feat in feats)
           _InfoCard(
-            title: feat,
+            title: localizedFeatDisplayName(feat, featDisplayNames),
             child: Text(
-              featDescriptions[feat] ??
+              localizedFeatDescription(feat, featDescriptions) ??
                   uiTextForLanguage(
                     'Descrizione non disponibile.',
                     """Description unavailable.""",
@@ -2639,10 +2663,10 @@ class _FeaturesView extends StatelessWidget {
           ),
         if (abilities.isEmpty && feats.isEmpty)
           _InfoCard(
-            title: 'Features',
+            title: uiTextForLanguage('Privilegi', """Features"""),
             child: Text(
               uiTextForLanguage(
-                'Nessuna feature disponibile.',
+                'Nessun privilegio disponibile.',
                 """No features available.""",
               ),
             ),

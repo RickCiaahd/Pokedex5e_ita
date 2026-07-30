@@ -10,7 +10,7 @@
       "description": "Mentre nevica o grandina, questo Pokémon recupera PF pari al proprio modificatore di competenza alla fine di ciascuno dei propri turni."
     },
     "ice-face": {
-      "description": "Questo Pokémon possiede due forme: Ice Form e No-Ice Form. In Ice Form, la prima volta che subisce danni li dimezza, ma si trasforma in No-Ice Form. In No-Ice Form, la sua CA diminuisce di 3 e ciascuna delle sue velocità di movimento aumenta di 5 piedi. Torna in Ice Form dopo un riposo breve oppure all’inizio del proprio turno mentre si trova nella grandine."
+      "description": "Questo Pokémon possiede due forme: Forma Ghiaccio e Forma Senza Ghiaccio. In Forma Ghiaccio, la prima volta che subisce danni li dimezza, ma si trasforma in Forma Senza Ghiaccio. In Forma Senza Ghiaccio, la sua CA diminuisce di 3 e ciascuna delle sue velocità di movimento aumenta di 5 piedi. Torna in Forma Ghiaccio dopo un riposo breve oppure all’inizio del proprio turno mentre si trova nella grandine."
     },
     "ice-scales": {
       "description": "Questo Pokémon ha resistenza ai danni inflitti dalle mosse la cui Caratteristica della mossa è INT, SAG o CAR."
@@ -25,10 +25,10 @@
       "description": "Questo Pokémon è immune alla condizione avvelenato."
     },
     "imposter": {
-      "description": "Questo Pokémon può usare Transform come azione bonus."
+      "description": "Questo Pokémon può usare Trasformazione come azione bonus."
     },
     "infiltrator": {
-      "description": "Questo Pokémon ignora Light Screen, Reflect, Substitute, Mist, Safeguard e Aurora Veil."
+      "description": "Questo Pokémon ignora Schermoluce, Riflesso, Sostituto, Nebbia, Salvaguardia e Velaurora."
     }
   }
 }

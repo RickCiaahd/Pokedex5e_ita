@@ -1,6 +1,6 @@
 # Glossario italiano dei contenuti
 
-Questo glossario definisce la terminologia da usare nelle descrizioni visualizzate da **Trainer Atlas 5e**. I nomi propri di Pokémon, mosse, abilità e oggetti restano invariati finché non viene approvata esplicitamente una localizzazione separata dei nomi.
+Questo glossario definisce la terminologia da usare nelle descrizioni visualizzate da **Trainer Atlas 5e**. Le chiavi tecniche di Pokémon, mosse, abilità, privilegi e oggetti restano invariati nei dati e nei salvataggi; l’interfaccia usa le localizzazioni italiane approvate.
 
 ## Regole generali
 
@@ -88,8 +88,14 @@ Questo glossario definisce la terminologia da usare nelle descrizioni visualizza
 - Le abilità presenti nei videogiochi usano il nome italiano riportato nella pagina **Abilità** di Pokémon Central Wiki: `https://wiki.pokemoncentral.it/Abilit%C3%A0`.
 - Il nome inglese tecnico resta invariato nei JSON sorgente, nei salvataggi, nei trasferimenti e nei riferimenti interni.
 - La localizzazione del nome viene applicata soltanto all'interfaccia.
-- Le capacità personalizzate del sistema 5e, le vecchie mosse registrate come abilità e le voci tecniche di cambio forma conservano il nome originale quando non esiste una corrispondenza ufficiale.
+- Le capacità personalizzate del sistema 5e, le vecchie mosse registrate come abilità e le voci tecniche di cambio forma usano una traduzione italiana dedicata nell’interfaccia, conservando il nome originale soltanto come chiave tecnica.
 - Le varianti tecniche della stessa abilità condividono il nome ufficiale verificato, per esempio `power-construct-*` → **Sciamefusione** ed `embody-aspect-*` → **Albergamemorie**.
+
+## Nomi dei privilegi Pokémon
+
+- Nell’interfaccia italiana i `Feat` del manuale Pokémon 5e sono chiamati **privilegi**; le chiavi inglesi restano invariate nei salvataggi e nelle regole.
+- I privilegi derivati dal Manuale del Giocatore usano le denominazioni italiane consolidate e riportano il riferimento nella forma **Pag. N del manuale del giocatore**.
+- I privilegi specifici di Pokémon 5e mantengono invariati numeri, formule e condizioni della pagina 18 del manuale, traducendo soltanto nome e testo visibile.
 
 ## Stile delle descrizioni del Pokédex
 

@@ -22,9 +22,9 @@ class ProfileRepository {
     final appState = await _appStateBox();
     final profiles = await _profilesBox();
 
-    final activeId = appState.get(HiveKeys.activeProfileId);
+    final activeId = await getActiveProfileId();
 
-    if (activeId != null && profiles.containsKey(activeId)) {
+    if (activeId != null) {
       return UserProfile.fromJson(
         Map<String, dynamic>.from(profiles.get(activeId)),
       );
@@ -49,9 +49,26 @@ class ProfileRepository {
     return defaultProfile;
   }
 
+  Future<String?> getActiveProfileId() async {
+    final appState = await _appStateBox();
+    final profiles = await _profilesBox();
+    final activeId = appState.get(HiveKeys.activeProfileId);
+
+    return activeId is String && profiles.containsKey(activeId)
+        ? activeId
+        : null;
+  }
+
   Future<void> setActiveProfile(String profileId) async {
     final appState = await _appStateBox();
     await appState.put(HiveKeys.activeProfileId, profileId);
+    await appState.flush();
+  }
+
+  Future<void> clearActiveProfile() async {
+    final appState = await _appStateBox();
+    await appState.delete(HiveKeys.activeProfileId);
+    await appState.flush();
   }
 
   Future<UserProfile> createProfile(String name) async {

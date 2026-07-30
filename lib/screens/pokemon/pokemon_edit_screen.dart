@@ -17,6 +17,7 @@ import '../../services/custom_pokemon_runtime_registry.dart';
 import '../../widgets/pokemon/pokemon_asset_image.dart';
 import '../../localization/ui_text.dart';
 import '../../localization/game_catalog_locale.dart';
+import '../../localization/feat_display_name.dart';
 
 class PokemonEditResult {
   const PokemonEditResult({required this.slot});
@@ -112,6 +113,7 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
   Map<String, String> _abilityDescriptions = {};
   Map<String, String> _abilityDisplayNames = {};
   Map<String, String> _featDescriptions = {};
+  Map<String, String> _featDisplayNames = {};
   Map<String, MoveData?> _moveData = {};
 
   bool _formOpen = true;
@@ -206,6 +208,7 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
     final deprecatedAbilitiesFuture = _abilityRepository
         .getDeprecatedAbilityNames();
     final featDescriptionsFuture = _featRepository.getFeatDescriptions();
+    final featDisplayNamesFuture = _featRepository.getFeatDisplayNames();
     final formChoicesFuture = PokemonAssetPaths.formChoices(widget.pokemon);
     final tmMapFuture = _tmRepository.getTmMap();
     final catalogMovesFuture = _moveRepository.getAllMoves();
@@ -215,6 +218,7 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
     final abilityDisplayNames = await abilityDisplayNamesFuture;
     final deprecatedAbilities = await deprecatedAbilitiesFuture;
     final featDescriptions = await featDescriptionsFuture;
+    final featDisplayNames = await featDisplayNamesFuture;
     final rawFormChoices = await formChoicesFuture;
     final persistentFormChoices = rawFormChoices
         .where(
@@ -269,6 +273,7 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
       _abilityDisplayNames = abilityDisplayNames;
       _deprecatedAbilityNames = deprecatedAbilities;
       _featDescriptions = featDescriptions;
+      _featDisplayNames = featDisplayNames;
       _moveData = moveData;
       _tmMoveNames = tmMoveNames;
       _catalogMoveNames = catalogMoveNames;
@@ -469,6 +474,9 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
     });
   }
 
+  String _localizedFeatName(String feat) =>
+      localizedFeatDisplayName(feat, _featDisplayNames);
+
   Future<void> _pickFeat([int? index]) async {
     final blocked = _feats
         .asMap()
@@ -480,10 +488,15 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
     final result = await Navigator.of(context).push<String>(
       MaterialPageRoute(
         builder: (_) => _ChoicePickerScreen(
-          title: uiTextForLanguage('Scegli feat', """Choose feat"""),
+          title: uiTextForLanguage(
+            'Scegli privilegio',
+            """Choose feat""",
+          ),
           options: _featDescriptions.keys.toList()..sort(),
           blockedOptions: blocked,
           descriptions: _featDescriptions,
+          labels: _featDisplayNames,
+          descriptionMaxLines: null,
         ),
       ),
     );
@@ -613,6 +626,7 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
                     Expanded(
                       child: DropdownButtonFormField<String>(
                         initialValue: _nature,
+                        isExpanded: true,
                         decoration: InputDecoration(
                           labelText: uiTextForLanguage('Natura', 'Nature'),
                           border: OutlineInputBorder(),
@@ -621,7 +635,11 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
                           for (final nature in PokemonNature.names)
                             DropdownMenuItem(
                               value: nature,
-                              child: Text(PokemonNature.labelFor(nature)),
+                              child: Text(
+                                PokemonNature.labelFor(nature),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
                         ],
                         onChanged: (value) {
@@ -634,6 +652,7 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
                     Expanded(
                       child: DropdownButtonFormField<String?>(
                         initialValue: _gender,
+                        isExpanded: true,
                         decoration: InputDecoration(
                           labelText: uiTextForLanguage('Sesso', """Gender"""),
                           border: OutlineInputBorder(),
@@ -643,18 +662,24 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
                             value: null,
                             child: Text(
                               uiTextForLanguage('Qualsiasi', """Any"""),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
                           DropdownMenuItem<String?>(
                             value: 'male',
                             child: Text(
                               uiTextForLanguage('Maschio', """Male"""),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
                           DropdownMenuItem<String?>(
                             value: 'female',
                             child: Text(
                               uiTextForLanguage('Femmina', """Female"""),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
                           DropdownMenuItem<String?>(
@@ -664,6 +689,8 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
                                 'Senza sesso',
                                 """Genderless""",
                               ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
                         ],
@@ -747,6 +774,9 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
                   onToggle: () => setState(() => _featsOpen = !_featsOpen),
                   child: _ChipSlots(
                     values: _feats,
+                    labels: {
+                      for (final feat in _feats) feat: _localizedFeatName(feat),
+                    },
                     emptyLabel: uiTextForLanguage('PRIVILEGIO', """FEATURE"""),
                     onAdd: () => _pickFeat(),
                     onPick: _pickFeat,
@@ -1000,10 +1030,14 @@ class _CollapsibleEditSection extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  title.toUpperCase(),
-                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
+                Flexible(
+                  child: Text(
+                    title.toUpperCase(),
+                    textAlign: TextAlign.center,
+                    softWrap: true,
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -1530,6 +1564,7 @@ class _ChoicePickerScreen extends StatefulWidget {
     this.descriptions = const {},
     this.labels = const {},
     this.includeNone = false,
+    this.descriptionMaxLines = 5,
   });
 
   static const noneValue = '__none__';
@@ -1542,6 +1577,7 @@ class _ChoicePickerScreen extends StatefulWidget {
   final Map<String, String> descriptions;
   final Map<String, String> labels;
   final bool includeNone;
+  final int? descriptionMaxLines;
 
   @override
   State<_ChoicePickerScreen> createState() => _ChoicePickerScreenState();
@@ -1599,6 +1635,7 @@ class _ChoicePickerScreenState extends State<_ChoicePickerScreen> {
             label: widget.labels[option] ?? option,
             subtitle: widget.descriptions[option],
             pinned: true,
+            subtitleMaxLines: widget.descriptionMaxLines,
             onTap: () => Navigator.of(context).pop(option),
           ),
         if (pinnedOptions.isNotEmpty && otherOptions.isNotEmpty)
@@ -1609,6 +1646,7 @@ class _ChoicePickerScreenState extends State<_ChoicePickerScreen> {
           _PickerTile(
             label: widget.labels[option] ?? option,
             subtitle: widget.descriptions[option],
+            subtitleMaxLines: widget.descriptionMaxLines,
             onTap: () => Navigator.of(context).pop(option),
           ),
         if (options.isEmpty && !widget.includeNone)
@@ -1736,12 +1774,14 @@ class _PickerTile extends StatelessWidget {
     this.subtitle,
     this.type,
     this.pinned = false,
+    this.subtitleMaxLines = 5,
   });
 
   final String label;
   final String? subtitle;
   final String? type;
   final bool pinned;
+  final int? subtitleMaxLines;
   final VoidCallback onTap;
 
   @override
@@ -1762,7 +1802,13 @@ class _PickerTile extends StatelessWidget {
         title: Text(label.toUpperCase()),
         subtitle: subtitle == null || subtitle!.isEmpty
             ? null
-            : Text(subtitle!, maxLines: 5, overflow: TextOverflow.ellipsis),
+            : Text(
+                subtitle!,
+                maxLines: subtitleMaxLines,
+                overflow: subtitleMaxLines == null
+                    ? TextOverflow.visible
+                    : TextOverflow.ellipsis,
+              ),
         onTap: onTap,
       ),
     );

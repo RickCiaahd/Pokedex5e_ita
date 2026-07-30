@@ -19,7 +19,7 @@
       "description": "Questo Pokémon non subisce danni dall’elettricità né dagli attacchi di tipo Elettro. Assorbe invece metà dei danni elettrici che avrebbe subito, recuperando un pari numero di PF."
     },
     "wandering-spirit": {
-      "description": "Quando questo Pokémon viene colpito da un attacco in mischia, un’abilità casuale dell’attaccante diventa Wandering Spirit per il resto dell’incontro, mentre l’abilità sostituita prende il posto di Wandering Spirit su questo Pokémon."
+      "description": "Quando questo Pokémon viene colpito da un attacco in mischia, un’abilità casuale dell’attaccante diventa Anima Errante per il resto dell’incontro, mentre l’abilità sostituita prende il posto di Anima Errante su questo Pokémon."
     },
     "water-absorb": {
       "description": "Questo Pokémon non subisce danni dall’acqua né dagli attacchi di tipo Acqua. Assorbe invece metà dei danni di tipo Acqua che avrebbe subito, recuperando un pari numero di PF."

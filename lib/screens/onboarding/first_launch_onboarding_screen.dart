@@ -13,18 +13,22 @@ import '../../models/trainer_origin_name_localization.dart';
 import '../../models/trainer_ui_localization.dart';
 import '../../models/user_profile.dart';
 import '../../repositories/evolution_repository.dart';
-import '../../repositories/pokedex_repositry.dart';
 import '../../repositories/pokemon_repository.dart';
-import '../../repositories/profile_repository.dart';
-import '../../repositories/team_repository.dart';
 import '../../repositories/trainer_manual_repository.dart';
-import '../../services/app_launch_service.dart';
+import '../../services/profile_creation_service.dart';
 import '../../widgets/pokemon/pokemon_asset_image.dart';
 
 class FirstLaunchOnboardingScreen extends StatefulWidget {
-  const FirstLaunchOnboardingScreen({super.key, required this.onCompleted});
+  const FirstLaunchOnboardingScreen({
+    super.key,
+    required this.onCompleted,
+    this.onCancel,
+    this.markOnboardingCompleted = true,
+  });
 
   final VoidCallback onCompleted;
+  final VoidCallback? onCancel;
+  final bool markOnboardingCompleted;
 
   @override
   State<FirstLaunchOnboardingScreen> createState() =>
@@ -33,14 +37,12 @@ class FirstLaunchOnboardingScreen extends StatefulWidget {
 
 class _FirstLaunchOnboardingScreenState
     extends State<FirstLaunchOnboardingScreen> {
-  final ProfileRepository _profileRepository = ProfileRepository();
   final PokemonRepository _pokemonRepository = PokemonRepository();
   final EvolutionRepository _evolutionRepository = EvolutionRepository();
-  final TeamRepository _teamRepository = TeamRepository();
-  final PokedexRepository _pokedexRepository = PokedexRepository();
   final TrainerManualRepository _trainerManualRepository =
       TrainerManualRepository();
-  final AppLaunchService _appLaunchService = AppLaunchService();
+  final ProfileCreationService _profileCreationService =
+      ProfileCreationService();
 
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _searchController = TextEditingController();
@@ -228,6 +230,16 @@ class _FirstLaunchOnboardingScreenState
     }
   }
 
+  bool get _canCancelFlow {
+    return widget.onCancel != null &&
+        !_isSaving &&
+        (_step < 8 || (_step == 8 && _errorMessage != null));
+  }
+
+  bool get _canPopRoute {
+    return widget.onCancel == null ? !_isSaving : _canCancelFlow;
+  }
+
   String get _buttonLabel {
     final l10n = AppLocalizations.of(context);
     switch (_step) {
@@ -340,11 +352,9 @@ class _FirstLaunchOnboardingScreenState
         }.toList(),
       );
 
-      await _profileRepository.saveProfile(profile);
-      await _profileRepository.setActiveProfile(profile.id);
-      await _teamRepository.updateSlot(
-        profileId: profile.id,
-        updatedSlot: TeamSlot(
+      await _profileCreationService.createGuidedProfile(
+        profile: profile,
+        starterSlot: TeamSlot(
           slotIndex: 0,
           pokemonId: starter.id,
           currentHp: starter.hitPoints,
@@ -352,15 +362,10 @@ class _FirstLaunchOnboardingScreenState
           abilities: starter.abilities.take(2).toList(),
           loyalty: 1,
         ),
+        starterPokemonId: starter.id,
+        starterSpeciesName: starter.name,
+        markOnboardingCompleted: widget.markOnboardingCompleted,
       );
-      await _pokedexRepository.updateMarkMode(
-        profileId: profile.id,
-        pokemonId: starter.id,
-        speciesName: starter.name,
-        seen: true,
-        caught: true,
-      );
-      await _appLaunchService.markOnboardingCompleted();
 
       if (!mounted) return;
       setState(() {
@@ -402,74 +407,78 @@ class _FirstLaunchOnboardingScreenState
       );
     }
 
-    return Scaffold(
-      backgroundColor: _OnboardingPalette.page,
-      body: SafeArea(
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 1080),
-            child: Padding(
-              padding: EdgeInsets.fromLTRB(
-                16,
-                keyboardVisible ? 8 : 12,
-                16,
-                keyboardVisible ? 8 : 18,
-              ),
-              child: Column(
-                children: [
-                  _ProgressHeader(
-                    step: _step,
-                    totalSteps: _totalSteps,
-                    canGoBack: _step > 0 && _step < 8,
-                    onBack: _back,
-                  ),
-                  SizedBox(height: keyboardVisible ? 6 : 14),
-                  Expanded(
-                    child: AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 280),
-                      switchInCurve: Curves.easeOutCubic,
-                      switchOutCurve: Curves.easeInCubic,
-                      child: _buildStage(keyboardVisible: keyboardVisible),
+    return PopScope(
+      canPop: _canPopRoute,
+      child: Scaffold(
+        backgroundColor: _OnboardingPalette.page,
+        body: SafeArea(
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 1080),
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(
+                  16,
+                  keyboardVisible ? 8 : 12,
+                  16,
+                  keyboardVisible ? 8 : 18,
+                ),
+                child: Column(
+                  children: [
+                    _ProgressHeader(
+                      step: _step,
+                      totalSteps: _totalSteps,
+                      canGoBack: _step > 0 && _step < 8,
+                      onBack: _back,
+                      onCancel: _canCancelFlow ? widget.onCancel : null,
                     ),
-                  ),
-                  if (_errorMessage != null && _step >= 8) ...[
-                    const SizedBox(height: 10),
-                    Text(
-                      l10n.onboardingProfileCreationError,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        color: Colors.redAccent,
-                        fontWeight: FontWeight.w700,
+                    SizedBox(height: keyboardVisible ? 6 : 14),
+                    Expanded(
+                      child: AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 280),
+                        switchInCurve: Curves.easeOutCubic,
+                        switchOutCurve: Curves.easeInCubic,
+                        child: _buildStage(keyboardVisible: keyboardVisible),
                       ),
                     ),
-                  ],
-                  SizedBox(height: keyboardVisible ? 8 : 14),
-                  if (_step != 8 || !_isSaving)
-                    SizedBox(
-                      width: double.infinity,
-                      height: keyboardVisible ? 48 : 54,
-                      child: FilledButton(
-                        onPressed: _canContinue && !_isSaving ? _next : null,
-                        style: FilledButton.styleFrom(
-                          backgroundColor: _OnboardingPalette.orange,
-                          foregroundColor: Colors.white,
-                          disabledBackgroundColor: _OnboardingPalette.orange
-                              .withValues(alpha: .35),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          textStyle: const TextStyle(
-                            fontSize: 17,
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: .2,
-                          ),
+                    if (_errorMessage != null && _step >= 8) ...[
+                      const SizedBox(height: 10),
+                      Text(
+                        l10n.onboardingProfileCreationError,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          color: Colors.redAccent,
+                          fontWeight: FontWeight.w700,
                         ),
-                        child: Text(_buttonLabel),
                       ),
-                    )
-                  else
-                    SizedBox(height: keyboardVisible ? 48 : 54),
-                ],
+                    ],
+                    SizedBox(height: keyboardVisible ? 8 : 14),
+                    if (_step != 8 || !_isSaving)
+                      SizedBox(
+                        width: double.infinity,
+                        height: keyboardVisible ? 48 : 54,
+                        child: FilledButton(
+                          onPressed: _canContinue && !_isSaving ? _next : null,
+                          style: FilledButton.styleFrom(
+                            backgroundColor: _OnboardingPalette.orange,
+                            foregroundColor: Colors.white,
+                            disabledBackgroundColor: _OnboardingPalette.orange
+                                .withValues(alpha: .35),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            textStyle: const TextStyle(
+                              fontSize: 17,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: .2,
+                            ),
+                          ),
+                          child: Text(_buttonLabel),
+                        ),
+                      )
+                    else
+                      SizedBox(height: keyboardVisible ? 48 : 54),
+                  ],
+                ),
               ),
             ),
           ),
@@ -736,12 +745,14 @@ class _ProgressHeader extends StatelessWidget {
     required this.totalSteps,
     required this.canGoBack,
     required this.onBack,
+    this.onCancel,
   });
 
   final int step;
   final int totalSteps;
   final bool canGoBack;
   final VoidCallback onBack;
+  final VoidCallback? onCancel;
 
   @override
   Widget build(BuildContext context) {
@@ -773,7 +784,19 @@ class _ProgressHeader extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(width: 50),
+        SizedBox(
+          width: 50,
+          child: onCancel == null
+              ? null
+              : IconButton(
+                  onPressed: onCancel,
+                  icon: const Icon(Icons.close, size: 28),
+                  color: _OnboardingPalette.text,
+                  tooltip: MaterialLocalizations.of(
+                    context,
+                  ).closeButtonTooltip,
+                ),
+        ),
       ],
     );
   }

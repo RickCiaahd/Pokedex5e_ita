@@ -196,6 +196,51 @@ class TeamRepository {
     await saveTeam(profileId, updatedTeam);
   }
 
+  Future<List<TeamSlot>> reorderSlots({
+    required String profileId,
+    required int fromSlotIndex,
+    required int toSlotIndex,
+  }) async {
+    final team = await getTeam(profileId);
+    final reordered = reorderTeam(
+      team,
+      fromSlotIndex: fromSlotIndex,
+      toSlotIndex: toSlotIndex,
+    );
+    await saveTeam(profileId, reordered);
+    return reordered;
+  }
+
+  static List<TeamSlot> reorderTeam(
+    List<TeamSlot> team, {
+    required int fromSlotIndex,
+    required int toSlotIndex,
+  }) {
+    final ordered = [...team]
+      ..sort((a, b) => a.slotIndex.compareTo(b.slotIndex));
+    final fromPosition = ordered.indexWhere(
+      (slot) => slot.slotIndex == fromSlotIndex,
+    );
+    final toPosition = ordered.indexWhere(
+      (slot) => slot.slotIndex == toSlotIndex,
+    );
+
+    if (fromPosition < 0 || toPosition < 0) {
+      throw RangeError(
+        'Impossibile riordinare gli slot $fromSlotIndex e $toSlotIndex.',
+      );
+    }
+    if (fromPosition == toPosition) return ordered;
+
+    final moved = ordered.removeAt(fromPosition);
+    ordered.insert(toPosition, moved);
+
+    return [
+      for (var index = 0; index < ordered.length; index++)
+        ordered[index].copyWith(slotIndex: index),
+    ];
+  }
+
   Future<void> deleteTeam(String profileId) async {
     final box = await _box();
     await box.delete(profileId);

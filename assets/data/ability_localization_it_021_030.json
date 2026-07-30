@@ -1,17 +1,40 @@
 {
   "locale": "it",
   "source": "assets/data_webapp/abilities.json",
-  "range": {"fromIndex": 21, "toIndex": 30},
+  "range": {
+    "fromIndex": 21,
+    "toIndex": 30
+  },
   "items": {
-    "big-pecks": {"description": "La CA di questo Pokémon non può essere ridotta dalle mosse degli avversari."},
-    "blaze": {"description": "Questo Pokémon raddoppia il proprio bonus STAB quando possiede il 25% o meno dei suoi PF massimi."},
-    "blizzard": {"description": "Questo Pokémon conosce Blizzard come quinta mossa. Dimentica la mossa se assume qualsiasi altra forma."},
-    "bulletproof": {"description": "Questo Pokémon è immune ai danni delle mosse che contengono Bullet, Ball o Bomb nel nome."},
-    "cheek-pouch": {"description": "Quando questo Pokémon mangia una bacca di qualsiasi tipo, recupera inoltre il 10% dei propri PF massimi, arrotondato per eccesso al numero intero più vicino."},
-    "chilling-neigh": {"description": "Quando manda KO un avversario, questo Pokémon può muoversi immediatamente fino a 20 piedi ed effettuare un’altra azione."},
-    "chlorophyll": {"description": "La velocità di questo Pokémon raddoppia sotto luce solare intensa."},
-    "clear-body": {"description": "Le mosse e le abilità degli altri Pokémon non possono ridurre le statistiche di questo Pokémon."},
-    "cloud-nine": {"description": "Finché questo Pokémon è in lotta, le abilità legate alle condizioni atmosferiche non hanno effetto sui Pokémon che le possiedono."},
-    "color-change": {"description": "Quando viene colpito da un attacco che infligge danni, il tipo di questo Pokémon diventa quello dell’attacco che lo ha colpito. Acquisisce resistenze, vulnerabilità e immunità del nuovo tipo."}
+    "big-pecks": {
+      "description": "La CA di questo Pokémon non può essere ridotta dalle mosse degli avversari."
+    },
+    "blaze": {
+      "description": "Questo Pokémon raddoppia il proprio bonus STAB quando possiede il 25% o meno dei suoi PF massimi."
+    },
+    "blizzard": {
+      "description": "Questo Pokémon conosce Bora come quinta mossa. Dimentica la mossa se assume qualsiasi altra forma."
+    },
+    "bulletproof": {
+      "description": "Questo Pokémon è immune ai danni delle mosse che contengono Bullet, Ball o Bomb nel nome."
+    },
+    "cheek-pouch": {
+      "description": "Quando questo Pokémon mangia una bacca di qualsiasi tipo, recupera inoltre il 10% dei propri PF massimi, arrotondato per eccesso al numero intero più vicino."
+    },
+    "chilling-neigh": {
+      "description": "Quando manda KO un avversario, questo Pokémon può muoversi immediatamente fino a 20 piedi ed effettuare un’altra azione."
+    },
+    "chlorophyll": {
+      "description": "La velocità di questo Pokémon raddoppia sotto luce solare intensa."
+    },
+    "clear-body": {
+      "description": "Le mosse e le abilità degli altri Pokémon non possono ridurre le statistiche di questo Pokémon."
+    },
+    "cloud-nine": {
+      "description": "Finché questo Pokémon è in lotta, le abilità legate alle condizioni atmosferiche non hanno effetto sui Pokémon che le possiedono."
+    },
+    "color-change": {
+      "description": "Quando viene colpito da un attacco che infligge danni, il tipo di questo Pokémon diventa quello dell’attacco che lo ha colpito. Acquisisce resistenze, vulnerabilità e immunità del nuovo tipo."
+    }
   }
 }

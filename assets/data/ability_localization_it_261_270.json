@@ -10,7 +10,7 @@
       "description": "Quando questo Pokémon subisce danni da una mossa, la sua CA aumenta di 2 fino all’inizio del proprio turno successivo. L’effetto non è cumulabile e resta attivo se il Pokémon viene colpito con successo in più turni consecutivi."
     },
     "stance-change": {
-      "description": "Aegislash possiede due forme. Quando usa King’s Shield, assume Shield Forme e scambia i valori di CA e DES. Quando usa una mossa che infligge danni, ritorna immediatamente in Blade Forme e ripristina le statistiche normali."
+      "description": "Aegislash possiede due forme. Quando usa Scudo Reale, assume Forma Scudo e scambia i valori di CA e DES. Quando usa una mossa che infligge danni, ritorna immediatamente in Forma Spada e ripristina le statistiche normali."
     },
     "static": {
       "description": "Quando questo Pokémon viene colpito da un attacco in mischia, tira d4. Con un risultato di 4, l’attaccante subisce danni di tipo Elettro pari al bonus di competenza di questo Pokémon."

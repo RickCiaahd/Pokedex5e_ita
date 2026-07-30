@@ -7,7 +7,7 @@
   },
   "items": {
     "strong-jaw": {
-      "description": "Per le mosse basate sui morsi usate da questo Pokémon, come Bite, Thunder Fang e Crunch, può tirare due volte i dadi dei danni e scegliere uno dei due totali."
+      "description": "Per le mosse basate sui morsi usate da questo Pokémon, come Morso, Fulmindenti e Sgranocchio, può tirare due volte i dadi dei danni e scegliere uno dei due totali."
     },
     "sturdy": {
       "description": "Quando questo Pokémon dovrebbe subire danni pari ad almeno la metà dei propri PF attuali, tira d4. Con un risultato di 3 o 4, dimezza i danni inflitti."
@@ -25,7 +25,7 @@
       "description": "Questo Pokémon aggiunge +1 ai propri tiri per colpire per ogni alleato attualmente a terra, fino a un massimo di +5."
     },
     "surge-surfer": {
-      "description": "Quando questo Pokémon inizia il proprio turno nell’area d’effetto di Electric Terrain, la sua velocità raddoppia fino all’inizio del turno successivo."
+      "description": "Quando questo Pokémon inizia il proprio turno nell’area d’effetto di Campo Elettrico, la sua velocità raddoppia fino all’inizio del turno successivo."
     },
     "swarm": {
       "description": "Questo Pokémon raddoppia il proprio bonus STAB quando possiede il 25% o meno dei suoi PF massimi."

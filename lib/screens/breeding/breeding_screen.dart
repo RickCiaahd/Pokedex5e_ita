@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 import '../../localization/ui_text.dart';
+import '../../localization/feat_display_name.dart';
 import '../../localization/user_facing_error.dart';
 import '../../models/breeding_candidate.dart';
 import '../../models/breeding_egg.dart';
@@ -75,6 +76,7 @@ class _BreedingScreenState extends State<BreedingScreen> {
       _dataService.load(),
       _bagRepository.getInventory(profile.id),
       _featRepository.getFeatDescriptions(),
+      _featRepository.getFeatDisplayNames(),
     ]);
     final catalog = results[0] as List<Pokemon>;
     var team = results[1] as List<TeamSlot>;
@@ -177,6 +179,7 @@ class _BreedingScreenState extends State<BreedingScreen> {
     final speciesData = results[4] as Map<int, BreedingSpeciesData>;
     final inventory = results[5] as List<BagInventoryEntry>;
     final featDescriptions = results[6] as Map<String, String>;
+    final featDisplayNames = results[7] as Map<String, String>;
     final incubatorQuantities = <EggIncubator, int>{
       for (final incubator in EggIncubator.values)
         incubator: incubator.itemId == null
@@ -268,6 +271,7 @@ class _BreedingScreenState extends State<BreedingScreen> {
       speciesData: speciesData,
       incubatorQuantities: incubatorQuantities,
       featDescriptions: featDescriptions,
+      featDisplayNames: featDisplayNames,
     );
   }
 
@@ -732,6 +736,7 @@ class _BreedingScreenState extends State<BreedingScreen> {
           formName: hatchEgg.formName,
         ),
         featDescriptions: data.featDescriptions,
+        featDisplayNames: data.featDisplayNames,
       );
       if (!mounted || selection == null) return;
       hatchEgg = hatchEgg.copyWith(
@@ -794,7 +799,7 @@ class _BreedingScreenState extends State<BreedingScreen> {
         if (hatchEgg.goodGenesAbilityBonuses.isNotEmpty)
           'Good Genes: ${hatchEgg.goodGenesAbilityBonuses.entries.map((entry) => '${entry.key} +${entry.value}').join(', ')}.',
         if (hatchEgg.goodGenesFeat != null)
-          'Good Genes: talento ${hatchEgg.goodGenesFeat}.',
+          'Good Genes: privilegio ${localizedFeatDisplayName(hatchEgg.goodGenesFeat!, data.featDisplayNames)}.',
       ].join(' ');
       await _pcRepository.depositPokemon(
         profileId: data.profile.id,
@@ -826,8 +831,8 @@ class _BreedingScreenState extends State<BreedingScreen> {
     final goodGenes = hatchEgg.hasGoodGenesSelection
         ? hatchEgg.goodGenesFeat != null
               ? uiTextForLanguage(
-                  ' Good Genes ha assegnato il talento ${hatchEgg.goodGenesFeat}.',
-                  """ Good Genes granted the ${hatchEgg.goodGenesFeat} feat.""",
+                  ' Good Genes ha assegnato il privilegio ${localizedFeatDisplayName(hatchEgg.goodGenesFeat!, data.featDisplayNames)}.',
+                  """ Good Genes granted the ${localizedFeatDisplayName(hatchEgg.goodGenesFeat!, data.featDisplayNames)} feat.""",
                 )
               : uiTextForLanguage(
                   ' Good Genes ha applicato ${hatchEgg.goodGenesAbilityBonuses.entries.map((entry) => '${entry.key} +${entry.value}').join(', ')}.',
@@ -1671,6 +1676,7 @@ class _BreedingScreenData {
     required this.speciesData,
     required this.incubatorQuantities,
     required this.featDescriptions,
+    required this.featDisplayNames,
   });
 
   final UserProfile profile;
@@ -1682,4 +1688,5 @@ class _BreedingScreenData {
   final Map<int, BreedingSpeciesData> speciesData;
   final Map<EggIncubator, int> incubatorQuantities;
   final Map<String, String> featDescriptions;
+  final Map<String, String> featDisplayNames;
 }

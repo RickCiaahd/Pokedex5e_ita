@@ -22,7 +22,7 @@
       "description": "Questo Pokémon è immune alla condizione paralizzato."
     },
     "lingering-aroma": {
-      "description": "Quando questo Pokémon viene colpito da un attacco in mischia o colpisce con un attacco in mischia, un’abilità casuale dell’altra creatura diventa Lingering Aroma fino alla fine dell’incontro o finché quella creatura non viene sostituita."
+      "description": "Quando questo Pokémon viene colpito da un attacco in mischia o colpisce con un attacco in mischia, un’abilità casuale dell’altra creatura diventa Odore Tenace fino alla fine dell’incontro o finché quella creatura non viene sostituita."
     },
     "liquid-ooze": {
       "description": "Se un nemico usa contro questo Pokémon una mossa che assorbe o sottrae energia, deve superare un tiro salvezza su COS con CD 12 oppure diventare avvelenato."

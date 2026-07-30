@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: flutter-ci-${{ github.workflow }}-${{ github.ref }}
@@ -23,9 +23,6 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
-          fetch-depth: 0
 
       - name: Set up Java
         uses: actions/setup-java@v4
@@ -38,26 +35,6 @@ jobs:
         with:
           flutter-version: '3.44.4'
           cache: true
-
-      - name: Apply starter selection improvements
-        if: (github.head_ref == 'improve/onboarding-starter-selection' || github.ref_name == 'improve/onboarding-starter-selection') && github.actor != 'github-actions[bot]'
-        shell: bash
-        run: |
-          set -euo pipefail
-          python tooling/apply_onboarding_starter_selection.py
-          dart format \
-            lib/screens/onboarding/first_launch_onboarding_screen.dart \
-            lib/models/trainer_origin_name_localization.dart \
-            test/trainer_origin_name_localization_test.dart
-          git rm \
-            .github/workflows/apply-onboarding-starter-selection.yml \
-            tooling/apply_onboarding_starter_selection.py
-          git checkout origin/main -- .github/workflows/flutter-ci.yml
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -A
-          git commit -m 'Compatta la scelta dello starter e localizza le origini'
-          git push origin HEAD:improve/onboarding-starter-selection
 
       - name: Show Flutter version
         run: flutter --version

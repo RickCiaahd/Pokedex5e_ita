@@ -47,7 +47,7 @@ void main() {
   test('feat definitions are not truncated in the picker', () {
     final source = File(
       'lib/screens/pokemon/pokemon_edit_screen.dart',
-    ).readAsStringSync();
+    ).readAsStringSync().replaceAll('\r\n', '\n');
     final featPickerStart = source.indexOf(
       "title: uiTextForLanguage(\n            'Scegli privilegio',",
     );

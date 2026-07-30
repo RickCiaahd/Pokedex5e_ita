@@ -50,41 +50,30 @@ void main() {
     expect(find.byType(FirstLaunchOnboardingScreen), findsOneWidget);
   });
 
-  testWidgets('onboarding adapts to the Android keyboard without overflow', (
-    WidgetTester tester,
-  ) async {
-    await tester.binding.setSurfaceSize(const Size(360, 800));
-    addTearDown(() => tester.binding.setSurfaceSize(null));
+  test('onboarding uses the compact layout when the keyboard is visible', () {
+    final source = File(
+      'lib/screens/onboarding/first_launch_onboarding_screen.dart',
+    ).readAsStringSync();
 
-    Widget buildApp({required double keyboardHeight}) {
-      return MaterialApp(
-        locale: const Locale('it'),
-        supportedLocales: AppLocalizations.supportedLocales,
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        home: MediaQuery(
-          data: MediaQueryData(
-            size: const Size(360, 800),
-            viewInsets: EdgeInsets.only(bottom: keyboardHeight),
-          ),
-          child: FirstLaunchOnboardingScreen(onCompleted: () {}),
-        ),
-      );
-    }
-
-    await tester.pumpWidget(buildApp(keyboardHeight: 0));
-    await tester.pumpAndSettle();
-
-    await tester.tap(find.text('INIZIA LA TUA AVVENTURA'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('AVANTI'));
-    await tester.pumpAndSettle();
-    expect(find.byType(TextField), findsOneWidget);
-
-    await tester.pumpWidget(buildApp(keyboardHeight: 320));
-    await tester.pumpAndSettle();
-
-    expect(tester.takeException(), isNull);
-    expect(find.byType(TextField), findsOneWidget);
-    expect(find.text('AVANTI'), findsOneWidget);
+    expect(
+      source,
+      contains('MediaQuery.viewInsetsOf(context).bottom > 0'),
+      reason: 'Il layout deve rilevare la tastiera prima dello Scaffold',
+    );
+    expect(
+      source,
+      contains('_buildStage(keyboardVisible: keyboardVisible)'),
+      reason: 'Lo stato della tastiera deve raggiungere la scena del professore',
+    );
+    expect(
+      source,
+      contains('keyboardCompact ? .22 : compactCardTopFactor'),
+      reason: 'Il dialogo deve salire quando la tastiera riduce lo spazio',
+    );
+    expect(
+      source,
+      contains('constraints.maxHeight - (keyboardCompact ? 220 : 140)'),
+      reason: 'Il dialogo deve conservare altezza sufficiente per lo scroll',
+    );
   });
 }

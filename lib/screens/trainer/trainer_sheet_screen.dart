@@ -338,7 +338,7 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
 
   String _localizedOriginDescription(TrainerOrigin origin) {
     final l10n = AppLocalizations.of(context);
-    return switch (origin.name) {
+    final description = switch (origin.name) {
       'Alolan' => l10n.onboardingOriginAlolanDescription,
       'Hoennian' => l10n.onboardingOriginHoennianDescription,
       'Johtoan' => l10n.onboardingOriginJohtoanDescription,
@@ -349,8 +349,9 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
       'Galarian' => l10n.onboardingOriginGalarianDescription,
       'Origine 5e approvata dal DM' =>
         l10n.onboardingOriginDmApprovedDescription,
-      _ => TrainerUiLocalization.visibleText(origin.description),
+      _ => origin.description,
     };
+    return TrainerUiLocalization.visibleText(description);
   }
 
   Map<String, String> get _originDisplayNames => {
@@ -832,6 +833,9 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
       body: AnimatedBuilder(
         animation: _tourController,
         builder: (context, _) {
+          final selectedOriginName = _raceController.text.trim();
+          final selectedOrigin = _originByName(selectedOriginName);
+
           return Stack(
             children: [
               Positioned.fill(
@@ -862,13 +866,12 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
                           progressionKey: _progressionKey,
                           nameController: _nameController,
                           moneyController: _moneyController,
-                          race: _raceController.text.trim(),
-                          raceDescription:
-                              _originByName(_raceController.text.trim()) == null
+                          race: selectedOrigin == null
+                              ? selectedOriginName
+                              : _localizedOriginName(selectedOrigin),
+                          raceDescription: selectedOrigin == null
                               ? ''
-                              : _localizedOriginDescription(
-                                  _originByName(_raceController.text.trim())!,
-                                ),
+                              : _localizedOriginDescription(selectedOrigin),
                           selectedStarter: _selectedStarter,
                           startingPack: _startingPack,
                           trainerLevel: _trainerLevel,

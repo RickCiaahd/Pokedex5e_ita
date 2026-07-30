@@ -10,6 +10,7 @@ import '../../models/team_slot.dart';
 import '../../models/trainer_manual_content.dart';
 import '../../models/trainer_manual_options.dart';
 import '../../models/trainer_origin_name_localization.dart';
+import '../../models/trainer_ui_localization.dart';
 import '../../models/user_profile.dart';
 import '../../repositories/evolution_repository.dart';
 import '../../repositories/pokedex_repositry.dart';
@@ -194,7 +195,7 @@ class _FirstLaunchOnboardingScreenState
   }
 
   String _originDescription(TrainerOrigin origin, AppLocalizations l10n) {
-    return switch (origin.name) {
+    final description = switch (origin.name) {
       'Alolan' => l10n.onboardingOriginAlolanDescription,
       'Hoennian' => l10n.onboardingOriginHoennianDescription,
       'Johtoan' => l10n.onboardingOriginJohtoanDescription,
@@ -207,6 +208,7 @@ class _FirstLaunchOnboardingScreenState
         l10n.onboardingOriginDmApprovedDescription,
       _ => origin.description,
     };
+    return TrainerUiLocalization.visibleText(description);
   }
 
   bool get _canContinue {
@@ -291,7 +293,10 @@ class _FirstLaunchOnboardingScreenState
       return AppLocalizations.of(context).onboardingNoAutomaticBonuses;
     }
     return origin.abilityBonuses.entries
-        .map((entry) => '${entry.key.toUpperCase()} +${entry.value}')
+        .map(
+          (entry) =>
+              '${TrainerUiLocalization.abilityAbbreviation(entry.key)} +${entry.value}',
+        )
         .join(', ');
   }
 

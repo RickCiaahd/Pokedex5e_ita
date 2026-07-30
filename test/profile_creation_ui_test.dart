@@ -15,8 +15,8 @@ void main() {
       "'Create profile'",
       "'Crea profilo guidato'",
       "'Create guided profile'",
-      "'nome, età, origine, background e starter'",
-      "'name, age, origin, background and starter'",
+      'nome, età, origine, background e starter',
+      'name, age, origin, background and starter',
     ]) {
       expect(source, contains(marker), reason: marker);
     }

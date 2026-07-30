@@ -9,6 +9,7 @@ import '../../models/pokemon.dart';
 import '../../models/team_slot.dart';
 import '../../models/trainer_manual_content.dart';
 import '../../models/trainer_manual_options.dart';
+import '../../models/trainer_origin_name_localization.dart';
 import '../../models/trainer_progression.dart';
 import '../../models/trainer_ui_localization.dart';
 import '../../models/user_profile.dart';
@@ -328,9 +329,11 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
 
   String _localizedOriginName(TrainerOrigin origin) {
     final l10n = AppLocalizations.of(context);
-    return origin.name == 'Origine 5e approvata dal DM'
-        ? l10n.onboardingOriginDmApprovedName
-        : origin.name;
+    return trainerOriginDisplayName(
+      origin.name,
+      isItalian: Localizations.localeOf(context).languageCode == 'it',
+      dmApprovedLabel: l10n.onboardingOriginDmApprovedName,
+    );
   }
 
   String _localizedOriginDescription(TrainerOrigin origin) {

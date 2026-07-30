@@ -11,14 +11,26 @@ class AppLaunchService {
     final profiles = await _profilesBox();
     if (profiles.isNotEmpty) return false;
 
+    return !(await isOnboardingCompleted());
+  }
+
+  Future<bool> isOnboardingCompleted() async {
     final appState = await _appStateBox();
-    return appState.get(HiveKeys.onboardingCompleted, defaultValue: false) !=
+    return appState.get(HiveKeys.onboardingCompleted, defaultValue: false) ==
         true;
   }
 
   Future<void> markOnboardingCompleted() async {
+    await setOnboardingCompleted(true);
+  }
+
+  Future<void> setOnboardingCompleted(bool completed) async {
     final appState = await _appStateBox();
-    await appState.put(HiveKeys.onboardingCompleted, true);
+    if (completed) {
+      await appState.put(HiveKeys.onboardingCompleted, true);
+    } else {
+      await appState.delete(HiveKeys.onboardingCompleted);
+    }
     await appState.flush();
   }
 }

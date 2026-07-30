@@ -9,7 +9,8 @@ Tutte le modifiche rilevanti al progetto vengono documentate in questo file.
 - documentazione GPLv3, NOTICE, Privacy, Data Safety e inventari riproducibili di dipendenze, asset e duplicati;
 - controlli automatici per licenze, funzionamento offline, completezza delle release e integrità delle immagini;
 - etichette grafiche inglesi per tutti i 18 tipi Pokémon;
-- test di regressione per layout mobile, localizzazione delle origini, residui bilingui e messaggi d’errore.
+- test di regressione per layout mobile, localizzazione delle origini, residui bilingui e messaggi d’errore;
+- scelta tra creazione rapida e creazione guidata dei nuovi profili dalla schermata Profili.
 
 ### Modificato
 
@@ -19,13 +20,15 @@ Tutte le modifiche rilevanti al progetto vengono documentate in questo file.
 - nomi italiani delle origini regionali uniformati ai nomi delle regioni;
 - Flutter bloccato alla versione 3.44.4 nei workflow di CI e release;
 - messaggi d’errore visibili centralizzati e localizzati, senza esporre eccezioni tecniche;
-- metadati delle mosse e azioni dello Zaino completati anche in inglese.
+- metadati delle mosse e azioni dello Zaino completati anche in inglese;
+- creazione di profilo, starter, squadra e Pokédex resa atomica, con attivazione soltanto dopo il salvataggio completo.
 
 ### Corretto
 
 - sovrapposizione tra Professore e fumetto nei tour su smartphone;
 - disposizione dei due tipi nella schermata Aggiungi Pokémon;
-- residui italiani nel flusso delle MT, nella sostituzione delle mosse e nella gestione degli strumenti tenuti.
+- residui italiani nel flusso delle MT, nella sostituzione delle mosse e nella gestione degli strumenti tenuti;
+- possibili profili parziali o cambi di profilo attivo in caso di errore durante la creazione guidata.
 
 ## [1.3.2] - 2026-07-26
 

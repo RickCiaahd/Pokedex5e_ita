@@ -27,6 +27,23 @@ Each result is emitted as one JSON line prefixed with
 are useful for regression comparisons but are not presented as Android device
 times.
 
+### First reference run
+
+Flutter CI
+[#1476](https://github.com/RickCiaahd/Pokedex5e_ita/actions/runs/30586333341)
+recorded the first Linux debug reference on 30 July 2026. Values are
+milliseconds and should only be compared with equivalent CI runs.
+
+| Locale | Cache | Pokémon | Moves | Abilities | Items/TMs | Feats |
+|---|---|---:|---:|---:|---:|---:|
+| Italian | cold | 376.305 | 134.127 | 13.324 | 16.777 | 3.568 |
+| Italian | warm | 0.158 | 0.780 | 0.028 | 0.020 | 0.048 |
+| English | cold | 132.785 | 30.678 | 2.203 | 6.667 | 0.171 |
+| English | warm | 0.075 | 0.458 | 0.033 | 0.016 | 0.032 |
+
+All four samples preserved the expected counts: 1,025 Pokémon, 830 moves, 330
+abilities, 467 items/TMs and 36 feats.
+
 ## Android profile baseline
 
 Profile or debug captures expose these timeline events:

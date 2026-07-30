@@ -80,35 +80,38 @@ void main() {
         await tester.binding.setSurfaceSize(const Size(320, 568));
         addTearDown(() => tester.binding.setSurfaceSize(null));
         final semantics = tester.ensureSemantics();
-        addTearDown(semantics.dispose);
         final semanticsLabel = '${content.title}. ${content.subtitle}';
 
-        await tester.pumpWidget(
-          MaterialApp(
-            theme: buildTrainerAtlasTheme(
-              platform: TargetPlatform.android,
-            ),
-            home: MediaQuery(
-              data: MediaQueryData(
-                size: const Size(320, 568),
-                textScaler: TextScaler.linear(2),
+        try {
+          await tester.pumpWidget(
+            MaterialApp(
+              theme: buildTrainerAtlasTheme(
+                platform: TargetPlatform.android,
               ),
-              child: Scaffold(
-                body: SingleChildScrollView(
-                  child: AccessibleActionCard(
-                    icon: Icons.flash_on,
-                    title: content.title,
-                    subtitle: content.subtitle,
-                    onTap: () {},
+              home: MediaQuery(
+                data: MediaQueryData(
+                  size: const Size(320, 568),
+                  textScaler: TextScaler.linear(2),
+                ),
+                child: Scaffold(
+                  body: SingleChildScrollView(
+                    child: AccessibleActionCard(
+                      icon: Icons.flash_on,
+                      title: content.title,
+                      subtitle: content.subtitle,
+                      onTap: () {},
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-        );
+          );
 
-        expect(tester.takeException(), isNull);
-        expect(find.bySemanticsLabel(semanticsLabel), findsOneWidget);
+          expect(tester.takeException(), isNull);
+          expect(find.bySemanticsLabel(semanticsLabel), findsOneWidget);
+        } finally {
+          semantics.dispose();
+        }
       },
     );
   }

@@ -2194,13 +2194,13 @@ class _QuantitySelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 116,
+      width: 132,
       child: Row(
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           IconButton(
-            visualDensity: VisualDensity.compact,
+            visualDensity: Theme.of(context).visualDensity,
             onPressed: canDecrease ? onDecrease : null,
             icon: const Icon(Icons.remove),
           ),
@@ -2213,7 +2213,7 @@ class _QuantitySelector extends StatelessWidget {
             ),
           ),
           IconButton(
-            visualDensity: VisualDensity.compact,
+            visualDensity: Theme.of(context).visualDensity,
             onPressed: canIncrease ? onIncrease : null,
             icon: const Icon(Icons.add),
           ),

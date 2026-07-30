@@ -5,12 +5,14 @@ import 'package:flutter/services.dart';
 import '../models/move_data.dart';
 import '../localization/game_catalog_locale.dart';
 import '../services/custom_pokemon_runtime_registry.dart';
+import '../services/performance_trace.dart';
 import 'move_localization_repository.dart';
 
 class MoveRepository {
-  final Map<String, MoveData?> _cache = {};
-  Map<String, MoveData>? _webMoveCache;
-  int _catalogLocaleRevision = -1;
+  static final Map<String, MoveData?> _cache = {};
+  static Map<String, MoveData>? _webMoveCache;
+  static Future<Map<String, MoveData>>? _webMoveFuture;
+  static int _catalogLocaleRevision = -1;
 
   Future<MoveData?> getMove(String reference, {int? pokemonId}) async {
     _ensureLocaleCache();
@@ -117,33 +119,67 @@ class MoveRepository {
   Future<Map<String, MoveData>> _getWebMoveCatalog() async {
     _ensureLocaleCache();
     if (_webMoveCache != null) return _webMoveCache!;
+    final loading = _webMoveFuture;
+    if (loading != null) return loading;
 
-    final jsonString = await rootBundle.loadString(
-      'assets/data_webapp/moves.json',
-    );
-    final json = Map<String, dynamic>.from(jsonDecode(jsonString));
-    final movesJson = List<dynamic>.from(json['moves'] ?? const []);
-    final localizations = GameCatalogLocale.isItalian
-        ? await MoveLocalizationRepository().getEntries()
-        : const <String, MoveLocalization>{};
-    final moves = <String, MoveData>{};
-
-    for (final value in movesJson) {
-      final sourceJson = Map<String, dynamic>.from(value);
-      final moveId = sourceJson['id']?.toString() ?? '';
-      final move = MoveData.fromWebJson(
-        _localizedMoveJson(sourceJson, localizations[moveId]),
-        localizeToItalian: GameCatalogLocale.isItalian,
-      );
-      if (move.name.trim().isEmpty) continue;
-
-      _registerMoveKey(moves, move.id, move);
-      _registerMoveKey(moves, move.name, move);
-      _registerMoveKey(moves, move.technicalName, move);
+    final localeRevision = GameCatalogLocale.revision;
+    final future = _loadWebMoveCatalog();
+    _webMoveFuture = future;
+    try {
+      final catalog = await future;
+      if (_catalogLocaleRevision == localeRevision) {
+        _webMoveCache = catalog;
+      }
+      return catalog;
+    } finally {
+      if (identical(_webMoveFuture, future)) {
+        _webMoveFuture = null;
+      }
     }
+  }
 
-    _webMoveCache = moves;
-    return _webMoveCache!;
+  Future<Map<String, MoveData>> _loadWebMoveCatalog() async {
+    final performanceTrace = PerformanceTrace.start(
+      'catalog.moves.load',
+      arguments: {'locale': GameCatalogLocale.languageCode},
+    );
+    try {
+      final jsonString = await rootBundle.loadString(
+        'assets/data_webapp/moves.json',
+      );
+      final json = Map<String, dynamic>.from(jsonDecode(jsonString));
+      final movesJson = List<dynamic>.from(json['moves'] ?? const []);
+      final localizations = GameCatalogLocale.isItalian
+          ? await MoveLocalizationRepository().getEntries()
+          : const <String, MoveLocalization>{};
+      final moves = <String, MoveData>{};
+
+      for (final value in movesJson) {
+        final sourceJson = Map<String, dynamic>.from(value);
+        final moveId = sourceJson['id']?.toString() ?? '';
+        final move = MoveData.fromWebJson(
+          _localizedMoveJson(sourceJson, localizations[moveId]),
+          localizeToItalian: GameCatalogLocale.isItalian,
+        );
+        if (move.name.trim().isEmpty) continue;
+
+        _registerMoveKey(moves, move.id, move);
+        _registerMoveKey(moves, move.name, move);
+        _registerMoveKey(moves, move.technicalName, move);
+      }
+
+      final result = Map<String, MoveData>.unmodifiable(moves);
+      performanceTrace.finish(
+        arguments: {
+          'status': 'success',
+          'count': {for (final move in moves.values) move.id}.length,
+        },
+      );
+      return result;
+    } catch (_) {
+      performanceTrace.finish(arguments: {'status': 'error'});
+      rethrow;
+    }
   }
 
   Map<String, dynamic> _localizedMoveJson(
@@ -174,6 +210,14 @@ class MoveRepository {
     _catalogLocaleRevision = revision;
     _cache.clear();
     _webMoveCache = null;
+    _webMoveFuture = null;
+  }
+
+  static void clearCache() {
+    _cache.clear();
+    _webMoveCache = null;
+    _webMoveFuture = null;
+    _catalogLocaleRevision = -1;
   }
 
   void _registerMoveKey(

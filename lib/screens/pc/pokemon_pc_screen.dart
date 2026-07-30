@@ -850,9 +850,8 @@ class _TeamMiniCard extends StatelessWidget {
                         TextButton(
                           onPressed: onDeposit,
                           style: TextButton.styleFrom(
-                            padding: EdgeInsets.zero,
-                            minimumSize: const Size(0, 20),
-                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            padding: const EdgeInsets.symmetric(horizontal: 8),
+                            minimumSize: const Size(48, 48),
                             textStyle: Theme.of(context).textTheme.labelSmall,
                           ),
                           child: Text(context.uiText('Deposita', 'Deposit')),

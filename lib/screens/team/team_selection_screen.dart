@@ -1168,7 +1168,7 @@ class _TeamSlotCard extends StatelessWidget {
                               'Condividi Pokémon',
                               'Share Pokémon',
                             ),
-                            visualDensity: VisualDensity.compact,
+                            visualDensity: Theme.of(context).visualDensity,
                             icon: const Icon(Icons.ios_share_outlined),
                           ),
                         PopupMenuButton<_SlotAction>(

@@ -6,6 +6,7 @@ import '../localization/game_catalog_locale.dart';
 import '../models/bag_item.dart';
 import '../models/move_data.dart';
 import '../models/tm_data.dart';
+import '../services/performance_trace.dart';
 import 'item_localization_repository.dart';
 import 'move_repository.dart';
 import 'tm_repository.dart';
@@ -14,9 +15,11 @@ class ItemRepository {
   final MoveRepository _moveRepository = MoveRepository();
   final TmRepository _tmRepository = TmRepository();
 
-  Map<String, String>? _descriptionCache;
-  List<BagItem>? _webItemCache;
-  int _catalogLocaleRevision = -1;
+  static Map<String, String>? _descriptionCache;
+  static Future<Map<String, String>>? _descriptionFuture;
+  static List<BagItem>? _webItemCache;
+  static Future<List<BagItem>>? _webItemFuture;
+  static int _catalogLocaleRevision = -1;
 
   Future<Map<String, String>> getItemDescriptions() async {
     _ensureLocaleCache();
@@ -24,15 +27,17 @@ class ItemRepository {
       return _descriptionCache!;
     }
 
-    final jsonString = await rootBundle.loadString('assets/data/items.json');
-    final json = Map<String, dynamic>.from(jsonDecode(jsonString));
-
-    _descriptionCache = json.map((key, value) {
-      final data = Map<String, dynamic>.from(value);
-      return MapEntry(key, data['Effect']?.toString() ?? '');
-    });
-
-    return _descriptionCache!;
+    final loading = _descriptionFuture;
+    if (loading != null) return loading;
+    final future = _loadItemDescriptions();
+    _descriptionFuture = future;
+    try {
+      final descriptions = await future;
+      _descriptionCache = descriptions;
+      return descriptions;
+    } finally {
+      if (identical(_descriptionFuture, future)) _descriptionFuture = null;
+    }
   }
 
   Future<List<BagItem>> getWebItems() async {
@@ -40,31 +45,70 @@ class ItemRepository {
     if (_webItemCache != null) {
       return _webItemCache!;
     }
+    final loading = _webItemFuture;
+    if (loading != null) return loading;
 
-    final jsonString = await rootBundle.loadString(
-      'assets/data_webapp/items.json',
-    );
+    final localeRevision = GameCatalogLocale.revision;
+    final future = _loadWebItems();
+    _webItemFuture = future;
+    try {
+      final items = await future;
+      if (_catalogLocaleRevision == localeRevision) {
+        _webItemCache = items;
+      }
+      return items;
+    } finally {
+      if (identical(_webItemFuture, future)) _webItemFuture = null;
+    }
+  }
+
+  Future<Map<String, String>> _loadItemDescriptions() async {
+    final jsonString = await rootBundle.loadString('assets/data/items.json');
     final json = Map<String, dynamic>.from(jsonDecode(jsonString));
-    final itemsJson = List<dynamic>.from(json['items'] ?? const []);
-    final localizations = GameCatalogLocale.isItalian
-        ? await ItemLocalizationRepository().getEntries()
-        : const <String, ItemLocalization>{};
-    final items = itemsJson
-        .map((value) => BagItem.fromWebJson(Map<String, dynamic>.from(value)))
-        .where((item) => item.id.isNotEmpty)
-        .map((item) => _localizedItem(item, localizations[item.id]))
-        .toList(growable: true);
+    return Map<String, String>.unmodifiable(
+      json.map((key, value) {
+        final data = Map<String, dynamic>.from(value);
+        return MapEntry(key, data['Effect']?.toString() ?? '');
+      }),
+    );
+  }
 
-    items.addAll(await _getTmItems());
+  Future<List<BagItem>> _loadWebItems() async {
+    final performanceTrace = PerformanceTrace.start(
+      'catalog.items.load',
+      arguments: {'locale': GameCatalogLocale.languageCode},
+    );
+    try {
+      final jsonString = await rootBundle.loadString(
+        'assets/data_webapp/items.json',
+      );
+      final json = Map<String, dynamic>.from(jsonDecode(jsonString));
+      final itemsJson = List<dynamic>.from(json['items'] ?? const []);
+      final localizations = GameCatalogLocale.isItalian
+          ? await ItemLocalizationRepository().getEntries()
+          : const <String, ItemLocalization>{};
+      final items = itemsJson
+          .map((value) => BagItem.fromWebJson(Map<String, dynamic>.from(value)))
+          .where((item) => item.id.isNotEmpty)
+          .map((item) => _localizedItem(item, localizations[item.id]))
+          .toList(growable: true);
 
-    _webItemCache = items
-      ..sort((a, b) {
+      items.addAll(await _getTmItems());
+
+      items.sort((a, b) {
         final typeCompare = a.type.compareTo(b.type);
         if (typeCompare != 0) return typeCompare;
         return a.name.compareTo(b.name);
       });
-
-    return _webItemCache!;
+      final result = List<BagItem>.unmodifiable(items);
+      performanceTrace.finish(
+        arguments: {'status': 'success', 'count': result.length},
+      );
+      return result;
+    } catch (_) {
+      performanceTrace.finish(arguments: {'status': 'error'});
+      rethrow;
+    }
   }
 
   BagItem _localizedItem(BagItem item, ItemLocalization? localization) {
@@ -140,7 +184,17 @@ class ItemRepository {
     if (_catalogLocaleRevision == revision) return;
     _catalogLocaleRevision = revision;
     _descriptionCache = null;
+    _descriptionFuture = null;
     _webItemCache = null;
+    _webItemFuture = null;
+  }
+
+  static void clearCache() {
+    _descriptionCache = null;
+    _descriptionFuture = null;
+    _webItemCache = null;
+    _webItemFuture = null;
+    _catalogLocaleRevision = -1;
   }
 
   String _labelFromId(String id) {

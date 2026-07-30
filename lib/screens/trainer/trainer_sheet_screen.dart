@@ -1783,7 +1783,7 @@ class _CheckValueRow extends StatelessWidget {
               Checkbox(
                 value: isSelected,
                 onChanged: isLocked ? null : (_) => onChanged(),
-                visualDensity: VisualDensity.compact,
+                visualDensity: Theme.of(context).visualDensity,
               ),
               SizedBox(
                 width: 34,
@@ -2166,7 +2166,7 @@ class _SheetCounterBox extends StatelessWidget {
           Row(
             children: [
               IconButton(
-                visualDensity: VisualDensity.compact,
+                visualDensity: Theme.of(context).visualDensity,
                 tooltip: context.uiText('Diminuisci $label', 'Decrease $label'),
                 onPressed: onDecrease,
                 icon: const Icon(Icons.remove, size: 18),
@@ -2181,7 +2181,7 @@ class _SheetCounterBox extends StatelessWidget {
                 ),
               ),
               IconButton(
-                visualDensity: VisualDensity.compact,
+                visualDensity: Theme.of(context).visualDensity,
                 tooltip: context.uiText('Aumenta $label', 'Increase $label'),
                 onPressed: onIncrease,
                 icon: const Icon(Icons.add, size: 18),
@@ -2474,7 +2474,7 @@ class _AbilityScoreTile extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   IconButton(
-                    visualDensity: VisualDensity.compact,
+                    visualDensity: Theme.of(context).visualDensity,
                     tooltip: context.uiText(
                       'Diminuisci $label',
                       'Decrease $label',
@@ -2483,7 +2483,7 @@ class _AbilityScoreTile extends StatelessWidget {
                     icon: const Icon(Icons.remove, size: 18),
                   ),
                   IconButton(
-                    visualDensity: VisualDensity.compact,
+                    visualDensity: Theme.of(context).visualDensity,
                     tooltip: context.uiText(
                       'Aumenta $label',
                       'Increase $label',

@@ -11,10 +11,15 @@ on:
       - 'NOTICE.md'
       - 'pubspec.yaml'
       - 'pubspec.lock'
+      - 'test/android_release_config_test.dart'
+      - 'test/profile_backup_test.dart'
+      - 'test/profile_backup_service_test.dart'
+      - 'test/profile_upgrade_compatibility_test.dart'
       - 'test/release_legal_assets_test.dart'
       - 'tooling/analyze_release_footprint.py'
       - 'tooling/generate_asset_duplicates.py'
       - 'tooling/prepare_release_legal_assets.py'
+      - 'docs/android-release.md'
       - 'docs/performance/**'
       - '.github/workflows/release-footprint-audit.yml'
   pull_request:
@@ -25,10 +30,15 @@ on:
       - 'NOTICE.md'
       - 'pubspec.yaml'
       - 'pubspec.lock'
+      - 'test/android_release_config_test.dart'
+      - 'test/profile_backup_test.dart'
+      - 'test/profile_backup_service_test.dart'
+      - 'test/profile_upgrade_compatibility_test.dart'
       - 'test/release_legal_assets_test.dart'
       - 'tooling/analyze_release_footprint.py'
       - 'tooling/generate_asset_duplicates.py'
       - 'tooling/prepare_release_legal_assets.py'
+      - 'docs/android-release.md'
       - 'docs/performance/**'
       - '.github/workflows/release-footprint-audit.yml'
   workflow_dispatch:
@@ -40,11 +50,16 @@ concurrency:
   group: release-footprint-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  BUNDLETOOL_VERSION: '1.18.3'
+
 jobs:
   audit:
-    name: Build and measure release archives
+    name: Build, shrink and measure Android release
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: 120
+    env:
+      READINESS_DIR: ${{ runner.temp }}/trainer-atlas-release-readiness
 
     steps:
       - name: Check out repository branch
@@ -66,7 +81,9 @@ jobs:
           cache: true
 
       - name: Show pinned toolchain
-        run: flutter --version
+        run: |
+          flutter --version
+          java -version
 
       - name: Install dependencies
         run: flutter pub get
@@ -85,8 +102,13 @@ jobs:
       - name: Analyze source
         run: flutter analyze
 
-      - name: Run release legal asset test
-        run: flutter test test/release_legal_assets_test.dart --reporter expanded
+      - name: Run release, backup and upgrade tests
+        run: |
+          flutter test test/release_legal_assets_test.dart --reporter expanded
+          flutter test test/android_release_config_test.dart --reporter expanded
+          flutter test test/profile_backup_test.dart --reporter expanded
+          flutter test test/profile_backup_service_test.dart --reporter expanded
+          flutter test test/profile_upgrade_compatibility_test.dart --reporter expanded
 
       - name: Create temporary CI signing key
         shell: bash
@@ -108,17 +130,148 @@ jobs:
           storeFile=../ci-footprint.jks
           EOF
 
-      - name: Build release APK
-        run: flutter build apk --release
+      - name: Build baseline release APK and AAB
+        run: |
+          set -euo pipefail
+          flutter build apk --release
+          flutter build appbundle --release
+          mkdir -p "$READINESS_DIR/baseline"
+          cp build/app/outputs/flutter-apk/app-release.apk "$READINESS_DIR/baseline/app-release.apk"
+          cp build/app/outputs/bundle/release/app-release.aab "$READINESS_DIR/baseline/app-release.aab"
 
-      - name: Build release AAB
-        run: flutter build appbundle --release
-
-      - name: Generate release footprint reports
+      - name: Generate baseline footprint reports
         run: |
           python tooling/analyze_release_footprint.py \
-            --apk build/app/outputs/flutter-apk/app-release.apk \
-            --aab build/app/outputs/bundle/release/app-release.aab
+            --apk "$READINESS_DIR/baseline/app-release.apk" \
+            --aab "$READINESS_DIR/baseline/app-release.aab"
+
+      - name: Build opt-in minified release APK and AAB
+        env:
+          ORG_GRADLE_PROJECT_trainerAtlasEnableReleaseShrinking: 'true'
+        run: |
+          set -euo pipefail
+          flutter clean
+          flutter pub get
+          python tooling/prepare_release_legal_assets.py
+          flutter build apk --release
+          flutter build appbundle --release
+          mkdir -p "$READINESS_DIR/shrunk"
+          cp build/app/outputs/flutter-apk/app-release.apk "$READINESS_DIR/shrunk/app-release.apk"
+          cp build/app/outputs/bundle/release/app-release.aab "$READINESS_DIR/shrunk/app-release.aab"
+
+      - name: Download pinned bundletool
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 3 \
+            "https://github.com/google/bundletool/releases/download/${BUNDLETOOL_VERSION}/bundletool-all-${BUNDLETOOL_VERSION}.jar" \
+            --output "$RUNNER_TEMP/bundletool.jar"
+          java -jar "$RUNNER_TEMP/bundletool.jar" version
+
+      - name: Validate bundles and Google Play metadata
+        run: |
+          set -euo pipefail
+          mkdir -p "$READINESS_DIR/reports"
+          for variant in baseline shrunk; do
+            bundle="$READINESS_DIR/${variant}/app-release.aab"
+            java -jar "$RUNNER_TEMP/bundletool.jar" validate --bundle="$bundle"
+            java -jar "$RUNNER_TEMP/bundletool.jar" dump manifest --bundle="$bundle" --module=base \
+              > "$READINESS_DIR/reports/${variant}-manifest.xml"
+            java -jar "$RUNNER_TEMP/bundletool.jar" dump config --bundle="$bundle" \
+              > "$READINESS_DIR/reports/${variant}-bundle-config.txt"
+
+            grep -q 'package="io.github.rickciaahd.traineratlas"' \
+              "$READINESS_DIR/reports/${variant}-manifest.xml"
+            grep -Eq 'targetSdkVersion="36"|targetSdkVersion="0x24"' \
+              "$READINESS_DIR/reports/${variant}-manifest.xml"
+            grep -q 'PAGE_ALIGNMENT_16K' \
+              "$READINESS_DIR/reports/${variant}-bundle-config.txt"
+          done
+
+      - name: Recreate Play delivery and measure device download
+        run: |
+          set -euo pipefail
+          cat > "$READINESS_DIR/device-spec-api36-arm64.json" <<'EOF'
+          {
+            "supportedAbis": ["arm64-v8a"],
+            "supportedLocales": ["it", "en"],
+            "screenDensity": 420,
+            "sdkVersion": 36
+          }
+          EOF
+
+          for variant in baseline shrunk; do
+            bundle="$READINESS_DIR/${variant}/app-release.aab"
+            apks="$READINESS_DIR/${variant}/api36-arm64.apks"
+            java -jar "$RUNNER_TEMP/bundletool.jar" build-apks \
+              --bundle="$bundle" \
+              --output="$apks" \
+              --device-spec="$READINESS_DIR/device-spec-api36-arm64.json" \
+              --ks=android/ci-footprint.jks \
+              --ks-pass=pass:footprint-pass \
+              --ks-key-alias=footprint \
+              --key-pass=pass:footprint-pass \
+              --overwrite
+            java -jar "$RUNNER_TEMP/bundletool.jar" get-size total \
+              --apks="$apks" \
+              --device-spec="$READINESS_DIR/device-spec-api36-arm64.json" \
+              > "$READINESS_DIR/reports/${variant}-device-size.txt"
+          done
+
+      - name: Verify 16 KiB ZIP alignment of delivered APKs
+        run: |
+          set -euo pipefail
+          zipalign_path=$(find "$ANDROID_SDK_ROOT/build-tools" -type f -name zipalign | sort -V | tail -n 1)
+          test -x "$zipalign_path"
+          for variant in baseline shrunk; do
+            output="$READINESS_DIR/${variant}/extracted-apks"
+            mkdir -p "$output"
+            unzip -q "$READINESS_DIR/${variant}/api36-arm64.apks" -d "$output"
+            while IFS= read -r apk; do
+              "$zipalign_path" -c -P 16 -v 4 "$apk"
+            done < <(find "$output" -type f -name '*.apk' | sort)
+          done
+
+      - name: Generate Android release readiness report
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import os
+          from pathlib import Path
+
+          root = Path(os.environ['READINESS_DIR'])
+          rows = []
+          for variant in ('baseline', 'shrunk'):
+              apk = root / variant / 'app-release.apk'
+              aab = root / variant / 'app-release.aab'
+              device_size = (root / 'reports' / f'{variant}-device-size.txt').read_text(encoding='utf-8').strip()
+              rows.append((variant, apk.stat().st_size, aab.stat().st_size, device_size))
+
+          baseline = rows[0]
+          shrunk = rows[1]
+          if shrunk[1] > baseline[1] * 1.02:
+              raise SystemExit('The shrunk APK is more than 2% larger than the baseline APK.')
+          if shrunk[2] > baseline[2] * 1.02:
+              raise SystemExit('The shrunk AAB is more than 2% larger than the baseline AAB.')
+
+          report = root / 'reports' / 'android-release-readiness.md'
+          report.write_text(
+              '# Android release readiness report\n\n'
+              'All byte values are decimal. Device delivery is the raw output of '
+              'bundletool 1.18.3 for an Android API 36 arm64 device spec.\n\n'
+              '| Variant | APK bytes | AAB bytes | bundletool device size |\n'
+              '|---|---:|---:|---|\n'
+              + ''.join(
+                  f'| {variant} | {apk:,} | {aab:,} | `{device}` |\n'
+                  for variant, apk, aab, device in rows
+              )
+              + '\nThe production release remains unshrunk by default. The `shrunk` '
+              'variant is enabled only through the Gradle property '
+              '`trainerAtlasEnableReleaseShrinking=true` until the phone upgrade '
+              'and backup checks are approved.\n',
+              encoding='utf-8',
+          )
+          print(report.read_text(encoding='utf-8'))
+          PY
 
       - name: Check generated file formatting
         run: git diff --check
@@ -135,3 +288,14 @@ jobs:
             docs/performance/asset-duplicates.csv
           if-no-files-found: error
           retention-days: 14
+
+      - name: Upload Android readiness reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Trainer-Atlas-Android-release-readiness
+          path: |
+            ${{ runner.temp }}/trainer-atlas-release-readiness/reports/
+            ${{ runner.temp }}/trainer-atlas-release-readiness/device-spec-api36-arm64.json
+          if-no-files-found: warn
+          retention-days: 30

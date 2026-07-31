@@ -59,20 +59,23 @@ class PokemonGeneratorCandidateSelector extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(12, 0, 12, 10),
-            child: Row(
+            child: Wrap(
+              spacing: 6,
+              runSpacing: 4,
+              crossAxisAlignment: WrapCrossAlignment.center,
               children: [
                 TextButton.icon(
                   onPressed: candidates.isEmpty ? null : onSelectAll,
                   icon: const Icon(Icons.select_all),
                   label: Text(context.uiText('Seleziona tutti', 'Select all')),
                 ),
-                const SizedBox(width: 6),
                 TextButton.icon(
                   onPressed: selectedVisible == 0 ? null : onClearSelection,
                   icon: const Icon(Icons.deselect),
-                  label: Text(context.uiText('Deseleziona', 'Clear selection')),
+                  label: Text(
+                    context.uiText('Deseleziona', 'Clear selection'),
+                  ),
                 ),
-                const Spacer(),
                 Text(
                   '$selectedVisible/${candidates.length}',
                   style: Theme.of(

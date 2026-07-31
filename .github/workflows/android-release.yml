@@ -87,22 +87,47 @@ jobs:
         id: version
         shell: bash
         run: |
-          VERSION=$(awk '/^version:/{print $2}' pubspec.yaml | cut -d+ -f1)
-          echo "name=$VERSION" >> "$GITHUB_OUTPUT"
+          VERSION_FULL=$(awk '/^version:/{print $2}' pubspec.yaml)
+          VERSION_NAME=${VERSION_FULL%%+*}
+          VERSION_CODE=${VERSION_FULL##*+}
+          echo "full=$VERSION_FULL" >> "$GITHUB_OUTPUT"
+          echo "name=$VERSION_NAME" >> "$GITHUB_OUTPUT"
+          echo "code=$VERSION_CODE" >> "$GITHUB_OUTPUT"
 
       - name: Prepare release artifacts
+        shell: bash
         run: |
           mkdir -p dist
-          cp build/app/outputs/flutter-apk/app-release.apk "dist/Pokedex5eITA-${{ steps.version.outputs.name }}.apk"
-          cp build/app/outputs/bundle/release/app-release.aab "dist/Pokedex5eITA-${{ steps.version.outputs.name }}.aab"
+          BASENAME="TrainerAtlas5e-${{ steps.version.outputs.name }}-vc${{ steps.version.outputs.code }}"
+          cp build/app/outputs/flutter-apk/app-release.apk "dist/${BASENAME}.apk"
+          cp build/app/outputs/bundle/release/app-release.aab "dist/${BASENAME}.aab"
           cp LICENSE dist/LICENSE
           cp NOTICE.md dist/NOTICE.md
-          sha256sum dist/*.apk dist/*.aab dist/LICENSE dist/NOTICE.md > dist/SHA256SUMS.txt
+
+          keytool -printcert -jarfile "dist/${BASENAME}.aab" > dist/SIGNING-CERTIFICATE.txt
+
+          cat > dist/RELEASE-METADATA.txt <<EOF
+          App: Trainer Atlas 5e
+          Application ID: io.github.rickciaahd.traineratlas
+          Version: ${{ steps.version.outputs.name }}
+          Version code: ${{ steps.version.outputs.code }}
+          Commit: ${{ github.sha }}
+          Release shrinking: disabled by default
+          EOF
+
+          sha256sum \
+            dist/*.apk \
+            dist/*.aab \
+            dist/LICENSE \
+            dist/NOTICE.md \
+            dist/SIGNING-CERTIFICATE.txt \
+            dist/RELEASE-METADATA.txt \
+            > dist/SHA256SUMS.txt
 
       - name: Upload signed artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: Pokedex5eITA-Android-${{ steps.version.outputs.name }}
+          name: TrainerAtlas5e-Android-${{ steps.version.outputs.name }}-vc${{ steps.version.outputs.code }}
           path: dist/
           if-no-files-found: error
           retention-days: 30

@@ -50,6 +50,34 @@ void main() {
     expect(find.byType(FirstLaunchOnboardingScreen), findsOneWidget);
   });
 
+  test('Trainer Atlas branding assets are wired into onboarding and Android', () {
+    final onboardingSource = File(
+      'lib/screens/onboarding/first_launch_onboarding_screen.dart',
+    ).readAsStringSync();
+    final adaptiveForeground = File(
+      'android/app/src/main/res/drawable/ic_launcher_foreground.xml',
+    ).readAsStringSync();
+
+    expect(
+      File('assets/textures/trainers/trainer_atlas_logo.png').existsSync(),
+      isTrue,
+    );
+    expect(
+      File('android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png')
+          .existsSync(),
+      isTrue,
+    );
+    expect(
+      onboardingSource,
+      contains('_OnboardingAssets.trainerAtlasLogo'),
+    );
+    expect(onboardingSource, contains("label: 'Trainer Atlas 5e'"));
+    expect(
+      adaptiveForeground,
+      contains('@drawable/trainer_atlas_launcher_foreground'),
+    );
+  });
+
   test('onboarding uses the compact layout when the keyboard is visible', () {
     final source = File(
       'lib/screens/onboarding/first_launch_onboarding_screen.dart',

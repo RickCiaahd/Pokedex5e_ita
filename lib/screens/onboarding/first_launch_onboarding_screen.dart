@@ -807,6 +807,8 @@ class _OnboardingAssets {
 
   static const welcomeBackground =
       'assets/textures/trainers/onboarding_welcome_background.webp';
+  static const trainerAtlasLogo =
+      'assets/textures/trainers/trainer_atlas_logo.png';
   static const laboratoryBackground =
       'assets/textures/trainers/onboarding_lab_background.webp';
   static const professor = 'assets/textures/trainers/onboarding_professor.png';
@@ -847,39 +849,20 @@ class _WelcomeStage extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Container(
-                  width: 112,
-                  height: 112,
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: .82),
-                    shape: BoxShape.circle,
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Color(0x22000000),
-                        blurRadius: 24,
-                        offset: Offset(0, 10),
-                      ),
-                    ],
-                  ),
-                  child: const Icon(
-                    Icons.catching_pokemon,
-                    size: 72,
-                    color: _OnboardingPalette.rust,
+                Flexible(
+                  child: Semantics(
+                    image: true,
+                    label: 'Trainer Atlas 5e',
+                    child: Image.asset(
+                      _OnboardingAssets.trainerAtlasLogo,
+                      width: 360,
+                      fit: BoxFit.contain,
+                      filterQuality: FilterQuality.high,
+                      excludeFromSemantics: true,
+                    ),
                   ),
                 ),
-                const SizedBox(height: 20),
-                Text(
-                  'TRAINER ATLAS',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: _OnboardingPalette.text,
-                    fontSize: 34,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: 1.2,
-                    shadows: [Shadow(color: Color(0x44FFFFFF), blurRadius: 12)],
-                  ),
-                ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 10),
                 Text(
                   l10n.onboardingTagline,
                   textAlign: TextAlign.center,

@@ -73,6 +73,10 @@ void main() {
     final foreground = File(
       'android/app/src/main/res/drawable/ic_launcher_foreground.xml',
     ).readAsStringSync();
+    final foregroundBitmap = File(
+      'android/app/src/main/res/drawable-xxxhdpi/'
+      'trainer_atlas_launcher_foreground.png',
+    );
     final splash = File(
       'android/app/src/main/res/values-v31/styles.xml',
     ).readAsStringSync();
@@ -80,7 +84,12 @@ void main() {
 
     expect(adaptiveIcon, contains('<adaptive-icon'));
     expect(adaptiveIcon, contains('@drawable/ic_launcher_foreground'));
-    expect(foreground, contains('android:viewportWidth="108"'));
+    expect(foreground, contains('<bitmap'));
+    expect(
+      foreground,
+      contains('@drawable/trainer_atlas_launcher_foreground'),
+    );
+    expect(foregroundBitmap.existsSync(), isTrue);
     expect(splash, contains('android:windowSplashScreenBackground'));
     expect(splash, contains('android:windowSplashScreenAnimatedIcon'));
     expect(splash, contains('@drawable/ic_launcher_foreground'));

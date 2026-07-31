@@ -6,6 +6,14 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+val googlePlayCompileSdk = 36
+val googlePlayTargetSdk = 36
+val releaseShrinkingEnabled =
+    providers.gradleProperty("trainerAtlasEnableReleaseShrinking")
+        .orNull
+        ?.toBooleanStrictOrNull()
+        ?: false
+
 val keystoreProperties = Properties()
 val keystorePropertiesFile = rootProject.file("key.properties")
 
@@ -30,7 +38,7 @@ if (releaseTaskRequested && !keystorePropertiesFile.exists()) {
 
 android {
     namespace = "io.github.rickciaahd.traineratlas"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = googlePlayCompileSdk
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
@@ -41,7 +49,7 @@ android {
     defaultConfig {
         applicationId = "io.github.rickciaahd.traineratlas"
         minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
+        targetSdk = googlePlayTargetSdk
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
@@ -57,13 +65,24 @@ android {
         }
     }
 
+    packaging {
+        jniLibs {
+            // AGP 8.5.1+ packages uncompressed native libraries with 16 KiB alignment.
+            useLegacyPackaging = false
+        }
+    }
+
     buildTypes {
         release {
             if (keystorePropertiesFile.exists()) {
                 signingConfig = signingConfigs.getByName("release")
             }
-            isMinifyEnabled = false
-            isShrinkResources = false
+            isMinifyEnabled = releaseShrinkingEnabled
+            isShrinkResources = releaseShrinkingEnabled
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro",
+            )
         }
     }
 }

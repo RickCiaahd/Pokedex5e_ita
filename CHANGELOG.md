@@ -12,7 +12,9 @@ Tutte le modifiche rilevanti al progetto vengono documentate in questo file.
 - test di regressione per layout mobile, localizzazione delle origini, residui bilingui e messaggi d’errore;
 - scelta tra creazione rapida e creazione guidata dei nuovi profili dalla schermata Profili;
 - riordino persistente dei Pokémon in squadra tramite trascinamento;
-- baseline ripetibile dei tempi di caricamento dei cataloghi in italiano e inglese, pubblicata dalla CI.
+- baseline ripetibile dei tempi di caricamento dei cataloghi in italiano e inglese, pubblicata dalla CI;
+- audit Android per API 36, pagine da 16 KiB, build standard e minificata e dimensione della consegna simulata con `bundletool`;
+- test di persistenza dei profili durante un aggiornamento e compatibilità dei formati backup storici da 1 a 5.
 
 ### Modificato
 
@@ -28,7 +30,9 @@ Tutte le modifiche rilevanti al progetto vengono documentate in questo file.
 - rimandi alle pagine del Manuale del Giocatore sostituiti con le definizioni complete dei privilegi in italiano e inglese, mantenendo gli adattamenti previsti da Pokémon 5e;
 - cache dei cataloghi condivise tra le schermate e caricamento concorrente dei dati indipendenti della Home;
 - target tattili mobile portati ad almeno 48 dp, mantenendo una densità più compatta su desktop;
-- azioni principali della Home rese più chiare per TalkBack e testate su schermi da 320 px con testo al 200%.
+- azioni principali della Home rese più chiare per TalkBack e testate su schermi da 320 px con testo al 200%;
+- configurazione Android aggiornata ad API 36, packaging nativo moderno e splash di sistema per Android 12 e successivi;
+- minificazione R8 e resource shrinking predisposti come opzione di collaudo, mantenendo la release standard non minificata per impostazione predefinita.
 
 ### Corretto
 

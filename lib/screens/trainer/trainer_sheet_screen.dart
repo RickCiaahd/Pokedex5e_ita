@@ -21,6 +21,7 @@ import '../../repositories/trainer_manual_repository.dart';
 import '../../services/guided_tour_service.dart';
 import '../../services/trainer_path_automation_service.dart';
 import '../../services/trainer_path_passive_service.dart';
+import '../../widgets/layout/responsive_content.dart';
 import '../../widgets/navigation/home_leading_button.dart';
 import '../../widgets/tour/guided_tour.dart';
 import '../../widgets/trainer/trainer_path_automation_panel.dart';
@@ -2457,7 +2458,11 @@ class _AbilityScoreTile extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
       ),
       child: SizedBox(
-        width: 96,
+        width: textScaleAwareValue(
+          context,
+          normal: 104,
+          enlarged: 116,
+        ),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
           child: Column(

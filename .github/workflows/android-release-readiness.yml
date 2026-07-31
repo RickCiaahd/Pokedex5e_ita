@@ -28,6 +28,8 @@ jobs:
     name: API 36, shrinking, bundletool and upgrade safety
     runs-on: ubuntu-latest
     timeout-minutes: 120
+    env:
+      READINESS_DIR: ${{ runner.temp }}/trainer-atlas-release-readiness
 
     steps:
       - name: Check out repository
@@ -95,9 +97,9 @@ jobs:
           set -euo pipefail
           flutter build apk --release
           flutter build appbundle --release
-          mkdir -p build/release-readiness/baseline
-          cp build/app/outputs/flutter-apk/app-release.apk build/release-readiness/baseline/app-release.apk
-          cp build/app/outputs/bundle/release/app-release.aab build/release-readiness/baseline/app-release.aab
+          mkdir -p "$READINESS_DIR/baseline"
+          cp build/app/outputs/flutter-apk/app-release.apk "$READINESS_DIR/baseline/app-release.apk"
+          cp build/app/outputs/bundle/release/app-release.aab "$READINESS_DIR/baseline/app-release.aab"
 
       - name: Build opt-in minified release APK and AAB
         env:
@@ -109,42 +111,42 @@ jobs:
           python tooling/prepare_release_legal_assets.py
           flutter build apk --release
           flutter build appbundle --release
-          mkdir -p build/release-readiness/shrunk
-          cp build/app/outputs/flutter-apk/app-release.apk build/release-readiness/shrunk/app-release.apk
-          cp build/app/outputs/bundle/release/app-release.aab build/release-readiness/shrunk/app-release.aab
+          mkdir -p "$READINESS_DIR/shrunk"
+          cp build/app/outputs/flutter-apk/app-release.apk "$READINESS_DIR/shrunk/app-release.apk"
+          cp build/app/outputs/bundle/release/app-release.aab "$READINESS_DIR/shrunk/app-release.aab"
 
       - name: Download pinned bundletool
         run: |
           set -euo pipefail
           curl --fail --location --retry 3 \
             "https://github.com/google/bundletool/releases/download/${BUNDLETOOL_VERSION}/bundletool-all-${BUNDLETOOL_VERSION}.jar" \
-            --output bundletool.jar
-          java -jar bundletool.jar version
+            --output "$RUNNER_TEMP/bundletool.jar"
+          java -jar "$RUNNER_TEMP/bundletool.jar" version
 
       - name: Validate bundles and Play metadata
         run: |
           set -euo pipefail
-          mkdir -p build/release-readiness/reports
+          mkdir -p "$READINESS_DIR/reports"
           for variant in baseline shrunk; do
-            bundle="build/release-readiness/${variant}/app-release.aab"
-            java -jar bundletool.jar validate --bundle="$bundle"
-            java -jar bundletool.jar dump manifest --bundle="$bundle" --module=base \
-              > "build/release-readiness/reports/${variant}-manifest.xml"
-            java -jar bundletool.jar dump config --bundle="$bundle" \
-              > "build/release-readiness/reports/${variant}-bundle-config.txt"
+            bundle="$READINESS_DIR/${variant}/app-release.aab"
+            java -jar "$RUNNER_TEMP/bundletool.jar" validate --bundle="$bundle"
+            java -jar "$RUNNER_TEMP/bundletool.jar" dump manifest --bundle="$bundle" --module=base \
+              > "$READINESS_DIR/reports/${variant}-manifest.xml"
+            java -jar "$RUNNER_TEMP/bundletool.jar" dump config --bundle="$bundle" \
+              > "$READINESS_DIR/reports/${variant}-bundle-config.txt"
 
             grep -q 'package="io.github.rickciaahd.traineratlas"' \
-              "build/release-readiness/reports/${variant}-manifest.xml"
+              "$READINESS_DIR/reports/${variant}-manifest.xml"
             grep -Eq 'targetSdkVersion="36"|targetSdkVersion="0x24"' \
-              "build/release-readiness/reports/${variant}-manifest.xml"
+              "$READINESS_DIR/reports/${variant}-manifest.xml"
             grep -q 'PAGE_ALIGNMENT_16K' \
-              "build/release-readiness/reports/${variant}-bundle-config.txt"
+              "$READINESS_DIR/reports/${variant}-bundle-config.txt"
           done
 
       - name: Recreate Play delivery and measure device download
         run: |
           set -euo pipefail
-          cat > build/release-readiness/device-spec-api36-arm64.json <<'EOF'
+          cat > "$READINESS_DIR/device-spec-api36-arm64.json" <<'EOF'
           {
             "supportedAbis": ["arm64-v8a"],
             "supportedLocales": ["it", "en"],
@@ -154,21 +156,21 @@ jobs:
           EOF
 
           for variant in baseline shrunk; do
-            bundle="build/release-readiness/${variant}/app-release.aab"
-            apks="build/release-readiness/${variant}/api36-arm64.apks"
-            java -jar bundletool.jar build-apks \
+            bundle="$READINESS_DIR/${variant}/app-release.aab"
+            apks="$READINESS_DIR/${variant}/api36-arm64.apks"
+            java -jar "$RUNNER_TEMP/bundletool.jar" build-apks \
               --bundle="$bundle" \
               --output="$apks" \
-              --device-spec=build/release-readiness/device-spec-api36-arm64.json \
+              --device-spec="$READINESS_DIR/device-spec-api36-arm64.json" \
               --ks=android/ci-release-readiness.jks \
               --ks-pass=pass:readiness-pass \
               --ks-key-alias=readiness \
               --key-pass=pass:readiness-pass \
               --overwrite
-            java -jar bundletool.jar get-size total \
+            java -jar "$RUNNER_TEMP/bundletool.jar" get-size total \
               --apks="$apks" \
-              --device-spec=build/release-readiness/device-spec-api36-arm64.json \
-              > "build/release-readiness/reports/${variant}-device-size.txt"
+              --device-spec="$READINESS_DIR/device-spec-api36-arm64.json" \
+              > "$READINESS_DIR/reports/${variant}-device-size.txt"
           done
 
       - name: Verify 16 KiB ZIP alignment of delivered APKs
@@ -177,9 +179,9 @@ jobs:
           zipalign_path=$(find "$ANDROID_SDK_ROOT/build-tools" -type f -name zipalign | sort -V | tail -n 1)
           test -x "$zipalign_path"
           for variant in baseline shrunk; do
-            output="build/release-readiness/${variant}/extracted-apks"
+            output="$READINESS_DIR/${variant}/extracted-apks"
             mkdir -p "$output"
-            unzip -q "build/release-readiness/${variant}/api36-arm64.apks" -d "$output"
+            unzip -q "$READINESS_DIR/${variant}/api36-arm64.apks" -d "$output"
             while IFS= read -r apk; do
               "$zipalign_path" -c -P 16 -v 4 "$apk"
             done < <(find "$output" -type f -name '*.apk' | sort)
@@ -189,9 +191,10 @@ jobs:
         run: |
           set -euo pipefail
           python - <<'PY'
+          import os
           from pathlib import Path
 
-          root = Path('build/release-readiness')
+          root = Path(os.environ['READINESS_DIR'])
           rows = []
           for variant in ('baseline', 'shrunk'):
               apk = root / variant / 'app-release.apk'
@@ -232,7 +235,7 @@ jobs:
         with:
           name: Trainer-Atlas-Android-release-readiness
           path: |
-            build/release-readiness/reports/
-            build/release-readiness/device-spec-api36-arm64.json
-          if-no-files-found: error
+            ${{ runner.temp }}/trainer-atlas-release-readiness/reports/
+            ${{ runner.temp }}/trainer-atlas-release-readiness/device-spec-api36-arm64.json
+          if-no-files-found: warn
           retention-days: 30

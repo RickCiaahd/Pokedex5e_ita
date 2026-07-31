@@ -94,7 +94,7 @@ void main() {
       '.github/workflows/android-release.yml',
     ).readAsStringSync();
     final readinessWorkflow = File(
-      '.github/workflows/android-release-readiness.yml',
+      '.github/workflows/release-footprint-audit.yml',
     ).readAsStringSync();
     final documentation = File('docs/android-release.md').readAsStringSync();
 

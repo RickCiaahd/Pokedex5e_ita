@@ -736,10 +736,10 @@ class _FixedTeamPanel extends StatelessWidget {
             constraints.maxWidth - (spacing * (crossAxisCount - 1));
         final cellWidth = availableWidth / crossAxisCount;
         final childAspectRatio = veryCompact
-            ? 0.95
+            ? textScaleAwareValue(context, normal: 0.95, enlarged: 0.56)
             : compact
-            ? 1.05
-            : 1.25;
+            ? textScaleAwareValue(context, normal: 1.05, enlarged: 0.68)
+            : textScaleAwareValue(context, normal: 1.25, enlarged: 0.9);
         final cellHeight = cellWidth / childAspectRatio;
         final height = (cellHeight * safeRows) + (spacing * (safeRows - 1));
 

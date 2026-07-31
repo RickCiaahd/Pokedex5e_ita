@@ -2033,11 +2033,8 @@ class _LoyaltyRow extends StatelessWidget {
         const SizedBox(width: 6),
         Expanded(
           child: Container(
-            height: textScaleAwareValue(
-              context,
-              normal: 38,
-              enlarged: 52,
-            ),
+            constraints: const BoxConstraints(minHeight: 48),
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
             alignment: Alignment.center,
             decoration: BoxDecoration(
               color: Colors.white,
@@ -2047,6 +2044,7 @@ class _LoyaltyRow extends StatelessWidget {
               ),
             ),
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(

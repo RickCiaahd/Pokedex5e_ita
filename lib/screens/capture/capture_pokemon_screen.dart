@@ -766,7 +766,10 @@ class _RegisterCaughtSheetState extends State<_RegisterCaughtSheet> {
                     DropdownMenuItem(
                       value: nature,
                       child: Text(
-                        nature,
+                        context.uiText(
+                          PokemonNature.labelFor(nature),
+                          nature,
+                        ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),

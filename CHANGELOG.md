@@ -11,7 +11,8 @@ Tutte le modifiche rilevanti al progetto vengono documentate in questo file.
 - etichette grafiche inglesi per tutti i 18 tipi Pokémon;
 - test di regressione per layout mobile, localizzazione delle origini, residui bilingui e messaggi d’errore;
 - scelta tra creazione rapida e creazione guidata dei nuovi profili dalla schermata Profili;
-- riordino persistente dei Pokémon in squadra tramite trascinamento.
+- riordino persistente dei Pokémon in squadra tramite trascinamento;
+- baseline ripetibile dei tempi di caricamento dei cataloghi in italiano e inglese, pubblicata dalla CI.
 
 ### Modificato
 
@@ -24,7 +25,10 @@ Tutte le modifiche rilevanti al progetto vengono documentate in questo file.
 - messaggi d’errore visibili centralizzati e localizzati, senza esporre eccezioni tecniche;
 - metadati delle mosse e azioni dello Zaino completati anche in inglese;
 - creazione di profilo, starter, squadra e Pokédex resa atomica, con attivazione soltanto dopo il salvataggio completo;
-- rimandi alle pagine del Manuale del Giocatore sostituiti con le definizioni complete dei privilegi in italiano e inglese, mantenendo gli adattamenti previsti da Pokémon 5e.
+- rimandi alle pagine del Manuale del Giocatore sostituiti con le definizioni complete dei privilegi in italiano e inglese, mantenendo gli adattamenti previsti da Pokémon 5e;
+- cache dei cataloghi condivise tra le schermate e caricamento concorrente dei dati indipendenti della Home;
+- target tattili mobile portati ad almeno 48 dp, mantenendo una densità più compatta su desktop;
+- azioni principali della Home rese più chiare per TalkBack e testate su schermi da 320 px con testo al 200%.
 
 ### Corretto
 

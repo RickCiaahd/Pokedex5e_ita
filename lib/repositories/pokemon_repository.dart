@@ -7,6 +7,7 @@ import '../localization/game_catalog_locale.dart';
 import '../models/pokemon.dart';
 import '../models/pokemon_flavor.dart';
 import '../services/custom_pokemon_discovery_service.dart';
+import '../services/performance_trace.dart';
 import 'custom_pokemon_repository.dart';
 import 'pokemon_localization_repository.dart';
 
@@ -14,80 +15,132 @@ class PokemonRepository {
   static List<Pokemon>? _cachedAllPokemon;
   static int _cachedCustomRevision = -1;
   static int _cachedLocaleRevision = -1;
+  static Future<List<Pokemon>>? _loadingAllPokemon;
+  static int _loadingCustomRevision = -1;
+  static int _loadingLocaleRevision = -1;
 
   Future<List<Pokemon>> getAllPokemon({bool includeSealed = false}) async {
     final customRevision = CustomPokemonRepository.revision;
+    final localeRevision = GameCatalogLocale.revision;
     if (_cachedAllPokemon != null &&
         _cachedCustomRevision == customRevision &&
-        _cachedLocaleRevision == GameCatalogLocale.revision) {
+        _cachedLocaleRevision == localeRevision) {
       return _filterSealed(_cachedAllPokemon!, includeSealed: includeSealed);
     }
 
+    var loading = _loadingAllPokemon;
+    if (loading == null ||
+        _loadingCustomRevision != customRevision ||
+        _loadingLocaleRevision != localeRevision) {
+      _loadingCustomRevision = customRevision;
+      _loadingLocaleRevision = localeRevision;
+      loading = _loadAllPokemon(
+        customRevision: customRevision,
+        localeRevision: localeRevision,
+      );
+      _loadingAllPokemon = loading;
+    }
+
+    try {
+      final pokemon = await loading;
+      return _filterSealed(pokemon, includeSealed: includeSealed);
+    } finally {
+      if (identical(_loadingAllPokemon, loading)) {
+        _loadingAllPokemon = null;
+        _loadingCustomRevision = -1;
+        _loadingLocaleRevision = -1;
+      }
+    }
+  }
+
+  Future<List<Pokemon>> _loadAllPokemon({
+    required int customRevision,
+    required int localeRevision,
+  }) async {
+    final performanceTrace = PerformanceTrace.start(
+      'catalog.pokemon.load',
+      arguments: {'locale': GameCatalogLocale.languageCode},
+    );
     final pokemonByNumber = <int, Pokemon>{};
 
-    for (final pokemon in await _getLegacyPokemon()) {
-      if (pokemon.id <= 0) continue;
-      pokemonByNumber[pokemon.id] = pokemon;
-    }
-
-    for (final pokemon in await _getWebappPokemon()) {
-      if (pokemon.id <= 0) continue;
-      final existing = pokemonByNumber[pokemon.id];
-      pokemonByNumber[pokemon.id] = existing == null
-          ? pokemon
-          : existing
-                .withMetadataFrom(pokemon)
-                .withAdditionalFormDefinitions(pokemon.formDefinitions);
-    }
-
-    final customDefinitions = await CustomPokemonRepository().getAll();
-    for (final definition in customDefinitions) {
-      if (definition.advanced.alternateFormOf != null) continue;
-      pokemonByNumber[definition.pokemonId] = definition.toPokemon();
-    }
-    for (final definition in customDefinitions) {
-      final parentReference = definition.advanced.alternateFormOf;
-      if (parentReference == null) continue;
-      final parentId = _resolveAlternateFormParentId(
-        parentReference,
-        customDefinitions,
-        pokemonByNumber,
-      );
-      final parent = parentId == null ? null : pokemonByNumber[parentId];
-      if (parent == null) continue;
-      final formPokemon = definition.toPokemon().copyWith(
-        name: parent.name,
-        formDefinitions: const [],
-      );
-      pokemonByNumber[parent.id] = parent.withAdditionalFormDefinitions([
-        PokemonFormDefinition(
-          key: 'fakemon-${definition.stableId}',
-          displayName: definition.name,
-          pokemon: formPokemon,
-        ),
+    try {
+      final sourceCatalogs = await Future.wait<List<Pokemon>>([
+        _getLegacyPokemon(),
+        _getWebappPokemon(),
       ]);
+      for (final pokemon in sourceCatalogs[0]) {
+        if (pokemon.id <= 0) continue;
+        pokemonByNumber[pokemon.id] = pokemon;
+      }
+
+      for (final pokemon in sourceCatalogs[1]) {
+        if (pokemon.id <= 0) continue;
+        final existing = pokemonByNumber[pokemon.id];
+        pokemonByNumber[pokemon.id] = existing == null
+            ? pokemon
+            : existing
+                  .withMetadataFrom(pokemon)
+                  .withAdditionalFormDefinitions(pokemon.formDefinitions);
+      }
+
+      final customDefinitions = await CustomPokemonRepository().getAll();
+      for (final definition in customDefinitions) {
+        if (definition.advanced.alternateFormOf != null) continue;
+        pokemonByNumber[definition.pokemonId] = definition.toPokemon();
+      }
+      for (final definition in customDefinitions) {
+        final parentReference = definition.advanced.alternateFormOf;
+        if (parentReference == null) continue;
+        final parentId = _resolveAlternateFormParentId(
+          parentReference,
+          customDefinitions,
+          pokemonByNumber,
+        );
+        final parent = parentId == null ? null : pokemonByNumber[parentId];
+        if (parent == null) continue;
+        final formPokemon = definition.toPokemon().copyWith(
+          name: parent.name,
+          formDefinitions: const [],
+        );
+        pokemonByNumber[parent.id] = parent.withAdditionalFormDefinitions([
+          PokemonFormDefinition(
+            key: 'fakemon-${definition.stableId}',
+            displayName: definition.name,
+            pokemon: formPokemon,
+          ),
+        ]);
+      }
+
+      final localizedTexts = GameCatalogLocale.isItalian
+          ? await PokemonLocalizationRepository().getPokemonTexts()
+          : const <int, PokemonLocalizedText>{};
+      final pokemonList =
+          pokemonByNumber.values
+              .map((pokemon) {
+                final localized = localizedTexts[pokemon.id];
+                if (localized == null) return pokemon;
+                return pokemon.copyWith(
+                  genus: localized.genus,
+                  description: localized.description,
+                );
+              })
+              .toList(growable: false)
+            ..sort((a, b) => a.id.compareTo(b.id));
+
+      if (CustomPokemonRepository.revision == customRevision &&
+          GameCatalogLocale.revision == localeRevision) {
+        _cachedAllPokemon = pokemonList;
+        _cachedCustomRevision = customRevision;
+        _cachedLocaleRevision = localeRevision;
+      }
+      performanceTrace.finish(
+        arguments: {'status': 'success', 'count': pokemonList.length},
+      );
+      return pokemonList;
+    } catch (_) {
+      performanceTrace.finish(arguments: {'status': 'error'});
+      rethrow;
     }
-
-    final localizedTexts = GameCatalogLocale.isItalian
-        ? await PokemonLocalizationRepository().getPokemonTexts()
-        : const <int, PokemonLocalizedText>{};
-    final pokemonList =
-        pokemonByNumber.values
-            .map((pokemon) {
-              final localized = localizedTexts[pokemon.id];
-              if (localized == null) return pokemon;
-              return pokemon.copyWith(
-                genus: localized.genus,
-                description: localized.description,
-              );
-            })
-            .toList(growable: false)
-          ..sort((a, b) => a.id.compareTo(b.id));
-    _cachedAllPokemon = pokemonList;
-    _cachedCustomRevision = customRevision;
-    _cachedLocaleRevision = GameCatalogLocale.revision;
-
-    return _filterSealed(pokemonList, includeSealed: includeSealed);
   }
 
   int? _resolveAlternateFormParentId(
@@ -150,6 +203,9 @@ class PokemonRepository {
     _cachedAllPokemon = null;
     _cachedCustomRevision = -1;
     _cachedLocaleRevision = -1;
+    _loadingAllPokemon = null;
+    _loadingCustomRevision = -1;
+    _loadingLocaleRevision = -1;
   }
 
   Future<List<Pokemon>> _getLegacyPokemon() async {

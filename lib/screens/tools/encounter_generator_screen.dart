@@ -1008,6 +1008,7 @@ class _EncounterGeneratorScreenState extends State<EncounterGeneratorScreen> {
             onChanged: (value) => setState(() => _generationRange = value),
           ),
           DropdownButtonFormField<int>(
+            isExpanded: true,
             initialValue: _generatedLevel,
             decoration: InputDecoration(
               labelText: context.uiText(
@@ -1024,6 +1025,8 @@ class _EncounterGeneratorScreenState extends State<EncounterGeneratorScreen> {
                     'Automatico: minimo selvatico',
                     'Automatic: minimum wild level',
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
               for (var level = 1; level <= 20; level++)

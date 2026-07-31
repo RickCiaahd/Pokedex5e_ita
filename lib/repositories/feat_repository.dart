@@ -10,9 +10,11 @@ class FeatRepository {
   static const String localizationAssetPath =
       'assets/data/feat_localization_it.json';
 
-  Map<String, String>? _sourceDescriptions;
-  Map<String, String>? _localizedDescriptions;
-  Map<String, String>? _localizedNames;
+  static Map<String, String>? _sourceDescriptions;
+  static Future<Map<String, String>>? _sourceDescriptionsFuture;
+  static Map<String, String>? _localizedDescriptions;
+  static Map<String, String>? _localizedNames;
+  static Future<void>? _italianLocalizationFuture;
 
   Future<Map<String, String>> getFeatDescriptions() async {
     final source = await _loadSourceDescriptions();
@@ -43,7 +45,23 @@ class FeatRepository {
   Future<Map<String, String>> _loadSourceDescriptions() async {
     final cached = _sourceDescriptions;
     if (cached != null) return cached;
+    final loading = _sourceDescriptionsFuture;
+    if (loading != null) return loading;
 
+    final future = _readSourceDescriptions();
+    _sourceDescriptionsFuture = future;
+    try {
+      final descriptions = await future;
+      _sourceDescriptions = descriptions;
+      return descriptions;
+    } finally {
+      if (identical(_sourceDescriptionsFuture, future)) {
+        _sourceDescriptionsFuture = null;
+      }
+    }
+  }
+
+  Future<Map<String, String>> _readSourceDescriptions() async {
     final jsonString = await rootBundle.loadString(sourceAssetPath);
     final decoded = jsonDecode(jsonString);
     if (decoded is! Map) {
@@ -61,13 +79,26 @@ class FeatRepository {
       }
       source[entry.key.toString()] = description;
     }
-    _sourceDescriptions = Map<String, String>.unmodifiable(source);
-    return _sourceDescriptions!;
+    return Map<String, String>.unmodifiable(source);
   }
 
   Future<void> _loadItalianLocalization(Set<String> sourceNames) async {
     if (_localizedDescriptions != null && _localizedNames != null) return;
+    final loading = _italianLocalizationFuture;
+    if (loading != null) return loading;
 
+    final future = _readItalianLocalization(sourceNames);
+    _italianLocalizationFuture = future;
+    try {
+      await future;
+    } finally {
+      if (identical(_italianLocalizationFuture, future)) {
+        _italianLocalizationFuture = null;
+      }
+    }
+  }
+
+  Future<void> _readItalianLocalization(Set<String> sourceNames) async {
     final jsonString = await rootBundle.loadString(localizationAssetPath);
     final decoded = jsonDecode(jsonString);
     if (decoded is! Map) {
@@ -116,6 +147,14 @@ class FeatRepository {
     }
     _localizedNames = Map<String, String>.unmodifiable(names);
     _localizedDescriptions = Map<String, String>.unmodifiable(descriptions);
+  }
+
+  static void clearCache() {
+    _sourceDescriptions = null;
+    _sourceDescriptionsFuture = null;
+    _localizedDescriptions = null;
+    _localizedNames = null;
+    _italianLocalizationFuture = null;
   }
 }
 

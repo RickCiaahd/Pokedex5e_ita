@@ -12,6 +12,8 @@ import '../../repositories/master_battle_session_repository.dart';
 import '../../repositories/pokemon_repository.dart';
 import '../../repositories/profile_repository.dart';
 import '../../services/home_tour_service.dart';
+import '../../services/performance_trace.dart';
+import '../../widgets/accessibility/accessible_action_card.dart';
 import '../../services/profile_storage_service.dart';
 import '../../widgets/home/home_tour_overlay.dart';
 import '../../widgets/layout/responsive_content.dart';
@@ -115,22 +117,33 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _loadDashboard() async {
+    final performanceTrace = PerformanceTrace.start('home.dashboard.load');
+    var traceArguments = const <String, Object?>{'status': 'error'};
     setState(() {
       _isLoading = true;
       _errorMessage = null;
     });
 
     try {
-      final profile = await _profileRepository.getActiveProfile();
-      final pokemon = await _pokemonRepository.getAllPokemon();
-      final entries = await _profileStorageService.loadPokedexEntries();
-      final hasActiveBattle = await _battleSessionRepository.hasSession(
-        profile.id,
-      );
-      final hasActiveMasterFight = await _masterBattleSessionRepository
-          .hasSession(profile.id);
+      final profileFuture = _profileRepository.getActiveProfile();
+      final pokemonFuture = _pokemonRepository.getAllPokemon();
+      final entriesFuture = _profileStorageService.loadPokedexEntries();
+      final profile = await profileFuture;
+      final results = await Future.wait<Object>([
+        pokemonFuture,
+        entriesFuture,
+        _battleSessionRepository.hasSession(profile.id),
+        _masterBattleSessionRepository.hasSession(profile.id),
+      ]);
+      final pokemon = results[0] as List<Pokemon>;
+      final entries = results[1] as Map<int, PokedexEntry>;
+      final hasActiveBattle = results[2] as bool;
+      final hasActiveMasterFight = results[3] as bool;
 
-      if (!mounted) return;
+      if (!mounted) {
+        traceArguments = const {'status': 'disposed'};
+        return;
+      }
 
       setState(() {
         _profile = profile;
@@ -140,9 +153,17 @@ class _HomeScreenState extends State<HomeScreen> {
         _hasActiveMasterFight = hasActiveMasterFight;
         _isLoading = false;
       });
+      traceArguments = {
+        'status': 'success',
+        'pokemonCount': pokemon.length,
+        'pokedexEntryCount': entries.length,
+      };
       _scheduleAutomaticTour();
     } catch (error) {
-      if (!mounted) return;
+      if (!mounted) {
+        traceArguments = const {'status': 'disposed'};
+        return;
+      }
 
       setState(() {
         _errorMessage = context.userFacingError(
@@ -151,6 +172,8 @@ class _HomeScreenState extends State<HomeScreen> {
         );
         _isLoading = false;
       });
+    } finally {
+      performanceTrace.finish(arguments: traceArguments);
     }
   }
 
@@ -820,19 +843,12 @@ class _HomeActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    return Card(
-      color: emphasized ? colors.primaryContainer : null,
-      child: ListTile(
-        leading: Icon(
-          icon,
-          color: emphasized ? colors.onPrimaryContainer : colors.primary,
-        ),
-        title: Text(title, style: const TextStyle(fontWeight: FontWeight.w800)),
-        subtitle: Text(subtitle),
-        trailing: const Icon(Icons.chevron_right),
-        onTap: onTap,
-      ),
+    return AccessibleActionCard(
+      icon: icon,
+      title: title,
+      subtitle: subtitle,
+      emphasized: emphasized,
+      onTap: onTap,
     );
   }
 }

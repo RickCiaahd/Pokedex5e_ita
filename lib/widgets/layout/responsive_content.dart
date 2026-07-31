@@ -25,3 +25,69 @@ class ResponsiveContent extends StatelessWidget {
     );
   }
 }
+
+/// Returns the effective scale for ordinary body text.
+double accessibleTextScaleRatio(
+  BuildContext context, {
+  double fontSize = 14,
+}) {
+  if (fontSize <= 0) return 1;
+  final scaledSize = MediaQuery.textScalerOf(context).scale(fontSize);
+  return (scaledSize / fontSize).clamp(1.0, 2.0).toDouble();
+}
+
+/// Interpolates a layout measurement between normal and enlarged text.
+double textScaleAwareValue(
+  BuildContext context, {
+  required double normal,
+  required double enlarged,
+}) {
+  final progress = (accessibleTextScaleRatio(context) - 1).clamp(0.0, 1.0);
+  return normal + ((enlarged - normal) * progress);
+}
+
+/// Keeps two form fields side by side when there is room and stacks them when
+/// large system text would make either field unreadable.
+class ResponsiveFormFieldPair extends StatelessWidget {
+  const ResponsiveFormFieldPair({
+    super.key,
+    required this.first,
+    required this.second,
+    this.spacing = 10,
+    this.minimumTwoColumnWidth = 420,
+  });
+
+  final Widget first;
+  final Widget second;
+  final double spacing;
+  final double minimumTwoColumnWidth;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final stackFields =
+            constraints.maxWidth < minimumTwoColumnWidth ||
+            accessibleTextScaleRatio(context) > 1.3;
+        if (stackFields) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              first,
+              SizedBox(height: spacing),
+              second,
+            ],
+          );
+        }
+
+        return Row(
+          children: [
+            Expanded(child: first),
+            SizedBox(width: spacing),
+            Expanded(child: second),
+          ],
+        );
+      },
+    );
+  }
+}

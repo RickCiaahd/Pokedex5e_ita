@@ -24,6 +24,7 @@ import '../../services/custom_pokemon_discovery_service.dart';
 import '../../services/custom_pokemon_runtime_registry.dart';
 import '../../services/evolution_service.dart';
 import '../../services/trainer_path_passive_service.dart';
+import '../../widgets/layout/responsive_content.dart';
 import '../../widgets/pokemon/pokemon_asset_image.dart';
 import '../../widgets/trainer/trainer_path_passive_card.dart';
 import 'evolution_selector_sheet.dart';
@@ -2032,7 +2033,8 @@ class _LoyaltyRow extends StatelessWidget {
         const SizedBox(width: 6),
         Expanded(
           child: Container(
-            height: 38,
+            constraints: const BoxConstraints(minHeight: 48),
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
             alignment: Alignment.center,
             decoration: BoxDecoration(
               color: Colors.white,
@@ -2042,6 +2044,7 @@ class _LoyaltyRow extends StatelessWidget {
               ),
             ),
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
@@ -2092,7 +2095,11 @@ class _ProgressPanel extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Container(
-      height: 46,
+      height: textScaleAwareValue(
+        context,
+        normal: 46,
+        enlarged: 62,
+      ),
       padding: const EdgeInsets.fromLTRB(8, 4, 8, 6),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -2133,7 +2140,11 @@ class _PanelButton extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(8),
       child: Container(
-        height: 36,
+        height: textScaleAwareValue(
+          context,
+          normal: 36,
+          enlarged: 50,
+        ),
         alignment: Alignment.center,
         padding: const EdgeInsets.symmetric(horizontal: 8),
         decoration: BoxDecoration(
@@ -2168,8 +2179,8 @@ class _FightIconButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 38,
-      height: 38,
+      width: 48,
+      height: 48,
       child: IconButton.filled(
         padding: EdgeInsets.zero,
         onPressed: onPressed,
@@ -2193,9 +2204,21 @@ class _FightStatsGrid extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final compact = constraints.maxWidth < 520;
+        final compactAspectRatio = textScaleAwareValue(
+          context,
+          normal: 1.85,
+          enlarged: 1.1,
+        );
+        final wideAspectRatio = textScaleAwareValue(
+          context,
+          normal: 1.18,
+          enlarged: 0.82,
+        );
         return GridView.count(
           crossAxisCount: compact ? 3 : 6,
-          childAspectRatio: compact ? 1.85 : 1.18,
+          childAspectRatio: compact
+              ? compactAspectRatio
+              : wideAspectRatio,
           crossAxisSpacing: 4,
           mainAxisSpacing: 4,
           shrinkWrap: true,
@@ -2330,7 +2353,11 @@ class _SaveBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 26,
+      height: textScaleAwareValue(
+        context,
+        normal: 26,
+        enlarged: 42,
+      ),
       alignment: Alignment.center,
       decoration: BoxDecoration(
         color: proficient
@@ -2362,7 +2389,11 @@ class _StatusPanelButton extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(8),
       child: Container(
-        height: 42,
+        height: textScaleAwareValue(
+          context,
+          normal: 42,
+          enlarged: 52,
+        ),
         alignment: Alignment.center,
         padding: const EdgeInsets.symmetric(horizontal: 8),
         decoration: BoxDecoration(
@@ -2958,7 +2989,11 @@ class _PartySwitcher extends StatelessWidget {
     return SafeArea(
       top: false,
       child: Container(
-        height: 68,
+        height: textScaleAwareValue(
+          context,
+          normal: 68,
+          enlarged: 98,
+        ),
         decoration: BoxDecoration(
           color: colorScheme.surfaceContainerHighest,
           border: Border(top: BorderSide(color: colorScheme.outlineVariant)),

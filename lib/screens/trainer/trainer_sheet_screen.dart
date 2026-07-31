@@ -21,6 +21,7 @@ import '../../repositories/trainer_manual_repository.dart';
 import '../../services/guided_tour_service.dart';
 import '../../services/trainer_path_automation_service.dart';
 import '../../services/trainer_path_passive_service.dart';
+import '../../widgets/layout/responsive_content.dart';
 import '../../widgets/navigation/home_leading_button.dart';
 import '../../widgets/tour/guided_tour.dart';
 import '../../widgets/trainer/trainer_path_automation_panel.dart';
@@ -1783,7 +1784,7 @@ class _CheckValueRow extends StatelessWidget {
               Checkbox(
                 value: isSelected,
                 onChanged: isLocked ? null : (_) => onChanged(),
-                visualDensity: VisualDensity.compact,
+                visualDensity: Theme.of(context).visualDensity,
               ),
               SizedBox(
                 width: 34,
@@ -2166,7 +2167,7 @@ class _SheetCounterBox extends StatelessWidget {
           Row(
             children: [
               IconButton(
-                visualDensity: VisualDensity.compact,
+                visualDensity: Theme.of(context).visualDensity,
                 tooltip: context.uiText('Diminuisci $label', 'Decrease $label'),
                 onPressed: onDecrease,
                 icon: const Icon(Icons.remove, size: 18),
@@ -2181,7 +2182,7 @@ class _SheetCounterBox extends StatelessWidget {
                 ),
               ),
               IconButton(
-                visualDensity: VisualDensity.compact,
+                visualDensity: Theme.of(context).visualDensity,
                 tooltip: context.uiText('Aumenta $label', 'Increase $label'),
                 onPressed: onIncrease,
                 icon: const Icon(Icons.add, size: 18),
@@ -2457,7 +2458,11 @@ class _AbilityScoreTile extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
       ),
       child: SizedBox(
-        width: 96,
+        width: textScaleAwareValue(
+          context,
+          normal: 104,
+          enlarged: 116,
+        ),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
           child: Column(
@@ -2474,7 +2479,7 @@ class _AbilityScoreTile extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   IconButton(
-                    visualDensity: VisualDensity.compact,
+                    visualDensity: Theme.of(context).visualDensity,
                     tooltip: context.uiText(
                       'Diminuisci $label',
                       'Decrease $label',
@@ -2483,7 +2488,7 @@ class _AbilityScoreTile extends StatelessWidget {
                     icon: const Icon(Icons.remove, size: 18),
                   ),
                   IconButton(
-                    visualDensity: VisualDensity.compact,
+                    visualDensity: Theme.of(context).visualDensity,
                     tooltip: context.uiText(
                       'Aumenta $label',
                       'Increase $label',

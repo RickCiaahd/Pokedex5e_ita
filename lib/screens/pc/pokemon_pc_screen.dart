@@ -736,10 +736,10 @@ class _FixedTeamPanel extends StatelessWidget {
             constraints.maxWidth - (spacing * (crossAxisCount - 1));
         final cellWidth = availableWidth / crossAxisCount;
         final childAspectRatio = veryCompact
-            ? 0.95
+            ? textScaleAwareValue(context, normal: 0.95, enlarged: 0.56)
             : compact
-            ? 1.05
-            : 1.25;
+            ? textScaleAwareValue(context, normal: 1.05, enlarged: 0.68)
+            : textScaleAwareValue(context, normal: 1.25, enlarged: 0.9);
         final cellHeight = cellWidth / childAspectRatio;
         final height = (cellHeight * safeRows) + (spacing * (safeRows - 1));
 
@@ -850,9 +850,8 @@ class _TeamMiniCard extends StatelessWidget {
                         TextButton(
                           onPressed: onDeposit,
                           style: TextButton.styleFrom(
-                            padding: EdgeInsets.zero,
-                            minimumSize: const Size(0, 20),
-                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            padding: const EdgeInsets.symmetric(horizontal: 8),
+                            minimumSize: const Size(48, 48),
                             textStyle: Theme.of(context).textTheme.labelSmall,
                           ),
                           child: Text(context.uiText('Deposita', 'Deposit')),

@@ -52,14 +52,13 @@ concurrency:
 
 env:
   BUNDLETOOL_VERSION: '1.18.3'
+  READINESS_DIR: /tmp/trainer-atlas-release-readiness
 
 jobs:
   audit:
     name: Build, shrink and measure Android release
     runs-on: ubuntu-latest
     timeout-minutes: 120
-    env:
-      READINESS_DIR: ${{ runner.temp }}/trainer-atlas-release-readiness
 
     steps:
       - name: Check out repository branch
@@ -295,7 +294,7 @@ jobs:
         with:
           name: Trainer-Atlas-Android-release-readiness
           path: |
-            ${{ runner.temp }}/trainer-atlas-release-readiness/reports/
-            ${{ runner.temp }}/trainer-atlas-release-readiness/device-spec-api36-arm64.json
+            /tmp/trainer-atlas-release-readiness/reports/
+            /tmp/trainer-atlas-release-readiness/device-spec-api36-arm64.json
           if-no-files-found: warn
           retention-days: 30

@@ -21,6 +21,7 @@ import '../../repositories/profile_repository.dart';
 import '../../repositories/team_repository.dart';
 import '../../services/custom_pokemon_discovery_service.dart';
 import '../../services/trainer_path_passive_service.dart';
+import '../../widgets/layout/responsive_content.dart';
 import '../../widgets/navigation/home_leading_button.dart';
 import '../../widgets/pokemon/pokemon_asset_image.dart';
 import '../../widgets/pokemon/pokemon_type_badge_row.dart';
@@ -734,53 +735,67 @@ class _RegisterCaughtSheetState extends State<_RegisterCaughtSheet> {
               ),
             ),
             const SizedBox(height: 10),
-            Row(
-              children: [
-                Expanded(
-                  child: DropdownButtonFormField<String?>(
-                    initialValue: _gender,
-                    decoration: InputDecoration(
-                      labelText: context.uiText('Sesso', 'Gender'),
-                    ),
-                    items: [
-                      for (final option in genderOptions)
-                        DropdownMenuItem<String?>(
-                          value: option.value,
-                          child: Text(option.label),
-                        ),
-                    ],
-                    onChanged: genderLocked ? null : _setGender,
-                  ),
+            ResponsiveFormFieldPair(
+              first: DropdownButtonFormField<String?>(
+                isExpanded: true,
+                initialValue: _gender,
+                decoration: InputDecoration(
+                  labelText: context.uiText('Sesso', 'Gender'),
                 ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: DropdownButtonFormField<String>(
-                    initialValue: _nature,
-                    decoration: InputDecoration(
-                      labelText: context.uiText('Natura', 'Nature'),
+                items: [
+                  for (final option in genderOptions)
+                    DropdownMenuItem<String?>(
+                      value: option.value,
+                      child: Text(
+                        option.label,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
-                    items: [
-                      for (final nature in PokemonNature.names)
-                        DropdownMenuItem(value: nature, child: Text(nature)),
-                    ],
-                    onChanged: (value) {
-                      if (value == null) return;
-                      setState(() => _nature = value);
-                    },
-                  ),
+                ],
+                onChanged: genderLocked ? null : _setGender,
+              ),
+              second: DropdownButtonFormField<String>(
+                isExpanded: true,
+                initialValue: _nature,
+                decoration: InputDecoration(
+                  labelText: context.uiText('Natura', 'Nature'),
                 ),
-              ],
+                items: [
+                  for (final nature in PokemonNature.names)
+                    DropdownMenuItem(
+                      value: nature,
+                      child: Text(
+                        nature,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                ],
+                onChanged: (value) {
+                  if (value == null) return;
+                  setState(() => _nature = value);
+                },
+              ),
             ),
             if (formChoices.isNotEmpty) ...[
               const SizedBox(height: 10),
               DropdownButtonFormField<String>(
+                isExpanded: true,
                 initialValue: _formName,
                 decoration: InputDecoration(
                   labelText: context.uiText('Forma', 'Form'),
                 ),
                 items: [
                   for (final form in formChoices)
-                    DropdownMenuItem(value: form.name, child: Text(form.name)),
+                    DropdownMenuItem(
+                      value: form.name,
+                      child: Text(
+                        form.name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
                 ],
                 onChanged: _setForm,
               ),
@@ -810,6 +825,7 @@ class _RegisterCaughtSheetState extends State<_RegisterCaughtSheet> {
             ),
             const SizedBox(height: 10),
             DropdownButtonFormField<String?>(
+              isExpanded: true,
               initialValue: _selectedBallId,
               decoration: InputDecoration(
                 labelText: context.uiText(
@@ -825,12 +841,18 @@ class _RegisterCaughtSheetState extends State<_RegisterCaughtSheet> {
                       'Nessuna / già consumata',
                       'None / already consumed',
                     ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 for (final ball in widget.ownedPokeballs)
                   DropdownMenuItem<String?>(
                     value: ball.item.id,
-                    child: Text('${ball.item.name}  x${ball.quantity}'),
+                    child: Text(
+                      '${ball.item.name}  x${ball.quantity}',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
               ],
               onChanged: (value) {

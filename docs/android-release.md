@@ -141,7 +141,7 @@ L'attivazione non va salvata stabilmente prima del collaudo finale. Una build ch
 
 ## Audit automatico con bundletool
 
-Il workflow `Android release readiness` usa `bundletool 1.18.3`, costruisce sia la variante di riferimento sia quella ottimizzata e riproduce la consegna di Google Play per un dispositivo Android API 36 arm64. Il report pubblicato come artefatto contiene:
+Il workflow `Release footprint audit` usa `bundletool 1.18.3`, costruisce sia la variante di riferimento sia quella ottimizzata e riproduce la consegna di Google Play per un dispositivo Android API 36 arm64. Il report pubblicato come artefatto contiene:
 
 - dimensione reale dell'APK release;
 - dimensione reale dell'AAB;
@@ -212,7 +212,7 @@ Restano obbligatori due collaudi reali prima del merge:
 
 R8 e resource shrinking possono diventare la configurazione predefinita soltanto quando:
 
-- la pipeline `Android release readiness` è verde;
+- la pipeline `Release footprint audit` è verde;
 - il report mostra una riduzione utile o almeno nessuna regressione anomala;
 - il collaudo di aggiornamento non perde dati;
 - i backup storici reali vengono importati correttamente;

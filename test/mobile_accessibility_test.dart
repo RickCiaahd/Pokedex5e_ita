@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -133,6 +135,29 @@ void main() {
       tester.getTopLeft(find.byKey(secondKey)).dy,
       greaterThan(tester.getBottomLeft(find.byKey(firstKey)).dy),
     );
+  });
+
+  test('cattura localizza le nature e lealtà cresce con il testo', () {
+    final captureSource = File(
+      'lib/screens/capture/capture_pokemon_screen.dart',
+    ).readAsStringSync();
+    expect(captureSource, contains('PokemonNature.labelFor(nature)'));
+
+    final detailSource = File(
+      'lib/screens/pokemon/pokemon_detail_screen_legacy.dart',
+    ).readAsStringSync();
+    final loyaltyStart = detailSource.indexOf('class _LoyaltyRow');
+    final metricStart = detailSource.indexOf('class _MetricBox', loyaltyStart);
+    expect(loyaltyStart, greaterThanOrEqualTo(0));
+    expect(metricStart, greaterThan(loyaltyStart));
+
+    final loyaltySource = detailSource.substring(loyaltyStart, metricStart);
+    expect(
+      loyaltySource,
+      contains('constraints: const BoxConstraints(minHeight: 48)'),
+    );
+    expect(loyaltySource, contains('mainAxisSize: MainAxisSize.min'));
+    expect(loyaltySource, isNot(contains('height: textScaleAwareValue')));
   });
 
   testWidgets('pulsanti e icone rispettano i 48 dp su Android', (tester) async {

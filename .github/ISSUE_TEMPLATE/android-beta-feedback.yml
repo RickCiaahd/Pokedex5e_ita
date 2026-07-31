@@ -1,0 +1,103 @@
+name: Feedback beta Android
+description: Segnala un problema riscontrato nella beta Google Play di Trainer Atlas 5e
+title: "[Beta Android] "
+labels: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Grazie per il collaudo. Non allegare backup, keystore, password, email, nomi reali o altri dati personali. Usa un profilo dimostrativo quando prepari gli screenshot.
+
+  - type: input
+    id: app_version
+    attributes:
+      label: Versione dell'app
+      description: Indica versione e versionCode mostrati nell'app o nelle informazioni della release.
+      placeholder: "1.4.0 (9)"
+    validations:
+      required: true
+
+  - type: input
+    id: device
+    attributes:
+      label: Dispositivo
+      placeholder: "es. Samsung Galaxy A54"
+    validations:
+      required: true
+
+  - type: input
+    id: android_version
+    attributes:
+      label: Versione Android
+      placeholder: "es. Android 15"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: language
+    attributes:
+      label: Lingua dell'app
+      options:
+        - Italiano
+        - English
+        - Lingua di sistema diversa da italiano/inglese
+    validations:
+      required: true
+
+  - type: dropdown
+    id: installation
+    attributes:
+      label: Tipo di installazione
+      options:
+        - Prima installazione dal Play Store
+        - Aggiornamento dal Play Store
+        - Aggiornamento da APK precedente
+        - Altro
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Passaggi per riprodurre il problema
+      description: Elenca i passaggi esatti, partendo dall'apertura dell'app.
+      placeholder: |
+        1. Apro ...
+        2. Seleziono ...
+        3. Premo ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Risultato atteso
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Risultato ottenuto
+    validations:
+      required: true
+
+  - type: textarea
+    id: attachments
+    attributes:
+      label: Screenshot o informazioni aggiuntive
+      description: Rimuovi dati personali e non allegare file di backup.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Controlli prima dell'invio
+      options:
+        - label: Ho verificato che il problema sia ripetibile.
+          required: true
+        - label: Non ho incluso backup, credenziali o dati personali.
+          required: true
+        - label: Ho controllato che non esista già una segnalazione equivalente.
+          required: true

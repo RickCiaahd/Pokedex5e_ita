@@ -214,6 +214,7 @@ class _NpcTrainerGeneratorScreenState extends State<NpcTrainerGeneratorScreen> {
                     ),
                     children: [
                       DropdownButtonFormField<NpcTrainerRank>(
+                        isExpanded: true,
                         key: ValueKey(_rank),
                         initialValue: _rank,
                         decoration: InputDecoration(
@@ -229,6 +230,8 @@ class _NpcTrainerGeneratorScreenState extends State<NpcTrainerGeneratorScreen> {
                               value: rank,
                               child: Text(
                                 context.uiText(rank.label, rank.englishLabel),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ),
                         ],
@@ -249,6 +252,7 @@ class _NpcTrainerGeneratorScreenState extends State<NpcTrainerGeneratorScreen> {
                       ),
                       const SizedBox(height: 12),
                       DropdownButtonFormField<String>(
+                        isExpanded: true,
                         key: ValueKey(_specialization),
                         initialValue: _specialization,
                         decoration: InputDecoration(
@@ -261,7 +265,11 @@ class _NpcTrainerGeneratorScreenState extends State<NpcTrainerGeneratorScreen> {
                         items: [
                           DropdownMenuItem(
                             value: _randomSpecialization,
-                            child: Text(context.uiText('Casuale', 'Random')),
+                            child: Text(
+                              context.uiText('Casuale', 'Random'),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
                           for (final specialization in
                               _localizedSpecializations)
@@ -271,6 +279,8 @@ class _NpcTrainerGeneratorScreenState extends State<NpcTrainerGeneratorScreen> {
                                 TrainerUiLocalization.specializationName(
                                   specialization,
                                 ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ),
                         ],
@@ -340,6 +350,7 @@ class _NpcTrainerGeneratorScreenState extends State<NpcTrainerGeneratorScreen> {
                       ),
                       const SizedBox(height: 8),
                       DropdownButtonFormField<NpcTeamComposition>(
+                        isExpanded: true,
                         key: ValueKey(_composition),
                         initialValue: _composition,
                         decoration: InputDecoration(
@@ -358,6 +369,8 @@ class _NpcTrainerGeneratorScreenState extends State<NpcTrainerGeneratorScreen> {
                                   composition.label,
                                   composition.englishLabel,
                                 ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ),
                         ],

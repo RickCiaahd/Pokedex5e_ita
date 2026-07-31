@@ -4,6 +4,13 @@ on:
   push:
     branches:
       - agent/trainer-atlas-branding
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - reopened
+      - synchronize
 
 permissions:
   contents: write
@@ -22,8 +29,10 @@ jobs:
       - name: Regenerate compliance reports
         run: python tooling/generate_compliance_reports.py
 
-      - name: Remove one-shot workflow
-        run: rm .github/workflows/refresh-branding-compliance.yml
+      - name: Remove one-shot files
+        run: |
+          rm .github/workflows/refresh-branding-compliance.yml
+          rm -f tooling/refresh_branding_compliance.trigger
 
       - name: Commit refreshed reports
         run: |

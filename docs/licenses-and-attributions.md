@@ -11,8 +11,8 @@ Il codice del progetto, salvo diversa indicazione nei singoli file, è distribui
 
 - [Licenza del repository](https://github.com/RickCiaahd/Pokedex5e_ita/blob/main/LICENSE)
 - [NOTICE](https://github.com/RickCiaahd/Pokedex5e_ita/blob/main/NOTICE.md)
-- [Audit di codice e licenze](compliance/code-and-license-audit.html)
-- [Inventario degli asset](compliance/asset-inventory.html)
+- [Audit di codice e licenze](https://github.com/RickCiaahd/Pokedex5e_ita/blob/main/docs/compliance/code-and-license-audit.md)
+- [Inventario degli asset](https://github.com/RickCiaahd/Pokedex5e_ita/blob/main/docs/compliance/asset-inventory.md)
 
 Marchi, personaggi, immagini e contenuti di terzi appartengono ai rispettivi titolari. La presenza nel progetto non implica affiliazione, approvazione o sponsorizzazione.
 

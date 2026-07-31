@@ -1,0 +1,34 @@
+name: Refresh branding compliance reports
+
+on:
+  push:
+    branches:
+      - agent/trainer-atlas-branding
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          ref: agent/trainer-atlas-branding
+          fetch-depth: 0
+
+      - name: Regenerate compliance reports
+        run: python tooling/generate_compliance_reports.py
+
+      - name: Remove one-shot workflow
+        run: rm .github/workflows/refresh-branding-compliance.yml
+
+      - name: Commit refreshed reports
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Aggiorna i report di conformità del branding"
+          git push origin HEAD:agent/trainer-atlas-branding

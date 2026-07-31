@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:pokedex_5e_ita/app.dart';
 import 'package:pokedex_5e_ita/widgets/accessibility/accessible_action_card.dart';
+import 'package:pokedex_5e_ita/widgets/layout/responsive_content.dart';
 
 void main() {
   test('il tema mantiene target tattili Android di almeno 48 dp', () {
@@ -66,6 +67,72 @@ void main() {
     expect(normalScale, closeTo(20, 0.01));
     expect(enlargedScale, greaterThan(normalScale));
     expect(enlargedHeight, greaterThan(normalHeight));
+  });
+
+  testWidgets('le geometrie crescono con il testo di sistema', (tester) async {
+    double? normalHeight;
+    double? enlargedHeight;
+
+    Future<void> pumpScale(double scale) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: MediaQuery(
+            data: MediaQueryData(textScaler: TextScaler.linear(scale)),
+            child: Builder(
+              builder: (context) {
+                final value = textScaleAwareValue(
+                  context,
+                  normal: 68,
+                  enlarged: 98,
+                );
+                if (scale == 1) {
+                  normalHeight = value;
+                } else {
+                  enlargedHeight = value;
+                }
+                return const SizedBox.shrink();
+              },
+            ),
+          ),
+        ),
+      );
+    }
+
+    await pumpScale(1);
+    await pumpScale(2);
+
+    expect(normalHeight, 68);
+    expect(enlargedHeight, 98);
+  });
+
+  testWidgets('i campi affiancati si impilano al 200%', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(320, 568));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    const firstKey = Key('first-field');
+    const secondKey = Key('second-field');
+    await tester.pumpWidget(
+      MaterialApp(
+        home: MediaQuery(
+          data: MediaQueryData(
+            size: const Size(320, 568),
+            textScaler: TextScaler.linear(2),
+          ),
+          child: Scaffold(
+            body: ResponsiveFormFieldPair(
+              first: SizedBox(key: firstKey, height: 48),
+              second: SizedBox(key: secondKey, height: 48),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    expect(tester.takeException(), isNull);
+    expect(
+      tester.getTopLeft(find.byKey(secondKey)).dy,
+      greaterThan(tester.getBottomLeft(find.byKey(firstKey)).dy),
+    );
   });
 
   testWidgets('pulsanti e icone rispettano i 48 dp su Android', (tester) async {

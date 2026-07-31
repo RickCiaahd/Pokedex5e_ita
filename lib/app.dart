@@ -135,6 +135,18 @@ ThemeData buildTrainerAtlasTheme({TargetPlatform? platform}) {
   );
 }
 
+/// Rebuilds platform media information when Android changes its font scale.
+///
+/// Keeping this boundary explicit ensures every route receives the live
+/// [TextScaler] exposed by the current Flutter view.
+@visibleForTesting
+Widget buildPlatformMediaQuery(BuildContext context, Widget? child) {
+  return MediaQuery.fromView(
+    view: View.of(context),
+    child: child ?? const SizedBox.shrink(),
+  );
+}
+
 class Pokedex5EApp extends StatefulWidget {
   const Pokedex5EApp({super.key, this.localeController});
 
@@ -196,6 +208,7 @@ class _Pokedex5EAppState extends State<Pokedex5EApp> {
               scrollbars: false,
             ),
             theme: buildTrainerAtlasTheme(),
+            builder: buildPlatformMediaQuery,
             home: const AppBootstrapScreen(),
           );
         },

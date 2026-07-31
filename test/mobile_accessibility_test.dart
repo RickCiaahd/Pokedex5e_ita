@@ -24,6 +24,50 @@ void main() {
     );
   });
 
+  testWidgets('la scala testo segue le impostazioni della piattaforma', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(320, 568));
+    tester.platformDispatcher.textScaleFactorTestValue = 1;
+    addTearDown(() {
+      tester.binding.setSurfaceSize(null);
+      tester.platformDispatcher.clearTextScaleFactorTestValue();
+    });
+
+    const textKey = Key('platform-scaled-text');
+    await tester.pumpWidget(
+      MaterialApp(
+        builder: buildPlatformMediaQuery,
+        home: const Scaffold(
+          body: Center(
+            child: Text(
+              'Testo accessibile',
+              key: textKey,
+              style: TextStyle(fontSize: 20),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    final normalHeight = tester.getSize(find.byKey(textKey)).height;
+    final normalScale = MediaQuery.textScalerOf(
+      tester.element(find.byKey(textKey)),
+    ).scale(20);
+
+    tester.platformDispatcher.textScaleFactorTestValue = 2;
+    await tester.pump();
+
+    final enlargedHeight = tester.getSize(find.byKey(textKey)).height;
+    final enlargedScale = MediaQuery.textScalerOf(
+      tester.element(find.byKey(textKey)),
+    ).scale(20);
+
+    expect(normalScale, closeTo(20, 0.01));
+    expect(enlargedScale, greaterThan(normalScale));
+    expect(enlargedHeight, greaterThan(normalHeight));
+  });
+
   testWidgets('pulsanti e icone rispettano i 48 dp su Android', (tester) async {
     await tester.binding.setSurfaceSize(const Size(320, 568));
     addTearDown(() => tester.binding.setSurfaceSize(null));

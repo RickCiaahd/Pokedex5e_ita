@@ -101,7 +101,10 @@ void main() {
     expect(signedWorkflow, contains('flutter build apk --release'));
     expect(signedWorkflow, contains('flutter build appbundle --release'));
     expect(signedWorkflow, contains('ANDROID_KEYSTORE_BASE64'));
-    expect(readinessWorkflow, contains('bundletool-all-${BUNDLETOOL_VERSION}.jar'));
+    expect(
+      readinessWorkflow,
+      contains(r'bundletool-all-${BUNDLETOOL_VERSION}.jar'),
+    );
     expect(readinessWorkflow, contains('PAGE_ALIGNMENT_16K'));
     expect(readinessWorkflow, contains('zipalign'));
     expect(

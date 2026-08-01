@@ -1,30 +1,50 @@
 name: Compliance audit
 
 on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'LICENSE'
+      - 'NOTICE.md'
+      - 'pubspec.yaml'
+      - 'pubspec.lock'
+      - 'assets/**'
+      - 'docs/compliance/**'
+      - 'tooling/generate_compliance_reports.py'
+      - 'tooling/prepare_release_legal_assets.py'
+      - 'test/legal_information_test.dart'
+      - '.github/workflows/compliance-audit.yml'
   pull_request:
     paths:
+      - 'LICENSE'
+      - 'NOTICE.md'
+      - 'pubspec.yaml'
+      - 'pubspec.lock'
+      - 'assets/**'
+      - 'docs/compliance/**'
+      - 'tooling/generate_compliance_reports.py'
+      - 'tooling/prepare_release_legal_assets.py'
+      - 'test/legal_information_test.dart'
       - '.github/workflows/compliance-audit.yml'
-      - '.github/apply_ability_grid.py'
+  workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: compliance-audit-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  apply-trainer-layout:
-    if: github.event.pull_request.head.ref == 'release/1.4.0-beta1'
+  audit:
+    name: Verify compliance reports and legal assets
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
     steps:
-      - name: Check out release branch
+      - name: Check out repository
         uses: actions/checkout@v4
-        with:
-          ref: release/1.4.0-beta1
-          fetch-depth: 0
 
       - name: Set up Java
         uses: actions/setup-java@v4
@@ -38,30 +58,34 @@ jobs:
           flutter-version: '3.44.4'
           cache: true
 
-      - name: Apply and verify the 2x3 ability grid
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Require committed compliance reports
+        run: python tooling/generate_compliance_reports.py --check
+
+      - name: Verify complete GPLv3 text
         shell: bash
         run: |
           set -euo pipefail
-          python .github/apply_ability_grid.py
-          dart format lib/screens/trainer/trainer_sheet_screen.dart
-          flutter pub get
-          flutter analyze lib/screens/trainer/trainer_sheet_screen.dart
+          grep -q 'GNU GENERAL PUBLIC LICENSE' LICENSE
+          grep -q 'END OF TERMS AND CONDITIONS' LICENSE
+          grep -q 'How to Apply These Terms to Your New Programs' LICENSE
 
-      - name: Restore permanent workflows and commit
-        shell: bash
+      - name: Regenerate and verify deterministic inventories
         run: |
-          set -euo pipefail
-          rm -f .github/apply_ability_grid.py
-          rm -f .github/.ability-grid-trigger
-          rm -f .github/workflows/apply-trainer-ability-grid.yml
-          rm -f .github/workflows/apply-trainer-ability-grid-v2.yml
+          python tooling/generate_compliance_reports.py
+          python tooling/generate_compliance_reports.py --check
 
-          git fetch origin main
-          git show origin/main:.github/workflows/compliance-audit.yml > .github/workflows/compliance-audit.yml
-          git show origin/main:.github/workflows/flutter-ci.yml > .github/workflows/flutter-ci.yml
+      - name: Prepare and verify embedded legal assets
+        run: |
+          python tooling/prepare_release_legal_assets.py
+          python tooling/prepare_release_legal_assets.py --check
 
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add lib/screens/trainer/trainer_sheet_screen.dart .github/
-          git commit -m 'Disponi le caratteristiche su due righe e tre colonne'
-          git push origin HEAD:release/1.4.0-beta1
+      - name: Require a clean generated diff
+        run: |
+          git diff --check
+          git diff --exit-code -- LICENSE NOTICE.md docs/compliance
+
+      - name: Run legal information tests
+        run: flutter test test/legal_information_test.dart --reporter expanded

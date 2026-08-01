@@ -13,7 +13,7 @@ Questi testi sono bozze operative. Devono essere riletti insieme alla build cari
 - Presenza di annunci: **No**
 - Acquisti in-app nella build corrente: **No**
 - Categoria proposta: **Strumenti**
-- Email assistenza: **DA DEFINIRE**
+- Email assistenza: **rickciaahd.apps@gmail.com**
 - URL Privacy Policy: **DA PUBBLICARE**
 - Sito web: pagina pubblica GitHub Pages del progetto, da confermare
 - Sorgente icona Store: `docs/branding/trainer_atlas_app_icon_source.png`
@@ -139,7 +139,7 @@ This build is intended for testing. Please report crashes, missing images, untra
 
 ## Revisione prima dell'inserimento in Play Console
 
-- [ ] confermare l'email pubblica di assistenza;
+- [x] confermare l'email pubblica di assistenza;
 - [ ] sostituire il placeholder della Privacy Policy;
 - [ ] esportare e controllare l'icona Store 512 × 512;
 - [ ] preparare la feature graphic 1024 × 500;

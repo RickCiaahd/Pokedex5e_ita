@@ -16,6 +16,6 @@ Trainer Atlas 5e è un progetto amatoriale e non ufficiale dedicato alla gestion
 - [Repository del progetto](https://github.com/RickCiaahd/Pokedex5e_ita)
 - Assistenza e privacy: [rickciaahd.apps@gmail.com](mailto:rickciaahd.apps@gmail.com)
 
-La documentazione pubblicata in queste pagine descrive la versione corrente del progetto.
+La documentazione pubblicata in queste pagine descrive la versione corrente del progetto. La Privacy Policy ha data di entrata in vigore **1 agosto 2026** e sarà resa disponibile tramite GitHub Pages dopo il merge della PR di preparazione della beta.
 
-Prima della distribuzione tramite Google Play, la Privacy Policy deve essere revisionata, contrassegnata con una data di entrata in vigore definitiva e pubblicata su un URL stabile. Gli aspetti irrisolti relativi a marchi, contenuti e provenienza degli asset restano separati dalla preparazione tecnica della beta.
+Gli aspetti irrisolti relativi a marchi, contenuti e provenienza degli asset restano separati dalla preparazione tecnica della beta.

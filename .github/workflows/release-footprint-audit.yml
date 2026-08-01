@@ -152,8 +152,8 @@ jobs:
           flutter clean
           flutter pub get
           python tooling/prepare_release_legal_assets.py
-          flutter build apk --release --build-number=9
-          flutter build appbundle --release --build-number=9
+          flutter build apk --release --build-number=10
+          flutter build appbundle --release --build-number=10
           mkdir -p "$READINESS_DIR/shrunk"
           cp build/app/outputs/flutter-apk/app-release.apk "$READINESS_DIR/shrunk/app-release.apk"
           cp build/app/outputs/bundle/release/app-release.aab "$READINESS_DIR/shrunk/app-release.aab"
@@ -185,9 +185,9 @@ jobs:
             grep -q 'PAGE_ALIGNMENT_16K' \
               "$READINESS_DIR/reports/${variant}-bundle-config.txt"
           done
-          grep -Eq 'versionCode="8"|versionCode="0x8"' \
-            "$READINESS_DIR/reports/baseline-manifest.xml"
           grep -Eq 'versionCode="9"|versionCode="0x9"' \
+            "$READINESS_DIR/reports/baseline-manifest.xml"
+          grep -Eq 'versionCode="10"|versionCode="0xa"' \
             "$READINESS_DIR/reports/shrunk-manifest.xml"
 
       - name: Recreate Play delivery and measure device download
@@ -264,7 +264,7 @@ jobs:
               '| Variant | Version code | APK bytes | AAB bytes | bundletool device size |\n'
               '|---|---:|---:|---:|---|\n'
               + ''.join(
-                  f'| {variant} | {8 if variant == "baseline" else 9} | {apk:,} | {aab:,} | `{device}` |\n'
+                  f'| {variant} | {9 if variant == "baseline" else 10} | {apk:,} | {aab:,} | `{device}` |\n'
                   for variant, apk, aab, device in rows
               )
               + '\nThe production release remains unshrunk by default. The `shrunk` '
@@ -281,13 +281,13 @@ jobs:
           set -euo pipefail
           mkdir -p "$READINESS_DIR/test-apks"
           cp "$READINESS_DIR/baseline/app-release.apk" \
-            "$READINESS_DIR/test-apks/Trainer-Atlas-5e-standard-vc8.apk"
+            "$READINESS_DIR/test-apks/Trainer-Atlas-5e-standard-vc9.apk"
           cp "$READINESS_DIR/shrunk/app-release.apk" \
-            "$READINESS_DIR/test-apks/Trainer-Atlas-5e-minified-vc9.apk"
+            "$READINESS_DIR/test-apks/Trainer-Atlas-5e-minified-vc10.apk"
           cat > "$READINESS_DIR/test-apks/README.txt" <<'EOF'
           Questi APK sono firmati con la stessa chiave CI temporanea e servono solo al collaudo.
-          1. Installare Trainer-Atlas-5e-standard-vc8.apk e creare dati di prova.
-          2. Installare Trainer-Atlas-5e-minified-vc9.apk sopra la precedente senza disinstallare.
+          1. Installare Trainer-Atlas-5e-standard-vc9.apk e creare dati di prova.
+          2. Installare Trainer-Atlas-5e-minified-vc10.apk sopra la precedente senza disinstallare.
           3. Verificare persistenza, backup, icona, splash e funzioni basate sui plugin.
           Non sono APK pubblicabili e non possono aggiornare installazioni firmate con un'altra chiave.
           Dopo il test potrebbe essere necessario disinstallarli prima di installare una release ufficiale.

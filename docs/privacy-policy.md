@@ -1,8 +1,8 @@
 # Privacy Policy — Trainer Atlas 5e
 
-Versione della bozza: 1 agosto 2026
+**Data di entrata in vigore: 1 agosto 2026**
 
-> Questa informativa descrive il comportamento tecnico della versione corrente del progetto. Deve essere revisionata e pubblicata su un URL stabile prima della distribuzione tramite Google Play.
+Questa informativa descrive il comportamento tecnico della versione corrente di Trainer Atlas 5e predisposta per la distribuzione tramite Google Play.
 
 ## Titolare e contatti
 
@@ -57,7 +57,7 @@ Le immagini e i dati di gioco usati durante il normale funzionamento vengono car
 
 I riferimenti al repository e alla documentazione sono mostrati come testo consultabile dall'utente e non vengono contattati automaticamente dall'app. Eventuali operazioni di condivisione o apertura effettuate tramite altre applicazioni dipendono da una scelta esplicita dell'utente.
 
-Prima della beta pubblica resta comunque necessario verificare la build release effettiva, le dipendenze transitive e il traffico osservato su dispositivi reali.
+La dichiarazione Google Play Data Safety dovrà essere mantenuta coerente con la build release effettivamente distribuita e aggiornata prima di ogni modifica che introduca rete, analytics, pubblicità o servizi esterni.
 
 ## Conservazione e sicurezza
 
@@ -99,4 +99,4 @@ Questa informativa verrà aggiornata quando cambieranno:
 - esportazione o condivisione;
 - modalità di pubblicazione e assistenza.
 
-La data della versione sarà aggiornata nel documento e nella schermata interna Privacy.
+La data di entrata in vigore o di ultimo aggiornamento sarà riportata all'inizio del documento e nella schermata interna Privacy.

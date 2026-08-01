@@ -1,0 +1,99 @@
+name: Temporary repository branch cleanup
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/repository-branch-cleanup.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  cleanup:
+    if: >-
+      github.repository == 'RickCiaahd/Pokedex5e_ita' &&
+      github.event.pull_request.head.ref == 'release/1.4.0-beta1' &&
+      github.actor == 'RickCiaahd'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Delete obsolete branches
+        shell: bash
+        run: |
+          set -euo pipefail
+          branches=(
+            'agent/guided-profile-creation'
+            'agent/mobile-accessibility-performance'
+            'agent/release-cleanup-error-messages'
+            'agent/trainer-atlas-branding'
+            'feature/android-google-play-release-readiness'
+            'feature/app-localization-foundation'
+            'feature/complete-ui-localization'
+            'feature/compliance-reports'
+            'feature/elegant-professor-portrait'
+            'feature/first-launch-onboarding'
+            'feature/google-play-closed-beta-preparation'
+            'feature/guided-submenu-tours'
+            'feature/home-menu-tour'
+            'feature/image-optimization-audit'
+            'feature/localized-game-catalogs'
+            'feature/localized-onboarding'
+            'feature/offline-local-assets'
+            'feature/public-safe-assets'
+            'feature/release-compliance-foundation'
+            'feature/release-footprint-audit'
+            'feature/webp-lossless-batch-2'
+            'feature/webp-lossless-batch-3'
+            'feature/webp-lossless-batch-4'
+            'feature/webp-lossless-batch-5'
+            'feature/webp-lossless-batch-6'
+            'feature/webp-lossless-batch-7'
+            'feature/webp-lossless-batch-8'
+            'feature/webp-lossless-batch-9'
+            'feature/webp-lossless-batch-10'
+            'feature/webp-lossless-pilot'
+            'fix/alolan-raichu-artwork'
+            'fix/battle-attributes-narrow-layout'
+            'fix/capture-type-badges-row'
+            'fix/english-ui-residuals'
+            'fix/english-ui-residuals-round2'
+            'fix/english-ui-residuals-round3'
+            'fix/guided-tour-postframe-restore'
+            'fix/guided-tour-restore-scroll'
+            'fix/mobile-tour-english-type-labels'
+            'fix/npc-specialization-localization-layout'
+            'fix/onboarding-asset-skeleton'
+            'fix/onboarding-asset-skeleton-clean'
+            'fix/onboarding-responsive-redesign'
+            'fix/professor-overlap-position'
+            'fix/professor-real-transparency'
+            'fix/repair-unreadable-pokemon-images'
+            'fix/restore-complete-release-assets'
+            'fix/tour-professor-behind-dialog'
+            'fix/tour-professor-montage-scrollbar'
+            'fix/tour-professor-montage-scrollbar-clean'
+            'fix/trainer-tour-unlocked-resources'
+            'improve/onboarding-starter-selection'
+            'release/publish-v1.3.0'
+            'release/publish-v1.3.1'
+            'release/v1.3.2'
+            'ui/tour-professor-three-quarter'
+          )
+
+          deleted=0
+          missing=0
+          for branch in "${branches[@]}"; do
+            if gh api "repos/${GITHUB_REPOSITORY}/git/ref/heads/${branch}" >/dev/null 2>&1; then
+              gh api --method DELETE "repos/${GITHUB_REPOSITORY}/git/refs/heads/${branch}"
+              echo "Deleted: ${branch}"
+              deleted=$((deleted + 1))
+            else
+              echo "Already absent: ${branch}"
+              missing=$((missing + 1))
+            fi
+          done
+
+          echo "Deleted branches: ${deleted}"
+          echo "Already absent branches: ${missing}"

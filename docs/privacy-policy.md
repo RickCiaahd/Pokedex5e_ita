@@ -1,16 +1,20 @@
 # Privacy Policy — Trainer Atlas 5e
 
-Versione della bozza: 27 luglio 2026
+Versione della bozza: 1 agosto 2026
 
 > Questa informativa descrive il comportamento tecnico della versione corrente del progetto. Deve essere revisionata e pubblicata su un URL stabile prima della distribuzione tramite Google Play.
 
 ## Titolare e contatti
 
-Trainer Atlas 5e è un progetto amatoriale e non ufficiale mantenuto tramite il repository GitHub:
+Trainer Atlas 5e è un progetto amatoriale e non ufficiale mantenuto da **RickCiaahd** tramite il repository GitHub:
 
 `https://github.com/RickCiaahd/Pokedex5e_ita`
 
-Per segnalazioni relative alla privacy è possibile aprire una issue nel repository. Prima della beta pubblica dovrà essere definito anche un indirizzo di contatto dedicato.
+Per richieste relative alla privacy o all'assistenza è disponibile l'indirizzo pubblico:
+
+[**rickciaahd.apps@gmail.com**](mailto:rickciaahd.apps@gmail.com)
+
+Le issue del repository possono essere utilizzate per segnalazioni tecniche che non contengano dati personali, backup, credenziali o informazioni riservate.
 
 ## Dati salvati sul dispositivo
 

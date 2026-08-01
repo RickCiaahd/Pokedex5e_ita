@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - '.github/workflows/apply-trainer-ability-grid-v2.yml'
+      - '.github/.ability-grid-trigger'
 
 permissions:
   contents: write
@@ -152,8 +153,9 @@ jobs:
           set -euo pipefail
           rm .github/workflows/apply-trainer-ability-grid.yml
           rm .github/workflows/apply-trainer-ability-grid-v2.yml
+          rm .github/.ability-grid-trigger
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add lib/screens/trainer/trainer_sheet_screen.dart .github/workflows/
+          git add lib/screens/trainer/trainer_sheet_screen.dart .github/
           git commit -m 'Disponi le caratteristiche su due righe e tre colonne'
           git push origin HEAD:release/1.4.0-beta1

@@ -31,7 +31,7 @@ Questa pagina riassume lo stato reale del progetto e separa ciò che è già com
 La PR #166 contiene:
 
 - guida operativa per beta interna e chiusa;
-- Privacy Policy predisposta per GitHub Pages e aggiornata con il contatto pubblico;
+- Privacy Policy definitiva con data di entrata in vigore **1 agosto 2026**, predisposta per GitHub Pages e aggiornata con il contatto pubblico;
 - bozze italiane e inglesi della scheda Store;
 - piano per icona Store, feature graphic e screenshot;
 - pagina pubblica di licenze e attribuzioni;
@@ -58,7 +58,6 @@ Il branch della PR #166 è stato sincronizzato con il nuovo `main` tramite la PR
 
 ### Documenti e scheda Store
 
-- finalizzare la data di entrata in vigore della Privacy Policy;
 - unire la PR #166 e pubblicare la cartella `/docs` tramite GitHub Pages;
 - verificare l'URL pubblico da una finestra anonima;
 - completare accesso all'app, annunci, pubblico di destinazione, classificazione IARC e Data Safety;
@@ -98,10 +97,9 @@ La presenza sullo Store di applicazioni simili non costituisce prova di autorizz
 
 ## Prossima sequenza operativa
 
-1. finalizzare Privacy Policy e testi Store;
-2. unire la PR #166 con autorizzazione esplicita;
-3. abilitare GitHub Pages;
-4. creare keystore e secret;
-5. aggiornare versione e `versionCode`;
-6. produrre l'AAB firmato;
-7. avviare test interno e poi test chiuso.
+1. unire la PR #166 con autorizzazione esplicita;
+2. abilitare GitHub Pages;
+3. creare keystore e secret;
+4. aggiornare versione e `versionCode`;
+5. produrre l'AAB firmato;
+6. avviare test interno e poi test chiuso.

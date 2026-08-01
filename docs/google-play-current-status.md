@@ -23,6 +23,7 @@ Questa pagina riassume lo stato reale del progetto e separa ciò che è già com
 - account sviluppatore creato come account personale;
 - app **Trainer Atlas 5e** creata come app senza costi;
 - package configurato: `io.github.rickciaahd.traineratlas`;
+- email pubblica per assistenza e privacy scelta: `rickciaahd.apps@gmail.com`;
 - la Dashboard indica il requisito del test chiuso con almeno 12 tester per 14 giorni consecutivi prima della richiesta di accesso alla produzione.
 
 ### Preparazione documentale
@@ -30,14 +31,14 @@ Questa pagina riassume lo stato reale del progetto e separa ciò che è già com
 La PR #166 contiene:
 
 - guida operativa per beta interna e chiusa;
-- Privacy Policy predisposta per GitHub Pages;
+- Privacy Policy predisposta per GitHub Pages e aggiornata con il contatto pubblico;
 - bozze italiane e inglesi della scheda Store;
 - piano per icona Store, feature graphic e screenshot;
 - pagina pubblica di licenze e attribuzioni;
 - modulo GitHub per il feedback dei tester;
 - workflow per APK e AAB firmati con chiave di upload conservata fuori dalla repository.
 
-Il branch della PR #166 è stato sincronizzato con il nuovo `main` tramite la PR #169.
+Il branch della PR #166 è stato sincronizzato con il nuovo `main` tramite la PR #169 e la CI combinata è terminata con successo.
 
 ## Attività ancora richieste al proprietario
 
@@ -45,7 +46,7 @@ Il branch della PR #166 è stato sincronizzato con il nuovo `main` tramite la PR
 
 - completare eventuali verifiche residue di identità, email, telefono e dispositivo mostrate dalla Play Console;
 - verificare che l'autenticazione a due fattori sia attiva;
-- scegliere un indirizzo email pubblico stabile per assistenza e privacy.
+- controllare regolarmente la casella pubblica `rickciaahd.apps@gmail.com`.
 
 ### Firma Android
 
@@ -57,7 +58,7 @@ Il branch della PR #166 è stato sincronizzato con il nuovo `main` tramite la PR
 
 ### Documenti e scheda Store
 
-- inserire l'email pubblica nella Privacy Policy;
+- finalizzare la data di entrata in vigore della Privacy Policy;
 - unire la PR #166 e pubblicare la cartella `/docs` tramite GitHub Pages;
 - verificare l'URL pubblico da una finestra anonima;
 - completare accesso all'app, annunci, pubblico di destinazione, classificazione IARC e Data Safety;
@@ -97,12 +98,10 @@ La presenza sullo Store di applicazioni simili non costituisce prova di autorizz
 
 ## Prossima sequenza operativa
 
-1. completare la CI combinata della PR #166;
-2. scegliere l'email pubblica;
-3. finalizzare Privacy Policy e testi Store;
-4. unire la PR #166 con autorizzazione esplicita;
-5. abilitare GitHub Pages;
-6. creare keystore e secret;
-7. aggiornare versione e `versionCode`;
-8. produrre l'AAB firmato;
-9. avviare test interno e poi test chiuso.
+1. finalizzare Privacy Policy e testi Store;
+2. unire la PR #166 con autorizzazione esplicita;
+3. abilitare GitHub Pages;
+4. creare keystore e secret;
+5. aggiornare versione e `versionCode`;
+6. produrre l'AAB firmato;
+7. avviare test interno e poi test chiuso.

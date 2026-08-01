@@ -14,10 +14,11 @@ Questi testi sono bozze operative. Devono essere riletti insieme alla build cari
 - Acquisti in-app nella build corrente: **No**
 - Categoria proposta: **Strumenti**
 - Email assistenza: **rickciaahd.apps@gmail.com**
-- URL Privacy Policy: **DA PUBBLICARE**
-- Sito web: pagina pubblica GitHub Pages del progetto, da confermare
+- URL Privacy Policy: `https://rickciaahd.github.io/Pokedex5e_ita/privacy.html`
+- Sito web: `https://rickciaahd.github.io/Pokedex5e_ita/`
 - Sorgente icona Store: `docs/branding/trainer_atlas_app_icon_source.png`
-- Feature graphic: **DA PREPARARE**
+- Feature graphic: candidato 1024 × 500 preparato il 1 agosto 2026
+- Screenshot tablet: facoltativi nella configurazione corrente e rimandati al collaudo su schermo grande
 
 Il nome pubblico contiene 16 caratteri ed è entro il limite di 30 caratteri.
 
@@ -140,13 +141,15 @@ This build is intended for testing. Please report crashes, missing images, untra
 ## Revisione prima dell'inserimento in Play Console
 
 - [x] confermare l'email pubblica di assistenza;
-- [ ] sostituire il placeholder della Privacy Policy;
-- [ ] esportare e controllare l'icona Store 512 × 512;
-- [ ] preparare la feature graphic 1024 × 500;
+- [x] pubblicare e inserire la Privacy Policy;
+- [x] confermare il sito pubblico del progetto;
+- [ ] controllare l'anteprima finale dell'icona Store 512 × 512;
+- [x] preparare la feature graphic 1024 × 500;
 - [ ] verificare che ogni funzione descritta sia presente nella build caricata;
 - [ ] controllare i limiti di caratteri direttamente nella Console;
 - [ ] evitare parole promozionali, ranking, premi o affiliazioni non reali;
 - [ ] far revisionare il disclaimer e l'uso di marchi e asset;
 - [ ] mantenere coerenti italiano e inglese;
 - [ ] non indicare acquisti in-app finché Google Play Billing non è implementato;
-- [ ] aggiornare le note di rilascio per ogni nuovo `versionCode`.
+- [ ] aggiornare le note di rilascio per ogni nuovo `versionCode`;
+- [ ] acquisire screenshot tablet soltanto da una build reale eseguita su emulatore o dispositivo grande.

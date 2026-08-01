@@ -1,0 +1,22 @@
+name: Delete temporary restore branch
+
+on:
+  push:
+    branches:
+      - release/1.4.0-beta1
+    paths:
+      - '.github/workflows/delete-temporary-restore-branch.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  cleanup:
+    if: github.repository == 'RickCiaahd/Pokedex5e_ita'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Delete temporary branch
+        run: gh api --method DELETE "repos/${GITHUB_REPOSITORY}/git/refs/heads/tmp/restore-release-1.4.0-beta1"

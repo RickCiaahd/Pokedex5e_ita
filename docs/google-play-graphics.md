@@ -1,18 +1,39 @@
 # Grafiche e screenshot Google Play
 
-Ultimo aggiornamento: 31 luglio 2026
+Ultimo aggiornamento: 1 agosto 2026
+
+## Stato attuale del branding
+
+Il logo dell'onboarding e la nuova icona Android sono stati integrati, collaudati su dispositivo reale e uniti in `main` tramite la PR #168.
+
+Asset canonici:
+
+- icona sorgente: `docs/branding/trainer_atlas_app_icon_source.png`;
+- logo completo: `assets/textures/trainers/trainer_atlas_logo.png`;
+- registro di provenienza: `docs/branding/provenance.md`.
+
+Le risorse launcher contenute nelle cartelle Android sono derivate tecniche e non devono essere usate come file promozionali dello Store.
 
 ## Risorse da preparare
 
 ### Icona Play Store
 
+- esportare dalla sorgente `trainer_atlas_app_icon_source.png`;
 - formato: PNG 32 bit con trasparenza;
 - dimensioni: 512 × 512 px;
 - peso massimo: 1024 KB;
 - niente badge, prezzi, ranking o simboli ingannevoli;
 - mantenere il soggetto principale centrato e leggibile anche in piccolo.
 
-L'icona dello Store è distinta tecnicamente dall'icona launcher inclusa nell'AAB, ma deve usare la stessa identità visiva.
+L'icona dello Store è distinta tecnicamente dall'icona launcher inclusa nell'AAB, ma deve usare lo stesso emblema e la stessa identità visiva.
+
+Prima del caricamento verificare che l'export finale:
+
+- non presenti bordi tagliati;
+- non incorpori uno sfondo rettangolare indesiderato;
+- resti leggibile nelle anteprime molto piccole;
+- non contenga testi troppo minuti;
+- sia coerente con l'icona mostrata nel launcher Android.
 
 ### Grafica in primo piano
 
@@ -22,12 +43,15 @@ L'icona dello Store è distinta tecnicamente dall'icona launcher inclusa nell'AA
 - testo ridotto al minimo;
 - nessun riferimento che faccia apparire l'app ufficiale o affiliata a terzi.
 
-Proposta di composizione:
+Proposta di composizione aggiornata:
 
-- sfondo coerente con il rosso e il bianco dell'app;
-- logo o simbolo di Trainer Atlas 5e al centro-sinistra;
+- sfondo coerente con la palette ambra/oro del nuovo launcher, compreso il riferimento `#F2B34A` usato dall'icona adattiva;
+- logo o emblema di Trainer Atlas 5e al centro-sinistra;
 - breve richiamo visivo alla gestione di squadra e campagna;
-- nessun logo Google Play e nessun marchio di terzi usato come elemento promozionale dominante.
+- nessun logo Google Play;
+- nessun artwork o marchio di terzi usato come elemento promozionale dominante.
+
+La feature graphic non è ancora pronta e deve essere prodotta come asset separato.
 
 ### Screenshot telefono
 
@@ -35,14 +59,14 @@ Usare catture reali della build distribuita tramite Play Store. Non inserire fun
 
 Sequenza proposta in italiano:
 
-1. Home con accesso alle aree principali;
-2. profilo Allenatore e riepilogo della campagna;
-3. squadra con quattro o più Pokémon visibili;
-4. dettaglio Pokémon con statistiche e informazioni;
-5. Pokédex o catalogo con ricerca;
-6. zaino e inventario;
-7. strumenti del Master o gestione incontri;
-8. Impostazioni con selezione della lingua e informazioni legali.
+1. schermata iniziale con il nuovo logo Trainer Atlas 5e;
+2. Home con accesso alle aree principali;
+3. profilo Allenatore e riepilogo della campagna;
+4. squadra con quattro o più Pokémon visibili;
+5. dettaglio Pokémon con statistiche e informazioni;
+6. Pokédex o catalogo con ricerca;
+7. zaino e inventario;
+8. strumenti del Master o gestione incontri.
 
 Preparare la stessa sequenza in inglese oppure usare gli stessi screenshot soltanto dove il testo è neutro. Le localizzazioni della scheda Store dovrebbero mostrare preferibilmente l'interfaccia nella lingua corrispondente.
 
@@ -55,7 +79,7 @@ Prima delle catture:
 - impostare lingua italiana per il primo set e inglese per il secondo;
 - usare un profilo dimostrativo senza nomi, email o dati reali;
 - riempire squadra, PC e zaino con dati sufficienti a evitare schermate vuote;
-- disattivare notifiche e modalità non disturbare;
+- disattivare notifiche o usare la modalità non disturbare;
 - nascondere eventuali informazioni personali nella barra di stato;
 - verificare che non siano visibili overlay di debug, indicatori FPS o banner di test.
 
@@ -67,7 +91,8 @@ Prima delle catture:
 - contenuto leggibile su un normale schermo da telefono;
 - niente cornici di dispositivi, claim, premi o classifiche non verificabili;
 - niente schermate contenenti backup, nomi reali o identificativi personali;
-- disclaimer e attribuzioni coerenti con la scheda Store.
+- disclaimer e attribuzioni coerenti con la scheda Store;
+- nessun riferimento a funzioni Premium o acquisti in-app finché non sono realmente implementati nella build.
 
 ## Controllo legale e di policy
 
@@ -77,7 +102,8 @@ Prima del caricamento, verificare separatamente:
 - uso corretto di marchi e personaggi di terzi;
 - assenza di elementi che suggeriscano affiliazione ufficiale;
 - coerenza con il nome sviluppatore, la descrizione e il disclaimer;
-- adeguatezza delle immagini al pubblico di destinazione dichiarato.
+- adeguatezza delle immagini al pubblico di destinazione dichiarato;
+- completamento delle evidenze ancora richieste in `docs/branding/provenance.md`.
 
 ## Cartella di lavoro locale consigliata
 

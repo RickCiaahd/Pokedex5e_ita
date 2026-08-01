@@ -21,7 +21,6 @@ import '../../repositories/trainer_manual_repository.dart';
 import '../../services/guided_tour_service.dart';
 import '../../services/trainer_path_automation_service.dart';
 import '../../services/trainer_path_passive_service.dart';
-import '../../widgets/layout/responsive_content.dart';
 import '../../widgets/navigation/home_leading_button.dart';
 import '../../widgets/tour/guided_tour.dart';
 import '../../widgets/trainer/trainer_path_automation_panel.dart';
@@ -1255,6 +1254,7 @@ class _TrainerSheetMainColumn extends StatelessWidget {
       ...TrainerManualOptions.fixedSkillProficiencies,
       ...skillProficiencies,
     ];
+    final abilityEntries = UserProfile.defaultAbilityScores.entries.toList();
     final nextPokeslotLevel = TrainerProgression.nextPokeslotLevel(
       trainerLevel,
     );
@@ -1337,17 +1337,38 @@ class _TrainerSheetMainColumn extends StatelessWidget {
           title: context.uiText('CARATTERISTICHE', 'ABILITY SCORES'),
         ),
         const SizedBox(height: 8),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
+        Column(
           children: [
-            for (final entry in UserProfile.defaultAbilityScores.entries)
-              _AbilityScoreTile(
-                label: TrainerUiLocalization.abilityAbbreviation(entry.key),
-                score: abilityScores[entry.key] ?? entry.value,
-                onDecrease: () => onAbilityScoreChanged(entry.key, -1),
-                onIncrease: () => onAbilityScoreChanged(entry.key, 1),
+            for (var row = 0; row < 2; row++) ...[
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  for (var column = 0; column < 3; column++) ...[
+                    if (column > 0) const SizedBox(width: 8),
+                    Expanded(
+                      child: _AbilityScoreTile(
+                        label: TrainerUiLocalization.abilityAbbreviation(
+                          abilityEntries[(row * 3) + column].key,
+                        ),
+                        score:
+                            abilityScores[abilityEntries[(row * 3) + column]
+                                .key] ??
+                            abilityEntries[(row * 3) + column].value,
+                        onDecrease: () => onAbilityScoreChanged(
+                          abilityEntries[(row * 3) + column].key,
+                          -1,
+                        ),
+                        onIncrease: () => onAbilityScoreChanged(
+                          abilityEntries[(row * 3) + column].key,
+                          1,
+                        ),
+                      ),
+                    ),
+                  ],
+                ],
               ),
+              if (row == 0) const SizedBox(height: 8),
+            ],
           ],
         ),
         const SizedBox(height: 16),
@@ -2458,13 +2479,9 @@ class _AbilityScoreTile extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
       ),
       child: SizedBox(
-        width: textScaleAwareValue(
-          context,
-          normal: 104,
-          enlarged: 116,
-        ),
+        width: double.infinity,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 8),
           child: Column(
             children: [
               Text(label, style: Theme.of(context).textTheme.labelMedium),
@@ -2479,7 +2496,12 @@ class _AbilityScoreTile extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   IconButton(
-                    visualDensity: Theme.of(context).visualDensity,
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints.tightFor(
+                      width: 36,
+                      height: 40,
+                    ),
+                    visualDensity: VisualDensity.compact,
                     tooltip: context.uiText(
                       'Diminuisci $label',
                       'Decrease $label',
@@ -2488,7 +2510,12 @@ class _AbilityScoreTile extends StatelessWidget {
                     icon: const Icon(Icons.remove, size: 18),
                   ),
                   IconButton(
-                    visualDensity: Theme.of(context).visualDensity,
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints.tightFor(
+                      width: 36,
+                      height: 40,
+                    ),
+                    visualDensity: VisualDensity.compact,
                     tooltip: context.uiText(
                       'Aumenta $label',
                       'Increase $label',

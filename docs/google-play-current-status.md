@@ -8,7 +8,7 @@ Questa pagina riassume lo stato reale del progetto e separa ciò che è già com
 
 ### Repository e build Android
 
-- `main` contiene la preparazione tecnica della release Android della PR #165;
+- `main` contiene la preparazione tecnica della release Android delle PR #165 e #166;
 - `compileSdk` e `targetSdk` sono impostati su API 36;
 - il supporto alle pagine di memoria da 16 KiB è verificato dalla pipeline;
 - APK e AAB release sono validati con `bundletool`;
@@ -18,59 +18,83 @@ Questa pagina riassume lo stato reale del progetto e separa ciò che è già com
 - logo, icona Android, splash, caratteri ingranditi e TalkBack sono stati collaudati nella PR #168;
 - il nuovo branding è presente in `main` dal merge commit `4a52896686566f368f7b1e77464fa251d2bcdfc6`.
 
+### Firma Android locale
+
+- il keystore di upload definitivo `android/upload-keystore.jks` è stato creato localmente;
+- l'alias è `upload` e la chiave è una RSA da 2048 bit;
+- `android/upload-keystore.jks` e `android/key.properties` sono esclusi da Git;
+- `git status --short` è rimasto pulito durante la verifica;
+- una build locale `flutter build appbundle --release` è terminata correttamente;
+- l'AAB prodotto è stato firmato con lo stesso certificato del keystore di upload;
+- il collaudo locale ha prodotto un AAB di circa 271,3 MB, valore che non coincide con la dimensione effettivamente scaricata dagli utenti e deve essere interpretato tramite `bundletool`.
+
+Il keystore, le password, `key.properties` e qualsiasi rappresentazione Base64 devono restare fuori dalla repository, dalle issue e dagli artefatti pubblici.
+
 ### Play Console
 
 - account sviluppatore creato come account personale;
 - app **Trainer Atlas 5e** creata come app senza costi;
 - package configurato: `io.github.rickciaahd.traineratlas`;
 - email pubblica per assistenza e privacy scelta: `rickciaahd.apps@gmail.com`;
+- Privacy Policy pubblicata e inserita nella Play Console;
+- URL pubblico della Privacy Policy: `https://rickciaahd.github.io/Pokedex5e_ita/privacy.html`;
+- sito pubblico del progetto: `https://rickciaahd.github.io/Pokedex5e_ita/`;
+- scheda Store italiana compilata con nome e descrizioni predisposte;
+- icona Store, feature graphic e screenshot smartphone preparati nella Play Console;
+- gli screenshot tablet non sono obbligatori per il salvataggio corrente e vengono rimandati a un collaudo reale su emulatore o dispositivo grande;
 - la Dashboard indica il requisito del test chiuso con almeno 12 tester per 14 giorni consecutivi prima della richiesta di accesso alla produzione.
 
 ### Preparazione documentale
 
-La PR #166 contiene:
+La PR #166, ora inclusa in `main`, contiene:
 
 - guida operativa per beta interna e chiusa;
-- Privacy Policy definitiva con data di entrata in vigore **1 agosto 2026**, predisposta per GitHub Pages e aggiornata con il contatto pubblico;
+- Privacy Policy definitiva con data di entrata in vigore **1 agosto 2026**;
 - bozze italiane e inglesi della scheda Store;
 - piano per icona Store, feature graphic e screenshot;
 - pagina pubblica di licenze e attribuzioni;
 - modulo GitHub per il feedback dei tester;
 - workflow per APK e AAB firmati con chiave di upload conservata fuori dalla repository.
 
-Il branch della PR #166 è stato sincronizzato con il nuovo `main` tramite la PR #169 e la CI combinata è terminata con successo.
-
 ## Attività ancora richieste al proprietario
 
-### Account e contatti
+### Account e sicurezza
 
 - completare eventuali verifiche residue di identità, email, telefono e dispositivo mostrate dalla Play Console;
 - verificare che l'autenticazione a due fattori sia attiva;
-- controllare regolarmente la casella pubblica `rickciaahd.apps@gmail.com`.
+- controllare regolarmente la casella pubblica `rickciaahd.apps@gmail.com`;
+- conservare almeno due copie cifrate del keystore in luoghi separati;
+- salvare password, alias e impronta SHA-256 in un password manager.
 
-### Firma Android
+### GitHub Actions Secrets
 
-- creare localmente il keystore di upload definitivo;
-- conservarne almeno due copie cifrate in luoghi separati;
-- salvare password, alias e impronta SHA-256 in un password manager;
-- configurare i quattro GitHub Actions Secrets;
-- non inserire mai keystore, password, file Base64 o `key.properties` nella repository.
+Configurare manualmente, senza pubblicarne i valori:
+
+- `ANDROID_KEYSTORE_BASE64`;
+- `ANDROID_STORE_PASSWORD`;
+- `ANDROID_KEY_PASSWORD`;
+- `ANDROID_KEY_ALIAS`.
+
+Dopo aver creato il valore Base64, eliminare immediatamente il file temporaneo dal computer.
 
 ### Documenti e scheda Store
 
-- unire la PR #166 e pubblicare la cartella `/docs` tramite GitHub Pages;
-- verificare l'URL pubblico da una finestra anonima;
-- completare accesso all'app, annunci, pubblico di destinazione, classificazione IARC e Data Safety;
-- esportare l'icona Store 512 × 512 dalla sorgente del branding;
-- creare la feature graphic 1024 × 500;
-- preparare screenshot italiani e inglesi da una build distribuita tramite Google Play.
+- completare e salvare tutte le dichiarazioni richieste dalla Play Console;
+- controllare l'anteprima finale della scheda italiana;
+- aggiungere la localizzazione inglese soltanto dopo il controllo di quella italiana;
+- verificare che tutti gli screenshot mostrino una build reale, senza dati personali, banner di debug o funzioni non presenti;
+- preparare screenshot tablet soltanto dopo un collaudo reale su schermo grande;
+- completare o far revisionare l'audit su marchi, licenze e provenienza degli asset prima di una diffusione pubblica ampia.
 
-### Beta
+### Prima beta Android
 
-- generare l'AAB firmato definitivo con un nuovo `versionCode`;
-- caricarlo prima nel test interno;
-- verificare installazione e aggiornamento tramite Play Store;
-- preparare almeno 12 account Google di tester affidabili;
+- aggiornare la versione da `1.3.2+8` a `1.4.0+9`;
+- produrre l'AAB firmato definitivo dalla revisione approvata;
+- eseguire l'audit `bundletool` sull'artefatto definitivo;
+- caricare l'AAB prima nel test interno;
+- accettare Play App Signing;
+- verificare installazione, avvio, persistenza dei dati e aggiornamento tramite Play Store;
+- preparare almeno 12 account Google di tester affidabili senza pubblicarli nella repository;
 - avviare il test chiuso e mantenerlo attivo per almeno 14 giorni consecutivi;
 - raccogliere feedback senza pubblicare email, backup o dati personali.
 
@@ -97,9 +121,10 @@ La presenza sullo Store di applicazioni simili non costituisce prova di autorizz
 
 ## Prossima sequenza operativa
 
-1. unire la PR #166 con autorizzazione esplicita;
-2. abilitare GitHub Pages;
-3. creare keystore e secret;
-4. aggiornare versione e `versionCode`;
-5. produrre l'AAB firmato;
-6. avviare test interno e poi test chiuso.
+1. configurare i quattro GitHub Actions Secrets;
+2. aggiornare la versione a `1.4.0+9` nella branch di release;
+3. completare CI e revisione della pull request;
+4. produrre e verificare l'AAB firmato definitivo;
+5. avviare il test interno;
+6. collaudare installazione e aggiornamento dal Play Store;
+7. avviare il test chiuso con i tester previsti.

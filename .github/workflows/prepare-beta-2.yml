@@ -1,0 +1,114 @@
+name: Prepare beta 2
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/prepare-beta-2.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  prepare:
+    if: >-
+      github.repository == 'RickCiaahd/Pokedex5e_ita' &&
+      github.event.pull_request.head.ref == 'release/1.4.0-beta1' &&
+      github.actor == 'RickCiaahd'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out release branch
+        uses: actions/checkout@v4
+        with:
+          ref: release/1.4.0-beta1
+          fetch-depth: 0
+
+      - name: Bump beta version and audit pair
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          pubspec = Path('pubspec.yaml')
+          text = pubspec.read_text(encoding='utf-8')
+          old = 'version: 1.4.0+9'
+          new = 'version: 1.4.0+10'
+          if text.count(old) != 1:
+              raise SystemExit(f'Expected exactly one {old!r} entry.')
+          pubspec.write_text(text.replace(old, new, 1), encoding='utf-8')
+
+          audit = Path('.github/workflows/release-footprint-audit.yml')
+          text = audit.read_text(encoding='utf-8')
+          replacements = {
+              'flutter build apk --release --build-number=10':
+                  'flutter build apk --release --build-number=11',
+              'flutter build appbundle --release --build-number=10':
+                  'flutter build appbundle --release --build-number=11',
+              "grep -Eq 'versionCode=\"9\"|versionCode=\"0x9\"'":
+                  "grep -Eq 'versionCode=\"10\"|versionCode=\"0xa\"'",
+              "grep -Eq 'versionCode=\"10\"|versionCode=\"0xa\"'":
+                  "grep -Eq 'versionCode=\"11\"|versionCode=\"0xb\"'",
+              'f\'| {variant} | {9 if variant == "baseline" else 10} |':
+                  'f\'| {variant} | {10 if variant == "baseline" else 11} |',
+              'Trainer-Atlas-5e-standard-vc9.apk':
+                  'Trainer-Atlas-5e-standard-vc10.apk',
+              'Trainer-Atlas-5e-minified-vc10.apk':
+                  'Trainer-Atlas-5e-minified-vc11.apk',
+          }
+
+          # Apply overlapping version-code checks safely from the original text.
+          baseline_old = "grep -Eq 'versionCode=\"9\"|versionCode=\"0x9\"'"
+          shrunk_old = "grep -Eq 'versionCode=\"10\"|versionCode=\"0xa\"'"
+          if text.count(baseline_old) != 1 or text.count(shrunk_old) != 1:
+              raise SystemExit('Unexpected version-code checks in release footprint audit.')
+          text = text.replace(baseline_old, '__BASELINE_VERSION_CHECK__', 1)
+          text = text.replace(shrunk_old, "grep -Eq 'versionCode=\"11\"|versionCode=\"0xb\"'", 1)
+          text = text.replace('__BASELINE_VERSION_CHECK__', "grep -Eq 'versionCode=\"10\"|versionCode=\"0xa\"'", 1)
+
+          simple_replacements = {
+              'flutter build apk --release --build-number=10':
+                  'flutter build apk --release --build-number=11',
+              'flutter build appbundle --release --build-number=10':
+                  'flutter build appbundle --release --build-number=11',
+              'f\'| {variant} | {9 if variant == "baseline" else 10} |':
+                  'f\'| {variant} | {10 if variant == "baseline" else 11} |',
+              'Trainer-Atlas-5e-standard-vc9.apk':
+                  'Trainer-Atlas-5e-standard-vc10.apk',
+              'Trainer-Atlas-5e-minified-vc10.apk':
+                  'Trainer-Atlas-5e-minified-vc11.apk',
+          }
+          for old_value, new_value in simple_replacements.items():
+              count = text.count(old_value)
+              if count < 1:
+                  raise SystemExit(f'Missing expected audit text: {old_value}')
+              text = text.replace(old_value, new_value)
+
+          audit.write_text(text, encoding='utf-8')
+          PY
+
+      - name: Verify prepared files
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -Fxq 'version: 1.4.0+10' pubspec.yaml
+          grep -Fq -- '--build-number=11' .github/workflows/release-footprint-audit.yml
+          grep -Fq 'versionCode="10"|versionCode="0xa"' .github/workflows/release-footprint-audit.yml
+          grep -Fq 'versionCode="11"|versionCode="0xb"' .github/workflows/release-footprint-audit.yml
+          grep -Fq 'Trainer-Atlas-5e-standard-vc10.apk' .github/workflows/release-footprint-audit.yml
+          grep -Fq 'Trainer-Atlas-5e-minified-vc11.apk' .github/workflows/release-footprint-audit.yml
+          git diff --check
+
+      - name: Remove temporary workflow and commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm .github/workflows/prepare-beta-2.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add pubspec.yaml .github/workflows/release-footprint-audit.yml .github/workflows/prepare-beta-2.yml
+          git commit -m 'Prepara la beta interna 2 con version code 10'
+          git push origin HEAD:release/1.4.0-beta1

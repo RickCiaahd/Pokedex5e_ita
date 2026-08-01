@@ -1,21 +1,27 @@
 # Scheda Google Play — bozze italiano e inglese
 
-Ultimo aggiornamento: 31 luglio 2026
+Ultimo aggiornamento: 1 agosto 2026
 
 Questi testi sono bozze operative. Devono essere riletti insieme alla build caricata, alla Privacy Policy definitiva e alla revisione su marchi, licenze e provenienza degli asset.
 
 ## Dati condivisi
 
 - Nome dell'app: **Trainer Atlas 5e**
+- Package: `io.github.rickciaahd.traineratlas`
 - Tipo: **App**
-- Prezzo iniziale: **Gratis**
+- Prezzo iniziale: **Senza costi**
 - Presenza di annunci: **No**
+- Acquisti in-app nella build corrente: **No**
 - Categoria proposta: **Strumenti**
 - Email assistenza: **DA DEFINIRE**
 - URL Privacy Policy: **DA PUBBLICARE**
-- Sito web: repository o pagina pubblica del progetto, da confermare
+- Sito web: pagina pubblica GitHub Pages del progetto, da confermare
+- Sorgente icona Store: `docs/branding/trainer_atlas_app_icon_source.png`
+- Feature graphic: **DA PREPARARE**
 
 Il nome pubblico contiene 16 caratteri ed è entro il limite di 30 caratteri.
+
+La creazione dell'app come “senza costi” non impedisce una futura integrazione di prodotti digitali in-app. Tuttavia, la build attuale non contiene Google Play Billing o funzioni Premium: testi, screenshot e dichiarazioni non devono ancora prometterli.
 
 ---
 
@@ -62,6 +68,7 @@ Trainer Atlas 5e è un progetto amatoriale e non ufficiale. Non è affiliato, ap
 ```text
 Prima beta Android distribuita tramite Google Play.
 
+• nuovo logo Trainer Atlas 5e e nuova icona Android;
 • interfaccia italiana e inglese;
 • cataloghi e immagini disponibili offline;
 • gestione profili, squadra, PC, Pokédex e zaino;
@@ -117,6 +124,7 @@ Trainer Atlas 5e is an amateur, unofficial project. It is not affiliated with, e
 ```text
 First Android beta distributed through Google Play.
 
+• new Trainer Atlas 5e logo and Android icon;
 • English and Italian interface;
 • catalogs and images available offline;
 • profile, team, storage, Pokédex and inventory management;
@@ -133,9 +141,12 @@ This build is intended for testing. Please report crashes, missing images, untra
 
 - [ ] confermare l'email pubblica di assistenza;
 - [ ] sostituire il placeholder della Privacy Policy;
+- [ ] esportare e controllare l'icona Store 512 × 512;
+- [ ] preparare la feature graphic 1024 × 500;
 - [ ] verificare che ogni funzione descritta sia presente nella build caricata;
 - [ ] controllare i limiti di caratteri direttamente nella Console;
 - [ ] evitare parole promozionali, ranking, premi o affiliazioni non reali;
 - [ ] far revisionare il disclaimer e l'uso di marchi e asset;
 - [ ] mantenere coerenti italiano e inglese;
+- [ ] non indicare acquisti in-app finché Google Play Billing non è implementato;
 - [ ] aggiornare le note di rilascio per ogni nuovo `versionCode`.

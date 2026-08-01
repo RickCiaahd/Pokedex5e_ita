@@ -14,59 +14,84 @@ Asset canonici:
 
 Le risorse launcher contenute nelle cartelle Android sono derivate tecniche e non devono essere usate come file promozionali dello Store.
 
-## Risorse da preparare
+## Stato degli asset Play Store
 
 ### Icona Play Store
 
-- esportare dalla sorgente `trainer_atlas_app_icon_source.png`;
+La sorgente è disponibile e l'icona è stata usata nella compilazione della scheda Store. Prima del salvataggio definitivo controllare ancora l'anteprima mostrata dalla Play Console.
+
+Requisiti di riferimento:
+
 - formato: PNG 32 bit con trasparenza;
 - dimensioni: 512 × 512 px;
 - peso massimo: 1024 KB;
 - niente badge, prezzi, ranking o simboli ingannevoli;
-- mantenere il soggetto principale centrato e leggibile anche in piccolo.
+- soggetto principale centrato e leggibile anche in piccolo.
 
 L'icona dello Store è distinta tecnicamente dall'icona launcher inclusa nell'AAB, ma deve usare lo stesso emblema e la stessa identità visiva.
 
-Prima del caricamento verificare che l'export finale:
+Controlli finali:
 
-- non presenti bordi tagliati;
-- non incorpori uno sfondo rettangolare indesiderato;
-- resti leggibile nelle anteprime molto piccole;
-- non contenga testi troppo minuti;
-- sia coerente con l'icona mostrata nel launcher Android.
+- nessun bordo tagliato;
+- nessuno sfondo rettangolare indesiderato;
+- leggibilità nelle anteprime molto piccole;
+- nessun testo troppo minuto;
+- coerenza con l'icona mostrata nel launcher Android.
 
 ### Grafica in primo piano
 
-- formato: JPEG oppure PNG 24 bit senza trasparenza;
-- dimensioni: 1024 × 500 px;
-- elementi importanti nella zona centrale;
-- testo ridotto al minimo;
-- nessun riferimento che faccia apparire l'app ufficiale o affiliata a terzi.
+Un candidato conforme è stato preparato il 1 agosto 2026 con queste caratteristiche:
 
-Proposta di composizione aggiornata:
+- formato PNG RGB senza trasparenza;
+- dimensioni 1024 × 500 px;
+- palette ambra/oro coerente con il launcher;
+- logo Trainer Atlas 5e e simbolo grafico del progetto;
+- nessun personaggio o marchio di terzi usato come elemento promozionale dominante;
+- nessun logo Google Play, prezzo, ranking o claim ingannevole.
 
-- sfondo coerente con la palette ambra/oro del nuovo launcher, compreso il riferimento `#F2B34A` usato dall'icona adattiva;
-- logo o emblema di Trainer Atlas 5e al centro-sinistra;
-- breve richiamo visivo alla gestione di squadra e campagna;
-- nessun logo Google Play;
-- nessun artwork o marchio di terzi usato come elemento promozionale dominante.
+La grafica deve essere approvata soltanto dopo il controllo dell'anteprima nella Play Console.
 
-La feature graphic non è ancora pronta e deve essere prodotta come asset separato.
+### Screenshot smartphone
 
-### Screenshot telefono
+Sono stati preparati e caricati screenshot reali dell'interfaccia smartphone per la scheda italiana.
 
-Usare catture reali della build distribuita tramite Play Store. Non inserire funzioni non presenti e non modificare le schermate per simulare risultati diversi.
+Ordine consigliato:
 
-Sequenza proposta in italiano:
+1. Home con accesso alle aree principali;
+2. squadra con più Pokémon visibili;
+3. dettaglio Pokémon con statistiche e informazioni;
+4. profilo Allenatore e riepilogo della progressione;
+5. Pokédex o catalogo con ricerca;
+6. zaino oppure strumenti del Master.
 
-1. schermata iniziale con il nuovo logo Trainer Atlas 5e;
-2. Home con accesso alle aree principali;
-3. profilo Allenatore e riepilogo della campagna;
-4. squadra con quattro o più Pokémon visibili;
-5. dettaglio Pokémon con statistiche e informazioni;
-6. Pokédex o catalogo con ricerca;
-7. zaino e inventario;
-8. strumenti del Master o gestione incontri.
+Home, squadra e dettaglio Pokémon devono restare nelle prime posizioni perché comunicano immediatamente la funzione principale dell'app. L'onboarding non è necessario come primo screenshot, dato che logo e identità visiva sono già rappresentati da icona e feature graphic.
+
+### Screenshot tablet da 7 pollici
+
+La Play Console non li ha richiesti come obbligatori per completare la scheda corrente. Vengono quindi rimandati e non devono bloccare il test interno.
+
+Non riutilizzare screenshot smartphone ingranditi o deformati. Quando verranno aggiunti, dovranno essere catturati realmente da una build release eseguita su un emulatore o dispositivo grande.
+
+Profilo di collaudo suggerito:
+
+```text
+Dimensione schermo: 7,0 pollici
+Risoluzione: 1200 × 1920
+Densità: 320 dpi
+Orientamento: verticale
+Android: 15 o 16
+```
+
+Sequenza minima tablet:
+
+1. Home;
+2. squadra;
+3. dettaglio Pokémon;
+4. Pokédex oppure strumenti del Master.
+
+Prima delle catture tablet verificare layout, spazi vuoti, leggibilità, overflow e funzionamento della navigazione. Eventuali problemi devono essere corretti nell'app prima di produrre gli asset definitivi.
+
+## Localizzazioni
 
 Preparare la stessa sequenza in inglese oppure usare gli stessi screenshot soltanto dove il testo è neutro. Le localizzazioni della scheda Store dovrebbero mostrare preferibilmente l'interfaccia nella lingua corrispondente.
 
@@ -96,7 +121,7 @@ Prima delle catture:
 
 ## Controllo legale e di policy
 
-Prima del caricamento, verificare separatamente:
+Prima del caricamento definitivo, verificare separatamente:
 
 - provenienza e licenza di ogni elemento grafico usato per icona e feature graphic;
 - uso corretto di marchi e personaggi di terzi;

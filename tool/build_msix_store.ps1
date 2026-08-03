@@ -16,17 +16,6 @@ param(
 $ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
 
-function Resolve-Executable([string]$Name, [string[]]$Fallbacks) {
-  $command = Get-Command $Name -ErrorAction SilentlyContinue
-  if ($command) { return $command.Source }
-
-  foreach ($candidate in $Fallbacks) {
-    if (Test-Path $candidate) { return $candidate }
-  }
-
-  throw "Impossibile trovare $Name. Installa Windows SDK/Visual Studio e riprova."
-}
-
 function Invoke-Checked {
   param(
     [Parameter(Mandatory = $true)]
@@ -41,6 +30,36 @@ function Invoke-Checked {
   if ($null -ne $exitCode -and $exitCode -ne 0) {
     throw "$Description non riuscito (codice $exitCode)."
   }
+}
+
+function Resolve-MakeAppx {
+  $command = Get-Command "makeappx.exe" -ErrorAction SilentlyContinue
+  if ($command) { return $command.Source }
+
+  $kitsRoot = Join-Path ${env:ProgramFiles(x86)} "Windows Kits\10"
+  $binRoot = Join-Path $kitsRoot "bin"
+
+  if (Test-Path $binRoot) {
+    $candidates = Get-ChildItem -Path $binRoot -Filter "makeappx.exe" -File -Recurse -ErrorAction SilentlyContinue |
+      Where-Object { $_.FullName -match '\\x64\\makeappx\.exe$' } |
+      Sort-Object -Property @{
+        Expression = {
+          $versionDirectory = Split-Path (Split-Path $_.DirectoryName -Parent) -Leaf
+          try { [version]$versionDirectory } catch { [version]"0.0.0.0" }
+        }
+        Descending = $true
+      }
+
+    $candidate = $candidates | Select-Object -First 1
+    if ($candidate) { return $candidate.FullName }
+  }
+
+  $certificationKitCandidate = Join-Path $kitsRoot "App Certification Kit\makeappx.exe"
+  if (Test-Path $certificationKitCandidate) {
+    return $certificationKitCandidate
+  }
+
+  throw "Impossibile trovare makeappx.exe. Apri Visual Studio Installer, modifica l'installazione e aggiungi un Windows 10/11 SDK; quindi verifica che il file esista sotto 'C:\Program Files (x86)\Windows Kits\10\bin\<versione>\x64'."
 }
 
 function Assert-WindowsToolchain {
@@ -84,6 +103,9 @@ $templatePath = Join-Path $buildDirectory "packaging\msix\Package.Store.appxmani
 $assetsSource = Join-Path $buildDirectory "packaging\msix\Assets"
 $stageDirectory = Join-Path $buildDirectory "build\msix_store_stage"
 $outputPath = Join-Path $buildDirectory $OutputDirectory
+$makeAppx = Resolve-MakeAppx
+
+Write-Host "MakeAppx rilevato: $makeAppx"
 
 Invoke-Checked "Abilitazione del desktop Windows" { flutter config --enable-windows-desktop }
 Invoke-Checked "Preparazione degli asset legali GPL e NOTICE" { python tooling/prepare_release_legal_assets.py }
@@ -119,12 +141,6 @@ $manifest = $manifest.Replace("STORE_PUBLISHER_DISPLAY_NAME", $PublisherDisplayN
 $manifest = $manifest.Replace("STORE_PUBLISHER", $Publisher)
 $manifest = $manifest.Replace("STORE_VERSION", $Version)
 Set-Content -Path (Join-Path $stageDirectory "AppxManifest.xml") -Value $manifest -Encoding utf8
-
-$makeAppx = Resolve-Executable "makeappx.exe" @(
-  "${env:ProgramFiles(x86)}\Windows Kits\10\bin\10.0.26100.0\x64\makeappx.exe",
-  "${env:ProgramFiles(x86)}\Windows Kits\10\bin\10.0.22621.0\x64\makeappx.exe",
-  "${env:ProgramFiles(x86)}\Windows Kits\10\bin\x64\makeappx.exe"
-)
 
 New-Item $outputPath -ItemType Directory -Force | Out-Null
 $packageName = "TrainerAtlas5e-$Version-x64.msix"

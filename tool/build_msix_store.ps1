@@ -108,7 +108,31 @@ function Get-PubspecVersion {
   if (-not $line) {
     throw "La versione in pubspec.yaml deve essere nel formato major.minor.patch+build."
   }
-  return "$($line.Matches[0].Groups[1].Value).$($line.Matches[0].Groups[2].Value).$($line.Matches[0].Groups[3].Value).$($line.Matches[0].Groups[4].Value)"
+
+  $major = $line.Matches[0].Groups[1].Value
+  $minor = $line.Matches[0].Groups[2].Value
+  $patch = $line.Matches[0].Groups[3].Value
+
+  return "$major.$minor.$patch.0"
+}
+
+function Assert-StoreVersion([string]$StoreVersion) {
+  if ($StoreVersion -notmatch '^\d+\.\d+\.\d+\.\d+$') {
+    throw "Version deve avere quattro componenti numeriche, per esempio 1.3.2.0."
+  }
+
+  $parts = @($StoreVersion.Split('.') | ForEach-Object { [uint64]$_ })
+  if ($parts[0] -eq 0) {
+    throw "Il primo componente della versione MSIX deve essere maggiore di zero."
+  }
+  if ($parts[3] -ne 0) {
+    throw "Per i pacchetti Windows 10/11 destinati al Microsoft Store il quarto componente della versione deve essere 0, per esempio 1.3.2.0."
+  }
+  foreach ($part in $parts) {
+    if ($part -gt 65535) {
+      throw "Ogni componente della versione MSIX deve essere compreso tra 0 e 65535."
+    }
+  }
 }
 
 if (-not (Test-Path "pubspec.yaml")) {
@@ -116,9 +140,7 @@ if (-not (Test-Path "pubspec.yaml")) {
 }
 
 if (-not $Version) { $Version = Get-PubspecVersion }
-if ($Version -notmatch '^\d+\.\d+\.\d+\.\d+$') {
-  throw "Version deve avere quattro componenti numeriche, per esempio 1.3.2.8."
-}
+Assert-StoreVersion $Version
 
 $buildDirectory = Resolve-Path "."
 $releaseDirectory = Join-Path $buildDirectory "build\windows\x64\runner\Release"
@@ -129,6 +151,7 @@ $outputPath = Join-Path $buildDirectory $OutputDirectory
 $makeAppx = Resolve-MakeAppx
 
 Write-Host "MakeAppx rilevato: $makeAppx"
+Write-Host "Versione MSIX Store: $Version"
 
 Invoke-Checked "Abilitazione del desktop Windows" { flutter config --enable-windows-desktop }
 Invoke-Checked "Preparazione degli asset legali GPL e NOTICE" { python tooling/prepare_release_legal_assets.py }

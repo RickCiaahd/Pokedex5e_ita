@@ -27,6 +27,40 @@ function Resolve-Executable([string]$Name, [string[]]$Fallbacks) {
   throw "Impossibile trovare $Name. Installa Windows SDK/Visual Studio e riprova."
 }
 
+function Invoke-Checked {
+  param(
+    [Parameter(Mandatory = $true)]
+    [string]$Description,
+
+    [Parameter(Mandatory = $true)]
+    [scriptblock]$Command
+  )
+
+  & $Command
+  $exitCode = $LASTEXITCODE
+  if ($null -ne $exitCode -and $exitCode -ne 0) {
+    throw "$Description non riuscito (codice $exitCode)."
+  }
+}
+
+function Assert-WindowsToolchain {
+  $doctorLines = & flutter doctor -v 2>&1
+  $exitCode = $LASTEXITCODE
+  $doctorLines | ForEach-Object { Write-Host $_ }
+
+  if ($null -ne $exitCode -and $exitCode -ne 0) {
+    throw "flutter doctor non riuscito (codice $exitCode)."
+  }
+
+  $doctorText = $doctorLines -join "`n"
+  if (
+    $doctorText -match 'Unable to find suitable Visual Studio toolchain' -or
+    $doctorText -match '(?m)^\[[X!]\]\s+Visual Studio - develop Windows apps'
+  ) {
+    throw "Toolchain Windows incompleta. Installa o modifica Visual Studio 2022 aggiungendo il workload 'Sviluppo di applicazioni desktop con C++', CMake e un Windows SDK, quindi riapri il terminale e verifica con 'flutter doctor -v'."
+  }
+}
+
 function Get-PubspecVersion {
   $line = Select-String -Path "pubspec.yaml" -Pattern '^version:\s*([0-9]+)\.([0-9]+)\.([0-9]+)\+([0-9]+)\s*$' | Select-Object -First 1
   if (-not $line) {
@@ -35,13 +69,13 @@ function Get-PubspecVersion {
   return "$($line.Matches[0].Groups[1].Value).$($line.Matches[0].Groups[2].Value).$($line.Matches[0].Groups[3].Value).$($line.Matches[0].Groups[4].Value)"
 }
 
+if (-not (Test-Path "pubspec.yaml")) {
+  throw "Esegui lo script dalla radice della repository."
+}
+
 if (-not $Version) { $Version = Get-PubspecVersion }
 if ($Version -notmatch '^\d+\.\d+\.\d+\.\d+$') {
   throw "Version deve avere quattro componenti numeriche, per esempio 1.3.2.8."
-}
-
-if (-not (Test-Path "pubspec.yaml")) {
-  throw "Esegui lo script dalla radice della repository."
 }
 
 $buildDirectory = Resolve-Path "."
@@ -51,14 +85,18 @@ $assetsSource = Join-Path $buildDirectory "packaging\msix\Assets"
 $stageDirectory = Join-Path $buildDirectory "build\msix_store_stage"
 $outputPath = Join-Path $buildDirectory $OutputDirectory
 
+Invoke-Checked "Abilitazione del desktop Windows" { flutter config --enable-windows-desktop }
+Invoke-Checked "Preparazione degli asset legali GPL e NOTICE" { python tooling/prepare_release_legal_assets.py }
+
 if (-not $SkipChecks) {
-  flutter pub get
-  flutter analyze
-  flutter test test/data_integrity_test.dart
-  flutter test
+  Invoke-Checked "Risoluzione delle dipendenze Flutter" { flutter pub get }
+  Invoke-Checked "Analisi Flutter" { flutter analyze }
+  Invoke-Checked "Test di integrità dei dati" { flutter test test/data_integrity_test.dart }
+  Invoke-Checked "Suite completa dei test" { flutter test }
 }
 
-flutter build windows --release
+Assert-WindowsToolchain
+Invoke-Checked "Build Windows release" { flutter build windows --release }
 
 if (-not (Test-Path (Join-Path $releaseDirectory "Pokedex5eITA.exe"))) {
   throw "Build Windows non trovata in $releaseDirectory."

@@ -83,11 +83,16 @@ Il workflow `Android release` può essere avviato manualmente dopo la configuraz
 
 ## Release Windows
 
-L'app Windows usa il titolo `Trainer Atlas 5e` e l'eseguibile `Pokedex5eITA.exe`. Viene distribuita inizialmente come archivio ZIP portatile x64 contenente l'intera cartella necessaria all'avvio.
+L'app Windows usa il titolo `Trainer Atlas 5e` e l'eseguibile `Pokedex5eITA.exe`.
 
-La guida di compilazione e distribuzione è disponibile in [`docs/windows-release.md`](docs/windows-release.md).
+Sono supportati due formati:
 
-Il workflow `Windows release` esegue analisi, test e build su Windows, crea lo ZIP portatile e il checksum SHA-256 e, sui tag `v*`, li allega alla stessa GitHub Release delle build Android.
+- archivio ZIP portatile x64 per GitHub Releases;
+- pacchetto MSIX x64 per Microsoft Store, generato con `tool/build_msix_store.ps1` dopo aver inserito identità Partner Center e asset Store definitivi.
+
+La guida completa è disponibile in [`docs/windows-release.md`](docs/windows-release.md).
+
+Il workflow `Windows release` continua a creare lo ZIP portatile e il checksum. Il pacchetto Store viene generato localmente perché dipende dai valori assegnati nel Partner Center.
 
 ## Dati e salvataggi
 

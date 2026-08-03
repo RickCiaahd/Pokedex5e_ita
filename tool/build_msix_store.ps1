@@ -36,30 +36,53 @@ function Resolve-MakeAppx {
   $command = Get-Command "makeappx.exe" -ErrorAction SilentlyContinue
   if ($command) { return $command.Source }
 
-  $kitsRoot = Join-Path ${env:ProgramFiles(x86)} "Windows Kits\10"
-  $binRoot = Join-Path $kitsRoot "bin"
+  $kitRoots = [System.Collections.Generic.List[string]]::new()
+  $registryKeys = @(
+    "HKLM:\SOFTWARE\Microsoft\Windows Kits\Installed Roots",
+    "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows Kits\Installed Roots"
+  )
 
-  if (Test-Path $binRoot) {
-    $candidates = Get-ChildItem -Path $binRoot -Filter "makeappx.exe" -File -Recurse -ErrorAction SilentlyContinue |
-      Where-Object { $_.FullName -match '\\x64\\makeappx\.exe$' } |
-      Sort-Object -Property @{
-        Expression = {
-          $versionDirectory = Split-Path (Split-Path $_.DirectoryName -Parent) -Leaf
-          try { [version]$versionDirectory } catch { [version]"0.0.0.0" }
+  foreach ($registryKey in $registryKeys) {
+    if (-not (Test-Path $registryKey)) { continue }
+
+    $kitsRoot10 = (Get-ItemProperty $registryKey -ErrorAction SilentlyContinue).KitsRoot10
+    if ($kitsRoot10 -and (Test-Path $kitsRoot10)) {
+      $kitRoots.Add($kitsRoot10)
+    }
+  }
+
+  $defaultRoot = Join-Path ${env:ProgramFiles(x86)} "Windows Kits\10"
+  if (Test-Path $defaultRoot) {
+    $kitRoots.Add($defaultRoot)
+  }
+
+  $kitRoots = $kitRoots | Select-Object -Unique
+
+  foreach ($kitsRoot in $kitRoots) {
+    $binRoot = Join-Path $kitsRoot "bin"
+    if (Test-Path $binRoot) {
+      $candidates = Get-ChildItem -Path $binRoot -Filter "makeappx.exe" -File -Recurse -ErrorAction SilentlyContinue |
+        Where-Object { $_.FullName -match '\\x64\\makeappx\.exe$' } |
+        Sort-Object -Property @{
+          Expression = {
+            $versionDirectory = Split-Path (Split-Path $_.DirectoryName -Parent) -Leaf
+            try { [version]$versionDirectory } catch { [version]"0.0.0.0" }
+          }
+          Descending = $true
         }
-        Descending = $true
-      }
 
-    $candidate = $candidates | Select-Object -First 1
-    if ($candidate) { return $candidate.FullName }
+      $candidate = $candidates | Select-Object -First 1
+      if ($candidate) { return $candidate.FullName }
+    }
+
+    $certificationKitCandidate = Join-Path $kitsRoot "App Certification Kit\makeappx.exe"
+    if (Test-Path $certificationKitCandidate) {
+      return $certificationKitCandidate
+    }
   }
 
-  $certificationKitCandidate = Join-Path $kitsRoot "App Certification Kit\makeappx.exe"
-  if (Test-Path $certificationKitCandidate) {
-    return $certificationKitCandidate
-  }
-
-  throw "Impossibile trovare makeappx.exe. Apri Visual Studio Installer, modifica l'installazione e aggiungi un Windows 10/11 SDK; quindi verifica che il file esista sotto 'C:\Program Files (x86)\Windows Kits\10\bin\<versione>\x64'."
+  $searchedRoots = if ($kitRoots) { $kitRoots -join "; " } else { "nessun KitsRoot10 registrato" }
+  throw "Impossibile trovare makeappx.exe. Percorsi Windows SDK controllati: $searchedRoots. Installa gli strumenti di packaging del Windows 10/11 SDK e riprova."
 }
 
 function Assert-WindowsToolchain {

@@ -4,6 +4,7 @@ import '../../localization/ui_text.dart';
 import '../../localization/feat_display_name.dart';
 import '../../models/bag_item.dart';
 import '../../models/evolution_data.dart';
+import '../../models/item_driven_pokemon_form.dart';
 import '../../models/level_progression.dart';
 import '../../models/move_data.dart';
 import '../../models/pokemon.dart';
@@ -225,7 +226,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
     _team = [...widget.team];
     _teamSlot = widget.teamSlot;
     _pokemon = _basePokemon.resolveVariant(
-      formName: _teamSlot?.formName,
+      formName: _teamSlot?.effectiveFormName,
       gender: _teamSlot?.gender,
     );
     _ensureSelectedMovesIsSaved();
@@ -259,7 +260,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
     setState(() {
       _teamSlot = updatedSlot;
       _pokemon = _basePokemon.resolveVariant(
-        formName: updatedSlot.formName,
+        formName: updatedSlot.effectiveFormName,
         gender: updatedSlot.gender,
       );
       _replaceTeamSlot(updatedSlot);
@@ -928,6 +929,9 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
               _MoveCard(
                 reference: newMove,
                 move: moveData,
+                moveType: moveData == null
+                    ? null
+                    : _effectiveMoveType(moveData),
                 stats: moveData == null ? null : _moveStats(moveData),
               ),
               const SizedBox(height: 8),
@@ -1202,7 +1206,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
     setState(() {
       _basePokemon = pokemon;
       _pokemon = pokemon.resolveVariant(
-        formName: slot.formName,
+        formName: slot.effectiveFormName,
         gender: slot.gender,
       );
       _teamSlot = slot;
@@ -1246,6 +1250,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
 
   String _moveStats(MoveData move) {
     final parts = <String>[];
+    final effectiveMoveType = _effectiveMoveType(move);
     final moveModifier = _bestMoveModifier(move);
     final proficiency = _proficiency(_level);
     final attackPathBonus = TrainerPathPassiveService.attackRollBonus(
@@ -1263,6 +1268,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
       slot: _teamSlot,
       move: move,
       pokemonLevel: _level,
+      moveTypeOverride: effectiveMoveType,
     );
 
     if (move.isAttack) {
@@ -1289,6 +1295,15 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
     if (move.duration != '-') parts.add(move.duration);
 
     return parts.join('  ||  ');
+  }
+
+  String _effectiveMoveType(MoveData move) {
+    return ItemDrivenPokemonForm.effectiveMoveType(
+      pokemonId: _teamSlot?.pokemonId ?? _pokemon.id,
+      moveReference: move.technicalName,
+      heldItem: _teamSlot?.heldItem,
+      fallbackType: move.type,
+    );
   }
 
   String _moveLabel(String reference) {
@@ -1395,6 +1410,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
                             selectedMoves: _selectedMoves(),
                             moves: _moves,
                             moveStatsBuilder: _moveStats,
+                            moveTypeBuilder: _effectiveMoveType,
                           ),
                           _FeaturesView(
                             pokemon: pokemon,
@@ -1563,7 +1579,7 @@ class _Header extends StatelessWidget {
                         Expanded(
                           child: PokemonAssetImage(
                             pokemon: imagePokemon,
-                            formName: slot?.formName,
+                            formName: slot?.effectiveFormName,
                             gender: slot?.gender,
                             isShiny: slot?.isShiny,
                             useLargeArtwork: true,
@@ -2506,11 +2522,13 @@ class _MovesView extends StatelessWidget {
     required this.selectedMoves,
     required this.moves,
     required this.moveStatsBuilder,
+    required this.moveTypeBuilder,
   });
 
   final List<String> selectedMoves;
   final Map<String, MoveData?> moves;
   final String Function(MoveData move) moveStatsBuilder;
+  final String Function(MoveData move) moveTypeBuilder;
 
   @override
   Widget build(BuildContext context) {
@@ -2522,6 +2540,7 @@ class _MovesView extends StatelessWidget {
           names: [...selectedMoves, 'Struggle'],
           moves: moves,
           moveStatsBuilder: moveStatsBuilder,
+          moveTypeBuilder: moveTypeBuilder,
         ),
       ],
     );
@@ -2534,12 +2553,14 @@ class _MoveSection extends StatelessWidget {
     required this.names,
     required this.moves,
     required this.moveStatsBuilder,
+    required this.moveTypeBuilder,
   });
 
   final String title;
   final List<String> names;
   final Map<String, MoveData?> moves;
   final String Function(MoveData move) moveStatsBuilder;
+  final String Function(MoveData move) moveTypeBuilder;
 
   @override
   Widget build(BuildContext context) {
@@ -2556,6 +2577,9 @@ class _MoveSection extends StatelessWidget {
           _MoveCard(
             reference: name,
             move: moves[name],
+            moveType: moves[name] == null
+                ? null
+                : moveTypeBuilder(moves[name]!),
             stats: moves[name] == null ? null : moveStatsBuilder(moves[name]!),
           ),
       ],
@@ -2567,11 +2591,13 @@ class _MoveCard extends StatelessWidget {
   const _MoveCard({
     required this.reference,
     required this.move,
+    required this.moveType,
     required this.stats,
   });
 
   final String reference;
   final MoveData? move;
+  final String? moveType;
   final String? stats;
 
   @override
@@ -2612,7 +2638,7 @@ class _MoveCard extends StatelessWidget {
               Wrap(
                 spacing: 8,
                 children: [
-                  PokemonTypeBadge(type: move.type, height: 24),
+                  PokemonTypeBadge(type: moveType ?? move.type, height: 24),
                   Chip(label: Text(move.moveTime)),
                 ],
               ),
@@ -2806,12 +2832,18 @@ class _TraitsView extends StatelessWidget {
                 label: context.uiText('Forma', 'Form'),
                 value: slot == null
                     ? '-'
+                    : ItemDrivenPokemonForm.usesHeldItemForm(
+                        basePokemon.id,
+                      )
+                    ? PokemonAssetPaths.localizedTypeLabel(
+                        slot?.effectiveFormName ?? 'Normal',
+                      )
                     : BattleFormChangeService.supports(basePokemon)
                     ? BattleFormChangeService.formLabel(
                         basePokemon,
-                        slot?.formName,
+                        slot?.effectiveFormName,
                       )
-                    : slot?.formName ?? '-',
+                    : slot?.effectiveFormName ?? '-',
               ),
               _InfoRow(
                 label: context.uiText('Cromatico', 'Shiny'),
@@ -3053,7 +3085,7 @@ class _PartySlotButton extends StatelessWidget {
                 ? Icon(Icons.radio_button_unchecked, color: colorScheme.outline)
                 : PokemonAssetImage(
                     pokemon: pokemon,
-                    formName: slot.formName,
+                    formName: slot.effectiveFormName,
                     gender: slot.gender,
                     isShiny: slot.isShiny,
                     size: 30,

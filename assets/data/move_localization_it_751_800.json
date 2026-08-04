@@ -194,7 +194,7 @@
       "sourceName": "Transform",
       "name": "Trasformazione",
       "description": [
-        "Tenti di trasformarti in una copia quasi esatta di una creatura a gittata. La base SR del bersaglio deve poter essere controllata dal tuo allenatore, altrimenti la mossa fallirà. Per tutta la durata, copi il tipo del bersaglio, i punteggi di caratteristica, CA, abilità, velocità, sensi, abilità e mosse attuali. Mantieni i tuoi talenti, il tuo livello e il tuo PF (COS modificato non ha alcun impatto sul tuo PF)."
+        "Tenti di trasformarti in una copia quasi esatta di una creatura a gittata. L’SR base del bersaglio deve rientrare tra quelli controllabili dal tuo Allenatore, altrimenti la mossa fallisce. Per tutta la durata, copi il tipo del bersaglio, i punteggi di caratteristica, le competenze, le velocità, i sensi, le abilità e le mosse attuali. Mantieni i tuoi privilegi, il tuo livello e i tuoi PF; il nuovo punteggio di COS non modifica i PF."
       ],
       "higherLevels": null
     },

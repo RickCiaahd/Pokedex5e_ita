@@ -197,7 +197,7 @@ class _BreedingScreenState extends State<BreedingScreen> {
       final base = byId[pokemonId];
       if (base == null) continue;
       final pokemon = base.resolveVariant(
-        formName: slot.formName,
+        formName: slot.effectiveFormName,
         gender: slot.gender,
       );
       candidates.add(
@@ -208,7 +208,7 @@ class _BreedingScreenState extends State<BreedingScreen> {
           displayName: _displayName(
             nickname: slot.nickname,
             pokemon: pokemon,
-            formName: slot.formName,
+            formName: slot.effectiveFormName,
           ),
           location: uiTextForLanguage(
             'Squadra ${slot.slotIndex + 1}',
@@ -232,7 +232,7 @@ class _BreedingScreenState extends State<BreedingScreen> {
       final base = byId[stored.pokemonId];
       if (base == null) continue;
       final pokemon = base.resolveVariant(
-        formName: stored.formName,
+        formName: stored.effectiveFormName,
         gender: stored.gender,
       );
       candidates.add(
@@ -243,7 +243,7 @@ class _BreedingScreenState extends State<BreedingScreen> {
           displayName: _displayName(
             nickname: stored.nickname,
             pokemon: pokemon,
-            formName: stored.formName,
+            formName: stored.effectiveFormName,
           ),
           location: 'PC',
           gender: stored.gender,

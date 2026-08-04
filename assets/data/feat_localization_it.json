@@ -78,7 +78,7 @@
     },
     "Power Sculptor": {
       "name": "Scultore del Potere",
-      "description": "Questo Pokémon può modellare il potere delle proprie mosse attorno agli alleati. Quando usa una mossa ad area, sceglie 1 + MOVE alleati nell’area: essi superano automaticamente il tiro salvezza contro i danni o gli effetti della mossa. Se un tiro salvezza riuscito dimezzerebbe i danni, non subiscono invece alcun danno."
+      "description": "Questo Pokémon può modellare il potere delle proprie mosse attorno agli alleati. Quando usa una mossa ad area, sceglie un numero di alleati pari a 1 + il modificatore di caratteristica della mossa: essi superano automaticamente il tiro salvezza contro i danni o gli effetti della mossa. Se un tiro salvezza riuscito dimezzerebbe i danni, non subiscono invece alcun danno."
     },
     "Quick-Fingered": {
       "name": "Mani Leste",

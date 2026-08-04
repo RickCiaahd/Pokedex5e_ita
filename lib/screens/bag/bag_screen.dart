@@ -196,7 +196,7 @@ class _BagScreenState extends State<BagScreen> {
       final basePokemon = data.pokemonById[pokemonId];
       if (basePokemon == null) continue;
       final pokemon = basePokemon.resolveVariant(
-        formName: slot.formName,
+        formName: slot.effectiveFormName,
         gender: slot.gender,
       );
 
@@ -274,7 +274,7 @@ class _BagScreenState extends State<BagScreen> {
       final basePokemon = data.pokemonById[pokemonId];
       if (basePokemon == null) continue;
       final pokemon = basePokemon.resolveVariant(
-        formName: slot.formName,
+        formName: slot.effectiveFormName,
         gender: slot.gender,
       );
 
@@ -433,7 +433,7 @@ class _BagScreenState extends State<BagScreen> {
       final basePokemon = pokemonById[pokemonId];
       if (basePokemon == null) continue;
       final pokemon = basePokemon.resolveVariant(
-        formName: slot.formName,
+        formName: slot.effectiveFormName,
         gender: slot.gender,
       );
 
@@ -1604,6 +1604,9 @@ class _HeldItemPokemonPickerSheet extends StatelessWidget {
                 child: ListTile(
                   leading: PokemonAssetImage(
                     pokemon: candidate.pokemon,
+                    formName: candidate.slot.effectiveFormName,
+                    gender: candidate.slot.gender,
+                    isShiny: candidate.slot.isShiny,
                     size: 46,
                   ),
                   title: Text(
@@ -1672,6 +1675,9 @@ class _MedicinePokemonPickerSheet extends StatelessWidget {
                 child: ListTile(
                   leading: PokemonAssetImage(
                     pokemon: candidate.pokemon,
+                    formName: candidate.slot.effectiveFormName,
+                    gender: candidate.slot.gender,
+                    isShiny: candidate.slot.isShiny,
                     size: 46,
                   ),
                   title: Text(
@@ -1750,6 +1756,9 @@ class _TmPokemonPickerSheet extends StatelessWidget {
                 child: ListTile(
                   leading: PokemonAssetImage(
                     pokemon: candidate.pokemon,
+                    formName: candidate.slot.effectiveFormName,
+                    gender: candidate.slot.gender,
+                    isShiny: candidate.slot.isShiny,
                     size: 46,
                   ),
                   title: Text(
@@ -2074,12 +2083,10 @@ class _ItemPickerSheetState extends State<_ItemPickerSheet> {
   @override
   Widget build(BuildContext context) {
     final filteredItems = widget.items.where((item) {
-      final query = _query.trim().toLowerCase();
-      if (query.isEmpty) return true;
-
-      return item.name.toLowerCase().contains(query) ||
-          item.type.toLowerCase().contains(query) ||
-          _typeLabel(item.type).toLowerCase().contains(query);
+      return item.matchesSearchQuery(
+        _query,
+        aliases: [_typeLabel(item.type)],
+      );
     }).toList();
 
     return SafeArea(

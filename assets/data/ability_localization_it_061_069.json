@@ -10,7 +10,7 @@
       "description": "Se conosce la mossa, questo Pokémon può usare Campo Elettrico come azione bonus."
     },
     "electromorphosis": {
-      "description": "Quando questo Pokémon subisce danni, può raddoppiare il modificatore MOVE ai danni della propria prossima mossa di tipo Elettro."
+      "description": "Quando questo Pokémon subisce danni, può raddoppiare il modificatore di caratteristica ai danni della propria prossima mossa di tipo Elettro."
     },
     "embody-aspect-cornerstone": {
       "description": "Questo Pokémon ottiene automaticamente questa abilità quando viene Teracristallizzato. Il suo punteggio di COS diventa 23, a meno che non sia già superiore."

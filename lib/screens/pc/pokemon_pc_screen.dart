@@ -126,7 +126,10 @@ class _PokemonPcScreenState extends State<PokemonPcScreen> {
 
     return _pcPokemon
         .where((item) {
-          final pokemon = _pokemonById(item.pokemonId);
+          final pokemon = _pokemonById(item.pokemonId)?.resolveVariant(
+            formName: item.effectiveFormName,
+            gender: item.gender,
+          );
           final baseName = pokemon?.name.toLowerCase() ?? '';
           final nickname = item.displayName.toLowerCase();
           final number = item.pokemonId.toString();
@@ -818,7 +821,7 @@ class _TeamMiniCard extends StatelessWidget {
                     : PokemonAssetImage(
                         pokemon: pokemon,
                         size: spriteSize,
-                        formName: slot.formName,
+                        formName: slot.effectiveFormName,
                         gender: slot.gender,
                         isShiny: slot.isShiny,
                       ),
@@ -944,7 +947,10 @@ class _PcGridCell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final pokemon = this.pokemon;
+    final pokemon = this.pokemon?.resolveVariant(
+      formName: pcPokemon.effectiveFormName,
+      gender: pcPokemon.gender,
+    );
     final selectedName = pcPokemon.displayName.isEmpty
         ? pokemon?.name ?? context.uiText('Sconosciuto', 'Unknown')
         : pcPokemon.displayName;
@@ -966,7 +972,7 @@ class _PcGridCell extends StatelessWidget {
                   : PokemonAssetImage(
                       pokemon: pokemon,
                       size: 58,
-                      formName: pcPokemon.formName,
+                      formName: pcPokemon.effectiveFormName,
                       gender: pcPokemon.gender,
                       isShiny: pcPokemon.isShiny,
                     ),
@@ -1024,7 +1030,10 @@ class _PcPokemonActionSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final pokemon = this.pokemon;
+    final pokemon = this.pokemon?.resolveVariant(
+      formName: pcPokemon.effectiveFormName,
+      gender: pcPokemon.gender,
+    );
 
     return SafeArea(
       child: Padding(
@@ -1040,7 +1049,7 @@ class _PcPokemonActionSheet extends StatelessWidget {
                     : PokemonAssetImage(
                         pokemon: pokemon,
                         size: 58,
-                        formName: pcPokemon.formName,
+                        formName: pcPokemon.effectiveFormName,
                         gender: pcPokemon.gender,
                         isShiny: pcPokemon.isShiny,
                       ),
@@ -1168,7 +1177,10 @@ class _ReplacementSlotTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final pokemon = this.pokemon;
+    final pokemon = this.pokemon?.resolveVariant(
+      formName: slot.effectiveFormName,
+      gender: slot.gender,
+    );
 
     return Card(
       child: ListTile(
@@ -1177,7 +1189,7 @@ class _ReplacementSlotTile extends StatelessWidget {
             : PokemonAssetImage(
                 pokemon: pokemon,
                 size: 48,
-                formName: slot.formName,
+                formName: slot.effectiveFormName,
                 gender: slot.gender,
                 isShiny: slot.isShiny,
               ),

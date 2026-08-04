@@ -40,7 +40,7 @@ Per ogni mossa sono stati conservati:
 - presenza o assenza di `higherLevels`;
 - dadi, valori numerici e modificatori;
 - distanze, livelli, durate e formule;
-- riferimenti tecnici come `MOVE`, `STAB`, `PP`, `SR` e `FLINCHED`;
+- riferimenti tecnici come `STAB`, `PP`, `SR` e `FLINCHED`; il token sorgente `MOVE` viene mostrato come **modificatore di caratteristica della mossa**;
 - caratteristiche, CA/CD e relativi alias italiani.
 
 ID, slug, nome tecnico inglese, tipo, PP, potenza, TM, tiri salvezza, attacchi e dati di danno restano nei file sorgente originali e non vengono modificati dagli overlay.

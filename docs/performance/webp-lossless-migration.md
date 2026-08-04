@@ -14,14 +14,14 @@ identici dimensioni e pixel RGBA e viene applicata solo quando riduce il peso.
 
 ## Scansione completa dei PNG rimanenti
 
-- File controllati: **2333**
-- Candidati oltre soglia: **0**
-- Risparmio teorico residuo: **0.00 MiB**
+- File controllati: **2485**
+- Candidati oltre soglia: **76**
+- Risparmio teorico residuo: **4.04 MiB**
 
 ## Ultimo blocco
 
-- Etichetta: `batch-10`
-- Limite: **124** file
+- Etichetta: `inventory-refresh`
+- Limite: **0** file
 - Soglia: **4096 byte** e **5.0%**
 
 Dettagli: `webp-lossless-candidates.csv` e `webp-lossless-conversions.csv`.

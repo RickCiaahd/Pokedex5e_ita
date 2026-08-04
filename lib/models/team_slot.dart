@@ -1,3 +1,4 @@
+import 'item_driven_pokemon_form.dart';
 import 'pokemon_form_preferences.dart';
 
 class TeamSlot {
@@ -46,9 +47,12 @@ class TeamSlot {
          'Uno slot non può contenere contemporaneamente un Pokémon e un uovo.',
        ),
        gender = PokemonFormPreferences.normalizeGender(gender),
-       formName = PokemonFormPreferences.normalizeFormName(
-         formName: formName,
-         gender: gender,
+       formName = ItemDrivenPokemonForm.normalizePersistedFormName(
+         pokemonId: pokemonId,
+         formName: PokemonFormPreferences.normalizeFormName(
+           formName: formName,
+           gender: gender,
+         ),
        ) {
     final pokemonId = this.pokemonId;
     if (pokemonId != null) {
@@ -67,6 +71,12 @@ class TeamSlot {
   bool get isPokemon => pokemonId != null;
   bool get isEgg => eggId != null;
   bool get isEmpty => pokemonId == null && eggId == null;
+
+  String? get effectiveFormName => ItemDrivenPokemonForm.effectiveFormName(
+    pokemonId: pokemonId,
+    persistedFormName: formName,
+    heldItem: heldItem,
+  );
 
   Map<String, dynamic> toJson() {
     return {

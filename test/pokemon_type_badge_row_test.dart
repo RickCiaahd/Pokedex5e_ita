@@ -30,4 +30,18 @@ void main() {
     expect(first.right, lessThanOrEqualTo(second.left));
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets('un tipo tecnico non tenta di caricare un asset inesistente', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: Scaffold(body: PokemonTypeBadge(type: 'Varies')),
+      ),
+    );
+
+    expect(find.byType(Image), findsNothing);
+    expect(find.text('VARIABILE'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
 }

@@ -154,6 +154,9 @@ class ItemRepository {
     return BagItem(
       id: tm.id,
       name: '${tm.label} - $moveName',
+      sourceName: move == null
+          ? '${tm.label} - ${tm.moveId}'
+          : '${tm.label} - ${move.technicalName}',
       type: 'tm',
       description: description,
       cost: tm.cost,

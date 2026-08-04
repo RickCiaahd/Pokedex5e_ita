@@ -46,6 +46,10 @@ class PokemonTypeBadge extends StatelessWidget {
       ),
     );
 
+    if (!_assetBackedTypes.contains(type.trim().toLowerCase())) {
+      return fallback;
+    }
+
     return Image.asset(
       assetPath,
       height: height,
@@ -53,6 +57,45 @@ class PokemonTypeBadge extends StatelessWidget {
       errorBuilder: (_, _, _) => fallback,
     );
   }
+
+  static const Set<String> _assetBackedTypes = {
+    'bug',
+    'coleottero',
+    'dark',
+    'buio',
+    'dragon',
+    'drago',
+    'electric',
+    'elettro',
+    'fairy',
+    'folletto',
+    'fighting',
+    'lotta',
+    'fire',
+    'fuoco',
+    'flying',
+    'volante',
+    'ghost',
+    'spettro',
+    'grass',
+    'erba',
+    'ground',
+    'terra',
+    'ice',
+    'ghiaccio',
+    'normal',
+    'normale',
+    'poison',
+    'veleno',
+    'psychic',
+    'psico',
+    'rock',
+    'roccia',
+    'steel',
+    'acciaio',
+    'water',
+    'acqua',
+  };
 
   static String _assetName(String value) {
     return value

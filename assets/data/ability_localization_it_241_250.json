@@ -10,7 +10,7 @@
       "description": "Se questo Pokémon subisce una condizione negativa, può tirare d4 alla fine di ciascuno dei propri turni. Con un risultato di 4, guarisce dalla condizione."
     },
     "sheer-force": {
-      "description": "Quando usa una mossa che può imporre una modifica alle statistiche o infliggere una condizione, questo Pokémon può invece raddoppiare il modificatore MOVE, ma non lo STAB, ai danni; in tal caso l’effetto aggiuntivo non può verificarsi."
+      "description": "Quando usa una mossa che può imporre una modifica alle statistiche o infliggere una condizione, questo Pokémon può invece raddoppiare il modificatore di caratteristica, ma non lo STAB, ai danni; in tal caso l’effetto aggiuntivo non può verificarsi."
     },
     "shell-armor": {
       "description": "Questo Pokémon è immune ai danni aggiuntivi inflitti da un colpo critico."

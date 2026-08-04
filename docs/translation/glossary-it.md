@@ -72,6 +72,7 @@ Questo glossario definisce la terminologia da usare nelle descrizioni visualizza
 | Loyalty | Lealtà |
 | Species Rating | Grado Specie / SR; mantenere **SR** nelle formule |
 | Move Power | Caratteristica della mossa |
+| MOVE | modificatore di caratteristica della mossa; mantenere `MOVE` solo nei dati sorgente e nelle formule tecniche non visualizzate |
 | Starting Moves | Mosse iniziali |
 | Egg Moves | Egg Moves, finché i nomi tecnici delle sezioni non vengono localizzati globalmente |
 | Egg Group | Gruppo Uova |

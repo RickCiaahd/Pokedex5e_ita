@@ -40,7 +40,7 @@ Per ogni mossa sono stati conservati:
 - presenza o assenza di `higherLevels`;
 - dadi, valori numerici e modificatori;
 - distanze, livelli, durate e formule;
-- riferimenti tecnici come `MOVE`, `STAB`, `PP`, `SR` e `FLINCHED`;
+- riferimenti tecnici come `STAB`, `PP`, `SR` e `FLINCHED`; il token sorgente `MOVE` viene mostrato come **modificatore di caratteristica della mossa**;
 - caratteristiche, CA/CD e relativi alias italiani;
 - struttura e valori meccanici delle tabelle di `Hidden Power`, `Ivy Cudgel` e `Magnitude`.
 

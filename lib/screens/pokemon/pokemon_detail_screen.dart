@@ -11,10 +11,10 @@ import 'pokemon_detail_screen_legacy.dart' as legacy;
 ///
 /// Evolution data can reference a concrete form (for example
 /// `alolan-raichu`) even though owned Pokémon are persisted as a Pokédex
-/// species id plus [TeamSlot.formName]. The full detail screen resolves an
-/// evolution by display name, so this shell exposes temporary catalog aliases
-/// and translates them back to the canonical species/form pair before
-/// anything is persisted.
+/// species id plus its persisted or item-derived effective form. The full
+/// detail screen resolves an evolution by display name, so this shell exposes
+/// temporary catalog aliases and translates them back to the canonical
+/// species/form pair before anything is persisted.
 class PokemonDetailScreen extends StatefulWidget {
   const PokemonDetailScreen({
     super.key,
@@ -87,7 +87,8 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
     final visualIdentityChanged =
         _basePokemon.id != nextBasePokemon.id ||
         previousSlot?.pokemonId != normalizedSlot.pokemonId ||
-        previousSlot?.formName != normalizedSlot.formName ||
+        previousSlot?.effectiveFormName != normalizedSlot.effectiveFormName ||
+        previousSlot?.heldItem != normalizedSlot.heldItem ||
         previousSlot?.gender != normalizedSlot.gender ||
         previousSlot?.isShiny != normalizedSlot.isShiny;
 
@@ -141,7 +142,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
   Widget build(BuildContext context) {
     return legacy.PokemonDetailScreen(
       key: ValueKey<String>(
-        '$_detailGeneration|${_slot?.pokemonId}|${_slot?.formName ?? 'base'}|${_slot?.gender ?? 'none'}|${_slot?.isShiny ?? false}',
+        '$_detailGeneration|${_slot?.pokemonId}|${_slot?.effectiveFormName ?? 'base'}|${_slot?.gender ?? 'none'}|${_slot?.isShiny ?? false}',
       ),
       pokemon: _basePokemon,
       teamSlot: _slot,

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../models/pokedex_entry.dart';
 import '../../localization/ui_text.dart';
+import '../../models/item_driven_pokemon_form.dart';
+import '../../models/pokedex_entry.dart';
 import '../../models/pokemon.dart';
 import '../../models/pokemon_flavor.dart';
 import '../../screens/pokemon/pokemon_detail_screen.dart';
@@ -37,7 +38,10 @@ class _PokemonSummaryDialogState extends State<PokemonSummaryDialog> {
   void initState() {
     super.initState();
     _entry = widget.entry;
-    _selectedFormName = widget.entry.preferredFormName;
+    _selectedFormName =
+        ItemDrivenPokemonForm.usesHeldItemForm(widget.pokemon.id)
+        ? null
+        : widget.entry.preferredFormName;
     _loadForms();
   }
 

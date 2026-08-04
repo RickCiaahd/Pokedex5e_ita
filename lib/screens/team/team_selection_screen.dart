@@ -1070,9 +1070,14 @@ class _TeamSlotCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final basePokemon = this.pokemon;
+    final pokemon = basePokemon?.resolveVariant(
+      formName: slot.effectiveFormName,
+      gender: slot.gender,
+    );
     final number = pokemon == null
         ? null
-        : '#${pokemon!.id.toString().padLeft(3, '0')}';
+        : '#${pokemon.id.toString().padLeft(3, '0')}';
     final nickname = slot.nickname?.trim() ?? '';
     final title = slot.isEgg
         ? context.uiText('Uovo in incubazione', 'Incubating Egg')
@@ -1145,10 +1150,10 @@ class _TeamSlotCard extends StatelessWidget {
                         spacing: 6,
                         runSpacing: 6,
                         children: [
-                          for (final type in pokemon!.types)
+                          for (final type in pokemon.types)
                             PokemonTypeBadge(type: type, height: 20),
-                          _SmallChip(label: 'HP ${pokemon!.hitPoints}'),
-                          _SmallChip(label: 'AC ${pokemon!.armorClass}'),
+                          _SmallChip(label: 'HP ${pokemon.hitPoints}'),
+                          _SmallChip(label: 'AC ${pokemon.armorClass}'),
                         ],
                       ),
                     ],
@@ -1301,7 +1306,7 @@ class _SlotAvatar extends StatelessWidget {
               )
             : PokemonAssetImage(
                 pokemon: pokemon,
-                formName: slot.formName,
+                formName: slot.effectiveFormName,
                 gender: slot.gender,
                 isShiny: slot.isShiny,
                 size: 48,

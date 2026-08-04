@@ -129,7 +129,7 @@
       "sourceName": "Multi-Attack",
       "name": "Multiattacco",
       "description": [
-        "Colpisci con potere interiore, a seconda del tuo tipo. Effettua un attacco in mischia contro un bersaglio, infliggendo 2d8 + MOVE danni del tuo tipo attuale."
+        "Colpisci con il potere interiore determinato dalla ROM che tieni. Effettua un attacco in mischia contro un bersaglio, infliggendo danni pari a 2d8 + il modificatore di caratteristica della mossa del tuo tipo attuale. Senza una ROM compatibile, i danni sono di tipo Normale."
       ],
       "higherLevels": "Il dado di danno di questa mossa diventa 2d10 al livello 5, 3d10 al livello 10 e 4d12 al livello 17."
     },

@@ -12,6 +12,7 @@ import '../../models/bag_item.dart';
 import '../../models/battle_environment.dart';
 import '../../models/custom_pokemon_advanced_data.dart';
 import '../../models/battle_session.dart';
+import '../../models/item_driven_pokemon_form.dart';
 import '../../models/level_progression.dart';
 import '../../models/move_data.dart';
 import '../../models/pokemon.dart';
@@ -341,10 +342,13 @@ class _BattleScreenState extends State<BattleScreen> {
   }
 
   String? _effectiveFormName(TeamSlot slot) {
+    if (ItemDrivenPokemonForm.usesHeldItemForm(slot.pokemonId)) {
+      return slot.effectiveFormName;
+    }
     if (_battleFormBySlot.containsKey(slot.slotIndex)) {
       return _battleFormBySlot[slot.slotIndex];
     }
-    return slot.formName;
+    return slot.effectiveFormName;
   }
 
   Pokemon? _pokemonForSlot(_BattleData data, TeamSlot slot) {
@@ -1374,6 +1378,23 @@ class _BattleScreenState extends State<BattleScreen> {
     return modifiers.isEmpty ? 0 : modifiers.last;
   }
 
+  MoveData _contextualMove(MoveData move, TeamSlot slot) {
+    final type = ItemDrivenPokemonForm.effectiveMoveType(
+      pokemonId: slot.pokemonId,
+      moveReference: move.technicalName,
+      heldItem: slot.heldItem,
+      fallbackType: move.type,
+    );
+    return type == move.type ? move : move.copyWith(type: type);
+  }
+
+  String _effectiveMoveType(MoveData move, TeamSlot slot) {
+    return BattleEnvironmentService.effectiveMoveType(
+      _contextualMove(move, slot),
+      _environment,
+    );
+  }
+
   String _moveStats(
     MoveData move,
     Pokemon pokemon,
@@ -1381,6 +1402,7 @@ class _BattleScreenState extends State<BattleScreen> {
     Pokemon basePokemon,
     String? formName,
   ) {
+    final contextualMove = _contextualMove(move, slot);
     final level = _levelForSlot(slot);
     final moveModifier = _bestMoveModifier(
       move,
@@ -1411,11 +1433,11 @@ class _BattleScreenState extends State<BattleScreen> {
     final terrainDamageBonus =
         BattleEnvironmentService.terrainMoveModifierBonus(
           environment: _environment,
-          move: move,
+          move: contextualMove,
           moveModifier: moveModifier,
         );
     final effectiveMoveType = BattleEnvironmentService.effectiveMoveType(
-      move,
+      contextualMove,
       _environment,
     );
     final formAttackBonus = BattleFormChangeService.attackRollBonus(
@@ -1426,7 +1448,7 @@ class _BattleScreenState extends State<BattleScreen> {
       profile: _activeProfile,
       pokemon: pokemon,
       slot: slot,
-      move: move,
+      move: contextualMove,
       pokemonLevel: level,
       moveTypeOverride: effectiveMoveType,
     );
@@ -1460,7 +1482,7 @@ class _BattleScreenState extends State<BattleScreen> {
     parts.addAll(
       BattleEnvironmentService.moveNotes(
         environment: _environment,
-        move: move,
+        move: contextualMove,
         moveModifier: moveModifier,
       ),
     );
@@ -1815,6 +1837,12 @@ class _BattleScreenState extends State<BattleScreen> {
                                     _MoveCard(
                                       reference: reference,
                                       move: moveForActive(reference),
+                                      moveType: moveForActive(reference) == null
+                                          ? null
+                                          : _effectiveMoveType(
+                                              moveForActive(reference)!,
+                                              activeSlot,
+                                            ),
                                       remainingPp: _remainingPp(
                                         activeSlot,
                                         reference,
@@ -3284,6 +3312,7 @@ class _MoveCard extends StatelessWidget {
   const _MoveCard({
     required this.reference,
     required this.move,
+    required this.moveType,
     required this.remainingPp,
     required this.maxPp,
     required this.stats,
@@ -3293,6 +3322,7 @@ class _MoveCard extends StatelessWidget {
 
   final String reference;
   final MoveData? move;
+  final String? moveType;
   final int remainingPp;
   final int maxPp;
   final String? stats;
@@ -3326,7 +3356,8 @@ class _MoveCard extends StatelessWidget {
             runSpacing: 4,
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
-              if (move != null) PokemonTypeBadge(type: move.type, height: 18),
+              if (move != null)
+                PokemonTypeBadge(type: moveType ?? move.type, height: 18),
               if (stats != null && stats!.isNotEmpty) Text(stats!),
             ],
           ),

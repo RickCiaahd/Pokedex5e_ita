@@ -127,6 +127,8 @@ void main() {
     expect(descriptions['wind-power'], contains('Tempesta Boreale'));
     expect(descriptions['form-change-meloetta'], contains('Forma Canto'));
     expect(descriptions['form-change-meloetta'], contains('Forma Danza'));
+    expect(descriptions['rks-system'], contains('ROM'));
+    expect(descriptions['rks-system'], isNot(contains('Memory Disc')));
 
     const forbidden = <String>[
       'Fury Swipes',
@@ -144,6 +146,9 @@ void main() {
     ];
     final errors = <String>[];
     for (final entry in descriptions.entries) {
+      if (RegExp(r'\bMOVE\b').hasMatch(entry.value)) {
+        errors.add('${entry.key}: MOVE');
+      }
       for (final term in forbidden) {
         if (entry.value.contains(term)) errors.add('${entry.key}: $term');
       }

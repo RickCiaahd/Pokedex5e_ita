@@ -7,7 +7,7 @@
   },
   "items": {
     "gorilla-tactics": {
-      "description": "Quando questo Pokémon entra in campo, scegli una delle sue mosse. Raddoppia il modificatore MOVE ai danni della mossa scelta; il modificatore MOVE ai danni delle altre mosse di questo Pokémon diventa 0. L’effetto si azzera quando questo Pokémon lascia il campo."
+      "description": "Quando questo Pokémon entra in campo, scegli una delle sue mosse. Raddoppia il modificatore di caratteristica ai danni della mossa scelta; il modificatore di caratteristica ai danni delle altre mosse di questo Pokémon diventa 0. L’effetto si azzera quando questo Pokémon lascia il campo."
     },
     "grass-pelt": {
       "description": "Questo Pokémon ottiene +1 alla CA mentre si trova su Campo Erboso."

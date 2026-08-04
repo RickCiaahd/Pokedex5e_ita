@@ -34,7 +34,7 @@
       "description": "Le creature entro 50 piedi da questo Pokémon non possono fuggire né essere sostituite, tranne che tramite uno strumento, una mossa o un’abilità."
     },
     "sharpness": {
-      "description": "Le mosse il cui nome tecnico inglese contiene “Cut”, “Blade”, “Slash”, “Edge”, “Cleave”, “Razor”, “Sword” o “Axe” raddoppiano il proprio modificatore ai danni MOVE."
+      "description": "Le mosse il cui nome tecnico inglese contiene “Cut”, “Blade”, “Slash”, “Edge”, “Cleave”, “Razor”, “Sword” o “Axe” raddoppiano il proprio modificatore di caratteristica ai danni."
     }
   }
 }

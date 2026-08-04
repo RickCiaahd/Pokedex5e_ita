@@ -124,62 +124,110 @@
     "sprite_suffix": "Silvally",
     "variants": {
       "Bug": {
-        "diff": {},
+        "diff": {
+          "Type": [
+            "Bug"
+          ]
+        },
         "display": "Silvally (Bug)",
         "original_species": "Silvally (Bug)"
       },
       "Dark": {
-        "diff": {},
+        "diff": {
+          "Type": [
+            "Dark"
+          ]
+        },
         "display": "Silvally (Dark)",
         "original_species": "Silvally (Dark)"
       },
       "Dragon": {
-        "diff": {},
+        "diff": {
+          "Type": [
+            "Dragon"
+          ]
+        },
         "display": "Silvally (Dragon)",
         "original_species": "Silvally (Dragon)"
       },
       "Electric": {
-        "diff": {},
+        "diff": {
+          "Type": [
+            "Electric"
+          ]
+        },
         "display": "Silvally (Electric)",
         "original_species": "Silvally (Electric)"
       },
       "Fairy": {
-        "diff": {},
+        "diff": {
+          "Type": [
+            "Fairy"
+          ]
+        },
         "display": "Silvally (Fairy)",
         "original_species": "Silvally (Fairy)"
       },
       "Fighting": {
-        "diff": {},
+        "diff": {
+          "Type": [
+            "Fighting"
+          ]
+        },
         "display": "Silvally (Fighting)",
         "original_species": "Silvally (Fighting)"
       },
       "Fire": {
-        "diff": {},
+        "diff": {
+          "Type": [
+            "Fire"
+          ]
+        },
         "display": "Silvally (Fire)",
         "original_species": "Silvally (Fire)"
       },
       "Flying": {
-        "diff": {},
+        "diff": {
+          "Type": [
+            "Flying"
+          ]
+        },
         "display": "Silvally (Flying)",
         "original_species": "Silvally (Flying)"
       },
       "Ghost": {
-        "diff": {},
+        "diff": {
+          "Type": [
+            "Ghost"
+          ]
+        },
         "display": "Silvally (Ghost)",
         "original_species": "Silvally (Ghost)"
       },
       "Grass": {
-        "diff": {},
+        "diff": {
+          "Type": [
+            "Grass"
+          ]
+        },
         "display": "Silvally (Grass)",
         "original_species": "Silvally (Grass)"
       },
       "Ground": {
-        "diff": {},
+        "diff": {
+          "Type": [
+            "Ground"
+          ]
+        },
         "display": "Silvally (Ground)",
         "original_species": "Silvally (Ground)"
       },
       "Ice": {
-        "diff": {},
+        "diff": {
+          "Type": [
+            "Ice"
+          ]
+        },
         "display": "Silvally (Ice)",
         "original_species": "Silvally (Ice)"
       },
@@ -188,27 +236,47 @@
         "original_species": "Silvally (Normal)"
       },
       "Poison": {
-        "diff": {},
+        "diff": {
+          "Type": [
+            "Poison"
+          ]
+        },
         "display": "Silvally (Poison)",
         "original_species": "Silvally (Poison)"
       },
       "Psychic": {
-        "diff": {},
+        "diff": {
+          "Type": [
+            "Psychic"
+          ]
+        },
         "display": "Silvally (Psychic)",
         "original_species": "Silvally (Psychic)"
       },
       "Rock": {
-        "diff": {},
+        "diff": {
+          "Type": [
+            "Rock"
+          ]
+        },
         "display": "Silvally (Rock)",
         "original_species": "Silvally (Rock)"
       },
       "Steel": {
-        "diff": {},
+        "diff": {
+          "Type": [
+            "Steel"
+          ]
+        },
         "display": "Silvally (Steel)",
         "original_species": "Silvally (Steel)"
       },
       "Water": {
-        "diff": {},
+        "diff": {
+          "Type": [
+            "Water"
+          ]
+        },
         "display": "Silvally (Water)",
         "original_species": "Silvally (Water)"
       }

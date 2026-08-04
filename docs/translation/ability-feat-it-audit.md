@@ -19,7 +19,7 @@
 - ID, nomi tecnici inglesi e valori salvati non vengono modificati;
 - 308 nomi ufficiali e 22 traduzioni specifiche del catalogo formano una copertura completa di 330 abilità;
 - i riferimenti a mosse, abilità, oggetti e forme nelle descrizioni italiane usano il nome visualizzato italiano;
-- `MOVE`, `STAB`, `PP`, `CA`, `PF`, formule, dadi, percentuali e distanze restano invariati;
+- il token sorgente `MOVE` viene mostrato come **modificatore di caratteristica della mossa**; `STAB`, `PP`, `CA`, `PF`, formule, dadi, percentuali e distanze restano invariati;
 - i frammenti inglesi richiesti da regole basate sul nome, come `Cut`, `Blade` e `Slash` per Affilama, sono esplicitamente indicati come parti del nome tecnico inglese;
 - l'interfaccia italiana usa **privilegio**, mentre la lingua inglese continua a usare **feat**.
 

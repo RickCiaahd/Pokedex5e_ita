@@ -340,7 +340,7 @@ class BattleEnvironmentService {
         case BattleFieldTerrain.electric:
           notes.add(
             uiTextForLanguage(
-              'Le creature a terra non possono dormire; le mosse Elettro raddoppiano il modificatore MOVE ai danni.',
+              'Le creature a terra non possono dormire; le mosse Elettro raddoppiano il modificatore di caratteristica della mossa ai danni.',
               'Grounded creatures cannot fall asleep; Electric moves double the MOVE modifier added to damage.',
             ),
           );
@@ -348,7 +348,7 @@ class BattleEnvironmentService {
         case BattleFieldTerrain.grassy:
           notes.add(
             uiTextForLanguage(
-              'Fine turno: le creature a terra recuperano $proficiency HP; le mosse Erba raddoppiano il modificatore MOVE ai danni.',
+              'Fine turno: le creature a terra recuperano $proficiency HP; le mosse Erba raddoppiano il modificatore di caratteristica della mossa ai danni.',
               'End of turn: grounded creatures recover $proficiency HP; Grass moves double the MOVE modifier added to damage.',
             ),
           );
@@ -364,7 +364,7 @@ class BattleEnvironmentService {
         case BattleFieldTerrain.psychic:
           notes.add(
             uiTextForLanguage(
-              'Le creature a terra non possono usare azioni bonus; le mosse Psico raddoppiano il modificatore MOVE ai danni.',
+              'Le creature a terra non possono usare azioni bonus; le mosse Psico raddoppiano il modificatore di caratteristica della mossa ai danni.',
               'Grounded creatures cannot use bonus actions; Psychic moves double the MOVE modifier added to damage.',
             ),
           );
@@ -623,7 +623,7 @@ class BattleEnvironmentService {
     if (terrainBonus != 0) {
       notes.add(
         uiTextForLanguage(
-          '${environment.fieldTerrain.label}: modificatore MOVE raddoppiato (${terrainBonus >= 0 ? '+' : ''}$terrainBonus aggiuntivo).',
+          '${environment.fieldTerrain.label}: modificatore di caratteristica della mossa raddoppiato (${terrainBonus >= 0 ? '+' : ''}$terrainBonus aggiuntivo).',
           '${environment.fieldTerrain.englishLabel}: MOVE modifier doubled (${terrainBonus >= 0 ? '+' : ''}$terrainBonus additional).',
         ),
       );

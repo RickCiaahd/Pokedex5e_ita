@@ -16,15 +16,91 @@ param(
 $ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
 
-function Resolve-Executable([string]$Name, [string[]]$Fallbacks) {
-  $command = Get-Command $Name -ErrorAction SilentlyContinue
+function Invoke-Checked {
+  param(
+    [Parameter(Mandatory = $true)]
+    [string]$Description,
+
+    [Parameter(Mandatory = $true)]
+    [scriptblock]$Command
+  )
+
+  & $Command
+  $exitCode = $LASTEXITCODE
+  if ($null -ne $exitCode -and $exitCode -ne 0) {
+    throw "$Description non riuscito (codice $exitCode)."
+  }
+}
+
+function Resolve-MakeAppx {
+  $command = Get-Command "makeappx.exe" -ErrorAction SilentlyContinue
   if ($command) { return $command.Source }
 
-  foreach ($candidate in $Fallbacks) {
-    if (Test-Path $candidate) { return $candidate }
+  $kitRoots = [System.Collections.Generic.List[string]]::new()
+  $registryKeys = @(
+    "HKLM:\SOFTWARE\Microsoft\Windows Kits\Installed Roots",
+    "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows Kits\Installed Roots"
+  )
+
+  foreach ($registryKey in $registryKeys) {
+    if (-not (Test-Path $registryKey)) { continue }
+
+    $kitsRoot10 = (Get-ItemProperty $registryKey -ErrorAction SilentlyContinue).KitsRoot10
+    if ($kitsRoot10 -and (Test-Path $kitsRoot10)) {
+      $kitRoots.Add($kitsRoot10)
+    }
   }
 
-  throw "Impossibile trovare $Name. Installa Windows SDK/Visual Studio e riprova."
+  $defaultRoot = Join-Path ${env:ProgramFiles(x86)} "Windows Kits\10"
+  if (Test-Path $defaultRoot) {
+    $kitRoots.Add($defaultRoot)
+  }
+
+  $kitRoots = $kitRoots | Select-Object -Unique
+
+  foreach ($kitsRoot in $kitRoots) {
+    $binRoot = Join-Path $kitsRoot "bin"
+    if (Test-Path $binRoot) {
+      $candidates = Get-ChildItem -Path $binRoot -Filter "makeappx.exe" -File -Recurse -ErrorAction SilentlyContinue |
+        Where-Object { $_.FullName -match '\\x64\\makeappx\.exe$' } |
+        Sort-Object -Property @{
+          Expression = {
+            $versionDirectory = Split-Path (Split-Path $_.DirectoryName -Parent) -Leaf
+            try { [version]$versionDirectory } catch { [version]"0.0.0.0" }
+          }
+          Descending = $true
+        }
+
+      $candidate = $candidates | Select-Object -First 1
+      if ($candidate) { return $candidate.FullName }
+    }
+
+    $certificationKitCandidate = Join-Path $kitsRoot "App Certification Kit\makeappx.exe"
+    if (Test-Path $certificationKitCandidate) {
+      return $certificationKitCandidate
+    }
+  }
+
+  $searchedRoots = if ($kitRoots) { $kitRoots -join "; " } else { "nessun KitsRoot10 registrato" }
+  throw "Impossibile trovare makeappx.exe. Percorsi Windows SDK controllati: $searchedRoots. Installa gli strumenti di packaging del Windows 10/11 SDK e riprova."
+}
+
+function Assert-WindowsToolchain {
+  $doctorLines = & flutter doctor -v 2>&1
+  $exitCode = $LASTEXITCODE
+  $doctorLines | ForEach-Object { Write-Host $_ }
+
+  if ($null -ne $exitCode -and $exitCode -ne 0) {
+    throw "flutter doctor non riuscito (codice $exitCode)."
+  }
+
+  $doctorText = $doctorLines -join "`n"
+  if (
+    $doctorText -match 'Unable to find suitable Visual Studio toolchain' -or
+    $doctorText -match '(?m)^\[[X!]\]\s+Visual Studio - develop Windows apps'
+  ) {
+    throw "Toolchain Windows incompleta. Installa o modifica Visual Studio 2022 aggiungendo il workload 'Sviluppo di applicazioni desktop con C++', CMake e un Windows SDK, quindi riapri il terminale e verifica con 'flutter doctor -v'."
+  }
 }
 
 function Get-PubspecVersion {
@@ -32,17 +108,39 @@ function Get-PubspecVersion {
   if (-not $line) {
     throw "La versione in pubspec.yaml deve essere nel formato major.minor.patch+build."
   }
-  return "$($line.Matches[0].Groups[1].Value).$($line.Matches[0].Groups[2].Value).$($line.Matches[0].Groups[3].Value).$($line.Matches[0].Groups[4].Value)"
+
+  $major = $line.Matches[0].Groups[1].Value
+  $minor = $line.Matches[0].Groups[2].Value
+  $patch = $line.Matches[0].Groups[3].Value
+
+  return "$major.$minor.$patch.0"
 }
 
-if (-not $Version) { $Version = Get-PubspecVersion }
-if ($Version -notmatch '^\d+\.\d+\.\d+\.\d+$') {
-  throw "Version deve avere quattro componenti numeriche, per esempio 1.3.2.8."
+function Assert-StoreVersion([string]$StoreVersion) {
+  if ($StoreVersion -notmatch '^\d+\.\d+\.\d+\.\d+$') {
+    throw "Version deve avere quattro componenti numeriche, per esempio 1.3.2.0."
+  }
+
+  $parts = @($StoreVersion.Split('.') | ForEach-Object { [uint64]$_ })
+  if ($parts[0] -eq 0) {
+    throw "Il primo componente della versione MSIX deve essere maggiore di zero."
+  }
+  if ($parts[3] -ne 0) {
+    throw "Per i pacchetti Windows 10/11 destinati al Microsoft Store il quarto componente della versione deve essere 0, per esempio 1.3.2.0."
+  }
+  foreach ($part in $parts) {
+    if ($part -gt 65535) {
+      throw "Ogni componente della versione MSIX deve essere compreso tra 0 e 65535."
+    }
+  }
 }
 
 if (-not (Test-Path "pubspec.yaml")) {
   throw "Esegui lo script dalla radice della repository."
 }
+
+if (-not $Version) { $Version = Get-PubspecVersion }
+Assert-StoreVersion $Version
 
 $buildDirectory = Resolve-Path "."
 $releaseDirectory = Join-Path $buildDirectory "build\windows\x64\runner\Release"
@@ -50,15 +148,23 @@ $templatePath = Join-Path $buildDirectory "packaging\msix\Package.Store.appxmani
 $assetsSource = Join-Path $buildDirectory "packaging\msix\Assets"
 $stageDirectory = Join-Path $buildDirectory "build\msix_store_stage"
 $outputPath = Join-Path $buildDirectory $OutputDirectory
+$makeAppx = Resolve-MakeAppx
+
+Write-Host "MakeAppx rilevato: $makeAppx"
+Write-Host "Versione MSIX Store: $Version"
+
+Invoke-Checked "Abilitazione del desktop Windows" { flutter config --enable-windows-desktop }
+Invoke-Checked "Preparazione degli asset legali GPL e NOTICE" { python tooling/prepare_release_legal_assets.py }
 
 if (-not $SkipChecks) {
-  flutter pub get
-  flutter analyze
-  flutter test test/data_integrity_test.dart
-  flutter test
+  Invoke-Checked "Risoluzione delle dipendenze Flutter" { flutter pub get }
+  Invoke-Checked "Analisi Flutter" { flutter analyze }
+  Invoke-Checked "Test di integrità dei dati" { flutter test test/data_integrity_test.dart }
+  Invoke-Checked "Suite completa dei test" { flutter test }
 }
 
-flutter build windows --release
+Assert-WindowsToolchain
+Invoke-Checked "Build Windows release" { flutter build windows --release }
 
 if (-not (Test-Path (Join-Path $releaseDirectory "Pokedex5eITA.exe"))) {
   throw "Build Windows non trovata in $releaseDirectory."
@@ -81,12 +187,6 @@ $manifest = $manifest.Replace("STORE_PUBLISHER_DISPLAY_NAME", $PublisherDisplayN
 $manifest = $manifest.Replace("STORE_PUBLISHER", $Publisher)
 $manifest = $manifest.Replace("STORE_VERSION", $Version)
 Set-Content -Path (Join-Path $stageDirectory "AppxManifest.xml") -Value $manifest -Encoding utf8
-
-$makeAppx = Resolve-Executable "makeappx.exe" @(
-  "${env:ProgramFiles(x86)}\Windows Kits\10\bin\10.0.26100.0\x64\makeappx.exe",
-  "${env:ProgramFiles(x86)}\Windows Kits\10\bin\10.0.22621.0\x64\makeappx.exe",
-  "${env:ProgramFiles(x86)}\Windows Kits\10\bin\x64\makeappx.exe"
-)
 
 New-Item $outputPath -ItemType Directory -Force | Out-Null
 $packageName = "TrainerAtlas5e-$Version-x64.msix"

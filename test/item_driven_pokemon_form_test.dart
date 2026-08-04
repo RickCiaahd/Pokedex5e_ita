@@ -76,6 +76,34 @@ void main() {
       }
     });
 
+    test('every Module maps to the expected Genesect form and move type', () {
+      const expected = <String, (String, String)>{
+        'burn-drive': ('Burn', 'Fire'),
+        'chill-drive': ('Chill', 'Ice'),
+        'douse-drive': ('Douse', 'Water'),
+        'shock-drive': ('Shock', 'Electric'),
+      };
+
+      for (final entry in expected.entries) {
+        expect(
+          ItemDrivenPokemonForm.formNameForHeldItem(
+            pokemonId: ItemDrivenPokemonForm.genesectId,
+            heldItem: entry.key,
+          ),
+          entry.value.$1,
+        );
+        expect(
+          ItemDrivenPokemonForm.effectiveMoveType(
+            pokemonId: ItemDrivenPokemonForm.genesectId,
+            moveReference: 'Techno Blast',
+            heldItem: entry.key,
+            fallbackType: 'Varies',
+          ),
+          entry.value.$2,
+        );
+      }
+    });
+
     test('Arceus derives its form from the held Elemental Plate', () {
       final slot = TeamSlot(
         slotIndex: 0,
@@ -100,6 +128,18 @@ void main() {
       expect(slot.effectiveFormName, 'Bug');
     });
 
+    test('Genesect derives its visual form only from the held Module', () {
+      final slot = TeamSlot(
+        slotIndex: 0,
+        pokemonId: ItemDrivenPokemonForm.genesectId,
+        formName: 'Shock',
+        heldItem: 'burn-drive',
+      );
+
+      expect(slot.formName, isNull);
+      expect(slot.effectiveFormName, 'Burn');
+    });
+
     test('missing or incompatible items restore the Normal base form', () {
       final arceus = TeamSlot(
         slotIndex: 0,
@@ -111,9 +151,15 @@ void main() {
         pokemonId: ItemDrivenPokemonForm.silvallyId,
         heldItem: 'flame-plate',
       );
+      final genesect = TeamSlot(
+        slotIndex: 2,
+        pokemonId: ItemDrivenPokemonForm.genesectId,
+        heldItem: 'water-memory-disc',
+      );
 
       expect(arceus.effectiveFormName, isNull);
       expect(silvally.effectiveFormName, isNull);
+      expect(genesect.effectiveFormName, isNull);
     });
 
     test('localized legacy item names remain compatible', () {
@@ -131,6 +177,13 @@ void main() {
         ),
         'Water',
       );
+      expect(
+        ItemDrivenPokemonForm.formNameForHeldItem(
+          pokemonId: ItemDrivenPokemonForm.genesectId,
+          heldItem: 'Voltmodulo',
+        ),
+        'Shock',
+      );
     });
 
     test('PC data also drops old manually selected forms', () {
@@ -146,7 +199,7 @@ void main() {
     });
   });
 
-  test('Arceus and Silvally types follow their effective item forms', () async {
+  test('item-driven variants have the expected Pokémon types', () async {
     final catalog = await PokemonRepository().getAllPokemon();
     final arceus = catalog.firstWhere(
       (pokemon) => pokemon.id == ItemDrivenPokemonForm.arceusId,
@@ -154,9 +207,16 @@ void main() {
     final silvally = catalog.firstWhere(
       (pokemon) => pokemon.id == ItemDrivenPokemonForm.silvallyId,
     );
+    final genesect = catalog.firstWhere(
+      (pokemon) => pokemon.id == ItemDrivenPokemonForm.genesectId,
+    );
 
     expect(arceus.resolveVariant(formName: 'Water').types, <String>['Water']);
     expect(silvally.resolveVariant(formName: 'Bug').types, <String>['Bug']);
+    expect(
+      genesect.resolveVariant(formName: 'Burn').types,
+      <String>['Bug', 'Steel'],
+    );
   });
 
   test('item-driven forms are not exposed as manual choices', () async {
@@ -167,9 +227,13 @@ void main() {
     final silvally = catalog.firstWhere(
       (pokemon) => pokemon.id == ItemDrivenPokemonForm.silvallyId,
     );
+    final genesect = catalog.firstWhere(
+      (pokemon) => pokemon.id == ItemDrivenPokemonForm.genesectId,
+    );
 
     expect(await PokemonAssetPaths.formChoices(arceus), isEmpty);
     expect(await PokemonAssetPaths.formChoices(silvally), isEmpty);
+    expect(await PokemonAssetPaths.formChoices(genesect), isEmpty);
     expect(
       PokedexEntry.isTrackableForm('Arceus (Fire)', speciesName: 'Arceus'),
       isFalse,
@@ -177,6 +241,13 @@ void main() {
     expect(
       const PokemonGeneratorService().eligibleFormNames(
         arceus,
+        const PokemonGeneratorFilters(),
+      ),
+      <String?>[null],
+    );
+    expect(
+      const PokemonGeneratorService().eligibleFormNames(
+        genesect,
         const PokemonGeneratorFilters(),
       ),
       <String?>[null],
@@ -218,4 +289,67 @@ void main() {
       );
     },
   );
+
+  test('Genesect artwork follows the Module filename convention', () async {
+    final catalog = await PokemonRepository().getAllPokemon();
+    final genesect = catalog.firstWhere(
+      (pokemon) => pokemon.id == ItemDrivenPokemonForm.genesectId,
+    );
+
+    final artwork = PokemonAssetPaths.imageCandidates(
+      pokemon: genesect,
+      useLargeArtwork: true,
+      formName: 'Burn',
+      isShiny: true,
+    );
+    final sprite = PokemonAssetPaths.imageCandidates(
+      pokemon: genesect,
+      useLargeArtwork: false,
+      formName: 'Burn',
+      isShiny: true,
+    );
+
+    expect(
+      artwork,
+      contains(
+        'assets/textures/textures_webapp/pokemon/genesect/main-burn-shiny.webp',
+      ),
+    );
+    expect(
+      sprite,
+      contains(
+        'assets/textures/textures_webapp/pokemon/genesect/sprite-burn-shiny.webp',
+      ),
+    );
+  });
+
+  test('signature move types follow the held item and never use Varies', () {
+    expect(
+      ItemDrivenPokemonForm.effectiveMoveType(
+        pokemonId: ItemDrivenPokemonForm.arceusId,
+        moveReference: 'Judgment',
+        heldItem: 'flame-plate',
+        fallbackType: 'Varies',
+      ),
+      'Fire',
+    );
+    expect(
+      ItemDrivenPokemonForm.effectiveMoveType(
+        pokemonId: ItemDrivenPokemonForm.silvallyId,
+        moveReference: 'Multi-Attack',
+        heldItem: 'water-memory-disc',
+        fallbackType: 'Varies',
+      ),
+      'Water',
+    );
+    expect(
+      ItemDrivenPokemonForm.effectiveMoveType(
+        pokemonId: ItemDrivenPokemonForm.genesectId,
+        moveReference: 'Tecnobotto',
+        heldItem: null,
+        fallbackType: 'Varies',
+      ),
+      'Normal',
+    );
+  });
 }

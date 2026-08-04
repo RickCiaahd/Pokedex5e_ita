@@ -20,7 +20,7 @@ Questo blocco avvia la localizzazione delle 830 mosse presenti in `assets/data_w
 - ID, nomi tecnici inglesi, tipi, PP, poteri, TM, tiri salvezza, attacchi e dati di danno restano invariati.
 - Il nome italiano viene applicato soltanto alla UI; il riferimento inglese continua a risolvere la stessa mossa.
 - Le descrizioni 5e conservano numero e ordine dei paragrafi, tabelle, dadi, valori numerici, distanze, livelli e formule.
-- Le sigle seguono il glossario del progetto: **CA**, **PF**, **CD**, **FOR**, **DES**, **COS**, **SAG**, **CAR**, mentre **MOVE**, **PP**, **SR**, **STAB** e `FLINCHED` restano tecniche quando richiesto.
+- Le sigle seguono il glossario del progetto: **CA**, **PF**, **CD**, **FOR**, **DES**, **COS**, **SAG**, **CAR**; il token sorgente `MOVE` viene mostrato come **modificatore di caratteristica della mossa**, mentre **PP**, **SR**, **STAB** e `FLINCHED` restano tecnici quando richiesto.
 - I nomi di altre mosse citate nelle descrizioni usano la denominazione italiana ufficiale quando disponibile.
 - I nomi delle forme di Morpeko sono stati verificati come **Motivo Panciapiena** e **Motivo Panciavuota**.
 

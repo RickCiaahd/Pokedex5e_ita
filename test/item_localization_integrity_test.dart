@@ -253,6 +253,14 @@ void main() {
     expect(byId['mirror-herb']?.technicalName, 'Mirror Herb');
     expect(byId['bug-memory-disc']?.name, 'ROM Coleottero');
     expect(byId['bug-memory-disc']?.technicalName, 'Bug Memory Disc');
+    expect(
+      byId['bug-memory-disc']?.displayDescription,
+      contains('Sistema Primevo'),
+    );
+    expect(
+      byId['bug-memory-disc']?.displayDescription,
+      isNot(contains('RKS System')),
+    );
     expect(byId['blue-orb']?.name, 'Gemma blu');
     expect(byId['blue-orb']?.technicalName, 'Blue Orb');
     expect(byId['megalite-stone']?.name, 'Megalite Stone');

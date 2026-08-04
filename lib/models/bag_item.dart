@@ -32,6 +32,21 @@ class BagItem {
     return description.join('\n\n');
   }
 
+  /// Matches both localized display text and stable English catalog text.
+  bool matchesSearchQuery(String query, {Iterable<String> aliases = const []}) {
+    final normalizedQuery = query.trim().toLowerCase();
+    if (normalizedQuery.isEmpty) return true;
+
+    return <String>[
+      id,
+      name,
+      technicalName,
+      type,
+      ...description,
+      ...aliases,
+    ].any((value) => value.toLowerCase().contains(normalizedQuery));
+  }
+
   factory BagItem.fromWebJson(Map<String, dynamic> json) {
     return BagItem(
       id: json['id']?.toString() ?? '',

@@ -100,6 +100,12 @@ void main() {
     expect(descriptions['Combo Master'], isNot(contains('Fury Swipes')));
     expect(
       descriptions.values.where(
+        (description) => RegExp(r'\bMOVE\b').hasMatch(description),
+      ),
+      isEmpty,
+    );
+    expect(
+      descriptions.values.where(
         (description) =>
             description.contains('Pag.') ||
             description.contains('manuale del giocatore') ||

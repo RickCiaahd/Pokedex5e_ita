@@ -2083,12 +2083,10 @@ class _ItemPickerSheetState extends State<_ItemPickerSheet> {
   @override
   Widget build(BuildContext context) {
     final filteredItems = widget.items.where((item) {
-      final query = _query.trim().toLowerCase();
-      if (query.isEmpty) return true;
-
-      return item.name.toLowerCase().contains(query) ||
-          item.type.toLowerCase().contains(query) ||
-          _typeLabel(item.type).toLowerCase().contains(query);
+      return item.matchesSearchQuery(
+        _query,
+        aliases: [_typeLabel(item.type)],
+      );
     }).toList();
 
     return SafeArea(

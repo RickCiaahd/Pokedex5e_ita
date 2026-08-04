@@ -154,7 +154,7 @@
       "sourceName": "Judgment",
       "name": "Giudizio",
       "description": [
-        "Scagli potenti proiettili di pura energia che piovono su ogni creatura in un cerchio del raggio di 80 piedi, centrato su un punto a gittata. Ogni creatura nell'area deve effettuare un tiro salvezza su DES contro la tua CD della mossa, subendo 5d6 + MOVE danni se lo fallisce, o la metà dei danni se lo supera. Il tipo dei danni dipende dal tipo di Lastra tenuta dall'utilizzatore."
+        "Scagli potenti proiettili di pura energia che piovono su ogni creatura in un cerchio del raggio di 80 piedi, centrato su un punto a gittata. Ogni creatura nell'area deve effettuare un tiro salvezza su DES contro la tua CD della mossa, subendo danni pari a 5d6 + il modificatore di caratteristica della mossa se lo fallisce, o la metà dei danni se lo supera. Il tipo dei danni corrisponde alla Lastra tenuta dall'utilizzatore; senza una Lastra compatibile è Normale."
       ],
       "higherLevels": "Il dado di danno di questa mossa diventa 4d10 al livello 5, 6d10 al livello 10 e 8d12 al livello 17."
     },

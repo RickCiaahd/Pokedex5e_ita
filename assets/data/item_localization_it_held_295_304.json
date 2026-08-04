@@ -17,70 +17,70 @@
       "sourceName": "Burn Drive",
       "name": "Piromodulo",
       "description": [
-        "Quando è tenuto da Genesect, cambia in Fuoco il tipo della sua mossa Techno Blast."
+        "Quando è tenuto da Genesect, cambia in Fuoco il tipo della sua mossa Tecnobotto."
       ]
     },
     "chill-drive": {
       "sourceName": "Chill Drive",
       "name": "Gelomodulo",
       "description": [
-        "Quando è tenuto da Genesect, cambia in Ghiaccio il tipo della sua mossa Techno Blast."
+        "Quando è tenuto da Genesect, cambia in Ghiaccio il tipo della sua mossa Tecnobotto."
       ]
     },
     "douse-drive": {
       "sourceName": "Douse Drive",
       "name": "Idromodulo",
       "description": [
-        "Quando è tenuto da Genesect, cambia in Acqua il tipo della sua mossa Techno Blast."
+        "Quando è tenuto da Genesect, cambia in Acqua il tipo della sua mossa Tecnobotto."
       ]
     },
     "shock-drive": {
       "sourceName": "Shock Drive",
       "name": "Voltmodulo",
       "description": [
-        "Quando è tenuto da Genesect, cambia in Elettro il tipo della sua mossa Techno Blast."
+        "Quando è tenuto da Genesect, cambia in Elettro il tipo della sua mossa Tecnobotto."
       ]
     },
     "bug-memory-disc": {
       "sourceName": "Bug Memory Disc",
       "name": "ROM Coleottero",
       "description": [
-        "Quando è tenuta da un Pokémon con l'abilità RKS System, cambia il tipo del possessore in Coleottero."
+        "Quando è tenuta da un Pokémon con l'abilità Sistema Primevo, cambia il tipo del possessore in Coleottero."
       ]
     },
     "dark-memory-disc": {
       "sourceName": "Dark Memory Disc",
       "name": "ROM Buio",
       "description": [
-        "Quando è tenuta da un Pokémon con l'abilità RKS System, cambia il tipo del possessore in Buio."
+        "Quando è tenuta da un Pokémon con l'abilità Sistema Primevo, cambia il tipo del possessore in Buio."
       ]
     },
     "dragon-memory-disc": {
       "sourceName": "Dragon Memory Disc",
       "name": "ROM Drago",
       "description": [
-        "Quando è tenuta da un Pokémon con l'abilità RKS System, cambia il tipo del possessore in Drago."
+        "Quando è tenuta da un Pokémon con l'abilità Sistema Primevo, cambia il tipo del possessore in Drago."
       ]
     },
     "electric-memory-disc": {
       "sourceName": "Electric Memory Disc",
       "name": "ROM Elettro",
       "description": [
-        "Quando è tenuta da un Pokémon con l'abilità RKS System, cambia il tipo del possessore in Elettro."
+        "Quando è tenuta da un Pokémon con l'abilità Sistema Primevo, cambia il tipo del possessore in Elettro."
       ]
     },
     "fairy-memory-disc": {
       "sourceName": "Fairy Memory Disc",
       "name": "ROM Folletto",
       "description": [
-        "Quando è tenuta da un Pokémon con l'abilità RKS System, cambia il tipo del possessore in Folletto."
+        "Quando è tenuta da un Pokémon con l'abilità Sistema Primevo, cambia il tipo del possessore in Folletto."
       ]
     },
     "fighting-memory-disc": {
       "sourceName": "Fighting Memory Disc",
       "name": "ROM Lotta",
       "description": [
-        "Quando è tenuta da un Pokémon con l'abilità RKS System, cambia il tipo del possessore in Lotta."
+        "Quando è tenuta da un Pokémon con l'abilità Sistema Primevo, cambia il tipo del possessore in Lotta."
       ]
     }
   }

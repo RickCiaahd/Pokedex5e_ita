@@ -186,7 +186,11 @@ void main() {
     expect(absorbById?.technicalName, 'Absorb');
     expect(absorbByEnglishName?.id, 'absorb');
     expect(absorbByItalianName?.id, 'absorb');
-    expect(absorbById?.description, contains('1d4 + MOVE'));
+    expect(
+      absorbById?.description,
+      contains('modificatore di caratteristica della mossa'),
+    );
+    expect(absorbById?.description, isNot(contains('MOVE')));
     expect(absorbById?.description, contains('Livelli superiori:'));
 
     expect(bloodMoonByEnglishName?.id, 'blood-moon');

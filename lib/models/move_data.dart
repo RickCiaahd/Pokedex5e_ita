@@ -48,6 +48,31 @@ class MoveData {
     return value == null || value.isEmpty ? name : value;
   }
 
+  MoveData copyWith({String? type}) {
+    return MoveData(
+      id: id,
+      name: name,
+      sourceName: sourceName,
+      type: type ?? this.type,
+      pp: pp,
+      range: range,
+      duration: duration,
+      moveTime: moveTime,
+      description: description,
+      scaling: scaling,
+      higherLevels: higherLevels,
+      damageByLevel: damageByLevel,
+      movePowers: movePowers,
+      isAttack: isAttack,
+      save: save,
+      damageModifier: damageModifier,
+      damageTypes: damageTypes,
+      attackScope: attackScope,
+      tmNumber: tmNumber,
+      tmCost: tmCost,
+    );
+  }
+
   factory MoveData.fromJson(
     String name,
     Map<String, dynamic> json, {
@@ -436,9 +461,52 @@ class MoveData {
         RegExp(r'\bconcentration\b', caseSensitive: false),
         'concentrazione',
       ),
+      MapEntry(
+        RegExp(r'\bBurn Drive\b', caseSensitive: false),
+        'Piromodulo',
+      ),
+      MapEntry(
+        RegExp(r'\bChill Drive\b', caseSensitive: false),
+        'Gelomodulo',
+      ),
+      MapEntry(
+        RegExp(r'\bDouse Drive\b', caseSensitive: false),
+        'Idromodulo',
+      ),
+      MapEntry(
+        RegExp(r'\bShock Drive\b', caseSensitive: false),
+        'Voltmodulo',
+      ),
+      MapEntry(
+        RegExp(r'\bMemory Disc\b', caseSensitive: false),
+        'ROM',
+      ),
+      MapEntry(RegExp(r'\bDrive\b', caseSensitive: false), 'Modulo'),
+      MapEntry(
+        RegExp(r'\bTechno Blast\b', caseSensitive: false),
+        'Tecnobotto',
+      ),
+      MapEntry(
+        RegExp(r'\bmodificatore\s+MOVE\b', caseSensitive: false),
+        'modificatore di caratteristica della mossa',
+      ),
+      MapEntry(
+        RegExp(r'\bMOVE\s+modifier\b', caseSensitive: false),
+        'modificatore di caratteristica della mossa',
+      ),
     ]) {
       result = result.replaceAll(replacement.key, replacement.value);
     }
+
+    result = result.replaceAllMapped(
+      RegExp(r'\b(\d+d\d+)\s*\+\s*MOVE\s+danni\b'),
+      (match) =>
+          'danni pari a ${match.group(1)} + il modificatore di caratteristica della mossa',
+    );
+    result = result.replaceAll(
+      RegExp(r'\bMOVE\b'),
+      'modificatore di caratteristica della mossa',
+    );
 
     result = result.replaceAllMapped(
       RegExp(r'\b(\d+)\s*(?:ft|feet|foot)\b', caseSensitive: false),

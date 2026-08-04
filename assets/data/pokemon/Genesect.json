@@ -103,5 +103,33 @@
     "Constitution",
     "Wisdom"
   ],
-  "size": "Medium"
+  "size": "Medium",
+  "variant_data": {
+    "create_mode": "default",
+    "default": "Normal",
+    "permanent": false,
+    "sprite_suffix": "Genesect",
+    "variants": {
+      "Burn": {
+        "display": "Genesect (Burn)",
+        "original_species": "Genesect Burn Drive"
+      },
+      "Chill": {
+        "display": "Genesect (Chill)",
+        "original_species": "Genesect Chill Drive"
+      },
+      "Douse": {
+        "display": "Genesect (Douse)",
+        "original_species": "Genesect Douse Drive"
+      },
+      "Normal": {
+        "display": "Genesect (Normal)",
+        "original_species": "Genesect Normal Drive"
+      },
+      "Shock": {
+        "display": "Genesect (Shock)",
+        "original_species": "Genesect Shock Drive"
+      }
+    }
+  }
 }

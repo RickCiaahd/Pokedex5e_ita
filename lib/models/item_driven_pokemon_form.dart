@@ -2,6 +2,7 @@ class ItemDrivenPokemonForm {
   const ItemDrivenPokemonForm._();
 
   static const int arceusId = 493;
+  static const int genesectId = 649;
   static const int silvallyId = 773;
 
   static const Map<String, String> _arceusPlateTypes = {
@@ -80,13 +81,39 @@ class ItemDrivenPokemonForm {
     'rom-acqua': 'Water',
   };
 
+  static const Map<String, String> _genesectDriveForms = {
+    'burn-drive': 'Burn',
+    'chill-drive': 'Chill',
+    'douse-drive': 'Douse',
+    'shock-drive': 'Shock',
+    // Localized display names are accepted for imported legacy data.
+    'piromodulo': 'Burn',
+    'gelomodulo': 'Chill',
+    'idromodulo': 'Douse',
+    'voltmodulo': 'Shock',
+  };
+
+  static const Map<String, String> _genesectDriveTypes = {
+    'burn-drive': 'Fire',
+    'chill-drive': 'Ice',
+    'douse-drive': 'Water',
+    'shock-drive': 'Electric',
+    // Localized display names are accepted for imported legacy data.
+    'piromodulo': 'Fire',
+    'gelomodulo': 'Ice',
+    'idromodulo': 'Water',
+    'voltmodulo': 'Electric',
+  };
+
   static bool usesHeldItemForm(int? pokemonId) {
-    return pokemonId == arceusId || pokemonId == silvallyId;
+    return pokemonId == arceusId ||
+        pokemonId == genesectId ||
+        pokemonId == silvallyId;
   }
 
   static bool usesHeldItemFormForSpecies(String speciesName) {
     final key = speciesName.trim().toLowerCase();
-    return key == 'arceus' || key == 'silvally';
+    return key == 'arceus' || key == 'genesect' || key == 'silvally';
   }
 
   /// Item-driven species never persist an independently selected form.
@@ -109,9 +136,39 @@ class ItemDrivenPokemonForm {
 
     return switch (pokemonId) {
       arceusId => _arceusPlateTypes[itemKey],
+      genesectId => _genesectDriveForms[itemKey],
       silvallyId => _silvallyMemoryTypes[itemKey],
       _ => null,
     };
+  }
+
+  /// Returns the contextual type of moves whose type depends on a held item.
+  ///
+  /// The returned value is always a real Pokémon type, so the UI never tries
+  /// to resolve technical placeholders such as `Varies` as image assets.
+  static String effectiveMoveType({
+    required int? pokemonId,
+    required String moveReference,
+    required String? heldItem,
+    required String fallbackType,
+  }) {
+    final moveKey = _referenceKey(moveReference);
+    final itemKey = _referenceKey(heldItem);
+
+    if (pokemonId == arceusId &&
+        const {'judgment', 'giudizio'}.contains(moveKey)) {
+      return _arceusPlateTypes[itemKey] ?? 'Normal';
+    }
+    if (pokemonId == silvallyId &&
+        const {'multi-attack', 'multiattacco'}.contains(moveKey)) {
+      return _silvallyMemoryTypes[itemKey] ?? 'Normal';
+    }
+    if (pokemonId == genesectId &&
+        const {'techno-blast', 'tecnobotto'}.contains(moveKey)) {
+      return _genesectDriveTypes[itemKey] ?? 'Normal';
+    }
+
+    return fallbackType;
   }
 
   static String? effectiveFormName({

@@ -294,6 +294,24 @@ def run_apply(label: str, size: int, min_bytes: int, min_percent: float) -> None
     print(f'Applied {len(converted)} conversions; saved {sum(i.saved for i in converted)/1048576:.2f} MiB')
 
 
+def refresh_reports(min_bytes: int, min_percent: float) -> None:
+    """Refresh inventory reports without converting or deleting any asset."""
+    remaining = scan(min_bytes, min_percent)
+    history = read_history()
+    write_candidates(remaining)
+    write_history(history)
+    write_summary(
+        remaining,
+        history,
+        'inventory-refresh',
+        0,
+        min_bytes,
+        min_percent,
+    )
+    verify()
+    print(f'Refreshed reports for {len(remaining)} remaining PNG files')
+
+
 def self_test() -> None:
     with tempfile.TemporaryDirectory() as directory:
         source = Path(directory) / 'sample.png'
@@ -308,6 +326,7 @@ def self_test() -> None:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument('--apply', action='store_true')
+    parser.add_argument('--refresh', action='store_true')
     parser.add_argument('--check', action='store_true')
     parser.add_argument('--self-test', action='store_true')
     parser.add_argument('--batch-label', default='batch-2')
@@ -324,10 +343,12 @@ def main() -> int:
             args.batch_label, args.batch_size,
             args.min_saved_bytes, args.min_saved_percent,
         )
+    if args.refresh:
+        refresh_reports(args.min_saved_bytes, args.min_saved_percent)
     if args.check:
         verify()
-    if not (args.apply or args.check or args.self_test):
-        raise RuntimeError('Choose --apply, --check or --self-test')
+    if not (args.apply or args.refresh or args.check or args.self_test):
+        raise RuntimeError('Choose --apply, --refresh, --check or --self-test')
     return 0
 
 

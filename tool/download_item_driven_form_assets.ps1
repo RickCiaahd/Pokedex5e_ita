@@ -13,7 +13,7 @@ if ([string]::IsNullOrWhiteSpace($DestinationRoot)) {
 
 $sourceCommit = '5841d46f1a0d2b8918a29a7376b1424878b86b59'
 $sourceRoot = "https://raw.githubusercontent.com/PokeAPI/sprites/$sourceCommit/sprites/pokemon"
-$types = @(
+$elementalTypes = @(
     'bug',
     'dark',
     'dragon',
@@ -33,8 +33,9 @@ $types = @(
     'water'
 )
 $species = @(
-    @{ Name = 'arceus'; Number = 493 },
-    @{ Name = 'silvally'; Number = 773 }
+    @{ Name = 'arceus'; Number = 493; Forms = $elementalTypes },
+    @{ Name = 'silvally'; Number = 773; Forms = $elementalTypes },
+    @{ Name = 'genesect'; Number = 649; Forms = @('burn', 'chill', 'douse', 'shock') }
 )
 
 $downloaded = 0
@@ -44,23 +45,23 @@ foreach ($pokemon in $species) {
     $targetDirectory = Join-Path $DestinationRoot $pokemon.Name
     New-Item -ItemType Directory -Path $targetDirectory -Force | Out-Null
 
-    foreach ($type in $types) {
-        $sourceStem = "$($pokemon.Number)-$type.png"
+    foreach ($form in $pokemon.Forms) {
+        $sourceStem = "$($pokemon.Number)-$form.png"
         $files = @(
             @{
-                Name = "main-$type.png"
+                Name = "main-$form.png"
                 Url = "$sourceRoot/other/home/$sourceStem"
             },
             @{
-                Name = "main-$type-shiny.png"
+                Name = "main-$form-shiny.png"
                 Url = "$sourceRoot/other/home/shiny/$sourceStem"
             },
             @{
-                Name = "sprite-$type.png"
+                Name = "sprite-$form.png"
                 Url = "$sourceRoot/$sourceStem"
             },
             @{
-                Name = "sprite-$type-shiny.png"
+                Name = "sprite-$form-shiny.png"
                 Url = "$sourceRoot/shiny/$sourceStem"
             }
         )

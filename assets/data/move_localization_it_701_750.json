@@ -347,7 +347,7 @@
       "sourceName": "Techno Blast",
       "name": "Tecnobotto",
       "description": [
-        "Spari un potente raggio di pura luce. La linea è lunga 80 piedi e larga 5 piedi, e tutte le creature coinvolte nell'esplosione devono effettuare un tiro salvezza su DES contro la tua CD della mossa, subendo 3d10 + MOVE danni se lo fallisce, o la metà di danni se lo supera. Il tipo di danno dipende dal Drive posseduto dall'utente. (Brucia - Fuoco, Gelo - Ghiaccio, Douse - Acqua, Shock - Elettrico)"
+        "Spari un potente raggio di pura luce. La linea è lunga 80 piedi e larga 5 piedi; tutte le creature coinvolte nell'esplosione devono effettuare un tiro salvezza su DES contro la tua CD della mossa, subendo danni pari a 3d10 + il modificatore di caratteristica della mossa se lo falliscono, o la metà dei danni se lo superano. Il tipo dei danni dipende dal Modulo tenuto: Piromodulo - Fuoco, Gelomodulo - Ghiaccio, Idromodulo - Acqua, Voltmodulo - Elettro. Senza un Modulo compatibile, i danni sono di tipo Normale."
       ],
       "higherLevels": "Il dado di danno per questa mossa diventa 6d6 al livello 5, 8d6 al livello 10 e 7d12 al livello 17."
     },

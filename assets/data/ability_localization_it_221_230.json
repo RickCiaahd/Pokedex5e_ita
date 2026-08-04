@@ -10,7 +10,7 @@
       "description": "Questo Pokémon aggiunge il proprio bonus di competenza ai danni quando attacca un Pokémon dello stesso tipo."
     },
     "rks-system": {
-      "description": "Il tipo di questo Pokémon è determinato dal Memory Disc che tiene. Se non tiene alcun Memory Disc, il suo tipo è Normale."
+      "description": "Il tipo e la forma di questo Pokémon sono determinati dalla ROM che tiene. Se non tiene alcuna ROM compatibile, il suo tipo è Normale."
     },
     "rock-head": {
       "description": "Questo Pokémon non subisce danni da contraccolpo."

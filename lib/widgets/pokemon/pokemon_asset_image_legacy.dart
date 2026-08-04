@@ -661,6 +661,9 @@ class PokemonAssetPaths {
       case 'typeless':
       case 'senza tipo':
         return 'Senza tipo';
+      case 'varies':
+      case 'variabile':
+        return 'Variabile';
       default:
         return type;
     }

@@ -4,6 +4,7 @@ import '../../localization/ui_text.dart';
 import '../../localization/user_facing_error.dart';
 
 import '../../models/custom_pokemon_definition.dart';
+import '../../models/item_driven_pokemon_form.dart';
 import '../../models/pokedex_entry.dart';
 import '../../models/pokemon.dart';
 import '../../models/pokemon_flavor.dart';
@@ -137,7 +138,9 @@ class _PokedexScreenState extends State<PokedexScreen> {
         .where((pokemon) {
           final entry = _entryFor(pokemon);
           final previewPokemon = pokemon.resolveVariant(
-            formName: entry.preferredFormName,
+            formName: ItemDrivenPokemonForm.usesHeldItemForm(pokemon.id)
+                ? null
+                : entry.preferredFormName,
           );
           final matchesSearch =
               query.isEmpty ||
@@ -670,7 +673,9 @@ class _PokedexScreenState extends State<PokedexScreen> {
                         columns: _gridColumnCount(context),
                         entryFor: _entryFor,
                         previewFormFor: (pokemon) =>
-                            _entryFor(pokemon).preferredFormName,
+                            ItemDrivenPokemonForm.usesHeldItemForm(pokemon.id)
+                            ? null
+                            : _entryFor(pokemon).preferredFormName,
                         onPokemonTap: _handlePokemonTap,
                       );
                     },

@@ -1070,6 +1070,11 @@ class _TeamSlotCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final basePokemon = pokemon;
+    final pokemon = basePokemon?.resolveVariant(
+      formName: slot.effectiveFormName,
+      gender: slot.gender,
+    );
     final number = pokemon == null
         ? null
         : '#${pokemon!.id.toString().padLeft(3, '0')}';
@@ -1301,7 +1306,7 @@ class _SlotAvatar extends StatelessWidget {
               )
             : PokemonAssetImage(
                 pokemon: pokemon,
-                formName: slot.formName,
+                formName: slot.effectiveFormName,
                 gender: slot.gender,
                 isShiny: slot.isShiny,
                 size: 48,

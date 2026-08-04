@@ -1,3 +1,4 @@
+import 'item_driven_pokemon_form.dart';
 import 'pokemon.dart';
 
 class PokedexFormEntry {
@@ -135,6 +136,10 @@ class PokedexEntry {
 
   static bool isTrackableForm(String? formName, {String speciesName = ''}) {
     final key = formKey(formName, speciesName: speciesName);
+    if (key != 'base' &&
+        ItemDrivenPokemonForm.usesHeldItemFormForSpecies(speciesName)) {
+      return false;
+    }
     const temporaryTokens = {
       'mega',
       'gigantamax',

@@ -4,6 +4,7 @@ import '../../localization/ui_text.dart';
 import '../../localization/feat_display_name.dart';
 import '../../models/bag_item.dart';
 import '../../models/evolution_data.dart';
+import '../../models/item_driven_pokemon_form.dart';
 import '../../models/level_progression.dart';
 import '../../models/move_data.dart';
 import '../../models/pokemon.dart';
@@ -225,7 +226,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
     _team = [...widget.team];
     _teamSlot = widget.teamSlot;
     _pokemon = _basePokemon.resolveVariant(
-      formName: _teamSlot?.formName,
+      formName: _teamSlot?.effectiveFormName,
       gender: _teamSlot?.gender,
     );
     _ensureSelectedMovesIsSaved();
@@ -259,7 +260,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
     setState(() {
       _teamSlot = updatedSlot;
       _pokemon = _basePokemon.resolveVariant(
-        formName: updatedSlot.formName,
+        formName: updatedSlot.effectiveFormName,
         gender: updatedSlot.gender,
       );
       _replaceTeamSlot(updatedSlot);
@@ -1202,7 +1203,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
     setState(() {
       _basePokemon = pokemon;
       _pokemon = pokemon.resolveVariant(
-        formName: slot.formName,
+        formName: slot.effectiveFormName,
         gender: slot.gender,
       );
       _teamSlot = slot;
@@ -1563,7 +1564,7 @@ class _Header extends StatelessWidget {
                         Expanded(
                           child: PokemonAssetImage(
                             pokemon: imagePokemon,
-                            formName: slot?.formName,
+                            formName: slot?.effectiveFormName,
                             gender: slot?.gender,
                             isShiny: slot?.isShiny,
                             useLargeArtwork: true,
@@ -2806,12 +2807,18 @@ class _TraitsView extends StatelessWidget {
                 label: context.uiText('Forma', 'Form'),
                 value: slot == null
                     ? '-'
+                    : ItemDrivenPokemonForm.usesHeldItemForm(
+                        basePokemon.id,
+                      )
+                    ? PokemonAssetPaths.localizedTypeLabel(
+                        slot.effectiveFormName ?? 'Normal',
+                      )
                     : BattleFormChangeService.supports(basePokemon)
                     ? BattleFormChangeService.formLabel(
                         basePokemon,
-                        slot?.formName,
+                        slot.effectiveFormName,
                       )
-                    : slot?.formName ?? '-',
+                    : slot.effectiveFormName ?? '-',
               ),
               _InfoRow(
                 label: context.uiText('Cromatico', 'Shiny'),
@@ -3053,7 +3060,7 @@ class _PartySlotButton extends StatelessWidget {
                 ? Icon(Icons.radio_button_unchecked, color: colorScheme.outline)
                 : PokemonAssetImage(
                     pokemon: pokemon,
-                    formName: slot.formName,
+                    formName: slot.effectiveFormName,
                     gender: slot.gender,
                     isShiny: slot.isShiny,
                     size: 30,

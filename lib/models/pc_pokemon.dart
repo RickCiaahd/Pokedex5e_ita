@@ -1,3 +1,4 @@
+import 'item_driven_pokemon_form.dart';
 import 'pokemon_form_preferences.dart';
 import 'team_slot.dart';
 
@@ -24,9 +25,12 @@ class PcPokemon {
     this.notes = '',
   })  : capturedAt = capturedAt ?? DateTime.now(),
         gender = PokemonFormPreferences.normalizeGender(gender),
-        formName = PokemonFormPreferences.normalizeFormName(
-          formName: formName,
-          gender: gender,
+        formName = ItemDrivenPokemonForm.normalizePersistedFormName(
+          pokemonId: pokemonId,
+          formName: PokemonFormPreferences.normalizeFormName(
+            formName: formName,
+            gender: gender,
+          ),
         ) {
     PokemonFormPreferences.setForm(
       pokemonId: pokemonId,
@@ -66,6 +70,12 @@ class PcPokemon {
     final trimmed = nickname?.trim() ?? '';
     return trimmed.isEmpty ? '' : trimmed;
   }
+
+  String? get effectiveFormName => ItemDrivenPokemonForm.effectiveFormName(
+    pokemonId: pokemonId,
+    persistedFormName: formName,
+    heldItem: heldItem,
+  );
 
   TeamSlot toTeamSlot({required int slotIndex, int fallbackCurrentHp = 0}) {
     return TeamSlot(

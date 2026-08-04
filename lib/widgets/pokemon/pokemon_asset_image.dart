@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../localization/game_catalog_locale.dart';
+import '../../models/item_driven_pokemon_form.dart';
 import '../../models/pokedex_entry.dart';
 import '../../models/pokemon.dart';
 import '../../models/pokemon_evolution_alias_registry.dart';
@@ -27,6 +28,8 @@ class PokemonAssetPaths {
   static Future<List<legacy.PokemonFormChoice>> formChoices(
     Pokemon pokemon,
   ) async {
+    if (ItemDrivenPokemonForm.usesHeldItemForm(pokemon.id)) return const [];
+
     final rawChoices = await legacy.PokemonAssetPaths.formChoices(pokemon);
     if (rawChoices.isEmpty) return const [];
 
@@ -108,13 +111,21 @@ class PokemonAssetPaths {
     String? gender,
     bool isShiny = false,
   }) {
-    return legacy.PokemonAssetPaths.imageCandidates(
-      pokemon: pokemon,
-      useLargeArtwork: useLargeArtwork,
-      formName: formName,
-      gender: gender,
-      isShiny: isShiny,
-    );
+    return <String>{
+      ..._itemDrivenAssetCandidates(
+        pokemon: pokemon,
+        useLargeArtwork: useLargeArtwork,
+        formName: formName,
+        isShiny: isShiny,
+      ),
+      ...legacy.PokemonAssetPaths.imageCandidates(
+        pokemon: pokemon,
+        useLargeArtwork: useLargeArtwork,
+        formName: formName,
+        gender: gender,
+        isShiny: isShiny,
+      ),
+    }.toList(growable: false);
   }
 
   static List<String> imageCandidatePrefixes({
@@ -237,6 +248,12 @@ class PokemonAssetImage extends StatelessWidget {
             ? 'male'
             : null);
     final candidates = <String>[
+      ..._itemDrivenAssetCandidates(
+        pokemon: effectivePokemon,
+        useLargeArtwork: useLargeArtwork,
+        formName: effectiveForm,
+        isShiny: isShiny ?? false,
+      ),
       ..._regionalAssetCandidates(
         pokemon: effectivePokemon,
         formName: effectiveForm,
@@ -271,6 +288,32 @@ class PokemonAssetImage extends StatelessWidget {
       scale: useLargeArtwork ? 1.08 : 1.12,
     );
   }
+}
+
+List<String> _itemDrivenAssetCandidates({
+  required Pokemon pokemon,
+  required bool useLargeArtwork,
+  required String? formName,
+  required bool isShiny,
+}) {
+  if (!ItemDrivenPokemonForm.usesHeldItemForm(pokemon.id)) return const [];
+
+  final formSlug = Pokemon.formReferenceKey(formName ?? '', pokemon.name);
+  if (formSlug == 'base' || formSlug.isEmpty) return const [];
+
+  final speciesSlug = _assetSlug(pokemon.name);
+  if (speciesSlug.isEmpty) return const [];
+
+  final imageKind = useLargeArtwork ? 'main' : 'sprite';
+  final root = 'assets/textures/textures_webapp/pokemon/$speciesSlug';
+  return <String>[
+    if (isShiny) ...[
+      '$root/$imageKind-$formSlug-shiny.webp',
+      '$root/$imageKind-$formSlug-shiny.png',
+    ],
+    '$root/$imageKind-$formSlug.webp',
+    '$root/$imageKind-$formSlug.png',
+  ];
 }
 
 List<String> _regionalAssetCandidates({

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../models/battle_environment.dart';
+import '../../models/item_driven_pokemon_form.dart';
 import '../../models/move_data.dart';
 import '../../models/pokemon.dart';
 import '../../models/pokemon_ability.dart';
@@ -124,8 +125,12 @@ class _PokemonEditScreenState extends State<PokemonEditScreen> {
   bool _extraAsiOpen = false;
   bool _isLoadingChoices = true;
 
-  Pokemon get _formPokemon =>
-      widget.pokemon.resolveVariant(formName: _formName, gender: _gender);
+  Pokemon get _formPokemon => widget.pokemon.resolveVariant(
+    formName: ItemDrivenPokemonForm.usesHeldItemForm(widget.pokemon.id)
+        ? widget.slot.effectiveFormName
+        : _formName,
+    gender: _gender,
+  );
 
   @override
   void initState() {

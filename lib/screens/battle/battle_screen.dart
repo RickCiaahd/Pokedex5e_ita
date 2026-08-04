@@ -12,6 +12,7 @@ import '../../models/bag_item.dart';
 import '../../models/battle_environment.dart';
 import '../../models/custom_pokemon_advanced_data.dart';
 import '../../models/battle_session.dart';
+import '../../models/item_driven_pokemon_form.dart';
 import '../../models/level_progression.dart';
 import '../../models/move_data.dart';
 import '../../models/pokemon.dart';
@@ -341,10 +342,13 @@ class _BattleScreenState extends State<BattleScreen> {
   }
 
   String? _effectiveFormName(TeamSlot slot) {
+    if (ItemDrivenPokemonForm.usesHeldItemForm(slot.pokemonId)) {
+      return slot.effectiveFormName;
+    }
     if (_battleFormBySlot.containsKey(slot.slotIndex)) {
       return _battleFormBySlot[slot.slotIndex];
     }
-    return slot.formName;
+    return slot.effectiveFormName;
   }
 
   Pokemon? _pokemonForSlot(_BattleData data, TeamSlot slot) {

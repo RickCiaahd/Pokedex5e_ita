@@ -17,6 +17,7 @@ import '../../widgets/accessibility/accessible_action_card.dart';
 import '../../services/profile_storage_service.dart';
 import '../../widgets/home/home_tour_overlay.dart';
 import '../../widgets/layout/responsive_content.dart';
+import '../../widgets/profile/trainer_profile_image_picker.dart';
 import '../bag/bag_screen.dart';
 import '../battle/battle_screen.dart';
 import '../battle/npc_battle_screen.dart';
@@ -637,10 +638,12 @@ class _TrainerHeader extends StatelessWidget {
 
     return Row(
       children: [
-        CircleAvatar(
+        TrainerProfileAvatar(
+          imageBase64: profile?.profileImageBase64 ?? '',
+          trainerName: profileName,
           radius: 32,
           backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-          child: Icon(
+          fallback: Icon(
             Icons.person,
             color: Theme.of(context).colorScheme.onPrimaryContainer,
             size: 34,

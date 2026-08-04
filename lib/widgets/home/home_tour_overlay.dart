@@ -162,7 +162,7 @@ class _HomeTourOverlayState extends State<HomeTourOverlay> {
         Positioned(
           left: 0,
           right: 0,
-          bottom: 0,
+          bottom: MediaQuery.viewPaddingOf(context).bottom,
           child: ProfessorTourPanel(
             icon: widget.step.icon,
             title: widget.step.title,

@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 import '../../l10n/app_localizations.dart';
+import '../../localization/ui_text.dart';
 import '../../localization/user_facing_error.dart';
 import '../../models/pokemon.dart';
 import '../../models/pokemon_type_localization.dart';
@@ -17,6 +18,7 @@ import '../../repositories/pokemon_repository.dart';
 import '../../repositories/trainer_manual_repository.dart';
 import '../../services/profile_creation_service.dart';
 import '../../widgets/pokemon/pokemon_asset_image.dart';
+import '../../widgets/profile/trainer_profile_image_picker.dart';
 
 class FirstLaunchOnboardingScreen extends StatefulWidget {
   const FirstLaunchOnboardingScreen({
@@ -53,13 +55,14 @@ class _FirstLaunchOnboardingScreenState
   bool _isSaving = false;
   String? _errorMessage;
   String _background = _backgroundOptions.first.name;
+  String _profileImageBase64 = '';
   TrainerOrigin? _origin;
   Pokemon? _starter;
   List<TrainerOrigin> _origins = const [];
   List<Pokemon> _starterCandidates = const [];
   String _starterQuery = '';
 
-  static const int _totalSteps = 10;
+  static const int _totalSteps = 11;
 
   static const List<_BackgroundOption> _backgroundOptions = [
     _BackgroundOption(name: 'Ricercatore', icon: Icons.science_outlined),
@@ -217,13 +220,13 @@ class _FirstLaunchOnboardingScreenState
     switch (_step) {
       case 2:
         return _nameController.text.trim().isNotEmpty;
-      case 4:
-        return _origin != null;
       case 5:
-        return _background.trim().isNotEmpty;
+        return _origin != null;
       case 6:
+        return _background.trim().isNotEmpty;
+      case 7:
         return _starter != null;
-      case 8:
+      case 9:
         return !_isSaving && _errorMessage != null;
       default:
         return true;
@@ -233,7 +236,7 @@ class _FirstLaunchOnboardingScreenState
   bool get _canCancelFlow {
     return widget.onCancel != null &&
         !_isSaving &&
-        (_step < 8 || (_step == 8 && _errorMessage != null));
+        (_step < 9 || (_step == 9 && _errorMessage != null));
   }
 
   bool get _canPopRoute {
@@ -245,13 +248,17 @@ class _FirstLaunchOnboardingScreenState
     switch (_step) {
       case 0:
         return l10n.onboardingStartAdventure;
-      case 7:
-        return l10n.onboardingConfirm;
+      case 3:
+        return _profileImageBase64.isEmpty
+            ? context.uiText('Salta', 'Skip')
+            : l10n.nextAction;
       case 8:
+        return l10n.onboardingConfirm;
+      case 9:
         return _errorMessage == null
             ? l10n.onboardingCreatingProfile
             : l10n.retryAction.toUpperCase();
-      case 9:
+      case 10:
         return l10n.onboardingBegin;
       default:
         return l10n.nextAction;
@@ -261,7 +268,7 @@ class _FirstLaunchOnboardingScreenState
   Future<void> _next() async {
     if (!_canContinue || _isSaving) return;
 
-    if (_step < 7) {
+    if (_step < 8) {
       setState(() {
         _step += 1;
         _errorMessage = null;
@@ -269,22 +276,22 @@ class _FirstLaunchOnboardingScreenState
       return;
     }
 
-    if (_step == 7 || _step == 8) {
+    if (_step == 8 || _step == 9) {
       setState(() {
-        _step = 8;
+        _step = 9;
         _errorMessage = null;
       });
       await _completeOnboarding();
       return;
     }
 
-    if (_step == 9) {
+    if (_step == 10) {
       widget.onCompleted();
     }
   }
 
   void _back() {
-    if (_step <= 0 || _step >= 8 || _isSaving) return;
+    if (_step <= 0 || _step >= 9 || _isSaving) return;
     setState(() {
       _step -= 1;
       _errorMessage = null;
@@ -327,6 +334,7 @@ class _FirstLaunchOnboardingScreenState
       final profile = UserProfile(
         id: now.microsecondsSinceEpoch.toString(),
         name: _nameController.text.trim(),
+        profileImageBase64: _profileImageBase64,
         createdAt: now,
         updatedAt: now,
         trainerAge: _age,
@@ -370,7 +378,7 @@ class _FirstLaunchOnboardingScreenState
       if (!mounted) return;
       setState(() {
         _isSaving = false;
-        _step = 9;
+        _step = 10;
       });
     } catch (error) {
       if (!mounted) return;
@@ -427,7 +435,7 @@ class _FirstLaunchOnboardingScreenState
                     _ProgressHeader(
                       step: _step,
                       totalSteps: _totalSteps,
-                      canGoBack: _step > 0 && _step < 8,
+                      canGoBack: _step > 0 && _step < 9,
                       onBack: _back,
                       onCancel: _canCancelFlow ? widget.onCancel : null,
                     ),
@@ -440,7 +448,7 @@ class _FirstLaunchOnboardingScreenState
                         child: _buildStage(keyboardVisible: keyboardVisible),
                       ),
                     ),
-                    if (_errorMessage != null && _step >= 8) ...[
+                    if (_errorMessage != null && _step >= 9) ...[
                       const SizedBox(height: 10),
                       Text(
                         l10n.onboardingProfileCreationError,
@@ -452,7 +460,7 @@ class _FirstLaunchOnboardingScreenState
                       ),
                     ],
                     SizedBox(height: keyboardVisible ? 8 : 14),
-                    if (_step != 8 || !_isSaving)
+                    if (_step != 9 || !_isSaving)
                       SizedBox(
                         width: double.infinity,
                         height: keyboardVisible ? 48 : 54,
@@ -494,9 +502,9 @@ class _FirstLaunchOnboardingScreenState
 
     final dialogue = _buildDialogue();
     final compactCardFactor = switch (_step) {
-      6 => .30,
-      7 => .36,
-      8 || 9 => .50,
+      7 => .30,
+      8 => .36,
+      9 || 10 => .50,
       _ => .48,
     };
 
@@ -541,6 +549,25 @@ class _FirstLaunchOnboardingScreenState
       case 3:
         return _DialogueCard(
           speaker: l10n.onboardingProfessor,
+          title: context.uiText(
+            'Scegli la tua immagine',
+            'Choose your image',
+          ),
+          body: context.uiText(
+            'Puoi aggiungere un’immagine dell’Allenatore oppure saltare questo passaggio.',
+            'You can add a Trainer image or skip this step.',
+          ),
+          content: TrainerProfileImagePicker(
+            imageBase64: _profileImageBase64,
+            trainerName: _nameController.text,
+            onChanged: (value) => setState(
+              () => _profileImageBase64 = value,
+            ),
+          ),
+        );
+      case 4:
+        return _DialogueCard(
+          speaker: l10n.onboardingProfessor,
           title: l10n.onboardingAgeTitle,
           body: l10n.onboardingAgeBody,
           content: _AgeSelector(
@@ -549,7 +576,7 @@ class _FirstLaunchOnboardingScreenState
             onIncrease: _age < 99 ? () => setState(() => _age++) : null,
           ),
         );
-      case 4:
+      case 5:
         final origin = _origin;
         return _DialogueCard(
           speaker: l10n.onboardingProfessor,
@@ -595,7 +622,7 @@ class _FirstLaunchOnboardingScreenState
             ],
           ),
         );
-      case 5:
+      case 6:
         final selected = _selectedBackground;
         return _DialogueCard(
           speaker: l10n.onboardingProfessor,
@@ -635,7 +662,7 @@ class _FirstLaunchOnboardingScreenState
             ],
           ),
         );
-      case 6:
+      case 7:
         return _DialogueCard(
           speaker: l10n.onboardingProfessor,
           title: l10n.onboardingStarterTitle,
@@ -666,13 +693,19 @@ class _FirstLaunchOnboardingScreenState
             ],
           ),
         );
-      case 7:
+      case 8:
         return _DialogueCard(
           speaker: l10n.onboardingProfessor,
           title: l10n.onboardingSummaryTitle,
           body: l10n.onboardingSummaryBody,
           content: Column(
             children: [
+              TrainerProfileAvatar(
+                imageBase64: _profileImageBase64,
+                trainerName: _nameController.text,
+                radius: 40,
+              ),
+              const SizedBox(height: 12),
               _SummaryRow(
                 icon: Icons.person_outline,
                 label: l10n.onboardingNameLabel,
@@ -703,7 +736,7 @@ class _FirstLaunchOnboardingScreenState
             ],
           ),
         );
-      case 8:
+      case 9:
         return _DialogueCard(
           speaker: l10n.onboardingProfessor,
           title: l10n.onboardingSavingTitle,

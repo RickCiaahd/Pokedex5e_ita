@@ -22,6 +22,7 @@ import '../../services/guided_tour_service.dart';
 import '../../services/trainer_path_automation_service.dart';
 import '../../services/trainer_path_passive_service.dart';
 import '../../widgets/navigation/home_leading_button.dart';
+import '../../widgets/profile/trainer_profile_image_picker.dart';
 import '../../widgets/tour/guided_tour.dart';
 import '../../widgets/trainer/trainer_path_automation_panel.dart';
 
@@ -65,6 +66,7 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
   String _startingPack = '';
   String _trainerPath = '';
   String _starterPokemon = '';
+  String _profileImageBase64 = '';
   String _originAbilityBonusSource = '';
   List<String> _skillProficiencies = [];
   List<String> _savingThrowProficiencies = [];
@@ -82,8 +84,8 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
         icon: Icons.badge_outlined,
         title: context.uiText('La scheda interattiva', 'The interactive sheet'),
         description: context.uiText(
-          'Qui aggiorni nome, livello, denaro, origine, starter, caratteristiche, PF, CA, velocità, competenze e tiri salvezza. I riquadri modificabili reagiscono al tocco.',
-          'Update name, level, money, origin, starter, ability scores, HP, AC, speed, proficiencies and saving throws. Editable panels respond to taps.',
+          'Qui aggiorni foto, nome, livello, denaro, origine, starter, caratteristiche, PF, CA, velocità, competenze e tiri salvezza. I riquadri modificabili reagiscono al tocco.',
+          'Update photo, name, level, money, origin, starter, ability scores, HP, AC, speed, proficiencies and saving throws. Editable panels respond to taps.',
         ),
       ),
       GuidedTourStepData(
@@ -189,6 +191,7 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
         _startingPack = profile.startingPack;
         _trainerPath = profile.trainerPath;
         _starterPokemon = profile.starterPokemon;
+        _profileImageBase64 = profile.profileImageBase64;
         _originAbilityBonusSource = profile.originAbilityBonusSource;
         _skillProficiencies = [...profile.skillProficiencies];
         _savingThrowProficiencies = [...profile.savingThrowProficiencies];
@@ -574,6 +577,7 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
     try {
       final updated = profile.copyWith(
         name: name,
+        profileImageBase64: _profileImageBase64,
         trainerLevel: _trainerLevel,
         money: money,
         abilityScores: _abilityScores,
@@ -865,6 +869,7 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
                           key: _sheetKey,
                           progressionKey: _progressionKey,
                           nameController: _nameController,
+                          profileImageBase64: _profileImageBase64,
                           moneyController: _moneyController,
                           race: selectedOrigin == null
                               ? selectedOriginName
@@ -894,6 +899,9 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
                           errorMessage: _errorMessage,
                           onDecreaseLevel: () => _changeLevel(-1),
                           onIncreaseLevel: () => _changeLevel(1),
+                          onProfileImageChanged: (value) => setState(
+                            () => _profileImageBase64 = value,
+                          ),
                           onRaceTap: _openRacePicker,
                           onStarterTap: _openStarterPicker,
                           onAddStarterToTeam: _addStarterToTeam,
@@ -963,6 +971,7 @@ class _InteractiveTrainerSheet extends StatelessWidget {
     super.key,
     required this.progressionKey,
     required this.nameController,
+    required this.profileImageBase64,
     required this.moneyController,
     required this.race,
     required this.raceDescription,
@@ -985,6 +994,7 @@ class _InteractiveTrainerSheet extends StatelessWidget {
     required this.errorMessage,
     required this.onDecreaseLevel,
     required this.onIncreaseLevel,
+    required this.onProfileImageChanged,
     required this.onRaceTap,
     required this.onStarterTap,
     required this.onAddStarterToTeam,
@@ -1003,6 +1013,7 @@ class _InteractiveTrainerSheet extends StatelessWidget {
 
   final GlobalKey progressionKey;
   final TextEditingController nameController;
+  final String profileImageBase64;
   final TextEditingController moneyController;
   final String race;
   final String raceDescription;
@@ -1025,6 +1036,7 @@ class _InteractiveTrainerSheet extends StatelessWidget {
   final String? errorMessage;
   final VoidCallback onDecreaseLevel;
   final VoidCallback onIncreaseLevel;
+  final ValueChanged<String> onProfileImageChanged;
   final VoidCallback onRaceTap;
   final VoidCallback onStarterTap;
   final VoidCallback onAddStarterToTeam;
@@ -1069,6 +1081,7 @@ class _InteractiveTrainerSheet extends StatelessWidget {
                     flex: 7,
                     child: _TrainerSheetMainColumn(
                       nameController: nameController,
+                      profileImageBase64: profileImageBase64,
                       moneyController: moneyController,
                       race: race,
                       raceDescription: raceDescription,
@@ -1090,6 +1103,7 @@ class _InteractiveTrainerSheet extends StatelessWidget {
                       isSaving: isSaving,
                       onDecreaseLevel: onDecreaseLevel,
                       onIncreaseLevel: onIncreaseLevel,
+                      onProfileImageChanged: onProfileImageChanged,
                       onRaceTap: onRaceTap,
                       onStarterTap: onStarterTap,
                       onAddStarterToTeam: onAddStarterToTeam,
@@ -1124,6 +1138,7 @@ class _InteractiveTrainerSheet extends StatelessWidget {
                 children: [
                   _TrainerSheetMainColumn(
                     nameController: nameController,
+                    profileImageBase64: profileImageBase64,
                     moneyController: moneyController,
                     race: race,
                     raceDescription: raceDescription,
@@ -1145,6 +1160,7 @@ class _InteractiveTrainerSheet extends StatelessWidget {
                     isSaving: isSaving,
                     onDecreaseLevel: onDecreaseLevel,
                     onIncreaseLevel: onIncreaseLevel,
+                    onProfileImageChanged: onProfileImageChanged,
                     onRaceTap: onRaceTap,
                     onStarterTap: onStarterTap,
                     onAddStarterToTeam: onAddStarterToTeam,
@@ -1178,6 +1194,7 @@ class _InteractiveTrainerSheet extends StatelessWidget {
 class _TrainerSheetMainColumn extends StatelessWidget {
   const _TrainerSheetMainColumn({
     required this.nameController,
+    required this.profileImageBase64,
     required this.moneyController,
     required this.race,
     required this.raceDescription,
@@ -1199,6 +1216,7 @@ class _TrainerSheetMainColumn extends StatelessWidget {
     required this.isSaving,
     required this.onDecreaseLevel,
     required this.onIncreaseLevel,
+    required this.onProfileImageChanged,
     required this.onRaceTap,
     required this.onStarterTap,
     required this.onAddStarterToTeam,
@@ -1214,6 +1232,7 @@ class _TrainerSheetMainColumn extends StatelessWidget {
   });
 
   final TextEditingController nameController;
+  final String profileImageBase64;
   final TextEditingController moneyController;
   final String race;
   final String raceDescription;
@@ -1235,6 +1254,7 @@ class _TrainerSheetMainColumn extends StatelessWidget {
   final bool isSaving;
   final VoidCallback onDecreaseLevel;
   final VoidCallback onIncreaseLevel;
+  final ValueChanged<String> onProfileImageChanged;
   final VoidCallback onRaceTap;
   final VoidCallback onStarterTap;
   final VoidCallback onAddStarterToTeam;
@@ -1273,6 +1293,15 @@ class _TrainerSheetMainColumn extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 8),
+        TrainerProfileImagePicker(
+          imageBase64: profileImageBase64,
+          trainerName: nameController.text,
+          compact: true,
+          editButtonOnly: true,
+          enabled: !isSaving,
+          onChanged: onProfileImageChanged,
+        ),
+        const SizedBox(height: 12),
         Wrap(
           spacing: 8,
           runSpacing: 8,

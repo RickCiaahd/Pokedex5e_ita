@@ -15,6 +15,10 @@ void main() {
       "'Create profile'",
       "'Crea profilo guidato'",
       "'Create guided profile'",
+      '_CreateProfileNameDialog',
+      '_CreateProfileImageDialog',
+      "'Salta'",
+      "'Skip'",
       'nome, età, origine, background e starter',
       'name, age, origin, background and starter',
     ]) {
@@ -37,6 +41,9 @@ void main() {
       contains('_canCancelFlow ? widget.onCancel : null'),
     );
     expect(onboardingSource, contains('canPop: _canPopRoute'));
-    expect(onboardingSource, contains('_step == 8 && _errorMessage != null'));
+    expect(onboardingSource, contains('static const int _totalSteps = 11'));
+    expect(onboardingSource, contains("'Scegli la tua immagine'"));
+    expect(onboardingSource, contains("'Choose your image'"));
+    expect(onboardingSource, contains('_step == 9 && _errorMessage != null'));
   });
 }

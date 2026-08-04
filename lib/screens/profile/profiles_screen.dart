@@ -16,6 +16,7 @@ import '../../services/profile_backup_service.dart';
 import '../../services/profile_creation_service.dart';
 import '../../widgets/layout/responsive_content.dart';
 import '../../widgets/navigation/home_leading_button.dart';
+import '../../widgets/profile/trainer_profile_image_picker.dart';
 import '../onboarding/first_launch_onboarding_screen.dart';
 
 class ProfilesScreen extends StatefulWidget {
@@ -104,14 +105,21 @@ class _ProfilesScreenState extends State<ProfilesScreen> {
     if (_isBusy) return;
     final name = await showDialog<String>(
       context: context,
-      builder: (_) => const _CreateProfileDialog(),
+      builder: (_) => const _CreateProfileNameDialog(),
     );
-    if (name == null || name.trim().isEmpty) return;
+    if (!mounted || name == null || name.trim().isEmpty) return;
+
+    final imageResult = await showDialog<_QuickProfileImageResult>(
+      context: context,
+      builder: (_) => _CreateProfileImageDialog(trainerName: name.trim()),
+    );
+    if (!mounted || imageResult == null) return;
 
     setState(() => _isBusy = true);
     try {
       final profile = await _profileCreationService.createEmptyProfile(
         name.trim(),
+        profileImageBase64: imageResult.profileImageBase64,
       );
       await _loadProfiles();
       _setStatus(
@@ -407,6 +415,8 @@ class _ProfilesScreenState extends State<ProfilesScreen> {
               else ...[
                 _ProfilesHeader(
                   activeProfileName: activeProfileName,
+                  activeProfileImageBase64:
+                      _activeProfile?.profileImageBase64 ?? '',
                   profileCount: _profiles.length,
                 ),
                 if (_statusMessage != null) ...[
@@ -455,10 +465,12 @@ class _ProfilesScreenState extends State<ProfilesScreen> {
 class _ProfilesHeader extends StatelessWidget {
   const _ProfilesHeader({
     required this.activeProfileName,
+    required this.activeProfileImageBase64,
     required this.profileCount,
   });
 
   final String activeProfileName;
+  final String activeProfileImageBase64;
   final int profileCount;
 
   @override
@@ -473,11 +485,12 @@ class _ProfilesHeader extends StatelessWidget {
       ),
       child: Row(
         children: [
-          CircleAvatar(
+          TrainerProfileAvatar(
+            imageBase64: activeProfileImageBase64,
+            trainerName: activeProfileName,
             radius: 32,
             backgroundColor: colorScheme.primary,
             foregroundColor: colorScheme.onPrimary,
-            child: const Icon(Icons.person, size: 34),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -648,14 +661,16 @@ class _ProfileTile extends StatelessWidget {
           horizontal: 16,
           vertical: 10,
         ),
-        leading: CircleAvatar(
+        leading: TrainerProfileAvatar(
+          imageBase64: profile.profileImageBase64,
+          trainerName: profile.name,
+          radius: 20,
           backgroundColor: isActive
               ? colorScheme.primary
               : colorScheme.surfaceContainerHighest,
           foregroundColor: isActive
               ? colorScheme.onPrimary
               : colorScheme.onSurfaceVariant,
-          child: Text(_initialsFor(profile.name)),
         ),
         title: Row(
           children: [
@@ -750,17 +765,6 @@ class _ProfileTile extends StatelessWidget {
     );
   }
 
-  String _initialsFor(String name) {
-    final parts = name
-        .trim()
-        .split(RegExp(r'\s+'))
-        .where((part) => part.isNotEmpty)
-        .toList();
-    if (parts.isEmpty) return '?';
-    if (parts.length == 1) return parts.first.substring(0, 1).toUpperCase();
-    return '${parts.first[0]}${parts.last[0]}'.toUpperCase();
-  }
-
   String _formatDate(DateTime date) {
     final day = date.day.toString().padLeft(2, '0');
     final month = date.month.toString().padLeft(2, '0');
@@ -794,14 +798,16 @@ class _ActiveBadge extends StatelessWidget {
   }
 }
 
-class _CreateProfileDialog extends StatefulWidget {
-  const _CreateProfileDialog();
+class _CreateProfileNameDialog extends StatefulWidget {
+  const _CreateProfileNameDialog();
 
   @override
-  State<_CreateProfileDialog> createState() => _CreateProfileDialogState();
+  State<_CreateProfileNameDialog> createState() =>
+      _CreateProfileNameDialogState();
 }
 
-class _CreateProfileDialogState extends State<_CreateProfileDialog> {
+class _CreateProfileNameDialogState
+    extends State<_CreateProfileNameDialog> {
   final TextEditingController _controller = TextEditingController();
 
   @override
@@ -826,6 +832,7 @@ class _CreateProfileDialogState extends State<_CreateProfileDialog> {
         decoration: InputDecoration(
           labelText: context.uiText('Nome allenatore', 'Trainer name'),
         ),
+        onChanged: (_) => setState(() {}),
         onSubmitted: (_) => _submit(),
       ),
       actions: [
@@ -834,12 +841,88 @@ class _CreateProfileDialogState extends State<_CreateProfileDialog> {
           child: Text(context.uiText('Annulla', 'Cancel')),
         ),
         FilledButton(
-          onPressed: _submit,
-          child: Text(context.uiText('Crea', 'Create')),
+          onPressed: _controller.text.trim().isEmpty ? null : _submit,
+          child: Text(context.uiText('Avanti', 'Next')),
         ),
       ],
     );
   }
+}
+
+class _CreateProfileImageDialog extends StatefulWidget {
+  const _CreateProfileImageDialog({required this.trainerName});
+
+  final String trainerName;
+
+  @override
+  State<_CreateProfileImageDialog> createState() =>
+      _CreateProfileImageDialogState();
+}
+
+class _CreateProfileImageDialogState
+    extends State<_CreateProfileImageDialog> {
+  String _profileImageBase64 = '';
+
+  void _submit() {
+    Navigator.of(context).pop(
+      _QuickProfileImageResult(
+        profileImageBase64: _profileImageBase64,
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final hasImage = _profileImageBase64.isNotEmpty;
+    return AlertDialog(
+      title: Text(
+        context.uiText('Immagine dell’Allenatore', 'Trainer image'),
+      ),
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              context.uiText(
+                'Puoi scegliere un’immagine adesso oppure saltare questo passaggio.',
+                'You can choose an image now or skip this step.',
+              ),
+            ),
+            const SizedBox(height: 18),
+            TrainerProfileImagePicker(
+              imageBase64: _profileImageBase64,
+              trainerName: widget.trainerName,
+              onChanged: (value) => setState(
+                () => _profileImageBase64 = value,
+              ),
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text(context.uiText('Annulla', 'Cancel')),
+        ),
+        FilledButton(
+          onPressed: _submit,
+          child: Text(
+            hasImage
+                ? context.uiText('Crea', 'Create')
+                : context.uiText('Salta', 'Skip'),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _QuickProfileImageResult {
+  const _QuickProfileImageResult({
+    required this.profileImageBase64,
+  });
+
+  final String profileImageBase64;
 }
 
 enum _ProfileCreationMode { quick, guided }

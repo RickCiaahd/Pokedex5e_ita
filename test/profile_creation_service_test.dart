@@ -113,9 +113,13 @@ void main() {
         appLaunchService: _FakeAppLaunchService(),
       );
 
-      final created = await service.createEmptyProfile('Brock');
+      final created = await service.createEmptyProfile(
+        'Brock',
+        profileImageBase64: 'encoded-image',
+      );
 
       expect(created.name, 'Brock');
+      expect(created.profileImageBase64, 'encoded-image');
       expect(profiles.activeProfileId, created.id);
       expect(profiles.saved[created.id], same(created));
     });

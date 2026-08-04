@@ -12,6 +12,7 @@ void main() {
       });
 
       expect(profile.trainerLevel, 1);
+      expect(profile.profileImageBase64, '');
       expect(profile.money, 0);
       expect(profile.abilityScores, UserProfile.defaultAbilityScores);
       expect(profile.armorClass, 10);
@@ -33,6 +34,7 @@ void main() {
       final profile = UserProfile(
         id: 'profile',
         name: 'Trainer',
+        profileImageBase64: 'encoded-image',
         createdAt: DateTime(2026, 7, 7),
         updatedAt: DateTime(2026, 7, 7),
         trainerLevel: 5,
@@ -63,6 +65,7 @@ void main() {
       final json = profile.toJson();
 
       expect(json['trainerLevel'], 5);
+      expect(json['profileImageBase64'], 'encoded-image');
       expect(json['money'], 1200);
       expect(json['abilityScores']['DEX'], 14);
       expect(json['armorClass'], 13);
@@ -90,6 +93,7 @@ void main() {
 
       final updated = profile.copyWith(
         name: 'Capopalestra',
+        profileImageBase64: 'new-encoded-image',
         trainerLevel: 8,
         money: 2500,
         abilityScores: const {
@@ -117,6 +121,7 @@ void main() {
 
       expect(updated.id, profile.id);
       expect(updated.name, 'Capopalestra');
+      expect(updated.profileImageBase64, 'new-encoded-image');
       expect(updated.trainerLevel, 8);
       expect(updated.money, 2500);
       expect(updated.abilityScores['DEX'], 16);
@@ -134,6 +139,9 @@ void main() {
       expect(updated.specializations, ['Pyromaniac']);
       expect(updated.trainerPath, 'Ace Trainer');
       expect(updated.createdAt, profile.createdAt);
+
+      final withoutImage = updated.copyWith(profileImageBase64: '');
+      expect(withoutImage.profileImageBase64, '');
     });
   });
 }

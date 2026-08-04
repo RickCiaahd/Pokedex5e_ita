@@ -1077,7 +1077,7 @@ class _TeamSlotCard extends StatelessWidget {
     );
     final number = pokemon == null
         ? null
-        : '#${pokemon!.id.toString().padLeft(3, '0')}';
+        : '#${pokemon.id.toString().padLeft(3, '0')}';
     final nickname = slot.nickname?.trim() ?? '';
     final title = slot.isEgg
         ? context.uiText('Uovo in incubazione', 'Incubating Egg')
@@ -1150,10 +1150,10 @@ class _TeamSlotCard extends StatelessWidget {
                         spacing: 6,
                         runSpacing: 6,
                         children: [
-                          for (final type in pokemon!.types)
+                          for (final type in pokemon.types)
                             PokemonTypeBadge(type: type, height: 20),
-                          _SmallChip(label: 'HP ${pokemon!.hitPoints}'),
-                          _SmallChip(label: 'AC ${pokemon!.armorClass}'),
+                          _SmallChip(label: 'HP ${pokemon.hitPoints}'),
+                          _SmallChip(label: 'AC ${pokemon.armorClass}'),
                         ],
                       ),
                     ],

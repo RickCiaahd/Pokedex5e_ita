@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -12,6 +13,35 @@ void main() {
     expect(ProfileImageService.tryDecode(encoded), [1, 2, 3, 4]);
     expect(ProfileImageService.tryDecode('not base64'), isNull);
     expect(ProfileImageService.tryDecode(''), isNull);
+  });
+
+  test('Home shows the saved image and keeps the person placeholder', () {
+    final homeSource = File(
+      'lib/screens/home/home_screen.dart',
+    ).readAsStringSync();
+
+    expect(homeSource, contains('TrainerProfileAvatar('));
+    expect(homeSource, contains("profile?.profileImageBase64 ?? ''"));
+    expect(homeSource, contains('fallback: Icon('));
+  });
+
+  testWidgets('avatar accepts a custom placeholder without an image', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: Scaffold(
+          body: TrainerProfileAvatar(
+            imageBase64: '',
+            trainerName: 'Riccardo Forte',
+            fallback: Icon(Icons.person),
+          ),
+        ),
+      ),
+    );
+
+    expect(find.byIcon(Icons.person), findsOneWidget);
+    expect(find.text('RF'), findsNothing);
   });
 
   testWidgets('avatar falls back to Trainer initials without an image', (

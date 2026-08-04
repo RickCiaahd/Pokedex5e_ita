@@ -14,9 +14,9 @@ identici dimensioni e pixel RGBA e viene applicata solo quando riduce il peso.
 
 ## Scansione completa dei PNG rimanenti
 
-- File controllati: **2469**
-- Candidati oltre soglia: **68**
-- Risparmio teorico residuo: **3.55 MiB**
+- File controllati: **2485**
+- Candidati oltre soglia: **76**
+- Risparmio teorico residuo: **4.04 MiB**
 
 ## Ultimo blocco
 

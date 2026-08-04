@@ -49,6 +49,11 @@ void main() {
     final guided = File('lib/widgets/tour/guided_tour.dart').readAsStringSync();
 
     expect(home, contains('ProfessorTourPanel('));
+    expect(
+      home,
+      contains('bottom: MediaQuery.viewPaddingOf(context).bottom'),
+      reason: 'Il tour Home deve restare sopra la navigazione di sistema',
+    );
     expect(guided, contains('ProfessorTourPanel('));
     expect(home, isNot(contains('class _ProfessorSpeechPanel')));
     expect(guided, isNot(contains('class _ProfessorSpeechPanel')));

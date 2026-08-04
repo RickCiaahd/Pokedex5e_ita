@@ -1070,7 +1070,7 @@ class _TeamSlotCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final basePokemon = pokemon;
+    final basePokemon = this.pokemon;
     final pokemon = basePokemon?.resolveVariant(
       formName: slot.effectiveFormName,
       gender: slot.gender,

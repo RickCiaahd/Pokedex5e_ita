@@ -2811,14 +2811,14 @@ class _TraitsView extends StatelessWidget {
                         basePokemon.id,
                       )
                     ? PokemonAssetPaths.localizedTypeLabel(
-                        slot.effectiveFormName ?? 'Normal',
+                        slot?.effectiveFormName ?? 'Normal',
                       )
                     : BattleFormChangeService.supports(basePokemon)
                     ? BattleFormChangeService.formLabel(
                         basePokemon,
-                        slot.effectiveFormName,
+                        slot?.effectiveFormName,
                       )
-                    : slot.effectiveFormName ?? '-',
+                    : slot?.effectiveFormName ?? '-',
               ),
               _InfoRow(
                 label: context.uiText('Cromatico', 'Shiny'),

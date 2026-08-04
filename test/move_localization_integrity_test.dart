@@ -266,6 +266,13 @@ Map<String, int> _mechanicalTokenCounts(
   ]) {
     normalizedValue = normalizedValue.replaceAll(pattern, 'MOVE DC');
   }
+  normalizedValue = normalizedValue.replaceAll(
+    RegExp(
+      r'\bmodificatore di caratteristica della mossa\b',
+      caseSensitive: false,
+    ),
+    'MOVE',
+  );
   for (final pattern in <RegExp>[
     RegExp(r'\bvalore CD per questa mossa\b', caseSensitive: false),
     RegExp(r'\bCD di questa mossa\b', caseSensitive: false),

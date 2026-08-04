@@ -13,6 +13,7 @@ class TrainerProfileAvatar extends StatefulWidget {
     this.radius = 28,
     this.backgroundColor,
     this.foregroundColor,
+    this.fallback,
   });
 
   final String imageBase64;
@@ -20,6 +21,7 @@ class TrainerProfileAvatar extends StatefulWidget {
   final double radius;
   final Color? backgroundColor;
   final Color? foregroundColor;
+  final Widget? fallback;
 
   @override
   State<TrainerProfileAvatar> createState() => _TrainerProfileAvatarState();
@@ -44,10 +46,12 @@ class _TrainerProfileAvatarState extends State<TrainerProfileAvatar> {
 
   @override
   Widget build(BuildContext context) {
-    final fallback = _AvatarFallback(
-      trainerName: widget.trainerName,
-      foregroundColor: widget.foregroundColor,
-    );
+    final fallback =
+        widget.fallback ??
+        _AvatarFallback(
+          trainerName: widget.trainerName,
+          foregroundColor: widget.foregroundColor,
+        );
 
     return CircleAvatar(
       radius: widget.radius,

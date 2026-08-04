@@ -51,4 +51,48 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('remove-trainer-profile-image')));
     expect(value, '');
   });
+
+  testWidgets('trainer sheet mode uses one edit button to remove an image', (
+    tester,
+  ) async {
+    var value = 'encoded-image';
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: TrainerProfileImagePicker(
+            imageBase64: value,
+            trainerName: 'Misty',
+            editButtonOnly: true,
+            onChanged: (updated) => value = updated,
+          ),
+        ),
+      ),
+    );
+
+    expect(
+      find.byKey(const ValueKey('edit-trainer-profile-image')),
+      findsOneWidget,
+    );
+    expect(find.text('Foto profilo (facoltativa)'), findsNothing);
+    expect(find.text('Profile photo (optional)'), findsNothing);
+    expect(
+      find.byKey(const ValueKey('choose-trainer-profile-image')),
+      findsNothing,
+    );
+    expect(
+      find.byKey(const ValueKey('remove-trainer-profile-image')),
+      findsNothing,
+    );
+
+    await tester.tap(
+      find.byKey(const ValueKey('edit-trainer-profile-image')),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(
+      find.byKey(const ValueKey('remove-trainer-profile-image-option')),
+    );
+    await tester.pumpAndSettle();
+
+    expect(value, '');
+  });
 }

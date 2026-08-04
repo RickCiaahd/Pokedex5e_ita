@@ -1297,6 +1297,7 @@ class _TrainerSheetMainColumn extends StatelessWidget {
           imageBase64: profileImageBase64,
           trainerName: nameController.text,
           compact: true,
+          editButtonOnly: true,
           enabled: !isSaving,
           onChanged: onProfileImageChanged,
         ),

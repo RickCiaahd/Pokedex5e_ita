@@ -103,17 +103,23 @@ class _ProfilesScreenState extends State<ProfilesScreen> {
 
   Future<void> _createQuickProfile() async {
     if (_isBusy) return;
-    final draft = await showDialog<_QuickProfileDraft>(
+    final name = await showDialog<String>(
       context: context,
-      builder: (_) => const _CreateProfileDialog(),
+      builder: (_) => const _CreateProfileNameDialog(),
     );
-    if (draft == null || draft.name.trim().isEmpty) return;
+    if (!mounted || name == null || name.trim().isEmpty) return;
+
+    final imageResult = await showDialog<_QuickProfileImageResult>(
+      context: context,
+      builder: (_) => _CreateProfileImageDialog(trainerName: name.trim()),
+    );
+    if (!mounted || imageResult == null) return;
 
     setState(() => _isBusy = true);
     try {
       final profile = await _profileCreationService.createEmptyProfile(
-        draft.name.trim(),
-        profileImageBase64: draft.profileImageBase64,
+        name.trim(),
+        profileImageBase64: imageResult.profileImageBase64,
       );
       await _loadProfiles();
       _setStatus(
@@ -792,16 +798,17 @@ class _ActiveBadge extends StatelessWidget {
   }
 }
 
-class _CreateProfileDialog extends StatefulWidget {
-  const _CreateProfileDialog();
+class _CreateProfileNameDialog extends StatefulWidget {
+  const _CreateProfileNameDialog();
 
   @override
-  State<_CreateProfileDialog> createState() => _CreateProfileDialogState();
+  State<_CreateProfileNameDialog> createState() =>
+      _CreateProfileNameDialogState();
 }
 
-class _CreateProfileDialogState extends State<_CreateProfileDialog> {
+class _CreateProfileNameDialogState
+    extends State<_CreateProfileNameDialog> {
   final TextEditingController _controller = TextEditingController();
-  String _profileImageBase64 = '';
 
   @override
   void dispose() {
@@ -812,9 +819,53 @@ class _CreateProfileDialogState extends State<_CreateProfileDialog> {
   void _submit() {
     final name = _controller.text.trim();
     if (name.isEmpty) return;
+    Navigator.of(context).pop(name);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text(context.uiText('Nuovo profilo', 'New profile')),
+      content: TextField(
+        controller: _controller,
+        autofocus: true,
+        decoration: InputDecoration(
+          labelText: context.uiText('Nome allenatore', 'Trainer name'),
+        ),
+        onChanged: (_) => setState(() {}),
+        onSubmitted: (_) => _submit(),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text(context.uiText('Annulla', 'Cancel')),
+        ),
+        FilledButton(
+          onPressed: _controller.text.trim().isEmpty ? null : _submit,
+          child: Text(context.uiText('Avanti', 'Next')),
+        ),
+      ],
+    );
+  }
+}
+
+class _CreateProfileImageDialog extends StatefulWidget {
+  const _CreateProfileImageDialog({required this.trainerName});
+
+  final String trainerName;
+
+  @override
+  State<_CreateProfileImageDialog> createState() =>
+      _CreateProfileImageDialogState();
+}
+
+class _CreateProfileImageDialogState
+    extends State<_CreateProfileImageDialog> {
+  String _profileImageBase64 = '';
+
+  void _submit() {
     Navigator.of(context).pop(
-      _QuickProfileDraft(
-        name: name,
+      _QuickProfileImageResult(
         profileImageBase64: _profileImageBase64,
       ),
     );
@@ -822,26 +873,25 @@ class _CreateProfileDialogState extends State<_CreateProfileDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final hasImage = _profileImageBase64.isNotEmpty;
     return AlertDialog(
-      title: Text(context.uiText('Nuovo profilo', 'New profile')),
+      title: Text(
+        context.uiText('Immagine dell’Allenatore', 'Trainer image'),
+      ),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            TextField(
-              controller: _controller,
-              autofocus: true,
-              decoration: InputDecoration(
-                labelText: context.uiText('Nome allenatore', 'Trainer name'),
+            Text(
+              context.uiText(
+                'Puoi scegliere un’immagine adesso oppure saltare questo passaggio.',
+                'You can choose an image now or skip this step.',
               ),
-              onChanged: (_) => setState(() {}),
-              onSubmitted: (_) => _submit(),
             ),
             const SizedBox(height: 18),
             TrainerProfileImagePicker(
               imageBase64: _profileImageBase64,
-              trainerName: _controller.text,
-              compact: true,
+              trainerName: widget.trainerName,
               onChanged: (value) => setState(
                 () => _profileImageBase64 = value,
               ),
@@ -856,20 +906,22 @@ class _CreateProfileDialogState extends State<_CreateProfileDialog> {
         ),
         FilledButton(
           onPressed: _submit,
-          child: Text(context.uiText('Crea', 'Create')),
+          child: Text(
+            hasImage
+                ? context.uiText('Crea', 'Create')
+                : context.uiText('Salta', 'Skip'),
+          ),
         ),
       ],
     );
   }
 }
 
-class _QuickProfileDraft {
-  const _QuickProfileDraft({
-    required this.name,
+class _QuickProfileImageResult {
+  const _QuickProfileImageResult({
     required this.profileImageBase64,
   });
 
-  final String name;
   final String profileImageBase64;
 }
 

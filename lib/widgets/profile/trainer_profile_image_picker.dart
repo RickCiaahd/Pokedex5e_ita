@@ -79,6 +79,7 @@ class TrainerProfileImagePicker extends StatefulWidget {
     required this.onChanged,
     this.enabled = true,
     this.compact = false,
+    this.editButtonOnly = false,
     this.imageService,
   });
 
@@ -87,6 +88,7 @@ class TrainerProfileImagePicker extends StatefulWidget {
   final ValueChanged<String> onChanged;
   final bool enabled;
   final bool compact;
+  final bool editButtonOnly;
   final ProfileImageService? imageService;
 
   @override
@@ -136,6 +138,54 @@ class _TrainerProfileImagePickerState
     }
   }
 
+  Future<void> _openEditOptions() async {
+    if (!widget.enabled || _isPicking) return;
+
+    final action = await showModalBottomSheet<_ProfileImageAction>(
+      context: context,
+      builder: (sheetContext) => SafeArea(
+        child: Wrap(
+          children: [
+            ListTile(
+              key: const ValueKey('replace-trainer-profile-image'),
+              leading: Icon(
+                widget.imageBase64.isEmpty
+                    ? Icons.add_a_photo_outlined
+                    : Icons.edit_outlined,
+              ),
+              title: Text(
+                widget.imageBase64.isEmpty
+                    ? context.uiText('Scegli immagine', 'Choose image')
+                    : context.uiText('Sostituisci immagine', 'Replace image'),
+              ),
+              onTap: () => Navigator.of(
+                sheetContext,
+              ).pop(_ProfileImageAction.choose),
+            ),
+            if (widget.imageBase64.isNotEmpty)
+              ListTile(
+                key: const ValueKey('remove-trainer-profile-image-option'),
+                leading: const Icon(Icons.delete_outline),
+                title: Text(
+                  context.uiText('Rimuovi immagine', 'Remove image'),
+                ),
+                onTap: () => Navigator.of(
+                  sheetContext,
+                ).pop(_ProfileImageAction.remove),
+              ),
+          ],
+        ),
+      ),
+    );
+    if (!mounted || action == null) return;
+
+    if (action == _ProfileImageAction.choose) {
+      await _pickImage();
+    } else {
+      widget.onChanged('');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final hasImage = widget.imageBase64.isNotEmpty;
@@ -147,34 +197,57 @@ class _TrainerProfileImagePickerState
     final actions = Wrap(
       spacing: 8,
       runSpacing: 4,
-      children: [
-        OutlinedButton.icon(
-          key: const ValueKey('choose-trainer-profile-image'),
-          onPressed: widget.enabled && !_isPicking ? _pickImage : null,
-          icon: _isPicking
-              ? const SizedBox.square(
-                  dimension: 16,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                )
-              : Icon(
-                  hasImage ? Icons.edit_outlined : Icons.add_a_photo_outlined,
+      children: widget.editButtonOnly
+          ? [
+              OutlinedButton.icon(
+                key: const ValueKey('edit-trainer-profile-image'),
+                onPressed: widget.enabled && !_isPicking
+                    ? _openEditOptions
+                    : null,
+                icon: _isPicking
+                    ? const SizedBox.square(
+                        dimension: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Icon(Icons.edit_outlined),
+                label: Text(
+                  context.uiText(
+                    'Modifica immagine profilo',
+                    'Edit profile image',
+                  ),
                 ),
-          label: Text(
-            hasImage
-                ? context.uiText('Cambia foto', 'Change photo')
-                : context.uiText('Scegli foto', 'Choose photo'),
-          ),
-        ),
-        if (hasImage)
-          TextButton.icon(
-            key: const ValueKey('remove-trainer-profile-image'),
-            onPressed: widget.enabled && !_isPicking
-                ? () => widget.onChanged('')
-                : null,
-            icon: const Icon(Icons.delete_outline),
-            label: Text(context.uiText('Rimuovi', 'Remove')),
-          ),
-      ],
+              ),
+            ]
+          : [
+              OutlinedButton.icon(
+                key: const ValueKey('choose-trainer-profile-image'),
+                onPressed: widget.enabled && !_isPicking ? _pickImage : null,
+                icon: _isPicking
+                    ? const SizedBox.square(
+                        dimension: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : Icon(
+                        hasImage
+                            ? Icons.edit_outlined
+                            : Icons.add_a_photo_outlined,
+                      ),
+                label: Text(
+                  hasImage
+                      ? context.uiText('Cambia foto', 'Change photo')
+                      : context.uiText('Scegli foto', 'Choose photo'),
+                ),
+              ),
+              if (hasImage)
+                TextButton.icon(
+                  key: const ValueKey('remove-trainer-profile-image'),
+                  onPressed: widget.enabled && !_isPicking
+                      ? () => widget.onChanged('')
+                      : null,
+                  icon: const Icon(Icons.delete_outline),
+                  label: Text(context.uiText('Rimuovi', 'Remove')),
+                ),
+            ],
     );
 
     return Semantics(
@@ -190,20 +263,24 @@ class _TrainerProfileImagePickerState
                 avatar,
                 const SizedBox(width: 12),
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        context.uiText(
-                          'Foto profilo (facoltativa)',
-                          'Profile photo (optional)',
+                  child: widget.editButtonOnly
+                      ? actions
+                      : Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              context.uiText(
+                                'Foto profilo (facoltativa)',
+                                'Profile photo (optional)',
+                              ),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            actions,
+                          ],
                         ),
-                        style: const TextStyle(fontWeight: FontWeight.w700),
-                      ),
-                      const SizedBox(height: 4),
-                      actions,
-                    ],
-                  ),
                 ),
               ],
             )
@@ -213,26 +290,32 @@ class _TrainerProfileImagePickerState
                 avatar,
                 const SizedBox(width: 16),
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        context.uiText(
-                          'Immagine profilo (facoltativa)',
-                          'Profile image (optional)',
+                  child: widget.editButtonOnly
+                      ? actions
+                      : Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              context.uiText(
+                                'Immagine profilo (facoltativa)',
+                                'Profile image (optional)',
+                              ),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            const SizedBox(height: 6),
+                            actions,
+                          ],
                         ),
-                        style: const TextStyle(fontWeight: FontWeight.w700),
-                      ),
-                      const SizedBox(height: 6),
-                      actions,
-                    ],
-                  ),
                 ),
               ],
             ),
     );
   }
 }
+
+enum _ProfileImageAction { choose, remove }
 
 class _AvatarFallback extends StatelessWidget {
   const _AvatarFallback({

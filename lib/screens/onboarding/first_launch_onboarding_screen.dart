@@ -17,6 +17,7 @@ import '../../repositories/pokemon_repository.dart';
 import '../../repositories/trainer_manual_repository.dart';
 import '../../services/profile_creation_service.dart';
 import '../../widgets/pokemon/pokemon_asset_image.dart';
+import '../../widgets/profile/trainer_profile_image_picker.dart';
 
 class FirstLaunchOnboardingScreen extends StatefulWidget {
   const FirstLaunchOnboardingScreen({
@@ -53,6 +54,7 @@ class _FirstLaunchOnboardingScreenState
   bool _isSaving = false;
   String? _errorMessage;
   String _background = _backgroundOptions.first.name;
+  String _profileImageBase64 = '';
   TrainerOrigin? _origin;
   Pokemon? _starter;
   List<TrainerOrigin> _origins = const [];
@@ -327,6 +329,7 @@ class _FirstLaunchOnboardingScreenState
       final profile = UserProfile(
         id: now.microsecondsSinceEpoch.toString(),
         name: _nameController.text.trim(),
+        profileImageBase64: _profileImageBase64,
         createdAt: now,
         updatedAt: now,
         trainerAge: _age,
@@ -526,16 +529,29 @@ class _FirstLaunchOnboardingScreenState
           speaker: l10n.onboardingProfessor,
           title: l10n.onboardingNameTitle,
           body: l10n.onboardingNameBody,
-          content: TextField(
-            controller: _nameController,
-            autofocus: true,
-            textCapitalization: TextCapitalization.words,
-            decoration: InputDecoration(
-              labelText: l10n.onboardingTrainerNameLabel,
-              hintText: l10n.onboardingTrainerNameHint,
-              prefixIcon: const Icon(Icons.person_outline),
-            ),
-            onChanged: (_) => setState(() {}),
+          content: Column(
+            children: [
+              TextField(
+                controller: _nameController,
+                autofocus: true,
+                textCapitalization: TextCapitalization.words,
+                decoration: InputDecoration(
+                  labelText: l10n.onboardingTrainerNameLabel,
+                  hintText: l10n.onboardingTrainerNameHint,
+                  prefixIcon: const Icon(Icons.person_outline),
+                ),
+                onChanged: (_) => setState(() {}),
+              ),
+              const SizedBox(height: 18),
+              TrainerProfileImagePicker(
+                imageBase64: _profileImageBase64,
+                trainerName: _nameController.text,
+                compact: true,
+                onChanged: (value) => setState(
+                  () => _profileImageBase64 = value,
+                ),
+              ),
+            ],
           ),
         );
       case 3:
@@ -673,6 +689,12 @@ class _FirstLaunchOnboardingScreenState
           body: l10n.onboardingSummaryBody,
           content: Column(
             children: [
+              TrainerProfileAvatar(
+                imageBase64: _profileImageBase64,
+                trainerName: _nameController.text,
+                radius: 40,
+              ),
+              const SizedBox(height: 12),
               _SummaryRow(
                 icon: Icons.person_outline,
                 label: l10n.onboardingNameLabel,

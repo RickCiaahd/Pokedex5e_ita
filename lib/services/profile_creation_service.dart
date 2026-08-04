@@ -21,8 +21,16 @@ class ProfileCreationService {
   final PokedexRepository _pokedexRepository;
   final AppLaunchService _appLaunchService;
 
-  Future<UserProfile> createEmptyProfile(String name) {
-    return _create(profile: UserProfile.create(name));
+  Future<UserProfile> createEmptyProfile(
+    String name, {
+    String profileImageBase64 = '',
+  }) {
+    return _create(
+      profile: UserProfile.create(
+        name,
+        profileImageBase64: profileImageBase64,
+      ),
+    );
   }
 
   Future<UserProfile> createGuidedProfile({

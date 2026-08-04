@@ -16,6 +16,7 @@ import '../../services/profile_backup_service.dart';
 import '../../services/profile_creation_service.dart';
 import '../../widgets/layout/responsive_content.dart';
 import '../../widgets/navigation/home_leading_button.dart';
+import '../../widgets/profile/trainer_profile_image_picker.dart';
 import '../onboarding/first_launch_onboarding_screen.dart';
 
 class ProfilesScreen extends StatefulWidget {
@@ -102,16 +103,17 @@ class _ProfilesScreenState extends State<ProfilesScreen> {
 
   Future<void> _createQuickProfile() async {
     if (_isBusy) return;
-    final name = await showDialog<String>(
+    final draft = await showDialog<_QuickProfileDraft>(
       context: context,
       builder: (_) => const _CreateProfileDialog(),
     );
-    if (name == null || name.trim().isEmpty) return;
+    if (draft == null || draft.name.trim().isEmpty) return;
 
     setState(() => _isBusy = true);
     try {
       final profile = await _profileCreationService.createEmptyProfile(
-        name.trim(),
+        draft.name.trim(),
+        profileImageBase64: draft.profileImageBase64,
       );
       await _loadProfiles();
       _setStatus(
@@ -407,6 +409,8 @@ class _ProfilesScreenState extends State<ProfilesScreen> {
               else ...[
                 _ProfilesHeader(
                   activeProfileName: activeProfileName,
+                  activeProfileImageBase64:
+                      _activeProfile?.profileImageBase64 ?? '',
                   profileCount: _profiles.length,
                 ),
                 if (_statusMessage != null) ...[
@@ -455,10 +459,12 @@ class _ProfilesScreenState extends State<ProfilesScreen> {
 class _ProfilesHeader extends StatelessWidget {
   const _ProfilesHeader({
     required this.activeProfileName,
+    required this.activeProfileImageBase64,
     required this.profileCount,
   });
 
   final String activeProfileName;
+  final String activeProfileImageBase64;
   final int profileCount;
 
   @override
@@ -473,11 +479,12 @@ class _ProfilesHeader extends StatelessWidget {
       ),
       child: Row(
         children: [
-          CircleAvatar(
+          TrainerProfileAvatar(
+            imageBase64: activeProfileImageBase64,
+            trainerName: activeProfileName,
             radius: 32,
             backgroundColor: colorScheme.primary,
             foregroundColor: colorScheme.onPrimary,
-            child: const Icon(Icons.person, size: 34),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -648,14 +655,16 @@ class _ProfileTile extends StatelessWidget {
           horizontal: 16,
           vertical: 10,
         ),
-        leading: CircleAvatar(
+        leading: TrainerProfileAvatar(
+          imageBase64: profile.profileImageBase64,
+          trainerName: profile.name,
+          radius: 20,
           backgroundColor: isActive
               ? colorScheme.primary
               : colorScheme.surfaceContainerHighest,
           foregroundColor: isActive
               ? colorScheme.onPrimary
               : colorScheme.onSurfaceVariant,
-          child: Text(_initialsFor(profile.name)),
         ),
         title: Row(
           children: [
@@ -750,17 +759,6 @@ class _ProfileTile extends StatelessWidget {
     );
   }
 
-  String _initialsFor(String name) {
-    final parts = name
-        .trim()
-        .split(RegExp(r'\s+'))
-        .where((part) => part.isNotEmpty)
-        .toList();
-    if (parts.isEmpty) return '?';
-    if (parts.length == 1) return parts.first.substring(0, 1).toUpperCase();
-    return '${parts.first[0]}${parts.last[0]}'.toUpperCase();
-  }
-
   String _formatDate(DateTime date) {
     final day = date.day.toString().padLeft(2, '0');
     final month = date.month.toString().padLeft(2, '0');
@@ -803,6 +801,7 @@ class _CreateProfileDialog extends StatefulWidget {
 
 class _CreateProfileDialogState extends State<_CreateProfileDialog> {
   final TextEditingController _controller = TextEditingController();
+  String _profileImageBase64 = '';
 
   @override
   void dispose() {
@@ -813,20 +812,42 @@ class _CreateProfileDialogState extends State<_CreateProfileDialog> {
   void _submit() {
     final name = _controller.text.trim();
     if (name.isEmpty) return;
-    Navigator.of(context).pop(name);
+    Navigator.of(context).pop(
+      _QuickProfileDraft(
+        name: name,
+        profileImageBase64: _profileImageBase64,
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text(context.uiText('Nuovo profilo', 'New profile')),
-      content: TextField(
-        controller: _controller,
-        autofocus: true,
-        decoration: InputDecoration(
-          labelText: context.uiText('Nome allenatore', 'Trainer name'),
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: _controller,
+              autofocus: true,
+              decoration: InputDecoration(
+                labelText: context.uiText('Nome allenatore', 'Trainer name'),
+              ),
+              onChanged: (_) => setState(() {}),
+              onSubmitted: (_) => _submit(),
+            ),
+            const SizedBox(height: 18),
+            TrainerProfileImagePicker(
+              imageBase64: _profileImageBase64,
+              trainerName: _controller.text,
+              compact: true,
+              onChanged: (value) => setState(
+                () => _profileImageBase64 = value,
+              ),
+            ),
+          ],
         ),
-        onSubmitted: (_) => _submit(),
       ),
       actions: [
         TextButton(
@@ -840,6 +861,16 @@ class _CreateProfileDialogState extends State<_CreateProfileDialog> {
       ],
     );
   }
+}
+
+class _QuickProfileDraft {
+  const _QuickProfileDraft({
+    required this.name,
+    required this.profileImageBase64,
+  });
+
+  final String name;
+  final String profileImageBase64;
 }
 
 enum _ProfileCreationMode { quick, guided }

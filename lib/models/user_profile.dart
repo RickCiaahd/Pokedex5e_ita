@@ -1,5 +1,6 @@
 class UserProfile {
   static const defaultProfileId = 'default';
+  static const maxProfileImageBase64Length = 4 * 1024 * 1024;
   static const defaultAbilityScores = {
     'STR': 10,
     'DEX': 10,
@@ -11,6 +12,7 @@ class UserProfile {
 
   final String id;
   final String name;
+  final String profileImageBase64;
   final DateTime createdAt;
   final DateTime updatedAt;
   final int trainerAge;
@@ -38,6 +40,7 @@ class UserProfile {
     required this.name,
     required this.createdAt,
     required this.updatedAt,
+    this.profileImageBase64 = '',
     this.trainerAge = 16,
     this.trainerLevel = 1,
     this.money = 0,
@@ -67,12 +70,16 @@ class UserProfile {
           trainerPathResources ?? const <String, int>{},
         );
 
-  factory UserProfile.create(String name) {
+  factory UserProfile.create(
+    String name, {
+    String profileImageBase64 = '',
+  }) {
     final now = DateTime.now();
 
     return UserProfile(
       id: now.microsecondsSinceEpoch.toString(),
       name: name,
+      profileImageBase64: profileImageBase64,
       createdAt: now,
       updatedAt: now,
       trainerAge: 16,
@@ -130,6 +137,7 @@ class UserProfile {
   UserProfile copyWith({
     String? id,
     String? name,
+    String? profileImageBase64,
     DateTime? createdAt,
     DateTime? updatedAt,
     int? trainerAge,
@@ -155,6 +163,7 @@ class UserProfile {
     return UserProfile(
       id: id ?? this.id,
       name: name ?? this.name,
+      profileImageBase64: profileImageBase64 ?? this.profileImageBase64,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? DateTime.now(),
       trainerAge: trainerAge ?? this.trainerAge,
@@ -185,6 +194,7 @@ class UserProfile {
     return {
       'id': id,
       'name': name,
+      'profileImageBase64': profileImageBase64,
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt.toIso8601String(),
       'trainerAge': trainerAge,
@@ -213,6 +223,7 @@ class UserProfile {
     return UserProfile(
       id: json['id'],
       name: json['name'],
+      profileImageBase64: _readProfileImage(json['profileImageBase64']),
       createdAt: DateTime.parse(json['createdAt']),
       updatedAt: DateTime.parse(json['updatedAt']),
       trainerAge: json['trainerAge'] ?? 16,
@@ -248,6 +259,14 @@ class UserProfile {
       for (final entry in defaultAbilityScores.entries)
         entry.key: rawScores[entry.key] is int ? rawScores[entry.key] : entry.value,
     };
+  }
+
+  static String _readProfileImage(dynamic rawValue) {
+    if (rawValue is! String ||
+        rawValue.length > maxProfileImageBase64Length) {
+      return '';
+    }
+    return rawValue;
   }
 
   static Map<String, String> _readStringMap(dynamic rawValues) {

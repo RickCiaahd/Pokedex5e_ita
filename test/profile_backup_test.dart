@@ -18,6 +18,7 @@ void main() {
     final profile = UserProfile(
       id: 'profile-1',
       name: 'Misty',
+      profileImageBase64: 'encoded-profile-image',
       createdAt: now,
       updatedAt: now,
       trainerLevel: 7,
@@ -137,6 +138,7 @@ void main() {
     final decoded = service.decodeBackup(service.encodeBackup(backup));
 
     expect(decoded.profile.name, 'Misty');
+    expect(decoded.profile.profileImageBase64, 'encoded-profile-image');
     expect(decoded.profile.trainerLevel, 7);
     expect(decoded.pokedex.single.formFor('Alolan').caught, isTrue);
     expect(decoded.team.first.formName, 'Alolan');

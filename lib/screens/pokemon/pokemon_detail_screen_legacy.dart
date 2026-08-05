@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../localization/ui_text.dart';
 import '../../localization/feat_display_name.dart';
+import '../../localization/pokemon_form_localization.dart';
 import '../../models/bag_item.dart';
 import '../../models/evolution_data.dart';
 import '../../models/item_driven_pokemon_form.dart';
@@ -23,6 +24,7 @@ import '../../repositories/pokemon_repository.dart';
 import '../../services/battle_form_change_service.dart';
 import '../../services/custom_pokemon_discovery_service.dart';
 import '../../services/custom_pokemon_runtime_registry.dart';
+import '../../services/evolution_catalog_resolver.dart';
 import '../../services/evolution_service.dart';
 import '../../services/trainer_path_passive_service.dart';
 import '../../widgets/layout/responsive_content.dart';
@@ -171,6 +173,8 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
       BagInventoryRepository();
   final ItemRepository _itemRepository = ItemRepository();
   final ProfileRepository _profileRepository = ProfileRepository();
+  final EvolutionCatalogResolver _evolutionCatalogResolver =
+      const EvolutionCatalogResolver();
   final EvolutionService _evolutionService = const EvolutionService();
   final CustomPokemonDiscoveryService _customDiscoveryService =
       CustomPokemonDiscoveryService();
@@ -1006,7 +1010,12 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
     final stable = CustomPokemonRuntimeRegistry.definitionByStableId(
       option.targetStableId,
     );
-    return stable?.toPokemon() ?? _pokemonByName(option.toName);
+    return stable?.toPokemon() ??
+        _evolutionCatalogResolver.targetPokemonFor(
+          option: option,
+          catalog: widget.allPokemon,
+        ) ??
+        _pokemonByName(option.toName);
   }
 
   String _referenceKey(String value) {
@@ -1044,7 +1053,10 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
     Pokemon pokemon,
     Map<String, EvolutionData> evolutions,
   ) {
-    return evolutions[pokemon.name] ?? evolutions[_referenceKey(pokemon.name)];
+    return _evolutionCatalogResolver.evolutionFor(
+      pokemon: pokemon,
+      evolutions: evolutions,
+    );
   }
 
   EvolutionData? _evolutionForCurrentPokemon() {
@@ -1060,7 +1072,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
         .where(
           (choice) =>
               choice.isAvailable &&
-              _pokemonByName(choice.option.toName) != null,
+              _pokemonForEvolutionOption(choice.option) != null,
         )
         .toList(growable: false);
   }
@@ -1112,6 +1124,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
         currentPokemon: _pokemon,
         choices: choices,
         pokemonByName: _pokemonByName,
+        pokemonForOption: _pokemonForEvolutionOption,
       ),
     );
 
@@ -1126,11 +1139,14 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
   ) async {
     if (!selected.isAvailable) return null;
 
+    final targetName = PokemonFormLocalization.evolutionName(
+      selected.option.toName,
+    );
     final evolvedPokemon = _pokemonForEvolutionOption(selected.option);
     if (evolvedPokemon == null) {
       _showMessage(
         uiTextForLanguage(
-          '${selected.option.toName} non è presente nel catalogo attuale.',
+          '$targetName non è presente nel catalogo attuale.',
           """${selected.option.toName} is not available in the current catalog.""",
         ),
       );
@@ -1176,7 +1192,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
       _replaceTeamSlot(updatedSlot);
       _isLoading = true;
       _message = uiTextForLanguage(
-        '$oldName si è evoluto in ${selected.option.toName}!',
+        '$oldName si è evoluto in $targetName!',
         """$oldName evolved into ${selected.option.toName}!""",
       );
     });
@@ -1189,7 +1205,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
       PokemonRepository.clearCache();
       _showMessage(
         uiTextForLanguage(
-          '$oldName si è evoluto in ${selected.option.toName}! Nuova specie scoperta.',
+          '$oldName si è evoluto in $targetName! Nuova specie scoperta.',
           """$oldName evolved into ${selected.option.toName}! New species discovered.""",
         ),
       );
@@ -2843,7 +2859,10 @@ class _TraitsView extends StatelessWidget {
                         basePokemon,
                         slot?.effectiveFormName,
                       )
-                    : slot?.effectiveFormName ?? '-',
+                    : PokemonFormLocalization.formLabel(
+                        basePokemon,
+                        slot?.effectiveFormName,
+                      ),
               ),
               _InfoRow(
                 label: context.uiText('Cromatico', 'Shiny'),

@@ -6,6 +6,7 @@ import 'package:pokedex_5e_ita/repositories/evolution_repository.dart';
 import 'package:pokedex_5e_ita/repositories/pokemon_repository.dart';
 import 'package:pokedex_5e_ita/services/evolution_catalog_resolver.dart';
 import 'package:pokedex_5e_ita/services/evolution_form_alias_service.dart';
+import 'package:pokedex_5e_ita/services/evolution_service.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -145,6 +146,63 @@ void main() {
       roamingEvolution!.options.map((option) => option.toKey),
       contains('gholdengo'),
     );
+
+    final chestEligibility = const EvolutionService()
+        .evaluateOptions(
+          pokemon: gimmighoul,
+          slot: TeamSlot(slotIndex: 0, pokemonId: gimmighoul.id),
+          evolution: chestEvolution,
+          inventory: const [],
+          itemCatalog: const [],
+        )
+        .singleWhere((entry) => entry.option.toKey == 'gholdengo');
+    final roamingEligibility = const EvolutionService()
+        .evaluateOptions(
+          pokemon: roaming,
+          slot: TeamSlot(slotIndex: 0, pokemonId: roaming.id),
+          evolution: roamingEvolution,
+          inventory: const [],
+          itemCatalog: const [],
+        )
+        .singleWhere((entry) => entry.option.toKey == 'gholdengo');
+
+    expect(chestEligibility.isAvailable, isTrue);
+    expect(roamingEligibility.isAvailable, isTrue);
+    expect(
+      chestEligibility.conditionLabels,
+      contains('Oppure prima del livello 10 consumando ₽9.999'),
+    );
+  });
+
+  test('tutte le forme con evoluzione usano il proprio id tecnico', () async {
+    final catalog = await PokemonRepository().getAllPokemon();
+    final evolutions = await EvolutionRepository().getEvolutionData();
+    var checkedForms = 0;
+
+    for (final basePokemon in catalog) {
+      for (final definition in basePokemon.formDefinitions) {
+        if (definition.gender != null) continue;
+        final concrete = definition.pokemon.copyWith(
+          formDefinitions: basePokemon.formDefinitions,
+        );
+        final assetSlug = concrete.assetSlug;
+        if (assetSlug == null || !evolutions.containsKey(assetSlug)) continue;
+
+        checkedForms++;
+        final resolved = resolver.evolutionFor(
+          pokemon: concrete,
+          evolutions: evolutions,
+        );
+        expect(
+          resolved,
+          isNotNull,
+          reason: 'Evoluzione non risolta per la forma $assetSlug',
+        );
+        expect(resolved!.options, isNotEmpty);
+      }
+    }
+
+    expect(checkedForms, greaterThan(20));
   });
 
   test('tutti i bersagli canonici del catalogo sono risolvibili', () async {

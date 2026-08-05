@@ -34,6 +34,8 @@ class UserProfile {
   final String trainerPath;
   final Map<String, String> trainerPathChoices;
   final Map<String, int> trainerPathResources;
+  final List<String> transformationUses;
+  final List<String> transformedPokemonKeys;
 
   UserProfile({
     required this.id,
@@ -60,6 +62,8 @@ class UserProfile {
     this.trainerPath = '',
     Map<String, String>? trainerPathChoices,
     Map<String, int>? trainerPathResources,
+    this.transformationUses = const [],
+    this.transformedPokemonKeys = const [],
   })  : abilityScores = Map.unmodifiable(
           abilityScores ?? defaultAbilityScores,
         ),
@@ -159,6 +163,8 @@ class UserProfile {
     String? trainerPath,
     Map<String, String>? trainerPathChoices,
     Map<String, int>? trainerPathResources,
+    List<String>? transformationUses,
+    List<String>? transformedPokemonKeys,
   }) {
     return UserProfile(
       id: id ?? this.id,
@@ -187,6 +193,9 @@ class UserProfile {
       trainerPath: trainerPath ?? this.trainerPath,
       trainerPathChoices: trainerPathChoices ?? this.trainerPathChoices,
       trainerPathResources: trainerPathResources ?? this.trainerPathResources,
+      transformationUses: transformationUses ?? this.transformationUses,
+      transformedPokemonKeys:
+          transformedPokemonKeys ?? this.transformedPokemonKeys,
     );
   }
 
@@ -216,6 +225,8 @@ class UserProfile {
       'trainerPath': trainerPath,
       'trainerPathChoices': trainerPathChoices,
       'trainerPathResources': trainerPathResources,
+      'transformationUses': transformationUses,
+      'transformedPokemonKeys': transformedPokemonKeys,
     };
   }
 
@@ -247,7 +258,17 @@ class UserProfile {
       trainerPath: json['trainerPath'] ?? '',
       trainerPathChoices: _readStringMap(json['trainerPathChoices']),
       trainerPathResources: _readIntMap(json['trainerPathResources']),
+      transformationUses: _readStringList(json['transformationUses']),
+      transformedPokemonKeys: _readStringList(json['transformedPokemonKeys']),
     );
+  }
+
+  static List<String> _readStringList(dynamic rawValues) {
+    if (rawValues is! List) return const [];
+    return rawValues
+        .whereType<String>()
+        .where((value) => value.trim().isNotEmpty)
+        .toList(growable: false);
   }
 
   static Map<String, int> _readAbilityScores(dynamic rawScores) {

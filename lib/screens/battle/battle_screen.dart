@@ -10,6 +10,8 @@ import '../../localization/user_facing_error.dart';
 import '../../models/bag_inventory_entry.dart';
 import '../../models/bag_item.dart';
 import '../../models/battle_environment.dart';
+import '../../models/battle_transformation.dart';
+import '../../models/evolution_data.dart';
 import '../../models/custom_pokemon_advanced_data.dart';
 import '../../models/battle_session.dart';
 import '../../models/item_driven_pokemon_form.dart';
@@ -20,6 +22,7 @@ import '../../models/team_slot.dart';
 import '../../models/user_profile.dart';
 import '../../repositories/bag_inventory_repository.dart';
 import '../../repositories/battle_session_repository.dart';
+import '../../repositories/evolution_repository.dart';
 import '../../repositories/item_repository.dart';
 import '../../repositories/move_repository.dart';
 import '../../repositories/pokemon_repository.dart';
@@ -32,10 +35,13 @@ import '../../services/guided_tour_service.dart';
 import '../../services/battle_quick_item_service.dart';
 import '../../services/battle_temporary_hp_service.dart';
 import '../../services/battle_status_rules.dart';
+import '../../services/battle_transformation_service.dart';
 import '../../services/trainer_path_passive_service.dart';
+import '../../services/pokemon_transform_asset_catalog.dart';
 import '../../widgets/battle/battle_environment_card.dart';
 import '../../widgets/battle/battle_status_assistance_card.dart';
 import '../../widgets/battle/pokemon_battle_attributes_card.dart';
+import '../../widgets/battle/pokemon_transformation_image.dart';
 import '../../widgets/layout/responsive_content.dart';
 import '../../widgets/navigation/home_leading_button.dart';
 import '../../widgets/pokemon/pokemon_asset_image.dart';
@@ -57,6 +63,7 @@ class _BattleScreenState extends State<BattleScreen> {
   final MoveRepository _moveRepository = MoveRepository();
   final ItemRepository _itemRepository = ItemRepository();
   final BagInventoryRepository _bagRepository = BagInventoryRepository();
+  final EvolutionRepository _evolutionRepository = EvolutionRepository();
   final BattleSessionRepository _battleSessionRepository =
       BattleSessionRepository();
   final Random _random = Random();
@@ -74,6 +81,9 @@ class _BattleScreenState extends State<BattleScreen> {
   final Map<int, Map<String, int>> _remainingPpBySlot = {};
   final Map<int, Set<String>> _volatileStatusesBySlot = {};
   final Map<int, String> _battleFormBySlot = {};
+  final Map<int, BattleTransformationState> _transformationBySlot = {};
+  final Set<String> _trainerTransformationUses = {};
+  final Set<String> _transformedPokemonKeys = {};
   final Map<int, int> _temporaryHpBySlot = {};
   final Map<int, bool> _temporaryHpEnabledBySlot = {};
   final Set<int> _temporaryHpInitializedSlots = {};
@@ -166,6 +176,7 @@ class _BattleScreenState extends State<BattleScreen> {
     };
     final items = await _itemRepository.getWebItems();
     final inventory = await _bagRepository.getInventory(profile.id);
+    final evolutionData = await _evolutionRepository.getEvolutionData();
     final referencesByPokemon = <int, Set<String>>{};
     for (final slot in team) {
       final pokemonId = slot.pokemonId;
@@ -190,6 +201,7 @@ class _BattleScreenState extends State<BattleScreen> {
       moves: moves,
       items: items,
       inventory: inventory,
+      evolutionData: evolutionData,
     );
     await _restoreOrStartSession(data);
     if (mounted) {
@@ -218,6 +230,13 @@ class _BattleScreenState extends State<BattleScreen> {
     _remainingPpBySlot.clear();
     _volatileStatusesBySlot.clear();
     _battleFormBySlot.clear();
+    _transformationBySlot.clear();
+    _trainerTransformationUses
+      ..clear()
+      ..addAll(data.profile.transformationUses);
+    _transformedPokemonKeys
+      ..clear()
+      ..addAll(data.profile.transformedPokemonKeys);
     _temporaryHpBySlot.clear();
     _temporaryHpEnabledBySlot.clear();
     _temporaryHpInitializedSlots.clear();
@@ -249,6 +268,10 @@ class _BattleScreenState extends State<BattleScreen> {
         final battleFormName = state.battleFormName;
         if (battleFormName != null && battleFormName.trim().isNotEmpty) {
           _battleFormBySlot[matchingSlot.slotIndex] = battleFormName;
+        }
+        final transformation = state.transformation;
+        if (transformation != null) {
+          _transformationBySlot[matchingSlot.slotIndex] = transformation;
         }
         _temporaryHpBySlot[matchingSlot.slotIndex] = state.temporaryHp;
         _temporaryHpEnabledBySlot[matchingSlot.slotIndex] =
@@ -307,6 +330,7 @@ class _BattleScreenState extends State<BattleScreen> {
         remainingPp: {...?_remainingPpBySlot[slot.slotIndex]},
         volatileStatuses: {...?_volatileStatusesBySlot[slot.slotIndex]},
         battleFormName: _battleFormBySlot[slot.slotIndex],
+        transformation: _transformationBySlot[slot.slotIndex],
         temporaryHp: _temporaryHpBySlot[slot.slotIndex] ?? 0,
         temporaryHpEnabled: _temporaryHpEnabledBySlot[slot.slotIndex] ?? false,
         temporaryHpInitialized: _temporaryHpInitializedSlots.contains(
@@ -357,12 +381,37 @@ class _BattleScreenState extends State<BattleScreen> {
     final basePokemon = data.pokemonById[pokemonId];
     if (basePokemon == null) return null;
     final formName = _effectiveFormName(slot);
-    if (basePokemon.name == 'Palafin' &&
-        BattleFormChangeService.canonicalFormKey(basePokemon, formName) ==
-            'hero') {
-      return basePokemon;
+    final resolved =
+        basePokemon.name == 'Palafin' &&
+            BattleFormChangeService.canonicalFormKey(basePokemon, formName) ==
+                'hero'
+        ? basePokemon
+        : basePokemon.resolveVariant(formName: formName, gender: slot.gender);
+    return _pokemonWithTransformation(resolved, slot);
+  }
+
+  Pokemon _pokemonWithTransformation(Pokemon pokemon, TeamSlot slot) {
+    final state = _transformationBySlot[slot.slotIndex];
+    if (state == null) return pokemon;
+
+    var types = pokemon.types;
+    var size = pokemon.size;
+    if (state.kind == BattleTransformationKind.mega &&
+        state.formIdentifier != null) {
+      final art = PokemonTransformAssetCatalog.byIdentifier(
+        state.formIdentifier!,
+      );
+      if (art != null && art.types.isNotEmpty) types = art.types;
     }
-    return basePokemon.resolveVariant(formName: formName, gender: slot.gender);
+    if (state.kind == BattleTransformationKind.terastal) {
+      final teraType = state.teraType;
+      if (teraType != null && teraType != 'Stellar') {
+        types = [teraType];
+      }
+    }
+    if (state.isDynamaxLike) size = 'Gargantuan';
+
+    return pokemon.copyWith(types: types, size: size);
   }
 
   List<PokemonFormChoice> _normalizedBattleFormChoices(
@@ -448,6 +497,323 @@ class _BattleScreenState extends State<BattleScreen> {
     });
     await _saveSession(data);
   }
+
+  bool _isFinalEvolutionStage(_BattleData data, Pokemon pokemon) {
+    final direct = data.evolutionData[pokemon.name];
+    if (direct != null) return direct.evolutions.isEmpty;
+    final wanted = MoveData.referenceKey(pokemon.name);
+    for (final entry in data.evolutionData.entries) {
+      if (MoveData.referenceKey(entry.key) == wanted) {
+        return entry.value.evolutions.isEmpty;
+      }
+    }
+    return true;
+  }
+
+  List<MoveData> _knownMoveData(
+    _BattleData data,
+    TeamSlot slot,
+    Pokemon pokemon,
+  ) {
+    final result = <MoveData>[];
+    for (final reference in _movesForSlot(slot, pokemon)) {
+      final move = data.moves[MoveRepository.contextualKey(
+        slot.pokemonId!,
+        reference,
+      )];
+      if (move != null) result.add(_contextualMove(move, slot));
+    }
+    return result;
+  }
+
+  TransformationEligibility _transformationEligibility(
+    BattleTransformationKind kind,
+    _BattleData data,
+    TeamSlot slot,
+    Pokemon pokemon,
+  ) {
+    return BattleTransformationService.eligibility(
+      kind: kind,
+      pokemonLevel: _levelForSlot(slot),
+      isFinalEvolutionStage: _isFinalEvolutionStage(
+        data,
+        data.pokemonById[slot.pokemonId!]!,
+      ),
+      heldItemId: data.heldItemFor(slot)?.id,
+      inventory: data.inventory,
+      trainerUses: _trainerTransformationUses,
+      pokemonAlreadyTransformed: _transformedPokemonKeys.contains(
+        BattleTransformationService.pokemonUsageKey(slot),
+      ),
+      hasActiveTransformation: _transformationBySlot.containsKey(
+        slot.slotIndex,
+      ),
+      knownMoves: _knownMoveData(data, slot, pokemon),
+    );
+  }
+
+  void _showTransformationBlocked(TransformationEligibility eligibility) {
+    if (!mounted || eligibility.missingRequirements.isEmpty) return;
+    setState(() {
+      _message = eligibility.missingRequirements.join(' · ');
+    });
+  }
+
+  Future<void> _recordTransformationUse(
+    _BattleData data,
+    TeamSlot slot,
+    BattleTransformationKind kind,
+  ) async {
+    _trainerTransformationUses.add(kind.trainerUseId);
+    _transformedPokemonKeys.add(
+      BattleTransformationService.pokemonUsageKey(slot),
+    );
+    final currentProfile = await _profileRepository.getActiveProfile();
+    if (currentProfile.id != data.profile.id) return;
+    final updated = currentProfile.copyWith(
+      transformationUses: _trainerTransformationUses.toList()..sort(),
+      transformedPokemonKeys: _transformedPokemonKeys.toList()..sort(),
+    );
+    await _profileRepository.saveProfile(updated);
+    _activeProfile = updated;
+  }
+
+  Future<void> _activateMega(
+    _BattleData data,
+    TeamSlot slot,
+    Pokemon pokemon,
+  ) async {
+    final eligibility = _transformationEligibility(
+      BattleTransformationKind.mega,
+      data,
+      slot,
+      pokemon,
+    );
+    if (!eligibility.isAvailable) {
+      _showTransformationBlocked(eligibility);
+      return;
+    }
+    if (_currentHpFor(slot, pokemon) <= 0) {
+      setState(() => _message = 'Un Pokémon esausto non può megaevolversi.');
+      return;
+    }
+
+    final options = PokemonTransformAssetCatalog.megaOptions(
+      pokemon.id,
+      formName: _effectiveFormName(slot),
+      gender: slot.gender,
+    );
+    PokemonTransformArt? selected;
+    if (options.length == 1) {
+      selected = options.first;
+    } else if (options.length > 1) {
+      selected = await showModalBottomSheet<PokemonTransformArt>(
+        context: context,
+        useSafeArea: true,
+        showDragHandle: true,
+        builder: (_) => _TransformArtPickerSheet(
+          title: 'Scegli la Mega Evoluzione',
+          pokemonName: pokemon.name,
+          options: options,
+        ),
+      );
+      if (!mounted || selected == null) return;
+    }
+
+    final state = BattleTransformationState(
+      kind: BattleTransformationKind.mega,
+      formIdentifier: selected?.identifier,
+    );
+    setState(() {
+      _transformationBySlot[slot.slotIndex] = state;
+      _message =
+          '${_displayName(slot, pokemon)} attiva ${selected?.label ?? 'Mega Evoluzione'}.';
+    });
+    await _recordTransformationUse(data, slot, state.kind);
+    await _saveSession(data);
+  }
+
+  Future<void> _activateDynamax(
+    _BattleData data,
+    TeamSlot slot,
+    Pokemon pokemon,
+  ) async {
+    final eligibility = _transformationEligibility(
+      BattleTransformationKind.dynamax,
+      data,
+      slot,
+      pokemon,
+    );
+    if (!eligibility.isAvailable) {
+      _showTransformationBlocked(eligibility);
+      return;
+    }
+    final currentHp = _currentHpFor(slot, pokemon);
+    if (currentHp <= 0) {
+      setState(() => _message = 'Un Pokémon esausto non può Dynamaxizzarsi.');
+      return;
+    }
+
+    final gmaxOptions = PokemonTransformAssetCatalog.gigamaxOptions(
+      pokemon.id,
+      formName: _effectiveFormName(slot),
+      gender: slot.gender,
+    );
+    final choice = await showModalBottomSheet<String>(
+      context: context,
+      useSafeArea: true,
+      showDragHandle: true,
+      builder: (_) => _DynamaxPickerSheet(
+        pokemonName: pokemon.name,
+        gigamaxOptions: gmaxOptions,
+      ),
+    );
+    if (!mounted || choice == null) return;
+    final selectedArt = choice == 'dynamax'
+        ? null
+        : PokemonTransformAssetCatalog.byIdentifier(choice);
+    final kind = selectedArt == null
+        ? BattleTransformationKind.dynamax
+        : BattleTransformationKind.gigamax;
+    final state = BattleTransformationState(
+      kind: kind,
+      formIdentifier: selectedArt?.identifier,
+      dynamaxTemporaryHp: currentHp,
+    );
+    setState(() {
+      _transformationBySlot[slot.slotIndex] = state;
+      _message =
+          '${_displayName(slot, pokemon)} attiva ${selectedArt?.label ?? 'Dynamax'} e ottiene $currentHp PF temporanei.';
+    });
+    await _recordTransformationUse(data, slot, kind);
+    await _saveSession(data);
+  }
+
+  Future<void> _activateTerastal(
+    _BattleData data,
+    TeamSlot slot,
+    Pokemon pokemon,
+  ) async {
+    final eligibility = _transformationEligibility(
+      BattleTransformationKind.terastal,
+      data,
+      slot,
+      pokemon,
+    );
+    if (!eligibility.isAvailable) {
+      _showTransformationBlocked(eligibility);
+      return;
+    }
+    if (_currentHpFor(slot, pokemon) <= 0) {
+      setState(
+        () => _message = 'Un Pokémon esausto non può teracristallizzarsi.',
+      );
+      return;
+    }
+
+    final teraType = await showModalBottomSheet<String>(
+      context: context,
+      useSafeArea: true,
+      showDragHandle: true,
+      builder: (_) => _TeraTypePickerSheet(
+        pokemonName: pokemon.name,
+        initialType: pokemon.types.isEmpty ? null : pokemon.types.first,
+      ),
+    );
+    if (!mounted || teraType == null) return;
+
+    final state = BattleTransformationState(
+      kind: BattleTransformationKind.terastal,
+      teraType: teraType,
+    );
+    setState(() {
+      _transformationBySlot[slot.slotIndex] = state;
+      _message =
+          '${_displayName(slot, pokemon)} si teracristallizza nel tipo $teraType.';
+    });
+    await _recordTransformationUse(data, slot, state.kind);
+    await _saveSession(data);
+  }
+
+  Future<void> _useZMove(
+    _BattleData data,
+    TeamSlot slot,
+    Pokemon pokemon,
+  ) async {
+    final eligibility = _transformationEligibility(
+      BattleTransformationKind.zMove,
+      data,
+      slot,
+      pokemon,
+    );
+    if (!eligibility.isAvailable) {
+      _showTransformationBlocked(eligibility);
+      return;
+    }
+    if (_currentHpFor(slot, pokemon) <= 0) {
+      setState(() => _message = 'Un Pokémon esausto non può usare una Mossa Z.');
+      return;
+    }
+
+    final crystal = BattleTransformationService.zCrystalForHeldItem(
+      data.heldItemFor(slot)?.id,
+    );
+    if (crystal == null) return;
+    final choices = <_ZMoveChoice>[];
+    for (final reference in _movesForSlot(slot, pokemon)) {
+      final rawMove = data.moves[MoveRepository.contextualKey(
+        slot.pokemonId!,
+        reference,
+      )];
+      if (rawMove == null) continue;
+      final move = _contextualMove(rawMove, slot);
+      if (MoveData.referenceKey(move.type) !=
+          MoveData.referenceKey(crystal.type)) {
+        continue;
+      }
+      final maxPp = _maxPpFor(rawMove);
+      if (maxPp > 0 && _remainingPp(slot, reference, rawMove) <= 0) continue;
+      choices.add(
+        _ZMoveChoice(reference: reference, move: move, rawMove: rawMove),
+      );
+    }
+    if (choices.isEmpty) {
+      setState(
+        () => _message = 'Nessuna Mossa Z compatibile ha PP disponibili.',
+      );
+      return;
+    }
+
+    final selected = await showModalBottomSheet<_ZMoveChoice>(
+      context: context,
+      useSafeArea: true,
+      showDragHandle: true,
+      builder: (_) => _ZMovePickerSheet(
+        pokemonName: pokemon.name,
+        crystalType: crystal.type,
+        choices: choices,
+      ),
+    );
+    if (!mounted || selected == null) return;
+
+    final state = BattleTransformationState(
+      kind: BattleTransformationKind.zMove,
+      zMoveReference: selected.reference,
+    );
+    setState(() {
+      _transformationBySlot[slot.slotIndex] = state;
+    });
+    if (_maxPpFor(selected.rawMove) > 0) {
+      _changePp(data, slot, selected.reference, selected.rawMove, -1);
+    }
+    setState(() {
+      _message =
+          'Mossa Z · ${selected.move.name}: ${BattleTransformationService.zMoveSummary(selected.move)}.';
+    });
+    await _recordTransformationUse(data, slot, state.kind);
+    await _saveSession(data);
+  }
+
 
   List<String> _movesForSlot(TeamSlot slot, Pokemon pokemon) {
     if (slot.selectedMoves.isNotEmpty) {
@@ -601,13 +967,32 @@ class _BattleScreenState extends State<BattleScreen> {
 
     final maxHp = _maxHpFor(pokemon, slot);
     var hpDelta = delta;
+    var dynamaxAbsorbed = 0;
     var absorbed = 0;
+
+    final transformation = _transformationBySlot[slot.slotIndex];
+    if (delta < 0 && transformation?.isDynamaxLike == true) {
+      final currentTemporaryHp = transformation!.dynamaxTemporaryHp;
+      dynamaxAbsorbed = min(currentTemporaryHp, -hpDelta);
+      if (dynamaxAbsorbed > 0) {
+        final remainingTemporaryHp = currentTemporaryHp - dynamaxAbsorbed;
+        hpDelta += dynamaxAbsorbed;
+        if (remainingTemporaryHp <= 0) {
+          _transformationBySlot.remove(slot.slotIndex);
+        } else {
+          _transformationBySlot[slot.slotIndex] = transformation.copyWith(
+            dynamaxTemporaryHp: remainingTemporaryHp,
+          );
+        }
+      }
+    }
+
     final rule = _temporaryHpRule(data, slot);
-    if (delta < 0 &&
+    if (hpDelta < 0 &&
         rule != null &&
         (_temporaryHpEnabledBySlot[slot.slotIndex] ?? false)) {
       final currentTemporaryHp = _temporaryHpBySlot[slot.slotIndex] ?? 0;
-      absorbed = min(currentTemporaryHp, -delta);
+      absorbed = min(currentTemporaryHp, -hpDelta);
       if (absorbed > 0) {
         final remainingTemporaryHp = currentTemporaryHp - absorbed;
         _temporaryHpBySlot[slot.slotIndex] = remainingTemporaryHp;
@@ -625,17 +1010,33 @@ class _BattleScreenState extends State<BattleScreen> {
     final updatedHp = (_currentHpFor(slot, pokemon) + hpDelta)
         .clamp(0, maxHp)
         .toInt();
+    if (updatedHp == 0) {
+      _transformationBySlot.remove(slot.slotIndex);
+    }
     await _teamRepository.updateSlot(
       profileId: data.profile.id,
       updatedSlot: slot.copyWith(currentHp: updatedHp),
     );
     await _saveSession(data);
-    final message = absorbed == 0
-        ? null
-        : (_temporaryHpBySlot[slot.slotIndex] ?? 0) > 0
-        ? '$absorbed danni assorbiti dai PF temporanei.'
-        : '$absorbed danni assorbiti: ${rule?.label ?? 'la protezione'} si spezza.';
-    await _reload(message: message);
+
+    final messages = <String>[];
+    if (dynamaxAbsorbed > 0) {
+      final stillActive =
+          _transformationBySlot[slot.slotIndex]?.isDynamaxLike == true;
+      messages.add(
+        stillActive
+            ? '$dynamaxAbsorbed danni assorbiti dai PF Dynamax.'
+            : '$dynamaxAbsorbed danni assorbiti: Dynamax/Gigamax termina.',
+      );
+    }
+    if (absorbed > 0) {
+      messages.add(
+        (_temporaryHpBySlot[slot.slotIndex] ?? 0) > 0
+            ? '$absorbed danni assorbiti dai PF temporanei.'
+            : '$absorbed danni assorbiti: ${rule?.label ?? 'la protezione'} si spezza.',
+      );
+    }
+    await _reload(message: messages.isEmpty ? null : messages.join(' '));
   }
 
   Future<void> _editHp(_BattleData data, TeamSlot slot) async {
@@ -660,10 +1061,14 @@ class _BattleScreenState extends State<BattleScreen> {
         ? (_currentHpFor(slot, pokemon) + value).clamp(0, maxHp).toInt()
         : value.clamp(0, maxHp).toInt();
 
+    if (updatedHp == 0) {
+      _transformationBySlot.remove(slot.slotIndex);
+    }
     await _teamRepository.updateSlot(
       profileId: data.profile.id,
       updatedSlot: slot.copyWith(currentHp: updatedHp),
     );
+    await _saveSession(data);
     await _reload();
   }
 
@@ -1087,7 +1492,12 @@ class _BattleScreenState extends State<BattleScreen> {
     if (!mounted || result == null) return;
 
     _statusMoment = BattleStatusMoment.turnStart;
-    _volatileStatusesBySlot[slot.slotIndex] = result.volatileStatuses;
+    final blocksVolatile = BattleTransformationService.isDynamaxLike(
+      _transformationBySlot[slot.slotIndex],
+    );
+    _volatileStatusesBySlot[slot.slotIndex] = blocksVolatile
+        ? <String>{}
+        : result.volatileStatuses;
     await _teamRepository.updateSlot(
       profileId: data.profile.id,
       updatedSlot: slot.copyWith(
@@ -1097,7 +1507,14 @@ class _BattleScreenState extends State<BattleScreen> {
       ),
     );
     await _saveSession(data);
-    await _reload();
+    await _reload(
+      message: blocksVolatile && result.volatileStatuses.isNotEmpty
+          ? context.uiText(
+              'Dynamax/Gigamax è immune agli status volatili.',
+              'Dynamax/Gigamax is immune to volatile conditions.',
+            )
+          : null,
+    );
   }
 
   void _ensureInitiative(_BattleData data, TeamSlot slot, Pokemon pokemon) {
@@ -1289,8 +1706,8 @@ class _BattleScreenState extends State<BattleScreen> {
         ),
         content: Text(
           context.uiText(
-            'Round, iniziativa, PP, PF temporanei, forme di battaglia e status volatili verranno rimossi. HP, status persistenti e oggetti consumati resteranno salvati.',
-            'Rounds, initiative, PP, temporary HP, battle forms and volatile conditions will be cleared. HP, persistent conditions and consumed items will remain saved.',
+            'Round, iniziativa, PP, PF temporanei, forme di battaglia, trasformazioni attive e status volatili verranno rimossi. Gli utilizzi di Mega/Z/Dynamax/Tera resteranno consumati fino al prossimo riposo lungo.',
+            'Rounds, initiative, PP, temporary HP, battle forms, active transformations and volatile conditions will be cleared. Mega/Z/Dynamax/Tera uses remain spent until the next long rest.',
           ),
         ),
         actions: [
@@ -1311,6 +1728,7 @@ class _BattleScreenState extends State<BattleScreen> {
     _remainingPpBySlot.clear();
     _volatileStatusesBySlot.clear();
     _battleFormBySlot.clear();
+    _transformationBySlot.clear();
     _temporaryHpBySlot.clear();
     _temporaryHpEnabledBySlot.clear();
     _temporaryHpInitializedSlots.clear();
@@ -1401,6 +1819,7 @@ class _BattleScreenState extends State<BattleScreen> {
     TeamSlot slot,
     Pokemon basePokemon,
     String? formName,
+    BattleTransformationState? transformation,
   ) {
     final contextualMove = _contextualMove(move, slot);
     final level = _levelForSlot(slot);
@@ -1410,6 +1829,10 @@ class _BattleScreenState extends State<BattleScreen> {
       slot,
       basePokemon: basePokemon,
       formName: formName,
+    );
+    final effectiveMoveModifier = BattleTransformationService.megaModifier(
+      moveModifier,
+      transformation,
     );
     final proficiency = _proficiency(level);
     final attackPathBonus = TrainerPathPassiveService.attackRollBonus(
@@ -1434,7 +1857,7 @@ class _BattleScreenState extends State<BattleScreen> {
         BattleEnvironmentService.terrainMoveModifierBonus(
           environment: _environment,
           move: contextualMove,
-          moveModifier: moveModifier,
+          moveModifier: effectiveMoveModifier,
         );
     final effectiveMoveType = BattleEnvironmentService.effectiveMoveType(
       contextualMove,
@@ -1452,18 +1875,35 @@ class _BattleScreenState extends State<BattleScreen> {
       pokemonLevel: level,
       moveTypeOverride: effectiveMoveType,
     );
+    final originalPokemon = basePokemon.resolveVariant(
+      formName: formName,
+      gender: slot.gender,
+    );
+    final originalStab = transformation?.kind ==
+            BattleTransformationKind.terastal
+        ? TrainerPathPassiveService.stabEffect(
+            profile: _activeProfile,
+            pokemon: originalPokemon,
+            slot: slot,
+            move: contextualMove,
+            pokemonLevel: level,
+            moveTypeOverride: effectiveMoveType,
+          )
+        : null;
     final parts = <String>[];
 
     if (move.isAttack) {
       final attackBonus =
-          moveModifier +
+          effectiveMoveModifier +
           proficiency +
           attackPathBonus +
           terrainAttackBonus +
           formAttackBonus;
       parts.add('AB ${attackBonus >= 0 ? '+' : ''}$attackBonus');
     }
-    if (move.save != null) parts.add('CD ${8 + proficiency + moveModifier}');
+    if (move.save != null) {
+      parts.add('CD ${8 + proficiency + effectiveMoveModifier}');
+    }
 
     final damage = move.damageForLevel(level);
     if (damage != null) {
@@ -1478,12 +1918,31 @@ class _BattleScreenState extends State<BattleScreen> {
       final source = stab.extendedByPath ? 'STAB esteso' : 'STAB';
       final bonus = stab.pathBonus == 0 ? '' : ' Path +${stab.pathBonus}';
       parts.add('$source$bonus');
+    } else if (originalStab?.applies == true) {
+      parts.add('STAB originale');
+    }
+    if (transformation?.kind == BattleTransformationKind.terastal &&
+        transformation?.teraType != null &&
+        originalPokemon.types.any(
+          (type) => MoveData.referenceKey(type) ==
+              MoveData.referenceKey(transformation!.teraType!),
+        ) &&
+        MoveData.referenceKey(effectiveMoveType) ==
+            MoveData.referenceKey(transformation!.teraType!)) {
+      parts.add('STAB Tera ×2');
+    }
+    if (transformation?.kind == BattleTransformationKind.mega &&
+        MoveData.referenceKey(move.damageModifier ?? '') == 'move') {
+      parts.add('Mega: modificatore MOVE ×2');
+    }
+    if (transformation?.isDynamaxLike == true && damage != null) {
+      parts.add('Dynamax: tira i danni 2 volte');
     }
     parts.addAll(
       BattleEnvironmentService.moveNotes(
         environment: _environment,
         move: contextualMove,
-        moveModifier: moveModifier,
+        moveModifier: effectiveMoveModifier,
       ),
     );
     if (move.range != '-') parts.add(move.range);
@@ -1579,6 +2038,32 @@ class _BattleScreenState extends State<BattleScreen> {
                             reference,
                           )];
                       final heldItem = data.heldItemFor(activeSlot);
+                      final transformationState =
+                          _transformationBySlot[activeSlot.slotIndex];
+                      final megaEligibility = _transformationEligibility(
+                        BattleTransformationKind.mega,
+                        data,
+                        activeSlot,
+                        pokemon,
+                      );
+                      final zMoveEligibility = _transformationEligibility(
+                        BattleTransformationKind.zMove,
+                        data,
+                        activeSlot,
+                        pokemon,
+                      );
+                      final dynamaxEligibility = _transformationEligibility(
+                        BattleTransformationKind.dynamax,
+                        data,
+                        activeSlot,
+                        pokemon,
+                      );
+                      final terastalEligibility = _transformationEligibility(
+                        BattleTransformationKind.terastal,
+                        data,
+                        activeSlot,
+                        pokemon,
+                      );
                       final passiveNotes =
                           TrainerPathPassiveService.passiveNotes(
                             profile: data.profile,
@@ -1611,8 +2096,13 @@ class _BattleScreenState extends State<BattleScreen> {
                             basePokemon,
                             effectiveFormName,
                           );
-                      final effectiveArmorClass =
+                      final transformationArmorClass =
                           formArmorClass +
+                          BattleTransformationService.armorClassBonus(
+                            transformationState,
+                          );
+                      final effectiveArmorClass =
+                          transformationArmorClass +
                           BattleEnvironmentService.armorClassBonus(
                             pokemon: pokemon,
                             slot: activeSlot,
@@ -1651,7 +2141,23 @@ class _BattleScreenState extends State<BattleScreen> {
                                     imagePokemonForSlot: (slot) =>
                                         data.pokemonById[slot.pokemonId],
                                     formNameForSlot: _effectiveFormName,
+                                    transformationForSlot: (slot) =>
+                                        _transformationBySlot[slot.slotIndex],
                                     onSelected: (slotIndex) {
+                                      if (slotIndex != activeSlot.slotIndex &&
+                                          BattleTransformationService
+                                              .isDynamaxLike(
+                                                _transformationBySlot[
+                                                    activeSlot.slotIndex],
+                                              )) {
+                                        setState(() {
+                                          _message = context.uiText(
+                                            'Un Pokémon Dynamax/Gigamax non può essere richiamato o sostituito.',
+                                            'A Dynamax/Gigamax Pokémon cannot be recalled or switched.',
+                                          );
+                                        });
+                                        return;
+                                      }
                                       setState(() {
                                         _activeSlotIndex = slotIndex;
                                         _statusMoment =
@@ -1719,11 +2225,16 @@ class _BattleScreenState extends State<BattleScreen> {
                             const SizedBox(height: 12),
                             KeyedSubtree(
                               key: _activePokemonKey,
-                              child: _ActivePokemonCard(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  _ActivePokemonCard(
                                 pokemon: pokemon,
                                 imagePokemon: basePokemon,
                                 slot: activeSlot,
                                 formName: effectiveFormName,
+                                transformation:
+                                    _transformationBySlot[activeSlot.slotIndex],
                                 formLabel: canChangeForm
                                     ? BattleFormChangeService.formLabel(
                                         basePokemon,
@@ -1782,6 +2293,38 @@ class _BattleScreenState extends State<BattleScreen> {
                                         activeSlot,
                                       )
                                     : null,
+                              ),
+                              const SizedBox(height: 12),
+                              _TransformationPanel(
+                                currentState: transformationState,
+                                megaEligibility: megaEligibility,
+                                zMoveEligibility: zMoveEligibility,
+                                dynamaxEligibility: dynamaxEligibility,
+                                terastalEligibility: terastalEligibility,
+                                hasCanonicalMega: PokemonTransformAssetCatalog
+                                    .megaOptions(
+                                      basePokemon.id,
+                                      formName: effectiveFormName,
+                                      gender: activeSlot.gender,
+                                    )
+                                    .isNotEmpty,
+                                hasGigamax: PokemonTransformAssetCatalog
+                                    .gigamaxOptions(
+                                      basePokemon.id,
+                                      formName: effectiveFormName,
+                                      gender: activeSlot.gender,
+                                    )
+                                    .isNotEmpty,
+                                onMega: () =>
+                                    _activateMega(data, activeSlot, pokemon),
+                                onZMove: () =>
+                                    _useZMove(data, activeSlot, pokemon),
+                                onDynamax: () =>
+                                    _activateDynamax(data, activeSlot, pokemon),
+                                onTerastal: () =>
+                                    _activateTerastal(data, activeSlot, pokemon),
+                              ),
+                                ],
                               ),
                             ),
                             if (passiveNotes.isNotEmpty) ...[
@@ -1859,6 +2402,7 @@ class _BattleScreenState extends State<BattleScreen> {
                                               activeSlot,
                                               basePokemon,
                                               effectiveFormName,
+                                              transformationState,
                                             ),
                                       onUse: () => _changePp(
                                         data,
@@ -1906,6 +2450,7 @@ class _BattleData {
     required this.moves,
     required this.items,
     required this.inventory,
+    required this.evolutionData,
   });
 
   final UserProfile profile;
@@ -1914,6 +2459,7 @@ class _BattleData {
   final Map<String, MoveData?> moves;
   final List<BagItem> items;
   final List<BagInventoryEntry> inventory;
+  final Map<String, EvolutionData> evolutionData;
 
   List<TeamSlot> get occupiedSlots {
     return team
@@ -2200,6 +2746,7 @@ class _PartyBar extends StatelessWidget {
     required this.pokemonForSlot,
     required this.imagePokemonForSlot,
     required this.formNameForSlot,
+    required this.transformationForSlot,
     required this.onSelected,
   });
 
@@ -2208,6 +2755,8 @@ class _PartyBar extends StatelessWidget {
   final Pokemon? Function(TeamSlot slot) pokemonForSlot;
   final Pokemon? Function(TeamSlot slot) imagePokemonForSlot;
   final String? Function(TeamSlot slot) formNameForSlot;
+  final BattleTransformationState? Function(TeamSlot slot)
+  transformationForSlot;
   final ValueChanged<int> onSelected;
 
   @override
@@ -2235,6 +2784,7 @@ class _PartyBar extends StatelessWidget {
                         pokemon: pokemonForSlot(slot),
                         imagePokemon: imagePokemonForSlot(slot),
                         formName: formNameForSlot(slot),
+                        transformation: transformationForSlot(slot),
                         selected: slot.slotIndex == activeSlot.slotIndex,
                         onTap: () => onSelected(slot.slotIndex),
                       ),
@@ -2255,6 +2805,7 @@ class _PartyPokemonButton extends StatelessWidget {
     required this.pokemon,
     required this.imagePokemon,
     required this.formName,
+    required this.transformation,
     required this.selected,
     required this.onTap,
   });
@@ -2263,6 +2814,7 @@ class _PartyPokemonButton extends StatelessWidget {
   final Pokemon? pokemon;
   final Pokemon? imagePokemon;
   final String? formName;
+  final BattleTransformationState? transformation;
   final bool selected;
   final VoidCallback onTap;
 
@@ -2298,12 +2850,13 @@ class _PartyPokemonButton extends StatelessWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                PokemonAssetImage(
+                PokemonTransformationImage(
                   pokemon: imagePokemon ?? pokemon,
                   size: 40,
                   formName: formName,
                   gender: slot.gender,
                   isShiny: slot.isShiny,
+                  transformation: transformation,
                 ),
                 const SizedBox(width: 4),
                 SizedBox(
@@ -2652,6 +3205,7 @@ class _ActivePokemonCard extends StatelessWidget {
     required this.imagePokemon,
     required this.slot,
     required this.formName,
+    required this.transformation,
     required this.formLabel,
     required this.formNote,
     required this.heldItem,
@@ -2684,6 +3238,7 @@ class _ActivePokemonCard extends StatelessWidget {
   final Pokemon imagePokemon;
   final TeamSlot slot;
   final String? formName;
+  final BattleTransformationState? transformation;
   final String? formLabel;
   final String? formNote;
   final BagItem? heldItem;
@@ -2725,13 +3280,14 @@ class _ActivePokemonCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                PokemonAssetImage(
+                PokemonTransformationImage(
                   pokemon: imagePokemon,
                   useLargeArtwork: true,
                   size: 96,
                   formName: formName,
                   gender: slot.gender,
                   isShiny: slot.isShiny,
+                  transformation: transformation,
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -2796,6 +3352,45 @@ class _ActivePokemonCard extends StatelessWidget {
                 const SizedBox(height: 6),
                 Text(formNote!, style: Theme.of(context).textTheme.bodySmall),
               ],
+            ],
+            if (transformation != null) ...[
+              const SizedBox(height: 10),
+              DecoratedBox(
+                decoration: BoxDecoration(
+                  color: Theme.of(context)
+                      .colorScheme
+                      .primaryContainer
+                      .withValues(alpha: 0.7),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Icon(Icons.auto_awesome),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              transformation!.kind.label.toUpperCase(),
+                              style: const TextStyle(fontWeight: FontWeight.w900),
+                            ),
+                            Text(
+                              BattleTransformationService.effectSummary(
+                                transformation!,
+                              ),
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ],
             const SizedBox(height: 12),
             InkWell(
@@ -3708,6 +4303,394 @@ class _BattleEmptyState extends StatelessWidget {
             FilledButton(onPressed: onAction, child: Text(actionLabel)),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _TransformationPanel extends StatelessWidget {
+  const _TransformationPanel({
+    required this.currentState,
+    required this.megaEligibility,
+    required this.zMoveEligibility,
+    required this.dynamaxEligibility,
+    required this.terastalEligibility,
+    required this.hasCanonicalMega,
+    required this.hasGigamax,
+    required this.onMega,
+    required this.onZMove,
+    required this.onDynamax,
+    required this.onTerastal,
+  });
+
+  final BattleTransformationState? currentState;
+  final TransformationEligibility megaEligibility;
+  final TransformationEligibility zMoveEligibility;
+  final TransformationEligibility dynamaxEligibility;
+  final TransformationEligibility terastalEligibility;
+  final bool hasCanonicalMega;
+  final bool hasGigamax;
+  final VoidCallback onMega;
+  final VoidCallback onZMove;
+  final VoidCallback onDynamax;
+  final VoidCallback onTerastal;
+
+  @override
+  Widget build(BuildContext context) {
+    final state = currentState;
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.auto_awesome),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    context.uiText('TRASFORMAZIONI', 'TRANSFORMATIONS'),
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 4),
+            Text(
+              context.uiText(
+                'Regole 2024: un Pokémon può trasformarsi una sola volta per riposo lungo; l’Allenatore può usare ogni tipo una volta per riposo lungo.',
+                '2024 rules: a Pokémon can transform once per long rest; its Trainer can use each transformation type once per long rest.',
+              ),
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+            if (state != null) ...[
+              const SizedBox(height: 10),
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primaryContainer,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  state.isDynamaxLike
+                      ? '${state.kind.label} attiva · ${state.dynamaxTemporaryHp} PF Dynamax'
+                      : state.kind == BattleTransformationKind.terastal
+                      ? '${state.kind.label} attiva · ${state.teraType}'
+                      : state.kind == BattleTransformationKind.zMove
+                      ? 'Mossa Z già usata in questo riposo lungo'
+                      : '${state.kind.label} attiva',
+                  style: const TextStyle(fontWeight: FontWeight.w900),
+                ),
+              ),
+            ],
+            const SizedBox(height: 10),
+            _TransformationActionTile(
+              icon: Icons.bolt,
+              title: context.uiText('MEGA EVOLUZIONE', 'MEGA EVOLUTION'),
+              hint: hasCanonicalMega
+                  ? context.uiText(
+                      'Artwork Mega canonico disponibile.',
+                      'Canonical Mega artwork available.',
+                    )
+                  : context.uiText(
+                      'La regola permette la Mega anche senza una forma canonica dedicata.',
+                      'The rule allows Mega Evolution even without a dedicated canonical form.',
+                    ),
+              eligibility: megaEligibility,
+              onPressed: onMega,
+            ),
+            _TransformationActionTile(
+              icon: Icons.flash_on,
+              title: context.uiText('MOSSA Z', 'Z-MOVE'),
+              hint: context.uiText(
+                'Scegli una mossa compatibile con il Cristallo Z tenuto.',
+                'Choose a move matching the held Z-Crystal.',
+              ),
+              eligibility: zMoveEligibility,
+              onPressed: onZMove,
+            ),
+            _TransformationActionTile(
+              icon: Icons.expand,
+              title: hasGigamax ? 'DYNAMAX / GIGAMAX' : 'DYNAMAX',
+              hint: hasGigamax
+                  ? context.uiText(
+                      'Questa specie dispone anche dell’aspetto Gigamax.',
+                      'This species also has a Gigantamax appearance.',
+                    )
+                  : context.uiText(
+                      'Conferma manualmente che ci sia spazio per una creatura Gargantuan.',
+                      'Manually confirm there is room for a Gargantuan creature.',
+                    ),
+              eligibility: dynamaxEligibility,
+              onPressed: onDynamax,
+            ),
+            _TransformationActionTile(
+              icon: Icons.diamond_outlined,
+              title: context.uiText('TERACRISTAL', 'TERASTALLIZATION'),
+              hint: context.uiText(
+                'Scegli il Tera Tipo da applicare per questa trasformazione.',
+                'Choose the Tera Type used for this transformation.',
+              ),
+              eligibility: terastalEligibility,
+              onPressed: onTerastal,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _TransformationActionTile extends StatelessWidget {
+  const _TransformationActionTile({
+    required this.icon,
+    required this.title,
+    required this.hint,
+    required this.eligibility,
+    required this.onPressed,
+  });
+
+  final IconData icon;
+  final String title;
+  final String hint;
+  final TransformationEligibility eligibility;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final available = eligibility.isAvailable;
+    return Padding(
+      padding: const EdgeInsets.only(top: 6),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(icon),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(title, style: const TextStyle(fontWeight: FontWeight.w900)),
+                    const SizedBox(height: 2),
+                    Text(hint, style: Theme.of(context).textTheme.bodySmall),
+                    if (!available && eligibility.missingRequirements.isNotEmpty) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        eligibility.missingRequirements.join(' · '),
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Theme.of(context).colorScheme.error,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              FilledButton.tonal(
+                onPressed: available ? onPressed : null,
+                child: Text(context.uiText('USA', 'USE')),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _TransformArtPickerSheet extends StatelessWidget {
+  const _TransformArtPickerSheet({
+    required this.title,
+    required this.pokemonName,
+    required this.options,
+  });
+
+  final String title;
+  final String pokemonName;
+  final List<PokemonTransformArt> options;
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: ListView(
+        shrinkWrap: true,
+        padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
+        children: [
+          Text(title, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900)),
+          const SizedBox(height: 4),
+          Text(pokemonName),
+          const SizedBox(height: 10),
+          for (final option in options)
+            Card(
+              child: ListTile(
+                leading: const Icon(Icons.auto_awesome),
+                title: Text('${option.label} $pokemonName'),
+                subtitle: Text(option.types.join(' / ')),
+                onTap: () => Navigator.of(context).pop(option),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DynamaxPickerSheet extends StatelessWidget {
+  const _DynamaxPickerSheet({
+    required this.pokemonName,
+    required this.gigamaxOptions,
+  });
+
+  final String pokemonName;
+  final List<PokemonTransformArt> gigamaxOptions;
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: ListView(
+        shrinkWrap: true,
+        padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
+        children: [
+          Text(
+            context.uiText('Dynamax / Gigamax', 'Dynamax / Gigantamax'),
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            context.uiText(
+              'Prosegui solo se attorno a $pokemonName c’è spazio sufficiente per una creatura Gargantuan.',
+              'Continue only if there is enough room around $pokemonName for a Gargantuan creature.',
+            ),
+          ),
+          const SizedBox(height: 10),
+          Card(
+            child: ListTile(
+              leading: const Icon(Icons.expand),
+              title: const Text('DYNAMAX'),
+              onTap: () => Navigator.of(context).pop('dynamax'),
+            ),
+          ),
+          for (final option in gigamaxOptions)
+            Card(
+              child: ListTile(
+                leading: const Icon(Icons.auto_awesome),
+                title: Text('${option.label.toUpperCase()} $pokemonName'),
+                onTap: () => Navigator.of(context).pop(option.identifier),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _TeraTypePickerSheet extends StatelessWidget {
+  const _TeraTypePickerSheet({
+    required this.pokemonName,
+    required this.initialType,
+  });
+
+  final String pokemonName;
+  final String? initialType;
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              context.uiText('Scegli il Tera Tipo', 'Choose the Tera Type'),
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
+            ),
+            const SizedBox(height: 4),
+            Text(pokemonName),
+            const SizedBox(height: 12),
+            Flexible(
+              child: SingleChildScrollView(
+                child: Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    for (final type in BattleTransformationService.teraTypes)
+                      ActionChip(
+                        avatar: type == initialType
+                            ? const Icon(Icons.check, size: 18)
+                            : const Icon(Icons.diamond_outlined, size: 18),
+                        label: Text(type),
+                        onPressed: () => Navigator.of(context).pop(type),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ZMoveChoice {
+  const _ZMoveChoice({
+    required this.reference,
+    required this.move,
+    required this.rawMove,
+  });
+
+  final String reference;
+  final MoveData move;
+  final MoveData rawMove;
+}
+
+class _ZMovePickerSheet extends StatelessWidget {
+  const _ZMovePickerSheet({
+    required this.pokemonName,
+    required this.crystalType,
+    required this.choices,
+  });
+
+  final String pokemonName;
+  final String crystalType;
+  final List<_ZMoveChoice> choices;
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: ListView(
+        shrinkWrap: true,
+        padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
+        children: [
+          Text(
+            context.uiText('Usa una Mossa Z', 'Use a Z-Move'),
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
+          ),
+          const SizedBox(height: 4),
+          Text('$pokemonName · Cristallo Z $crystalType'),
+          const SizedBox(height: 10),
+          for (final choice in choices)
+            Card(
+              child: ListTile(
+                leading: const Icon(Icons.flash_on),
+                title: Text(choice.move.name),
+                subtitle: Text(BattleTransformationService.zMoveSummary(choice.move)),
+                onTap: () => Navigator.of(context).pop(choice),
+              ),
+            ),
+        ],
       ),
     );
   }

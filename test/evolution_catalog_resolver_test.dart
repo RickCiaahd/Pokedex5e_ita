@@ -3,6 +3,7 @@ import 'package:pokedex_5e_ita/localization/game_catalog_locale.dart';
 import 'package:pokedex_5e_ita/localization/pokemon_form_localization.dart';
 import 'package:pokedex_5e_ita/models/evolution_data.dart';
 import 'package:pokedex_5e_ita/models/level_progression.dart';
+import 'package:pokedex_5e_ita/models/pokemon.dart';
 import 'package:pokedex_5e_ita/models/team_slot.dart';
 import 'package:pokedex_5e_ita/repositories/evolution_repository.dart';
 import 'package:pokedex_5e_ita/repositories/pokemon_repository.dart';

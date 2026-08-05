@@ -66,6 +66,9 @@ class EvolutionService {
     String? requiredItemId;
     final level = LevelProgression.levelFromExperience(slot.experience);
     final selectedMoveKeys = slot.selectedMoves.map(_referenceKey).toSet();
+    final hasManualEarlierAlternative = option.conditions.any(
+      _isManualEarlierAlternative,
+    );
 
     for (final condition in option.conditions) {
       switch (condition.type) {
@@ -73,7 +76,7 @@ class EvolutionService {
           final requiredLevel = condition.intValue;
           if (requiredLevel != null) {
             conditionLabels.add('Livello $requiredLevel');
-            if (level < requiredLevel) {
+            if (level < requiredLevel && !hasManualEarlierAlternative) {
               missing.add('Richiede livello $requiredLevel');
             }
           }
@@ -121,9 +124,13 @@ class EvolutionService {
             }
           }
           break;
+        case 'special':
+          final label = _specialConditionLabel(condition.valueLabel);
+          if (label.isNotEmpty) conditionLabels.add(label);
+          break;
         default:
-          // Condizioni come giorno/notte, bioma, luogo, meteo o altre regole
-          // non visibili nell'app non devono bloccare l'evoluzione.
+          // Condizioni come giorno/notte, bioma, luogo o meteo non
+          // verificabili automaticamente non devono bloccare l'evoluzione.
           break;
       }
     }
@@ -158,6 +165,23 @@ class EvolutionService {
           ],
         ),
     ];
+  }
+
+  bool _isManualEarlierAlternative(EvolutionRule condition) {
+    if (condition.type != 'special') return false;
+    final value = condition.valueLabel.trim().toLowerCase();
+    return value.startsWith('or ') &&
+        value.contains('earlier than level') &&
+        value.contains('9,999');
+  }
+
+  String _specialConditionLabel(String value) {
+    final normalized = value.trim().toLowerCase();
+    if (normalized.contains('earlier than level 10') &&
+        normalized.contains('9,999')) {
+      return 'Oppure prima del livello 10 consumando ₽9.999';
+    }
+    return value.trim();
   }
 
   String _normalizeGender(String value) {

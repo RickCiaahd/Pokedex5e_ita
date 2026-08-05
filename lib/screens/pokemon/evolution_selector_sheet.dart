@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 
+import '../../models/evolution_data.dart';
 import '../../models/pokemon.dart';
 import '../../services/evolution_service.dart';
 import '../../widgets/pokemon/pokemon_asset_image.dart';
 import '../../localization/ui_text.dart';
+import '../../localization/pokemon_form_localization.dart';
 
 class EvolutionSelectorSheet extends StatelessWidget {
   const EvolutionSelectorSheet({
@@ -11,18 +13,25 @@ class EvolutionSelectorSheet extends StatelessWidget {
     required this.currentPokemon,
     required this.choices,
     required this.pokemonByName,
+    this.pokemonForOption,
   });
 
   final Pokemon currentPokemon;
   final List<EvolutionEligibility> choices;
   final Pokemon? Function(String name) pokemonByName;
+  final Pokemon? Function(EvolutionOption option)? pokemonForOption;
+
+  Pokemon? _targetFor(EvolutionEligibility choice) {
+    return pokemonForOption?.call(choice.option) ??
+        pokemonByName(choice.option.toName);
+  }
 
   @override
   Widget build(BuildContext context) {
     final availableChoices = choices
         .where(
           (choice) =>
-              choice.isAvailable && pokemonByName(choice.option.toName) != null,
+              choice.isAvailable && _targetFor(choice) != null,
         )
         .toList(growable: false);
     final isSingleEvolution = choices.length == 1;
@@ -64,7 +73,7 @@ class EvolutionSelectorSheet extends StatelessWidget {
             for (final choice in choices)
               _EvolutionChoiceTile(
                 choice: choice,
-                targetPokemon: pokemonByName(choice.option.toName),
+                targetPokemon: _targetFor(choice),
                 actionLabel: isSingleEvolution
                     ? 'Evolvi'
                     : uiTextForLanguage('Scegli', """Choose"""),
@@ -109,7 +118,9 @@ class _EvolutionChoiceTile extends StatelessWidget {
         title: Text(
           choice.option.isSecret
               ? 'EVOLUZIONE SCONOSCIUTA'
-              : _localizedEvolutionName(choice.option.toName).toUpperCase(),
+              : PokemonFormLocalization.evolutionName(
+                  choice.option.toName,
+                ).toUpperCase(),
           style: const TextStyle(fontWeight: FontWeight.w900),
         ),
         subtitle: Padding(
@@ -170,23 +181,6 @@ class _EvolutionChoiceTile extends StatelessWidget {
       ),
     );
   }
-}
-
-String _localizedEvolutionName(String value) {
-  final trimmed = value.trim();
-  final regional = RegExp(
-    r'^(Alolan|Galarian|Hisuian|Paldean)\s+(.+)$',
-    caseSensitive: false,
-  ).firstMatch(trimmed);
-  if (regional == null) return trimmed;
-  final region = switch (regional.group(1)!.toLowerCase()) {
-    'alolan' => 'Alola',
-    'galarian' => 'Galar',
-    'hisuian' => 'Hisui',
-    'paldean' => 'Paldea',
-    _ => regional.group(1)!,
-  };
-  return '${regional.group(2)} di $region';
 }
 
 class _ConditionChip extends StatelessWidget {

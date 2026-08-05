@@ -1599,22 +1599,26 @@ class _Header extends StatelessWidget {
     final hpProgress = maxHp <= 0
         ? 0.0
         : (currentHp / maxHp).clamp(0.0, 1.0).toDouble();
+    final compact = MediaQuery.sizeOf(context).width < 520;
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(8, 8, 8, 6),
+      padding: EdgeInsets.fromLTRB(compact ? 6 : 8, 6, compact ? 6 : 8, 4),
       child: Column(
         children: [
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _PokemonCenterButton(onTap: isPartyMode ? onPokemonCenter : null),
-              const SizedBox(width: 6),
+              _PokemonCenterButton(
+                onTap: isPartyMode ? onPokemonCenter : null,
+                compact: compact,
+              ),
+              SizedBox(width: compact ? 4 : 6),
               Card(
                 child: SizedBox(
-                  width: 132,
-                  height: 142,
+                  width: compact ? 108 : 132,
+                  height: compact ? 136 : 142,
                   child: Padding(
-                    padding: const EdgeInsets.all(6),
+                    padding: EdgeInsets.all(compact ? 4 : 6),
                     child: Column(
                       children: [
                         Expanded(
@@ -1624,7 +1628,7 @@ class _Header extends StatelessWidget {
                             gender: slot?.gender,
                             isShiny: slot?.isShiny,
                             useLargeArtwork: true,
-                            size: 112,
+                            size: compact ? 96 : 112,
                           ),
                         ),
                         Text(
@@ -1639,62 +1643,131 @@ class _Header extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(width: 8),
+              SizedBox(width: compact ? 6 : 8),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text(
-                      pokemon.name.toUpperCase(),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.headlineSmall
-                          ?.copyWith(fontWeight: FontWeight.w900),
-                    ),
-                    const SizedBox(height: 4),
-                    Wrap(
-                      alignment: WrapAlignment.center,
-                      spacing: 6,
-                      runSpacing: 4,
-                      children: [
-                        for (final type in pokemon.types)
-                          PokemonTypeBadge(type: type, height: 20),
-                      ],
-                    ),
-                    const SizedBox(height: 6),
+                    if (compact)
+                      SizedBox(
+                        height: 34,
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                pokemon.name.toUpperCase(),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: Theme.of(context).textTheme.titleMedium
+                                    ?.copyWith(fontWeight: FontWeight.w900),
+                              ),
+                            ),
+                            if (pokemon.types.isNotEmpty) ...[
+                              const SizedBox(width: 4),
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  for (final type in pokemon.types.take(2))
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 1,
+                                      ),
+                                      child: PokemonTypeBadge(
+                                        type: type,
+                                        height: 15,
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ],
+                          ],
+                        ),
+                      )
+                    else ...[
+                      Text(
+                        pokemon.name.toUpperCase(),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.headlineSmall
+                            ?.copyWith(fontWeight: FontWeight.w900),
+                      ),
+                      const SizedBox(height: 4),
+                      Wrap(
+                        alignment: WrapAlignment.center,
+                        spacing: 6,
+                        runSpacing: 4,
+                        children: [
+                          for (final type in pokemon.types)
+                            PokemonTypeBadge(type: type, height: 20),
+                        ],
+                      ),
+                    ],
+                    SizedBox(height: compact ? 4 : 6),
                     _LoyaltyRow(
                       loyalty: loyalty,
                       onDecrease: loyalty <= -3 ? null : onDecreaseLoyalty,
                       onIncrease: loyalty >= 3 ? null : onIncreaseLoyalty,
                     ),
-                    const SizedBox(height: 6),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _MetricBox(
-                            label: context.uiText('Liv.', 'Lv.'),
-                            value: '$level',
+                    SizedBox(height: compact ? 4 : 6),
+                    if (compact)
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _MetricBox(
+                              label: context.uiText('Liv.', 'Lv.'),
+                              value: '$level',
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: 6),
-                        Expanded(
-                          child: _MetricBox(
-                            label: context.uiText('CA:', 'AC:'),
-                            value: '$armorClass',
+                          const SizedBox(width: 4),
+                          Expanded(
+                            child: _MetricBox(
+                              label: context.uiText('CA:', 'AC:'),
+                              value: '$armorClass',
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 6),
-                    InkWell(
-                      onTap: isPartyMode ? onEditExperience : null,
-                      borderRadius: BorderRadius.circular(8),
-                      child: _ProgressPanel(
-                        label: 'EXP: $experience/$nextThreshold',
-                        value: expProgress,
+                          const SizedBox(width: 4),
+                          Expanded(
+                            flex: 2,
+                            child: InkWell(
+                              onTap: isPartyMode ? onEditExperience : null,
+                              borderRadius: BorderRadius.circular(8),
+                              child: _ProgressPanel(
+                                label: 'EXP: $experience/$nextThreshold',
+                                value: expProgress,
+                              ),
+                            ),
+                          ),
+                        ],
+                      )
+                    else ...[
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _MetricBox(
+                              label: context.uiText('Liv.', 'Lv.'),
+                              value: '$level',
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          Expanded(
+                            child: _MetricBox(
+                              label: context.uiText('CA:', 'AC:'),
+                              value: '$armorClass',
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
+                      const SizedBox(height: 6),
+                      InkWell(
+                        onTap: isPartyMode ? onEditExperience : null,
+                        borderRadius: BorderRadius.circular(8),
+                        child: _ProgressPanel(
+                          label: 'EXP: $experience/$nextThreshold',
+                          value: expProgress,
+                        ),
+                      ),
+                    ],
                   ],
                 ),
               ),
@@ -1741,13 +1814,13 @@ class _Header extends StatelessWidget {
           Row(
             children: [
               _FightIconButton(icon: Icons.remove, onPressed: onDecreaseHp),
-              const SizedBox(width: 8),
+              SizedBox(width: compact ? 6 : 8),
               Expanded(
                 child: InkWell(
                   onTap: isPartyMode ? onEditHp : null,
                   borderRadius: BorderRadius.circular(8),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 6),
+                    padding: EdgeInsets.symmetric(vertical: compact ? 4 : 6),
                     child: Row(
                       children: [
                         Text(
@@ -1755,16 +1828,18 @@ class _Header extends StatelessWidget {
                             'PF: $currentHp/$maxHp',
                             'HP: $currentHp/$maxHp',
                           ),
-                          style: Theme.of(context).textTheme.titleLarge
+                          style: (compact
+                                  ? Theme.of(context).textTheme.titleMedium
+                                  : Theme.of(context).textTheme.titleLarge)
                               ?.copyWith(fontWeight: FontWeight.w800),
                         ),
-                        const SizedBox(width: 12),
+                        SizedBox(width: compact ? 8 : 12),
                         Expanded(
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(999),
                             child: LinearProgressIndicator(
                               value: hpProgress,
-                              minHeight: 16,
+                              minHeight: compact ? 12 : 16,
                               valueColor: AlwaysStoppedAnimation<Color>(
                                 _hpProgressColor(hpProgress),
                               ),
@@ -1779,7 +1854,19 @@ class _Header extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(width: 8),
+              if (compact && isPartyMode && evolutionLabel != null) ...[
+                const SizedBox(width: 6),
+                SizedBox(
+                  width: 48,
+                  height: 48,
+                  child: IconButton.outlined(
+                    tooltip: evolutionLabel,
+                    onPressed: onEvolve,
+                    icon: const Icon(Icons.trending_up),
+                  ),
+                ),
+              ],
+              SizedBox(width: compact ? 6 : 8),
               _FightIconButton(icon: Icons.add, onPressed: onIncreaseHp),
             ],
           ),
@@ -1787,7 +1874,7 @@ class _Header extends StatelessWidget {
             const SizedBox(height: 8),
             _InlineDetailMessage(message: message!),
           ],
-          if (isPartyMode && evolutionLabel != null) ...[
+          if (!compact && isPartyMode && evolutionLabel != null) ...[
             const SizedBox(height: 8),
             SizedBox(
               width: double.infinity,
@@ -1992,9 +2079,13 @@ String _itemReferenceKey(String value) {
 }
 
 class _PokemonCenterButton extends StatelessWidget {
-  const _PokemonCenterButton({required this.onTap});
+  const _PokemonCenterButton({
+    required this.onTap,
+    this.compact = false,
+  });
 
   final VoidCallback? onTap;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
@@ -2003,8 +2094,8 @@ class _PokemonCenterButton extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(8),
       child: Container(
-        width: 46,
-        height: 142,
+        width: compact ? 48 : 46,
+        height: compact ? 136 : 142,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(8),
@@ -2261,10 +2352,12 @@ class _FightStatsGrid extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final compact = constraints.maxWidth < 520;
+        final compactSingleRow =
+            compact && accessibleTextScaleRatio(context) <= 1.3;
         final compactAspectRatio = textScaleAwareValue(
           context,
-          normal: 1.85,
-          enlarged: 1.1,
+          normal: compactSingleRow ? 1.05 : 1.85,
+          enlarged: compactSingleRow ? 1.05 : 1.1,
         );
         final wideAspectRatio = textScaleAwareValue(
           context,
@@ -2272,10 +2365,8 @@ class _FightStatsGrid extends StatelessWidget {
           enlarged: 0.82,
         );
         return GridView.count(
-          crossAxisCount: compact ? 3 : 6,
-          childAspectRatio: compact
-              ? compactAspectRatio
-              : wideAspectRatio,
+          crossAxisCount: compactSingleRow || !compact ? 6 : 3,
+          childAspectRatio: compact ? compactAspectRatio : wideAspectRatio,
           crossAxisSpacing: 4,
           mainAxisSpacing: 4,
           shrinkWrap: true,
@@ -2309,7 +2400,7 @@ class _FightStatBox extends StatelessWidget {
   Widget build(BuildContext context) {
     final muted = Theme.of(context).colorScheme.onSurfaceVariant;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 3),
+      padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 2),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(6),
@@ -2318,23 +2409,32 @@ class _FightStatBox extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                label,
-                style: TextStyle(color: muted, fontWeight: FontWeight.w700),
+          SizedBox(
+            width: double.infinity,
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    label,
+                    style: TextStyle(
+                      color: muted,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(width: 3),
+                  Text(
+                    '$score',
+                    style: const TextStyle(fontWeight: FontWeight.w900),
+                  ),
+                ],
               ),
-              const SizedBox(width: 5),
-              Text(
-                '$score',
-                style: const TextStyle(fontWeight: FontWeight.w900),
-              ),
-            ],
+            ),
           ),
           Text(
             _signed(modifier),
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
               fontWeight: FontWeight.w900,
               height: 1,
             ),
@@ -3067,7 +3167,7 @@ class _PartySwitcher extends StatelessWidget {
       child: Container(
         height: textScaleAwareValue(
           context,
-          normal: 68,
+          normal: 60,
           enlarged: 98,
         ),
         decoration: BoxDecoration(

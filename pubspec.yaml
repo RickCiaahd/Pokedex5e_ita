@@ -2,8 +2,7 @@ name: pokedex_5e_ita
 description: "Trainer Atlas, companion non ufficiale in italiano per campagne con creature tascabili in 5e."
 publish_to: 'none'
 
-version: 1.4.0+12
-
+version: 1.4.0+13
 environment:
   sdk: ^3.12.2
 
@@ -350,6 +349,8 @@ flutter:
     - assets/textures/textures_webapp/items/zoom-lens/
     - assets/textures/textures_webapp/pokemon/
     - assets/textures/textures_webapp/pokemon_transforms/
+    - assets/textures/textures_webapp/pokemon_transforms/mega/
+    - assets/textures/textures_webapp/pokemon_transforms/gigamax/
     - assets/textures/textures_webapp/pokemon/aegislash-shield/
     - assets/textures/textures_webapp/pokemon/cherrim-sunshine/
     - assets/textures/textures_webapp/pokemon/cramorant-gorging/

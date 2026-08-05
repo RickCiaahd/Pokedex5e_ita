@@ -73,6 +73,8 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
   List<String> _specializations = [];
   Map<String, String> _trainerPathChoices = {};
   Map<String, int> _trainerPathResources = {};
+  List<String> _transformationUses = [];
+  List<String> _transformedPokemonKeys = [];
   bool _isLoading = true;
   bool _isSaving = false;
   String? _errorMessage;
@@ -198,6 +200,8 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
         _specializations = [...profile.specializations];
         _trainerPathChoices = {...profile.trainerPathChoices};
         _trainerPathResources = {...profile.trainerPathResources};
+        _transformationUses = [...profile.transformationUses];
+        _transformedPokemonKeys = [...profile.transformedPokemonKeys];
         _reconcileTrainerPathAutomation();
         _isLoading = false;
       });
@@ -474,6 +478,40 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
     });
   }
 
+  Future<void> _applyLongRest() async {
+    final profile = _profile;
+    final restoredResources = TrainerPathAutomationService.restoreForRest(
+      current: _trainerPathResources,
+      definitions: _trainerPathResourceDefinitions,
+      rest: TrainerPathResourceReset.longRest,
+    );
+    setState(() {
+      _trainerPathResources = restoredResources;
+      _transformationUses = [];
+      _transformedPokemonKeys = [];
+    });
+    if (profile == null) return;
+
+    final updated = profile.copyWith(
+      trainerPathResources: restoredResources,
+      transformationUses: const [],
+      transformedPokemonKeys: const [],
+    );
+    await _profileRepository.saveProfile(updated);
+    if (!mounted) return;
+    setState(() => _profile = updated);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          context.uiText(
+            'Riposo lungo completato: risorse e trasformazioni recuperate.',
+            'Long rest completed: resources and transformations restored.',
+          ),
+        ),
+      ),
+    );
+  }
+
   void _changeStarter(Pokemon pokemon) {
     setState(() => _starterPokemon = pokemon.name);
   }
@@ -595,6 +633,8 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
         trainerPath: _trainerPath,
         trainerPathChoices: {..._trainerPathChoices},
         trainerPathResources: {..._trainerPathResources},
+        transformationUses: [..._transformationUses],
+        transformedPokemonKeys: [..._transformedPokemonKeys],
       );
 
       await _profileRepository.saveProfile(updated);
@@ -931,11 +971,18 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
                             onShortRest: () => _restoreTrainerPathResources(
                               TrainerPathResourceReset.shortRest,
                             ),
-                            onLongRest: () => _restoreTrainerPathResources(
-                              TrainerPathResourceReset.longRest,
-                            ),
+                            onLongRest: () => _applyLongRest(),
                           ),
                         ),
+                        if (_transformationUses.isNotEmpty ||
+                            _transformedPokemonKeys.isNotEmpty) ...[
+                          const SizedBox(height: 12),
+                          _TransformationRestCard(
+                            usedKinds: _transformationUses,
+                            pokemonCount: _transformedPokemonKeys.length,
+                            onLongRest: () => _applyLongRest(),
+                          ),
+                        ],
                       ],
                     ],
                   ),
@@ -2823,6 +2870,56 @@ class _TrainerSheetErrorState extends StatelessWidget {
             child: Text(context.uiText('Riprova', 'Retry')),
           ),
         ],
+      ),
+    );
+  }
+}
+
+
+class _TransformationRestCard extends StatelessWidget {
+  const _TransformationRestCard({
+    required this.usedKinds,
+    required this.pokemonCount,
+    required this.onLongRest,
+  });
+
+  final List<String> usedKinds;
+  final int pokemonCount;
+  final VoidCallback onLongRest;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      color: Theme.of(context).colorScheme.tertiaryContainer.withValues(alpha: 0.45),
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              context.uiText('TRASFORMAZIONI UTILIZZATE', 'USED TRANSFORMATIONS'),
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              context.uiText(
+                '${usedKinds.length} tipi usati · $pokemonCount Pokémon trasformati. Il riposo lungo azzera entrambi i limiti.',
+                '${usedKinds.length} types used · $pokemonCount transformed Pokémon. A long rest resets both limits.',
+              ),
+            ),
+            const SizedBox(height: 10),
+            Align(
+              alignment: Alignment.centerRight,
+              child: FilledButton.tonalIcon(
+                onPressed: onLongRest,
+                icon: const Icon(Icons.hotel_outlined),
+                label: Text(context.uiText('RIPOSO LUNGO', 'LONG REST')),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

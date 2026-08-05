@@ -1,4 +1,5 @@
 import 'battle_environment.dart';
+import 'battle_transformation.dart';
 import 'team_slot.dart';
 
 class BattleSession {
@@ -98,6 +99,7 @@ class BattlePokemonState {
     this.temporaryHp = 0,
     this.temporaryHpEnabled = false,
     this.temporaryHpInitialized = false,
+    this.transformation,
   });
 
   final int slotIndex;
@@ -109,6 +111,7 @@ class BattlePokemonState {
   final int temporaryHp;
   final bool temporaryHpEnabled;
   final bool temporaryHpInitialized;
+  final BattleTransformationState? transformation;
 
   bool matches(TeamSlot slot) {
     return slot.slotIndex == slotIndex &&
@@ -127,6 +130,7 @@ class BattlePokemonState {
       'temporaryHp': temporaryHp,
       'temporaryHpEnabled': temporaryHpEnabled,
       'temporaryHpInitialized': temporaryHpInitialized,
+      'transformation': transformation?.toJson(),
     };
   }
 
@@ -150,6 +154,11 @@ class BattlePokemonState {
       temporaryHp: _readInt(json['temporaryHp']).clamp(0, 9999).toInt(),
       temporaryHpEnabled: json['temporaryHpEnabled'] == true,
       temporaryHpInitialized: json['temporaryHpInitialized'] == true,
+      transformation: json['transformation'] is Map
+          ? BattleTransformationState.fromJson(
+              Map<String, dynamic>.from(json['transformation'] as Map),
+            )
+          : null,
     );
   }
 

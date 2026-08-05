@@ -46,8 +46,7 @@ class EvolutionFormAliasService {
           index < basePokemon.formDefinitions.length;
           index += 1) {
         final definition = basePokemon.formDefinitions[index];
-        if (definition.gender != null ||
-            _isTemporaryTransformation(basePokemon, definition)) {
+        if (_isTemporaryTransformation(basePokemon, definition)) {
           continue;
         }
 

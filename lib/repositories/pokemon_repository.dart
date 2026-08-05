@@ -323,7 +323,13 @@ class PokemonRepository {
         return lengthCompare != 0 ? lengthCompare : aSlug.compareTo(bSlug);
       });
     final selectedBase = explicitBase ?? sorted.first;
-    final speciesName = explicitBase?.name ?? Pokemon.labelFromId(speciesSlug);
+    final defaultSpeciesName =
+        explicitBase?.name ?? Pokemon.labelFromId(speciesSlug);
+    final speciesName =
+        GameCatalogLocale.isItalian &&
+            explicitBase?.assetSlug == 'gimmighoul'
+        ? 'Gimmighoul (Scrigno)'
+        : defaultSpeciesName;
     final definitions = <PokemonFormDefinition>[];
 
     for (final candidate in group) {

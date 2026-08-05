@@ -87,6 +87,26 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
+      - name: Resolve release version codes
+        shell: bash
+        run: |
+          set -euo pipefail
+          VERSION="$(awk '/^version:/ {print $2; exit}' pubspec.yaml)"
+          VERSION="${VERSION//\"/}"
+          VERSION="${VERSION//\'/}"
+          BASE_VERSION_CODE="${VERSION##*+}"
+          if [[ ! "$BASE_VERSION_CODE" =~ ^[0-9]+$ ]]; then
+            echo "Unable to resolve a numeric build number from pubspec.yaml version." >&2
+            exit 1
+          fi
+          SHRUNK_VERSION_CODE=$((BASE_VERSION_CODE + 1))
+          {
+            echo "BASE_VERSION_CODE=$BASE_VERSION_CODE"
+            echo "SHRUNK_VERSION_CODE=$SHRUNK_VERSION_CODE"
+          } >> "$GITHUB_ENV"
+          echo "Baseline version code: $BASE_VERSION_CODE"
+          echo "Shrunk version code: $SHRUNK_VERSION_CODE"
+
       - name: Verify compliance inventories
         run: python tooling/generate_compliance_reports.py --check
 
@@ -152,8 +172,8 @@ jobs:
           flutter clean
           flutter pub get
           python tooling/prepare_release_legal_assets.py
-          flutter build apk --release --build-number=11
-          flutter build appbundle --release --build-number=11
+          flutter build apk --release --build-number="$SHRUNK_VERSION_CODE"
+          flutter build appbundle --release --build-number="$SHRUNK_VERSION_CODE"
           mkdir -p "$READINESS_DIR/shrunk"
           cp build/app/outputs/flutter-apk/app-release.apk "$READINESS_DIR/shrunk/app-release.apk"
           cp build/app/outputs/bundle/release/app-release.aab "$READINESS_DIR/shrunk/app-release.aab"
@@ -185,9 +205,11 @@ jobs:
             grep -q 'PAGE_ALIGNMENT_16K' \
               "$READINESS_DIR/reports/${variant}-bundle-config.txt"
           done
-          grep -Eq 'versionCode="10"|versionCode="0xa"' \
+          printf -v baseline_version_hex '0x%x' "$BASE_VERSION_CODE"
+          printf -v shrunk_version_hex '0x%x' "$SHRUNK_VERSION_CODE"
+          grep -Eq "versionCode=\"${BASE_VERSION_CODE}\"|versionCode=\"${baseline_version_hex}\"" \
             "$READINESS_DIR/reports/baseline-manifest.xml"
-          grep -Eq 'versionCode="11"|versionCode="0xb"' \
+          grep -Eq "versionCode=\"${SHRUNK_VERSION_CODE}\"|versionCode=\"${shrunk_version_hex}\"" \
             "$READINESS_DIR/reports/shrunk-manifest.xml"
 
       - name: Recreate Play delivery and measure device download
@@ -256,6 +278,11 @@ jobs:
           if shrunk[2] > baseline[2] * 1.02:
               raise SystemExit('The shrunk AAB is more than 2% larger than the baseline AAB.')
 
+          version_codes = {
+              'baseline': int(os.environ['BASE_VERSION_CODE']),
+              'shrunk': int(os.environ['SHRUNK_VERSION_CODE']),
+          }
+
           report = root / 'reports' / 'android-release-readiness.md'
           report.write_text(
               '# Android release readiness report\n\n'
@@ -264,7 +291,7 @@ jobs:
               '| Variant | Version code | APK bytes | AAB bytes | bundletool device size |\n'
               '|---|---:|---:|---:|---|\n'
               + ''.join(
-                  f'| {variant} | {10 if variant == "baseline" else 11} | {apk:,} | {aab:,} | `{device}` |\n'
+                  f'| {variant} | {version_codes[variant]} | {apk:,} | {aab:,} | `{device}` |\n'
                   for variant, apk, aab, device in rows
               )
               + '\nThe production release remains unshrunk by default. The `shrunk` '
@@ -281,13 +308,13 @@ jobs:
           set -euo pipefail
           mkdir -p "$READINESS_DIR/test-apks"
           cp "$READINESS_DIR/baseline/app-release.apk" \
-            "$READINESS_DIR/test-apks/Trainer-Atlas-5e-standard-vc10.apk"
+            "$READINESS_DIR/test-apks/Trainer-Atlas-5e-standard-vc${BASE_VERSION_CODE}.apk"
           cp "$READINESS_DIR/shrunk/app-release.apk" \
-            "$READINESS_DIR/test-apks/Trainer-Atlas-5e-minified-vc11.apk"
-          cat > "$READINESS_DIR/test-apks/README.txt" <<'EOF'
+            "$READINESS_DIR/test-apks/Trainer-Atlas-5e-minified-vc${SHRUNK_VERSION_CODE}.apk"
+          cat > "$READINESS_DIR/test-apks/README.txt" <<EOF
           Questi APK sono firmati con la stessa chiave CI temporanea e servono solo al collaudo.
-          1. Installare Trainer-Atlas-5e-standard-vc10.apk e creare dati di prova.
-          2. Installare Trainer-Atlas-5e-minified-vc11.apk sopra la precedente senza disinstallare.
+          1. Installare Trainer-Atlas-5e-standard-vc${BASE_VERSION_CODE}.apk e creare dati di prova.
+          2. Installare Trainer-Atlas-5e-minified-vc${SHRUNK_VERSION_CODE}.apk sopra la precedente senza disinstallare.
           3. Verificare persistenza, backup, icona, splash e funzioni basate sui plugin.
           Non sono APK pubblicabili e non possono aggiornare installazioni firmate con un'altra chiave.
           Dopo il test potrebbe essere necessario disinstallarli prima di installare una release ufficiale.

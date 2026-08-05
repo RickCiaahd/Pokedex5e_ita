@@ -19,6 +19,7 @@ import '../../widgets/pokemon/pokemon_asset_image.dart';
 import '../../localization/ui_text.dart';
 import '../../localization/game_catalog_locale.dart';
 import '../../localization/feat_display_name.dart';
+import '../../localization/pokemon_form_localization.dart';
 
 class PokemonEditResult {
   const PokemonEditResult({required this.slot});
@@ -903,9 +904,7 @@ String _localizedFormLabel(Pokemon pokemon, String? formName) {
   if (BattleFormChangeService.supports(pokemon)) {
     return BattleFormChangeService.formLabel(pokemon, formName);
   }
-  return formName?.trim().isNotEmpty == true
-      ? formName!
-      : uiTextForLanguage('Forma base', """Base form""");
+  return PokemonFormLocalization.formLabel(pokemon, formName);
 }
 
 class _FormSelector extends StatelessWidget {

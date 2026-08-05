@@ -103,7 +103,7 @@ class BattleTransformationService {
         }
         if (pokemonLevel < 10) missing.add('Richiede livello 10');
         if (heldKey != 'megalite-stone') {
-          missing.add('Il Pokémon deve tenere una Megalite');
+          missing.add('Il Pokémon deve tenere Megalite Stone');
         }
         if (!inventoryIds.contains('key-stone')) {
           missing.add('Richiede una Pietrachiave nello Zaino');
@@ -127,13 +127,13 @@ class BattleTransformationService {
       case BattleTransformationKind.gigamax:
         if (pokemonLevel < 10) missing.add('Richiede livello 10');
         if (!inventoryIds.contains('dynamax-band')) {
-          missing.add('Richiede una Fascia Dynamax nello Zaino');
+          missing.add('Richiede un Polsino Dynamax nello Zaino');
         }
         break;
       case BattleTransformationKind.terastal:
         if (pokemonLevel < 6) missing.add('Richiede livello 6');
         if (!inventoryIds.contains('tera-orb')) {
-          missing.add('Richiede una Tera Orb nello Zaino');
+          missing.add('Richiede una Terasfera nello Zaino');
         }
         break;
     }

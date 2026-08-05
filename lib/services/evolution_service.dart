@@ -12,6 +12,7 @@ class EvolutionEligibility {
     required this.conditionLabels,
     required this.missingRequirements,
     this.requiredItemId,
+    this.requiredMoney = 0,
   });
 
   final EvolutionOption option;
@@ -19,6 +20,7 @@ class EvolutionEligibility {
   final List<String> conditionLabels;
   final List<String> missingRequirements;
   final String? requiredItemId;
+  final int requiredMoney;
 }
 
 class EvolutionService {
@@ -30,6 +32,7 @@ class EvolutionService {
     required EvolutionData evolution,
     required List<BagInventoryEntry> inventory,
     required List<BagItem> itemCatalog,
+    int trainerMoney = 0,
   }) {
     final options = evolution.options.isEmpty
         ? _legacyOptions(pokemon: pokemon, evolution: evolution)
@@ -51,6 +54,7 @@ class EvolutionService {
           slot: slot,
           ownedItemIds: ownedItemIds,
           itemByName: itemByName,
+          trainerMoney: trainerMoney,
         ),
     ];
   }
@@ -60,15 +64,15 @@ class EvolutionService {
     required TeamSlot slot,
     required Set<String> ownedItemIds,
     required Map<String, BagItem> itemByName,
+    required int trainerMoney,
   }) {
     final conditionLabels = <String>[];
     final missing = <String>[];
     String? requiredItemId;
+    var requiredMoney = 0;
     final level = LevelProgression.levelFromExperience(slot.experience);
     final selectedMoveKeys = slot.selectedMoves.map(_referenceKey).toSet();
-    final hasManualEarlierAlternative = option.conditions.any(
-      _isManualEarlierAlternative,
-    );
+    final manualEarlierCost = _manualEarlierCost(option.conditions);
 
     for (final condition in option.conditions) {
       switch (condition.type) {
@@ -76,8 +80,15 @@ class EvolutionService {
           final requiredLevel = condition.intValue;
           if (requiredLevel != null) {
             conditionLabels.add('Livello $requiredLevel');
-            if (level < requiredLevel && !hasManualEarlierAlternative) {
-              missing.add('Richiede livello $requiredLevel');
+            if (level < requiredLevel) {
+              if (manualEarlierCost != null) {
+                requiredMoney = manualEarlierCost;
+                if (trainerMoney < requiredMoney) {
+                  missing.add('Richiede ₽9.999 nel portafogli');
+                }
+              } else {
+                missing.add('Richiede livello $requiredLevel');
+              }
             }
           }
           break;
@@ -141,6 +152,7 @@ class EvolutionService {
       conditionLabels: conditionLabels,
       missingRequirements: missing,
       requiredItemId: requiredItemId,
+      requiredMoney: requiredMoney,
     );
   }
 
@@ -165,6 +177,24 @@ class EvolutionService {
           ],
         ),
     ];
+  }
+
+  int moneyAfterSuccessfulEvolution({
+    required int currentMoney,
+    required EvolutionEligibility eligibility,
+  }) {
+    if (!eligibility.isAvailable || eligibility.requiredMoney <= 0) {
+      return currentMoney;
+    }
+    if (currentMoney < eligibility.requiredMoney) return currentMoney;
+    return currentMoney - eligibility.requiredMoney;
+  }
+
+  int? _manualEarlierCost(List<EvolutionRule> conditions) {
+    for (final condition in conditions) {
+      if (_isManualEarlierAlternative(condition)) return 9999;
+    }
+    return null;
   }
 
   bool _isManualEarlierAlternative(EvolutionRule condition) {

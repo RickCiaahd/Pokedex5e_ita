@@ -1,6 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pokedex_5e_ita/localization/game_catalog_locale.dart';
 import 'package:pokedex_5e_ita/localization/pokemon_form_localization.dart';
+import 'package:pokedex_5e_ita/models/evolution_data.dart';
+import 'package:pokedex_5e_ita/models/level_progression.dart';
+import 'package:pokedex_5e_ita/models/pokemon.dart';
 import 'package:pokedex_5e_ita/models/team_slot.dart';
 import 'package:pokedex_5e_ita/repositories/evolution_repository.dart';
 import 'package:pokedex_5e_ita/repositories/pokemon_repository.dart';
@@ -147,30 +150,91 @@ void main() {
       contains('gholdengo'),
     );
 
-    final chestEligibility = const EvolutionService()
-        .evaluateOptions(
-          pokemon: gimmighoul,
-          slot: TeamSlot(slotIndex: 0, pokemonId: gimmighoul.id),
-          evolution: chestEvolution,
-          inventory: const [],
-          itemCatalog: const [],
-        )
-        .singleWhere((entry) => entry.option.toKey == 'gholdengo');
-    final roamingEligibility = const EvolutionService()
-        .evaluateOptions(
-          pokemon: roaming,
-          slot: TeamSlot(slotIndex: 0, pokemonId: roaming.id),
-          evolution: roamingEvolution,
-          inventory: const [],
-          itemCatalog: const [],
-        )
-        .singleWhere((entry) => entry.option.toKey == 'gholdengo');
+    const service = EvolutionService();
+    EvolutionEligibility evaluate(
+      Pokemon pokemon,
+      EvolutionData evolution, {
+      required int experience,
+      required int money,
+    }) {
+      return service
+          .evaluateOptions(
+            pokemon: pokemon,
+            slot: TeamSlot(
+              slotIndex: 0,
+              pokemonId: pokemon.id,
+              experience: experience,
+            ),
+            evolution: evolution,
+            inventory: const [],
+            itemCatalog: const [],
+            trainerMoney: money,
+          )
+          .singleWhere((entry) => entry.option.toKey == 'gholdengo');
+    }
 
-    expect(chestEligibility.isAvailable, isTrue);
-    expect(roamingEligibility.isAvailable, isTrue);
+    final insufficientMoney = evaluate(
+      gimmighoul,
+      chestEvolution,
+      experience: 0,
+      money: 9998,
+    );
+    expect(insufficientMoney.isAvailable, isFalse);
+    expect(insufficientMoney.requiredMoney, 9999);
     expect(
-      chestEligibility.conditionLabels,
+      insufficientMoney.missingRequirements,
+      contains('Richiede ₽9.999 nel portafogli'),
+    );
+
+    final chestPaid = evaluate(
+      gimmighoul,
+      chestEvolution,
+      experience: 0,
+      money: 12000,
+    );
+    final roamingPaid = evaluate(
+      roaming,
+      roamingEvolution,
+      experience: 0,
+      money: 9999,
+    );
+    expect(chestPaid.isAvailable, isTrue);
+    expect(roamingPaid.isAvailable, isTrue);
+    expect(chestPaid.requiredMoney, 9999);
+    expect(roamingPaid.requiredMoney, 9999);
+    expect(
+      chestPaid.conditionLabels,
       contains('Oppure prima del livello 10 consumando ₽9.999'),
+    );
+    expect(
+      service.moneyAfterSuccessfulEvolution(
+        currentMoney: 12000,
+        eligibility: chestPaid,
+      ),
+      2001,
+    );
+    expect(
+      service.moneyAfterSuccessfulEvolution(
+        currentMoney: 9999,
+        eligibility: roamingPaid,
+      ),
+      0,
+    );
+
+    final levelTen = evaluate(
+      gimmighoul,
+      chestEvolution,
+      experience: LevelProgression.thresholdForLevel(10),
+      money: 0,
+    );
+    expect(levelTen.isAvailable, isTrue);
+    expect(levelTen.requiredMoney, 0);
+    expect(
+      service.moneyAfterSuccessfulEvolution(
+        currentMoney: 0,
+        eligibility: levelTen,
+      ),
+      0,
     );
   });
 

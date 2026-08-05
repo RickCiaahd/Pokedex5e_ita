@@ -346,6 +346,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
       evolution: evolution,
       inventory: inventory,
       itemCatalog: itemCatalog,
+      trainerMoney: profile.money,
     );
   }
 
@@ -1154,6 +1155,18 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
     }
 
     final profile = await _profileRepository.getActiveProfile();
+    final requiredMoney = selected.requiredMoney;
+    if (requiredMoney > 0 && profile.money < requiredMoney) {
+      _showMessage(
+        uiTextForLanguage(
+          'Servono ₽9.999 nel portafogli per questa evoluzione.',
+          'You need ₽9,999 in your wallet for this evolution.',
+        ),
+      );
+      await _refreshEvolutionChoices();
+      return null;
+    }
+
     final requiredItemId = selected.requiredItemId;
     if (requiredItemId != null) {
       final consumed = await _bagInventoryRepository.consumeItem(
@@ -1183,6 +1196,17 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
       formName: selected.option.targetFormName,
     );
 
+    var updatedProfile = profile;
+    if (requiredMoney > 0) {
+      updatedProfile = profile.copyWith(
+        money: _evolutionService.moneyAfterSuccessfulEvolution(
+          currentMoney: profile.money,
+          eligibility: selected,
+        ),
+      );
+      await _profileRepository.saveProfile(updatedProfile);
+    }
+
     if (!mounted) return updatedSlot;
 
     setState(() {
@@ -1190,6 +1214,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
       _pokemon = evolvedPokemon;
       _teamSlot = updatedSlot;
       _replaceTeamSlot(updatedSlot);
+      _profile = updatedProfile;
       _isLoading = true;
       _message = uiTextForLanguage(
         '$oldName si è evoluto in $targetName!',

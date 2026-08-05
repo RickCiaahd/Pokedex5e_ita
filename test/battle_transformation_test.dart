@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pokedex_5e_ita/models/bag_inventory_entry.dart';
 import 'package:pokedex_5e_ita/models/battle_transformation.dart';
@@ -122,5 +123,15 @@ void main() {
     expect(mega.map((art) => art.identifier), contains('charizard-mega-x'));
     expect(mega.map((art) => art.identifier), contains('charizard-mega-y'));
     expect(gmax.map((art) => art.identifier), contains('charizard-gmax'));
+  });
+
+  testWidgets('all transformation artwork is bundled in normal and shiny form',
+      (tester) async {
+    final manifest = await AssetManifest.loadFromAssetBundle(rootBundle);
+    final assets = manifest.listAssets().toSet();
+    for (final art in PokemonTransformAssetCatalog.all) {
+      expect(assets, contains(art.assetPath(shiny: false)));
+      expect(assets, contains(art.assetPath(shiny: true)));
+    }
   });
 }

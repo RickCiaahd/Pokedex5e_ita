@@ -615,6 +615,7 @@ class _BattleScreenState extends State<BattleScreen> {
           title: 'Scegli la Mega Evoluzione',
           pokemonName: pokemon.name,
           options: options,
+          isShiny: slot.isShiny,
         ),
       );
       if (!mounted || selected == null) return;
@@ -666,6 +667,7 @@ class _BattleScreenState extends State<BattleScreen> {
       builder: (_) => _DynamaxPickerSheet(
         pokemonName: pokemon.name,
         gigamaxOptions: gmaxOptions,
+        isShiny: slot.isShiny,
       ),
     );
     if (!mounted || choice == null) return;
@@ -4513,11 +4515,13 @@ class _TransformArtPickerSheet extends StatelessWidget {
     required this.title,
     required this.pokemonName,
     required this.options,
+    required this.isShiny,
   });
 
   final String title;
   final String pokemonName;
   final List<PokemonTransformArt> options;
+  final bool isShiny;
 
   @override
   Widget build(BuildContext context) {
@@ -4533,7 +4537,13 @@ class _TransformArtPickerSheet extends StatelessWidget {
           for (final option in options)
             Card(
               child: ListTile(
-                leading: const Icon(Icons.auto_awesome),
+                leading: Image.asset(
+                  option.assetPath(shiny: isShiny),
+                  width: 52,
+                  height: 52,
+                  fit: BoxFit.contain,
+                  errorBuilder: (_, _, _) => const Icon(Icons.auto_awesome),
+                ),
                 title: Text('${option.label} $pokemonName'),
                 subtitle: Text(option.types.join(' / ')),
                 onTap: () => Navigator.of(context).pop(option),
@@ -4549,10 +4559,12 @@ class _DynamaxPickerSheet extends StatelessWidget {
   const _DynamaxPickerSheet({
     required this.pokemonName,
     required this.gigamaxOptions,
+    required this.isShiny,
   });
 
   final String pokemonName;
   final List<PokemonTransformArt> gigamaxOptions;
+  final bool isShiny;
 
   @override
   Widget build(BuildContext context) {
@@ -4583,7 +4595,13 @@ class _DynamaxPickerSheet extends StatelessWidget {
           for (final option in gigamaxOptions)
             Card(
               child: ListTile(
-                leading: const Icon(Icons.auto_awesome),
+                leading: Image.asset(
+                  option.assetPath(shiny: isShiny),
+                  width: 52,
+                  height: 52,
+                  fit: BoxFit.contain,
+                  errorBuilder: (_, _, _) => const Icon(Icons.auto_awesome),
+                ),
                 title: Text('${option.label.toUpperCase()} $pokemonName'),
                 onTap: () => Navigator.of(context).pop(option.identifier),
               ),

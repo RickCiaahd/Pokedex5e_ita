@@ -350,6 +350,8 @@ flutter:
     - assets/textures/textures_webapp/items/zoom-lens/
     - assets/textures/textures_webapp/pokemon/
     - assets/textures/textures_webapp/pokemon_transforms/
+    - assets/textures/textures_webapp/pokemon_transforms/mega/
+    - assets/textures/textures_webapp/pokemon_transforms/gigamax/
     - assets/textures/textures_webapp/pokemon/aegislash-shield/
     - assets/textures/textures_webapp/pokemon/cherrim-sunshine/
     - assets/textures/textures_webapp/pokemon/cramorant-gorging/

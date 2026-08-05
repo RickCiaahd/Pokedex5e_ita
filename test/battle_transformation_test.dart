@@ -95,6 +95,73 @@ void main() {
       expect(blocked.isAvailable, isFalse);
     });
 
+
+    test('missing gear messages use the same names shown in the Bag', () {
+      final mega = BattleTransformationService.eligibility(
+        kind: BattleTransformationKind.mega,
+        pokemonLevel: 10,
+        isFinalEvolutionStage: true,
+        heldItemId: null,
+        inventory: const [],
+        trainerUses: const {},
+        pokemonAlreadyTransformed: false,
+        hasActiveTransformation: false,
+      );
+      expect(
+        mega.missingRequirements,
+        contains('Il Pokémon deve tenere Megalite Stone'),
+      );
+      expect(
+        mega.missingRequirements,
+        contains('Richiede una Pietrachiave nello Zaino'),
+      );
+
+      final zMove = BattleTransformationService.eligibility(
+        kind: BattleTransformationKind.zMove,
+        pokemonLevel: 6,
+        isFinalEvolutionStage: true,
+        heldItemId: null,
+        inventory: const [],
+        trainerUses: const {},
+        pokemonAlreadyTransformed: false,
+        hasActiveTransformation: false,
+      );
+      expect(
+        zMove.missingRequirements,
+        contains('Richiede un Cerchio Z nello Zaino'),
+      );
+
+      final dynamax = BattleTransformationService.eligibility(
+        kind: BattleTransformationKind.dynamax,
+        pokemonLevel: 10,
+        isFinalEvolutionStage: true,
+        heldItemId: null,
+        inventory: const [],
+        trainerUses: const {},
+        pokemonAlreadyTransformed: false,
+        hasActiveTransformation: false,
+      );
+      expect(
+        dynamax.missingRequirements,
+        contains('Richiede un Polsino Dynamax nello Zaino'),
+      );
+
+      final terastal = BattleTransformationService.eligibility(
+        kind: BattleTransformationKind.terastal,
+        pokemonLevel: 6,
+        isFinalEvolutionStage: true,
+        heldItemId: null,
+        inventory: const [],
+        trainerUses: const {},
+        pokemonAlreadyTransformed: false,
+        hasActiveTransformation: false,
+      );
+      expect(
+        terastal.missingRequirements,
+        contains('Richiede una Terasfera nello Zaino'),
+      );
+    });
+
     test('pokemon usage key distinguishes team slots', () {
       final first = TeamSlot(slotIndex: 0, pokemonId: 25, nickname: 'Sparky');
       final second = TeamSlot(slotIndex: 1, pokemonId: 25, nickname: 'Sparky');

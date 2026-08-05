@@ -817,6 +817,62 @@ class _BattleScreenState extends State<BattleScreen> {
   }
 
 
+  Future<void> _openTransformationMenu({
+    required _BattleData data,
+    required TeamSlot slot,
+    required Pokemon pokemon,
+    required Pokemon basePokemon,
+    required String? effectiveFormName,
+    required BattleTransformationState? currentState,
+    required TransformationEligibility megaEligibility,
+    required TransformationEligibility zMoveEligibility,
+    required TransformationEligibility dynamaxEligibility,
+    required TransformationEligibility terastalEligibility,
+  }) async {
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      showDragHandle: true,
+      builder: (sheetContext) => SingleChildScrollView(
+        padding: const EdgeInsets.fromLTRB(12, 0, 12, 24),
+        child: _TransformationPanel(
+          currentState: currentState,
+          megaEligibility: megaEligibility,
+          zMoveEligibility: zMoveEligibility,
+          dynamaxEligibility: dynamaxEligibility,
+          terastalEligibility: terastalEligibility,
+          hasCanonicalMega: PokemonTransformAssetCatalog.megaOptions(
+            basePokemon.id,
+            formName: effectiveFormName,
+            gender: slot.gender,
+          ).isNotEmpty,
+          hasGigamax: PokemonTransformAssetCatalog.gigamaxOptions(
+            basePokemon.id,
+            formName: effectiveFormName,
+            gender: slot.gender,
+          ).isNotEmpty,
+          onMega: () {
+            Navigator.of(sheetContext).pop();
+            _activateMega(data, slot, pokemon);
+          },
+          onZMove: () {
+            Navigator.of(sheetContext).pop();
+            _useZMove(data, slot, pokemon);
+          },
+          onDynamax: () {
+            Navigator.of(sheetContext).pop();
+            _activateDynamax(data, slot, pokemon);
+          },
+          onTerastal: () {
+            Navigator.of(sheetContext).pop();
+            _activateTerastal(data, slot, pokemon);
+          },
+        ),
+      ),
+    );
+  }
+
   List<String> _movesForSlot(TeamSlot slot, Pokemon pokemon) {
     if (slot.selectedMoves.isNotEmpty) {
       return slot.selectedMoves.take(4).toList(growable: false);
@@ -963,6 +1019,13 @@ class _BattleScreenState extends State<BattleScreen> {
     await _saveSession(data);
   }
 
+  void _replaceTeamSlot(_BattleData data, TeamSlot updatedSlot) {
+    final index = data.team.indexWhere(
+      (candidate) => candidate.slotIndex == updatedSlot.slotIndex,
+    );
+    if (index >= 0) data.team[index] = updatedSlot;
+  }
+
   Future<void> _changeHp(_BattleData data, TeamSlot slot, int delta) async {
     final pokemon = _pokemonForSlot(data, slot);
     if (pokemon == null) return;
@@ -1015,10 +1078,12 @@ class _BattleScreenState extends State<BattleScreen> {
     if (updatedHp == 0) {
       _transformationBySlot.remove(slot.slotIndex);
     }
+    final updatedSlot = slot.copyWith(currentHp: updatedHp);
     await _teamRepository.updateSlot(
       profileId: data.profile.id,
-      updatedSlot: slot.copyWith(currentHp: updatedHp),
+      updatedSlot: updatedSlot,
     );
+    _replaceTeamSlot(data, updatedSlot);
     await _saveSession(data);
 
     final messages = <String>[];
@@ -1038,7 +1103,10 @@ class _BattleScreenState extends State<BattleScreen> {
             : '$absorbed danni assorbiti: ${rule?.label ?? 'la protezione'} si spezza.',
       );
     }
-    await _reload(message: messages.isEmpty ? null : messages.join(' '));
+    if (!mounted) return;
+    setState(() {
+      _message = messages.isEmpty ? null : messages.join(' ');
+    });
   }
 
   Future<void> _editHp(_BattleData data, TeamSlot slot) async {
@@ -1057,21 +1125,27 @@ class _BattleScreenState extends State<BattleScreen> {
     final value = int.tryParse(input.trim());
     if (value == null) return;
 
+    final trimmedInput = input.trim();
+    if (trimmedInput.startsWith('+') || trimmedInput.startsWith('-')) {
+      await _changeHp(data, slot, value);
+      return;
+    }
+
     final maxHp = _maxHpFor(pokemon, slot);
-    final updatedHp =
-        input.trim().startsWith('+') || input.trim().startsWith('-')
-        ? (_currentHpFor(slot, pokemon) + value).clamp(0, maxHp).toInt()
-        : value.clamp(0, maxHp).toInt();
+    final updatedHp = value.clamp(0, maxHp).toInt();
 
     if (updatedHp == 0) {
       _transformationBySlot.remove(slot.slotIndex);
     }
+    final updatedSlot = slot.copyWith(currentHp: updatedHp);
     await _teamRepository.updateSlot(
       profileId: data.profile.id,
-      updatedSlot: slot.copyWith(currentHp: updatedHp),
+      updatedSlot: updatedSlot,
     );
+    _replaceTeamSlot(data, updatedSlot);
     await _saveSession(data);
-    await _reload();
+    if (!mounted) return;
+    setState(() => _message = null);
   }
 
   Future<void> _healFull(_BattleData data, TeamSlot slot) async {
@@ -1091,20 +1165,23 @@ class _BattleScreenState extends State<BattleScreen> {
         _battleFormBySlot[slot.slotIndex] = 'Base';
       }
     }
+    final updatedSlot = slot.copyWith(
+      currentHp: _maxHpFor(pokemon, slot),
+      statusEffects: const [],
+    );
     await _teamRepository.updateSlot(
       profileId: data.profile.id,
-      updatedSlot: slot.copyWith(
-        currentHp: _maxHpFor(pokemon, slot),
-        statusEffects: const [],
-      ),
+      updatedSlot: updatedSlot,
     );
+    _replaceTeamSlot(data, updatedSlot);
     await _saveSession(data);
-    await _reload(
-      message: context.uiText(
-        '${_displayName(slot, pokemon)} è pronto a combattere.',
-        '${_displayName(slot, pokemon)} is ready to battle.',
-      ),
-    );
+    if (!mounted) return;
+    setState(() {
+      _message = context.uiText(
+        '${_displayName(updatedSlot, pokemon)} è pronto a combattere.',
+        '${_displayName(updatedSlot, pokemon)} is ready to battle.',
+      );
+    });
   }
 
   Future<void> _useHeldBerry(_BattleData data, TeamSlot slot) async {
@@ -1124,18 +1201,20 @@ class _BattleScreenState extends State<BattleScreen> {
       profileId: data.profile.id,
       updatedSlot: updatedSlot,
     );
+    _replaceTeamSlot(data, updatedSlot);
     if (result != null) {
       _volatileStatusesBySlot[slot.slotIndex] = result.volatileStatuses;
     }
     await _saveSession(data);
-    await _reload(
-      message:
+    if (!mounted) return;
+    setState(() {
+      _message =
           result?.message ??
           context.uiText(
             '${heldItem.name} è stato consumato. Applica manualmente il suo effetto se necessario.',
             '${heldItem.name} was consumed. Apply its effect manually if needed.',
-          ),
-    );
+          );
+    });
   }
 
   Future<void> _openQuickBag(_BattleData data, TeamSlot slot) async {
@@ -1244,9 +1323,11 @@ class _BattleScreenState extends State<BattleScreen> {
         profileId: data.profile.id,
         updatedSlot: result.updatedSlot,
       );
+      _replaceTeamSlot(data, result.updatedSlot);
       _volatileStatusesBySlot[slot.slotIndex] = result.volatileStatuses;
       await _saveSession(data);
-      await _reload(message: result.message);
+      if (!mounted) return;
+      setState(() => _message = result.message);
       return;
     }
 
@@ -1607,16 +1688,20 @@ class _BattleScreenState extends State<BattleScreen> {
     final maxHp = _maxHpFor(pokemon, slot);
     final currentHp = _currentHpFor(slot, pokemon);
     final updatedHp = (currentHp - damage).clamp(0, maxHp).toInt();
+    final updatedSlot = slot.copyWith(currentHp: updatedHp);
     await _teamRepository.updateSlot(
       profileId: data.profile.id,
-      updatedSlot: slot.copyWith(currentHp: updatedHp),
+      updatedSlot: updatedSlot,
     );
-    await _reload(
-      message: context.uiText(
-        '${_displayName(slot, pokemon)} subisce $damage danni da ${_environment.weather.label}.',
-        '${_displayName(slot, pokemon)} takes $damage damage from ${_environment.weather.label}.',
-      ),
-    );
+    _replaceTeamSlot(data, updatedSlot);
+    await _saveSession(data);
+    if (!mounted) return;
+    setState(() {
+      _message = context.uiText(
+        '${_displayName(updatedSlot, pokemon)} subisce $damage danni da ${_environment.weather.label}.',
+        '${_displayName(updatedSlot, pokemon)} takes $damage damage from ${_environment.weather.label}.',
+      );
+    });
   }
 
   void _rerollTrainerInitiative(_BattleData data) {
@@ -2266,13 +2351,20 @@ class _BattleScreenState extends State<BattleScreen> {
                                   activeSlot,
                                 ),
                                 message: _message,
-                                onMinusFive: () =>
-                                    _changeHp(data, activeSlot, -5),
-                                onMinusOne: () =>
-                                    _changeHp(data, activeSlot, -1),
-                                onPlusOne: () => _changeHp(data, activeSlot, 1),
-                                onPlusFive: () =>
-                                    _changeHp(data, activeSlot, 5),
+                                onTransformations: () {
+                                  _openTransformationMenu(
+                                    data: data,
+                                    slot: activeSlot,
+                                    pokemon: pokemon,
+                                    basePokemon: basePokemon,
+                                    effectiveFormName: effectiveFormName,
+                                    currentState: transformationState,
+                                    megaEligibility: megaEligibility,
+                                    zMoveEligibility: zMoveEligibility,
+                                    dynamaxEligibility: dynamaxEligibility,
+                                    terastalEligibility: terastalEligibility,
+                                  );
+                                },
                                 onEditHp: () => _editHp(data, activeSlot),
                                 onHeal: () => _healFull(data, activeSlot),
                                 onStatus: () =>
@@ -2295,36 +2387,6 @@ class _BattleScreenState extends State<BattleScreen> {
                                         activeSlot,
                                       )
                                     : null,
-                              ),
-                              const SizedBox(height: 12),
-                              _TransformationPanel(
-                                currentState: transformationState,
-                                megaEligibility: megaEligibility,
-                                zMoveEligibility: zMoveEligibility,
-                                dynamaxEligibility: dynamaxEligibility,
-                                terastalEligibility: terastalEligibility,
-                                hasCanonicalMega: PokemonTransformAssetCatalog
-                                    .megaOptions(
-                                      basePokemon.id,
-                                      formName: effectiveFormName,
-                                      gender: activeSlot.gender,
-                                    )
-                                    .isNotEmpty,
-                                hasGigamax: PokemonTransformAssetCatalog
-                                    .gigamaxOptions(
-                                      basePokemon.id,
-                                      formName: effectiveFormName,
-                                      gender: activeSlot.gender,
-                                    )
-                                    .isNotEmpty,
-                                onMega: () =>
-                                    _activateMega(data, activeSlot, pokemon),
-                                onZMove: () =>
-                                    _useZMove(data, activeSlot, pokemon),
-                                onDynamax: () =>
-                                    _activateDynamax(data, activeSlot, pokemon),
-                                onTerastal: () =>
-                                    _activateTerastal(data, activeSlot, pokemon),
                               ),
                                 ],
                               ),
@@ -3223,10 +3285,7 @@ class _ActivePokemonCard extends StatelessWidget {
     required this.nonVolatileStatus,
     required this.volatileStatuses,
     required this.message,
-    required this.onMinusFive,
-    required this.onMinusOne,
-    required this.onPlusOne,
-    required this.onPlusFive,
+    required this.onTransformations,
     required this.onEditHp,
     required this.onHeal,
     required this.onStatus,
@@ -3256,10 +3315,7 @@ class _ActivePokemonCard extends StatelessWidget {
   final String? nonVolatileStatus;
   final Set<String> volatileStatuses;
   final String? message;
-  final VoidCallback onMinusFive;
-  final VoidCallback onMinusOne;
-  final VoidCallback onPlusOne;
-  final VoidCallback onPlusFive;
+  final VoidCallback onTransformations;
   final VoidCallback onEditHp;
   final VoidCallback onHeal;
   final VoidCallback onStatus;
@@ -3436,10 +3492,11 @@ class _ActivePokemonCard extends StatelessWidget {
               runSpacing: 6,
               alignment: WrapAlignment.center,
               children: [
-                _SmallBattleButton(label: '-5', onTap: onMinusFive),
-                _SmallBattleButton(label: '-1', onTap: onMinusOne),
-                _SmallBattleButton(label: '+1', onTap: onPlusOne),
-                _SmallBattleButton(label: '+5', onTap: onPlusFive),
+                OutlinedButton.icon(
+                  onPressed: onTransformations,
+                  icon: const Icon(Icons.auto_awesome, size: 18),
+                  label: Text(context.uiText('TRASFORMA', 'TRANSFORM')),
+                ),
                 FilledButton(
                   onPressed: onHeal,
                   child: Text(
@@ -4227,18 +4284,6 @@ class _StruggleWarning extends StatelessWidget {
         ),
       ),
     );
-  }
-}
-
-class _SmallBattleButton extends StatelessWidget {
-  const _SmallBattleButton({required this.label, required this.onTap});
-
-  final String label;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return OutlinedButton(onPressed: onTap, child: Text(label));
   }
 }
 

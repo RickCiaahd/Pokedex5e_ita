@@ -3,6 +3,7 @@ description: "Trainer Atlas, companion non ufficiale in italiano per campagne co
 publish_to: 'none'
 
 version: 1.4.0+12
+
 environment:
   sdk: ^3.12.2
 

@@ -1,4 +1,4 @@
-# Rebuild marker: party picker
+# Rebuild marker: trainer sheet tabs
 name: Build compact test APK
 
 on:
@@ -12,6 +12,8 @@ on:
       - lib/widgets/battle/battle_environment_card.dart
       - lib/widgets/battle/pokemon_battle_attributes_card.dart
       - lib/screens/pokemon/pokemon_detail_screen_legacy.dart
+      - lib/screens/trainer/trainer_sheet_screen.dart
+      - lib/screens/trainer/trainer_sheet_mobile.dart
 
 permissions:
   contents: read

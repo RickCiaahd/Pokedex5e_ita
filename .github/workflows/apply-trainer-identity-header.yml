@@ -1,0 +1,84 @@
+name: Apply trainer identity header
+
+on:
+  push:
+    branches:
+      - feature/compact-pokemon-detail-v2
+    paths:
+      - .github/workflows/apply-trainer-identity-header.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: apply-trainer-identity-header-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  apply-and-verify:
+    name: Apply and verify trainer header refinement
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Check out feature branch
+        uses: actions/checkout@v4
+        with:
+          ref: feature/compact-pokemon-detail-v2
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.4'
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Apply requested layout change
+        run: python3 tool/apply_trainer_identity_header.py
+
+      - name: Format modified Dart files
+        run: dart format lib/widgets/profile/trainer_profile_image_picker.dart lib/screens/trainer/trainer_sheet_mobile.dart
+
+      - name: Analyze project
+        run: flutter analyze
+
+      - name: Run profile image tests
+        run: flutter test test/trainer_profile_image_test.dart
+
+      - name: Build Android debug APK
+        run: flutter build apk --debug
+
+      - name: Commit verified changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add lib/widgets/profile/trainer_profile_image_picker.dart lib/screens/trainer/trainer_sheet_mobile.dart
+          git commit -m "Refine trainer identity header on mobile"
+          git push origin HEAD:feature/compact-pokemon-detail-v2
+
+      - name: Prepare downloadable APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          NEW_SHA="$(git rev-parse --short=7 HEAD)"
+          cp build/app/outputs/flutter-apk/app-debug.apk "dist/Pokedex5e-trainer-header-${NEW_SHA}.apk"
+          printf 'Branch: %s\nCommit: %s\nBuild type: debug APK\n' "feature/compact-pokemon-detail-v2" "$(git rev-parse HEAD)" > dist/BUILD-INFO.txt
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Pokedex5e-trainer-header-apk
+          path: dist/
+          if-no-files-found: error
+          retention-days: 30

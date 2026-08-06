@@ -134,6 +134,51 @@ class BagInventoryRepository {
     return true;
   }
 
+  Future<bool> removeItems({
+    required String profileId,
+    required Map<String, int> quantities,
+  }) async {
+    final selected = quantities.entries
+        .where((entry) => entry.key.trim().isNotEmpty && entry.value > 0)
+        .toList(growable: false);
+    if (selected.isEmpty) return true;
+
+    final box = await _box();
+    final existingByKey = <String, BagInventoryEntry>{};
+
+    for (final entry in selected) {
+      final itemId = entry.key.trim();
+      final key = BagInventoryEntry.keyFor(profileId, itemId);
+      final existingJson = box.get(key);
+      if (existingJson == null) return false;
+
+      final existing = BagInventoryEntry.fromJson(
+        Map<String, dynamic>.from(existingJson),
+      );
+      if (existing.quantity < entry.value) return false;
+      existingByKey[key] = existing;
+    }
+
+    final updates = <String, dynamic>{};
+    final keysToDelete = <String>[];
+    for (final entry in selected) {
+      final itemId = entry.key.trim();
+      final key = BagInventoryEntry.keyFor(profileId, itemId);
+      final existing = existingByKey[key]!;
+      final updatedQuantity = existing.quantity - entry.value;
+      if (updatedQuantity <= 0) {
+        keysToDelete.add(key);
+      } else {
+        updates[key] = existing.copyWith(quantity: updatedQuantity).toJson();
+      }
+    }
+
+    if (keysToDelete.isNotEmpty) await box.deleteAll(keysToDelete);
+    if (updates.isNotEmpty) await box.putAll(updates);
+    await box.flush();
+    return true;
+  }
+
   Future<void> replaceInventory({
     required String profileId,
     required Iterable<BagInventoryEntry> entries,

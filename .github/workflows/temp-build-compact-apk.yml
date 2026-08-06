@@ -6,6 +6,9 @@ on:
     - cron: '*/5 * * * *'
   pull_request_target:
     types: [opened, reopened]
+  workflow_run:
+    workflows: ['Build compact test APK']
+    types: [completed]
 
 permissions:
   contents: read
@@ -20,6 +23,7 @@ jobs:
     if: >-
       github.event_name == 'workflow_dispatch' ||
       github.event_name == 'schedule' ||
+      github.event_name == 'workflow_run' ||
       (github.event_name == 'pull_request_target' && github.event.pull_request.head.ref == 'agent/request-compact-apk-build')
     runs-on: ubuntu-latest
     timeout-minutes: 45

@@ -1,4 +1,4 @@
-# Rebuild marker: multi-item selling at half catalog price
+# Rebuild marker: retry multi-item selling test APK
 name: Build compact test APK
 
 on:
@@ -26,7 +26,7 @@ permissions:
 
 concurrency:
   group: compact-test-apk-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   build-apk:

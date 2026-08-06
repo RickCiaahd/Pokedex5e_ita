@@ -42,7 +42,9 @@ jobs:
         run: flutter pub get
 
       - name: Apply requested layout change
-        run: python3 tool/apply_trainer_identity_header.py
+        run: |
+          python3 tool/fix_trainer_header_script_expectation.py
+          python3 tool/apply_trainer_identity_header.py
 
       - name: Format modified Dart files
         run: dart format lib/widgets/profile/trainer_profile_image_picker.dart lib/screens/trainer/trainer_sheet_mobile.dart

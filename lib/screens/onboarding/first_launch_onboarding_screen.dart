@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../../localization/ui_text.dart';
@@ -51,6 +52,7 @@ class _FirstLaunchOnboardingScreenState
 
   int _step = 0;
   int _age = 16;
+  bool _ageInputIsValid = true;
   bool _isLoading = true;
   bool _isSaving = false;
   String? _errorMessage;
@@ -220,6 +222,8 @@ class _FirstLaunchOnboardingScreenState
     switch (_step) {
       case 2:
         return _nameController.text.trim().isNotEmpty;
+      case 4:
+        return _ageInputIsValid;
       case 5:
         return _origin != null;
       case 6:
@@ -549,10 +553,7 @@ class _FirstLaunchOnboardingScreenState
       case 3:
         return _DialogueCard(
           speaker: l10n.onboardingProfessor,
-          title: context.uiText(
-            'Scegli la tua immagine',
-            'Choose your image',
-          ),
+          title: context.uiText('Scegli la tua immagine', 'Choose your image'),
           body: context.uiText(
             'Puoi aggiungere un’immagine dell’Allenatore oppure saltare questo passaggio.',
             'You can add a Trainer image or skip this step.',
@@ -560,9 +561,7 @@ class _FirstLaunchOnboardingScreenState
           content: TrainerProfileImagePicker(
             imageBase64: _profileImageBase64,
             trainerName: _nameController.text,
-            onChanged: (value) => setState(
-              () => _profileImageBase64 = value,
-            ),
+            onChanged: (value) => setState(() => _profileImageBase64 = value),
           ),
         );
       case 4:
@@ -572,8 +571,15 @@ class _FirstLaunchOnboardingScreenState
           body: l10n.onboardingAgeBody,
           content: _AgeSelector(
             age: _age,
-            onDecrease: _age > 6 ? () => setState(() => _age--) : null,
-            onIncrease: _age < 99 ? () => setState(() => _age++) : null,
+            isValid: _ageInputIsValid,
+            onChanged: (value) {
+              final parsed = int.tryParse(value.trim());
+              setState(() {
+                _ageInputIsValid =
+                    parsed != null && parsed >= 6 && parsed <= 99;
+                if (_ageInputIsValid) _age = parsed!;
+              });
+            },
           ),
         );
       case 5:
@@ -825,9 +831,7 @@ class _ProgressHeader extends StatelessWidget {
                   onPressed: onCancel,
                   icon: const Icon(Icons.close, size: 28),
                   color: _OnboardingPalette.text,
-                  tooltip: MaterialLocalizations.of(
-                    context,
-                  ).closeButtonTooltip,
+                  tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
                 ),
         ),
       ],
@@ -1004,20 +1008,11 @@ class _ProfessorScene extends StatelessWidget {
         final professorInset = compact ? 4.0 : 72.0;
         final double professorOverlap;
         if (keyboardCompact) {
-          professorOverlap = math.min(
-            120.0,
-            math.max(80.0, cardTop * .35),
-          );
+          professorOverlap = math.min(120.0, math.max(80.0, cardTop * .35));
         } else if (compact) {
-          professorOverlap = math.min(
-            220.0,
-            math.max(132.0, cardTop * .48),
-          );
+          professorOverlap = math.min(220.0, math.max(132.0, cardTop * .48));
         } else {
-          professorOverlap = math.min(
-            260.0,
-            math.max(170.0, cardTop * .42),
-          );
+          professorOverlap = math.min(260.0, math.max(170.0, cardTop * .42));
         }
 
         return Align(
@@ -1285,35 +1280,39 @@ class _DialogueCard extends StatelessWidget {
 class _AgeSelector extends StatelessWidget {
   const _AgeSelector({
     required this.age,
-    required this.onDecrease,
-    required this.onIncrease,
+    required this.isValid,
+    required this.onChanged,
   });
-
   final int age;
-  final VoidCallback? onDecrease;
-  final VoidCallback? onIncrease;
+  final bool isValid;
+  final ValueChanged<String> onChanged;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 58,
-      decoration: BoxDecoration(
-        border: Border.all(color: _OnboardingPalette.border),
-        borderRadius: BorderRadius.circular(16),
+    return TextFormField(
+      initialValue: '$age',
+      keyboardType: TextInputType.number,
+      textInputAction: TextInputAction.done,
+      inputFormatters: [
+        FilteringTextInputFormatter.digitsOnly,
+        LengthLimitingTextInputFormatter(2),
+      ],
+      decoration: InputDecoration(
+        labelText: context.uiText('Età dell’Allenatore', 'Trainer age'),
+        helperText: context.uiText(
+          'Scrivi un valore da 6 a 99.',
+          'Enter a value from 6 to 99.',
+        ),
+        errorText: isValid
+            ? null
+            : context.uiText(
+                'Inserisci un’età valida da 6 a 99.',
+                'Enter a valid age from 6 to 99.',
+              ),
+        prefixIcon: const Icon(Icons.cake_outlined),
+        border: const OutlineInputBorder(),
       ),
-      child: Row(
-        children: [
-          IconButton(onPressed: onDecrease, icon: const Icon(Icons.remove)),
-          Expanded(
-            child: Text(
-              '$age',
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900),
-            ),
-          ),
-          IconButton(onPressed: onIncrease, icon: const Icon(Icons.add)),
-        ],
-      ),
+      onChanged: onChanged,
     );
   }
 }

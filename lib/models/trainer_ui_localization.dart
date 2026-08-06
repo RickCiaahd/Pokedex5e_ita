@@ -48,6 +48,75 @@ class TrainerUiLocalization {
     "Filcher's pack": 'Dotazione da Borseggiatore',
   };
 
+  static const Map<String, String> _startingPackDescriptionsIt = {
+    "Dungeoneer's pack":
+        'Contiene: zaino, kit da scalatore, torcia, 5 celle energetiche, acciarino e pietra focaia, 10 razioni da campeggio, borraccia e 30 piedi di corda.',
+    "Explorer's pack":
+        'Contiene: zaino, sacco a pelo, gavetta, acciarino e pietra focaia, torcia, 5 celle energetiche, 10 razioni da campeggio, borraccia e 30 piedi di corda.',
+    "Filcher's pack":
+        'Contiene: zaino, arnesi da scasso, 20 piedi di filo, campanella, lanterna, 3 celle energetiche, 5 razioni da campeggio, acciarino e pietra focaia e borraccia.',
+  };
+  static const Map<String, String> _startingPackDescriptionsEn = {
+    "Dungeoneer's pack":
+        "Contains a backpack, climber's kit, flashlight, 5 energy cells, flint and steel, 10 camping rations, a canteen, and 30 feet of rope.",
+    "Explorer's pack":
+        'Contains a backpack, sleeping bag, mess kit, flint and steel, flashlight, 5 energy cells, 10 camping rations, a canteen, and 30 feet of rope.',
+    "Filcher's pack":
+        "Contains a backpack, thieves' tools, 20 feet of wire, a bell, a lantern, 3 energy cells, 5 camping rations, flint and steel, and a canteen.",
+  };
+  static const List<String> backgroundOptions = [
+    'Ricercatore',
+    'Esploratore',
+    'Allevatore',
+    'Combattente',
+    'Artista',
+    'Studioso',
+  ];
+  static const Map<String, String> _backgroundLabelsIt = {
+    'Ricercatore': 'Ricercatore',
+    'Esploratore': 'Esploratore',
+    'Allevatore': 'Allevatore',
+    'Combattente': 'Combattente',
+    'Artista': 'Artista',
+    'Studioso': 'Studioso',
+  };
+  static const Map<String, String> _backgroundLabelsEn = {
+    'Ricercatore': 'Researcher',
+    'Esploratore': 'Explorer',
+    'Allevatore': 'Breeder',
+    'Combattente': 'Fighter',
+    'Artista': 'Artist',
+    'Studioso': 'Scholar',
+  };
+  static const Map<String, String> _backgroundDescriptionsIt = {
+    'Ricercatore':
+        'Osservi, cataloghi e studi ogni scoperta prima di trarre conclusioni. Scelta narrativa: non modifica automaticamente le caratteristiche.',
+    'Esploratore':
+        'Ti senti a casa sulle strade meno battute e negli ambienti selvaggi. Scelta narrativa: non modifica automaticamente le caratteristiche.',
+    'Allevatore':
+        'Conosci le necessità delle creature e costruisci legami pazienti. Scelta narrativa: non modifica automaticamente le caratteristiche.',
+    'Combattente':
+        'Affronti le difficoltà con disciplina, coraggio e spirito competitivo. Scelta narrativa: non modifica automaticamente le caratteristiche.',
+    'Artista':
+        'Esprimi te stesso attraverso spettacolo, creatività e sensibilità. Scelta narrativa: non modifica automaticamente le caratteristiche.',
+    'Studioso':
+        'Hai dedicato anni a libri, tradizioni e conoscenze specialistiche. Scelta narrativa: non modifica automaticamente le caratteristiche.',
+  };
+  static const Map<String, String> _backgroundDescriptionsEn = {
+    'Ricercatore':
+        'You observe, catalogue and study every discovery before drawing conclusions. Narrative choice: it does not automatically change ability scores.',
+    'Esploratore':
+        'You feel at home on less-travelled roads and in the wilderness. Narrative choice: it does not automatically change ability scores.',
+    'Allevatore':
+        'You understand the needs of creatures and build patient bonds. Narrative choice: it does not automatically change ability scores.',
+    'Combattente':
+        'You face challenges with discipline, courage and a competitive spirit. Narrative choice: it does not automatically change ability scores.',
+    'Artista':
+        'You express yourself through performance, creativity and sensitivity. Narrative choice: it does not automatically change ability scores.',
+    'Studioso':
+        'You have devoted years to books, traditions and specialist knowledge. Narrative choice: it does not automatically change ability scores.',
+  };
+
   static const Map<String, String> _natureLabelsIt = {
     'Hardy': 'Ardita',
     'Lonely': 'Schiva',
@@ -201,6 +270,12 @@ class TrainerUiLocalization {
   static Map<String, String> get skillLabels => _localizedMap(_skillLabelsIt);
   static Map<String, String> get startingPackLabels =>
       _localizedMap(_startingPackLabelsIt);
+  static Map<String, String> get startingPackDescriptions =>
+      _isItalian ? _startingPackDescriptionsIt : _startingPackDescriptionsEn;
+  static Map<String, String> get backgroundLabels =>
+      _isItalian ? _backgroundLabelsIt : _backgroundLabelsEn;
+  static Map<String, String> get backgroundDescriptions =>
+      _isItalian ? _backgroundDescriptionsIt : _backgroundDescriptionsEn;
   static Map<String, String> get natureLabels => _localizedMap(_natureLabelsIt);
   static Map<String, String> get sizeLabels => _localizedMap(_sizeLabelsIt);
   static Map<String, String> get genderLabels => _localizedMap(_genderLabelsIt);
@@ -231,6 +306,12 @@ class TrainerUiLocalization {
 
   static String startingPackName(String value) =>
       _isItalian ? (_startingPackLabelsIt[value] ?? value) : value;
+  static String startingPackDescription(String value) =>
+      startingPackDescriptions[value] ?? '';
+  static String backgroundName(String value) =>
+      backgroundLabels[value] ?? value;
+  static String backgroundDescription(String value) =>
+      backgroundDescriptions[value] ?? '';
 
   static String natureName(String value) =>
       _isItalian ? (_natureLabelsIt[value] ?? value) : value;

@@ -16,8 +16,11 @@ class TrainerSheetMobile extends StatefulWidget {
     required this.nameController,
     required this.profileImageBase64,
     required this.moneyController,
+    required this.ageController,
     required this.race,
     required this.raceDescription,
+    required this.background,
+    required this.backgroundDescription,
     required this.selectedStarter,
     required this.startingPack,
     required this.trainerLevel,
@@ -41,6 +44,7 @@ class TrainerSheetMobile extends StatefulWidget {
     required this.onIncreaseLevel,
     required this.onProfileImageChanged,
     required this.onRaceTap,
+    required this.onBackgroundTap,
     required this.onStarterTap,
     required this.onAddStarterToTeam,
     required this.onStartingPackTap,
@@ -59,8 +63,11 @@ class TrainerSheetMobile extends StatefulWidget {
   final TextEditingController nameController;
   final String profileImageBase64;
   final TextEditingController moneyController;
+  final TextEditingController ageController;
   final String race;
   final String raceDescription;
+  final String background;
+  final String backgroundDescription;
   final Pokemon? selectedStarter;
   final String startingPack;
   final int trainerLevel;
@@ -84,6 +91,7 @@ class TrainerSheetMobile extends StatefulWidget {
   final VoidCallback onIncreaseLevel;
   final ValueChanged<String> onProfileImageChanged;
   final VoidCallback onRaceTap;
+  final VoidCallback onBackgroundTap;
   final VoidCallback onStarterTap;
   final VoidCallback onAddStarterToTeam;
   final VoidCallback onStartingPackTap;
@@ -151,8 +159,11 @@ class _TrainerSheetMobileState extends State<TrainerSheetMobile> {
                   nameController: widget.nameController,
                   profileImageBase64: widget.profileImageBase64,
                   moneyController: widget.moneyController,
+                  ageController: widget.ageController,
                   race: widget.race,
                   raceDescription: widget.raceDescription,
+                  background: widget.background,
+                  backgroundDescription: widget.backgroundDescription,
                   selectedStarter: widget.selectedStarter,
                   startingPack: widget.startingPack,
                   trainerLevel: widget.trainerLevel,
@@ -171,6 +182,7 @@ class _TrainerSheetMobileState extends State<TrainerSheetMobile> {
                   onIncreaseLevel: widget.onIncreaseLevel,
                   onProfileImageChanged: widget.onProfileImageChanged,
                   onRaceTap: widget.onRaceTap,
+                  onBackgroundTap: widget.onBackgroundTap,
                   onStarterTap: widget.onStarterTap,
                   onAddStarterToTeam: widget.onAddStarterToTeam,
                   onStartingPackTap: widget.onStartingPackTap,
@@ -265,8 +277,11 @@ class _MobileOverview extends StatelessWidget {
     required this.nameController,
     required this.profileImageBase64,
     required this.moneyController,
+    required this.ageController,
     required this.race,
     required this.raceDescription,
+    required this.background,
+    required this.backgroundDescription,
     required this.selectedStarter,
     required this.startingPack,
     required this.trainerLevel,
@@ -285,6 +300,7 @@ class _MobileOverview extends StatelessWidget {
     required this.onIncreaseLevel,
     required this.onProfileImageChanged,
     required this.onRaceTap,
+    required this.onBackgroundTap,
     required this.onStarterTap,
     required this.onAddStarterToTeam,
     required this.onStartingPackTap,
@@ -297,8 +313,11 @@ class _MobileOverview extends StatelessWidget {
   final TextEditingController nameController;
   final String profileImageBase64;
   final TextEditingController moneyController;
+  final TextEditingController ageController;
   final String race;
   final String raceDescription;
+  final String background;
+  final String backgroundDescription;
   final Pokemon? selectedStarter;
   final String startingPack;
   final int trainerLevel;
@@ -317,6 +336,7 @@ class _MobileOverview extends StatelessWidget {
   final VoidCallback onIncreaseLevel;
   final ValueChanged<String> onProfileImageChanged;
   final VoidCallback onRaceTap;
+  final VoidCallback onBackgroundTap;
   final VoidCallback onStarterTap;
   final VoidCallback onAddStarterToTeam;
   final VoidCallback onStartingPackTap;
@@ -420,17 +440,42 @@ class _MobileOverview extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 10),
-        TextField(
-          controller: moneyController,
-          enabled: !isSaving,
-          keyboardType: TextInputType.number,
-          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-          decoration: InputDecoration(
-            labelText: context.uiText('Pokédollars', 'Pokédollars'),
-            prefixText: '₽ ',
-            isDense: true,
-            border: const OutlineInputBorder(),
-          ),
+        Row(
+          children: [
+            Expanded(
+              child: TextField(
+                controller: moneyController,
+                enabled: !isSaving,
+                keyboardType: TextInputType.number,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                decoration: InputDecoration(
+                  labelText: context.uiText('Pokédollars', 'Pokédollars'),
+                  prefixText: '₽ ',
+                  isDense: true,
+                  border: const OutlineInputBorder(),
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            SizedBox(
+              width: 104,
+              child: TextField(
+                controller: ageController,
+                enabled: !isSaving,
+                keyboardType: TextInputType.number,
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly,
+                  LengthLimitingTextInputFormatter(2),
+                ],
+                decoration: InputDecoration(
+                  labelText: context.uiText('Età', 'Age'),
+                  prefixIcon: const Icon(Icons.cake_outlined, size: 19),
+                  isDense: true,
+                  border: const OutlineInputBorder(),
+                ),
+              ),
+            ),
+          ],
         ),
         const SizedBox(height: 10),
         _CompactChoiceCard(
@@ -442,8 +487,23 @@ class _MobileOverview extends StatelessWidget {
                   'Tocca per scegliere dal manuale.',
                   'Tap to choose from the manual.',
                 )
-              : _compactOriginDetail(raceDescription),
+              : _compactDetail(raceDescription),
           onTap: onRaceTap,
+        ),
+        const SizedBox(height: 8),
+        _CompactChoiceCard(
+          icon: Icons.auto_stories_outlined,
+          label: context.uiText('BACKGROUND', 'BACKGROUND'),
+          value: background.isEmpty
+              ? context.uiText('Scegli', 'Choose')
+              : background,
+          detail: background.isEmpty
+              ? context.uiText(
+                  'Scelta narrativa, senza bonus automatici alle caratteristiche.',
+                  'Narrative choice, with no automatic ability-score bonuses.',
+                )
+              : _compactDetail(backgroundDescription),
+          onTap: onBackgroundTap,
         ),
         const SizedBox(height: 12),
         _MobileSectionTitle(title: context.uiText('COMBATTIMENTO', 'COMBAT')),
@@ -524,6 +584,12 @@ class _MobileOverview extends StatelessWidget {
           value: startingPack.isEmpty
               ? context.uiText('Scegli', 'Choose')
               : TrainerUiLocalization.startingPackName(startingPack),
+          detail: startingPack.isEmpty
+              ? context.uiText(
+                  'Scegli una delle tre dotazioni del manuale.',
+                  'Choose one of the three packs from the manual.',
+                )
+              : TrainerUiLocalization.startingPackDescription(startingPack),
           onTap: onStartingPackTap,
         ),
         if (progressionNotes.isNotEmpty) ...[
@@ -559,7 +625,7 @@ class _MobileOverview extends StatelessWidget {
     );
   }
 
-  String _compactOriginDetail(String description) {
+  String _compactDetail(String description) {
     final normalized = description.replaceAll(RegExp(r'\s+'), ' ').trim();
     if (normalized.length <= 150) return normalized;
     return '${normalized.substring(0, 147)}…';

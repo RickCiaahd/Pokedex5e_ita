@@ -745,7 +745,7 @@ new_stage = r'''      case 6:
             minLines: 4,
             maxLines: 8,
             textCapitalization: TextCapitalization.sentences,
-            inputFormatters: const [LengthLimitingTextInputFormatter(4000)],
+            inputFormatters: [LengthLimitingTextInputFormatter(4000)],
             decoration: InputDecoration(
               labelText: context.uiText(
                 'Background narrativo',
@@ -934,7 +934,7 @@ new_editor = r'''  Future<void> _openBackgroundEditor() async {
             minLines: 7,
             maxLines: 14,
             textCapitalization: TextCapitalization.sentences,
-            inputFormatters: const [LengthLimitingTextInputFormatter(4000)],
+            inputFormatters: [LengthLimitingTextInputFormatter(4000)],
             decoration: InputDecoration(
               hintText: context.uiText(
                 'Scrivi storia, legami, motivazioni ed esperienze del personaggio.',

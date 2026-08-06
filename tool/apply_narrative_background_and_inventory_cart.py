@@ -17,7 +17,7 @@ def replace_once(text: str, old: str, new: str, path: str) -> str:
 
 
 def regex_once(text: str, pattern: str, replacement: str, path: str) -> str:
-    updated, count = re.subn(pattern, replacement, text, count=1, flags=re.S)
+    updated, count = re.subn(pattern, lambda _: replacement, text, count=1, flags=re.S)
     if count != 1:
         raise RuntimeError(f'Expected one regex match in {path}, got {count}: {pattern}')
     return updated

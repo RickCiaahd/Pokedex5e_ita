@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../../localization/ui_text.dart';
 import '../../models/battle_environment.dart';
 import '../../models/pokemon.dart';
-import '../../models/pokemon_type_localization.dart';
 import '../../models/team_slot.dart';
 import '../../services/battle_environment_service.dart';
 
@@ -17,8 +16,6 @@ class BattleEnvironmentCard extends StatelessWidget {
     required this.proficiency,
     required this.baseSpeed,
     required this.onEdit,
-    required this.onRollWeather,
-    this.onApplyWeatherDamage,
   });
 
   final BattleEnvironment environment;
@@ -28,8 +25,6 @@ class BattleEnvironmentCard extends StatelessWidget {
   final int proficiency;
   final int baseSpeed;
   final VoidCallback onEdit;
-  final VoidCallback onRollWeather;
-  final VoidCallback? onApplyWeatherDamage;
 
   @override
   Widget build(BuildContext context) {
@@ -52,22 +47,18 @@ class BattleEnvironmentCard extends StatelessWidget {
       proficiency: proficiency,
       environment: environment,
     );
-    final hazard = BattleEnvironmentService.startTurnWeatherDamage(
-      pokemon: pokemon,
-      slot: slot,
-      environment: environment,
+    final weatherLabel = context.uiText(
+      environment.weather.label,
+      environment.weather.englishLabel,
     );
-    final favored = BattleEnvironmentService.favoredMoveTypes(environment)
-        .map(
-          context.usesItalianUi
-              ? PokemonTypeLocalization.italianLabel
-              : PokemonTypeLocalization.englishValue,
-        )
-        .toList(growable: false);
+    final naturalTerrainLabel = context.uiText(
+      environment.naturalTerrain.label,
+      environment.naturalTerrain.englishLabel,
+    );
 
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(14),
+        padding: const EdgeInsets.fromLTRB(12, 8, 8, 8),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -76,41 +67,49 @@ class BattleEnvironmentCard extends StatelessWidget {
                 const Icon(Icons.public_outlined),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: Text(
-                    context.uiText('AMBIENTE', 'ENVIRONMENT'),
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w900,
-                    ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        context.uiText('AMBIENTE', 'ENVIRONMENT'),
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                      Text(
+                        context.uiText(
+                          'Tracker delle condizioni comunicate dal Master',
+                          'Tracker for conditions communicated by the GM',
+                        ),
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                    ],
                   ),
                 ),
                 IconButton(
                   tooltip: context.uiText(
-                    'Modifica ambiente',
-                    'Edit environment',
+                    'Aggiorna ambiente',
+                    'Update environment',
                   ),
                   onPressed: onEdit,
-                  icon: const Icon(Icons.tune),
+                  icon: const Icon(Icons.edit_outlined),
                 ),
               ],
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 6),
             Wrap(
-              spacing: 8,
-              runSpacing: 8,
+              spacing: 6,
+              runSpacing: 6,
               children: [
                 _EnvironmentChip(
                   icon: Icons.cloud_outlined,
-                  label: context.uiText(
-                    environment.weather.label,
-                    environment.weather.englishLabel,
-                  ),
+                  label: environment.hasTimedWeather
+                      ? '$weatherLabel · ${environment.weatherRoundsRemaining}R'
+                      : weatherLabel,
                 ),
                 _EnvironmentChip(
                   icon: Icons.landscape_outlined,
-                  label: context.uiText(
-                    environment.naturalTerrain.label,
-                    environment.naturalTerrain.englishLabel,
-                  ),
+                  label: naturalTerrainLabel,
                 ),
                 if (environment.hasFieldTerrain)
                   _EnvironmentChip(
@@ -118,71 +117,46 @@ class BattleEnvironmentCard extends StatelessWidget {
                     label:
                         '${context.uiText(environment.fieldTerrain.label, environment.fieldTerrain.englishLabel)} · ${environment.fieldTerrainRoundsRemaining}R',
                   ),
-                _EnvironmentChip(
-                  icon: Icons.shield_outlined,
-                  label: acBonus == 0
-                      ? '${context.uiText('CA', 'AC')} $baseAc'
-                      : '${context.uiText('CA', 'AC')} $baseAc → ${baseAc + acBonus}',
-                ),
-                _EnvironmentChip(
-                  icon: Icons.speed_outlined,
-                  label: speed == baseSpeed
-                      ? '${context.uiText('Velocità', 'Speed')} $baseSpeed ft'
-                      : '${context.uiText('Velocità', 'Speed')} $baseSpeed → $speed ft',
-                ),
+                if (acBonus != 0)
+                  _EnvironmentChip(
+                    icon: Icons.shield_outlined,
+                    label:
+                        '${context.uiText('CA', 'AC')} $baseAc → ${baseAc + acBonus}',
+                  ),
+                if (speed != baseSpeed)
+                  _EnvironmentChip(
+                    icon: Icons.speed_outlined,
+                    label:
+                        '${context.uiText('Velocità', 'Speed')} $baseSpeed → $speed ft',
+                  ),
               ],
             ),
-            if (environment.optionalWeatherDamageAdvantage &&
-                favored.isNotEmpty) ...[
-              const SizedBox(height: 10),
-              Text(
-                context.uiText(
-                  'Regola opzionale del manuale: vantaggio ai danni per ${favored.join(', ')}.',
-                  'Optional manual rule: advantage on damage for ${favored.join(', ')}.',
-                ),
-                style: const TextStyle(fontWeight: FontWeight.w700),
-              ),
-            ],
             if (notes.isNotEmpty) ...[
-              const SizedBox(height: 10),
-              for (final note in notes)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 4),
-                  child: Text('• $note'),
-                ),
-            ],
-            const SizedBox(height: 8),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                OutlinedButton.icon(
-                  onPressed: onRollWeather,
-                  icon: const Icon(Icons.casino_outlined),
-                  label: Text(
-                    '${context.uiText('TIRA METEO', 'ROLL WEATHER')} · ${context.uiText(environment.season.label, environment.season.englishLabel)}',
+              const SizedBox(height: 4),
+              ExpansionTile(
+                tilePadding: EdgeInsets.zero,
+                childrenPadding: const EdgeInsets.only(bottom: 4),
+                dense: true,
+                visualDensity: VisualDensity.compact,
+                title: Text(
+                  context.uiText(
+                    'EFFETTI SUL POKÉMON (${notes.length})',
+                    'EFFECTS ON POKÉMON (${notes.length})',
                   ),
+                  style: const TextStyle(fontWeight: FontWeight.w800),
                 ),
-                OutlinedButton.icon(
-                  onPressed: onEdit,
-                  icon: const Icon(Icons.edit_outlined),
-                  label: Text(context.uiText('MODIFICA', 'EDIT')),
-                ),
-                if (hazard != null &&
-                    hazard > 0 &&
-                    onApplyWeatherDamage != null)
-                  FilledButton.tonalIcon(
-                    onPressed: onApplyWeatherDamage,
-                    icon: const Icon(Icons.heart_broken_outlined),
-                    label: Text(
-                      context.uiText(
-                        'APPLICA $hazard DANNI',
-                        'APPLY $hazard DAMAGE',
+                children: [
+                  for (final note in notes)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 4),
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text('• $note'),
                       ),
                     ),
-                  ),
-              ],
-            ),
+                ],
+              ),
+            ],
           ],
         ),
       ),
@@ -227,54 +201,33 @@ class _BattleEnvironmentDialog extends StatefulWidget {
 }
 
 class _BattleEnvironmentDialogState extends State<_BattleEnvironmentDialog> {
-  late BattleSeason _season;
   late BattleWeather _weather;
   late bool _timedWeather;
   late int _weatherRounds;
-  late final TextEditingController _sourceLevelController;
   late BattleNaturalTerrain _naturalTerrain;
   late BattleFieldTerrain _fieldTerrain;
   late int _fieldRounds;
-  late bool _optionalWeatherDamageAdvantage;
-  late bool _suppressWeatherAbilities;
 
   @override
   void initState() {
     super.initState();
     final value = widget.initial;
-    _season = value.season;
     _weather = value.weather;
-    _timedWeather = value.weatherRoundsRemaining > 0;
+    _timedWeather = value.hasTimedWeather;
     _weatherRounds = value.weatherRoundsRemaining > 0
         ? value.weatherRoundsRemaining
         : 5;
-    _sourceLevelController = TextEditingController(
-      text: value.weatherSourceLevel > 0
-          ? value.weatherSourceLevel.toString()
-          : '',
-    );
     _naturalTerrain = value.naturalTerrain;
     _fieldTerrain = value.fieldTerrain;
     _fieldRounds = value.fieldTerrainRoundsRemaining > 0
         ? value.fieldTerrainRoundsRemaining
         : 3;
-    _optionalWeatherDamageAdvantage = value.optionalWeatherDamageAdvantage;
-    _suppressWeatherAbilities = value.suppressWeatherAbilities;
-  }
-
-  @override
-  void dispose() {
-    _sourceLevelController.dispose();
-    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final specialDamageWeather =
-        _weather == BattleWeather.hail || _weather == BattleWeather.sandstorm;
-
     return AlertDialog(
-      title: Text(context.uiText('Meteo e terreno', 'Weather and terrain')),
+      title: Text(context.uiText('Aggiorna ambiente', 'Update environment')),
       content: SizedBox(
         width: 560,
         child: SingleChildScrollView(
@@ -282,25 +235,13 @@ class _BattleEnvironmentDialogState extends State<_BattleEnvironmentDialog> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              DropdownButtonFormField<BattleSeason>(
-                initialValue: _season,
-                decoration: InputDecoration(
-                  labelText: context.uiText('Stagione', 'Season'),
+              Text(
+                context.uiText(
+                  'Inserisci soltanto le condizioni comunicate dal Master. Il Battle Companion non genera casualmente il meteo e non decide la scena.',
+                  'Enter only the conditions communicated by the GM. The Battle Companion does not generate weather or decide the scene.',
                 ),
-                items: [
-                  for (final value in BattleSeason.values)
-                    DropdownMenuItem(
-                      value: value,
-                      child: Text(
-                        context.uiText(value.label, value.englishLabel),
-                      ),
-                    ),
-                ],
-                onChanged: (value) {
-                  if (value != null) setState(() => _season = value);
-                },
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 14),
               DropdownButtonFormField<BattleWeather>(
                 initialValue: _weather,
                 isExpanded: true,
@@ -328,14 +269,14 @@ class _BattleEnvironmentDialogState extends State<_BattleEnvironmentDialog> {
                 contentPadding: EdgeInsets.zero,
                 title: Text(
                   context.uiText(
-                    'Meteo creato da mossa o abilità',
-                    'Weather created by a move or ability',
+                    'Meteo con durata comunicata',
+                    'Weather with a communicated duration',
                   ),
                 ),
                 subtitle: Text(
                   context.uiText(
-                    'Attiva una durata in round. Il meteo naturale resta senza scadenza.',
-                    'Sets a duration in rounds. Natural weather has no expiration.',
+                    'Usalo solo quando il Master indica un numero di round.',
+                    'Use this only when the GM provides a number of rounds.',
                   ),
                 ),
                 value: _timedWeather && _weather != BattleWeather.clear,
@@ -344,48 +285,14 @@ class _BattleEnvironmentDialogState extends State<_BattleEnvironmentDialog> {
                     : (value) => setState(() => _timedWeather = value),
               ),
               if (_timedWeather && _weather != BattleWeather.clear)
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        context.uiText('Round rimanenti', 'Rounds remaining'),
-                      ),
-                    ),
-                    IconButton(
-                      onPressed: _weatherRounds > 1
-                          ? () => setState(() => _weatherRounds -= 1)
-                          : null,
-                      icon: const Icon(Icons.remove_circle_outline),
-                    ),
-                    Text(
-                      '$_weatherRounds',
-                      style: const TextStyle(fontWeight: FontWeight.w900),
-                    ),
-                    IconButton(
-                      onPressed: _weatherRounds < 20
-                          ? () => setState(() => _weatherRounds += 1)
-                          : null,
-                      icon: const Icon(Icons.add_circle_outline),
-                    ),
-                  ],
-                ),
-              if (_timedWeather && specialDamageWeather) ...[
-                const SizedBox(height: 6),
-                TextField(
-                  controller: _sourceLevelController,
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    labelText: context.uiText(
-                      'Livello della creatura che ha creato il meteo',
-                      'Level of the creature that created the weather',
-                    ),
-                    helperText: context.uiText(
-                      'Serve per i danni di Grandine o Tempesta di sabbia. Lascia 0 per un fenomeno naturale.',
-                      'Used for Hail or Sandstorm damage. Leave 0 for natural weather.',
-                    ),
+                _RoundCounter(
+                  label: context.uiText(
+                    'Round meteo rimanenti',
+                    'Weather rounds remaining',
                   ),
+                  value: _weatherRounds,
+                  onChanged: (value) => setState(() => _weatherRounds = value),
                 ),
-              ],
               const Divider(height: 24),
               DropdownButtonFormField<BattleNaturalTerrain>(
                 initialValue: _naturalTerrain,
@@ -433,71 +340,14 @@ class _BattleEnvironmentDialogState extends State<_BattleEnvironmentDialog> {
                 },
               ),
               if (_fieldTerrain != BattleFieldTerrain.none)
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        context.uiText(
-                          'Round terreno rimanenti',
-                          'Terrain rounds remaining',
-                        ),
-                      ),
-                    ),
-                    IconButton(
-                      onPressed: _fieldRounds > 1
-                          ? () => setState(() => _fieldRounds -= 1)
-                          : null,
-                      icon: const Icon(Icons.remove_circle_outline),
-                    ),
-                    Text(
-                      '$_fieldRounds',
-                      style: const TextStyle(fontWeight: FontWeight.w900),
-                    ),
-                    IconButton(
-                      onPressed: _fieldRounds < 20
-                          ? () => setState(() => _fieldRounds += 1)
-                          : null,
-                      icon: const Icon(Icons.add_circle_outline),
-                    ),
-                  ],
-                ),
-              const Divider(height: 24),
-              SwitchListTile(
-                contentPadding: EdgeInsets.zero,
-                title: Text(
-                  context.uiText(
-                    'Vantaggio ai danni per i tipi favoriti',
-                    'Damage advantage for favored types',
+                _RoundCounter(
+                  label: context.uiText(
+                    'Round terreno rimanenti',
+                    'Terrain rounds remaining',
                   ),
+                  value: _fieldRounds,
+                  onChanged: (value) => setState(() => _fieldRounds = value),
                 ),
-                subtitle: Text(
-                  context.uiText(
-                    'Regola opzionale del manuale: tira due volte i danni e usa il risultato migliore.',
-                    'Optional manual rule: roll damage twice and use the higher result.',
-                  ),
-                ),
-                value: _optionalWeatherDamageAdvantage,
-                onChanged: (value) =>
-                    setState(() => _optionalWeatherDamageAdvantage = value),
-              ),
-              SwitchListTile(
-                contentPadding: EdgeInsets.zero,
-                title: Text(
-                  context.uiText(
-                    'Air Lock / Cloud Nine attivo',
-                    'Air Lock / Cloud Nine active',
-                  ),
-                ),
-                subtitle: Text(
-                  context.uiText(
-                    'Sopprime i bonus e malus delle abilità legate al meteo, non il meteo stesso.',
-                    'Suppresses bonuses and penalties from weather-related abilities, not the weather itself.',
-                  ),
-                ),
-                value: _suppressWeatherAbilities,
-                onChanged: (value) =>
-                    setState(() => _suppressWeatherAbilities = value),
-              ),
             ],
           ),
         ),
@@ -509,30 +359,58 @@ class _BattleEnvironmentDialogState extends State<_BattleEnvironmentDialog> {
         ),
         FilledButton(
           onPressed: () {
-            final sourceLevel =
-                int.tryParse(_sourceLevelController.text.trim()) ?? 0;
             Navigator.of(context).pop(
               BattleEnvironment(
-                season: _season,
+                season: widget.initial.season,
                 weather: _weather,
                 weatherRoundsRemaining:
                     _weather == BattleWeather.clear || !_timedWeather
                     ? 0
                     : _weatherRounds,
-                weatherSourceLevel:
-                    _weather == BattleWeather.clear || !_timedWeather
-                    ? 0
-                    : sourceLevel.clamp(0, 20).toInt(),
+                weatherSourceLevel: 0,
                 naturalTerrain: _naturalTerrain,
                 fieldTerrain: _fieldTerrain,
                 fieldTerrainRoundsRemaining:
                     _fieldTerrain == BattleFieldTerrain.none ? 0 : _fieldRounds,
-                optionalWeatherDamageAdvantage: _optionalWeatherDamageAdvantage,
-                suppressWeatherAbilities: _suppressWeatherAbilities,
+                optionalWeatherDamageAdvantage: false,
+                suppressWeatherAbilities: false,
               ),
             );
           },
           child: Text(context.uiText('SALVA', 'SAVE')),
+        ),
+      ],
+    );
+  }
+}
+
+class _RoundCounter extends StatelessWidget {
+  const _RoundCounter({
+    required this.label,
+    required this.value,
+    required this.onChanged,
+  });
+
+  final String label;
+  final int value;
+  final ValueChanged<int> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(child: Text(label)),
+        IconButton(
+          onPressed: value > 1 ? () => onChanged(value - 1) : null,
+          icon: const Icon(Icons.remove_circle_outline),
+        ),
+        Text(
+          '$value',
+          style: const TextStyle(fontWeight: FontWeight.w900),
+        ),
+        IconButton(
+          onPressed: value < 20 ? () => onChanged(value + 1) : null,
+          icon: const Icon(Icons.add_circle_outline),
         ),
       ],
     );

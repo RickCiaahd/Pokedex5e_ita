@@ -94,3 +94,54 @@ jobs:
           path: build/app/outputs/flutter-apk/app-debug.apk
           if-no-files-found: error
           retention-days: 30
+
+  compact-apk:
+    name: Build corrected Bag test APK
+    if: github.event_name == 'pull_request' && github.head_ref == 'feature/compact-pokemon-detail-v2'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Check out compact prototype branch
+        uses: actions/checkout@v4
+        with:
+          ref: feature/compact-pokemon-detail-v2
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up pinned Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.4'
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze Bag screen
+        run: flutter analyze lib/screens/bag/bag_screen.dart
+
+      - name: Build Android debug APK
+        run: flutter build apk --debug
+
+      - name: Prepare downloadable artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          BRANCH_SHA="$(git rev-parse HEAD)"
+          SHORT_SHA="${BRANCH_SHA::7}"
+          cp build/app/outputs/flutter-apk/app-debug.apk "dist/Pokedex5e-compact-test-${SHORT_SHA}.apk"
+          printf 'Branch: feature/compact-pokemon-detail-v2\nCommit: %s\nBuild type: debug APK\n' "$BRANCH_SHA" > dist/BUILD-INFO.txt
+
+      - name: Upload corrected Bag APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Pokedex5e-compact-test-apk
+          path: dist/
+          if-no-files-found: error
+          retention-days: 30

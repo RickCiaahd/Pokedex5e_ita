@@ -1,4 +1,4 @@
-# Rebuild marker: retry multi-item selling test APK
+# Rebuild marker: APK test with multi-item selling (2026-08-06 19:58 CEST)
 name: Build compact test APK
 
 on:

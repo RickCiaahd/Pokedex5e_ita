@@ -344,7 +344,7 @@ class _FirstLaunchOnboardingScreenState
       if (!mounted) return;
       setState(() {
         _isSaving = false;
-        _step = 10;
+        _step = 11;
       });
     } catch (error) {
       if (!mounted) return;
@@ -401,7 +401,7 @@ class _FirstLaunchOnboardingScreenState
                     _ProgressHeader(
                       step: _step,
                       totalSteps: _totalSteps,
-                      canGoBack: _step > 0 && _step < 9,
+                      canGoBack: _step > 0 && _step < 10,
                       onBack: _back,
                       onCancel: _canCancelFlow ? widget.onCancel : null,
                     ),
@@ -414,7 +414,7 @@ class _FirstLaunchOnboardingScreenState
                         child: _buildStage(keyboardVisible: keyboardVisible),
                       ),
                     ),
-                    if (_errorMessage != null && _step >= 9) ...[
+                    if (_errorMessage != null && _step >= 10) ...[
                       const SizedBox(height: 10),
                       Text(
                         l10n.onboardingProfileCreationError,
@@ -426,7 +426,7 @@ class _FirstLaunchOnboardingScreenState
                       ),
                     ],
                     SizedBox(height: keyboardVisible ? 8 : 14),
-                    if (_step != 9 || !_isSaving)
+                    if (_step != 10 || !_isSaving)
                       SizedBox(
                         width: double.infinity,
                         height: keyboardVisible ? 48 : 54,

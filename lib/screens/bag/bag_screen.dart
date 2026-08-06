@@ -2171,6 +2171,7 @@ class _ItemPickerSheetState extends State<_ItemPickerSheet> {
   @override
   Widget build(BuildContext context) {
     final filteredItems = widget.items.where((item) {
+      if (_isBuy && (item.cost == null || item.cost! <= 0)) return false;
       return item.matchesSearchQuery(_query, aliases: [_typeLabel(item.type)]);
     }).toList();
 
@@ -2227,9 +2228,12 @@ class _ItemPickerSheetState extends State<_ItemPickerSheet> {
                     final quantity = _quantityFor(item);
                     final maxQuantity = _maxQuantityFor(item);
                     final canSelect = maxQuantity > 0;
-                    final costLabel = item.cost == null
-                        ? context.uiText('Non acquistabile', 'Not for sale')
-                        : '₽ ${item.cost}';
+                    final costLabel = _isBuy
+                        ? '₽ ${item.cost}'
+                        : context.uiText(
+                            'Gestione manuale',
+                            'Manual management',
+                          );
                     final selectionLabel = quantity <= 0
                         ? context.uiText(
                             'Quantità da aggiungere: 0',

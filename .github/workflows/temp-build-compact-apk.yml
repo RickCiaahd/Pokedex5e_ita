@@ -1,0 +1,70 @@
+name: Temporary compact APK build
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '*/5 * * * *'
+  pull_request_target:
+    types: [opened, reopened]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: temporary-compact-apk-build
+  cancel-in-progress: false
+
+jobs:
+  build-apk:
+    name: Build latest compact Android test APK
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      github.event_name == 'schedule' ||
+      (github.event_name == 'pull_request_target' && github.event.pull_request.head.ref == 'agent/request-compact-apk-build')
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Check out compact prototype branch
+        uses: actions/checkout@v4
+        with:
+          ref: feature/compact-pokemon-detail-v2
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.4'
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze Bag screen
+        run: flutter analyze lib/screens/bag/bag_screen.dart
+
+      - name: Build debug APK
+        run: flutter build apk --debug
+
+      - name: Prepare downloadable file
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          BRANCH_SHA="$(git rev-parse HEAD)"
+          SHORT_SHA="${BRANCH_SHA::7}"
+          cp build/app/outputs/flutter-apk/app-debug.apk "dist/Pokedex5e-compact-test-${SHORT_SHA}.apk"
+          printf 'Branch: feature/compact-pokemon-detail-v2\nCommit: %s\nBuild type: debug APK\n' "$BRANCH_SHA" > dist/BUILD-INFO.txt
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Pokedex5e-compact-test-apk
+          path: dist/
+          if-no-files-found: error
+          retention-days: 30

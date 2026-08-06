@@ -1,10 +1,13 @@
+# Trigger: build corrected Bag APK 2026-08-07 00:16 CEST
 name: Temporary compact APK build
 
 on:
   workflow_dispatch:
-  workflow_run:
-    workflows: ['PR-target form-aware evolution migration']
-    types: [completed]
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/temp-build-compact-apk.yml
 
 permissions:
   contents: read
@@ -16,9 +19,6 @@ concurrency:
 jobs:
   build-apk:
     name: Build latest compact Android test APK
-    if: >-
-      github.event_name == 'workflow_dispatch' ||
-      (github.event_name == 'workflow_run' && github.event.workflow_run.id == 29132863087)
     runs-on: ubuntu-latest
     timeout-minutes: 45
 

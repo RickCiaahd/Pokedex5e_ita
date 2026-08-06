@@ -72,9 +72,8 @@ class BattleEnvironmentCard extends StatelessWidget {
                     children: [
                       Text(
                         context.uiText('AMBIENTE', 'ENVIRONMENT'),
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w900,
-                        ),
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(fontWeight: FontWeight.w900),
                       ),
                       Text(
                         context.uiText(
@@ -404,10 +403,7 @@ class _RoundCounter extends StatelessWidget {
           onPressed: value > 1 ? () => onChanged(value - 1) : null,
           icon: const Icon(Icons.remove_circle_outline),
         ),
-        Text(
-          '$value',
-          style: const TextStyle(fontWeight: FontWeight.w900),
-        ),
+        Text('$value', style: const TextStyle(fontWeight: FontWeight.w900)),
         IconButton(
           onPressed: value < 20 ? () => onChanged(value + 1) : null,
           icon: const Icon(Icons.add_circle_outline),

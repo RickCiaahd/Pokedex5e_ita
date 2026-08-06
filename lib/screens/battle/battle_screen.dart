@@ -87,12 +87,10 @@ class _BattleScreenState extends State<BattleScreen> {
   final Map<int, int> _temporaryHpBySlot = {};
   final Map<int, bool> _temporaryHpEnabledBySlot = {};
   final Set<int> _temporaryHpInitializedSlots = {};
-  final List<BattleInitiativeEntry> _initiativeEntries = [];
 
   BattleStatusMoment _statusMoment = BattleStatusMoment.turnStart;
   int? _activeSlotIndex;
   int _round = 1;
-  int _turnIndex = 0;
   BattleEnvironment _environment = const BattleEnvironment();
   String? _message;
   String? _restoredProfileId;
@@ -111,11 +109,11 @@ class _BattleScreenState extends State<BattleScreen> {
     ),
     GuidedTourStepData(
       targetKey: _initiativeKey,
-      icon: Icons.format_list_numbered,
-      title: context.uiText('Iniziativa e turni', 'Initiative and turns'),
+      icon: Icons.timelapse_outlined,
+      title: context.uiText('Round personale', 'Personal round'),
       description: context.uiText(
-        'Aggiungi partecipanti, modifica l’ordine e usa il comando del turno successivo. Quando il giro termina, il round avanza automaticamente.',
-        'Add participants, change the order and use the next-turn command. When the cycle ends, the round advances automatically.',
+        'Quando il Master comunica che torna il tuo turno, usa il pulsante per avanzare il round personale. Non devi gestire l’ordine completo dell’iniziativa.',
+        'When the GM says your turn has come back, use the button to advance your personal round. You do not need to manage the full initiative order.',
       ),
       fallbackScrollFraction: .16,
     ),
@@ -124,8 +122,8 @@ class _BattleScreenState extends State<BattleScreen> {
       icon: Icons.public_outlined,
       title: context.uiText('Meteo e terreno', 'Weather and terrain'),
       description: context.uiText(
-        'L’ambiente applica regole e modificatori a velocità, CA, tipi e danni. Puoi impostarlo manualmente o generare il meteo con il d100.',
-        'The environment applies rules and modifiers to speed, AC, types and damage. Set it manually or roll weather with a d100.',
+        'Registra il meteo e il terreno comunicati dal Master. Il Battle Companion applica al Pokémon i modificatori conosciuti, senza generare la scena al posto del Master.',
+        'Record the weather and terrain communicated by the GM. The Battle Companion applies known modifiers to the Pokémon without generating the scene for the GM.',
       ),
       fallbackScrollFraction: .30,
     ),
@@ -240,9 +238,7 @@ class _BattleScreenState extends State<BattleScreen> {
     _temporaryHpBySlot.clear();
     _temporaryHpEnabledBySlot.clear();
     _temporaryHpInitializedSlots.clear();
-    _initiativeEntries.clear();
     _round = 1;
-    _turnIndex = 0;
     _activeSlotIndex = null;
     _environment = const BattleEnvironment();
 
@@ -250,7 +246,6 @@ class _BattleScreenState extends State<BattleScreen> {
     if (session != null) {
       _round = session.round;
       _environment = session.environment;
-      _initiativeEntries.addAll(session.initiativeEntries);
 
       for (final state in session.pokemonStates.values) {
         TeamSlot? matchingSlot;
@@ -286,9 +281,6 @@ class _BattleScreenState extends State<BattleScreen> {
           data.occupiedSlots.any((slot) => slot.slotIndex == savedActiveSlot)) {
         _activeSlotIndex = savedActiveSlot;
       }
-      _turnIndex = _initiativeEntries.isEmpty
-          ? 0
-          : session.turnIndex.clamp(0, _initiativeEntries.length - 1).toInt();
     }
 
     for (final slot in data.occupiedSlots) {
@@ -310,11 +302,7 @@ class _BattleScreenState extends State<BattleScreen> {
     }
 
     final activeSlot = _activeSlotFor(data);
-    if (activeSlot != null) {
-      _activeSlotIndex = activeSlot.slotIndex;
-      final pokemon = _pokemonForSlot(data, activeSlot);
-      if (pokemon != null) _ensureInitiative(data, activeSlot, pokemon);
-    }
+    if (activeSlot != null) _activeSlotIndex = activeSlot.slotIndex;
     await _saveSession(data);
   }
 
@@ -343,10 +331,10 @@ class _BattleScreenState extends State<BattleScreen> {
       BattleSession(
         profileId: data.profile.id,
         round: _round,
-        turnIndex: _turnIndex,
+        turnIndex: 0,
         activeSlotIndex: _activeSlotIndex,
         pokemonStates: states,
-        initiativeEntries: List<BattleInitiativeEntry>.from(_initiativeEntries),
+        initiativeEntries: const [],
         environment: _environment,
         updatedAt: DateTime.now(),
       ),
@@ -517,10 +505,8 @@ class _BattleScreenState extends State<BattleScreen> {
   ) {
     final result = <MoveData>[];
     for (final reference in _movesForSlot(slot, pokemon)) {
-      final move = data.moves[MoveRepository.contextualKey(
-        slot.pokemonId!,
-        reference,
-      )];
+      final move =
+          data.moves[MoveRepository.contextualKey(slot.pokemonId!, reference)];
       if (move != null) result.add(_contextualMove(move, slot));
     }
     return result;
@@ -753,7 +739,9 @@ class _BattleScreenState extends State<BattleScreen> {
       return;
     }
     if (_currentHpFor(slot, pokemon) <= 0) {
-      setState(() => _message = 'Un Pokémon esausto non può usare una Mossa Z.');
+      setState(
+        () => _message = 'Un Pokémon esausto non può usare una Mossa Z.',
+      );
       return;
     }
 
@@ -763,10 +751,8 @@ class _BattleScreenState extends State<BattleScreen> {
     if (crystal == null) return;
     final choices = <_ZMoveChoice>[];
     for (final reference in _movesForSlot(slot, pokemon)) {
-      final rawMove = data.moves[MoveRepository.contextualKey(
-        slot.pokemonId!,
-        reference,
-      )];
+      final rawMove =
+          data.moves[MoveRepository.contextualKey(slot.pokemonId!, reference)];
       if (rawMove == null) continue;
       final move = _contextualMove(rawMove, slot);
       if (MoveData.referenceKey(move.type) !=
@@ -815,7 +801,6 @@ class _BattleScreenState extends State<BattleScreen> {
     await _recordTransformationUse(data, slot, state.kind);
     await _saveSession(data);
   }
-
 
   Future<void> _openTransformationMenu({
     required _BattleData data,
@@ -900,10 +885,6 @@ class _BattleScreenState extends State<BattleScreen> {
 
   int _trainerInitiativeBonus(UserProfile profile) {
     return _modifier(profile.abilityScores['DEX'] ?? 10);
-  }
-
-  int _rollTrainerInitiative(UserProfile profile) {
-    return _random.nextInt(20) + 1 + _trainerInitiativeBonus(profile);
   }
 
   int _maxPpFor(MoveData? move) {
@@ -1600,43 +1581,6 @@ class _BattleScreenState extends State<BattleScreen> {
     );
   }
 
-  void _ensureInitiative(_BattleData data, TeamSlot slot, Pokemon pokemon) {
-    final label = '${data.profile.name} + ${_displayName(slot, pokemon)}';
-    final index = _initiativeEntries.indexWhere(
-      (entry) => entry.isTrainerGroup,
-    );
-
-    if (index == -1) {
-      _initiativeEntries.add(
-        BattleInitiativeEntry(
-          id: 'trainer',
-          name: label,
-          initiative: _rollTrainerInitiative(data.profile),
-          isTrainerGroup: true,
-        ),
-      );
-      _sortInitiative();
-    } else if (_initiativeEntries[index].name != label) {
-      _initiativeEntries[index] = _initiativeEntries[index].copyWith(
-        name: label,
-      );
-    }
-  }
-
-  void _sortInitiative() {
-    _initiativeEntries.sort((a, b) {
-      final initiativeCompare = b.initiative.compareTo(a.initiative);
-      if (initiativeCompare != 0) return initiativeCompare;
-      if (a.isTrainerGroup != b.isTrainerGroup) {
-        return a.isTrainerGroup ? -1 : 1;
-      }
-      return a.name.compareTo(b.name);
-    });
-    _turnIndex = _initiativeEntries.isEmpty
-        ? 0
-        : _turnIndex.clamp(0, _initiativeEntries.length - 1).toInt();
-  }
-
   Future<void> _editEnvironment(_BattleData data) async {
     final result = await showBattleEnvironmentDialog(
       context: context,
@@ -1653,132 +1597,15 @@ class _BattleScreenState extends State<BattleScreen> {
     _scheduleSessionSave(data);
   }
 
-  void _rollEnvironmentWeather(_BattleData data) {
-    final roll = _random.nextInt(100) + 1;
-    final weather = BattleEnvironmentService.rollWeather(
-      _environment.season,
-      roll,
-    );
-    setState(() {
-      _environment = _environment.copyWith(
-        weather: weather,
-        weatherRoundsRemaining: 0,
-        weatherSourceLevel: 0,
-      );
-      _message = context.uiText(
-        'Meteo d100: $roll - ${weather.label}.',
-        'Weather d100: $roll - ${weather.label}.',
-      );
-    });
-    _scheduleSessionSave(data);
-  }
-
-  Future<void> _applyEnvironmentWeatherDamage(
-    _BattleData data,
-    TeamSlot slot,
-  ) async {
-    final pokemon = _pokemonForSlot(data, slot);
-    if (pokemon == null) return;
-    final damage = BattleEnvironmentService.startTurnWeatherDamage(
-      pokemon: pokemon,
-      slot: slot,
-      environment: _environment,
-    );
-    if (damage == null || damage <= 0) return;
-    final maxHp = _maxHpFor(pokemon, slot);
-    final currentHp = _currentHpFor(slot, pokemon);
-    final updatedHp = (currentHp - damage).clamp(0, maxHp).toInt();
-    final updatedSlot = slot.copyWith(currentHp: updatedHp);
-    await _teamRepository.updateSlot(
-      profileId: data.profile.id,
-      updatedSlot: updatedSlot,
-    );
-    _replaceTeamSlot(data, updatedSlot);
-    await _saveSession(data);
-    if (!mounted) return;
-    setState(() {
-      _message = context.uiText(
-        '${_displayName(updatedSlot, pokemon)} subisce $damage danni da ${_environment.weather.label}.',
-        '${_displayName(updatedSlot, pokemon)} takes $damage damage from ${_environment.weather.label}.',
-      );
-    });
-  }
-
-  void _rerollTrainerInitiative(_BattleData data) {
-    setState(() {
-      final index = _initiativeEntries.indexWhere(
-        (entry) => entry.isTrainerGroup,
-      );
-      final roll = _rollTrainerInitiative(data.profile);
-      if (index == -1) {
-        _initiativeEntries.add(
-          BattleInitiativeEntry(
-            id: 'trainer',
-            name: '${data.profile.name} + Pokémon',
-            initiative: roll,
-            isTrainerGroup: true,
-          ),
-        );
-      } else {
-        _initiativeEntries[index] = _initiativeEntries[index].copyWith(
-          initiative: roll,
-        );
-      }
-      _turnIndex = 0;
-      _sortInitiative();
-      _message = context.uiText(
-        'Iniziativa allenatore/Pokémon: $roll.',
-        'Trainer/Pokémon initiative: $roll.',
-      );
-    });
-    _scheduleSessionSave(data);
-  }
-
-  Future<void> _addInitiativeEntry(_BattleData data) async {
-    final input = await showDialog<_InitiativeEntryInput>(
-      context: context,
-      builder: (_) => const _InitiativeEntryDialog(),
-    );
-    if (!mounted || input == null) return;
-
-    setState(() {
-      _initiativeEntries.add(
-        BattleInitiativeEntry(
-          id: DateTime.now().microsecondsSinceEpoch.toString(),
-          name: input.name,
-          initiative: input.initiative,
-          isTrainerGroup: false,
-        ),
-      );
-      _sortInitiative();
-    });
-    _scheduleSessionSave(data);
-  }
-
-  void _removeInitiativeEntry(_BattleData data, BattleInitiativeEntry entry) {
-    setState(() {
-      _initiativeEntries.removeWhere((candidate) => candidate.id == entry.id);
-      _sortInitiative();
-    });
-    _scheduleSessionSave(data);
-  }
-
-  void _nextTurn(_BattleData data) {
+  void _nextPlayerRound(_BattleData data) {
     setState(() {
       _statusMoment = BattleStatusMoment.turnStart;
-      if (_initiativeEntries.isEmpty) return;
-      if (_turnIndex + 1 >= _initiativeEntries.length) {
-        _turnIndex = 0;
-        _round += 1;
-        _environment = _environment.advanceRound();
-        _message = context.uiText(
-          'Round $_round iniziato.',
-          'Round $_round started.',
-        );
-      } else {
-        _turnIndex += 1;
-        _message = null;
-      }
+      _round += 1;
+      _environment = _environment.advanceRound();
+      _message = context.uiText(
+        'Round $_round iniziato.',
+        'Round $_round started.',
+      );
     });
     _scheduleSessionSave(data);
   }
@@ -1793,8 +1620,8 @@ class _BattleScreenState extends State<BattleScreen> {
         ),
         content: Text(
           context.uiText(
-            'Round, iniziativa, PP, PF temporanei, forme di battaglia, trasformazioni attive e status volatili verranno rimossi. Gli utilizzi di Mega/Z/Dynamax/Tera resteranno consumati fino al prossimo riposo lungo.',
-            'Rounds, initiative, PP, temporary HP, battle forms, active transformations and volatile conditions will be cleared. Mega/Z/Dynamax/Tera uses remain spent until the next long rest.',
+            'Round personale, PP, PF temporanei, forme di battaglia, trasformazioni attive e status volatili verranno rimossi. Gli utilizzi di Mega/Z/Dynamax/Tera resteranno consumati fino al prossimo riposo lungo.',
+            'Personal round, PP, temporary HP, battle forms, active transformations and volatile conditions will be cleared. Mega/Z/Dynamax/Tera uses remain spent until the next long rest.',
           ),
         ),
         actions: [
@@ -1819,7 +1646,6 @@ class _BattleScreenState extends State<BattleScreen> {
     _temporaryHpBySlot.clear();
     _temporaryHpEnabledBySlot.clear();
     _temporaryHpInitializedSlots.clear();
-    _initiativeEntries.clear();
     if (!mounted) return;
     Navigator.of(context).pop();
   }
@@ -1966,8 +1792,8 @@ class _BattleScreenState extends State<BattleScreen> {
       formName: formName,
       gender: slot.gender,
     );
-    final originalStab = transformation?.kind ==
-            BattleTransformationKind.terastal
+    final originalStab =
+        transformation?.kind == BattleTransformationKind.terastal
         ? TrainerPathPassiveService.stabEffect(
             profile: _activeProfile,
             pokemon: originalPokemon,
@@ -2011,7 +1837,8 @@ class _BattleScreenState extends State<BattleScreen> {
     if (transformation?.kind == BattleTransformationKind.terastal &&
         transformation?.teraType != null &&
         originalPokemon.types.any(
-          (type) => MoveData.referenceKey(type) ==
+          (type) =>
+              MoveData.referenceKey(type) ==
               MoveData.referenceKey(transformation!.teraType!),
         ) &&
         MoveData.referenceKey(effectiveMoveType) ==
@@ -2212,12 +2039,16 @@ class _BattleScreenState extends State<BattleScreen> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
-                                  _BattleHeader(
-                                    round: _round,
-                                    profile: data.profile,
-                                    trainerInitiativeBonus:
-                                        _trainerInitiativeBonus(data.profile),
-                                    onEnd: () => _endBattle(data),
+                                  KeyedSubtree(
+                                    key: _initiativeKey,
+                                    child: _BattleHeader(
+                                      round: _round,
+                                      profile: data.profile,
+                                      trainerInitiativeBonus:
+                                          _trainerInitiativeBonus(data.profile),
+                                      onNextRound: () => _nextPlayerRound(data),
+                                      onEnd: () => _endBattle(data),
+                                    ),
                                   ),
                                   const SizedBox(height: 12),
                                   _PartyBar(
@@ -2232,11 +2063,10 @@ class _BattleScreenState extends State<BattleScreen> {
                                         _transformationBySlot[slot.slotIndex],
                                     onSelected: (slotIndex) {
                                       if (slotIndex != activeSlot.slotIndex &&
-                                          BattleTransformationService
-                                              .isDynamaxLike(
-                                                _transformationBySlot[
-                                                    activeSlot.slotIndex],
-                                              )) {
+                                          BattleTransformationService.isDynamaxLike(
+                                            _transformationBySlot[activeSlot
+                                                .slotIndex],
+                                          )) {
                                         setState(() {
                                           _message = context.uiText(
                                             'Un Pokémon Dynamax/Gigamax non può essere richiamato o sostituito.',
@@ -2259,24 +2089,6 @@ class _BattleScreenState extends State<BattleScreen> {
                             ),
                             const SizedBox(height: 12),
                             KeyedSubtree(
-                              key: _initiativeKey,
-                              child: _InitiativeTracker(
-                                round: _round,
-                                entries: _initiativeEntries,
-                                currentTurnIndex: _turnIndex,
-                                trainerInitiativeBonus: _trainerInitiativeBonus(
-                                  data.profile,
-                                ),
-                                onRollTrainer: () =>
-                                    _rerollTrainerInitiative(data),
-                                onAddEntry: () => _addInitiativeEntry(data),
-                                onRemoveEntry: (entry) =>
-                                    _removeInitiativeEntry(data, entry),
-                                onNextTurn: () => _nextTurn(data),
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            KeyedSubtree(
                               key: _environmentKey,
                               child: BattleEnvironmentCard(
                                 environment: _environment,
@@ -2293,20 +2105,6 @@ class _BattleScreenState extends State<BattleScreen> {
                                       slot: activeSlot,
                                     ),
                                 onEdit: () => _editEnvironment(data),
-                                onRollWeather: () =>
-                                    _rollEnvironmentWeather(data),
-                                onApplyWeatherDamage:
-                                    BattleEnvironmentService.startTurnWeatherDamage(
-                                          pokemon: pokemon,
-                                          slot: activeSlot,
-                                          environment: _environment,
-                                        ) ==
-                                        null
-                                    ? null
-                                    : () => _applyEnvironmentWeatherDamage(
-                                        data,
-                                        activeSlot,
-                                      ),
                               ),
                             ),
                             const SizedBox(height: 12),
@@ -2316,78 +2114,86 @@ class _BattleScreenState extends State<BattleScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
                                   _ActivePokemonCard(
-                                pokemon: pokemon,
-                                imagePokemon: basePokemon,
-                                slot: activeSlot,
-                                formName: effectiveFormName,
-                                transformation:
-                                    _transformationBySlot[activeSlot.slotIndex],
-                                formLabel: canChangeForm
-                                    ? BattleFormChangeService.formLabel(
-                                        basePokemon,
-                                        effectiveFormName,
-                                      )
-                                    : null,
-                                formNote: canChangeForm
-                                    ? BattleFormChangeService.effectNote(
-                                        basePokemon,
-                                        effectiveFormName,
-                                      )
-                                    : null,
-                                heldItem: heldItem,
-                                displayName: _displayName(activeSlot, pokemon),
-                                level: _levelForSlot(activeSlot),
-                                baseArmorClass: formArmorClass,
-                                effectiveArmorClass: effectiveArmorClass,
-                                currentHp: _currentHpFor(activeSlot, pokemon),
-                                maxHp: _maxHpFor(pokemon, activeSlot),
-                                temporaryHp: temporaryHp,
-                                temporaryHpRule: temporaryHpRule,
-                                temporaryHpEnabled: temporaryHpEnabled,
-                                nonVolatileStatus: _nonVolatileStatusFor(
-                                  activeSlot,
-                                ),
-                                volatileStatuses: _volatileStatusesFor(
-                                  activeSlot,
-                                ),
-                                message: _message,
-                                onTransformations: () {
-                                  _openTransformationMenu(
-                                    data: data,
-                                    slot: activeSlot,
                                     pokemon: pokemon,
-                                    basePokemon: basePokemon,
-                                    effectiveFormName: effectiveFormName,
-                                    currentState: transformationState,
-                                    megaEligibility: megaEligibility,
-                                    zMoveEligibility: zMoveEligibility,
-                                    dynamaxEligibility: dynamaxEligibility,
-                                    terastalEligibility: terastalEligibility,
-                                  );
-                                },
-                                onEditHp: () => _editHp(data, activeSlot),
-                                onHeal: () => _healFull(data, activeSlot),
-                                onStatus: () =>
-                                    _openStatusPicker(data, activeSlot),
-                                onUseHeldBerry: heldItem?.type == 'berry'
-                                    ? () => _useHeldBerry(data, activeSlot)
-                                    : null,
-                                onOpenBag: () =>
-                                    _openQuickBag(data, activeSlot),
-                                onToggleTemporaryHp: temporaryHpRule == null
-                                    ? null
-                                    : (enabled) => _toggleTemporaryHpRule(
-                                        data,
-                                        activeSlot,
-                                        enabled,
-                                      ),
-                                onChangeForm: canChangeForm
-                                    ? () => _openBattleFormPicker(
-                                        data,
-                                        activeSlot,
-                                      )
-                                    : null,
-                              ),
+                                    imagePokemon: basePokemon,
+                                    slot: activeSlot,
+                                    formName: effectiveFormName,
+                                    transformation:
+                                        _transformationBySlot[activeSlot
+                                            .slotIndex],
+                                    formLabel: canChangeForm
+                                        ? BattleFormChangeService.formLabel(
+                                            basePokemon,
+                                            effectiveFormName,
+                                          )
+                                        : null,
+                                    formNote: canChangeForm
+                                        ? BattleFormChangeService.effectNote(
+                                            basePokemon,
+                                            effectiveFormName,
+                                          )
+                                        : null,
+                                    heldItem: heldItem,
+                                    displayName: _displayName(
+                                      activeSlot,
+                                      pokemon,
+                                    ),
+                                    level: _levelForSlot(activeSlot),
+                                    baseArmorClass: formArmorClass,
+                                    effectiveArmorClass: effectiveArmorClass,
+                                    currentHp: _currentHpFor(
+                                      activeSlot,
+                                      pokemon,
+                                    ),
+                                    maxHp: _maxHpFor(pokemon, activeSlot),
+                                    temporaryHp: temporaryHp,
+                                    temporaryHpRule: temporaryHpRule,
+                                    temporaryHpEnabled: temporaryHpEnabled,
+                                    nonVolatileStatus: _nonVolatileStatusFor(
+                                      activeSlot,
+                                    ),
+                                    volatileStatuses: _volatileStatusesFor(
+                                      activeSlot,
+                                    ),
+                                    message: _message,
+                                    onTransformations: () {
+                                      _openTransformationMenu(
+                                        data: data,
+                                        slot: activeSlot,
+                                        pokemon: pokemon,
+                                        basePokemon: basePokemon,
+                                        effectiveFormName: effectiveFormName,
+                                        currentState: transformationState,
+                                        megaEligibility: megaEligibility,
+                                        zMoveEligibility: zMoveEligibility,
+                                        dynamaxEligibility: dynamaxEligibility,
+                                        terastalEligibility:
+                                            terastalEligibility,
+                                      );
+                                    },
+                                    onEditHp: () => _editHp(data, activeSlot),
+                                    onHeal: () => _healFull(data, activeSlot),
+                                    onStatus: () =>
+                                        _openStatusPicker(data, activeSlot),
+                                    onUseHeldBerry: heldItem?.type == 'berry'
+                                        ? () => _useHeldBerry(data, activeSlot)
+                                        : null,
+                                    onOpenBag: () =>
+                                        _openQuickBag(data, activeSlot),
+                                    onToggleTemporaryHp: temporaryHpRule == null
+                                        ? null
+                                        : (enabled) => _toggleTemporaryHpRule(
+                                            data,
+                                            activeSlot,
+                                            enabled,
+                                          ),
+                                    onChangeForm: canChangeForm
+                                        ? () => _openBattleFormPicker(
+                                            data,
+                                            activeSlot,
+                                          )
+                                        : null,
+                                  ),
                                 ],
                               ),
                             ),
@@ -2569,13 +2375,6 @@ class _MedicineUseResult {
   final String message;
 }
 
-class _InitiativeEntryInput {
-  const _InitiativeEntryInput({required this.name, required this.initiative});
-
-  final String name;
-  final int initiative;
-}
-
 class _StatusPickerResult {
   const _StatusPickerResult({
     required this.nonVolatileStatus,
@@ -2755,48 +2554,84 @@ class _BattleHeader extends StatelessWidget {
     required this.round,
     required this.profile,
     required this.trainerInitiativeBonus,
+    required this.onNextRound,
     required this.onEnd,
   });
 
   final int round;
   final UserProfile profile;
   final int trainerInitiativeBonus;
+  final VoidCallback onNextRound;
   final VoidCallback onEnd;
 
   @override
   Widget build(BuildContext context) {
+    final info = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          'ROUND $round',
+          style: Theme.of(
+            context,
+          ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
+        ),
+        Text(
+          context.uiText(
+            '${profile.name} · INIZ. ${trainerInitiativeBonus >= 0 ? '+' : ''}$trainerInitiativeBonus',
+            '${profile.name} · INIT. ${trainerInitiativeBonus >= 0 ? '+' : ''}$trainerInitiativeBonus',
+          ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ],
+    );
+
+    final nextButton = FilledButton.icon(
+      onPressed: onNextRound,
+      icon: const Icon(Icons.navigate_next),
+      label: Text(
+        context.uiText('PROSSIMO MIO TURNO', 'NEXT MY TURN'),
+        maxLines: 1,
+      ),
+    );
+
+    final endButton = IconButton(
+      tooltip: context.uiText('Termina battaglia', 'End battle'),
+      onPressed: onEnd,
+      icon: const Icon(Icons.stop_circle_outlined),
+    );
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        child: Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            if (constraints.maxWidth < 460) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text(
-                    'Round $round',
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.w900,
-                    ),
+                  Row(
+                    children: [
+                      Expanded(child: info),
+                      endButton,
+                    ],
                   ),
-                  Text(
-                    context.uiText(
-                      '${profile.name} · INIZ. ${trainerInitiativeBonus >= 0 ? '+' : ''}$trainerInitiativeBonus',
-                      '${profile.name} · INIT. ${trainerInitiativeBonus >= 0 ? '+' : ''}$trainerInitiativeBonus',
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
+                  const SizedBox(height: 6),
+                  SizedBox(width: double.infinity, child: nextButton),
                 ],
-              ),
-            ),
-            IconButton(
-              tooltip: context.uiText('Termina battaglia', 'End battle'),
-              onPressed: onEnd,
-              icon: const Icon(Icons.stop_circle_outlined),
-            ),
-          ],
+              );
+            }
+
+            return Row(
+              children: [
+                Expanded(child: info),
+                nextButton,
+                const SizedBox(width: 4),
+                endButton,
+              ],
+            );
+          },
         ),
       ),
     );
@@ -2939,256 +2774,6 @@ class _PartyPokemonButton extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-}
-
-class _InitiativeTracker extends StatelessWidget {
-  const _InitiativeTracker({
-    required this.round,
-    required this.entries,
-    required this.currentTurnIndex,
-    required this.trainerInitiativeBonus,
-    required this.onRollTrainer,
-    required this.onAddEntry,
-    required this.onRemoveEntry,
-    required this.onNextTurn,
-  });
-
-  final int round;
-  final List<BattleInitiativeEntry> entries;
-  final int currentTurnIndex;
-  final int trainerInitiativeBonus;
-  final VoidCallback onRollTrainer;
-  final VoidCallback onAddEntry;
-  final ValueChanged<BattleInitiativeEntry> onRemoveEntry;
-  final VoidCallback onNextTurn;
-
-  @override
-  Widget build(BuildContext context) {
-    final currentEntry = entries.isEmpty
-        ? null
-        : entries[currentTurnIndex.clamp(0, entries.length - 1).toInt()];
-
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(10, 8, 10, 6),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    context.uiText('INIZIATIVA', 'INITIATIVE'),
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                ),
-                Text('Round $round'),
-              ],
-            ),
-            const SizedBox(height: 4),
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    currentEntry == null
-                        ? context.uiText(
-                            'Nessun turno impostato.',
-                            'No turn is set.',
-                          )
-                        : context.uiText(
-                            'Turno: ${currentEntry.name}',
-                            'Turn: ${currentEntry.name}',
-                          ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                FilledButton.icon(
-                  onPressed: onNextTurn,
-                  icon: const Icon(Icons.navigate_next),
-                  label: Text(context.uiText('PROSSIMO TURNO', 'NEXT TURN')),
-                ),
-              ],
-            ),
-            ExpansionTile(
-              tilePadding: EdgeInsets.zero,
-              childrenPadding: EdgeInsets.zero,
-              dense: true,
-              visualDensity: VisualDensity.compact,
-              title: Text(
-                context.uiText(
-                  'Ordine e comandi (${entries.length})',
-                  'Order and commands (${entries.length})',
-                ),
-              ),
-              children: [
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: [
-                      OutlinedButton.icon(
-                        onPressed: onRollTrainer,
-                        icon: const Icon(Icons.casino_outlined),
-                        label: Text(
-                          '${context.uiText('RITIRA ALLENATORE', 'REROLL TRAINER')} '
-                          '(${trainerInitiativeBonus >= 0 ? '+' : ''}$trainerInitiativeBonus)',
-                        ),
-                      ),
-                      OutlinedButton.icon(
-                        onPressed: onAddEntry,
-                        icon: const Icon(Icons.add),
-                        label: Text(context.uiText('AGGIUNGI', 'ADD')),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 8),
-                for (final indexed in entries.indexed)
-                  _InitiativeTile(
-                    entry: indexed.$2,
-                    active: indexed.$1 == currentTurnIndex,
-                    onRemove: indexed.$2.isTrainerGroup
-                        ? null
-                        : () => onRemoveEntry(indexed.$2),
-                  ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _InitiativeTile extends StatelessWidget {
-  const _InitiativeTile({
-    required this.entry,
-    required this.active,
-    required this.onRemove,
-  });
-
-  final BattleInitiativeEntry entry;
-  final bool active;
-  final VoidCallback? onRemove;
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 6),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: active
-              ? colorScheme.primaryContainer
-              : colorScheme.surfaceContainerHighest,
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: ListTile(
-          dense: true,
-          leading: CircleAvatar(child: Text(entry.initiative.toString())),
-          title: Text(
-            entry.name,
-            style: const TextStyle(fontWeight: FontWeight.w800),
-          ),
-          subtitle: Text(
-            entry.isTrainerGroup
-                ? context.uiText('Allenatore + Pokémon', 'Trainer + Pokémon')
-                : context.uiText(
-                    'Partecipante esterno',
-                    'External participant',
-                  ),
-          ),
-          trailing: onRemove == null
-              ? null
-              : IconButton(
-                  tooltip: context.uiText('Rimuovi', 'Remove'),
-                  onPressed: onRemove,
-                  icon: const Icon(Icons.close),
-                ),
-        ),
-      ),
-    );
-  }
-}
-
-class _InitiativeEntryDialog extends StatefulWidget {
-  const _InitiativeEntryDialog();
-
-  @override
-  State<_InitiativeEntryDialog> createState() => _InitiativeEntryDialogState();
-}
-
-class _InitiativeEntryDialogState extends State<_InitiativeEntryDialog> {
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _initiativeController = TextEditingController();
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _initiativeController.dispose();
-    super.dispose();
-  }
-
-  void _submit() {
-    final name = _nameController.text.trim();
-    final initiative = int.tryParse(_initiativeController.text.trim());
-    if (name.isEmpty || initiative == null) return;
-    Navigator.of(
-      context,
-    ).pop(_InitiativeEntryInput(name: name, initiative: initiative));
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      scrollable: true,
-      title: Text(context.uiText('Aggiungi iniziativa', 'Add initiative')),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          TextField(
-            controller: _nameController,
-            autofocus: true,
-            decoration: InputDecoration(
-              labelText: context.uiText(
-                'Nome partecipante',
-                'Participant name',
-              ),
-            ),
-            onSubmitted: (_) => _submit(),
-          ),
-          const SizedBox(height: 10),
-          TextField(
-            controller: _initiativeController,
-            keyboardType: TextInputType.number,
-            decoration: InputDecoration(
-              labelText: context.uiText('Iniziativa', 'Initiative'),
-            ),
-            onSubmitted: (_) => _submit(),
-          ),
-        ],
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: Text(context.uiText('Annulla', 'Cancel')),
-        ),
-        FilledButton(
-          onPressed: _submit,
-          child: Text(context.uiText('Aggiungi', 'Add')),
-        ),
-      ],
     );
   }
 }
@@ -3415,10 +3000,9 @@ class _ActivePokemonCard extends StatelessWidget {
               const SizedBox(height: 10),
               DecoratedBox(
                 decoration: BoxDecoration(
-                  color: Theme.of(context)
-                      .colorScheme
-                      .primaryContainer
-                      .withValues(alpha: 0.7),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.primaryContainer.withValues(alpha: 0.7),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Padding(
@@ -3434,7 +3018,9 @@ class _ActivePokemonCard extends StatelessWidget {
                           children: [
                             Text(
                               transformation!.kind.label.toUpperCase(),
-                              style: const TextStyle(fontWeight: FontWeight.w900),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w900,
+                              ),
                             ),
                             Text(
                               BattleTransformationService.effectSummary(
@@ -4513,7 +4099,9 @@ class _TransformationActionTile extends StatelessWidget {
       padding: const EdgeInsets.only(top: 6),
       child: DecoratedBox(
         decoration: BoxDecoration(
-          border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+          border: Border.all(
+            color: Theme.of(context).colorScheme.outlineVariant,
+          ),
           borderRadius: BorderRadius.circular(10),
         ),
         child: Padding(
@@ -4527,10 +4115,14 @@ class _TransformationActionTile extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(title, style: const TextStyle(fontWeight: FontWeight.w900)),
+                    Text(
+                      title,
+                      style: const TextStyle(fontWeight: FontWeight.w900),
+                    ),
                     const SizedBox(height: 2),
                     Text(hint, style: Theme.of(context).textTheme.bodySmall),
-                    if (!available && eligibility.missingRequirements.isNotEmpty) ...[
+                    if (!available &&
+                        eligibility.missingRequirements.isNotEmpty) ...[
                       const SizedBox(height: 4),
                       Text(
                         eligibility.missingRequirements.join(' · '),
@@ -4575,7 +4167,12 @@ class _TransformArtPickerSheet extends StatelessWidget {
         shrinkWrap: true,
         padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
         children: [
-          Text(title, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900)),
+          Text(
+            title,
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
+          ),
           const SizedBox(height: 4),
           Text(pokemonName),
           const SizedBox(height: 10),
@@ -4620,7 +4217,9 @@ class _DynamaxPickerSheet extends StatelessWidget {
         children: [
           Text(
             context.uiText('Dynamax / Gigamax', 'Dynamax / Gigantamax'),
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
           ),
           const SizedBox(height: 6),
           Text(
@@ -4677,7 +4276,9 @@ class _TeraTypePickerSheet extends StatelessWidget {
           children: [
             Text(
               context.uiText('Scegli il Tera Tipo', 'Choose the Tera Type'),
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
             ),
             const SizedBox(height: 4),
             Text(pokemonName),
@@ -4739,7 +4340,9 @@ class _ZMovePickerSheet extends StatelessWidget {
         children: [
           Text(
             context.uiText('Usa una Mossa Z', 'Use a Z-Move'),
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
           ),
           const SizedBox(height: 4),
           Text('$pokemonName · Cristallo Z $crystalType'),
@@ -4749,7 +4352,9 @@ class _ZMovePickerSheet extends StatelessWidget {
               child: ListTile(
                 leading: const Icon(Icons.flash_on),
                 title: Text(choice.move.name),
-                subtitle: Text(BattleTransformationService.zMoveSummary(choice.move)),
+                subtitle: Text(
+                  BattleTransformationService.zMoveSummary(choice.move),
+                ),
                 onTap: () => Navigator.of(context).pop(choice),
               ),
             ),

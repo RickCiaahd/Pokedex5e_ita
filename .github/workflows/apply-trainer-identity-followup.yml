@@ -8,6 +8,7 @@ on:
       - tool/patch_trainer_identity_a.py
       - tool/patch_trainer_identity_b.py
       - tool/patch_trainer_identity_c.py
+      - tool/patch_trainer_identity_d.py
       - .github/workflows/apply-trainer-identity-followup.yml
 
 permissions:
@@ -34,6 +35,7 @@ jobs:
           python tool/patch_trainer_identity_a.py
           python tool/patch_trainer_identity_b.py
           python tool/patch_trainer_identity_c.py
+          python tool/patch_trainer_identity_d.py
 
       - name: Format changed Dart files
         run: |

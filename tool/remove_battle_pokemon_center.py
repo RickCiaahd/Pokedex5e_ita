@@ -1,5 +1,4 @@
 from pathlib import Path
-import re
 
 
 def replace_once(text: str, old: str, new: str, label: str) -> str:
@@ -9,20 +8,44 @@ def replace_once(text: str, old: str, new: str, label: str) -> str:
     return text.replace(old, new, 1)
 
 
-def regex_once(text: str, pattern: str, replacement: str, label: str) -> str:
-    updated, count = re.subn(pattern, replacement, text, count=1, flags=re.S)
-    if count != 1:
-        raise RuntimeError(f'{label}: expected 1 regex match, found {count}')
-    return updated
+def remove_dart_method(text: str, signature: str, label: str) -> str:
+    start = text.find(signature)
+    if start < 0:
+        raise RuntimeError(f'{label}: signature not found')
+    if text.find(signature, start + 1) >= 0:
+        raise RuntimeError(f'{label}: signature is not unique')
+
+    opening_brace = text.find('{', start)
+    if opening_brace < 0:
+        raise RuntimeError(f'{label}: opening brace not found')
+
+    depth = 0
+    index = opening_brace
+    while index < len(text):
+        char = text[index]
+        if char == '{':
+            depth += 1
+        elif char == '}':
+            depth -= 1
+            if depth == 0:
+                end = index + 1
+                while end < len(text) and text[end] == '\n':
+                    end += 1
+                prefix_start = start
+                if prefix_start > 0 and text[prefix_start - 1] == '\n':
+                    prefix_start -= 1
+                return text[:prefix_start] + '\n\n' + text[end:]
+        index += 1
+
+    raise RuntimeError(f'{label}: matching closing brace not found')
 
 
 path = Path('lib/screens/battle/battle_screen.dart')
 text = path.read_text(encoding='utf-8')
 
-text = regex_once(
+text = remove_dart_method(
     text,
-    r"\n  Future<void> _healFull\(_BattleData data, TeamSlot slot\) async \{.*?\n  \}\n\n(?=  Future<void> _openStatusPicker)",
-    "\n",
+    '  Future<void> _healFull(_BattleData data, TeamSlot slot) async {',
     'remove Pokemon Center healing method',
 )
 

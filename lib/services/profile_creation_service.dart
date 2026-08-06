@@ -1,5 +1,6 @@
 import '../models/team_slot.dart';
 import '../models/user_profile.dart';
+import '../repositories/bag_inventory_repository.dart';
 import '../repositories/pokedex_repositry.dart';
 import '../repositories/profile_repository.dart';
 import '../repositories/team_repository.dart';
@@ -10,15 +11,19 @@ class ProfileCreationService {
     ProfileRepository? profileRepository,
     TeamRepository? teamRepository,
     PokedexRepository? pokedexRepository,
+    BagInventoryRepository? bagInventoryRepository,
     AppLaunchService? appLaunchService,
   }) : _profileRepository = profileRepository ?? ProfileRepository(),
        _teamRepository = teamRepository ?? TeamRepository(),
        _pokedexRepository = pokedexRepository ?? PokedexRepository(),
+       _bagInventoryRepository =
+           bagInventoryRepository ?? BagInventoryRepository(),
        _appLaunchService = appLaunchService ?? AppLaunchService();
 
   final ProfileRepository _profileRepository;
   final TeamRepository _teamRepository;
   final PokedexRepository _pokedexRepository;
+  final BagInventoryRepository _bagInventoryRepository;
   final AppLaunchService _appLaunchService;
 
   Future<UserProfile> createEmptyProfile(
@@ -26,10 +31,7 @@ class ProfileCreationService {
     String profileImageBase64 = '',
   }) {
     return _create(
-      profile: UserProfile.create(
-        name,
-        profileImageBase64: profileImageBase64,
-      ),
+      profile: UserProfile.create(name, profileImageBase64: profileImageBase64),
     );
   }
 
@@ -38,6 +40,7 @@ class ProfileCreationService {
     required TeamSlot starterSlot,
     required int starterPokemonId,
     required String starterSpeciesName,
+    Map<String, int> initialInventory = const {},
     bool markOnboardingCompleted = false,
   }) {
     return _create(
@@ -45,6 +48,7 @@ class ProfileCreationService {
       starterSlot: starterSlot,
       starterPokemonId: starterPokemonId,
       starterSpeciesName: starterSpeciesName,
+      initialInventory: initialInventory,
       markOnboardingCompleted: markOnboardingCompleted,
     );
   }
@@ -54,16 +58,21 @@ class ProfileCreationService {
     TeamSlot? starterSlot,
     int? starterPokemonId,
     String? starterSpeciesName,
+    Map<String, int> initialInventory = const {},
     bool markOnboardingCompleted = false,
   }) async {
-    final previousActiveProfileId =
-        await _profileRepository.getActiveProfileId();
+    final previousActiveProfileId = await _profileRepository
+        .getActiveProfileId();
     final previousOnboardingCompleted = markOnboardingCompleted
         ? await _appLaunchService.isOnboardingCompleted()
         : null;
 
     try {
       await _profileRepository.saveProfile(profile);
+      await _bagInventoryRepository.addItems(
+        profileId: profile.id,
+        quantities: initialInventory,
+      );
 
       if (starterSlot != null) {
         await _teamRepository.updateSlot(
@@ -112,6 +121,9 @@ class ProfileCreationService {
     });
     await _ignoreFailure(
       () => _pokedexRepository.clearProfilePokedex(profileId),
+    );
+    await _ignoreFailure(
+      () => _bagInventoryRepository.deleteInventory(profileId),
     );
     await _ignoreFailure(() => _teamRepository.deleteTeam(profileId));
     await _ignoreFailure(() => _profileRepository.deleteProfile(profileId));

@@ -84,7 +84,7 @@ class _BagScreenState extends State<BagScreen> {
   }
 
   Future<void> _openFinder(_BagData data, _BagAction action) async {
-    final result = await showModalBottomSheet<_ItemPickerResult>(
+    final result = await showModalBottomSheet<_ItemCartResult>(
       context: context,
       isScrollControlled: true,
       builder: (_) => _ItemPickerSheet(
@@ -94,55 +94,93 @@ class _BagScreenState extends State<BagScreen> {
       ),
     );
 
-    if (!mounted || result == null) return;
+    if (!mounted || result == null || result.quantities.isEmpty) return;
 
-    final item = result.item;
-    final quantity = result.quantity.clamp(1, 99).toInt();
+    final itemsById = data.itemById;
+    final selected = <BagItem, int>{};
+    for (final entry in result.quantities.entries) {
+      final item = itemsById[entry.key];
+      if (item != null && entry.value > 0) selected[item] = entry.value;
+    }
+    if (selected.isEmpty) return;
 
-    if (action == _BagAction.buy) {
-      final cost = item.cost;
-      if (cost == null) {
+    final quantities = {
+      for (final entry in selected.entries) entry.key.id: entry.value,
+    };
+    final totalUnits = selected.values.fold<int>(
+      0,
+      (sum, value) => sum + value,
+    );
+    final typeCount = selected.length;
+
+    try {
+      if (action == _BagAction.buy) {
+        var totalCost = 0;
+        for (final entry in selected.entries) {
+          final cost = entry.key.cost;
+          if (cost == null || cost <= 0) {
+            await _reload(
+              message: context.uiText(
+                '${entry.key.name} non si può acquistare.',
+                '${entry.key.name} cannot be purchased.',
+              ),
+            );
+            return;
+          }
+          totalCost += cost * entry.value;
+        }
+
+        if (data.profile.money < totalCost) {
+          await _reload(
+            message: context.uiText(
+              'Pokédollari insufficienti: servono ₽ $totalCost.',
+              'Not enough Pokédollars: ₽ $totalCost are required.',
+            ),
+          );
+          return;
+        }
+
+        final updatedProfile = data.profile.copyWith(
+          money: data.profile.money - totalCost,
+        );
+        await _profileRepository.saveProfile(updatedProfile);
+        try {
+          await _bagRepository.addItems(
+            profileId: data.profile.id,
+            quantities: quantities,
+          );
+        } catch (_) {
+          await _profileRepository.saveProfile(data.profile);
+          rethrow;
+        }
+
         await _reload(
           message: context.uiText(
-            '${item.name} non si può acquistare.',
-            '${item.name} cannot be purchased.',
+            '$totalUnits oggetti di $typeCount tipi acquistati per ₽ $totalCost.',
+            '$totalUnits items across $typeCount types purchased for ₽ $totalCost.',
           ),
         );
         return;
       }
 
-      final totalCost = cost * quantity;
-      if (data.profile.money < totalCost) {
-        await _reload(
-          message: context.uiText(
-            'Pokédollari insufficienti per acquistare ${item.name} x$quantity.',
-            'Not enough Pokédollars to buy ${item.name} x$quantity.',
-          ),
-        );
-        return;
-      }
-
-      await _profileRepository.saveProfile(
-        data.profile.copyWith(money: data.profile.money - totalCost),
+      await _bagRepository.addItems(
+        profileId: data.profile.id,
+        quantities: quantities,
+      );
+      await _reload(
+        message: context.uiText(
+          '$totalUnits oggetti di $typeCount tipi aggiunti allo zaino.',
+          '$totalUnits items across $typeCount types added to the Bag.',
+        ),
+      );
+    } catch (error) {
+      await _reload(
+        message: context.userFacingError(
+          error,
+          action: UserFacingErrorAction.save,
+        ),
       );
     }
-
-    for (var index = 0; index < quantity; index++) {
-      await _bagRepository.addItem(profileId: data.profile.id, itemId: item.id);
-    }
-
-    final quantityText = quantity == 1 ? '' : ' x$quantity';
-    await _reload(
-      message: action == _BagAction.buy
-          ? context.uiText(
-              '${item.name}$quantityText acquistato e aggiunto allo zaino.',
-              '${item.name}$quantityText purchased and added to the Bag.',
-            )
-          : context.uiText(
-              '${item.name}$quantityText aggiunto allo zaino.',
-              '${item.name}$quantityText added to the Bag.',
-            ),
-    );
   }
 
   Future<void> _useBagItem(_BagData data, _OwnedBagItem entry) async {
@@ -1230,7 +1268,7 @@ class _BagActions extends StatelessWidget {
           child: FilledButton.icon(
             onPressed: onFindItem,
             icon: const Icon(Icons.search),
-            label: Text(context.uiText('Trova oggetto', 'Find item')),
+            label: Text(context.uiText('Aggiungi oggetti', 'Add items')),
           ),
         ),
         const SizedBox(width: 12),
@@ -2015,11 +2053,10 @@ String _damageSummary(MoveData move) {
       .join(' / ');
 }
 
-class _ItemPickerResult {
-  const _ItemPickerResult({required this.item, required this.quantity});
+class _ItemCartResult {
+  const _ItemCartResult({required this.quantities});
 
-  final BagItem item;
-  final int quantity;
+  final Map<String, int> quantities;
 }
 
 class _ItemPickerSheet extends StatefulWidget {
@@ -2050,43 +2087,91 @@ class _ItemPickerSheetState extends State<_ItemPickerSheet> {
 
   bool get _isBuy => widget.action == _BagAction.buy;
 
-  int _quantityFor(BagItem item) => _quantities[item.id] ?? 1;
+  int _quantityFor(BagItem item) => _quantities[item.id] ?? 0;
+
+  int get _selectedTypeCount =>
+      _quantities.values.where((quantity) => quantity > 0).length;
+
+  int get _selectedUnitCount =>
+      _quantities.values.fold<int>(0, (sum, quantity) => sum + quantity);
+
+  int get _totalCost {
+    if (!_isBuy) return 0;
+    final byId = {for (final item in widget.items) item.id: item};
+    var total = 0;
+    for (final entry in _quantities.entries) {
+      if (entry.value <= 0) continue;
+      final cost = byId[entry.key]?.cost;
+      if (cost != null) total += cost * entry.value;
+    }
+    return total;
+  }
+
+  bool get _canConfirm {
+    if (_selectedUnitCount <= 0) return false;
+    return !_isBuy || _totalCost <= widget.availableMoney;
+  }
 
   int _maxQuantityFor(BagItem item) {
     if (!_isBuy) return 99;
-
     final cost = item.cost;
     if (cost == null || cost <= 0) return 0;
-
     return (widget.availableMoney ~/ cost).clamp(0, 99).toInt();
+  }
+
+  bool _canIncrease(BagItem item) {
+    final quantity = _quantityFor(item);
+    if (quantity >= _maxQuantityFor(item)) return false;
+    if (!_isBuy) return true;
+    final cost = item.cost;
+    return cost != null && _totalCost + cost <= widget.availableMoney;
   }
 
   void _setQuantity(BagItem item, int value) {
     final maxQuantity = _maxQuantityFor(item);
-    if (maxQuantity <= 0) return;
-
+    final next = value.clamp(0, maxQuantity).toInt();
     setState(() {
-      _quantities[item.id] = value.clamp(1, maxQuantity).toInt();
+      if (next == 0) {
+        _quantities.remove(item.id);
+      } else {
+        _quantities[item.id] = next;
+      }
     });
   }
 
-  void _confirm(BagItem item) {
-    final maxQuantity = _maxQuantityFor(item);
-    if (maxQuantity <= 0) return;
+  void _showItemDetails(BagItem item) {
+    showDialog<void>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Row(
+          children: [
+            _ItemSprite(item: item),
+            const SizedBox(width: 12),
+            Expanded(child: Text(item.name)),
+          ],
+        ),
+        content: SingleChildScrollView(child: Text(item.displayDescription)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: Text(context.uiText('CHIUDI', 'CLOSE')),
+          ),
+        ],
+      ),
+    );
+  }
 
-    final quantity = _quantityFor(item).clamp(1, maxQuantity).toInt();
-    Navigator.of(
-      context,
-    ).pop(_ItemPickerResult(item: item, quantity: quantity));
+  void _confirmCart() {
+    if (!_canConfirm) return;
+    Navigator.of(context).pop(
+      _ItemCartResult(quantities: Map<String, int>.unmodifiable(_quantities)),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final filteredItems = widget.items.where((item) {
-      return item.matchesSearchQuery(
-        _query,
-        aliases: [_typeLabel(item.type)],
-      );
+      return item.matchesSearchQuery(_query, aliases: [_typeLabel(item.type)]);
     }).toList();
 
     return SafeArea(
@@ -2095,38 +2180,41 @@ class _ItemPickerSheetState extends State<_ItemPickerSheet> {
           left: 16,
           right: 16,
           top: 16,
-          bottom: 16 + MediaQuery.of(context).viewInsets.bottom,
+          bottom: 12 + MediaQuery.of(context).viewInsets.bottom,
         ),
         child: SizedBox(
-          height: MediaQuery.of(context).size.height * 0.78,
+          height: MediaQuery.of(context).size.height * 0.84,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 _isBuy
-                    ? context.uiText('Compra oggetto', 'Buy item')
-                    : context.uiText('Trova oggetto', 'Find item'),
+                    ? context.uiText('Compra oggetti', 'Buy items')
+                    : context.uiText('Aggiungi oggetti', 'Add items'),
                 style: Theme.of(
                   context,
                 ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
               ),
-              if (_isBuy) ...[
-                const SizedBox(height: 4),
-                Text(
-                  context.uiText(
-                    'Pokédollari disponibili: ₽ ${widget.availableMoney}',
-                    'Available Pokédollars: ₽ ${widget.availableMoney}',
-                  ),
-                ),
-              ],
+              const SizedBox(height: 4),
+              Text(
+                _isBuy
+                    ? context.uiText(
+                        'Prepara il carrello. Disponibili: ₽ ${widget.availableMoney}',
+                        'Prepare the cart. Available: ₽ ${widget.availableMoney}',
+                      )
+                    : context.uiText(
+                        'Imposta le quantità desiderate, poi conferma una sola volta.',
+                        'Set the desired quantities, then confirm once.',
+                      ),
+              ),
               const SizedBox(height: 12),
               TextField(
                 controller: _controller,
                 autofocus: true,
                 decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.search),
+                  prefixIcon: const Icon(Icons.search),
                   labelText: context.uiText('Cerca oggetto', 'Search items'),
-                  border: OutlineInputBorder(),
+                  border: const OutlineInputBorder(),
                 ),
                 onChanged: (value) => setState(() => _query = value),
               ),
@@ -2136,22 +2224,25 @@ class _ItemPickerSheetState extends State<_ItemPickerSheet> {
                   itemCount: filteredItems.length,
                   itemBuilder: (context, index) {
                     final item = filteredItems[index];
+                    final quantity = _quantityFor(item);
                     final maxQuantity = _maxQuantityFor(item);
                     final canSelect = maxQuantity > 0;
-                    final quantity = _quantityFor(
-                      item,
-                    ).clamp(1, maxQuantity <= 0 ? 1 : maxQuantity).toInt();
                     final costLabel = item.cost == null
                         ? context.uiText('Non acquistabile', 'Not for sale')
                         : '₽ ${item.cost}';
-                    final totalLabel = _isBuy && item.cost != null
+                    final selectionLabel = quantity <= 0
                         ? context.uiText(
-                            'Totale ₽ ${item.cost! * quantity}',
-                            'Total ₽ ${item.cost! * quantity}',
+                            'Quantità da aggiungere: 0',
+                            'Quantity to add: 0',
+                          )
+                        : _isBuy && item.cost != null
+                        ? context.uiText(
+                            'Nel carrello: $quantity • ₽ ${item.cost! * quantity}',
+                            'In cart: $quantity • ₽ ${item.cost! * quantity}',
                           )
                         : context.uiText(
-                            'Quantità $quantity',
-                            'Quantity $quantity',
+                            'Da aggiungere: $quantity',
+                            'To add: $quantity',
                           );
 
                     return Card(
@@ -2159,14 +2250,14 @@ class _ItemPickerSheetState extends State<_ItemPickerSheet> {
                         leading: _ItemSprite(item: item),
                         title: Text(item.name),
                         subtitle: Text(
-                          '${_typeLabel(item.type)} • $costLabel • $totalLabel',
+                          '${_typeLabel(item.type)} • $costLabel\n$selectionLabel',
                         ),
-                        enabled: canSelect,
-                        onTap: canSelect ? () => _confirm(item) : null,
+                        isThreeLine: true,
+                        onTap: () => _showItemDetails(item),
                         trailing: _QuantitySelector(
                           quantity: quantity,
-                          canDecrease: canSelect && quantity > 1,
-                          canIncrease: canSelect && quantity < maxQuantity,
+                          canDecrease: quantity > 0,
+                          canIncrease: canSelect && _canIncrease(item),
                           onDecrease: () => _setQuantity(item, quantity - 1),
                           onIncrease: () => _setQuantity(item, quantity + 1),
                         ),
@@ -2174,6 +2265,37 @@ class _ItemPickerSheetState extends State<_ItemPickerSheet> {
                     );
                   },
                 ),
+              ),
+              const Divider(height: 18),
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      _isBuy
+                          ? context.uiText(
+                              '$_selectedTypeCount tipi • $_selectedUnitCount unità • Totale ₽ $_totalCost',
+                              '$_selectedTypeCount types • $_selectedUnitCount units • Total ₽ $_totalCost',
+                            )
+                          : context.uiText(
+                              '$_selectedTypeCount tipi • $_selectedUnitCount unità',
+                              '$_selectedTypeCount types • $_selectedUnitCount units',
+                            ),
+                      style: const TextStyle(fontWeight: FontWeight.w800),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  FilledButton.icon(
+                    onPressed: _canConfirm ? _confirmCart : null,
+                    icon: Icon(
+                      _isBuy ? Icons.shopping_cart_checkout : Icons.add_box,
+                    ),
+                    label: Text(
+                      _isBuy
+                          ? context.uiText('COMPRA', 'BUY')
+                          : context.uiText('AGGIUNGI', 'ADD'),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),

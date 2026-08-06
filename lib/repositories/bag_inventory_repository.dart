@@ -37,6 +37,34 @@ class BagInventoryRepository {
     await box.flush();
   }
 
+  Future<void> addItems({
+    required String profileId,
+    required Map<String, int> quantities,
+  }) async {
+    final selected = quantities.entries
+        .where((entry) => entry.key.trim().isNotEmpty && entry.value > 0)
+        .toList(growable: false);
+    if (selected.isEmpty) return;
+
+    final box = await _box();
+    final updates = <String, dynamic>{};
+
+    for (final entry in selected) {
+      final itemId = entry.key.trim();
+      final key = BagInventoryEntry.keyFor(profileId, itemId);
+      final existingJson = box.get(key);
+      final existing = existingJson == null
+          ? BagInventoryEntry(profileId: profileId, itemId: itemId, quantity: 0)
+          : BagInventoryEntry.fromJson(Map<String, dynamic>.from(existingJson));
+      updates[key] = existing
+          .copyWith(quantity: existing.quantity + entry.value)
+          .toJson();
+    }
+
+    await box.putAll(updates);
+    await box.flush();
+  }
+
   Future<bool> consumeItem({
     required String profileId,
     required String itemId,

@@ -493,14 +493,14 @@ class _MobileOverview extends StatelessWidget {
         const SizedBox(height: 8),
         _CompactChoiceCard(
           icon: Icons.auto_stories_outlined,
-          label: context.uiText('BACKGROUND', 'BACKGROUND'),
+          label: context.uiText('BACKGROUND NARRATIVO', 'NARRATIVE BACKGROUND'),
           value: background.isEmpty
               ? context.uiText('Scegli', 'Choose')
               : background,
           detail: background.isEmpty
               ? context.uiText(
-                  'Scelta narrativa, senza bonus automatici alle caratteristiche.',
-                  'Narrative choice, with no automatic ability-score bonuses.',
+                  'Scrivi liberamente storia, legami e motivazioni del personaggio.',
+                  'Write the character’s history, bonds, and motivations freely.',
                 )
               : _compactDetail(backgroundDescription),
           onTap: onBackgroundTap,

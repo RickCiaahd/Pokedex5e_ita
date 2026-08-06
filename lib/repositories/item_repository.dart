@@ -6,6 +6,7 @@ import '../localization/game_catalog_locale.dart';
 import '../models/bag_item.dart';
 import '../models/move_data.dart';
 import '../models/tm_data.dart';
+import '../models/trainer_starting_equipment.dart';
 import '../services/performance_trace.dart';
 import 'item_localization_repository.dart';
 import 'move_repository.dart';
@@ -94,6 +95,7 @@ class ItemRepository {
           .toList(growable: true);
 
       items.addAll(await _getTmItems());
+      items.addAll(TrainerStartingEquipment.catalogItems);
 
       items.sort((a, b) {
         final typeCompare = a.type.compareTo(b.type);

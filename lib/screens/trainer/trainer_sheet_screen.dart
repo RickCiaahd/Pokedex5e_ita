@@ -750,18 +750,56 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
     _changeRace(selected);
   }
 
-  Future<void> _openBackgroundPicker() async {
-    final selected = await showModalBottomSheet<String>(
+  Future<void> _openBackgroundEditor() async {
+    final controller = TextEditingController(text: _background);
+    final selected = await showDialog<String>(
       context: context,
-      showDragHandle: true,
-      builder: (_) => _StringPickerSheet(
-        title: context.uiText('Background', 'Background'),
-        options: TrainerUiLocalization.backgroundOptions,
-        selected: _background,
-        descriptions: TrainerUiLocalization.backgroundDescriptions,
-        displayNames: TrainerUiLocalization.backgroundLabels,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(
+          context.uiText('Background narrativo', 'Narrative background'),
+        ),
+        content: SizedBox(
+          width: 560,
+          child: TextField(
+            controller: controller,
+            autofocus: true,
+            minLines: 7,
+            maxLines: 14,
+            textCapitalization: TextCapitalization.sentences,
+            inputFormatters: [LengthLimitingTextInputFormatter(4000)],
+            decoration: InputDecoration(
+              hintText: context.uiText(
+                'Scrivi storia, legami, motivazioni ed esperienze del personaggio.',
+                'Write the character’s history, bonds, motivations, and experiences.',
+              ),
+              helperText: context.uiText(
+                'Testo narrativo libero: non assegna bonus automatici.',
+                'Free narrative text: it grants no automatic bonuses.',
+              ),
+              helperMaxLines: 2,
+              alignLabelWithHint: true,
+              border: const OutlineInputBorder(),
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: Text(context.uiText('ANNULLA', 'CANCEL')),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(''),
+            child: Text(context.uiText('SVUOTA', 'CLEAR')),
+          ),
+          FilledButton(
+            onPressed: () =>
+                Navigator.of(dialogContext).pop(controller.text.trim()),
+            child: Text(context.uiText('APPLICA', 'APPLY')),
+          ),
+        ],
       ),
     );
+    controller.dispose();
     _changeBackground(selected);
   }
 
@@ -976,10 +1014,7 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
                           background: TrainerUiLocalization.backgroundName(
                             _background,
                           ),
-                          backgroundDescription:
-                              TrainerUiLocalization.backgroundDescription(
-                                _background,
-                              ),
+                          backgroundDescription: _background,
                           selectedStarter: _selectedStarter,
                           startingPack: _startingPack,
                           trainerLevel: _trainerLevel,
@@ -1036,7 +1071,7 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
                           onProfileImageChanged: (value) =>
                               setState(() => _profileImageBase64 = value),
                           onRaceTap: _openRacePicker,
-                          onBackgroundTap: _openBackgroundPicker,
+                          onBackgroundTap: _openBackgroundEditor,
                           onStarterTap: _openStarterPicker,
                           onAddStarterToTeam: _addStarterToTeam,
                           onStartingPackTap: _openStartingPackPicker,
@@ -1592,14 +1627,14 @@ class _TrainerSheetMainColumn extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         _SheetChoiceBox(
-          label: context.uiText('Background', 'Background'),
+          label: context.uiText('Background narrativo', 'Narrative background'),
           value: background.isEmpty
-              ? context.uiText('Scegli', 'Choose')
-              : background,
+              ? context.uiText('Aggiungi storia', 'Add story')
+              : context.uiText('Storia del personaggio', 'Character story'),
           detail: background.isEmpty
               ? context.uiText(
-                  'Scelta narrativa, senza bonus automatici alle caratteristiche.',
-                  'Narrative choice, with no automatic ability-score bonuses.',
+                  'Scrivi liberamente storia, legami e motivazioni del personaggio.',
+                  'Write the character’s history, bonds, and motivations freely.',
                 )
               : backgroundDescription,
           detailMaxLines: null,

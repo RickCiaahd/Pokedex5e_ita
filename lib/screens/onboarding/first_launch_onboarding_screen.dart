@@ -11,6 +11,7 @@ import '../../models/pokemon_type_localization.dart';
 import '../../models/team_slot.dart';
 import '../../models/trainer_manual_content.dart';
 import '../../models/trainer_manual_options.dart';
+import '../../models/trainer_starting_equipment.dart';
 import '../../models/trainer_origin_name_localization.dart';
 import '../../models/trainer_ui_localization.dart';
 import '../../models/user_profile.dart';
@@ -48,6 +49,7 @@ class _FirstLaunchOnboardingScreenState
       ProfileCreationService();
 
   final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _backgroundController = TextEditingController();
   final TextEditingController _searchController = TextEditingController();
 
   int _step = 0;
@@ -56,7 +58,7 @@ class _FirstLaunchOnboardingScreenState
   bool _isLoading = true;
   bool _isSaving = false;
   String? _errorMessage;
-  String _background = _backgroundOptions.first.name;
+  String _startingPack = TrainerManualOptions.startingPacks.first;
   String _profileImageBase64 = '';
   TrainerOrigin? _origin;
   Pokemon? _starter;
@@ -64,19 +66,7 @@ class _FirstLaunchOnboardingScreenState
   List<Pokemon> _starterCandidates = const [];
   String _starterQuery = '';
 
-  static const int _totalSteps = 11;
-
-  static const List<_BackgroundOption> _backgroundOptions = [
-    _BackgroundOption(name: 'Ricercatore', icon: Icons.science_outlined),
-    _BackgroundOption(name: 'Esploratore', icon: Icons.explore_outlined),
-    _BackgroundOption(name: 'Allevatore', icon: Icons.pets_outlined),
-    _BackgroundOption(
-      name: 'Combattente',
-      icon: Icons.sports_martial_arts_outlined,
-    ),
-    _BackgroundOption(name: 'Artista', icon: Icons.palette_outlined),
-    _BackgroundOption(name: 'Studioso', icon: Icons.menu_book_outlined),
-  ];
+  static const int _totalSteps = 12;
 
   @override
   void initState() {
@@ -88,6 +78,7 @@ class _FirstLaunchOnboardingScreenState
   @override
   void dispose() {
     _nameController.dispose();
+    _backgroundController.dispose();
     _searchController
       ..removeListener(_onStarterSearchChanged)
       ..dispose();
@@ -161,38 +152,6 @@ class _FirstLaunchOnboardingScreenState
         .toList(growable: false);
   }
 
-  _BackgroundOption get _selectedBackground => _backgroundOptions.firstWhere(
-    (option) => option.name == _background,
-    orElse: () => _backgroundOptions.first,
-  );
-
-  String _backgroundLabel(_BackgroundOption option, AppLocalizations l10n) {
-    return switch (option.name) {
-      'Ricercatore' => l10n.onboardingBackgroundResearcher,
-      'Esploratore' => l10n.onboardingBackgroundExplorer,
-      'Allevatore' => l10n.onboardingBackgroundBreeder,
-      'Combattente' => l10n.onboardingBackgroundFighter,
-      'Artista' => l10n.onboardingBackgroundArtist,
-      'Studioso' => l10n.onboardingBackgroundScholar,
-      _ => option.name,
-    };
-  }
-
-  String _backgroundDescription(
-    _BackgroundOption option,
-    AppLocalizations l10n,
-  ) {
-    return switch (option.name) {
-      'Ricercatore' => l10n.onboardingBackgroundResearcherDescription,
-      'Esploratore' => l10n.onboardingBackgroundExplorerDescription,
-      'Allevatore' => l10n.onboardingBackgroundBreederDescription,
-      'Combattente' => l10n.onboardingBackgroundFighterDescription,
-      'Artista' => l10n.onboardingBackgroundArtistDescription,
-      'Studioso' => l10n.onboardingBackgroundScholarDescription,
-      _ => option.name,
-    };
-  }
-
   String _originDisplayName(TrainerOrigin origin, AppLocalizations l10n) {
     return trainerOriginDisplayName(
       origin.name,
@@ -226,11 +185,11 @@ class _FirstLaunchOnboardingScreenState
         return _ageInputIsValid;
       case 5:
         return _origin != null;
-      case 6:
-        return _background.trim().isNotEmpty;
       case 7:
+        return _startingPack.trim().isNotEmpty;
+      case 8:
         return _starter != null;
-      case 9:
+      case 10:
         return !_isSaving && _errorMessage != null;
       default:
         return true;
@@ -240,7 +199,7 @@ class _FirstLaunchOnboardingScreenState
   bool get _canCancelFlow {
     return widget.onCancel != null &&
         !_isSaving &&
-        (_step < 9 || (_step == 9 && _errorMessage != null));
+        (_step < 10 || (_step == 10 && _errorMessage != null));
   }
 
   bool get _canPopRoute {
@@ -256,13 +215,13 @@ class _FirstLaunchOnboardingScreenState
         return _profileImageBase64.isEmpty
             ? context.uiText('Salta', 'Skip')
             : l10n.nextAction;
-      case 8:
-        return l10n.onboardingConfirm;
       case 9:
+        return l10n.onboardingConfirm;
+      case 10:
         return _errorMessage == null
             ? l10n.onboardingCreatingProfile
             : l10n.retryAction.toUpperCase();
-      case 10:
+      case 11:
         return l10n.onboardingBegin;
       default:
         return l10n.nextAction;
@@ -272,7 +231,7 @@ class _FirstLaunchOnboardingScreenState
   Future<void> _next() async {
     if (!_canContinue || _isSaving) return;
 
-    if (_step < 8) {
+    if (_step < 9) {
       setState(() {
         _step += 1;
         _errorMessage = null;
@@ -280,22 +239,22 @@ class _FirstLaunchOnboardingScreenState
       return;
     }
 
-    if (_step == 8 || _step == 9) {
+    if (_step == 9 || _step == 10) {
       setState(() {
-        _step = 9;
+        _step = 10;
         _errorMessage = null;
       });
       await _completeOnboarding();
       return;
     }
 
-    if (_step == 10) {
+    if (_step == 11) {
       widget.onCompleted();
     }
   }
 
   void _back() {
-    if (_step <= 0 || _step >= 9 || _isSaving) return;
+    if (_step <= 0 || _step >= 10 || _isSaving) return;
     setState(() {
       _step -= 1;
       _errorMessage = null;
@@ -351,9 +310,9 @@ class _FirstLaunchOnboardingScreenState
         speed: 30,
         trainerRace: origin.name,
         originAbilityBonusSource: origin.name,
-        background: _background,
+        background: _backgroundController.text.trim(),
         starterPokemon: starter.name,
-        startingPack: TrainerManualOptions.startingPacks.first,
+        startingPack: _startingPack,
         skillProficiencies: <String>{
           ...TrainerManualOptions.fixedSkillProficiencies,
           ...origin.skillProficiencies,
@@ -376,6 +335,9 @@ class _FirstLaunchOnboardingScreenState
         ),
         starterPokemonId: starter.id,
         starterSpeciesName: starter.name,
+        initialInventory: TrainerStartingEquipment.inventoryForPack(
+          _startingPack,
+        ),
         markOnboardingCompleted: widget.markOnboardingCompleted,
       );
 
@@ -506,9 +468,9 @@ class _FirstLaunchOnboardingScreenState
 
     final dialogue = _buildDialogue();
     final compactCardFactor = switch (_step) {
-      7 => .30,
-      8 => .36,
-      9 || 10 => .50,
+      8 => .30,
+      9 => .36,
+      10 || 11 => .50,
       _ => .48,
     };
 
@@ -629,46 +591,79 @@ class _FirstLaunchOnboardingScreenState
           ),
         );
       case 6:
-        final selected = _selectedBackground;
         return _DialogueCard(
           speaker: l10n.onboardingProfessor,
-          title: l10n.onboardingBackgroundTitle,
-          body: l10n.onboardingBackgroundBody,
+          title: context.uiText('Racconta chi sei', 'Tell us who you are'),
+          body: context.uiText(
+            'Scrivi liberamente il background narrativo del tuo Allenatore. Non assegna bonus automatici e potrai modificarlo dalla scheda.',
+            'Write your Trainer’s narrative background freely. It grants no automatic bonuses and can be edited from the sheet.',
+          ),
+          content: TextField(
+            controller: _backgroundController,
+            minLines: 4,
+            maxLines: 8,
+            textCapitalization: TextCapitalization.sentences,
+            inputFormatters: [LengthLimitingTextInputFormatter(4000)],
+            decoration: InputDecoration(
+              labelText: context.uiText(
+                'Background narrativo',
+                'Narrative background',
+              ),
+              hintText: context.uiText(
+                'Da dove vieni? Perché hai iniziato il viaggio? Chi o cosa hai lasciato alle spalle?',
+                'Where are you from? Why did you begin your journey? Who or what did you leave behind?',
+              ),
+              alignLabelWithHint: true,
+              prefixIcon: const Padding(
+                padding: EdgeInsets.only(bottom: 86),
+                child: Icon(Icons.auto_stories_outlined),
+              ),
+            ),
+          ),
+        );
+      case 7:
+        return _DialogueCard(
+          speaker: l10n.onboardingProfessor,
+          title: context.uiText(
+            'Scegli la dotazione iniziale',
+            'Choose your starting pack',
+          ),
+          body: context.uiText(
+            'La dotazione scelta verrà aperta e ogni oggetto sarà inserito concretamente nello Zaino.',
+            'The selected pack will be unpacked and every item will be placed in the Bag.',
+          ),
           content: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               DropdownButtonFormField<String>(
-                initialValue: _background,
+                initialValue: _startingPack,
                 isExpanded: true,
                 items: [
-                  for (final option in _backgroundOptions)
+                  for (final pack in TrainerManualOptions.startingPacks)
                     DropdownMenuItem(
-                      value: option.name,
-                      child: Row(
-                        children: [
-                          Icon(option.icon, size: 20),
-                          const SizedBox(width: 10),
-                          Text(_backgroundLabel(option, l10n)),
-                        ],
-                      ),
+                      value: pack,
+                      child: Text(TrainerUiLocalization.startingPackName(pack)),
                     ),
                 ],
                 onChanged: (value) {
-                  if (value != null) setState(() => _background = value);
+                  if (value != null) setState(() => _startingPack = value);
                 },
                 decoration: InputDecoration(
-                  labelText: l10n.onboardingBackgroundLabel,
+                  labelText: context.uiText('Dotazione', 'Starting pack'),
+                  prefixIcon: const Icon(Icons.backpack_outlined),
                 ),
               ),
               const SizedBox(height: 16),
               _InfoBanner(
-                icon: selected.icon,
-                text: _backgroundDescription(selected, l10n),
+                icon: Icons.inventory_2_outlined,
+                text: TrainerUiLocalization.startingPackDescription(
+                  _startingPack,
+                ),
               ),
             ],
           ),
         );
-      case 7:
+      case 8:
         return _DialogueCard(
           speaker: l10n.onboardingProfessor,
           title: l10n.onboardingStarterTitle,
@@ -699,7 +694,7 @@ class _FirstLaunchOnboardingScreenState
             ],
           ),
         );
-      case 8:
+      case 9:
         return _DialogueCard(
           speaker: l10n.onboardingProfessor,
           title: l10n.onboardingSummaryTitle,
@@ -730,9 +725,19 @@ class _FirstLaunchOnboardingScreenState
                     : _originDisplayName(_origin!, l10n),
               ),
               _SummaryRow(
-                icon: Icons.menu_book_outlined,
-                label: l10n.onboardingBackgroundLabel,
-                value: _backgroundLabel(_selectedBackground, l10n),
+                icon: Icons.auto_stories_outlined,
+                label: context.uiText(
+                  'Background narrativo',
+                  'Narrative background',
+                ),
+                value: _backgroundController.text.trim().isEmpty
+                    ? context.uiText('Non compilato', 'Not provided')
+                    : _backgroundController.text.trim(),
+              ),
+              _SummaryRow(
+                icon: Icons.backpack_outlined,
+                label: context.uiText('Dotazione', 'Starting pack'),
+                value: TrainerUiLocalization.startingPackName(_startingPack),
               ),
               _SummaryRow(
                 icon: Icons.catching_pokemon,
@@ -742,7 +747,7 @@ class _FirstLaunchOnboardingScreenState
             ],
           ),
         );
-      case 9:
+      case 10:
         return _DialogueCard(
           speaker: l10n.onboardingProfessor,
           title: l10n.onboardingSavingTitle,
@@ -1549,13 +1554,6 @@ class _SavingView extends StatelessWidget {
       ),
     );
   }
-}
-
-class _BackgroundOption {
-  const _BackgroundOption({required this.name, required this.icon});
-
-  final String name;
-  final IconData icon;
 }
 
 class _OnboardingError extends StatelessWidget {

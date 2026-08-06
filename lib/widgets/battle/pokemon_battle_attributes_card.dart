@@ -115,9 +115,9 @@ class _CompactAttributeTile extends StatelessWidget {
               Text(
                 abbreviation,
                 maxLines: 1,
-                style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                  fontWeight: FontWeight.w900,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w900),
               ),
               const SizedBox(height: 2),
               FittedBox(

@@ -1129,42 +1129,6 @@ class _BattleScreenState extends State<BattleScreen> {
     setState(() => _message = null);
   }
 
-  Future<void> _healFull(_BattleData data, TeamSlot slot) async {
-    final pokemon = _pokemonForSlot(data, slot);
-    if (pokemon == null) return;
-
-    _volatileStatusesBySlot.remove(slot.slotIndex);
-    final rule = _temporaryHpRule(data, slot);
-    if (rule != null) {
-      _temporaryHpInitializedSlots.add(slot.slotIndex);
-      _temporaryHpEnabledBySlot[slot.slotIndex] = true;
-      _temporaryHpBySlot[slot.slotIndex] = rule.maximumForLevel(
-        _levelForSlot(slot),
-      );
-      final basePokemon = data.pokemonById[slot.pokemonId!];
-      if (basePokemon?.name == 'Mimikyu') {
-        _battleFormBySlot[slot.slotIndex] = 'Base';
-      }
-    }
-    final updatedSlot = slot.copyWith(
-      currentHp: _maxHpFor(pokemon, slot),
-      statusEffects: const [],
-    );
-    await _teamRepository.updateSlot(
-      profileId: data.profile.id,
-      updatedSlot: updatedSlot,
-    );
-    _replaceTeamSlot(data, updatedSlot);
-    await _saveSession(data);
-    if (!mounted) return;
-    setState(() {
-      _message = context.uiText(
-        '${_displayName(updatedSlot, pokemon)} è pronto a combattere.',
-        '${_displayName(updatedSlot, pokemon)} is ready to battle.',
-      );
-    });
-  }
-
   Future<void> _useHeldBerry(_BattleData data, TeamSlot slot) async {
     final pokemon = _pokemonForSlot(data, slot);
     final heldItem = data.heldItemFor(slot);
@@ -2172,7 +2136,6 @@ class _BattleScreenState extends State<BattleScreen> {
                                       );
                                     },
                                     onEditHp: () => _editHp(data, activeSlot),
-                                    onHeal: () => _healFull(data, activeSlot),
                                     onStatus: () =>
                                         _openStatusPicker(data, activeSlot),
                                     onUseHeldBerry: heldItem?.type == 'berry'
@@ -2872,7 +2835,6 @@ class _ActivePokemonCard extends StatelessWidget {
     required this.message,
     required this.onTransformations,
     required this.onEditHp,
-    required this.onHeal,
     required this.onStatus,
     required this.onUseHeldBerry,
     required this.onOpenBag,
@@ -2902,7 +2864,6 @@ class _ActivePokemonCard extends StatelessWidget {
   final String? message;
   final VoidCallback onTransformations;
   final VoidCallback onEditHp;
-  final VoidCallback onHeal;
   final VoidCallback onStatus;
   final VoidCallback? onUseHeldBerry;
   final VoidCallback onOpenBag;
@@ -3082,12 +3043,6 @@ class _ActivePokemonCard extends StatelessWidget {
                   onPressed: onTransformations,
                   icon: const Icon(Icons.auto_awesome, size: 18),
                   label: Text(context.uiText('TRASFORMA', 'TRANSFORM')),
-                ),
-                FilledButton(
-                  onPressed: onHeal,
-                  child: Text(
-                    context.uiText('POKÉMON CENTER', 'POKÉMON CENTER'),
-                  ),
                 ),
               ],
             ),

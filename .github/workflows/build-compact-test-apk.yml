@@ -1,4 +1,4 @@
-# Rebuild marker: fixed Bag bottom bar 2026-08-07 00:12 CEST
+# Rebuild marker: fixed Bag bottom bar 2026-08-07 00:13 CEST
 name: Build compact test APK
 
 on:
@@ -21,6 +21,12 @@ on:
       - lib/repositories/bag_inventory_repository.dart
       - lib/repositories/item_repository.dart
       - lib/models/trainer_starting_equipment.dart
+  pull_request:
+    branches:
+      - feature/compact-pokemon-detail-v2
+    types: [opened, synchronize, reopened]
+    paths:
+      - .github/workflows/build-compact-test-apk.yml
 
 permissions:
   contents: read

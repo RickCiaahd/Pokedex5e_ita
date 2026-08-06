@@ -28,6 +28,9 @@ jobs:
           flutter-version: '3.44.4'
           cache: true
 
+      - name: Allow repeated initiative reset markers
+        run: sed -i '0,/if count != 1:/s//if count < 1:/' tool/apply_battle_round_tracker.py
+
       - name: Apply tracker changes
         run: python tool/apply_battle_round_tracker.py
 

@@ -29,7 +29,8 @@ jobs:
           cache: true
 
       - name: Preserve replacement escape sequences
-        run: sed -i 's/re.subn(pattern, replacement, text/re.subn(pattern, lambda _: replacement, text/' tool/apply_battle_party_picker.py
+        run: |
+          sed -i 's/re.subn(pattern, replacement, text/re.subn(pattern, lambda _: replacement, text/' tool/apply_battle_party_picker.py
 
       - name: Apply party picker
         run: python tool/apply_battle_party_picker.py

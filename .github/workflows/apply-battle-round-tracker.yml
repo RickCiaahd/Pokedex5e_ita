@@ -1,0 +1,52 @@
+name: Apply Battle Companion round tracker
+
+on:
+  push:
+    branches:
+      - feature/compact-pokemon-detail-v2
+    paths:
+      - tool/apply_battle_round_tracker.py
+      - .github/workflows/apply-battle-round-tracker.yml
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v4
+        with:
+          ref: feature/compact-pokemon-detail-v2
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.4'
+          cache: true
+
+      - name: Apply tracker changes
+        run: python tool/apply_battle_round_tracker.py
+
+      - name: Format touched Dart files
+        run: |
+          dart format lib/screens/battle/battle_screen.dart
+          dart format lib/widgets/battle/battle_environment_card.dart
+
+      - name: Validate patch
+        run: git diff --check
+
+      - name: Commit Battle Companion prototype
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add lib/screens/battle/battle_screen.dart lib/widgets/battle/battle_environment_card.dart
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          git commit -m "Semplifica round e ambiente nel Battle Companion"
+          git push origin HEAD:feature/compact-pokemon-detail-v2

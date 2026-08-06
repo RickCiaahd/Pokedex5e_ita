@@ -8,8 +8,8 @@ class TrainerStartingEquipment {
   static const Map<String, int> baseInventory = {
     'poke-ball': 5,
     'potion': 1,
-    'trainer-license': 1,
-    'trainer-pokedex': 1,
+    'trainers-license': 1,
+    'pokedex': 1,
   };
 
   static const Map<String, Map<String, int>> packInventory = {
@@ -61,34 +61,6 @@ class TrainerStartingEquipment {
     String text(String it, String en) => italian ? it : en;
 
     return List<BagItem>.unmodifiable([
-      BagItem(
-        id: 'trainer-license',
-        name: text('Licenza da Allenatore', 'Trainer License'),
-        sourceName: 'Trainer License',
-        type: 'key-item',
-        description: [
-          text(
-            'Documento ufficiale che identifica il personaggio come Allenatore.',
-            'Official document identifying the character as a Trainer.',
-          ),
-        ],
-        cost: null,
-        spriteAssetPath: null,
-      ),
-      BagItem(
-        id: 'trainer-pokedex',
-        name: 'Pokédex',
-        sourceName: 'Pokédex',
-        type: 'key-item',
-        description: [
-          text(
-            'Dispositivo affidato all’Allenatore per consultare e registrare informazioni sui Pokémon.',
-            'A device entrusted to the Trainer to consult and record Pokémon information.',
-          ),
-        ],
-        cost: null,
-        spriteAssetPath: null,
-      ),
       BagItem(
         id: 'trainer-backpack',
         name: text('Zaino', 'Backpack'),

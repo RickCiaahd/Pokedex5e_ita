@@ -183,6 +183,108 @@ class _BagScreenState extends State<BagScreen> {
     }
   }
 
+  Future<void> _discardBagItem(_BagData data, _OwnedBagItem entry) async {
+    var quantity = 1;
+    final selectedQuantity = await showDialog<int>(
+      context: context,
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: Text(
+            context.uiText(
+              'Scarta ${entry.item.name}',
+              'Discard ${entry.item.name}',
+            ),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                context.uiText(
+                  'L’oggetto verrà rimosso realmente dallo Zaino.',
+                  'The item will be permanently removed from the Bag.',
+                ),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  IconButton(
+                    tooltip: context.uiText('Diminuisci', 'Decrease'),
+                    onPressed: quantity > 1
+                        ? () => setDialogState(() => quantity -= 1)
+                        : null,
+                    icon: const Icon(Icons.remove_circle_outline),
+                  ),
+                  SizedBox(
+                    width: 72,
+                    child: Text(
+                      '$quantity / ${entry.quantity}',
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    tooltip: context.uiText('Aumenta', 'Increase'),
+                    onPressed: quantity < entry.quantity
+                        ? () => setDialogState(() => quantity += 1)
+                        : null,
+                    icon: const Icon(Icons.add_circle_outline),
+                  ),
+                ],
+              ),
+              if (entry.quantity > 1)
+                Align(
+                  alignment: Alignment.center,
+                  child: TextButton(
+                    onPressed: () =>
+                        setDialogState(() => quantity = entry.quantity),
+                    child: Text(context.uiText('SCARTA TUTTI', 'DISCARD ALL')),
+                  ),
+                ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: Text(context.uiText('ANNULLA', 'CANCEL')),
+            ),
+            FilledButton.icon(
+              style: FilledButton.styleFrom(
+                backgroundColor: Theme.of(context).colorScheme.error,
+                foregroundColor: Theme.of(context).colorScheme.onError,
+              ),
+              onPressed: () => Navigator.of(dialogContext).pop(quantity),
+              icon: const Icon(Icons.delete_outline),
+              label: Text(context.uiText('SCARTA', 'DISCARD')),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    if (!mounted || selectedQuantity == null) return;
+
+    final removed = await _bagRepository.consumeItem(
+      profileId: data.profile.id,
+      itemId: entry.item.id,
+      quantity: selectedQuantity,
+    );
+    await _reload(
+      message: removed
+          ? context.uiText(
+              '$selectedQuantity × ${entry.item.name} scartati.',
+              '$selectedQuantity × ${entry.item.name} discarded.',
+            )
+          : context.uiText(
+              'Non è stato possibile scartare ${entry.item.name}.',
+              '${entry.item.name} could not be discarded.',
+            ),
+    );
+  }
+
   Future<void> _useBagItem(_BagData data, _OwnedBagItem entry) async {
     final item = entry.item;
 
@@ -864,6 +966,7 @@ class _BagScreenState extends State<BagScreen> {
               onBuyItem: () => _openFinder(data, _BagAction.buy),
               onUseItem: (entry) => _useBagItem(data, entry),
               onEquipItem: (entry) => _useHeldItem(data, entry),
+              onDiscardItem: (entry) => _discardBagItem(data, entry),
               onRemoveHeldItem: (entry) => _removeHeldItem(data, entry),
             );
           },
@@ -1078,6 +1181,7 @@ class _BagContent extends StatelessWidget {
     required this.onBuyItem,
     required this.onUseItem,
     required this.onEquipItem,
+    required this.onDiscardItem,
     required this.onRemoveHeldItem,
   });
 
@@ -1089,6 +1193,7 @@ class _BagContent extends StatelessWidget {
   final VoidCallback onBuyItem;
   final ValueChanged<_OwnedBagItem> onUseItem;
   final ValueChanged<_OwnedBagItem> onEquipItem;
+  final ValueChanged<_OwnedBagItem> onDiscardItem;
   final ValueChanged<_EquippedHeldItem> onRemoveHeldItem;
 
   @override
@@ -1137,6 +1242,7 @@ class _BagContent extends StatelessWidget {
             items: filteredItems,
             onUseItem: onUseItem,
             onEquipItem: onEquipItem,
+            onDiscardItem: onDiscardItem,
           ),
       ],
     );
@@ -1330,11 +1436,13 @@ class _BagItemsLayout extends StatelessWidget {
     required this.items,
     required this.onUseItem,
     required this.onEquipItem,
+    required this.onDiscardItem,
   });
 
   final List<_OwnedBagItem> items;
   final ValueChanged<_OwnedBagItem> onUseItem;
   final ValueChanged<_OwnedBagItem> onEquipItem;
+  final ValueChanged<_OwnedBagItem> onDiscardItem;
 
   @override
   Widget build(BuildContext context) {
@@ -1357,6 +1465,7 @@ class _BagItemsLayout extends StatelessWidget {
                   entry: entry,
                   onUse: () => onUseItem(entry),
                   onEquip: () => onEquipItem(entry),
+                  onDiscard: () => onDiscardItem(entry),
                 ),
               ),
           ],
@@ -1367,10 +1476,16 @@ class _BagItemsLayout extends StatelessWidget {
 }
 
 class _BagItemCard extends StatefulWidget {
-  const _BagItemCard({required this.entry, required this.onUse, this.onEquip});
+  const _BagItemCard({
+    required this.entry,
+    required this.onUse,
+    required this.onDiscard,
+    this.onEquip,
+  });
 
   final _OwnedBagItem entry;
   final VoidCallback onUse;
+  final VoidCallback onDiscard;
   final VoidCallback? onEquip;
 
   @override
@@ -1488,42 +1603,41 @@ class _BagItemCardState extends State<_BagItemCard> {
               },
             ),
           ],
-          if (canUse) ...[
-            const SizedBox(height: 12),
-            Align(
-              alignment: Alignment.centerRight,
-              child: item.type == 'berry'
-                  ? Wrap(
-                      alignment: WrapAlignment.end,
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: [
-                        OutlinedButton.icon(
-                          onPressed: widget.onUse,
-                          icon: const Icon(Icons.medical_services_outlined),
-                          label: Text(
-                            uiTextForLanguage('Usa bacca', 'Use Berry'),
-                          ),
-                        ),
-                        FilledButton.icon(
-                          onPressed: widget.onEquip,
-                          icon: const Icon(Icons.inventory_2_outlined),
-                          label: Text(
-                            uiTextForLanguage(
-                              'Dai a Pokémon',
-                              'Give to Pokémon',
-                            ),
-                          ),
-                        ),
-                      ],
-                    )
-                  : FilledButton.icon(
-                      onPressed: widget.onUse,
-                      icon: Icon(_useIconForItemType(item.type)),
-                      label: Text(_useLabelForItemType(item.type)),
+          const SizedBox(height: 12),
+          Align(
+            alignment: Alignment.centerRight,
+            child: Wrap(
+              alignment: WrapAlignment.end,
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                OutlinedButton.icon(
+                  onPressed: widget.onDiscard,
+                  icon: const Icon(Icons.delete_outline),
+                  label: Text(context.uiText('Scarta', 'Discard')),
+                ),
+                if (canUse && item.type == 'berry') ...[
+                  OutlinedButton.icon(
+                    onPressed: widget.onUse,
+                    icon: const Icon(Icons.medical_services_outlined),
+                    label: Text(uiTextForLanguage('Usa bacca', 'Use Berry')),
+                  ),
+                  FilledButton.icon(
+                    onPressed: widget.onEquip,
+                    icon: const Icon(Icons.inventory_2_outlined),
+                    label: Text(
+                      uiTextForLanguage('Dai a Pokémon', 'Give to Pokémon'),
                     ),
+                  ),
+                ] else if (canUse)
+                  FilledButton.icon(
+                    onPressed: widget.onUse,
+                    icon: Icon(_useIconForItemType(item.type)),
+                    label: Text(_useLabelForItemType(item.type)),
+                  ),
+              ],
             ),
-          ],
+          ),
         ],
       ),
     );

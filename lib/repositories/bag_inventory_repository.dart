@@ -8,6 +8,7 @@ class BagInventoryRepository {
 
   Future<List<BagInventoryEntry>> getInventory(String profileId) async {
     final box = await _box();
+    await _migrateLegacyStartingItemIds(box, profileId);
 
     return box.values
         .map(
@@ -15,6 +16,46 @@ class BagInventoryRepository {
         )
         .where((entry) => entry.profileId == profileId && entry.quantity > 0)
         .toList(growable: false);
+  }
+
+  Future<void> _migrateLegacyStartingItemIds(Box box, String profileId) async {
+    const aliases = {
+      'trainer-license': 'trainers-license',
+      'trainer-pokedex': 'pokedex',
+    };
+    var changed = false;
+
+    for (final alias in aliases.entries) {
+      final legacyKey = BagInventoryEntry.keyFor(profileId, alias.key);
+      final legacyJson = box.get(legacyKey);
+      if (legacyJson == null) continue;
+
+      final legacy = BagInventoryEntry.fromJson(
+        Map<String, dynamic>.from(legacyJson),
+      );
+      final canonicalKey = BagInventoryEntry.keyFor(profileId, alias.value);
+      final canonicalJson = box.get(canonicalKey);
+      final canonical = canonicalJson == null
+          ? BagInventoryEntry(
+              profileId: profileId,
+              itemId: alias.value,
+              quantity: 0,
+            )
+          : BagInventoryEntry.fromJson(
+              Map<String, dynamic>.from(canonicalJson),
+            );
+
+      await box.put(
+        canonicalKey,
+        canonical
+            .copyWith(quantity: canonical.quantity + legacy.quantity)
+            .toJson(),
+      );
+      await box.delete(legacyKey);
+      changed = true;
+    }
+
+    if (changed) await box.flush();
   }
 
   Future<void> addItem({

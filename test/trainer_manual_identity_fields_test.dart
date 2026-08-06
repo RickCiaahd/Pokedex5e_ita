@@ -13,8 +13,8 @@ void main() {
       final inventory = TrainerStartingEquipment.inventoryForPack(value);
       expect(inventory['poke-ball'], 5);
       expect(inventory['potion'], 1);
-      expect(inventory['trainer-license'], 1);
-      expect(inventory['trainer-pokedex'], 1);
+      expect(inventory['trainers-license'], 1);
+      expect(inventory['pokedex'], 1);
       expect(inventory['trainer-backpack'], 1);
     }
   });
@@ -24,11 +24,29 @@ void main() {
         .map((item) => item.id)
         .toSet();
     final customInventoryIds = <String>{
-      ...TrainerStartingEquipment.baseInventory.keys,
       for (final pack in TrainerStartingEquipment.packInventory.values)
         ...pack.keys,
-    }..removeAll({'poke-ball', 'potion'});
+    };
 
     expect(catalogIds, containsAll(customInventoryIds));
+  });
+
+  test('starting inventory reuses the existing license and pokedex items', () {
+    expect(TrainerStartingEquipment.baseInventory['trainers-license'], 1);
+    expect(TrainerStartingEquipment.baseInventory['pokedex'], 1);
+    expect(
+      TrainerStartingEquipment.baseInventory,
+      isNot(contains('trainer-license')),
+    );
+    expect(
+      TrainerStartingEquipment.baseInventory,
+      isNot(contains('trainer-pokedex')),
+    );
+
+    final generatedIds = TrainerStartingEquipment.catalogItems
+        .map((item) => item.id)
+        .toSet();
+    expect(generatedIds, isNot(contains('trainers-license')));
+    expect(generatedIds, isNot(contains('pokedex')));
   });
 }

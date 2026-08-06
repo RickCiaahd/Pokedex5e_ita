@@ -1,4 +1,4 @@
-# Rebuild marker: trainer age, background, and packs
+# Rebuild marker: source-grounded trainer background descriptions
 name: Build compact test APK
 
 on:

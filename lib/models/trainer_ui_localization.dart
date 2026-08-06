@@ -90,31 +90,31 @@ class TrainerUiLocalization {
   };
   static const Map<String, String> _backgroundDescriptionsIt = {
     'Ricercatore':
-        'Osservi, cataloghi e studi ogni scoperta prima di trarre conclusioni. Scelta narrativa: non modifica automaticamente le caratteristiche.',
+        'Background scelto durante l’onboarding. Nel manuale disponibile non gli sono associati aumenti automatici delle caratteristiche.',
     'Esploratore':
-        'Ti senti a casa sulle strade meno battute e negli ambienti selvaggi. Scelta narrativa: non modifica automaticamente le caratteristiche.',
+        'Background scelto durante l’onboarding. Nel manuale disponibile non gli sono associati aumenti automatici delle caratteristiche.',
     'Allevatore':
-        'Conosci le necessità delle creature e costruisci legami pazienti. Scelta narrativa: non modifica automaticamente le caratteristiche.',
+        'Background scelto durante l’onboarding. Nel manuale disponibile non gli sono associati aumenti automatici delle caratteristiche.',
     'Combattente':
-        'Affronti le difficoltà con disciplina, coraggio e spirito competitivo. Scelta narrativa: non modifica automaticamente le caratteristiche.',
+        'Background scelto durante l’onboarding. Nel manuale disponibile non gli sono associati aumenti automatici delle caratteristiche.',
     'Artista':
-        'Esprimi te stesso attraverso spettacolo, creatività e sensibilità. Scelta narrativa: non modifica automaticamente le caratteristiche.',
+        'Background scelto durante l’onboarding. Nel manuale disponibile non gli sono associati aumenti automatici delle caratteristiche.',
     'Studioso':
-        'Hai dedicato anni a libri, tradizioni e conoscenze specialistiche. Scelta narrativa: non modifica automaticamente le caratteristiche.',
+        'Background scelto durante l’onboarding. Nel manuale disponibile non gli sono associati aumenti automatici delle caratteristiche.',
   };
   static const Map<String, String> _backgroundDescriptionsEn = {
     'Ricercatore':
-        'You observe, catalogue and study every discovery before drawing conclusions. Narrative choice: it does not automatically change ability scores.',
+        'Background selected during onboarding. The available manual does not associate it with automatic ability-score increases.',
     'Esploratore':
-        'You feel at home on less-travelled roads and in the wilderness. Narrative choice: it does not automatically change ability scores.',
+        'Background selected during onboarding. The available manual does not associate it with automatic ability-score increases.',
     'Allevatore':
-        'You understand the needs of creatures and build patient bonds. Narrative choice: it does not automatically change ability scores.',
+        'Background selected during onboarding. The available manual does not associate it with automatic ability-score increases.',
     'Combattente':
-        'You face challenges with discipline, courage and a competitive spirit. Narrative choice: it does not automatically change ability scores.',
+        'Background selected during onboarding. The available manual does not associate it with automatic ability-score increases.',
     'Artista':
-        'You express yourself through performance, creativity and sensitivity. Narrative choice: it does not automatically change ability scores.',
+        'Background selected during onboarding. The available manual does not associate it with automatic ability-score increases.',
     'Studioso':
-        'You have devoted years to books, traditions and specialist knowledge. Narrative choice: it does not automatically change ability scores.',
+        'Background selected during onboarding. The available manual does not associate it with automatic ability-score increases.',
   };
 
   static const Map<String, String> _natureLabelsIt = {

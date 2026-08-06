@@ -1,4 +1,4 @@
-# Rebuild marker: APK test with multi-item selling (2026-08-06 19:58 CEST)
+# Temporary layout application and APK verification
 name: Build compact test APK
 
 on:
@@ -22,7 +22,7 @@ on:
       - lib/models/trainer_starting_equipment.dart
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: compact-test-apk-${{ github.ref }}
@@ -30,13 +30,16 @@ concurrency:
 
 jobs:
   build-apk:
-    name: Build downloadable Android test APK
+    name: Apply Bag layout and build Android test APK
     runs-on: ubuntu-latest
     timeout-minutes: 45
 
     steps:
       - name: Check out prototype branch
         uses: actions/checkout@v4
+        with:
+          ref: feature/compact-pokemon-detail-v2
+          fetch-depth: 0
 
       - name: Set up Java
         uses: actions/setup-java@v4
@@ -50,8 +53,29 @@ jobs:
           flutter-version: '3.44.4'
           cache: true
 
+      - name: Apply compact Bag layout
+        run: |
+          python tool/apply_bag_layout.py
+          dart format lib/screens/bag/bag_screen.dart
+
+      - name: Commit Bag layout
+        shell: bash
+        run: |
+          if git diff --quiet; then
+            echo "Bag layout already applied"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add lib/screens/bag/bag_screen.dart
+          git commit -m "Riorganizza lo Zaino con azioni fisse in basso"
+          git push origin HEAD:feature/compact-pokemon-detail-v2
+
       - name: Install dependencies
         run: flutter pub get
+
+      - name: Analyze Bag screen
+        run: flutter analyze lib/screens/bag/bag_screen.dart
 
       - name: Build debug APK
         run: flutter build apk --debug
@@ -61,9 +85,9 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p dist
-          SHORT_SHA="${GITHUB_SHA::7}"
+          SHORT_SHA="$(git rev-parse --short=7 HEAD)"
           cp build/app/outputs/flutter-apk/app-debug.apk "dist/Pokedex5e-compact-test-${SHORT_SHA}.apk"
-          printf 'Branch: %s\nCommit: %s\nBuild type: debug APK\n' "$GITHUB_REF_NAME" "$GITHUB_SHA" > dist/BUILD-INFO.txt
+          printf 'Branch: %s\nCommit: %s\nBuild type: debug APK\n' "feature/compact-pokemon-detail-v2" "$(git rev-parse HEAD)" > dist/BUILD-INFO.txt
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4

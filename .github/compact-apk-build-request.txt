@@ -1,0 +1,1 @@
+Richiesta build APK del branch feature/compact-pokemon-detail-v2 del 2026-08-06.

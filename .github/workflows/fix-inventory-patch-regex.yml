@@ -1,4 +1,4 @@
-name: Fix inventory patch regex
+name: Fix onboarding and inventory cart details
 
 on:
   push:
@@ -14,15 +14,41 @@ permissions:
 jobs:
   fix:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
         with:
           ref: feature/compact-pokemon-detail-v2
           fetch-depth: 0
-      - run: python tool/fix_inventory_patch_regex.py
-      - run: |
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.4'
+          cache: true
+
+      - name: Apply fixes
+        run: python tool/fix_inventory_patch_regex.py
+
+      - name: Format
+        run: dart format lib/screens/onboarding/first_launch_onboarding_screen.dart lib/screens/bag/bag_screen.dart
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Targeted tests
+        run: |
+          flutter test test/trainer_manual_identity_fields_test.dart
+          flutter test test/battle_quick_item_service_test.dart
+
+      - name: Commit fixes
+        run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add tool/apply_narrative_background_and_inventory_cart.py
-          git commit -m "Correggi escaping dello script inventario"
+          git add \
+            lib/screens/onboarding/first_launch_onboarding_screen.dart \
+            lib/screens/bag/bag_screen.dart
+          git commit -m "Correggi completamento onboarding e carrello"
           git push origin HEAD:feature/compact-pokemon-detail-v2

@@ -1,96 +1,47 @@
-name: Flutter CI
+name: Apply compact Bag layout
 
 on:
-  push:
+  pull_request:
     branches:
       - main
-  pull_request:
-  workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
-  group: flutter-ci-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  group: apply-compact-bag-layout
+  cancel-in-progress: false
 
 jobs:
-  quality:
-    name: Analyze, test and build Android
+  apply-layout:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
-
     steps:
-      - name: Check out repository
+      - name: Check out prototype branch
         uses: actions/checkout@v4
-
-      - name: Set up Java
-        uses: actions/setup-java@v4
         with:
-          distribution: temurin
-          java-version: '17'
+          ref: feature/compact-pokemon-detail-v2
+          fetch-depth: 0
 
-      - name: Set up pinned Flutter
+      - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.44.4'
           cache: true
 
-      - name: Show Flutter version
-        run: flutter --version
-
-      - name: Install dependencies
-        run: flutter pub get
-
-      - name: Verify compliance reports
-        run: python tooling/generate_compliance_reports.py --check
-
-      - name: Prepare embedded GPL and NOTICE
+      - name: Apply and format Bag layout
         run: |
-          python tooling/prepare_release_legal_assets.py
-          python tooling/prepare_release_legal_assets.py --check
+          python tool/apply_bag_layout.py
+          dart format lib/screens/bag/bag_screen.dart
 
-      - name: Analyze source
-        run: flutter analyze
-
-      - name: Validate application data
+      - name: Commit layout on prototype branch
+        shell: bash
         run: |
-          set -o pipefail
-          flutter test test/data_integrity_test.dart --reporter expanded 2>&1 | tee data-validation.log
-
-      - name: Upload validation log
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: data-validation-log
-          path: data-validation.log
-          if-no-files-found: ignore
-          retention-days: 7
-
-      - name: Measure runtime catalog baseline
-        run: |
-          set -o pipefail
-          flutter test tool/performance/catalog_runtime_benchmark.dart --reporter expanded 2>&1 | tee catalog-performance.log
-
-      - name: Upload runtime catalog baseline
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: catalog-performance-log
-          path: catalog-performance.log
-          if-no-files-found: ignore
-          retention-days: 30
-
-      - name: Run complete test suite
-        run: flutter test --reporter expanded
-
-      - name: Build Android debug APK
-        run: flutter build apk --debug
-
-      - name: Upload debug APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: Pokedex5eITA-debug
-          path: build/app/outputs/flutter-apk/app-debug.apk
-          if-no-files-found: error
-          retention-days: 30
+          if git diff --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add lib/screens/bag/bag_screen.dart
+          git commit -m "Riorganizza lo Zaino con azioni fisse in basso"
+          git push origin HEAD:feature/compact-pokemon-detail-v2

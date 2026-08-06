@@ -347,40 +347,56 @@ class _MobileOverview extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        TrainerProfileImagePicker(
-          imageBase64: profileImageBase64,
-          trainerName: nameController.text,
-          compact: true,
-          editButtonOnly: true,
-          enabled: !isSaving,
-          onChanged: onProfileImageChanged,
-        ),
-        const SizedBox(height: 10),
-        TextField(
-          controller: nameController,
-          enabled: !isSaving,
-          decoration: InputDecoration(
-            labelText: context.uiText('Nome', 'Name'),
-            isDense: true,
-            border: const OutlineInputBorder(),
-          ),
-          style: Theme.of(
-            context,
-          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
-        ),
-        const SizedBox(height: 6),
-        _CompactChoiceLine(
-          label: context.uiText('LIVELLO', 'LEVEL'),
-          value: '$trainerLevel',
-          onTap: () => _showCounterSheet(
-            context: context,
-            title: context.uiText('Livello allenatore', 'Trainer level'),
-            initialValue: trainerLevel,
-            minValue: TrainerProgression.minLevel,
-            maxValue: TrainerProgression.maxLevel,
-            onDecrease: onDecreaseLevel,
-            onIncrease: onIncreaseLevel,
-          ),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            TrainerProfileImagePicker(
+              imageBase64: profileImageBase64,
+              trainerName: nameController.text,
+              compact: true,
+              avatarOnly: true,
+              tapAvatarToEdit: true,
+              avatarRadius: 46,
+              enabled: !isSaving,
+              onChanged: onProfileImageChanged,
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  TextField(
+                    controller: nameController,
+                    enabled: !isSaving,
+                    decoration: InputDecoration(
+                      labelText: context.uiText('Nome', 'Name'),
+                      isDense: true,
+                      border: const OutlineInputBorder(),
+                    ),
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  _ProminentLevelCard(
+                    level: trainerLevel,
+                    onTap: () => _showCounterSheet(
+                      context: context,
+                      title: context.uiText(
+                        'Livello allenatore',
+                        'Trainer level',
+                      ),
+                      initialValue: trainerLevel,
+                      minValue: TrainerProgression.minLevel,
+                      maxValue: TrainerProgression.maxLevel,
+                      onDecrease: onDecreaseLevel,
+                      onIncrease: onIncreaseLevel,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
         const SizedBox(height: 10),
         Wrap(
@@ -972,37 +988,62 @@ class _ProgressionRow extends StatelessWidget {
   }
 }
 
-class _CompactChoiceLine extends StatelessWidget {
-  const _CompactChoiceLine({
-    required this.label,
-    required this.value,
-    required this.onTap,
-  });
+class _ProminentLevelCard extends StatelessWidget {
+  const _ProminentLevelCard({required this.level, required this.onTap});
 
-  final String label;
-  final String value;
+  final int level;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(6),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4),
-        child: Row(
-          children: [
-            Text(
-              label,
-              style: Theme.of(
-                context,
-              ).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w900),
-            ),
-            const Spacer(),
-            Text(value, style: const TextStyle(fontWeight: FontWeight.w900)),
-            const SizedBox(width: 4),
-            const Icon(Icons.edit_outlined, size: 17),
-          ],
+    final colors = Theme.of(context).colorScheme;
+
+    return Card(
+      margin: EdgeInsets.zero,
+      color: colors.primaryContainer,
+      child: InkWell(
+        key: const ValueKey('edit-trainer-level-mobile'),
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          child: Row(
+            children: [
+              Icon(
+                Icons.military_tech_outlined,
+                color: colors.onPrimaryContainer,
+              ),
+              const SizedBox(width: 9),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      context.uiText('LIVELLO ALLENATORE', 'TRAINER LEVEL'),
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        color: colors.onPrimaryContainer,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 0.35,
+                      ),
+                    ),
+                    Text(
+                      'LV $level',
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        color: colors.onPrimaryContainer,
+                        fontWeight: FontWeight.w900,
+                        height: 1,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(
+                Icons.edit_outlined,
+                size: 18,
+                color: colors.onPrimaryContainer,
+              ),
+            ],
+          ),
         ),
       ),
     );

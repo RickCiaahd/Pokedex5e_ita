@@ -84,6 +84,9 @@ class TrainerProfileImagePicker extends StatefulWidget {
     this.enabled = true,
     this.compact = false,
     this.editButtonOnly = false,
+    this.avatarOnly = false,
+    this.tapAvatarToEdit = false,
+    this.avatarRadius,
     this.imageService,
   });
 
@@ -93,6 +96,9 @@ class TrainerProfileImagePicker extends StatefulWidget {
   final bool enabled;
   final bool compact;
   final bool editButtonOnly;
+  final bool avatarOnly;
+  final bool tapAvatarToEdit;
+  final double? avatarRadius;
   final ProfileImageService? imageService;
 
   @override
@@ -100,8 +106,7 @@ class TrainerProfileImagePicker extends StatefulWidget {
       _TrainerProfileImagePickerState();
 }
 
-class _TrainerProfileImagePickerState
-    extends State<TrainerProfileImagePicker> {
+class _TrainerProfileImagePickerState extends State<TrainerProfileImagePicker> {
   bool _isPicking = false;
 
   Future<void> _pickImage() async {
@@ -162,20 +167,16 @@ class _TrainerProfileImagePickerState
                     ? context.uiText('Scegli immagine', 'Choose image')
                     : context.uiText('Sostituisci immagine', 'Replace image'),
               ),
-              onTap: () => Navigator.of(
-                sheetContext,
-              ).pop(_ProfileImageAction.choose),
+              onTap: () =>
+                  Navigator.of(sheetContext).pop(_ProfileImageAction.choose),
             ),
             if (widget.imageBase64.isNotEmpty)
               ListTile(
                 key: const ValueKey('remove-trainer-profile-image-option'),
                 leading: const Icon(Icons.delete_outline),
-                title: Text(
-                  context.uiText('Rimuovi immagine', 'Remove image'),
-                ),
-                onTap: () => Navigator.of(
-                  sheetContext,
-                ).pop(_ProfileImageAction.remove),
+                title: Text(context.uiText('Rimuovi immagine', 'Remove image')),
+                onTap: () =>
+                    Navigator.of(sheetContext).pop(_ProfileImageAction.remove),
               ),
           ],
         ),
@@ -193,11 +194,65 @@ class _TrainerProfileImagePickerState
   @override
   Widget build(BuildContext context) {
     final hasImage = widget.imageBase64.isNotEmpty;
+    final resolvedAvatarRadius =
+        widget.avatarRadius ?? (widget.compact ? 34.0 : 46.0);
     final avatar = TrainerProfileAvatar(
       imageBase64: widget.imageBase64,
       trainerName: widget.trainerName,
-      radius: widget.compact ? 34 : 46,
+      radius: resolvedAvatarRadius,
     );
+    final interactiveAvatar = widget.tapAvatarToEdit
+        ? Tooltip(
+            message: context.uiText(
+              'Tocca per modificare l’immagine del profilo',
+              'Tap to edit the profile image',
+            ),
+            child: InkResponse(
+              key: const ValueKey('edit-trainer-profile-image-avatar'),
+              onTap: widget.enabled && !_isPicking ? _openEditOptions : null,
+              customBorder: const CircleBorder(),
+              radius: resolvedAvatarRadius + 10,
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  avatar,
+                  Positioned(
+                    right: -2,
+                    bottom: -2,
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.primary,
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: Theme.of(context).colorScheme.surface,
+                          width: 2,
+                        ),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(5),
+                        child: _isPicking
+                            ? SizedBox.square(
+                                dimension: 14,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onPrimary,
+                                ),
+                              )
+                            : Icon(
+                                Icons.edit_outlined,
+                                size: 14,
+                                color: Theme.of(context).colorScheme.onPrimary,
+                              ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          )
+        : avatar;
     final actions = Wrap(
       spacing: 8,
       runSpacing: 4,
@@ -254,6 +309,22 @@ class _TrainerProfileImagePickerState
             ],
     );
 
+    if (widget.avatarOnly) {
+      return Semantics(
+        container: true,
+        button: widget.tapAvatarToEdit,
+        enabled: widget.enabled,
+        label: context.uiText(
+          'Immagine del profilo Allenatore',
+          'Trainer profile image',
+        ),
+        hint: widget.tapAvatarToEdit
+            ? context.uiText('Tocca per modificarla', 'Tap to edit it')
+            : null,
+        child: interactiveAvatar,
+      );
+    }
+
     return Semantics(
       container: true,
       label: context.uiText(
@@ -264,7 +335,7 @@ class _TrainerProfileImagePickerState
           ? Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                avatar,
+                interactiveAvatar,
                 const SizedBox(width: 12),
                 Expanded(
                   child: widget.editButtonOnly
@@ -291,7 +362,7 @@ class _TrainerProfileImagePickerState
           : Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                avatar,
+                interactiveAvatar,
                 const SizedBox(width: 16),
                 Expanded(
                   child: widget.editButtonOnly

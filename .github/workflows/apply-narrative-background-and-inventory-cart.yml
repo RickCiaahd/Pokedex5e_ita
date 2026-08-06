@@ -1,4 +1,4 @@
-# Rerun marker: non-const narrative text formatters
+# Rerun marker: commit implementation without workflow files
 name: Apply narrative background and inventory cart
 
 on:
@@ -59,7 +59,6 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add \
-            .github/workflows/build-compact-test-apk.yml \
             lib/models/trainer_starting_equipment.dart \
             lib/repositories/bag_inventory_repository.dart \
             lib/repositories/item_repository.dart \

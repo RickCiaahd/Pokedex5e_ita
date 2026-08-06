@@ -1,0 +1,1 @@
+Esegui l'applicazione verificata del nuovo layout dello Zaino sul branch di collaudo.

@@ -347,58 +347,40 @@ class _MobileOverview extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(
-              width: 108,
-              child: TrainerProfileImagePicker(
-                imageBase64: profileImageBase64,
-                trainerName: nameController.text,
-                compact: true,
-                editButtonOnly: true,
-                enabled: !isSaving,
-                onChanged: onProfileImageChanged,
-              ),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  TextField(
-                    controller: nameController,
-                    enabled: !isSaving,
-                    decoration: InputDecoration(
-                      labelText: context.uiText('Nome', 'Name'),
-                      isDense: true,
-                      border: const OutlineInputBorder(),
-                    ),
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  _CompactChoiceLine(
-                    label: context.uiText('LIVELLO', 'LEVEL'),
-                    value: '$trainerLevel',
-                    onTap: () => _showCounterSheet(
-                      context: context,
-                      title: context.uiText(
-                        'Livello allenatore',
-                        'Trainer level',
-                      ),
-                      initialValue: trainerLevel,
-                      minValue: TrainerProgression.minLevel,
-                      maxValue: TrainerProgression.maxLevel,
-                      onDecrease: onDecreaseLevel,
-                      onIncrease: onIncreaseLevel,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
+        TrainerProfileImagePicker(
+          imageBase64: profileImageBase64,
+          trainerName: nameController.text,
+          compact: true,
+          editButtonOnly: true,
+          enabled: !isSaving,
+          onChanged: onProfileImageChanged,
+        ),
+        const SizedBox(height: 10),
+        TextField(
+          controller: nameController,
+          enabled: !isSaving,
+          decoration: InputDecoration(
+            labelText: context.uiText('Nome', 'Name'),
+            isDense: true,
+            border: const OutlineInputBorder(),
+          ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
+        ),
+        const SizedBox(height: 6),
+        _CompactChoiceLine(
+          label: context.uiText('LIVELLO', 'LEVEL'),
+          value: '$trainerLevel',
+          onTap: () => _showCounterSheet(
+            context: context,
+            title: context.uiText('Livello allenatore', 'Trainer level'),
+            initialValue: trainerLevel,
+            minValue: TrainerProgression.minLevel,
+            maxValue: TrainerProgression.maxLevel,
+            onDecrease: onDecreaseLevel,
+            onIncrease: onIncreaseLevel,
+          ),
         ),
         const SizedBox(height: 10),
         Wrap(
@@ -485,7 +467,7 @@ class _MobileOverview extends StatelessWidget {
             Expanded(
               child: _CompactStatTile(
                 label: context.uiText('VELOCITÀ', 'SPEED'),
-                value: context.uiText('$speed ft', '$speed ft'),
+                value: context.uiText('$speed piedi', '$speed ft'),
                 onTap: () => _showCounterSheet(
                   context: context,
                   title: context.uiText('Velocità', 'Speed'),

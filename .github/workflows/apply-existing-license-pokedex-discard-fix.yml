@@ -1,0 +1,59 @@
+name: Apply existing license pokedex and discard fix
+
+on:
+  push:
+    branches:
+      - feature/compact-pokemon-detail-v2
+    paths:
+      - tool/fix_existing_license_pokedex_and_discard.py
+      - .github/workflows/apply-existing-license-pokedex-discard-fix.yml
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/compact-pokemon-detail-v2
+          fetch-depth: 0
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.4'
+          cache: true
+
+      - name: Apply fix
+        run: python tool/fix_existing_license_pokedex_and_discard.py
+
+      - name: Format
+        run: |
+          dart format \
+            lib/models/trainer_starting_equipment.dart \
+            lib/repositories/bag_inventory_repository.dart \
+            lib/screens/bag/bag_screen.dart \
+            test/trainer_manual_identity_fields_test.dart
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Targeted tests
+        run: flutter test test/trainer_manual_identity_fields_test.dart
+
+      - name: Commit fix
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
+            lib/models/trainer_starting_equipment.dart \
+            lib/repositories/bag_inventory_repository.dart \
+            lib/screens/bag/bag_screen.dart \
+            test/trainer_manual_identity_fields_test.dart
+          git commit -m "Riusa Licenza e Pokédex esistenti e consenti lo scarto"
+          git push origin HEAD:feature/compact-pokemon-detail-v2

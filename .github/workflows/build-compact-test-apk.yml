@@ -8,6 +8,7 @@ on:
       - feature/compact-pokemon-detail-v2
     paths:
       - .github/workflows/build-compact-test-apk.yml
+      - .github/bag-layout-trigger.txt
       - lib/screens/battle/battle_screen.dart
       - lib/widgets/battle/battle_environment_card.dart
       - lib/widgets/battle/pokemon_battle_attributes_card.dart

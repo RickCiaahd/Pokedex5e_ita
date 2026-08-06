@@ -1,3 +1,4 @@
+# Rerun marker: preserve Dart newline escapes in generated code
 name: Apply narrative background and inventory cart
 
 on:

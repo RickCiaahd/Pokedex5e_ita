@@ -1,0 +1,42 @@
+name: Apply background source grounding
+
+on:
+  push:
+    branches:
+      - feature/compact-pokemon-detail-v2
+    paths:
+      - tool/normalize_background_descriptions.py
+      - .github/workflows/apply-background-source-grounding.yml
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/compact-pokemon-detail-v2
+          fetch-depth: 0
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: Apply source-grounded descriptions
+        run: python tool/normalize_background_descriptions.py
+      - name: Format
+        run: dart format lib/models/trainer_ui_localization.dart
+      - name: Install dependencies
+        run: flutter pub get
+      - name: Analyze
+        run: flutter analyze
+      - name: Targeted test
+        run: flutter test test/trainer_manual_identity_fields_test.dart
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add lib/models/trainer_ui_localization.dart
+          git commit -m "Ground background descriptions in the available manual"
+          git push origin HEAD:feature/compact-pokemon-detail-v2

@@ -7,6 +7,10 @@ on:
       - feature/compact-pokemon-detail-v2
     paths:
       - .github/workflows/build-compact-test-apk.yml
+      - lib/screens/battle/battle_screen.dart
+      - lib/widgets/battle/battle_environment_card.dart
+      - lib/widgets/battle/pokemon_battle_attributes_card.dart
+      - lib/screens/pokemon/pokemon_detail_screen_legacy.dart
 
 permissions:
   contents: read

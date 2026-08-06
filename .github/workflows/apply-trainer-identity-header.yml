@@ -44,6 +44,7 @@ jobs:
       - name: Apply requested layout change
         run: |
           python3 tool/fix_trainer_header_script_expectation.py
+          python3 tool/fix_trainer_header_script_layout.py
           python3 tool/apply_trainer_identity_header.py
 
       - name: Format modified Dart files

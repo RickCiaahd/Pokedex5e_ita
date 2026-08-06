@@ -1,4 +1,4 @@
-# Rebuild marker: reuse existing license and pokedex, discard all items
+# Rebuild marker: multi-item selling at half catalog price
 name: Build compact test APK
 
 on:

@@ -1,4 +1,4 @@
-# Rebuild marker: cleaned narrative background and inventory cart prototype
+# Rebuild marker: reuse existing license and pokedex, discard all items
 name: Build compact test APK
 
 on:

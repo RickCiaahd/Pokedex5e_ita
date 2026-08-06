@@ -23,6 +23,7 @@ import '../../services/trainer_path_automation_service.dart';
 import '../../services/trainer_path_passive_service.dart';
 import '../../widgets/navigation/home_leading_button.dart';
 import '../../widgets/profile/trainer_profile_image_picker.dart';
+import 'trainer_sheet_mobile.dart';
 import '../../widgets/tour/guided_tour.dart';
 import '../../widgets/trainer/trainer_path_automation_panel.dart';
 
@@ -867,6 +868,19 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
         leading: const HomeLeadingButton(),
         title: Text(context.uiText('Scheda Allenatore', 'Trainer Sheet')),
         actions: [
+          IconButton(
+            tooltip: context.uiText('Salva scheda', 'Save sheet'),
+            onPressed: _isLoading || _profile == null || _isSaving
+                ? null
+                : _saveProfile,
+            icon: _isSaving
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Icon(Icons.save_outlined),
+          ),
           GuidedTourInfoAction(
             controller: _tourController,
             enabled: !_isLoading && _profile != null,
@@ -877,6 +891,7 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
       body: AnimatedBuilder(
         animation: _tourController,
         builder: (context, _) {
+          final isCompactLayout = MediaQuery.sizeOf(context).width < 760;
           final selectedOriginName = _raceController.text.trim();
           final selectedOrigin = _originByName(selectedOriginName);
 
@@ -937,11 +952,41 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
                           starterAlreadyInTeam: _starterAlreadyInTeam,
                           isSaving: _isSaving,
                           errorMessage: _errorMessage,
+                          mobileAdvancementFooter: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              KeyedSubtree(
+                                key: _automationKey,
+                                child: TrainerPathAutomationPanel(
+                                  trainerPath: _trainerPath,
+                                  resources: _trainerPathResourceDefinitions,
+                                  resourceValues: _trainerPathResources,
+                                  choices: _trainerPathChoiceDefinitions,
+                                  choiceValues: _trainerPathChoices,
+                                  onResourceChanged: _changeTrainerPathResource,
+                                  onChoiceChanged: _changeTrainerPathChoice,
+                                  onShortRest: () =>
+                                      _restoreTrainerPathResources(
+                                        TrainerPathResourceReset.shortRest,
+                                      ),
+                                  onLongRest: () => _applyLongRest(),
+                                ),
+                              ),
+                              if (_transformationUses.isNotEmpty ||
+                                  _transformedPokemonKeys.isNotEmpty) ...[
+                                const SizedBox(height: 12),
+                                _TransformationRestCard(
+                                  usedKinds: _transformationUses,
+                                  pokemonCount: _transformedPokemonKeys.length,
+                                  onLongRest: () => _applyLongRest(),
+                                ),
+                              ],
+                            ],
+                          ),
                           onDecreaseLevel: () => _changeLevel(-1),
                           onIncreaseLevel: () => _changeLevel(1),
-                          onProfileImageChanged: (value) => setState(
-                            () => _profileImageBase64 = value,
-                          ),
+                          onProfileImageChanged: (value) =>
+                              setState(() => _profileImageBase64 = value),
                           onRaceTap: _openRacePicker,
                           onStarterTap: _openStarterPicker,
                           onAddStarterToTeam: _addStarterToTeam,
@@ -957,31 +1002,33 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
                           onSpeedChanged: _changeSpeed,
                           onSave: _saveProfile,
                         ),
-                        const SizedBox(height: 16),
-                        KeyedSubtree(
-                          key: _automationKey,
-                          child: TrainerPathAutomationPanel(
-                            trainerPath: _trainerPath,
-                            resources: _trainerPathResourceDefinitions,
-                            resourceValues: _trainerPathResources,
-                            choices: _trainerPathChoiceDefinitions,
-                            choiceValues: _trainerPathChoices,
-                            onResourceChanged: _changeTrainerPathResource,
-                            onChoiceChanged: _changeTrainerPathChoice,
-                            onShortRest: () => _restoreTrainerPathResources(
-                              TrainerPathResourceReset.shortRest,
+                        if (!isCompactLayout) ...[
+                          const SizedBox(height: 16),
+                          KeyedSubtree(
+                            key: _automationKey,
+                            child: TrainerPathAutomationPanel(
+                              trainerPath: _trainerPath,
+                              resources: _trainerPathResourceDefinitions,
+                              resourceValues: _trainerPathResources,
+                              choices: _trainerPathChoiceDefinitions,
+                              choiceValues: _trainerPathChoices,
+                              onResourceChanged: _changeTrainerPathResource,
+                              onChoiceChanged: _changeTrainerPathChoice,
+                              onShortRest: () => _restoreTrainerPathResources(
+                                TrainerPathResourceReset.shortRest,
+                              ),
+                              onLongRest: () => _applyLongRest(),
                             ),
-                            onLongRest: () => _applyLongRest(),
                           ),
-                        ),
-                        if (_transformationUses.isNotEmpty ||
-                            _transformedPokemonKeys.isNotEmpty) ...[
-                          const SizedBox(height: 12),
-                          _TransformationRestCard(
-                            usedKinds: _transformationUses,
-                            pokemonCount: _transformedPokemonKeys.length,
-                            onLongRest: () => _applyLongRest(),
-                          ),
+                          if (_transformationUses.isNotEmpty ||
+                              _transformedPokemonKeys.isNotEmpty) ...[
+                            const SizedBox(height: 12),
+                            _TransformationRestCard(
+                              usedKinds: _transformationUses,
+                              pokemonCount: _transformedPokemonKeys.length,
+                              onLongRest: () => _applyLongRest(),
+                            ),
+                          ],
                         ],
                       ],
                     ],
@@ -1039,6 +1086,7 @@ class _InteractiveTrainerSheet extends StatelessWidget {
     required this.starterAlreadyInTeam,
     required this.isSaving,
     required this.errorMessage,
+    required this.mobileAdvancementFooter,
     required this.onDecreaseLevel,
     required this.onIncreaseLevel,
     required this.onProfileImageChanged,
@@ -1081,6 +1129,7 @@ class _InteractiveTrainerSheet extends StatelessWidget {
   final bool starterAlreadyInTeam;
   final bool isSaving;
   final String? errorMessage;
+  final Widget mobileAdvancementFooter;
   final VoidCallback onDecreaseLevel;
   final VoidCallback onIncreaseLevel;
   final ValueChanged<String> onProfileImageChanged;
@@ -1105,6 +1154,52 @@ class _InteractiveTrainerSheet extends StatelessWidget {
     final maxSr = TrainerProgression.maxControlledSrForLevel(trainerLevel);
     final width = MediaQuery.sizeOf(context).width;
     final isWide = width >= 980;
+
+    if (width < 760) {
+      return TrainerSheetMobile(
+        nameController: nameController,
+        profileImageBase64: profileImageBase64,
+        moneyController: moneyController,
+        race: race,
+        raceDescription: raceDescription,
+        selectedStarter: selectedStarter,
+        startingPack: startingPack,
+        trainerLevel: trainerLevel,
+        trainerPath: trainerPath,
+        trainerPaths: trainerPaths,
+        abilityScores: abilityScores,
+        armorClass: armorClass,
+        maxHp: maxHp,
+        currentHp: currentHp,
+        speed: speed,
+        pokeslots: pokeslots,
+        maxSr: maxSr,
+        skillProficiencies: skillProficiencies,
+        savingThrowProficiencies: savingThrowProficiencies,
+        specializations: specializations,
+        canAddStarterToTeam: canAddStarterToTeam,
+        starterAlreadyInTeam: starterAlreadyInTeam,
+        isSaving: isSaving,
+        errorMessage: errorMessage,
+        onDecreaseLevel: onDecreaseLevel,
+        onIncreaseLevel: onIncreaseLevel,
+        onProfileImageChanged: onProfileImageChanged,
+        onRaceTap: onRaceTap,
+        onStarterTap: onStarterTap,
+        onAddStarterToTeam: onAddStarterToTeam,
+        onStartingPackTap: onStartingPackTap,
+        onTrainerPathTap: onTrainerPathTap,
+        onSkillToggle: onSkillToggle,
+        onSavingThrowToggle: onSavingThrowToggle,
+        onSpecializationTap: onSpecializationTap,
+        onAbilityScoreChanged: onAbilityScoreChanged,
+        onArmorClassChanged: onArmorClassChanged,
+        onMaxHpChanged: onMaxHpChanged,
+        onCurrentHpChanged: onCurrentHpChanged,
+        onSpeedChanged: onSpeedChanged,
+        advancementFooter: mobileAdvancementFooter,
+      );
+    }
 
     return DecoratedBox(
       decoration: BoxDecoration(
@@ -2875,7 +2970,6 @@ class _TrainerSheetErrorState extends StatelessWidget {
   }
 }
 
-
 class _TransformationRestCard extends StatelessWidget {
   const _TransformationRestCard({
     required this.usedKinds,
@@ -2890,17 +2984,22 @@ class _TransformationRestCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: Theme.of(context).colorScheme.tertiaryContainer.withValues(alpha: 0.45),
+      color: Theme.of(
+        context,
+      ).colorScheme.tertiaryContainer.withValues(alpha: 0.45),
       child: Padding(
         padding: const EdgeInsets.all(14),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              context.uiText('TRASFORMAZIONI UTILIZZATE', 'USED TRANSFORMATIONS'),
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w900,
+              context.uiText(
+                'TRASFORMAZIONI UTILIZZATE',
+                'USED TRANSFORMATIONS',
               ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
             ),
             const SizedBox(height: 6),
             Text(

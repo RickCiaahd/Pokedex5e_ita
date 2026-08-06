@@ -131,8 +131,7 @@ class _TrainerSheetMobileState extends State<TrainerSheetMobile> {
                   trainerLevel: widget.trainerLevel,
                   abilityScores: widget.abilityScores,
                   skillProficiencies: widget.skillProficiencies,
-                  savingThrowProficiencies:
-                      widget.savingThrowProficiencies,
+                  savingThrowProficiencies: widget.savingThrowProficiencies,
                   onAbilityScoreChanged: widget.onAbilityScoreChanged,
                   onSkillToggle: widget.onSkillToggle,
                   onSavingThrowToggle: widget.onSavingThrowToggle,
@@ -205,7 +204,11 @@ class _MobileSectionTabs extends StatelessWidget {
       context.uiText('COMPETENZE', 'SKILLS'),
       context.uiText('AVANZ.', 'PROGRESS'),
     ];
-    final icons = [Icons.badge_outlined, Icons.fact_check_outlined, Icons.route];
+    final icons = [
+      Icons.badge_outlined,
+      Icons.fact_check_outlined,
+      Icons.route,
+    ];
 
     return DecoratedBox(
       decoration: BoxDecoration(
@@ -221,7 +224,10 @@ class _MobileSectionTabs extends StatelessWidget {
                 onTap: () => onSelected(index),
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 150),
-                  padding: const EdgeInsets.symmetric(vertical: 9, horizontal: 3),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 9,
+                    horizontal: 3,
+                  ),
                   decoration: BoxDecoration(
                     color: index == selectedIndex
                         ? Theme.of(context).colorScheme.primaryContainer
@@ -238,9 +244,8 @@ class _MobileSectionTabs extends StatelessWidget {
                         child: Text(
                           labels[index],
                           maxLines: 1,
-                          style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                            fontWeight: FontWeight.w900,
-                          ),
+                          style: Theme.of(context).textTheme.labelSmall
+                              ?.copyWith(fontWeight: FontWeight.w900),
                         ),
                       ),
                     ],
@@ -323,7 +328,9 @@ class _MobileOverview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final nextPokeslot = TrainerProgression.nextPokeslotLevel(trainerLevel);
-    final nextControl = TrainerProgression.nextControlUpgradeLevel(trainerLevel);
+    final nextControl = TrainerProgression.nextControlUpgradeLevel(
+      trainerLevel,
+    );
     final progressionNotes = <String>[
       if (nextPokeslot != null)
         context.uiText(
@@ -398,7 +405,10 @@ class _MobileOverview extends StatelessWidget {
           spacing: 6,
           runSpacing: 6,
           children: [
-            _InfoChip(label: 'COMP', value: _signed(_proficiency(trainerLevel))),
+            _InfoChip(
+              label: 'COMP',
+              value: _signed(_proficiency(trainerLevel)),
+            ),
             _InfoChip(
               label: context.uiText('SLOT', 'SLOTS'),
               value: '$pokeslots',
@@ -633,7 +643,10 @@ class _MobileCompetencies extends StatelessWidget {
           children: [
             Expanded(
               child: _MobileSectionTitle(
-                title: context.uiText('ABILITÀ COMPETENTI', 'SKILL PROFICIENCIES'),
+                title: context.uiText(
+                  'ABILITÀ COMPETENTI',
+                  'SKILL PROFICIENCIES',
+                ),
               ),
             ),
             TextButton.icon(
@@ -720,7 +733,9 @@ class _MobileCompetencies extends StatelessWidget {
                           TrainerManualOptions.savingThrows[(row * 3) + column];
                       final proficient = selectedSavingThrows.contains(ability);
                       return _SavingThrowTile(
-                        label: TrainerUiLocalization.abilityAbbreviation(ability),
+                        label: TrainerUiLocalization.abilityAbbreviation(
+                          ability,
+                        ),
                         value: _signed(
                           _checkTotal(
                             abilityScores: abilityScores,
@@ -859,7 +874,10 @@ class _MobileProgression extends StatelessWidget {
           level: 7,
           label: context.uiText('Specializzazione', 'Specialization'),
           value: _specializationAt(1).isEmpty
-              ? context.uiText('Scegli specializzazione', 'Choose specialization')
+              ? context.uiText(
+                  'Scegli specializzazione',
+                  'Choose specialization',
+                )
               : TrainerUiLocalization.specializationName(_specializationAt(1)),
           detail: _specializationAt(1).isEmpty
               ? context.uiText(
@@ -879,7 +897,10 @@ class _MobileProgression extends StatelessWidget {
           level: 18,
           label: context.uiText('Specializzazione', 'Specialization'),
           value: _specializationAt(2).isEmpty
-              ? context.uiText('Scegli specializzazione', 'Choose specialization')
+              ? context.uiText(
+                  'Scegli specializzazione',
+                  'Choose specialization',
+                )
               : TrainerUiLocalization.specializationName(_specializationAt(2)),
           detail: _specializationAt(2).isEmpty
               ? context.uiText(
@@ -942,27 +963,29 @@ class _ProgressionRow extends StatelessWidget {
         child: Text(
           'LV\n${entry.level}',
           textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.labelSmall?.copyWith(
-            fontWeight: FontWeight.w900,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w900),
         ),
       ),
       title: Text(
         entry.label.toUpperCase(),
-        style: Theme.of(context).textTheme.labelSmall?.copyWith(
-          fontWeight: FontWeight.w900,
-        ),
+        style: Theme.of(
+          context,
+        ).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w900),
       ),
       subtitle: Text(
         entry.value,
         maxLines: 2,
         overflow: TextOverflow.ellipsis,
-        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-          fontWeight: FontWeight.w800,
-        ),
+        style: Theme.of(
+          context,
+        ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800),
       ),
       trailing: Icon(entry.editable ? Icons.edit_outlined : Icons.info_outline),
-      onTap: entry.onTap ?? () => _showTextSheet(context, entry.value, entry.detail),
+      onTap:
+          entry.onTap ??
+          () => _showTextSheet(context, entry.value, entry.detail),
     );
   }
 }
@@ -989,15 +1012,12 @@ class _CompactChoiceLine extends StatelessWidget {
           children: [
             Text(
               label,
-              style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                fontWeight: FontWeight.w900,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w900),
             ),
             const Spacer(),
-            Text(
-              value,
-              style: const TextStyle(fontWeight: FontWeight.w900),
-            ),
+            Text(value, style: const TextStyle(fontWeight: FontWeight.w900)),
             const SizedBox(width: 4),
             const Icon(Icons.edit_outlined, size: 17),
           ],
@@ -1043,10 +1063,7 @@ class _MobileSectionTitle extends StatelessWidget {
           ),
         ),
         if (trailing != null)
-          Text(
-            trailing!,
-            style: const TextStyle(fontWeight: FontWeight.w900),
-          ),
+          Text(trailing!, style: const TextStyle(fontWeight: FontWeight.w900)),
       ],
     );
   }
@@ -1113,10 +1130,7 @@ class _CompactChoiceCard extends StatelessWidget {
                 ),
               ),
               if (actionLabel != null)
-                TextButton(
-                  onPressed: onAction,
-                  child: Text(actionLabel!),
-                )
+                TextButton(onPressed: onAction, child: Text(actionLabel!))
               else
                 const Icon(Icons.chevron_right),
             ],
@@ -1153,9 +1167,9 @@ class _CompactStatTile extends StatelessWidget {
                 fit: BoxFit.scaleDown,
                 child: Text(
                   label,
-                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    fontWeight: FontWeight.w900,
-                  ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w900),
                 ),
               ),
               const SizedBox(height: 3),
@@ -1200,15 +1214,12 @@ class _CompactAbilityTile extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
           child: Column(
             children: [
-              Text(
-                label,
-                style: const TextStyle(fontWeight: FontWeight.w900),
-              ),
+              Text(label, style: const TextStyle(fontWeight: FontWeight.w900)),
               Text(
                 '$score',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w900,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
               ),
               Text(
                 _signed(modifier),
@@ -1253,14 +1264,17 @@ class _SavingThrowTile extends StatelessWidget {
                   const Icon(Icons.check_circle, size: 14),
                   const SizedBox(width: 3),
                 ],
-                Text(label, style: const TextStyle(fontWeight: FontWeight.w900)),
+                Text(
+                  label,
+                  style: const TextStyle(fontWeight: FontWeight.w900),
+                ),
               ],
             ),
             Text(
               value,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w900,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
             ),
           ],
         ),
@@ -1283,7 +1297,8 @@ int _checkTotal({
 }) {
   final score =
       abilityScores[ability] ?? UserProfile.defaultAbilityScores[ability] ?? 10;
-  return _abilityModifier(score) + (proficient ? _proficiency(trainerLevel) : 0);
+  return _abilityModifier(score) +
+      (proficient ? _proficiency(trainerLevel) : 0);
 }
 
 String _signed(int value) => value >= 0 ? '+$value' : '$value';
@@ -1311,9 +1326,9 @@ Future<void> _showTextSheet(
         children: [
           Text(
             title,
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.w900,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
           ),
           const SizedBox(height: 10),
           Text(description),
@@ -1347,9 +1362,9 @@ Future<void> _showCounterSheet({
             children: [
               Text(
                 title,
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w900,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
               ),
               const SizedBox(height: 16),
               Row(
@@ -1360,7 +1375,12 @@ Future<void> _showCounterSheet({
                         ? null
                         : () {
                             onDecrease();
-                            setSheetState(() => value = (value - step).clamp(minValue, maxValue));
+                            setSheetState(
+                              () => value = (value - step).clamp(
+                                minValue,
+                                maxValue,
+                              ),
+                            );
                           },
                     icon: const Icon(Icons.remove),
                   ),
@@ -1369,9 +1389,8 @@ Future<void> _showCounterSheet({
                     child: Text(
                       '$value',
                       textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.w900,
-                      ),
+                      style: Theme.of(context).textTheme.headlineMedium
+                          ?.copyWith(fontWeight: FontWeight.w900),
                     ),
                   ),
                   IconButton.filledTonal(
@@ -1379,7 +1398,12 @@ Future<void> _showCounterSheet({
                         ? null
                         : () {
                             onIncrease();
-                            setSheetState(() => value = (value + step).clamp(minValue, maxValue));
+                            setSheetState(
+                              () => value = (value + step).clamp(
+                                minValue,
+                                maxValue,
+                              ),
+                            );
                           },
                     icon: const Icon(Icons.add),
                   ),
@@ -1451,9 +1475,9 @@ Future<void> _showHpSheet({
             children: [
               Text(
                 context.uiText('Punti Ferita', 'Hit Points'),
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w900,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
               ),
               const SizedBox(height: 12),
               counter(
@@ -1517,9 +1541,9 @@ Future<void> _showAbilitySheet({
             children: [
               Text(
                 TrainerUiLocalization.abilityAbbreviation(ability),
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w900,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
               ),
               const SizedBox(height: 6),
               Text(
@@ -1546,9 +1570,8 @@ Future<void> _showAbilitySheet({
                     child: Text(
                       '$current',
                       textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.w900,
-                      ),
+                      style: Theme.of(context).textTheme.headlineMedium
+                          ?.copyWith(fontWeight: FontWeight.w900),
                     ),
                   ),
                   IconButton.filledTonal(
@@ -1597,9 +1620,9 @@ Future<void> _showSkillsSheet({
                 padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
                 child: Text(
                   context.uiText('Gestisci abilità', 'Manage skills'),
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w900,
-                  ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
                 ),
               ),
               const Divider(height: 1),
@@ -1676,18 +1699,21 @@ Future<void> _showSavingThrowsSheet({
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(
-                context.uiText('Gestisci tiri salvezza', 'Manage saving throws'),
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w900,
+                context.uiText(
+                  'Gestisci tiri salvezza',
+                  'Manage saving throws',
                 ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
               ),
               const SizedBox(height: 8),
               for (final ability in TrainerManualOptions.savingThrows)
                 Builder(
                   builder: (context) {
-                    final locked =
-                        TrainerManualOptions.fixedSavingThrowProficiencies
-                            .contains(ability);
+                    final locked = TrainerManualOptions
+                        .fixedSavingThrowProficiencies
+                        .contains(ability);
                     final checked = selected.contains(ability);
                     return CheckboxListTile(
                       dense: true,

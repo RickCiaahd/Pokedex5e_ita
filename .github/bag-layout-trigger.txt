@@ -1,1 +1,0 @@
-Applica il layout compatto dello Zaino con filtri in alto, saldo nell'AppBar e barra azioni fissa in basso.

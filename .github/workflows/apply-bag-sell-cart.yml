@@ -1,0 +1,52 @@
+name: Apply bag sell cart
+
+on:
+  push:
+    branches:
+      - feature/compact-pokemon-detail-v2
+    paths:
+      - tool/apply_bag_sell_cart.py
+      - .github/workflows/apply-bag-sell-cart.yml
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/compact-pokemon-detail-v2
+          fetch-depth: 0
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.4'
+          cache: true
+
+      - name: Apply implementation
+        run: python tool/apply_bag_sell_cart.py
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Format
+        run: dart format lib/screens/bag/bag_screen.dart lib/repositories/bag_inventory_repository.dart
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Targeted tests
+        run: |
+          flutter test test/trainer_manual_identity_fields_test.dart
+          flutter test test/battle_quick_item_service_test.dart
+
+      - name: Commit implementation
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add lib/screens/bag/bag_screen.dart lib/repositories/bag_inventory_repository.dart
+          git commit -m "Aggiungi vendita multipla degli oggetti"
+          git push origin HEAD:feature/compact-pokemon-detail-v2

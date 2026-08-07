@@ -50,6 +50,7 @@ Widget _dialogHost({
   double textScale = 1,
 }) {
   return MaterialApp(
+    locale: const Locale('it'),
     builder: (context, child) => MediaQuery(
       data: MediaQuery.of(
         context,
@@ -76,6 +77,16 @@ Widget _dialogHost({
       ),
     ),
   );
+}
+
+Future<void> _openAndWaitForForms(WidgetTester tester) async {
+  await tester.tap(find.text('Apri'));
+  await tester.pump();
+  for (var attempt = 0; attempt < 40; attempt++) {
+    await tester.pump(const Duration(milliseconds: 100));
+    if (find.byType(LinearProgressIndicator).evaluate().isEmpty) return;
+  }
+  fail('Il caricamento delle forme non è terminato nel tempo previsto.');
 }
 
 void main() {
@@ -119,8 +130,7 @@ void main() {
         );
 
     await tester.pumpWidget(_dialogHost(pokemon: pokemon, entry: entry));
-    await tester.tap(find.text('Apri'));
-    await tester.pumpAndSettle();
+    await _openAndWaitForForms(tester);
 
     expect(tester.takeException(), isNull);
     expect(find.text('Rattata #019'), findsOneWidget);
@@ -147,8 +157,7 @@ void main() {
     );
 
     await tester.pumpWidget(_dialogHost(pokemon: pokemon, entry: entry));
-    await tester.tap(find.text('Apri'));
-    await tester.pumpAndSettle();
+    await _openAndWaitForForms(tester);
 
     expect(tester.takeException(), isNull);
     expect(find.text('Bulbasaur #001'), findsOneWidget);
@@ -203,10 +212,9 @@ void main() {
     await tester.pumpWidget(
       _dialogHost(pokemon: pokemon, entry: entry, textScale: 1.5),
     );
-    await tester.tap(find.text('Apri'));
-    await tester.pumpAndSettle();
+    await _openAndWaitForForms(tester);
     await tester.tap(find.text('Alola'));
-    await tester.pumpAndSettle();
+    await tester.pump();
 
     expect(tester.takeException(), isNull);
     expect(find.text('Pokémon Graffimiao'), findsOneWidget);

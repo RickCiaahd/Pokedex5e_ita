@@ -100,6 +100,7 @@ class _CompactAttributeTile extends StatelessWidget {
     final colors = Theme.of(context).colorScheme;
 
     return Semantics(
+      container: true,
       label: '$label: $score, $modifierLabel',
       excludeSemantics: true,
       child: DecoratedBox(

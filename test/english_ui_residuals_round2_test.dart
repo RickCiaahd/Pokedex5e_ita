@@ -49,7 +49,7 @@ void main() {
         'EVOLUTION REQUIREMENTS',
         'LOYALTY',
         'SAVING THROWS',
-        'Equipped moves',
+        'MOVES',
       ],
       'lib/services/npc_trainer_generator_service.dart': [
         '_personalitiesEn',

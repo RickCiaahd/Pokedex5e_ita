@@ -186,20 +186,26 @@ class _Pokedex5EAppState extends State<Pokedex5EApp> {
         animation: _localeController,
         builder: (context, _) {
           final explicitLocale = _localeController.locale;
-          if (explicitLocale != null) {
-            GameCatalogLocale.setLanguageCode(explicitLocale.languageCode);
-          }
+          final platformLocales =
+              WidgetsBinding.instance.platformDispatcher.locales;
+          final catalogLocale =
+              explicitLocale ??
+              _localeController.resolveDeviceLocales(platformLocales);
+          GameCatalogLocale.setLanguageCode(catalogLocale.languageCode);
 
           return MaterialApp(
             title: 'Trainer Atlas 5e',
             onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
             debugShowCheckedModeBanner: false,
-            locale: _localeController.locale,
+            locale: explicitLocale,
             supportedLocales: AppLocalizations.supportedLocales,
             localizationsDelegates: AppLocalizations.localizationsDelegates,
-            localeResolutionCallback: (deviceLocale, supportedLocales) {
-              final resolvedLocale = _localeController.resolveDeviceLocale(
-                deviceLocale,
+            localeListResolutionCallback: (deviceLocales, supportedLocales) {
+              final effectiveDeviceLocales =
+                  deviceLocales ??
+                  WidgetsBinding.instance.platformDispatcher.locales;
+              final resolvedLocale = _localeController.resolveDeviceLocales(
+                effectiveDeviceLocales,
               );
               GameCatalogLocale.setLanguageCode(resolvedLocale.languageCode);
               return resolvedLocale;

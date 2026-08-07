@@ -8,6 +8,7 @@ on:
       - '.github/workflows/temp-english-ui-localization-pass.yml'
       - 'tool/apply_english_ui_localization_pass.py'
       - 'tool/fix_english_ui_localization_patch.py'
+      - 'tool/repair_english_ui_localization_output.py'
 
 permissions:
   contents: write
@@ -28,9 +29,12 @@ jobs:
         run: |
           python tool/fix_english_ui_localization_patch.py
           python -m py_compile tool/apply_english_ui_localization_pass.py
+          python -m py_compile tool/repair_english_ui_localization_output.py
 
       - name: Apply English localization pass
-        run: python tool/apply_english_ui_localization_pass.py
+        run: |
+          python tool/apply_english_ui_localization_pass.py
+          python tool/repair_english_ui_localization_output.py
 
       - name: Set up pinned Flutter
         uses: subosito/flutter-action@v2
@@ -106,6 +110,7 @@ jobs:
         run: |
           rm -f tool/apply_english_ui_localization_pass.py
           rm -f tool/fix_english_ui_localization_patch.py
+          rm -f tool/repair_english_ui_localization_output.py
           rm -f .github/workflows/temp-english-ui-localization-pass.yml
 
       - name: Commit localization pass

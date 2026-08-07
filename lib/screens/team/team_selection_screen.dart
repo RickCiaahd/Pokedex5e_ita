@@ -1185,6 +1185,9 @@ class _TeamSlotCard extends StatelessWidget {
                                     child: LinearProgressIndicator(
                                       value: hpProgress,
                                       minHeight: 6,
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                        _teamHpProgressColor(hpProgress),
+                                      ),
                                       backgroundColor:
                                           colorScheme.surfaceContainerHighest,
                                     ),
@@ -1331,6 +1334,12 @@ class _TeamSlotMenu extends StatelessWidget {
       ),
     );
   }
+}
+
+Color _teamHpProgressColor(double value) {
+  if (value <= 0.25) return Colors.red;
+  if (value <= 0.5) return Colors.amber;
+  return Colors.green;
 }
 
 enum _TeamTransferAction { exportTeam, shareTeam, importTeam }

@@ -1,0 +1,87 @@
+name: Build latest Android test APK v2 once
+
+on:
+  push:
+    branches:
+      - feature/compact-pokemon-detail-v2
+    paths:
+      - '.github/workflows/temp-build-latest-test-apk-v2.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  build-apk:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Check out triggering commit
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 4
+
+      - name: Verify app source commit
+        id: source
+        shell: bash
+        run: |
+          APP_SHA="fa0a368274325a1a590375ad31d99867ab1285f2"
+          git cat-file -e "$APP_SHA^{commit}"
+          if ! git diff --quiet "$APP_SHA"..HEAD -- . \
+            ':(exclude).github/workflows/temp-build-latest-test-apk.yml' \
+            ':(exclude).github/workflows/temp-build-latest-test-apk-v2.yml'; then
+            echo "Application files changed after expected source commit $APP_SHA" >&2
+            git diff --stat "$APP_SHA"..HEAD -- . \
+              ':(exclude).github/workflows/temp-build-latest-test-apk.yml' \
+              ':(exclude).github/workflows/temp-build-latest-test-apk-v2.yml'
+            exit 1
+          fi
+          echo "sha=$APP_SHA" >> "$GITHUB_OUTPUT"
+          echo "short=${APP_SHA:0:7}" >> "$GITHUB_OUTPUT"
+
+      - name: Set up pinned Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.4'
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze project
+        run: flutter analyze --no-fatal-infos
+
+      - name: Run key regression tests
+        run: |
+          flutter test test/battle_transformation_test.dart --reporter expanded
+          flutter test test/english_ui_localization_test.dart --reporter expanded
+
+      - name: Build universal debug APK
+        run: flutter build apk --debug
+
+      - name: Rename APK
+        shell: bash
+        run: |
+          cp build/app/outputs/flutter-apk/app-debug.apk "Trainer-Atlas-5e-test-${{ steps.source.outputs.short }}.apk"
+          ls -lh "Trainer-Atlas-5e-test-${{ steps.source.outputs.short }}.apk"
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Trainer-Atlas-5e-test-apk-${{ steps.source.outputs.short }}
+          path: Trainer-Atlas-5e-test-${{ steps.source.outputs.short }}.apk
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Remove one-shot workflows
+        if: success()
+        shell: bash
+        run: |
+          rm -f .github/workflows/temp-build-latest-test-apk.yml
+          rm -f .github/workflows/temp-build-latest-test-apk-v2.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Rimuovi workflow temporanei APK di collaudo'
+          git push origin HEAD:feature/compact-pokemon-detail-v2

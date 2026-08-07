@@ -188,7 +188,7 @@ battle = sub_once(
 battle = replace_once(
     battle,
     """                            const SizedBox(height: 12),\n                            PokemonBattleAttributesCard(attributes: attributes),\n""",
-    """,
+    "",
     'remove old attributes position',
 )
 

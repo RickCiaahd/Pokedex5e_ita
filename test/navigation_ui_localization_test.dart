@@ -17,10 +17,7 @@ void main() {
         "'Profili allenatore'",
         "'Trainer profiles'",
       ],
-      'lib/screens/bag/bag_screen.dart': [
-        "'Zaino allenatore'",
-        "'Trainer Bag'",
-      ],
+      'lib/screens/bag/bag_screen.dart': ["'Zaino'", "'Bag'"],
       'lib/screens/pc/pokemon_pc_screen.dart': ["'PC Pokémon'", "'Pokémon PC'"],
       'lib/screens/capture/capture_pokemon_screen.dart': [
         "'REGISTRA CATTURA'",

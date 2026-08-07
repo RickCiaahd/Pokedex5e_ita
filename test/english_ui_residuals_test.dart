@@ -66,8 +66,8 @@ void main() {
         "'Update environment'",
       ],
       'lib/screens/bag/bag_screen.dart': [
-        "'Trainer Bag'",
-        "'Find item'",
+        "'Bag'",
+        "'Search items'",
         "'Quantity",
       ],
       'lib/screens/trainer/trainer_sheet_screen.dart': [

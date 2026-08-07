@@ -101,6 +101,7 @@ class _CompactAttributeTile extends StatelessWidget {
 
     return Semantics(
       label: '$label: $score, $modifierLabel',
+      excludeSemantics: true,
       child: DecoratedBox(
         decoration: BoxDecoration(
           color: colors.surfaceContainerHighest.withValues(alpha: 0.55),

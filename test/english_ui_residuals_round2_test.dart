@@ -42,7 +42,7 @@ void main() {
       'lib/screens/team/team_selection_screen.dart': [
         'Team',
         'Empty slot',
-        'Tap to choose a Pokémon',
+        'Tap to choose',
       ],
       'lib/screens/pokemon/pokemon_detail_screen_legacy.dart': [
         'AVAILABLE ASI',

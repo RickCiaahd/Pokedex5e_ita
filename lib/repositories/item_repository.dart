@@ -95,7 +95,12 @@ class ItemRepository {
           .toList(growable: true);
 
       items.addAll(await _getTmItems());
-      items.addAll(TrainerStartingEquipment.catalogItems);
+      final existingIds = items.map((item) => item.id).toSet();
+      for (final item in TrainerStartingEquipment.catalogItems) {
+        if (existingIds.add(item.id)) {
+          items.add(item);
+        }
+      }
 
       items.sort((a, b) {
         final typeCompare = a.type.compareTo(b.type);

@@ -41,9 +41,12 @@ void main() {
       contains('_canCancelFlow ? widget.onCancel : null'),
     );
     expect(onboardingSource, contains('canPop: _canPopRoute'));
-    expect(onboardingSource, contains('static const int _totalSteps = 11'));
+    expect(onboardingSource, contains('static const int _totalSteps = 12'));
     expect(onboardingSource, contains("'Scegli la tua immagine'"));
     expect(onboardingSource, contains("'Choose your image'"));
-    expect(onboardingSource, contains('_step == 9 && _errorMessage != null'));
+    expect(
+      onboardingSource,
+      contains('if (_errorMessage != null && _step >= 10) ...['),
+    );
   });
 }

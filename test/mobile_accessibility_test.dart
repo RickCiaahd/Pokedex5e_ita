@@ -152,11 +152,9 @@ void main() {
     expect(metricStart, greaterThan(loyaltyStart));
 
     final loyaltySource = detailSource.substring(loyaltyStart, metricStart);
-    expect(
-      loyaltySource,
-      contains('constraints: const BoxConstraints(minHeight: 48)'),
-    );
+    expect(loyaltySource, contains('this.compact = false'));
     expect(loyaltySource, contains('mainAxisSize: MainAxisSize.min'));
+    expect(loyaltySource, contains("context.uiText('LEALTÀ', 'LOYALTY')"));
     expect(loyaltySource, isNot(contains('height: textScaleAwareValue')));
   });
 

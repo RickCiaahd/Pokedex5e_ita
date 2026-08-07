@@ -17,6 +17,9 @@ void main() {
   testWidgets('mostra tutte le caratteristiche e i modificatori', (
     tester,
   ) async {
+    final semantics = tester.ensureSemantics();
+    addTearDown(semantics.dispose);
+
     await tester.pumpWidget(
       const MaterialApp(
         locale: Locale('it'),
@@ -31,18 +34,19 @@ void main() {
     );
 
     expect(find.text('CARATTERISTICHE'), findsOneWidget);
-    expect(
-      find.text(
-        'Valori effettivi e modificatori da usare per prove, tiri salvezza e iniziativa del Pokémon.',
-      ),
-      findsOneWidget,
-    );
-    expect(find.text('Forza'), findsOneWidget);
-    expect(find.text('Destrezza'), findsOneWidget);
-    expect(find.text('Costituzione'), findsOneWidget);
-    expect(find.text('Intelligenza'), findsOneWidget);
-    expect(find.text('Saggezza'), findsOneWidget);
-    expect(find.text('Carisma'), findsOneWidget);
+    for (final abbreviation in ['STR', 'DEX', 'CON', 'INT', 'WIS', 'CHA']) {
+      expect(find.text(abbreviation), findsOneWidget);
+    }
+    for (final label in [
+      'Forza: 8, -1',
+      'Destrezza: 12, +1',
+      'Costituzione: 14, +2',
+      'Intelligenza: 10, +0',
+      'Saggezza: 16, +3',
+      'Carisma: 6, -2',
+    ]) {
+      expect(find.bySemanticsLabel(label), findsOneWidget);
+    }
     expect(find.text('-1'), findsOneWidget);
     expect(find.text('+1'), findsOneWidget);
     expect(find.text('+2'), findsOneWidget);

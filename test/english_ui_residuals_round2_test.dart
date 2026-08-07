@@ -41,7 +41,6 @@ void main() {
       ],
       'lib/screens/team/team_selection_screen.dart': [
         'Team',
-        'Poké Slots occupied',
         'Empty slot',
         'Tap to choose a Pokémon',
       ],

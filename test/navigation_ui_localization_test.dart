@@ -29,7 +29,9 @@ void main() {
     };
 
     for (final entry in expectations.entries) {
-      final source = File(entry.key).readAsStringSync();
+      final source = entry.key == 'lib/screens/bag/bag_screen.dart'
+          ? _bagSource()
+          : File(entry.key).readAsStringSync();
       expect(source, contains("import '../../localization/ui_text.dart';"));
       for (final text in entry.value) {
         expect(
@@ -40,4 +42,14 @@ void main() {
       }
     }
   });
+}
+
+String _bagSource() {
+  final files = Directory('lib/screens/bag')
+      .listSync()
+      .whereType<File>()
+      .where((file) => file.path.endsWith('.dart'))
+      .toList()
+    ..sort((a, b) => a.path.compareTo(b.path));
+  return files.map((file) => file.readAsStringSync()).join('\n');
 }

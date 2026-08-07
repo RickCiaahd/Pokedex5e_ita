@@ -8,7 +8,7 @@ on:
       - '.github/workflows/temp-build-system-locale-apk.yml'
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build-apk:
@@ -20,19 +20,18 @@ jobs:
       - name: Check out triggering commit
         uses: actions/checkout@v4
         with:
-          fetch-depth: 2
+          fetch-depth: 4
 
-      - name: Verify app source commit
-        id: source
+      - name: Verify locale fix source
         shell: bash
         run: |
-          APP_SHA="$(git rev-parse HEAD^)"
-          if [ "$APP_SHA" != "ece221d560102d465a6c1908e9a4bcdf1c5f8b74" ]; then
-            echo "Unexpected app source commit: $APP_SHA" >&2
+          APP_SHA="ece221d560102d465a6c1908e9a4bcdf1c5f8b74"
+          git cat-file -e "$APP_SHA^{commit}"
+          if ! git diff --quiet "$APP_SHA"..HEAD -- . ':(exclude).github/workflows/temp-build-system-locale-apk.yml'; then
+            echo "Application files changed after expected locale fix commit $APP_SHA" >&2
+            git diff --stat "$APP_SHA"..HEAD -- . ':(exclude).github/workflows/temp-build-system-locale-apk.yml'
             exit 1
           fi
-          echo "sha=$APP_SHA" >> "$GITHUB_OUTPUT"
-          echo "short=${APP_SHA:0:7}" >> "$GITHUB_OUTPUT"
 
       - name: Set up pinned Flutter
         uses: subosito/flutter-action@v2
@@ -43,8 +42,21 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Check formatting
-        run: dart format --output=none --set-exit-if-changed lib/app.dart lib/localization/app_locale_controller.dart test/app_locale_controller_test.dart
+      - name: Format locale fix and commit formatting
+        id: source
+        shell: bash
+        run: |
+          dart format lib/app.dart lib/localization/app_locale_controller.dart test/app_locale_controller_test.dart
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add lib/app.dart lib/localization/app_locale_controller.dart test/app_locale_controller_test.dart
+          if ! git diff --cached --quiet; then
+            git commit -m 'Formatta il fix della lingua del dispositivo'
+            git push origin HEAD:feature/compact-pokemon-detail-v2
+          fi
+          APP_SHA="$(git rev-parse HEAD)"
+          echo "sha=$APP_SHA" >> "$GITHUB_OUTPUT"
+          echo "short=${APP_SHA:0:7}" >> "$GITHUB_OUTPUT"
 
       - name: Analyze locale fix
         run: flutter analyze --no-fatal-infos lib/app.dart lib/localization/app_locale_controller.dart test/app_locale_controller_test.dart

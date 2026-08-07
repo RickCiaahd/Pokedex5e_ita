@@ -1,0 +1,97 @@
+name: Test Pokedex popup and build APK once
+
+on:
+  push:
+    branches:
+      - feature/compact-pokemon-detail-v2
+    paths:
+      - .github/workflows/temp-pokedex-popup-apk.yml
+
+permissions:
+  contents: write
+
+jobs:
+  test-and-build:
+    if: startsWith(github.event.head_commit.message, 'Testa popup Pokédex e crea APK')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out feature branch
+        uses: actions/checkout@v4
+        with:
+          ref: feature/compact-pokemon-detail-v2
+          fetch-depth: 0
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.4'
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Format Pokedex popup files
+        run: >-
+          dart format
+          lib/localization/pokemon_form_localization.dart
+          lib/widgets/pokedex/pokemon_summary_dialog.dart
+          test/pokemon_summary_dialog_layout_test.dart
+          test/pokemon_form_localization_test.dart
+
+      - name: Analyze Pokedex popup files
+        run: >-
+          flutter analyze
+          lib/localization/pokemon_form_localization.dart
+          lib/widgets/pokedex/pokemon_summary_dialog.dart
+          lib/screens/pokedex/pokedex_screen.dart
+          test/pokemon_summary_dialog_layout_test.dart
+          test/pokemon_form_localization_test.dart
+
+      - name: Run Pokedex popup tests
+        run: >-
+          flutter test
+          test/pokemon_summary_dialog_layout_test.dart
+          test/pokemon_form_localization_test.dart
+          test/pokemon_localization_integrity_test.dart
+
+      - name: Remove one-shot workflow and commit formatting
+        shell: bash
+        run: |
+          rm -f .github/workflows/temp-pokedex-popup-apk.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Verifica e pulisci il popup Pokédex"
+          git push origin HEAD:feature/compact-pokemon-detail-v2
+
+      - name: Build Android debug APK
+        run: flutter build apk --debug
+
+      - name: Prepare artifact
+        shell: bash
+        run: |
+          BUILD_SHA="$(git rev-parse HEAD)"
+          SHORT_SHA="${BUILD_SHA::7}"
+          mkdir -p dist
+          cp build/app/outputs/flutter-apk/app-debug.apk "dist/Pokedex5e-pokedex-popup-test-${SHORT_SHA}.apk"
+          {
+            echo "Branch: feature/compact-pokemon-detail-v2"
+            echo "Commit: ${BUILD_SHA}"
+            echo "Flutter: 3.44.4"
+            echo "Build: debug APK"
+            echo "Includes: compact Pokedex popup, single-form simplification, Italian regional form descriptions"
+          } > dist/BUILD-INFO.txt
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Pokedex5e-pokedex-popup-test-apk
+          path: dist/
+          retention-days: 30

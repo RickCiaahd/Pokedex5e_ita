@@ -100,27 +100,35 @@ class _PokemonSummaryDialogState extends State<PokemonSummaryDialog> {
       );
     }
 
-    for (final definition in widget.pokemon.formDefinitions) {
-      if (definition.gender != null) continue;
-      addForm(definition.displayName);
-    }
-    for (final choice in await PokemonAssetPaths.formChoices(widget.pokemon)) {
-      addForm(choice.name);
-    }
-    addForm(_selectedFormName);
-
-    final forms = formsByKey.values.toList(growable: false)
+    List<String?> sortedForms() => formsByKey.values.toList(growable: false)
       ..sort((a, b) {
         if (a == null) return -1;
         if (b == null) return 1;
         return a.toLowerCase().compareTo(b.toLowerCase());
       });
 
+    for (final definition in widget.pokemon.formDefinitions) {
+      if (definition.gender != null) continue;
+      addForm(definition.displayName);
+    }
+    addForm(_selectedFormName);
+
+    // Le forme già note dai dati del Pokémon sono sufficienti per rendere il
+    // popup immediatamente utilizzabile. Le eventuali forme scoperte dagli
+    // asset vengono aggiunte in seguito senza bloccare il contenuto con uno
+    // spinner, cosa particolarmente importante sui dispositivi più lenti.
     if (!mounted) return;
     setState(() {
-      _forms = forms;
+      _forms = sortedForms();
       _loadingForms = false;
     });
+
+    final assetChoices = await PokemonAssetPaths.formChoices(widget.pokemon);
+    for (final choice in assetChoices) {
+      addForm(choice.name);
+    }
+    if (!mounted) return;
+    setState(() => _forms = sortedForms());
   }
 
   PokedexFormEntry get _selectedFormEntry =>

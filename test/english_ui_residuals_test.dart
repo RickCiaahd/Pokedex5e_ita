@@ -29,34 +29,36 @@ void main() {
   ) async {
     GameCatalogLocale.setLanguageCode('en');
     final semantics = tester.ensureSemantics();
-    addTearDown(semantics.dispose);
-
-    await tester.pumpWidget(
-      const MaterialApp(
-        locale: Locale('en'),
-        home: Scaffold(
-          body: PokemonBattleAttributesCard(
-            attributes: {
-              'STR': 13,
-              'DEX': 12,
-              'CON': 12,
-              'INT': 6,
-              'WIS': 10,
-              'CHA': 10,
-            },
+    try {
+      await tester.pumpWidget(
+        const MaterialApp(
+          locale: Locale('en'),
+          home: Scaffold(
+            body: PokemonBattleAttributesCard(
+              attributes: {
+                'STR': 13,
+                'DEX': 12,
+                'CON': 12,
+                'INT': 6,
+                'WIS': 10,
+                'CHA': 10,
+              },
+            ),
           ),
         ),
-      ),
-    );
+      );
 
-    expect(find.text('ABILITY SCORES'), findsOneWidget);
-    expect(find.bySemanticsLabel('Strength: 13, +1'), findsOneWidget);
-    expect(find.bySemanticsLabel('Dexterity: 12, +1'), findsOneWidget);
-    expect(find.bySemanticsLabel('Constitution: 12, +1'), findsOneWidget);
-    expect(find.bySemanticsLabel('Intelligence: 6, -2'), findsOneWidget);
-    expect(find.bySemanticsLabel('Wisdom: 10, +0'), findsOneWidget);
-    expect(find.bySemanticsLabel('Charisma: 10, +0'), findsOneWidget);
-    expect(find.text('CARATTERISTICHE'), findsNothing);
+      expect(find.text('ABILITY SCORES'), findsOneWidget);
+      expect(find.bySemanticsLabel('Strength: 13, +1'), findsOneWidget);
+      expect(find.bySemanticsLabel('Dexterity: 12, +1'), findsOneWidget);
+      expect(find.bySemanticsLabel('Constitution: 12, +1'), findsOneWidget);
+      expect(find.bySemanticsLabel('Intelligence: 6, -2'), findsOneWidget);
+      expect(find.bySemanticsLabel('Wisdom: 10, +0'), findsOneWidget);
+      expect(find.bySemanticsLabel('Charisma: 10, +0'), findsOneWidget);
+      expect(find.text('CARATTERISTICHE'), findsNothing);
+    } finally {
+      semantics.dispose();
+    }
   });
 
   test('reported screens include their English UI text', () {

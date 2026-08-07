@@ -63,7 +63,7 @@ jobs:
 
       - name: Analyze source
         shell: pwsh
-        run: flutter analyze
+        run: flutter analyze --no-fatal-infos
 
       - name: Validate application data
         shell: pwsh

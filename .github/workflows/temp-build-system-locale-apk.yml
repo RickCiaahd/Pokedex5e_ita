@@ -1,0 +1,72 @@
+name: Build system locale fix APK once
+
+on:
+  push:
+    branches:
+      - feature/compact-pokemon-detail-v2
+    paths:
+      - '.github/workflows/temp-build-system-locale-apk.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  build-apk:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Check out triggering commit
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Verify app source commit
+        id: source
+        shell: bash
+        run: |
+          APP_SHA="$(git rev-parse HEAD^)"
+          if [ "$APP_SHA" != "ece221d560102d465a6c1908e9a4bcdf1c5f8b74" ]; then
+            echo "Unexpected app source commit: $APP_SHA" >&2
+            exit 1
+          fi
+          echo "sha=$APP_SHA" >> "$GITHUB_OUTPUT"
+          echo "short=${APP_SHA:0:7}" >> "$GITHUB_OUTPUT"
+
+      - name: Set up pinned Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.4'
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Check formatting
+        run: dart format --output=none --set-exit-if-changed lib/app.dart lib/localization/app_locale_controller.dart test/app_locale_controller_test.dart
+
+      - name: Analyze locale fix
+        run: flutter analyze --no-fatal-infos lib/app.dart lib/localization/app_locale_controller.dart test/app_locale_controller_test.dart
+
+      - name: Run locale regression tests
+        run: |
+          flutter test test/app_locale_controller_test.dart --reporter expanded
+          flutter test test/english_ui_localization_test.dart --reporter expanded
+
+      - name: Build universal debug APK
+        run: flutter build apk --debug
+
+      - name: Rename APK
+        shell: bash
+        run: |
+          cp build/app/outputs/flutter-apk/app-debug.apk "Trainer-Atlas-5e-system-locale-test-${{ steps.source.outputs.short }}.apk"
+          ls -lh "Trainer-Atlas-5e-system-locale-test-${{ steps.source.outputs.short }}.apk"
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Trainer-Atlas-5e-system-locale-test-apk-${{ steps.source.outputs.short }}
+          path: Trainer-Atlas-5e-system-locale-test-${{ steps.source.outputs.short }}.apk
+          if-no-files-found: error
+          retention-days: 14

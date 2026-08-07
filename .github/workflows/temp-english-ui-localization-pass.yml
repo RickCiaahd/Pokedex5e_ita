@@ -1,0 +1,122 @@
+name: Apply English UI localization pass once
+
+on:
+  push:
+    branches:
+      - feature/compact-pokemon-detail-v2
+    paths:
+      - '.github/workflows/temp-english-ui-localization-pass.yml'
+      - 'tool/apply_english_ui_localization_pass.py'
+      - 'tool/fix_english_ui_localization_patch.py'
+
+permissions:
+  contents: write
+
+jobs:
+  apply-localization:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+
+    steps:
+      - name: Check out feature branch
+        uses: actions/checkout@v4
+        with:
+          ref: feature/compact-pokemon-detail-v2
+
+      - name: Repair and validate temporary patch script
+        run: |
+          python tool/fix_english_ui_localization_patch.py
+          python -m py_compile tool/apply_english_ui_localization_pass.py
+
+      - name: Apply English localization pass
+        run: python tool/apply_english_ui_localization_pass.py
+
+      - name: Set up pinned Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.4'
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Format changed Dart files
+        run: |
+          dart format \
+            lib/models/battle_transformation.dart \
+            lib/services/battle_transformation_service.dart \
+            lib/services/battle_status_rules.dart \
+            lib/widgets/battle/battle_status_assistance_card.dart \
+            lib/services/battle_form_change_service.dart \
+            lib/services/battle_temporary_hp_service.dart \
+            lib/services/trainer_path_automation_service.dart \
+            lib/models/trainer_ui_localization.dart \
+            lib/services/trainer_path_passive_service.dart \
+            lib/widgets/trainer/trainer_path_automation_panel.dart \
+            lib/services/evolution_service.dart \
+            lib/screens/pokemon/evolution_selector_sheet.dart \
+            lib/screens/battle/battle_screen.dart \
+            lib/services/master_fight_summary_service.dart \
+            lib/screens/battle/npc_battle_screen.dart \
+            lib/screens/pokemon/custom_pokemon_library_screen.dart \
+            lib/screens/pokemon/custom_pokemon_advanced_editor_screen.dart \
+            test/english_ui_localization_test.dart
+
+      - name: Analyze localization scope
+        run: |
+          flutter analyze \
+            lib/models/battle_transformation.dart \
+            lib/services/battle_transformation_service.dart \
+            lib/services/battle_status_rules.dart \
+            lib/widgets/battle/battle_status_assistance_card.dart \
+            lib/services/battle_form_change_service.dart \
+            lib/services/battle_temporary_hp_service.dart \
+            lib/services/trainer_path_automation_service.dart \
+            lib/models/trainer_ui_localization.dart \
+            lib/services/trainer_path_passive_service.dart \
+            lib/widgets/trainer/trainer_path_automation_panel.dart \
+            lib/services/evolution_service.dart \
+            lib/screens/pokemon/evolution_selector_sheet.dart \
+            lib/screens/battle/battle_screen.dart \
+            lib/services/master_fight_summary_service.dart \
+            lib/screens/battle/npc_battle_screen.dart \
+            lib/screens/pokemon/custom_pokemon_library_screen.dart \
+            lib/screens/pokemon/custom_pokemon_advanced_editor_screen.dart \
+            test/english_ui_localization_test.dart
+
+      - name: Run transformation regression tests
+        run: flutter test test/battle_transformation_test.dart --reporter expanded
+
+      - name: Run English localization regression tests
+        run: flutter test test/english_ui_localization_test.dart --reporter expanded
+
+      - name: Re-run UI localization audit
+        run: python tooling/audit_ui_strings.py
+
+      - name: Upload localization audit
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-localization-audit-after-fix
+          path: build/ui-localization-audit/
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Remove one-shot patch files
+        run: |
+          rm -f tool/apply_english_ui_localization_pass.py
+          rm -f tool/fix_english_ui_localization_patch.py
+          rm -f .github/workflows/temp-english-ui-localization-pass.yml
+
+      - name: Commit localization pass
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          if git diff --cached --quiet; then
+            echo 'No changes to commit.'
+            exit 1
+          fi
+          git commit -m 'Completa la localizzazione inglese delle UI dinamiche'
+          git push origin HEAD:feature/compact-pokemon-detail-v2

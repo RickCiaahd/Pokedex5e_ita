@@ -108,19 +108,16 @@ void main() {
       types: const ['Dark', 'Normal'],
       assetSlug: 'alolan-rattata',
     );
-    final pokemon = _pokemon(
-      id: 19,
-      name: 'Rattata',
-      types: const ['Normal'],
-    ).copyWith(
-      formDefinitions: [
-        PokemonFormDefinition(
-          key: 'alolan',
-          displayName: 'Alolan Rattata',
-          pokemon: alolan,
-        ),
-      ],
-    );
+    final pokemon = _pokemon(id: 19, name: 'Rattata', types: const ['Normal'])
+        .copyWith(
+          formDefinitions: [
+            PokemonFormDefinition(
+              key: 'alolan',
+              displayName: 'Alolan Rattata',
+              pokemon: alolan,
+            ),
+          ],
+        );
     final entry = PokedexEntry.empty(19)
         .setFormState(
           formName: null,
@@ -188,19 +185,16 @@ void main() {
           'When its delicate pride is wounded, or when the gold coin on its '
           'forehead is dirtied, it flies into a hysterical rage.',
     );
-    final pokemon = _pokemon(
-      id: 52,
-      name: 'Meowth',
-      types: const ['Normal'],
-    ).copyWith(
-      formDefinitions: [
-        PokemonFormDefinition(
-          key: 'alolan',
-          displayName: 'Alolan Meowth',
-          pokemon: alolan,
-        ),
-      ],
-    );
+    final pokemon = _pokemon(id: 52, name: 'Meowth', types: const ['Normal'])
+        .copyWith(
+          formDefinitions: [
+            PokemonFormDefinition(
+              key: 'alolan',
+              displayName: 'Alolan Meowth',
+              pokemon: alolan,
+            ),
+          ],
+        );
     final entry = PokedexEntry.empty(52)
         .setFormState(
           formName: null,
@@ -228,6 +222,9 @@ void main() {
     expect(find.text('VISTO'), findsOneWidget);
     expect(find.text('NON CATTURATO'), findsOneWidget);
     expect(find.text('SCHEDA'), findsOneWidget);
-    expect(tester.getBottomRight(find.text('SCHEDA')).dy, lessThanOrEqualTo(640));
+    expect(
+      tester.getBottomRight(find.text('SCHEDA')).dy,
+      lessThanOrEqualTo(640),
+    );
   });
 }

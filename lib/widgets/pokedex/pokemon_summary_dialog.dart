@@ -100,12 +100,12 @@ class _PokemonSummaryDialogState extends State<PokemonSummaryDialog> {
       );
     }
 
-    List<String?> sortedForms() => formsByKey.values.toList(growable: false)
-      ..sort((a, b) {
-        if (a == null) return -1;
-        if (b == null) return 1;
-        return a.toLowerCase().compareTo(b.toLowerCase());
-      });
+    List<String?> sortedForms() =>
+        formsByKey.values.toList(growable: false)..sort((a, b) {
+          if (a == null) return -1;
+          if (b == null) return 1;
+          return a.toLowerCase().compareTo(b.toLowerCase());
+        });
 
     for (final definition in widget.pokemon.formDefinitions) {
       if (definition.gender != null) continue;
@@ -287,9 +287,8 @@ class _PokemonSummaryDialogState extends State<PokemonSummaryDialog> {
                           context,
                           _selectedFormName,
                         ).toUpperCase(),
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w900,
-                        ),
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(fontWeight: FontWeight.w900),
                       ),
                       const SizedBox(height: 8),
                       SizedBox(
@@ -442,10 +441,7 @@ class _PokemonSummaryDialogState extends State<PokemonSummaryDialog> {
                           child: Text(
                             formEntry.caught
                                 ? context.uiText('CATTURATO', 'CAUGHT')
-                                : context.uiText(
-                                    'NON CATTURATO',
-                                    'NOT CAUGHT',
-                                  ),
+                                : context.uiText('NON CATTURATO', 'NOT CAUGHT'),
                           ),
                         ),
                       ),

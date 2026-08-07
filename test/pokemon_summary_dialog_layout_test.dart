@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pokedex_5e_ita/l10n/app_localizations.dart';
 import 'package:pokedex_5e_ita/models/pokedex_entry.dart';
 import 'package:pokedex_5e_ita/models/pokemon.dart';
 import 'package:pokedex_5e_ita/models/pokemon_attributes.dart';
@@ -51,6 +52,8 @@ Widget _dialogHost({
 }) {
   return MaterialApp(
     locale: const Locale('it'),
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    supportedLocales: AppLocalizations.supportedLocales,
     builder: (context, child) => MediaQuery(
       data: MediaQuery.of(
         context,
@@ -83,7 +86,10 @@ Future<void> _openAndWaitForForms(WidgetTester tester) async {
   await tester.tap(find.text('Apri'));
   await tester.pump();
   for (var attempt = 0; attempt < 40; attempt++) {
-    await tester.pump(const Duration(milliseconds: 100));
+    await tester.runAsync(
+      () => Future<void>.delayed(const Duration(milliseconds: 50)),
+    );
+    await tester.pump();
     if (find.byType(LinearProgressIndicator).evaluate().isEmpty) return;
   }
   fail('Il caricamento delle forme non è terminato nel tempo previsto.');

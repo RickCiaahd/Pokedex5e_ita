@@ -95,3 +95,5 @@ jobs:
           name: Pokedex5e-pokedex-popup-test-apk
           path: dist/
           retention-days: 30
+
+# retry 2

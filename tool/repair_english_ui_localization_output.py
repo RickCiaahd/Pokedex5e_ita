@@ -2,15 +2,23 @@ from pathlib import Path
 
 path = Path('lib/screens/battle/battle_screen.dart')
 text = path.read_text(encoding='utf-8')
-start_marker = '    final messages = <String>[];\n'
+method_start = text.find('  Future<void> _changeHp(')
+method_end = text.find('  Future<void> _editHp(', method_start)
+if method_start < 0 or method_end < 0:
+    raise SystemExit('change HP method boundaries not found')
+
+save_marker = '    await _saveSession(data);\n'
 end_marker = '    if (!mounted) return;\n'
-start = text.find(start_marker)
+start = text.find(save_marker, method_start, method_end)
 if start < 0:
-    raise SystemExit('messages block start not found')
-end = text.find(end_marker, start)
+    raise SystemExit('change HP save marker not found')
+start += len(save_marker)
+end = text.find(end_marker, start, method_end)
 if end < 0:
-    raise SystemExit('messages block end not found')
-replacement = """    final messages = <String>[];
+    raise SystemExit('change HP mounted marker not found')
+
+replacement = """
+    final messages = <String>[];
     if (dynamaxAbsorbed > 0) {
       final stillActive =
           _transformationBySlot[slot.slotIndex]?.isDynamaxLike == true;

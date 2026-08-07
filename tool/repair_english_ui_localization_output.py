@@ -50,3 +50,15 @@ replacement = """
 """
 path.write_text(text[:start] + replacement + text[end:], encoding='utf-8')
 print('Battle damage message block repaired.')
+
+trainer_path = Path('lib/services/trainer_path_automation_service.dart')
+trainer_text = trainer_path.read_text(encoding='utf-8')
+old = '      if (!definition.isRequired || definition.options.isEmpty) return false;\n'
+new = """      if (!definition.isRequired || definition.options.isEmpty) {
+        return false;
+      }
+"""
+if old not in trainer_text:
+    raise SystemExit('Trainer Path lint marker not found')
+trainer_path.write_text(trainer_text.replace(old, new, 1), encoding='utf-8')
+print('Trainer Path lint repaired.')

@@ -114,14 +114,22 @@ class _CustomPokemonLibraryScreenState
         source,
         stableId: _repository.createStableId(),
         pokemonId: await _repository.allocatePokemonId(),
-        name: '${source.name} (copia)',
+        name: uiTextForLanguage(
+          '${source.name} (copia)',
+          '${source.name} (copy)',
+        ),
         createdAt: now,
         updatedAt: now,
       );
       await _repository.save(duplicate);
       PokemonRepository.clearCache();
       await _load();
-      _setMessage('${duplicate.name} creato.');
+      _setMessage(
+        uiTextForLanguage(
+          '${duplicate.name} creato.',
+          '${duplicate.name} created.',
+        ),
+      );
     } catch (error) {
       if (!mounted) return;
       _setMessage(
@@ -152,7 +160,12 @@ class _CustomPokemonLibraryScreenState
       await showDialog<void>(
         context: context,
         builder: (_) => AlertDialog(
-          title: Text('Impossibile eliminare ${definition.name}'),
+          title: Text(
+            uiTextForLanguage(
+              'Impossibile eliminare ${definition.name}',
+              'Cannot delete ${definition.name}',
+            ),
+          ),
           content: SizedBox(
             width: 620,
             child: Column(
@@ -201,7 +214,12 @@ class _CustomPokemonLibraryScreenState
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        title: Text('Eliminare ${definition.name}?'),
+        title: Text(
+          uiTextForLanguage(
+            'Eliminare ${definition.name}?',
+            'Delete ${definition.name}?',
+          ),
+        ),
         content: Text(
           uiTextForLanguage(
             'La specie non è utilizzata da nessun profilo e verrà rimossa dal catalogo globale.',
@@ -227,7 +245,12 @@ class _CustomPokemonLibraryScreenState
       await _repository.delete(definition.stableId);
       PokemonRepository.clearCache();
       await _load();
-      _setMessage('${definition.name} eliminato.');
+      _setMessage(
+        uiTextForLanguage(
+          '${definition.name} eliminato.',
+          '${definition.name} deleted.',
+        ),
+      );
     } catch (error) {
       if (!mounted) return;
       _setMessage(
@@ -261,7 +284,10 @@ class _CustomPokemonLibraryScreenState
                 'Esportazione catalogo annullata.',
                 """Catalog export cancelled.""",
               )
-            : '${bundle.definitions.length} Fakemon esportati.',
+            : uiTextForLanguage(
+                '${bundle.definitions.length} Fakemon esportati.',
+                '${bundle.definitions.length} Fakemon exported.',
+              ),
       );
     } catch (error) {
       if (!mounted) return;
@@ -349,12 +375,12 @@ class _CustomPokemonLibraryScreenState
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
-              child: Text('NORMALE'),
+              child: Text(uiTextForLanguage('NORMALE', 'NORMAL')),
             ),
             FilledButton.icon(
               onPressed: () => Navigator.of(context).pop(true),
               icon: Icon(Icons.lock_outline),
-              label: Text('SEGRETA'),
+              label: Text(uiTextForLanguage('SEGRETA', 'SECRET')),
             ),
           ],
         ),
@@ -425,12 +451,18 @@ class _CustomPokemonLibraryScreenState
           """Share ${definition.name}""",
         ),
         subject: 'Fakemon ${definition.name}',
-        text: 'Fakemon creato con Trainer Atlas 5e.',
+        text: uiTextForLanguage(
+          'Fakemon creato con Trainer Atlas 5e.',
+          'Fakemon created with Trainer Atlas 5e.',
+        ),
       );
       _setMessage(
         _shareService.feedback(
           outcome,
-          successMessage: '${definition.name} condiviso.',
+          successMessage: uiTextForLanguage(
+            '${definition.name} condiviso.',
+            '${definition.name} shared.',
+          ),
         ),
       );
     } catch (error) {
@@ -504,7 +536,10 @@ class _CustomPokemonLibraryScreenState
                 """Secret content installed. It will be revealed upon capture or evolution.""",
               )
             : imported.updatedExisting
-            ? '${imported.definition.name} aggiornato.'
+            ? uiTextForLanguage(
+                '${imported.definition.name} aggiornato.',
+                '${imported.definition.name} updated.',
+              )
             : uiTextForLanguage(
                 '${imported.definition.name} importato.',
                 """${imported.definition.name} imported.""",
@@ -529,7 +564,7 @@ class _CustomPokemonLibraryScreenState
     return Scaffold(
       appBar: AppBar(
         leading: HomeLeadingButton(),
-        title: Text('I MIEI FAKEMON'),
+        title: Text(uiTextForLanguage('I MIEI FAKEMON', 'MY FAKEMON')),
         actions: [
           PopupMenuButton<String>(
             tooltip: uiTextForLanguage(
@@ -1147,7 +1182,10 @@ class _CustomPokemonEditorScreenState extends State<CustomPokemonEditorScreen> {
                     children: [
                       Expanded(
                         child: _imagePickerCard(
-                          label: 'IMMAGINE PRINCIPALE',
+                          label: uiTextForLanguage(
+                            'IMMAGINE PRINCIPALE',
+                            'MAIN IMAGE',
+                          ),
                           bytes: _imageBytes,
                           shiny: false,
                         ),
@@ -1155,7 +1193,10 @@ class _CustomPokemonEditorScreenState extends State<CustomPokemonEditorScreen> {
                       SizedBox(width: 12),
                       Expanded(
                         child: _imagePickerCard(
-                          label: 'SHINY (FACOLTATIVA)',
+                          label: uiTextForLanguage(
+                            'SHINY (FACOLTATIVA)',
+                            'SHINY (OPTIONAL)',
+                          ),
                           bytes: _shinyImageBytes,
                           shiny: true,
                         ),
@@ -1166,11 +1207,17 @@ class _CustomPokemonEditorScreenState extends State<CustomPokemonEditorScreen> {
                     controller: _name,
                     label: uiTextForLanguage('Nome', """Name"""),
                   ),
-                  _RequiredTextField(controller: _author, label: 'Autore'),
+                  _RequiredTextField(
+                    controller: _author,
+                    label: uiTextForLanguage('Autore', 'Author'),
+                  ),
                   TextFormField(
                     controller: _genus,
                     decoration: InputDecoration(
-                      labelText: 'Categoria / genere',
+                      labelText: uiTextForLanguage(
+                        'Categoria / genere',
+                        'Category / genus',
+                      ),
                     ),
                   ),
                   TextFormField(
@@ -1188,18 +1235,26 @@ class _CustomPokemonEditorScreenState extends State<CustomPokemonEditorScreen> {
                     controller: _notes,
                     minLines: 2,
                     maxLines: 5,
-                    decoration: InputDecoration(labelText: 'Note del creatore'),
+                    decoration: InputDecoration(
+                      labelText: uiTextForLanguage(
+                        'Note del creatore',
+                        'Creator notes',
+                      ),
+                    ),
                   ),
                 ],
               ),
               _EditorSection(
-                title: 'Tipi e dati fisici',
+                title: uiTextForLanguage(
+                  'Tipi e dati fisici',
+                  'Types and physical data',
+                ),
                 children: [
                   Row(
                     children: [
                       Expanded(
                         child: _typeDropdown(
-                          'Tipo principale',
+                          uiTextForLanguage('Tipo principale', 'Primary type'),
                           _primaryType,
                           (value) => setState(() => _primaryType = value!),
                         ),
@@ -1207,7 +1262,10 @@ class _CustomPokemonEditorScreenState extends State<CustomPokemonEditorScreen> {
                       SizedBox(width: 10),
                       Expanded(
                         child: _typeDropdown(
-                          'Tipo secondario',
+                          uiTextForLanguage(
+                            'Tipo secondario',
+                            'Secondary type',
+                          ),
                           _secondaryType,
                           (value) => setState(() => _secondaryType = value),
                           optional: true,
@@ -1217,7 +1275,9 @@ class _CustomPokemonEditorScreenState extends State<CustomPokemonEditorScreen> {
                   ),
                   DropdownButtonFormField<String>(
                     initialValue: _size,
-                    decoration: InputDecoration(labelText: 'Taglia'),
+                    decoration: InputDecoration(
+                      labelText: uiTextForLanguage('Taglia', 'Size'),
+                    ),
                     items: [
                       for (final size in _sizes)
                         DropdownMenuItem(value: size, child: Text(size)),
@@ -1229,7 +1289,13 @@ class _CustomPokemonEditorScreenState extends State<CustomPokemonEditorScreen> {
                   Row(
                     children: [
                       Expanded(
-                        child: _optionalNumber(_height, 'Altezza (decimetri)'),
+                        child: _optionalNumber(
+                          _height,
+                          uiTextForLanguage(
+                            'Altezza (decimetri)',
+                            'Height (decimeters)',
+                          ),
+                        ),
                       ),
                       SizedBox(width: 10),
                       Expanded(
@@ -1246,26 +1312,33 @@ class _CustomPokemonEditorScreenState extends State<CustomPokemonEditorScreen> {
                   TextFormField(
                     controller: _genderRatio,
                     decoration: InputDecoration(
-                      labelText: 'Rapporto tra i sessi',
+                      labelText: uiTextForLanguage(
+                        'Rapporto tra i sessi',
+                        'Gender ratio',
+                      ),
                     ),
                   ),
                 ],
               ),
               _EditorSection(
-                title: 'Statistiche 5e',
+                title: uiTextForLanguage('Statistiche 5e', '5e statistics'),
                 children: [
                   Wrap(
                     spacing: 10,
                     runSpacing: 10,
                     children: [
-                      _numberBox(_ac, 'CA', min: 1),
-                      _numberBox(_hp, 'PF', min: 1),
+                      _numberBox(_ac, uiTextForLanguage('CA', 'AC'), min: 1),
+                      _numberBox(_hp, uiTextForLanguage('PF', 'HP'), min: 1),
                       _numberBox(
                         _speed,
                         uiTextForLanguage('Velocità', """Speed"""),
                         min: 0,
                       ),
-                      _numberBox(_hitDice, 'Dadi Vita', min: 1),
+                      _numberBox(
+                        _hitDice,
+                        uiTextForLanguage('Dadi Vita', 'Hit Dice'),
+                        min: 1,
+                      ),
                       _decimalBox(_sr, 'SR', min: 0),
                       _numberBox(
                         _minLevel,
@@ -1304,7 +1377,10 @@ class _CustomPokemonEditorScreenState extends State<CustomPokemonEditorScreen> {
                   TextFormField(
                     controller: _savingThrows,
                     decoration: InputDecoration(
-                      labelText: 'Tiri salvezza, separati da virgole',
+                      labelText: uiTextForLanguage(
+                        'Tiri salvezza, separati da virgole',
+                        'Saving throws, comma-separated',
+                      ),
                     ),
                   ),
                 ],
@@ -1345,7 +1421,9 @@ class _CustomPokemonEditorScreenState extends State<CustomPokemonEditorScreen> {
                       FilledButton.tonalIcon(
                         onPressed: _addLocalAbility,
                         icon: Icon(Icons.add),
-                        label: Text('NUOVA ESCLUSIVA'),
+                        label: Text(
+                          uiTextForLanguage('NUOVA ESCLUSIVA', 'NEW EXCLUSIVE'),
+                        ),
                       ),
                     ],
                   ),
@@ -1459,7 +1537,9 @@ class _CustomPokemonEditorScreenState extends State<CustomPokemonEditorScreen> {
                       final text = (value ?? '').trim();
                       if (text.isEmpty) return null;
                       final id = int.tryParse(text);
-                      return id == null || id <= 0 ? 'ID non valido' : null;
+                      return id == null || id <= 0
+                          ? uiTextForLanguage('ID non valido', 'Invalid ID')
+                          : null;
                     },
                   ),
                   Wrap(
@@ -1521,14 +1601,20 @@ class _CustomPokemonEditorScreenState extends State<CustomPokemonEditorScreen> {
                   TextFormField(
                     controller: _tmMoves,
                     decoration: InputDecoration(
-                      labelText: 'Numeri MT, separati da virgole',
+                      labelText: uiTextForLanguage(
+                        'Numeri MT, separati da virgole',
+                        'TM numbers, comma-separated',
+                      ),
                     ),
                     validator: (value) {
                       try {
                         _intCsv(value ?? '');
                         return null;
                       } catch (_) {
-                        return 'Inserisci soltanto numeri MT separati da virgole.';
+                        return uiTextForLanguage(
+                          'Inserisci soltanto numeri MT separati da virgole.',
+                          'Enter only comma-separated TM numbers.',
+                        );
                       }
                     },
                   ),
@@ -2198,14 +2284,22 @@ class _LocalMoveDialogState extends State<_LocalMoveDialog> {
               ),
               SwitchListTile(
                 contentPadding: EdgeInsets.zero,
-                title: Text('Richiede tiro per colpire'),
+                title: Text(
+                  uiTextForLanguage(
+                    'Richiede tiro per colpire',
+                    'Requires an attack roll',
+                  ),
+                ),
                 value: _isAttack,
                 onChanged: (value) => setState(() => _isAttack = value),
               ),
               TextField(
                 controller: _save,
                 decoration: InputDecoration(
-                  labelText: 'Tiro salvezza, se previsto',
+                  labelText: uiTextForLanguage(
+                    'Tiro salvezza, se previsto',
+                    'Saving throw, if any',
+                  ),
                 ),
               ),
               SizedBox(height: 10),

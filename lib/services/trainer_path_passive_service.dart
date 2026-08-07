@@ -1,9 +1,11 @@
 import '../models/level_progression.dart';
+import '../localization/ui_text.dart';
 import '../models/move_data.dart';
 import '../models/pokemon.dart';
 import '../models/pokemon_nature.dart';
 import '../models/team_slot.dart';
 import '../models/trainer_manual_options.dart';
+import '../models/trainer_ui_localization.dart';
 import '../models/user_profile.dart';
 
 class TrainerPathPassiveNote {
@@ -342,9 +344,11 @@ class TrainerPathPassiveService {
     if (attackBonus != 0 || damageBonus != 0) {
       notes.add(
         TrainerPathPassiveNote(
-          title: 'Combattimento',
-          detail:
-              'Tiri per colpire ${_signed(attackBonus)} · danni ${_signed(damageBonus)}.',
+          title: uiTextForLanguage('Combattimento', 'Battle'),
+          detail: uiTextForLanguage(
+            'Tiri per colpire ${_signed(attackBonus)} · danni ${_signed(damageBonus)}.',
+            'Attack rolls ${_signed(attackBonus)} · damage ${_signed(damageBonus)}.',
+          ),
         ),
       );
     }
@@ -353,8 +357,14 @@ class TrainerPathPassiveService {
       final choice = profile.trainerPathChoices['aceMaxPotential'];
       if (choice != null && choice.isNotEmpty) {
         final detail = choice == '+10 ft velocità'
-            ? 'Velocità effettiva: ${effectiveSpeed(profile: profile, pokemon: pokemon, slot: slot)} ft.'
-            : '$choice applicato alle caratteristiche mostrate.';
+            ? uiTextForLanguage(
+                'Velocità effettiva: ${effectiveSpeed(profile: profile, pokemon: pokemon, slot: slot)} ft.',
+                'Effective Speed: ${effectiveSpeed(profile: profile, pokemon: pokemon, slot: slot)} ft.',
+              )
+            : uiTextForLanguage(
+                '$choice applicato alle caratteristiche mostrate.',
+                '${TrainerUiLocalization.optionLabel(choice)} applied to the displayed ability scores.',
+              );
         notes.add(
           TrainerPathPassiveNote(title: 'Max Potential', detail: detail),
         );
@@ -369,7 +379,10 @@ class TrainerPathPassiveService {
         notes.add(
           TrainerPathPassiveNote(
             title: 'Researcher',
-            detail: '+$modifier alle prove di abilità del Pokémon ($ability).',
+            detail: uiTextForLanguage(
+              '+$modifier alle prove di abilità del Pokémon ($ability).',
+              '+$modifier to the Pokémon’s ability checks ($ability).',
+            ),
           ),
         );
       }
@@ -383,11 +396,25 @@ class TrainerPathPassiveService {
         TrainerPathPassiveNote(
           title: 'Type Master',
           detail: [
-            'Bonus STAB del Path: +$typeMatches',
-            if (profile.trainerLevel >= 5) '+2 ai tiri per colpire già incluso',
-            if (resistance != null) 'resistenza scelta: $resistance',
+            uiTextForLanguage(
+              'Bonus STAB del Path: +$typeMatches',
+              'Path STAB bonus: +$typeMatches',
+            ),
+            if (profile.trainerLevel >= 5)
+              uiTextForLanguage(
+                '+2 ai tiri per colpire già incluso',
+                '+2 to attack rolls already included',
+              ),
+            if (resistance != null)
+              uiTextForLanguage(
+                'resistenza scelta: $resistance',
+                'chosen resistance: $resistance',
+              ),
             if (profile.trainerLevel >= 15)
-              'STAB applicabile a ogni mossa dannosa',
+              uiTextForLanguage(
+                'STAB applicabile a ogni mossa dannosa',
+                'STAB can apply to every damaging move',
+              ),
           ].join(' · '),
         ),
       );
@@ -396,19 +423,24 @@ class TrainerPathPassiveService {
     if (hasFeature(profile, trainerPath: 'Commander', level: 2) &&
         slot.loyalty > 0) {
       notes.add(
-        const TrainerPathPassiveNote(
+        TrainerPathPassiveNote(
           title: 'Commander',
-          detail:
-              'I bonus positivi di Lealtà a PF e tiri salvezza sono raddoppiati.',
+          detail: uiTextForLanguage(
+            'I bonus positivi di Lealtà a PF e tiri salvezza sono raddoppiati.',
+            'Positive Loyalty bonuses to HP and saving throws are doubled.',
+          ),
         ),
       );
     }
 
     if (hasFeature(profile, trainerPath: 'Guru', level: 5)) {
       notes.add(
-        const TrainerPathPassiveNote(
+        TrainerPathPassiveNote(
           title: 'Mind',
-          detail: 'Competenza nei tiri salvezza di Saggezza.',
+          detail: uiTextForLanguage(
+            'Competenza nei tiri salvezza di Saggezza.',
+            'Proficiency in Wisdom saving throws.',
+          ),
         ),
       );
     }
@@ -418,7 +450,10 @@ class TrainerPathPassiveService {
       notes.add(
         TrainerPathPassiveNote(
           title: 'Many Faces',
-          detail: 'Privilegio copiato: $copied.',
+          detail: uiTextForLanguage(
+            'Privilegio copiato: $copied.',
+            'Copied feature: ${TrainerUiLocalization.optionLabel(copied)}.',
+          ),
         ),
       );
     }

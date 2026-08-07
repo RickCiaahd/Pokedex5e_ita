@@ -2,6 +2,7 @@ import '../models/bag_inventory_entry.dart';
 import '../models/battle_transformation.dart';
 import '../models/move_data.dart';
 import '../models/team_slot.dart';
+import '../localization/ui_text.dart';
 
 class TransformationEligibility {
   const TransformationEligibility({
@@ -87,53 +88,124 @@ class BattleTransformationService {
     final heldKey = _key(heldItemId ?? '');
 
     if (hasActiveTransformation) {
-      missing.add('Il Pokémon ha già una trasformazione attiva');
+      missing.add(
+        uiTextForLanguage(
+          'Il Pokémon ha già una trasformazione attiva',
+          'The Pokémon already has an active transformation',
+        ),
+      );
     }
     if (pokemonAlreadyTransformed) {
-      missing.add('Questo Pokémon ha già usato una trasformazione dopo l’ultimo riposo lungo');
+      missing.add(
+        uiTextForLanguage(
+          'Questo Pokémon ha già usato una trasformazione dopo l’ultimo riposo lungo',
+          'This Pokémon has already used a transformation since the last long rest',
+        ),
+      );
     }
     if (trainerUses.contains(kind.trainerUseId)) {
-      missing.add('L’Allenatore ha già usato ${_trainerUseLabel(kind)} dopo l’ultimo riposo lungo');
+      missing.add(
+        uiTextForLanguage(
+          'L’Allenatore ha già usato ${_trainerUseLabel(kind)} dopo l’ultimo riposo lungo',
+          'The Trainer has already used ${_trainerUseLabel(kind)} since the last long rest',
+        ),
+      );
     }
 
     switch (kind) {
       case BattleTransformationKind.mega:
         if (!isFinalEvolutionStage) {
-          missing.add('Richiede lo stadio evolutivo finale');
+          missing.add(
+            uiTextForLanguage(
+              'Richiede lo stadio evolutivo finale',
+              'Requires the final evolution stage',
+            ),
+          );
         }
-        if (pokemonLevel < 10) missing.add('Richiede livello 10');
+        if (pokemonLevel < 10) {
+          missing.add(
+            uiTextForLanguage('Richiede livello 10', 'Requires level 10'),
+          );
+        }
         if (heldKey != 'megalite-stone') {
-          missing.add('Il Pokémon deve tenere Megalite Stone');
+          missing.add(
+            uiTextForLanguage(
+              'Il Pokémon deve tenere Megalite Stone',
+              'The Pokémon must hold a Megalite Stone',
+            ),
+          );
         }
         if (!inventoryIds.contains('key-stone')) {
-          missing.add('Richiede una Pietrachiave nello Zaino');
+          missing.add(
+            uiTextForLanguage(
+              'Richiede una Pietrachiave nello Zaino',
+              'Requires a Key Stone in the Bag',
+            ),
+          );
         }
         break;
       case BattleTransformationKind.zMove:
-        if (pokemonLevel < 6) missing.add('Richiede livello 6');
+        if (pokemonLevel < 6) {
+          missing.add(
+            uiTextForLanguage('Richiede livello 6', 'Requires level 6'),
+          );
+        }
         final crystal = zCrystalForHeldItem(heldItemId);
         if (crystal == null) {
-          missing.add('Il Pokémon deve tenere un Cristallo Z');
+          missing.add(
+            uiTextForLanguage(
+              'Il Pokémon deve tenere un Cristallo Z',
+              'The Pokémon must hold a Z-Crystal',
+            ),
+          );
         } else if (!knownMoves.any(
           (move) => _key(move.type) == _key(crystal.type),
         )) {
-          missing.add('Nessuna mossa conosciuta corrisponde al Cristallo Z');
+          missing.add(
+            uiTextForLanguage(
+              'Nessuna mossa conosciuta corrisponde al Cristallo Z',
+              'No known move matches the Z-Crystal',
+            ),
+          );
         }
         if (!inventoryIds.contains('z-ring')) {
-          missing.add('Richiede un Cerchio Z nello Zaino');
+          missing.add(
+            uiTextForLanguage(
+              'Richiede un Cerchio Z nello Zaino',
+              'Requires a Z-Ring in the Bag',
+            ),
+          );
         }
         break;
       case BattleTransformationKind.dynamax:
       case BattleTransformationKind.gigamax:
-        if (pokemonLevel < 10) missing.add('Richiede livello 10');
+        if (pokemonLevel < 10) {
+          missing.add(
+            uiTextForLanguage('Richiede livello 10', 'Requires level 10'),
+          );
+        }
         if (!inventoryIds.contains('dynamax-band')) {
-          missing.add('Richiede un Polsino Dynamax nello Zaino');
+          missing.add(
+            uiTextForLanguage(
+              'Richiede un Polsino Dynamax nello Zaino',
+              'Requires a Dynamax Band in the Bag',
+            ),
+          );
         }
         break;
       case BattleTransformationKind.terastal:
-        if (pokemonLevel < 6) missing.add('Richiede livello 6');
+        if (pokemonLevel < 6) {
+          missing.add(
+            uiTextForLanguage('Richiede livello 6', 'Requires level 6'),
+          );
+        }
         if (!inventoryIds.contains('tera-orb')) {
-          missing.add('Richiede una Terasfera nello Zaino');
+          missing.add(
+            uiTextForLanguage(
+              'Richiede una Terasfera nello Zaino',
+              'Requires a Tera Orb in the Bag',
+            ),
+          );
         }
         break;
     }
@@ -183,34 +255,63 @@ class BattleTransformationService {
   static String effectSummary(BattleTransformationState state) {
     switch (state.kind) {
       case BattleTransformationKind.mega:
-        return 'CA +2; raddoppia i modificatori di caratteristica per attacchi, danni, tiri salvezza e CD.';
+        return uiTextForLanguage(
+          'CA +2; raddoppia i modificatori di caratteristica per attacchi, danni, tiri salvezza e CD.',
+          'AC +2; doubles ability modifiers for attacks, damage, saving throws and DCs.',
+        );
       case BattleTransformationKind.zMove:
-        return 'La Mossa Z non manca; CD +5; raddoppia dadi di danno/guarigione e bonus MOVE.';
+        return uiTextForLanguage(
+          'La Mossa Z non manca; CD +5; raddoppia dadi di danno/guarigione e bonus MOVE.',
+          'The Z-Move cannot miss; DC +5; doubles damage/healing dice and MOVE bonus.',
+        );
       case BattleTransformationKind.dynamax:
       case BattleTransformationKind.gigamax:
-        return 'Taglia Gargantuan, immunità agli status volatili, niente cambio e tiri di danno due volte.';
+        return uiTextForLanguage(
+          'Taglia Gargantuan, immunità agli status volatili, niente cambio e tiri di danno due volte.',
+          'Gargantuan size, immunity to volatile conditions, no switching, and damage rolls are made twice.',
+        );
       case BattleTransformationKind.terastal:
-        return 'Il tipo diventa ${state.teraType ?? 'Tera'}; conserva lo STAB originale ed è vulnerabile a Stellar.';
+        return uiTextForLanguage(
+          'Il tipo diventa ${state.teraType ?? 'Tera'}; conserva lo STAB originale ed è vulnerabile a Stellar.',
+          'Type becomes ${state.teraType ?? 'Tera'}; keeps its original STAB and is vulnerable to Stellar.',
+        );
     }
   }
 
   static String zMoveSummary(MoveData move) {
-    final parts = <String>['non può mancare'];
-    if (move.save != null) parts.add('CD +5');
-    if (move.damageByLevel.isNotEmpty) parts.add('dadi di danno ×2');
+    final parts = <String>[uiTextForLanguage('non può mancare', 'cannot miss')];
+    if (move.save != null) parts.add(uiTextForLanguage('CD +5', 'DC +5'));
+    if (move.damageByLevel.isNotEmpty) {
+      parts.add(uiTextForLanguage('dadi di danno ×2', 'damage dice ×2'));
+    }
     if (_key(move.damageModifier ?? '') == 'move') {
-      parts.add('bonus MOVE ×2');
+      parts.add(uiTextForLanguage('bonus MOVE ×2', 'MOVE bonus ×2'));
     }
     return parts.join(' · ');
   }
 
   static String _trainerUseLabel(BattleTransformationKind kind) {
     return switch (kind) {
-      BattleTransformationKind.mega => 'la Mega Evoluzione',
-      BattleTransformationKind.zMove => 'una Mossa Z',
-      BattleTransformationKind.dynamax => 'Dynamax/Gigamax',
-      BattleTransformationKind.gigamax => 'Dynamax/Gigamax',
-      BattleTransformationKind.terastal => 'la Teracristallizzazione',
+      BattleTransformationKind.mega => uiTextForLanguage(
+        'la Mega Evoluzione',
+        'Mega Evolution',
+      ),
+      BattleTransformationKind.zMove => uiTextForLanguage(
+        'una Mossa Z',
+        'a Z-Move',
+      ),
+      BattleTransformationKind.dynamax => uiTextForLanguage(
+        'Dynamax/Gigamax',
+        'Dynamax/Gigantamax',
+      ),
+      BattleTransformationKind.gigamax => uiTextForLanguage(
+        'Dynamax/Gigamax',
+        'Dynamax/Gigantamax',
+      ),
+      BattleTransformationKind.terastal => uiTextForLanguage(
+        'la Teracristallizzazione',
+        'Terastallization',
+      ),
     };
   }
 

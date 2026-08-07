@@ -63,7 +63,10 @@ class BattleStatusAssistanceCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'ASSISTENZA STATUS',
+                        uiTextForLanguage(
+                          'ASSISTENZA STATUS',
+                          'STATUS ASSISTANCE',
+                        ),
                         style: Theme.of(context).textTheme.titleMedium
                             ?.copyWith(
                               color: colors.onTertiaryContainer,

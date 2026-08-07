@@ -480,8 +480,10 @@ class _BattleScreenState extends State<BattleScreen> {
 
     setState(() {
       _battleFormBySlot[slot.slotIndex] = selected;
-      _message =
-          '${_displayName(slot, basePokemon)} assume la ${BattleFormChangeService.formLabel(basePokemon, selected)}.';
+      _message = context.uiText(
+        '${_displayName(slot, basePokemon)} assume la ${BattleFormChangeService.formLabel(basePokemon, selected)}.',
+        '${_displayName(slot, basePokemon)} changes to ${BattleFormChangeService.formLabel(basePokemon, selected)}.',
+      );
     });
     await _saveSession(data);
   }
@@ -580,7 +582,12 @@ class _BattleScreenState extends State<BattleScreen> {
       return;
     }
     if (_currentHpFor(slot, pokemon) <= 0) {
-      setState(() => _message = 'Un Pokémon esausto non può megaevolversi.');
+      setState(
+        () => _message = context.uiText(
+          'Un Pokémon esausto non può megaevolversi.',
+          'A fainted Pokémon cannot Mega Evolve.',
+        ),
+      );
       return;
     }
 
@@ -598,7 +605,10 @@ class _BattleScreenState extends State<BattleScreen> {
         useSafeArea: true,
         showDragHandle: true,
         builder: (_) => _TransformArtPickerSheet(
-          title: 'Scegli la Mega Evoluzione',
+          title: context.uiText(
+            'Scegli la Mega Evoluzione',
+            'Choose Mega Evolution',
+          ),
           pokemonName: pokemon.name,
           options: options,
           isShiny: slot.isShiny,
@@ -613,8 +623,10 @@ class _BattleScreenState extends State<BattleScreen> {
     );
     setState(() {
       _transformationBySlot[slot.slotIndex] = state;
-      _message =
-          '${_displayName(slot, pokemon)} attiva ${selected?.label ?? 'Mega Evoluzione'}.';
+      _message = context.uiText(
+        '${_displayName(slot, pokemon)} attiva ${selected?.label ?? 'Mega Evoluzione'}.',
+        '${_displayName(slot, pokemon)} activates ${selected?.label ?? 'Mega Evolution'}.',
+      );
     });
     await _recordTransformationUse(data, slot, state.kind);
     await _saveSession(data);
@@ -637,7 +649,12 @@ class _BattleScreenState extends State<BattleScreen> {
     }
     final currentHp = _currentHpFor(slot, pokemon);
     if (currentHp <= 0) {
-      setState(() => _message = 'Un Pokémon esausto non può Dynamaxizzarsi.');
+      setState(
+        () => _message = context.uiText(
+          'Un Pokémon esausto non può Dynamaxizzarsi.',
+          'A fainted Pokémon cannot Dynamax.',
+        ),
+      );
       return;
     }
 
@@ -670,8 +687,10 @@ class _BattleScreenState extends State<BattleScreen> {
     );
     setState(() {
       _transformationBySlot[slot.slotIndex] = state;
-      _message =
-          '${_displayName(slot, pokemon)} attiva ${selectedArt?.label ?? 'Dynamax'} e ottiene $currentHp PF temporanei.';
+      _message = context.uiText(
+        '${_displayName(slot, pokemon)} attiva ${selectedArt?.label ?? 'Dynamax'} e ottiene $currentHp PF temporanei.',
+        '${_displayName(slot, pokemon)} activates ${selectedArt?.label ?? 'Dynamax'} and gains $currentHp temporary HP.',
+      );
     });
     await _recordTransformationUse(data, slot, kind);
     await _saveSession(data);
@@ -694,7 +713,10 @@ class _BattleScreenState extends State<BattleScreen> {
     }
     if (_currentHpFor(slot, pokemon) <= 0) {
       setState(
-        () => _message = 'Un Pokémon esausto non può teracristallizzarsi.',
+        () => _message = context.uiText(
+          'Un Pokémon esausto non può teracristallizzarsi.',
+          'A fainted Pokémon cannot Terastallize.',
+        ),
       );
       return;
     }
@@ -716,8 +738,10 @@ class _BattleScreenState extends State<BattleScreen> {
     );
     setState(() {
       _transformationBySlot[slot.slotIndex] = state;
-      _message =
-          '${_displayName(slot, pokemon)} si teracristallizza nel tipo $teraType.';
+      _message = context.uiText(
+        '${_displayName(slot, pokemon)} si teracristallizza nel tipo $teraType.',
+        '${_displayName(slot, pokemon)} Terastallizes into the $teraType type.',
+      );
     });
     await _recordTransformationUse(data, slot, state.kind);
     await _saveSession(data);
@@ -740,7 +764,10 @@ class _BattleScreenState extends State<BattleScreen> {
     }
     if (_currentHpFor(slot, pokemon) <= 0) {
       setState(
-        () => _message = 'Un Pokémon esausto non può usare una Mossa Z.',
+        () => _message = context.uiText(
+          'Un Pokémon esausto non può usare una Mossa Z.',
+          'A fainted Pokémon cannot use a Z-Move.',
+        ),
       );
       return;
     }
@@ -767,7 +794,10 @@ class _BattleScreenState extends State<BattleScreen> {
     }
     if (choices.isEmpty) {
       setState(
-        () => _message = 'Nessuna Mossa Z compatibile ha PP disponibili.',
+        () => _message = context.uiText(
+          'Nessuna Mossa Z compatibile ha PP disponibili.',
+          'No compatible Z-Move has PP available.',
+        ),
       );
       return;
     }
@@ -795,8 +825,10 @@ class _BattleScreenState extends State<BattleScreen> {
       _changePp(data, slot, selected.reference, selected.rawMove, -1);
     }
     setState(() {
-      _message =
-          'Mossa Z · ${selected.move.name}: ${BattleTransformationService.zMoveSummary(selected.move)}.';
+      _message = context.uiText(
+        'Mossa Z · ${selected.move.name}: ${BattleTransformationService.zMoveSummary(selected.move)}.',
+        'Z-Move · ${selected.move.name}: ${BattleTransformationService.zMoveSummary(selected.move)}.',
+      );
     });
     await _recordTransformationUse(data, slot, state.kind);
     await _saveSession(data);
@@ -989,12 +1021,12 @@ class _BattleScreenState extends State<BattleScreen> {
       }
       _message = enabled
           ? context.uiText(
-              '${rule.label} attivato: ${_temporaryHpBySlot[slot.slotIndex]} PF temporanei.',
-              '${rule.label} enabled: ${_temporaryHpBySlot[slot.slotIndex]} temporary HP.',
+              '${rule.localizedLabel} attivato: ${_temporaryHpBySlot[slot.slotIndex]} PF temporanei.',
+              '${rule.localizedLabel} enabled: ${_temporaryHpBySlot[slot.slotIndex]} temporary HP.',
             )
           : context.uiText(
-              '${rule.label} disattivato.',
-              '${rule.label} disabled.',
+              '${rule.localizedLabel} disattivato.',
+              '${rule.localizedLabel} disabled.',
             );
     });
     await _saveSession(data);
@@ -1073,15 +1105,27 @@ class _BattleScreenState extends State<BattleScreen> {
           _transformationBySlot[slot.slotIndex]?.isDynamaxLike == true;
       messages.add(
         stillActive
-            ? '$dynamaxAbsorbed danni assorbiti dai PF Dynamax.'
-            : '$dynamaxAbsorbed danni assorbiti: Dynamax/Gigamax termina.',
+            ? context.uiText(
+                '$dynamaxAbsorbed danni assorbiti dai PF Dynamax.',
+                '$dynamaxAbsorbed damage absorbed by Dynamax HP.',
+              )
+            : context.uiText(
+                '$dynamaxAbsorbed danni assorbiti: Dynamax/Gigamax termina.',
+                '$dynamaxAbsorbed damage absorbed: Dynamax/Gigantamax ends.',
+              ),
       );
     }
     if (absorbed > 0) {
       messages.add(
         (_temporaryHpBySlot[slot.slotIndex] ?? 0) > 0
-            ? '$absorbed danni assorbiti dai PF temporanei.'
-            : '$absorbed danni assorbiti: ${rule?.label ?? 'la protezione'} si spezza.',
+            ? context.uiText(
+                '$absorbed danni assorbiti dai PF temporanei.',
+                '$absorbed damage absorbed by temporary HP.',
+              )
+            : context.uiText(
+                '$absorbed danni assorbiti: ${rule?.localizedLabel ?? 'la protezione'} si spezza.',
+                '$absorbed damage absorbed: ${rule?.localizedLabel ?? 'the protection'} breaks.',
+              ),
       );
     }
     if (!mounted) return;
@@ -3196,11 +3240,14 @@ class _TemporaryHpPanel extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '${rule.label}: $currentHp PF temporanei',
+                    context.uiText(
+                      '${rule.localizedLabel}: $currentHp PF temporanei',
+                      '${rule.localizedLabel}: $currentHp temporary HP',
+                    ),
                     style: const TextStyle(fontWeight: FontWeight.w800),
                   ),
                   Text(
-                    rule.description,
+                    rule.localizedDescription,
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
                 ],
@@ -4051,12 +4098,24 @@ class _TransformationPanel extends StatelessWidget {
                 ),
                 child: Text(
                   state.isDynamaxLike
-                      ? '${state.kind.label} attiva · ${state.dynamaxTemporaryHp} PF Dynamax'
+                      ? context.uiText(
+                          '${state.kind.label} attiva · ${state.dynamaxTemporaryHp} PF Dynamax',
+                          '${state.kind.label} active · ${state.dynamaxTemporaryHp} Dynamax HP',
+                        )
                       : state.kind == BattleTransformationKind.terastal
-                      ? '${state.kind.label} attiva · ${state.teraType}'
+                      ? context.uiText(
+                          '${state.kind.label} attiva · ${state.teraType}',
+                          '${state.kind.label} active · ${state.teraType}',
+                        )
                       : state.kind == BattleTransformationKind.zMove
-                      ? 'Mossa Z già usata in questo riposo lungo'
-                      : '${state.kind.label} attiva',
+                      ? context.uiText(
+                          'Mossa Z già usata in questo riposo lungo',
+                          'Z-Move already used during this long rest',
+                        )
+                      : context.uiText(
+                          '${state.kind.label} attiva',
+                          '${state.kind.label} active',
+                        ),
                   style: const TextStyle(fontWeight: FontWeight.w900),
                 ),
               ),
@@ -4387,7 +4446,12 @@ class _ZMovePickerSheet extends StatelessWidget {
             ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
           ),
           const SizedBox(height: 4),
-          Text('$pokemonName · Cristallo Z $crystalType'),
+          Text(
+            context.uiText(
+              '$pokemonName · Cristallo Z $crystalType',
+              '$pokemonName · $crystalType Z-Crystal',
+            ),
+          ),
           const SizedBox(height: 10),
           for (final choice in choices)
             Card(

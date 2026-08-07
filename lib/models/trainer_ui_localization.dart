@@ -333,8 +333,43 @@ class TrainerUiLocalization {
     return _featureLabelsIt[value] ?? trainerPathName(value);
   }
 
+  static String _englishLegacyText(String value) {
+    const exact = <String, String>{
+      'Dadi battaglia d6': 'Battle Dice d6',
+      'Dadi abilità d6': 'Ability Dice d6',
+      'Riserva di guarigione': 'Healing Pool',
+      'Potenziamento permanente': 'Permanent boost',
+      'La scelta si applica a tutti i Pokémon dell’Allenatore.':
+          'The choice applies to all of the Trainer’s Pokémon.',
+      'Privilegio copiato': 'Copied feature',
+      'Scegli un privilegio di livello 2, 5 o 9 appartenente a un altro Trainer Path.':
+          'Choose a level 2, 5 or 9 feature from another Trainer Path.',
+      'Caratteristica di ricerca': 'Research ability score',
+      'Il modificatore scelto viene aggiunto alle prove di abilità dei tuoi Pokémon, minimo +1.':
+          'The chosen modifier is added to your Pokémon’s ability checks, minimum +1.',
+      'Resistenza scelta': 'Chosen resistance',
+      'La resistenza deve appartenere a uno dei tipi delle tue specializzazioni.':
+          'The resistance must match one of your specialization types.',
+      'Caratteristica di Deep Connection': 'Deep Connection ability score',
+      'Determina il numero di utilizzi giornalieri, con un minimo di 1.':
+          'Determines the number of daily uses, with a minimum of 1.',
+      'Primo legame': 'First bond',
+      'Il legame può essere ridefinito dopo un riposo lungo.':
+          'The bond can be redefined after a long rest.',
+      'Secondo legame': 'Second bond',
+      'Nessun secondo legame': 'No second bond',
+      'Scegli Nessun secondo legame per mantenere un solo Pokémon legato.':
+          'Choose No second bond to keep only one bonded Pokémon.',
+      '+10 ft velocità': '+10 ft Speed',
+      'dadi': 'dice',
+      'punti': 'points',
+      'usi': 'uses',
+    };
+    return exact[value] ?? value;
+  }
+
   static String optionLabel(String value) {
-    if (!_isItalian) return value;
+    if (!_isItalian) return _englishLegacyText(value);
     final parts = value.split(' · ');
     if (parts.length == 3 && parts[1].startsWith('Lv ')) {
       return '${trainerPathName(parts[0])} · Liv. ${parts[1].substring(3)} · ${featureName(parts[2])}';
@@ -347,7 +382,7 @@ class TrainerUiLocalization {
   }
 
   static String visibleText(String value) {
-    if (!_isItalian) return value;
+    if (!_isItalian) return _englishLegacyText(value);
     final exactFeature = _featureLabelsIt[value];
     if (exactFeature != null) return exactFeature;
     final exactPath = _trainerPathLabelsIt[value];

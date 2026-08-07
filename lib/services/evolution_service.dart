@@ -1,4 +1,5 @@
 import '../models/bag_inventory_entry.dart';
+import '../localization/ui_text.dart';
 import '../models/bag_item.dart';
 import '../models/evolution_data.dart';
 import '../models/level_progression.dart';
@@ -79,15 +80,30 @@ class EvolutionService {
         case 'level':
           final requiredLevel = condition.intValue;
           if (requiredLevel != null) {
-            conditionLabels.add('Livello $requiredLevel');
+            conditionLabels.add(
+              uiTextForLanguage(
+                'Livello $requiredLevel',
+                'Level $requiredLevel',
+              ),
+            );
             if (level < requiredLevel) {
               if (manualEarlierCost != null) {
                 requiredMoney = manualEarlierCost;
                 if (trainerMoney < requiredMoney) {
-                  missing.add('Richiede ₽9.999 nel portafogli');
+                  missing.add(
+                    uiTextForLanguage(
+                      'Richiede ₽9.999 nel portafogli',
+                      'Requires ₽9,999 in the wallet',
+                    ),
+                  );
                 }
               } else {
-                missing.add('Richiede livello $requiredLevel');
+                missing.add(
+                  uiTextForLanguage(
+                    'Richiede livello $requiredLevel',
+                    'Requires level $requiredLevel',
+                  ),
+                );
               }
             }
           }
@@ -95,9 +111,19 @@ class EvolutionService {
         case 'loyalty':
           final requiredLoyalty = condition.intValue;
           if (requiredLoyalty != null) {
-            conditionLabels.add('Lealtà $requiredLoyalty');
+            conditionLabels.add(
+              uiTextForLanguage(
+                'Lealtà $requiredLoyalty',
+                'Loyalty $requiredLoyalty',
+              ),
+            );
             if (slot.loyalty < requiredLoyalty) {
-              missing.add('Richiede lealtà $requiredLoyalty');
+              missing.add(
+                uiTextForLanguage(
+                  'Richiede lealtà $requiredLoyalty',
+                  'Requires Loyalty $requiredLoyalty',
+                ),
+              );
             }
           }
           break;
@@ -105,18 +131,38 @@ class EvolutionService {
           final requiredGender = _normalizeGender(condition.valueLabel);
           final currentGender = _normalizeGender(slot.gender ?? '');
           if (requiredGender.isNotEmpty) {
-            conditionLabels.add('Sesso: ${_genderLabel(requiredGender)}');
+            conditionLabels.add(
+              uiTextForLanguage(
+                'Sesso: ${_genderLabel(requiredGender)}',
+                'Gender: ${_genderLabel(requiredGender)}',
+              ),
+            );
             if (currentGender != requiredGender) {
-              missing.add('Richiede sesso ${_genderLabel(requiredGender)}');
+              missing.add(
+                uiTextForLanguage(
+                  'Richiede sesso ${_genderLabel(requiredGender)}',
+                  'Requires gender ${_genderLabel(requiredGender)}',
+                ),
+              );
             }
           }
           break;
         case 'move':
           final requiredMove = _referenceKey(condition.valueLabel);
           if (requiredMove.isNotEmpty) {
-            conditionLabels.add('Mossa: ${condition.valueLabel}');
+            conditionLabels.add(
+              uiTextForLanguage(
+                'Mossa: ${condition.valueLabel}',
+                'Move: ${condition.valueLabel}',
+              ),
+            );
             if (!selectedMoveKeys.contains(requiredMove)) {
-              missing.add('Richiede la mossa ${condition.valueLabel}');
+              missing.add(
+                uiTextForLanguage(
+                  'Richiede la mossa ${condition.valueLabel}',
+                  'Requires the move ${condition.valueLabel}',
+                ),
+              );
             }
           }
           break;
@@ -126,12 +172,20 @@ class EvolutionService {
           if (requiredItem == null) {
             conditionLabels.add(condition.valueLabel);
             missing.add(
-              'Oggetto richiesto non trovato: ${condition.valueLabel}',
+              uiTextForLanguage(
+                'Oggetto richiesto non trovato: ${condition.valueLabel}',
+                'Required item not found: ${condition.valueLabel}',
+              ),
             );
           } else {
             conditionLabels.add(requiredItem.name);
             if (!ownedItemIds.contains(requiredItem.id)) {
-              missing.add('Richiede ${requiredItem.name} nello zaino');
+              missing.add(
+                uiTextForLanguage(
+                  'Richiede ${requiredItem.name} nello zaino',
+                  'Requires ${requiredItem.name} in the Bag',
+                ),
+              );
             }
           }
           break;
@@ -209,7 +263,10 @@ class EvolutionService {
     final normalized = value.trim().toLowerCase();
     if (normalized.contains('earlier than level 10') &&
         normalized.contains('9,999')) {
-      return 'Oppure prima del livello 10 consumando ₽9.999';
+      return uiTextForLanguage(
+        'Oppure prima del livello 10 consumando ₽9.999',
+        'Or before level 10 by spending ₽9,999',
+      );
     }
     return value.trim();
   }
@@ -237,11 +294,11 @@ class EvolutionService {
   String _genderLabel(String value) {
     switch (value) {
       case 'male':
-        return 'Maschio';
+        return uiTextForLanguage('Maschio', 'Male');
       case 'female':
-        return 'Femmina';
+        return uiTextForLanguage('Femmina', 'Female');
       case 'genderless':
-        return 'Senza sesso';
+        return uiTextForLanguage('Senza sesso', 'Genderless');
       default:
         return value;
     }

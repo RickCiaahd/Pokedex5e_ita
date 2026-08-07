@@ -144,12 +144,14 @@ class TrainerPathAutomationPanel extends StatelessWidget {
                   OutlinedButton.icon(
                     onPressed: onShortRest,
                     icon: const Icon(Icons.bedtime_outlined),
-                    label: Text('RIPOSO BREVE'),
+                    label: Text(
+                      uiTextForLanguage('RIPOSO BREVE', 'SHORT REST'),
+                    ),
                   ),
                   FilledButton.tonalIcon(
                     onPressed: onLongRest,
                     icon: const Icon(Icons.hotel_outlined),
-                    label: Text('RIPOSO LUNGO'),
+                    label: Text(uiTextForLanguage('RIPOSO LUNGO', 'LONG REST')),
                   ),
                 ],
               ),
@@ -261,21 +263,21 @@ class _PathResourceRow extends StatelessWidget {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    'Liv. ${definition.featureLevel} · ${TrainerUiLocalization.featureName(definition.featureTitle)} · ${definition.resetLabel}',
+                    '${uiTextForLanguage('Liv.', 'Lv.')} ${definition.featureLevel} · ${TrainerUiLocalization.featureName(definition.featureTitle)} · ${definition.resetLabel}',
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
                 ],
               ),
             ),
             IconButton(
-              tooltip: 'Consuma',
+              tooltip: uiTextForLanguage('Consuma', 'Spend'),
               onPressed: current <= 0 ? null : () => onChanged(current - 1),
               icon: const Icon(Icons.remove_circle_outline),
             ),
             SizedBox(
               width: 74,
               child: Text(
-                '$current/${definition.maxUses} ${definition.unitLabel}',
+                '$current/${definition.maxUses} ${TrainerUiLocalization.visibleText(definition.unitLabel)}',
                 textAlign: TextAlign.center,
                 style: Theme.of(
                   context,
@@ -283,7 +285,7 @@ class _PathResourceRow extends StatelessWidget {
               ),
             ),
             IconButton(
-              tooltip: 'Recupera',
+              tooltip: uiTextForLanguage('Recupera', 'Restore'),
               onPressed: current >= definition.maxUses
                   ? null
                   : () => onChanged(current + 1),

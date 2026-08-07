@@ -1,4 +1,5 @@
 import '../models/pokemon.dart';
+import '../localization/ui_text.dart';
 import '../models/team_slot.dart';
 
 class BattleTemporaryHpRule {
@@ -17,6 +18,19 @@ class BattleTemporaryHpRule {
   final int levelMultiplier;
   final String description;
   final String? brokenFormName;
+
+  String get localizedLabel => switch (id) {
+    'disguise' => uiTextForLanguage('Fantasmanto', 'Disguise'),
+    _ => label,
+  };
+
+  String get localizedDescription => switch (id) {
+    'disguise' => uiTextForLanguage(
+      'Concede PF temporanei pari al doppio del livello. Quando vengono esauriti, il Fantasmanto si rompe e Mimikyu assume la Forma Smascherata.',
+      'Grants temporary HP equal to twice the level. When they are depleted, Disguise breaks and Mimikyu assumes Busted Form.',
+    ),
+    _ => description,
+  };
 
   int maximumForLevel(int level) {
     return (level.clamp(1, 20) * levelMultiplier).toInt();

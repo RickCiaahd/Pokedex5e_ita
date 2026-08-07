@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import '../localization/ui_text.dart';
 import '../models/pokemon.dart';
 import '../models/team_slot.dart';
 import 'custom_pokemon_runtime_registry.dart';
@@ -216,105 +217,162 @@ class BattleFormChangeService {
     switch (pokemon.name) {
       case 'Deoxys':
         return switch (key) {
-          'attack' => 'Forma Attacco',
-          'defense' => 'Forma Difesa',
-          'speed' => 'Forma Velocità',
-          _ => 'Forma Normale',
+          'attack' => uiTextForLanguage('Forma Attacco', 'Attack Form'),
+          'defense' => uiTextForLanguage('Forma Difesa', 'Defense Form'),
+          'speed' => uiTextForLanguage('Forma Velocità', 'Speed Form'),
+          _ => uiTextForLanguage('Forma Normale', 'Normal Form'),
         };
       case 'Castform':
         return switch (key) {
-          'sunny' => 'Forma Sole',
-          'rainy' => 'Forma Pioggia',
-          'snowy' => 'Forma Neve',
-          _ => 'Forma Normale',
+          'sunny' => uiTextForLanguage('Forma Sole', 'Sunny Form'),
+          'rainy' => uiTextForLanguage('Forma Pioggia', 'Rainy Form'),
+          'snowy' => uiTextForLanguage('Forma Neve', 'Snowy Form'),
+          _ => uiTextForLanguage('Forma Normale', 'Normal Form'),
         };
       case 'Cherrim':
-        return key == 'sunshine' ? 'Forma Splendore' : 'Forma Nuvola';
+        return key == 'sunshine'
+            ? uiTextForLanguage('Forma Splendore', 'Sunshine Form')
+            : uiTextForLanguage('Forma Nuvola', 'Overcast Form');
       case 'Darmanitan':
         return switch (key) {
-          'zen' => 'Stato Zen',
-          'galarian-standard' => 'Forma di Galar · Stato Normale',
-          'galarian-zen' => 'Forma di Galar · Stato Zen',
-          _ => 'Stato Normale',
+          'zen' => uiTextForLanguage('Stato Zen', 'Zen Mode'),
+          'galarian-standard' => uiTextForLanguage(
+            'Forma di Galar · Stato Normale',
+            'Galarian Form · Standard Mode',
+          ),
+          'galarian-zen' => uiTextForLanguage(
+            'Forma di Galar · Stato Zen',
+            'Galarian Form · Zen Mode',
+          ),
+          _ => uiTextForLanguage('Stato Normale', 'Standard Mode'),
         };
       case 'Meloetta':
-        return key == 'pirouette' ? 'Forma Danza' : 'Forma Canto';
+        return key == 'pirouette'
+            ? uiTextForLanguage('Forma Danza', 'Pirouette Form')
+            : uiTextForLanguage('Forma Canto', 'Aria Form');
       case 'Aegislash':
-        return key == 'shield' ? 'Forma Scudo' : 'Forma Spada';
+        return key == 'shield'
+            ? uiTextForLanguage('Forma Scudo', 'Shield Form')
+            : uiTextForLanguage('Forma Spada', 'Blade Form');
       case 'Zygarde':
         return switch (key) {
-          '10' => 'Forma 10%',
-          'complete' => 'Forma Perfetta',
-          _ => 'Forma 50%',
+          '10' => uiTextForLanguage('Forma 10%', '10% Form'),
+          'complete' => uiTextForLanguage('Forma Perfetta', 'Complete Form'),
+          _ => uiTextForLanguage('Forma 50%', '50% Form'),
         };
       case 'Wishiwashi':
-        return key == 'school' ? 'Forma Banco' : 'Forma Individuale';
+        return key == 'school'
+            ? uiTextForLanguage('Forma Banco', 'School Form')
+            : uiTextForLanguage('Forma Individuale', 'Solo Form');
       case 'Minior':
         return switch (key) {
-          'core-red' => 'Nucleo Rosso',
-          'core-orange' => 'Nucleo Arancione',
-          'core-yellow' => 'Nucleo Giallo',
-          'core-green' => 'Nucleo Verde',
-          'core-blue' => 'Nucleo Azzurro',
-          'core-indigo' => 'Nucleo Indaco',
-          'core-violet' => 'Nucleo Violetto',
-          _ => 'Forma Meteora',
+          'core-red' => uiTextForLanguage('Nucleo Rosso', 'Red Core'),
+          'core-orange' => uiTextForLanguage('Nucleo Arancione', 'Orange Core'),
+          'core-yellow' => uiTextForLanguage('Nucleo Giallo', 'Yellow Core'),
+          'core-green' => uiTextForLanguage('Nucleo Verde', 'Green Core'),
+          'core-blue' => uiTextForLanguage('Nucleo Azzurro', 'Blue Core'),
+          'core-indigo' => uiTextForLanguage('Nucleo Indaco', 'Indigo Core'),
+          'core-violet' => uiTextForLanguage('Nucleo Violetto', 'Violet Core'),
+          _ => uiTextForLanguage('Forma Meteora', 'Meteor Form'),
         };
       case 'Mimikyu':
-        return key == 'busted' ? 'Forma Smascherata' : 'Forma Mascherata';
+        return key == 'busted'
+            ? uiTextForLanguage('Forma Smascherata', 'Busted Form')
+            : uiTextForLanguage('Forma Mascherata', 'Disguised Form');
       case 'Necrozma':
         return switch (key) {
-          'dusk-mane' => 'Criniera del Vespro',
-          'dawn-wings' => 'Ali dell’Aurora',
-          'ultra' => 'UltraNecrozma',
-          _ => 'Forma Normale',
+          'dusk-mane' => uiTextForLanguage('Criniera del Vespro', 'Dusk Mane'),
+          'dawn-wings' => uiTextForLanguage('Ali dell’Aurora', 'Dawn Wings'),
+          'ultra' => 'Ultra Necrozma',
+          _ => uiTextForLanguage('Forma Normale', 'Normal Form'),
         };
       case 'Cramorant':
         return switch (key) {
-          'gulping' => 'Forma Inghiottitutto',
-          'gorging' => 'Forma Ingozzata',
-          _ => 'Forma Normale',
+          'gulping' => uiTextForLanguage(
+            'Forma Inghiottitutto',
+            'Gulping Form',
+          ),
+          'gorging' => uiTextForLanguage('Forma Ingozzata', 'Gorging Form'),
+          _ => uiTextForLanguage('Forma Normale', 'Normal Form'),
         };
       case 'Eiscue':
-        return key == 'noice-face' ? 'Forma Liquefaccia' : 'Forma Gelofaccia';
+        return key == 'noice-face'
+            ? uiTextForLanguage('Forma Liquefaccia', 'Noice Face')
+            : uiTextForLanguage('Forma Gelofaccia', 'Ice Face');
       case 'Morpeko':
-        return key == 'hangry' ? 'Motivo Panciavuota' : 'Motivo Panciapiena';
+        return key == 'hangry'
+            ? uiTextForLanguage('Motivo Panciavuota', 'Hangry Mode')
+            : uiTextForLanguage('Motivo Panciapiena', 'Full Belly Mode');
       case 'Palafin':
-        return key == 'hero' ? 'Forma Possente' : 'Forma Ingenua';
+        return key == 'hero'
+            ? uiTextForLanguage('Forma Possente', 'Hero Form')
+            : uiTextForLanguage('Forma Ingenua', 'Zero Form');
       case 'Ogerpon':
         return switch (key) {
-          'wellspring-mask' => 'Maschera Pozzo',
-          'hearthflame-mask' => 'Maschera Focolare',
-          'cornerstone-mask' => 'Maschera Fondamenta',
-          _ => 'Maschera Turchese',
+          'wellspring-mask' => uiTextForLanguage(
+            'Maschera Pozzo',
+            'Wellspring Mask',
+          ),
+          'hearthflame-mask' => uiTextForLanguage(
+            'Maschera Focolare',
+            'Hearthflame Mask',
+          ),
+          'cornerstone-mask' => uiTextForLanguage(
+            'Maschera Fondamenta',
+            'Cornerstone Mask',
+          ),
+          _ => uiTextForLanguage('Maschera Turchese', 'Teal Mask'),
         };
       case 'Terapagos':
         return switch (key) {
-          'terastal' => 'Forma Teracristal',
-          'stellar' => 'Forma Astrale',
-          _ => 'Forma Normale',
+          'terastal' => uiTextForLanguage('Forma Teracristal', 'Terastal Form'),
+          'stellar' => uiTextForLanguage('Forma Astrale', 'Stellar Form'),
+          _ => uiTextForLanguage('Forma Normale', 'Normal Form'),
         };
       default:
-        return formName?.trim().isNotEmpty == true ? formName! : 'Forma';
+        return formName?.trim().isNotEmpty == true
+            ? formName!
+            : uiTextForLanguage('Forma', 'Form');
     }
   }
 
   static String changeHint(Pokemon pokemon) {
     switch (pokemon.name) {
       case 'Darmanitan':
-        return 'Lo Stato Zen si attiva sotto la metà dei PF se il Pokémon possiede l’abilità Stato Zen.';
+        return uiTextForLanguage(
+          'Lo Stato Zen si attiva sotto la metà dei PF se il Pokémon possiede l’abilità Stato Zen.',
+          'Zen Mode activates below half HP if the Pokémon has the Zen Mode ability.',
+        );
       case 'Aegislash':
-        return 'Accendilotta alterna Forma Spada e Forma Scudo in base alla mossa usata.';
+        return uiTextForLanguage(
+          'Accendilotta alterna Forma Spada e Forma Scudo in base alla mossa usata.',
+          'Stance Change alternates Blade Form and Shield Form based on the move used.',
+        );
       case 'Zygarde':
-        return 'La Forma 50% è quella predefinita; usa le altre forme quando la situazione di gioco lo richiede.';
+        return uiTextForLanguage(
+          'La Forma 50% è quella predefinita; usa le altre forme quando la situazione di gioco lo richiede.',
+          '50% Form is the default; use the other forms when the game situation requires them.',
+        );
       case 'Minior':
-        return 'Scudi Giù alterna la Forma Meteora e il Nucleo; il colore del Nucleo è soltanto estetico.';
+        return uiTextForLanguage(
+          'Scudi Giù alterna la Forma Meteora e il Nucleo; il colore del Nucleo è soltanto estetico.',
+          'Shields Down alternates Meteor Form and Core; the Core color is cosmetic only.',
+        );
       case 'Mimikyu':
-        return 'Fantasmanto mantiene la Forma Mascherata finché i suoi PF temporanei non vengono esauriti.';
+        return uiTextForLanguage(
+          'Fantasmanto mantiene la Forma Mascherata finché i suoi PF temporanei non vengono esauriti.',
+          'Disguise keeps Disguised Form until its temporary HP are depleted.',
+        );
       case 'Palafin':
-        return 'Supercambio consente di assumere la Forma Possente; al termine della lotta torna alla Forma Ingenua.';
+        return uiTextForLanguage(
+          'Supercambio consente di assumere la Forma Possente; al termine della lotta torna alla Forma Ingenua.',
+          'Zero to Hero allows Hero Form; at the end of the battle it returns to Zero Form.',
+        );
       default:
-        return 'Il cambio forma vale soltanto per la battaglia corrente.';
+        return uiTextForLanguage(
+          'Il cambio forma vale soltanto per la battaglia corrente.',
+          'The form change applies only to the current battle.',
+        );
     }
   }
 
@@ -349,34 +407,70 @@ class BattleFormChangeService {
     final key = canonicalFormKey(pokemon, formName);
     if (pokemon.name == 'Deoxys') {
       return switch (key) {
-        'attack' => 'Mutante: +5 ai tiri per colpire.',
-        'defense' => 'Mutante: +3 alla CA.',
-        'speed' => 'Mutante: velocità raddoppiata.',
-        _ => 'Forma equilibrata, senza bonus di Mutante.',
+        'attack' => uiTextForLanguage(
+          'Mutante: +5 ai tiri per colpire.',
+          'Mutant: +5 to attack rolls.',
+        ),
+        'defense' => uiTextForLanguage(
+          'Mutante: +3 alla CA.',
+          'Mutant: +3 AC.',
+        ),
+        'speed' => uiTextForLanguage(
+          'Mutante: velocità raddoppiata.',
+          'Mutant: Speed is doubled.',
+        ),
+        _ => uiTextForLanguage(
+          'Forma equilibrata, senza bonus di Mutante.',
+          'Balanced form, with no Mutant bonus.',
+        ),
       };
     }
     if (pokemon.name == 'Aegislash' && key == 'shield') {
-      return 'Accendilotta: CA 20 e DES 15 al posto dei valori della Forma Spada.';
+      return uiTextForLanguage(
+        'Accendilotta: CA 20 e DES 15 al posto dei valori della Forma Spada.',
+        'Stance Change: AC 20 and DEX 15 instead of the Blade Form values.',
+      );
     }
     if (pokemon.name == 'Zygarde') {
       return switch (key) {
-        '10' => 'CA 16; FOR 16, DES 19, COS 15, INT 14, SAG 14, CAR 14.',
-        'complete' => 'CA 20; FOR 19, DES 17, COS 30, INT 18, SAG 18, CAR 18.',
-        _ => 'CA 18; FOR 19, DES 18, COS 20, INT 16, SAG 16, CAR 16.',
+        '10' => uiTextForLanguage(
+          'CA 16; FOR 16, DES 19, COS 15, INT 14, SAG 14, CAR 14.',
+          'AC 16; STR 16, DEX 19, CON 15, INT 14, WIS 14, CHA 14.',
+        ),
+        'complete' => uiTextForLanguage(
+          'CA 20; FOR 19, DES 17, COS 30, INT 18, SAG 18, CAR 18.',
+          'AC 20; STR 19, DEX 17, CON 30, INT 18, WIS 18, CHA 18.',
+        ),
+        _ => uiTextForLanguage(
+          'CA 18; FOR 19, DES 18, COS 20, INT 16, SAG 16, CAR 16.',
+          'AC 18; STR 19, DEX 18, CON 20, INT 16, WIS 16, CHA 16.',
+        ),
       };
     }
     if (pokemon.name == 'Darmanitan') {
       return switch (key) {
-        'zen' => 'Tipo Fuoco/Psico, CA 18; FOR e SAG vengono scambiate.',
-        'galarian-zen' => 'Tipo Ghiaccio/Fuoco; FOR e DES aumentano di 2.',
+        'zen' => uiTextForLanguage(
+          'Tipo Fuoco/Psico, CA 18; FOR e SAG vengono scambiate.',
+          'Fire/Psychic type, AC 18; STR and WIS are swapped.',
+        ),
+        'galarian-zen' => uiTextForLanguage(
+          'Tipo Ghiaccio/Fuoco; FOR e DES aumentano di 2.',
+          'Ice/Fire type; STR and DEX increase by 2.',
+        ),
         _ => null,
       };
     }
     if (pokemon.name == 'Mimikyu' && key == 'busted') {
-      return 'Fantasmanto è spezzato e non concede più PF temporanei.';
+      return uiTextForLanguage(
+        'Fantasmanto è spezzato e non concede più PF temporanei.',
+        'Disguise is broken and no longer grants temporary HP.',
+      );
     }
     if (pokemon.name == 'Palafin' && key == 'hero') {
-      return 'Supercambio: +4 CA, +4 FOR e +4 DES (massimo 22) fino alla fine della lotta.';
+      return uiTextForLanguage(
+        'Supercambio: +4 CA, +4 FOR e +4 DES (massimo 22) fino alla fine della lotta.',
+        'Zero to Hero: +4 AC, +4 STR and +4 DEX (maximum 22) until the end of the battle.',
+      );
     }
     return null;
   }

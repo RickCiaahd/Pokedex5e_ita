@@ -118,16 +118,6 @@ class _BattleScreenState extends State<BattleScreen> {
       fallbackScrollFraction: .16,
     ),
     GuidedTourStepData(
-      targetKey: _environmentKey,
-      icon: Icons.public_outlined,
-      title: context.uiText('Meteo e terreno', 'Weather and terrain'),
-      description: context.uiText(
-        'Registra il meteo e il terreno comunicati dal Master. Il Battle Companion applica al Pokémon i modificatori conosciuti, senza generare la scena al posto del Master.',
-        'Record the weather and terrain communicated by the GM. The Battle Companion applies known modifiers to the Pokémon without generating the scene for the GM.',
-      ),
-      fallbackScrollFraction: .30,
-    ),
-    GuidedTourStepData(
       targetKey: _activePokemonKey,
       icon: Icons.favorite_outline,
       title: context.uiText('Pokémon attivo', 'Active Pokémon'),
@@ -135,7 +125,7 @@ class _BattleScreenState extends State<BattleScreen> {
         'Qui gestisci PF, PF temporanei, status, forma di battaglia, oggetto tenuto e Zaino rapido del Pokémon selezionato.',
         'Manage HP, temporary HP, conditions, battle form, held item and the selected Pokémon’s quick Bag.',
       ),
-      fallbackScrollFraction: .50,
+      fallbackScrollFraction: .30,
     ),
     GuidedTourStepData(
       targetKey: _movesKey,
@@ -145,7 +135,17 @@ class _BattleScreenState extends State<BattleScreen> {
         'Le mosse mostrano tiro, CD, danni e PP rimanenti. Usa e ripristina i PP dai pulsanti; quando finiscono, il tracker segnala Struggle.',
         'Moves show rolls, DC, damage and remaining PP. Spend or restore PP with the buttons; when all are depleted, the tracker warns you to use Struggle.',
       ),
-      fallbackScrollFraction: 1,
+      fallbackScrollFraction: .55,
+    ),
+    GuidedTourStepData(
+      targetKey: _environmentKey,
+      icon: Icons.public_outlined,
+      title: context.uiText('Meteo e terreno', 'Weather and terrain'),
+      description: context.uiText(
+        'Registra il meteo e il terreno comunicati dal Master. Il Battle Companion applica al Pokémon i modificatori conosciuti, senza generare la scena al posto del Master.',
+        'Record the weather and terrain communicated by the GM. The Battle Companion applies known modifiers to the Pokémon without generating the scene for the GM.',
+      ),
+      fallbackScrollFraction: .80,
     ),
   ];
 
@@ -2063,26 +2063,6 @@ class _BattleScreenState extends State<BattleScreen> {
                             ),
                             const SizedBox(height: 12),
                             KeyedSubtree(
-                              key: _environmentKey,
-                              child: BattleEnvironmentCard(
-                                environment: _environment,
-                                pokemon: pokemon,
-                                slot: activeSlot,
-                                level: _levelForSlot(activeSlot),
-                                proficiency: _proficiency(
-                                  _levelForSlot(activeSlot),
-                                ),
-                                baseSpeed:
-                                    TrainerPathPassiveService.effectiveSpeed(
-                                      profile: data.profile,
-                                      pokemon: pokemon,
-                                      slot: activeSlot,
-                                    ),
-                                onEdit: () => _editEnvironment(data),
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            KeyedSubtree(
                               key: _activePokemonKey,
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -2170,32 +2150,6 @@ class _BattleScreenState extends State<BattleScreen> {
                                 ],
                               ),
                             ),
-                            if (passiveNotes.isNotEmpty) ...[
-                              const SizedBox(height: 12),
-                              TrainerPathPassiveCard(
-                                trainerPath: data.profile.trainerPath,
-                                notes: passiveNotes,
-                              ),
-                            ],
-                            const SizedBox(height: 12),
-                            BattleStatusAssistanceCard(
-                              key: ValueKey(
-                                'player-status-${activeSlot.slotIndex}',
-                              ),
-                              pokemonName: _displayName(activeSlot, pokemon),
-                              nonVolatileStatus: _nonVolatileStatusFor(
-                                activeSlot,
-                              ),
-                              volatileStatuses: _volatileStatusesFor(
-                                activeSlot,
-                              ),
-                              selectedMoment: _statusMoment,
-                              onMomentChanged: (moment) {
-                                setState(() => _statusMoment = moment);
-                              },
-                            ),
-                            const SizedBox(height: 12),
-                            PokemonBattleAttributesCard(attributes: attributes),
                             const SizedBox(height: 12),
                             KeyedSubtree(
                               key: _movesKey,
@@ -2265,6 +2219,52 @@ class _BattleScreenState extends State<BattleScreen> {
                                 ],
                               ),
                             ),
+                            const SizedBox(height: 12),
+                            KeyedSubtree(
+                              key: _environmentKey,
+                              child: BattleEnvironmentCard(
+                                environment: _environment,
+                                pokemon: pokemon,
+                                slot: activeSlot,
+                                level: _levelForSlot(activeSlot),
+                                proficiency: _proficiency(
+                                  _levelForSlot(activeSlot),
+                                ),
+                                baseSpeed:
+                                    TrainerPathPassiveService.effectiveSpeed(
+                                      profile: data.profile,
+                                      pokemon: pokemon,
+                                      slot: activeSlot,
+                                    ),
+                                onEdit: () => _editEnvironment(data),
+                              ),
+                            ),
+                            if (passiveNotes.isNotEmpty) ...[
+                              const SizedBox(height: 12),
+                              TrainerPathPassiveCard(
+                                trainerPath: data.profile.trainerPath,
+                                notes: passiveNotes,
+                              ),
+                            ],
+                            const SizedBox(height: 12),
+                            BattleStatusAssistanceCard(
+                              key: ValueKey(
+                                'player-status-${activeSlot.slotIndex}',
+                              ),
+                              pokemonName: _displayName(activeSlot, pokemon),
+                              nonVolatileStatus: _nonVolatileStatusFor(
+                                activeSlot,
+                              ),
+                              volatileStatuses: _volatileStatusesFor(
+                                activeSlot,
+                              ),
+                              selectedMoment: _statusMoment,
+                              onMomentChanged: (moment) {
+                                setState(() => _statusMoment = moment);
+                              },
+                            ),
+                            const SizedBox(height: 12),
+                            PokemonBattleAttributesCard(attributes: attributes),
                           ],
                         ),
                       );

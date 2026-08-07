@@ -2000,65 +2000,55 @@ class _BattleScreenState extends State<BattleScreen> {
                           children: [
                             KeyedSubtree(
                               key: _battleHeaderKey,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  KeyedSubtree(
-                                    key: _initiativeKey,
-                                    child: _BattleHeader(
-                                      round: _round,
-                                      profile: data.profile,
-                                      trainerInitiativeBonus:
-                                          _trainerInitiativeBonus(data.profile),
-                                      onNextRound: () => _nextPlayerRound(data),
-                                      onEnd: () => _endBattle(data),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 12),
-                                  _PartyBar(
-                                    slots: data.occupiedSlots,
-                                    activeSlot: activeSlot,
-                                    pokemonForSlot: (slot) =>
-                                        _pokemonForSlot(data, slot),
-                                    imagePokemonForSlot: (slot) =>
-                                        data.pokemonById[slot.pokemonId],
-                                    formNameForSlot: _effectiveFormName,
-                                    transformationForSlot: (slot) =>
-                                        _transformationBySlot[slot.slotIndex],
-                                    levelForSlot: _levelForSlot,
-                                    maxHpForSlot: (slot) {
-                                      final slotPokemon = _pokemonForSlot(
-                                        data,
-                                        slot,
+                              child: _PartyBar(
+                                headerKey: _initiativeKey,
+                                round: _round,
+                                trainerInitiativeBonus: _trainerInitiativeBonus(
+                                  data.profile,
+                                ),
+                                onNextRound: () => _nextPlayerRound(data),
+                                onEnd: () => _endBattle(data),
+                                slots: data.occupiedSlots,
+                                activeSlot: activeSlot,
+                                pokemonForSlot: (slot) =>
+                                    _pokemonForSlot(data, slot),
+                                imagePokemonForSlot: (slot) =>
+                                    data.pokemonById[slot.pokemonId],
+                                formNameForSlot: _effectiveFormName,
+                                transformationForSlot: (slot) =>
+                                    _transformationBySlot[slot.slotIndex],
+                                levelForSlot: _levelForSlot,
+                                maxHpForSlot: (slot) {
+                                  final slotPokemon = _pokemonForSlot(
+                                    data,
+                                    slot,
+                                  );
+                                  return slotPokemon == null
+                                      ? 0
+                                      : _maxHpFor(slotPokemon, slot);
+                                },
+                                onSelected: (slotIndex) {
+                                  if (slotIndex != activeSlot.slotIndex &&
+                                      BattleTransformationService.isDynamaxLike(
+                                        _transformationBySlot[activeSlot
+                                            .slotIndex],
+                                      )) {
+                                    setState(() {
+                                      _message = context.uiText(
+                                        'Un Pokémon Dynamax/Gigamax non può essere richiamato o sostituito.',
+                                        'A Dynamax/Gigamax Pokémon cannot be recalled or switched.',
                                       );
-                                      return slotPokemon == null
-                                          ? 0
-                                          : _maxHpFor(slotPokemon, slot);
-                                    },
-                                    onSelected: (slotIndex) {
-                                      if (slotIndex != activeSlot.slotIndex &&
-                                          BattleTransformationService.isDynamaxLike(
-                                            _transformationBySlot[activeSlot
-                                                .slotIndex],
-                                          )) {
-                                        setState(() {
-                                          _message = context.uiText(
-                                            'Un Pokémon Dynamax/Gigamax non può essere richiamato o sostituito.',
-                                            'A Dynamax/Gigamax Pokémon cannot be recalled or switched.',
-                                          );
-                                        });
-                                        return;
-                                      }
-                                      setState(() {
-                                        _activeSlotIndex = slotIndex;
-                                        _statusMoment =
-                                            BattleStatusMoment.turnStart;
-                                        _message = null;
-                                      });
-                                      _scheduleSessionSave(data);
-                                    },
-                                  ),
-                                ],
+                                    });
+                                    return;
+                                  }
+                                  setState(() {
+                                    _activeSlotIndex = slotIndex;
+                                    _statusMoment =
+                                        BattleStatusMoment.turnStart;
+                                    _message = null;
+                                  });
+                                  _scheduleSessionSave(data);
+                                },
                               ),
                             ),
                             const SizedBox(height: 12),
@@ -2150,6 +2140,8 @@ class _BattleScreenState extends State<BattleScreen> {
                                 ],
                               ),
                             ),
+                            const SizedBox(height: 12),
+                            PokemonBattleAttributesCard(attributes: attributes),
                             const SizedBox(height: 12),
                             KeyedSubtree(
                               key: _movesKey,
@@ -2263,8 +2255,6 @@ class _BattleScreenState extends State<BattleScreen> {
                                 setState(() => _statusMoment = moment);
                               },
                             ),
-                            const SizedBox(height: 12),
-                            PokemonBattleAttributesCard(attributes: attributes),
                           ],
                         ),
                       );
@@ -2524,95 +2514,82 @@ Color _hpProgressColor(double value) {
 
 class _BattleHeader extends StatelessWidget {
   const _BattleHeader({
+    super.key,
     required this.round,
-    required this.profile,
     required this.trainerInitiativeBonus,
     required this.onNextRound,
     required this.onEnd,
   });
 
   final int round;
-  final UserProfile profile;
   final int trainerInitiativeBonus;
   final VoidCallback onNextRound;
   final VoidCallback onEnd;
 
   @override
   Widget build(BuildContext context) {
-    final info = Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          'ROUND $round',
-          style: Theme.of(
-            context,
-          ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
-        ),
-        Text(
-          context.uiText(
-            '${profile.name} · INIZ. ${trainerInitiativeBonus >= 0 ? '+' : ''}$trainerInitiativeBonus',
-            '${profile.name} · INIT. ${trainerInitiativeBonus >= 0 ? '+' : ''}$trainerInitiativeBonus',
-          ),
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
-      ],
-    );
-
-    final nextButton = FilledButton.icon(
-      onPressed: onNextRound,
-      icon: const Icon(Icons.navigate_next),
-      label: Text(
-        context.uiText('PROSSIMO MIO TURNO', 'NEXT MY TURN'),
-        maxLines: 1,
+    final initiative =
+        '${trainerInitiativeBonus >= 0 ? '+' : ''}$trainerInitiativeBonus';
+    final info = Text(
+      context.uiText(
+        'ROUND $round · INIZ. $initiative',
+        'ROUND $round · INIT. $initiative',
       ),
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      style: Theme.of(
+        context,
+      ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
     );
 
     final endButton = IconButton(
       tooltip: context.uiText('Termina battaglia', 'End battle'),
+      visualDensity: VisualDensity.compact,
       onPressed: onEnd,
       icon: const Icon(Icons.stop_circle_outlined),
     );
 
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            if (constraints.maxWidth < 460) {
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Row(
-                    children: [
-                      Expanded(child: info),
-                      endButton,
-                    ],
-                  ),
-                  const SizedBox(height: 6),
-                  SizedBox(width: double.infinity, child: nextButton),
-                ],
-              );
-            }
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final veryCompact = constraints.maxWidth < 390;
+        final nextButton = Tooltip(
+          message: context.uiText('Prossimo mio turno', 'Next my turn'),
+          child: FilledButton.icon(
+            onPressed: onNextRound,
+            style: FilledButton.styleFrom(
+              visualDensity: VisualDensity.compact,
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+            ),
+            icon: const Icon(Icons.navigate_next, size: 18),
+            label: Text(
+              veryCompact
+                  ? context.uiText('TURNO', 'TURN')
+                  : context.uiText('PROSSIMO TURNO', 'NEXT TURN'),
+              maxLines: 1,
+            ),
+          ),
+        );
 
-            return Row(
-              children: [
-                Expanded(child: info),
-                nextButton,
-                const SizedBox(width: 4),
-                endButton,
-              ],
-            );
-          },
-        ),
-      ),
+        return Row(
+          children: [
+            Expanded(child: info),
+            const SizedBox(width: 6),
+            nextButton,
+            endButton,
+          ],
+        );
+      },
     );
   }
 }
 
 class _PartyBar extends StatelessWidget {
   const _PartyBar({
+    required this.headerKey,
+    required this.round,
+    required this.trainerInitiativeBonus,
+    required this.onNextRound,
+    required this.onEnd,
     required this.slots,
     required this.activeSlot,
     required this.pokemonForSlot,
@@ -2624,6 +2601,11 @@ class _PartyBar extends StatelessWidget {
     required this.onSelected,
   });
 
+  final Key headerKey;
+  final int round;
+  final int trainerInitiativeBonus;
+  final VoidCallback onNextRound;
+  final VoidCallback onEnd;
   final List<TeamSlot> slots;
   final TeamSlot activeSlot;
   final Pokemon? Function(TeamSlot slot) pokemonForSlot;
@@ -2634,11 +2616,6 @@ class _PartyBar extends StatelessWidget {
   final int Function(TeamSlot slot) levelForSlot;
   final int Function(TeamSlot slot) maxHpForSlot;
   final ValueChanged<int> onSelected;
-
-  String _displayName(TeamSlot slot, Pokemon pokemon) {
-    final nickname = slot.nickname?.trim();
-    return nickname == null || nickname.isEmpty ? pokemon.name : nickname;
-  }
 
   Future<void> _openPicker(BuildContext context) async {
     final selectedSlot = await showModalBottomSheet<int>(
@@ -2663,69 +2640,35 @@ class _PartyBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final pokemon = pokemonForSlot(activeSlot);
-    if (pokemon == null) return const SizedBox.shrink();
-
-    final activeInfo = Row(
-      children: [
-        PokemonTransformationImage(
-          pokemon: imagePokemonForSlot(activeSlot) ?? pokemon,
-          size: 48,
-          formName: formNameForSlot(activeSlot),
-          gender: activeSlot.gender,
-          isShiny: activeSlot.isShiny,
-          transformation: transformationForSlot(activeSlot),
-        ),
-        const SizedBox(width: 10),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                context.uiText('POKÉMON ATTIVO', 'ACTIVE POKÉMON'),
-                style: Theme.of(
-                  context,
-                ).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w900),
-              ),
-              Text(
-                _displayName(activeSlot, pokemon),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(
-                  context,
-                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
-              ),
-              Text(
-                context.uiText(
-                  '${slots.length} Pokémon in squadra',
-                  '${slots.length} Pokémon in the team',
-                ),
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-
-    final changeButton = FilledButton.icon(
+    final changeButton = OutlinedButton.icon(
       onPressed: () => _openPicker(context),
-      icon: const Icon(Icons.swap_horiz),
+      style: OutlinedButton.styleFrom(
+        visualDensity: VisualDensity.compact,
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      ),
+      icon: const Icon(Icons.swap_horiz, size: 18),
       label: Text(context.uiText('CAMBIA POKÉMON', 'SWITCH POKÉMON')),
     );
 
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(10),
+        padding: const EdgeInsets.all(8),
         child: LayoutBuilder(
           builder: (context, constraints) {
-            if (constraints.maxWidth < 520) {
+            final header = _BattleHeader(
+              key: headerKey,
+              round: round,
+              trainerInitiativeBonus: trainerInitiativeBonus,
+              onNextRound: onNextRound,
+              onEnd: onEnd,
+            );
+
+            if (constraints.maxWidth < 600) {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  activeInfo,
-                  const SizedBox(height: 8),
+                  header,
+                  const SizedBox(height: 6),
                   SizedBox(width: double.infinity, child: changeButton),
                 ],
               );
@@ -2733,8 +2676,8 @@ class _PartyBar extends StatelessWidget {
 
             return Row(
               children: [
-                Expanded(child: activeInfo),
-                const SizedBox(width: 12),
+                Expanded(child: header),
+                const SizedBox(width: 10),
                 changeButton,
               ],
             );

@@ -394,9 +394,18 @@ class _HomeScreenState extends State<HomeScreen> {
                       _TrainerHeader(key: _trainerHeaderKey, profile: profile),
                       const SizedBox(height: 14),
                       _ProgressOverview(
+                        key: _pokedexKey,
                         total: total,
                         seen: seen,
                         caught: caught,
+                        onTap: () async {
+                          await Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => const PokedexScreen(),
+                            ),
+                          );
+                          await _loadDashboard();
+                        },
                       ),
                       if (hasActiveSession) ...[
                         const SizedBox(height: 24),
@@ -528,30 +537,6 @@ class _HomeScreenState extends State<HomeScreen> {
                               await Navigator.of(context).push(
                                 MaterialPageRoute(
                                   builder: (_) => const BreedingScreen(),
-                                ),
-                              );
-                              await _loadDashboard();
-                            },
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 20),
-                      _HomeSectionTitle(
-                        icon: Icons.menu_book_outlined,
-                        title: l10n.homeConsultationTitle,
-                        subtitle: l10n.homeConsultationSubtitle,
-                      ),
-                      _HomeQuickActionsGrid(
-                        children: [
-                          _HomeQuickAction(
-                            key: _pokedexKey,
-                            icon: Icons.catching_pokemon,
-                            title: l10n.homeOpenPokedexTitle,
-                            subtitle: l10n.homeOpenPokedexSubtitle,
-                            onTap: () async {
-                              await Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (_) => const PokedexScreen(),
                                 ),
                               );
                               await _loadDashboard();
@@ -717,53 +702,79 @@ class _TrainerInfoChip extends StatelessWidget {
 
 class _ProgressOverview extends StatelessWidget {
   const _ProgressOverview({
+    super.key,
     required this.total,
     required this.seen,
     required this.caught,
+    required this.onTap,
   });
 
   final int total;
   final int seen;
   final int caught;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              l10n.pokedexProgressTitle,
-              style: Theme.of(
-                context,
-              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 12),
-            LinearProgressIndicator(
-              value: total == 0 ? 0 : caught / total,
-              minHeight: 8,
-            ),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  child: _ProgressStat(
-                    label: l10n.seenLabel,
-                    value: '$seen/$total',
+    final semanticLabel =
+        '${l10n.pokedexProgressTitle}. '
+        '${l10n.seenLabel} $seen/$total. '
+        '${l10n.caughtLabel} $caught/$total. '
+        '${l10n.homeOpenPokedexTitle}';
+
+    return Semantics(
+      button: true,
+      onTap: onTap,
+      label: semanticLabel,
+      child: ExcludeSemantics(
+        child: Card(
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: onTap,
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          l10n.pokedexProgressTitle,
+                          style: Theme.of(context).textTheme.titleMedium
+                              ?.copyWith(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      const Icon(Icons.chevron_right),
+                    ],
                   ),
-                ),
-                Expanded(
-                  child: _ProgressStat(
-                    label: l10n.caughtLabel,
-                    value: '$caught/$total',
+                  const SizedBox(height: 12),
+                  LinearProgressIndicator(
+                    value: total == 0 ? 0 : caught / total,
+                    minHeight: 8,
                   ),
-                ),
-              ],
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _ProgressStat(
+                          label: l10n.seenLabel,
+                          value: '$seen/$total',
+                        ),
+                      ),
+                      Expanded(
+                        child: _ProgressStat(
+                          label: l10n.caughtLabel,
+                          value: '$caught/$total',
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ],
+          ),
         ),
       ),
     );

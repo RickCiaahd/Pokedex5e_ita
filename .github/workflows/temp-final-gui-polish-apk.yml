@@ -86,3 +86,5 @@ jobs:
           name: Pokedex5e-final-gui-test-apk
           path: dist/
           retention-days: 30
+
+# retry after patch-script syntax fix

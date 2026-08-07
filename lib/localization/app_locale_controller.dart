@@ -65,9 +65,7 @@ class AppLocaleController extends ChangeNotifier {
   }
 
   Locale resolveDeviceLocale(Locale? deviceLocale) {
-    return resolveDeviceLocales([
-      if (deviceLocale != null) deviceLocale,
-    ]);
+    return resolveDeviceLocales([if (deviceLocale != null) deviceLocale]);
   }
 
   Locale resolveDeviceLocales(Iterable<Locale> deviceLocales) {

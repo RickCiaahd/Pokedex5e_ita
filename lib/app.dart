@@ -30,9 +30,7 @@ bool _usesTouchLayout(TargetPlatform platform) {
 ThemeData buildTrainerAtlasTheme({TargetPlatform? platform}) {
   final effectivePlatform = platform ?? defaultTargetPlatform;
   final touchLayout = _usesTouchLayout(effectivePlatform);
-  final density = touchLayout
-      ? VisualDensity.standard
-      : _desktopCompactDensity;
+  final density = touchLayout ? VisualDensity.standard : _desktopCompactDensity;
   final tapTargetSize = touchLayout
       ? MaterialTapTargetSize.padded
       : MaterialTapTargetSize.shrinkWrap;
@@ -42,9 +40,7 @@ ThemeData buildTrainerAtlasTheme({TargetPlatform? platform}) {
   );
 
   final compactButtonStyle = ButtonStyle(
-    minimumSize: WidgetStatePropertyAll(
-      Size(0, touchLayout ? 48 : 42),
-    ),
+    minimumSize: WidgetStatePropertyAll(Size(0, touchLayout ? 48 : 42)),
     padding: const WidgetStatePropertyAll(
       EdgeInsets.symmetric(horizontal: 12, vertical: 8),
     ),
@@ -94,9 +90,7 @@ ThemeData buildTrainerAtlasTheme({TargetPlatform? platform}) {
     outlinedButtonTheme: OutlinedButtonThemeData(style: compactButtonStyle),
     textButtonTheme: TextButtonThemeData(
       style: compactButtonStyle.copyWith(
-        minimumSize: WidgetStatePropertyAll(
-          Size(0, touchLayout ? 48 : 38),
-        ),
+        minimumSize: WidgetStatePropertyAll(Size(0, touchLayout ? 48 : 38)),
       ),
     ),
     iconButtonTheme: IconButtonThemeData(

@@ -484,6 +484,10 @@ class Pokemon {
       'therian-forme',
       'altered-forme',
       'origin-forme',
+      'teal-mask',
+      'wellspring-mask',
+      'hearthflame-mask',
+      'cornerstone-mask',
     ];
 
     for (final suffix in removableSuffixes) {

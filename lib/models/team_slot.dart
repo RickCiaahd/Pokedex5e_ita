@@ -36,7 +36,7 @@ class TeamSlot {
     String? formName,
     this.nature = 'No Nature',
     this.heldItem,
-    this.abilities = const [],
+    List<String> abilities = const [],
     this.feats = const [],
     this.extraSkills = const [],
     this.statusEffects = const [],
@@ -53,7 +53,8 @@ class TeamSlot {
            formName: formName,
            gender: gender,
          ),
-       ) {
+       ),
+       abilities = _normalizeAbilityReferences(abilities) {
     final pokemonId = this.pokemonId;
     if (pokemonId != null) {
       PokemonFormPreferences.setForm(
@@ -209,5 +210,37 @@ class TeamSlot {
           : customAbilityScores ?? this.customAbilityScores,
       loyalty: choosingEgg ? 0 : loyalty ?? this.loyalty,
     );
+  }
+
+  static List<String> _normalizeAbilityReferences(Iterable<String> values) {
+    final result = <String>[];
+    final seen = <String>{};
+    var hasPowerConstruct = false;
+
+    for (final raw in values) {
+      final value = raw.trim();
+      if (value.isEmpty) continue;
+      final key = _abilityReferenceKey(value);
+      if (key == 'power-construct' || key.startsWith('power-construct-')) {
+        hasPowerConstruct = true;
+        continue;
+      }
+      if (seen.add(key)) result.add(value);
+    }
+
+    if (hasPowerConstruct) {
+      result.add('Power Construct');
+    }
+    return List<String>.unmodifiable(result);
+  }
+
+  static String _abilityReferenceKey(String value) {
+    return value
+        .trim()
+        .toLowerCase()
+        .replaceAll(RegExp(r"[’']"), '')
+        .replaceAll(RegExp(r'[^a-z0-9]+'), '-')
+        .replaceAll(RegExp(r'-+'), '-')
+        .replaceAll(RegExp(r'^-+|-+$'), '');
   }
 }

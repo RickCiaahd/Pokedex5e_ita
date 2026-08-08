@@ -40,6 +40,33 @@ void main() {
     }
   });
 
+  test('Ogerpon repository variant follows the held mask typing', () async {
+    final catalog = await PokemonRepository().getAllPokemon();
+    final ogerpon = catalog.firstWhere(
+      (pokemon) => pokemon.id == ItemDrivenPokemonForm.ogerponId,
+    );
+    const expectedTypes = <String, Set<String>>{
+      'teal-mask': {'grass'},
+      'wellspring-mask': {'grass', 'water'},
+      'hearthflame-mask': {'grass', 'fire'},
+      'cornerstone-mask': {'grass', 'rock'},
+    };
+
+    for (final entry in expectedTypes.entries) {
+      final slot = TeamSlot(
+        slotIndex: 0,
+        pokemonId: ogerpon.id,
+        heldItem: entry.key,
+      );
+      final resolved = ogerpon.resolveVariant(formName: slot.effectiveFormName);
+      expect(
+        resolved.types.map((type) => type.toLowerCase()).toSet(),
+        entry.value,
+        reason: '${entry.key} deve aggiornare i tipi effettivi di Ogerpon',
+      );
+    }
+  });
+
   test('localized Ogerpon mask names remain compatible', () {
     expect(
       ItemDrivenPokemonForm.formNameForHeldItem(

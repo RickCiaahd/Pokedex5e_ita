@@ -264,7 +264,15 @@ class TrainerPathPassiveService {
       pokemon: pokemon,
       slot: slot,
     );
-    final constitutionModifier = (((attributes['CON'] ?? 10) - 10) / 2).floor();
+    // Schooling explicitly says Wishiwashi's +5 CON in School Form does not
+    // alter its HP. The School variant is Huge in the source data, while the
+    // Solo form is Tiny, so remove only that form-specific CON increase and
+    // preserve nature, custom-score and Trainer Path modifiers.
+    final constitutionScore =
+        pokemon.name == 'Wishiwashi' && pokemon.size == 'Huge'
+        ? (attributes['CON'] ?? 10) - 5
+        : (attributes['CON'] ?? 10);
+    final constitutionModifier = ((constitutionScore - 10) / 2).floor();
     final toughBonus = slot?.feats.contains('Tough') == true
         ? safeLevel * 2
         : 0;

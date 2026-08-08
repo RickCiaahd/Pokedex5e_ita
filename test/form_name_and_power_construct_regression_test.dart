@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pokedex_5e_ita/localization/game_catalog_locale.dart';
 import 'package:pokedex_5e_ita/localization/pokemon_form_localization.dart';
+import 'package:pokedex_5e_ita/models/pokemon.dart';
 import 'package:pokedex_5e_ita/models/team_slot.dart';
 import 'package:pokedex_5e_ita/repositories/ability_repository.dart';
 import 'package:pokedex_5e_ita/repositories/pokemon_repository.dart';
@@ -80,9 +81,7 @@ void main() {
           definition.displayName,
         );
         if (englishMarkers.hasMatch(label)) {
-          errors.add(
-            '${pokemon.name}: ${definition.displayName} -> $label',
-          );
+          errors.add('${pokemon.name}: ${definition.displayName} -> $label');
         }
       }
     }

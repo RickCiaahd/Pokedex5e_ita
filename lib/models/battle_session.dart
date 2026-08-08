@@ -96,6 +96,7 @@ class BattlePokemonState {
     required this.remainingPp,
     required this.volatileStatuses,
     this.battleFormName,
+    this.formRuleState = const {},
     this.temporaryHp = 0,
     this.temporaryHpEnabled = false,
     this.temporaryHpInitialized = false,
@@ -108,6 +109,7 @@ class BattlePokemonState {
   final Map<String, int> remainingPp;
   final Set<String> volatileStatuses;
   final String? battleFormName;
+  final Map<String, int> formRuleState;
   final int temporaryHp;
   final bool temporaryHpEnabled;
   final bool temporaryHpInitialized;
@@ -127,6 +129,7 @@ class BattlePokemonState {
       'remainingPp': remainingPp,
       'volatileStatuses': volatileStatuses.toList(growable: false),
       'battleFormName': battleFormName,
+      'formRuleState': formRuleState,
       'temporaryHp': temporaryHp,
       'temporaryHpEnabled': temporaryHpEnabled,
       'temporaryHpInitialized': temporaryHpInitialized,
@@ -151,6 +154,12 @@ class BattlePokemonState {
         ).map((value) => value.toString()),
       ),
       battleFormName: json['battleFormName']?.toString(),
+      formRuleState: {
+        for (final entry in Map<dynamic, dynamic>.from(
+          json['formRuleState'] ?? const {},
+        ).entries)
+          entry.key.toString(): _readInt(entry.value),
+      },
       temporaryHp: _readInt(json['temporaryHp']).clamp(0, 9999).toInt(),
       temporaryHpEnabled: json['temporaryHpEnabled'] == true,
       temporaryHpInitialized: json['temporaryHpInitialized'] == true,

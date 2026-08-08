@@ -61,6 +61,7 @@ void main() {
       'Tornadus',
       'Thundurus',
       'Landorus',
+      'Enamorus',
       'Terapagos',
     ];
 
@@ -77,9 +78,6 @@ void main() {
         reason: name,
       );
     }
-    // Enamorus has ancillary form metadata in the repository but no runtime
-    // Pokemon record, so it cannot be exercised by Battle Companion yet.
-    expect(byName.containsKey('Enamorus'), isFalse);
     expect(BattleFormChangeService.supports(byName['Pikachu']!), isFalse);
   });
 

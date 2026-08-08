@@ -40,19 +40,19 @@ void main() {
     }
   });
 
-  test('Ogerpon repository variant follows the held mask typing', () async {
+  test('Ogerpon repository variant follows the held mask typing and artwork', () async {
     final catalog = await PokemonRepository().getAllPokemon();
     final ogerpon = catalog.firstWhere(
       (pokemon) => pokemon.id == ItemDrivenPokemonForm.ogerponId,
     );
-    const expectedTypes = <String, Set<String>>{
-      'teal-mask': {'grass'},
-      'wellspring-mask': {'grass', 'water'},
-      'hearthflame-mask': {'grass', 'fire'},
-      'cornerstone-mask': {'grass', 'rock'},
+    const expected = <String, (Set<String>, String)>{
+      'teal-mask': ({'grass'}, 'ogerpon'),
+      'wellspring-mask': ({'grass', 'water'}, 'ogerpon-wellspring-mask'),
+      'hearthflame-mask': ({'grass', 'fire'}, 'ogerpon-hearthflame-mask'),
+      'cornerstone-mask': ({'grass', 'rock'}, 'ogerpon-cornerstone-mask'),
     };
 
-    for (final entry in expectedTypes.entries) {
+    for (final entry in expected.entries) {
       final slot = TeamSlot(
         slotIndex: 0,
         pokemonId: ogerpon.id,
@@ -61,8 +61,13 @@ void main() {
       final resolved = ogerpon.resolveVariant(formName: slot.effectiveFormName);
       expect(
         resolved.types.map((type) => type.toLowerCase()).toSet(),
-        entry.value,
+        entry.value.$1,
         reason: '${entry.key} deve aggiornare i tipi effettivi di Ogerpon',
+      );
+      expect(
+        resolved.assetSlug,
+        entry.value.$2,
+        reason: '${entry.key} deve usare l artwork della maschera corretta',
       );
     }
   });

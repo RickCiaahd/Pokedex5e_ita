@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../localization/game_catalog_locale.dart';
+import '../models/pokedex_entry.dart';
 import '../models/pokemon.dart';
 import '../models/pokemon_flavor.dart';
 import '../services/custom_pokemon_discovery_service.dart';
@@ -309,9 +310,19 @@ class PokemonRepository {
       for (final entry in json.entries) {
         final variants = entry.value;
         if (variants is! List || variants.isEmpty) continue;
-        final first = variants.first.toString().trim();
-        if (first.isEmpty) continue;
-        result[_slug(entry.key)] = _slug(first);
+        final speciesName = entry.key.toString();
+        String? preferredVariant;
+        for (final variant in variants) {
+          final name = variant.toString().trim();
+          if (name.isEmpty) continue;
+          if (PokedexEntry.formKey(name, speciesName: speciesName) == 'base') {
+            preferredVariant = name;
+            break;
+          }
+        }
+        preferredVariant ??= variants.first.toString().trim();
+        if (preferredVariant.isEmpty) continue;
+        result[_slug(speciesName)] = _slug(preferredVariant);
       }
       return result;
     } catch (error) {

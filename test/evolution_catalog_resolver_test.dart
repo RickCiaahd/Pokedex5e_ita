@@ -299,28 +299,16 @@ void main() {
     expect(checked.length, greaterThan(500));
   });
 
-  test('le etichette regionali visibili sono italiane', () async {
+  test('le etichette regionali visibili sono italiane e compatte', () async {
     final catalog = await PokemonRepository().getAllPokemon();
     final rattata = catalog.firstWhere((pokemon) => pokemon.id == 19);
     final meowth = catalog.firstWhere((pokemon) => pokemon.id == 52);
     final sneasel = catalog.firstWhere((pokemon) => pokemon.id == 215);
     final wooper = catalog.firstWhere((pokemon) => pokemon.id == 194);
 
-    expect(
-      PokemonFormLocalization.formLabel(rattata, 'Alolan'),
-      'Forma di Alola',
-    );
-    expect(
-      PokemonFormLocalization.formLabel(meowth, 'Galarian'),
-      'Forma di Galar',
-    );
-    expect(
-      PokemonFormLocalization.formLabel(sneasel, 'Hisuian'),
-      'Forma di Hisui',
-    );
-    expect(
-      PokemonFormLocalization.formLabel(wooper, 'Paldean'),
-      'Forma di Paldea',
-    );
+    expect(PokemonFormLocalization.formLabel(rattata, 'Alolan'), 'Alola');
+    expect(PokemonFormLocalization.formLabel(meowth, 'Galarian'), 'Galar');
+    expect(PokemonFormLocalization.formLabel(sneasel, 'Hisuian'), 'Hisui');
+    expect(PokemonFormLocalization.formLabel(wooper, 'Paldean'), 'Paldea');
   });
 }

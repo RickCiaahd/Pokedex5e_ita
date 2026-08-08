@@ -11,37 +11,6 @@ import '../pokemon/pokemon_asset_image.dart';
 
 typedef PokedexEntryChanged = Future<void> Function(PokedexEntry entry);
 
-String _displayFormLabel(BuildContext context, String? formName) {
-  if (formName == null || formName.trim().isEmpty) {
-    return context.uiText('Base', 'Base');
-  }
-
-  final raw = formName.trim();
-  final normalized = raw.toLowerCase();
-  if (normalized.contains('combat breed')) {
-    return context.uiText('Paldea · Lotta', 'Paldea · Combat');
-  }
-  if (normalized.contains('blaze breed')) {
-    return context.uiText('Paldea · Fuoco', 'Paldea · Blaze');
-  }
-  if (normalized.contains('aqua breed')) {
-    return context.uiText('Paldea · Acqua', 'Paldea · Aqua');
-  }
-  if (normalized.contains('alolan') || normalized == 'alola') {
-    return context.uiText('Alola', 'Alolan');
-  }
-  if (normalized.contains('galarian') || normalized == 'galar') {
-    return context.uiText('Galar', 'Galarian');
-  }
-  if (normalized.contains('hisuian') || normalized == 'hisui') {
-    return context.uiText('Hisui', 'Hisuian');
-  }
-  if (normalized.contains('paldean') || normalized == 'paldea') {
-    return context.uiText('Paldea', 'Paldean');
-  }
-  return raw;
-}
-
 class PokemonSummaryDialog extends StatefulWidget {
   const PokemonSummaryDialog({
     super.key,
@@ -283,8 +252,8 @@ class _PokemonSummaryDialogState extends State<PokemonSummaryDialog> {
                     ] else if (hasFormSelector) ...[
                       const SizedBox(height: 10),
                       Text(
-                        _displayFormLabel(
-                          context,
+                        PokemonFormLocalization.formLabel(
+                          widget.pokemon,
                           _selectedFormName,
                         ).toUpperCase(),
                         style: Theme.of(context).textTheme.titleMedium
@@ -486,7 +455,7 @@ class _FormCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final label = _displayFormLabel(context, formName);
+    final label = PokemonFormLocalization.formLabel(pokemon, formName);
     final colorScheme = Theme.of(context).colorScheme;
 
     return InkWell(

@@ -45,12 +45,32 @@ void main() {
     final ogerpon = catalog.firstWhere(
       (pokemon) => pokemon.id == ItemDrivenPokemonForm.ogerponId,
     );
+    final definitions = <String, String>{
+      for (final definition in ogerpon.formDefinitions)
+        definition.key:
+            '${definition.pokemon.assetSlug}:${definition.pokemon.types.join('/')}',
+    };
     const expected = <String, (Set<String>, String)>{
-      'teal-mask': ({'grass'}, 'ogerpon'),
+      'teal-mask': ({'grass'}, 'ogerpon-teal-mask'),
       'wellspring-mask': ({'grass', 'water'}, 'ogerpon-wellspring-mask'),
       'hearthflame-mask': ({'grass', 'fire'}, 'ogerpon-hearthflame-mask'),
       'cornerstone-mask': ({'grass', 'rock'}, 'ogerpon-cornerstone-mask'),
     };
+
+    expect(
+      ogerpon.assetSlug,
+      'ogerpon-teal-mask',
+      reason: 'La forma base canonica di Ogerpon deve essere Maschera Turchese',
+    );
+    expect(
+      definitions.keys,
+      containsAll(const [
+        'wellspring-mask',
+        'hearthflame-mask',
+        'cornerstone-mask',
+      ]),
+      reason: 'Forme Ogerpon disponibili: $definitions',
+    );
 
     for (final entry in expected.entries) {
       final slot = TeamSlot(
@@ -60,14 +80,14 @@ void main() {
       );
       final resolved = ogerpon.resolveVariant(formName: slot.effectiveFormName);
       expect(
-        resolved.types.map((type) => type.toLowerCase()).toSet(),
-        entry.value.$1,
-        reason: '${entry.key} deve aggiornare i tipi effettivi di Ogerpon',
-      );
-      expect(
         resolved.assetSlug,
         entry.value.$2,
-        reason: '${entry.key} deve usare l artwork della maschera corretta',
+        reason: '${entry.key} deve usare l artwork corretto; forme=$definitions',
+      );
+      expect(
+        resolved.types.map((type) => type.toLowerCase()).toSet(),
+        entry.value.$1,
+        reason: '${entry.key} deve aggiornare i tipi effettivi; forme=$definitions',
       );
     }
   });

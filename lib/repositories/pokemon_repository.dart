@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../localization/game_catalog_locale.dart';
+import '../models/item_driven_pokemon_form.dart';
 import '../models/pokedex_entry.dart';
 import '../models/pokemon.dart';
 import '../models/pokemon_flavor.dart';
@@ -407,11 +408,16 @@ class PokemonRepository {
       if (rawSuffix.isEmpty) continue;
 
       final gender = Pokemon.normalizeGenderValue(rawSuffix);
+      final normalizedCandidate = _normalizeWebFormMechanics(
+        candidate,
+        speciesSlug: speciesSlug,
+        rawSuffix: rawSuffix,
+      );
       definitions.add(
         PokemonFormDefinition(
           key: rawSuffix,
           displayName: _webFormLabel(rawSuffix),
-          pokemon: candidate.copyWith(
+          pokemon: normalizedCandidate.copyWith(
             name: speciesName,
             formDefinitions: const [],
           ),
@@ -423,6 +429,23 @@ class PokemonRepository {
     return selectedBase.copyWith(
       name: speciesName,
       formDefinitions: definitions,
+    );
+  }
+
+  Pokemon _normalizeWebFormMechanics(
+    Pokemon pokemon, {
+    required String speciesSlug,
+    required String rawSuffix,
+  }) {
+    if (speciesSlug != 'ogerpon') return pokemon;
+
+    final maskType = ItemDrivenPokemonForm.ogerponMaskType(rawSuffix);
+    if (maskType == null) return pokemon;
+    final secondaryType = maskType.toLowerCase();
+    return pokemon.copyWith(
+      types: secondaryType == 'grass'
+          ? const ['grass']
+          : ['grass', secondaryType],
     );
   }
 

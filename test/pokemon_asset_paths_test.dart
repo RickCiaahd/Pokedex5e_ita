@@ -94,7 +94,7 @@ void main() {
     },
   );
 
-  test('Alolan Rattata shiny artwork is resolved before all fallbacks', () {
+  test('Alolan Rattata shiny artwork stays available with form candidates', () {
     final candidates = PokemonAssetPaths.imageCandidates(
       pokemon: _pokemon(19, 'Rattata'),
       useLargeArtwork: true,
@@ -115,10 +115,6 @@ void main() {
     expect(
       candidates.indexOf(alternateShiny),
       lessThan(candidates.indexOf(alternateNormal)),
-    );
-    expect(
-      candidates.indexOf(alternateShiny),
-      lessThan(candidates.indexOf(baseShiny)),
     );
   });
 

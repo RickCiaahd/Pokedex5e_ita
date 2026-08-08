@@ -266,6 +266,7 @@ class PokemonRepository {
       final json = Map<String, dynamic>.from(jsonDecode(jsonString));
       final items = List<dynamic>.from(json['items'] ?? const []);
       final physicalMetadata = await _getWebappPhysicalMetadata();
+      final preferredBaseSlugs = await _getWebappPreferredBaseSlugs();
       final grouped = <int, List<Pokemon>>{};
 
       for (final item in items) {
@@ -288,10 +289,34 @@ class PokemonRepository {
         }
       }
 
-      return [for (final group in grouped.values) _mergeWebFormGroup(group)];
+      return [
+        for (final group in grouped.values)
+          _mergeWebFormGroup(group, preferredBaseSlugs),
+      ];
     } catch (error) {
       debugPrint('Catalogo Pokemon webapp non disponibile: $error');
       return const [];
+    }
+  }
+
+  Future<Map<String, String>> _getWebappPreferredBaseSlugs() async {
+    try {
+      final jsonString = await rootBundle.loadString(
+        'assets/data/variant_map.json',
+      );
+      final json = Map<String, dynamic>.from(jsonDecode(jsonString));
+      final result = <String, String>{};
+      for (final entry in json.entries) {
+        final variants = entry.value;
+        if (variants is! List || variants.isEmpty) continue;
+        final first = variants.first.toString().trim();
+        if (first.isEmpty) continue;
+        result[_slug(entry.key)] = _slug(first);
+      }
+      return result;
+    } catch (error) {
+      debugPrint('Mappa delle forme predefinite non disponibile: $error');
+      return const {};
     }
   }
 
@@ -315,7 +340,10 @@ class PokemonRepository {
     }
   }
 
-  Pokemon _mergeWebFormGroup(List<Pokemon> group) {
+  Pokemon _mergeWebFormGroup(
+    List<Pokemon> group,
+    Map<String, String> preferredBaseSlugs,
+  ) {
     if (group.length <= 1) return group.first;
 
     final speciesSlug = _commonSlugPrefix(
@@ -329,6 +357,17 @@ class PokemonRepository {
       }
     }
 
+    Pokemon? preferredBase;
+    final preferredBaseSlug = preferredBaseSlugs[speciesSlug];
+    if (preferredBaseSlug != null) {
+      for (final pokemon in group) {
+        if ((pokemon.assetSlug ?? _slug(pokemon.name)) == preferredBaseSlug) {
+          preferredBase = pokemon;
+          break;
+        }
+      }
+    }
+
     final sorted = [...group]
       ..sort((a, b) {
         final aSlug = a.assetSlug ?? _slug(a.name);
@@ -336,7 +375,7 @@ class PokemonRepository {
         final lengthCompare = aSlug.length.compareTo(bSlug.length);
         return lengthCompare != 0 ? lengthCompare : aSlug.compareTo(bSlug);
       });
-    final selectedBase = explicitBase ?? sorted.first;
+    final selectedBase = explicitBase ?? preferredBase ?? sorted.first;
     final defaultSpeciesName =
         explicitBase?.name ?? Pokemon.labelFromId(speciesSlug);
     final speciesName =
@@ -348,7 +387,7 @@ class PokemonRepository {
 
     for (final candidate in group) {
       final candidateSlug = candidate.assetSlug ?? _slug(candidate.name);
-      if (explicitBase != null && identical(candidate, explicitBase)) continue;
+      if (identical(candidate, selectedBase)) continue;
       if (candidateSlug == speciesSlug) continue;
 
       final rawSuffix = candidateSlug.startsWith('$speciesSlug-')

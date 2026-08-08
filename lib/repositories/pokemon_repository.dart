@@ -119,9 +119,23 @@ class PokemonRepository {
               .map((pokemon) {
                 final localized = localizedTexts[pokemon.id];
                 if (localized == null) return pokemon;
+                final localizedForms = pokemon.formDefinitions
+                    .map(
+                      (definition) => PokemonFormDefinition(
+                        key: definition.key,
+                        displayName: definition.displayName,
+                        pokemon: definition.pokemon.copyWith(
+                          genus: localized.genus,
+                          description: localized.description,
+                        ),
+                        gender: definition.gender,
+                      ),
+                    )
+                    .toList(growable: false);
                 return pokemon.copyWith(
                   genus: localized.genus,
                   description: localized.description,
+                  formDefinitions: localizedForms,
                 );
               })
               .toList(growable: false)

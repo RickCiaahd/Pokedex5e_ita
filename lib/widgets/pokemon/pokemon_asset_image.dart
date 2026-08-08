@@ -45,9 +45,18 @@ class PokemonAssetPaths {
     }
 
     legacy.PokemonFormChoice? baseChoice;
-    final realChoices = <legacy.PokemonFormChoice>[];
+    final realChoicesByKey = <String, legacy.PokemonFormChoice>{};
     for (final choice in rawChoices) {
-      final key = Pokemon.formReferenceKey(choice.name, pokemon.name);
+      if (!PokedexEntry.isTrackableForm(
+        choice.name,
+        speciesName: pokemon.name,
+      )) {
+        continue;
+      }
+      final key = PokedexEntry.formKey(
+        choice.name,
+        speciesName: pokemon.name,
+      );
       if (key == 'base') {
         baseChoice ??= choice;
         continue;
@@ -59,16 +68,16 @@ class PokemonAssetPaths {
       )) {
         continue;
       }
-      realChoices.add(choice);
+      realChoicesByKey.putIfAbsent(key, () => choice);
     }
 
-    // A species whose only alternatives are male/female must not display a
-    // Forma section containing a single, meaningless Base entry.
-    if (realChoices.isEmpty) return const [];
+    // A species whose only alternatives are male/female or temporary battle
+    // states must not display a Forma section containing only Base.
+    if (realChoicesByKey.isEmpty) return const [];
 
     return <legacy.PokemonFormChoice>[
       baseChoice ?? const legacy.PokemonFormChoice(name: 'Base', assetPath: ''),
-      ...realChoices,
+      ...realChoicesByKey.values,
     ];
   }
 
@@ -112,6 +121,12 @@ class PokemonAssetPaths {
     bool isShiny = false,
   }) {
     return <String>{
+      ..._explicitFormAssetCandidates(
+        pokemon: pokemon,
+        useLargeArtwork: useLargeArtwork,
+        formName: formName,
+        isShiny: isShiny,
+      ),
       ..._itemDrivenAssetCandidates(
         pokemon: pokemon,
         useLargeArtwork: useLargeArtwork,
@@ -248,6 +263,12 @@ class PokemonAssetImage extends StatelessWidget {
             ? 'male'
             : null);
     final candidates = <String>[
+      ..._explicitFormAssetCandidates(
+        pokemon: effectivePokemon,
+        useLargeArtwork: useLargeArtwork,
+        formName: effectiveForm,
+        isShiny: isShiny ?? false,
+      ),
       ..._itemDrivenAssetCandidates(
         pokemon: effectivePokemon,
         useLargeArtwork: useLargeArtwork,
@@ -288,6 +309,57 @@ class PokemonAssetImage extends StatelessWidget {
       scale: useLargeArtwork ? 1.08 : 1.12,
     );
   }
+}
+
+List<String> _explicitFormAssetCandidates({
+  required Pokemon pokemon,
+  required bool useLargeArtwork,
+  required String? formName,
+  required bool isShiny,
+}) {
+  final formKey = Pokemon.formReferenceKey(formName ?? '', pokemon.name);
+  if (formKey == 'base' || formKey.isEmpty) return const [];
+
+  final speciesSlug = _assetSlug(pokemon.name);
+  if (speciesSlug.isEmpty) return const [];
+
+  final formSlugs = <String>{
+    formKey,
+    '$formKey-style',
+    '$formKey-form',
+    '$formKey-forme',
+    '$formKey-mode',
+  };
+  final folders = <String>[];
+  for (final formSlug in formSlugs) {
+    folders.addAll([
+      '$speciesSlug-$formSlug',
+      '$formSlug-$speciesSlug',
+      '$speciesSlug/$formSlug',
+    ]);
+  }
+
+  final primary = useLargeArtwork ? 'main' : 'sprite';
+  final secondary = useLargeArtwork ? 'sprite' : 'main';
+  const root = 'assets/textures/textures_webapp/pokemon';
+  final candidates = <String>[];
+  for (final folder in folders) {
+    if (isShiny) {
+      candidates.addAll([
+        '$root/$folder/$primary-shiny.png',
+        '$root/$folder/$secondary-shiny.png',
+        '$root/$folder/${primary}_shiny.png',
+        '$root/$folder/${secondary}_shiny.png',
+      ]);
+    }
+    candidates.addAll([
+      '$root/$folder/$primary.png',
+      '$root/$folder/$secondary.png',
+      '$root/$folder/main.png',
+      '$root/$folder/sprite.png',
+    ]);
+  }
+  return candidates;
 }
 
 List<String> _itemDrivenAssetCandidates({

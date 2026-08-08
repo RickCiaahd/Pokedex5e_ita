@@ -9,6 +9,12 @@ import '../services/performance_trace.dart';
 import 'ability_localization_repository.dart';
 
 class AbilityRepository {
+  static const Set<String> _powerConstructVariantIds = {
+    'power-construct-10',
+    'power-construct-50',
+    'power-construct-100',
+  };
+
   static Map<String, String>? _descriptionCache;
   static Future<Map<String, String>>? _descriptionFuture;
   static Map<String, String>? _displayNameCache;
@@ -90,11 +96,7 @@ class AbilityRepository {
           if (_catalogLocaleRevision == localeRevision) {
             _webAbilityCache = abilities;
           }
-          return includeDeprecated
-              ? abilities
-              : abilities
-                    .where((ability) => !ability.deprecated)
-                    .toList(growable: false);
+          return includeDeprecated ? abilities : _visibleAbilities(abilities);
         } finally {
           if (identical(_webAbilityFuture, future)) {
             _webAbilityFuture = null;
@@ -105,10 +107,7 @@ class AbilityRepository {
 
     final abilities = _webAbilityCache!;
     if (includeDeprecated) return abilities;
-
-    return abilities
-        .where((ability) => !ability.deprecated)
-        .toList(growable: false);
+    return _visibleAbilities(abilities);
   }
 
   Future<Set<String>> getDeprecatedAbilityNames() async {
@@ -145,14 +144,60 @@ class AbilityRepository {
     for (final ability in webAbilities) {
       descriptions[ability.name] = ability.description;
     }
+    descriptions['Power Construct'] = GameCatalogLocale.isItalian
+        ? 'Quando Zygarde scende sotto la metà dei PF massimi, Sciamefusione ne cambia automaticamente la forma: dal 10% passa al 50%, mentre dal 50% passa alla Forma Perfetta. Al cambio recupera tutti i PF.'
+        : 'When Zygarde drops below half of its maximum HP, Power Construct automatically changes its form: 10% becomes 50%, while 50% becomes Complete Form. It restores all HP when the form changes.';
     return Map<String, String>.unmodifiable(descriptions);
   }
 
   Future<Map<String, String>> _loadAbilityDisplayNames() async {
     final abilities = await getWebAbilities(includeDeprecated: true);
-    return Map<String, String>.unmodifiable({
+    final result = <String, String>{
       for (final ability in abilities) ability.name: ability.displayName,
-    });
+    };
+    final powerConstruct = _powerConstructReference(abilities);
+    result['Power Construct'] = powerConstruct?.displayName ??
+        (GameCatalogLocale.isItalian ? 'Sciamefusione' : 'Power Construct');
+    return Map<String, String>.unmodifiable(result);
+  }
+
+  List<PokemonAbility> _visibleAbilities(List<PokemonAbility> abilities) {
+    final result = abilities
+        .where(
+          (ability) =>
+              !ability.deprecated &&
+              !_powerConstructVariantIds.contains(ability.id),
+        )
+        .toList(growable: true);
+    final powerConstruct = _powerConstructReference(abilities);
+    if (powerConstruct != null) {
+      result.add(
+        PokemonAbility(
+          id: 'power-construct',
+          name: 'Power Construct',
+          displayName: powerConstruct.displayName,
+          description: GameCatalogLocale.isItalian
+              ? 'Quando Zygarde scende sotto la metà dei PF massimi, Sciamefusione ne cambia automaticamente la forma e ripristina tutti i PF.'
+              : 'When Zygarde drops below half of its maximum HP, Power Construct automatically changes its form and restores all HP.',
+        ),
+      );
+    }
+    result.sort(
+      (a, b) => a.displayName.toLowerCase().compareTo(
+        b.displayName.toLowerCase(),
+      ),
+    );
+    return List<PokemonAbility>.unmodifiable(result);
+  }
+
+  PokemonAbility? _powerConstructReference(List<PokemonAbility> abilities) {
+    for (final ability in abilities) {
+      if (ability.id == 'power-construct-50') return ability;
+    }
+    for (final ability in abilities) {
+      if (_powerConstructVariantIds.contains(ability.id)) return ability;
+    }
+    return null;
   }
 
   Future<List<PokemonAbility>> _loadWebAbilities() async {

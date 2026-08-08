@@ -407,16 +407,17 @@ class PokemonRepository {
           : candidateSlug;
       if (rawSuffix.isEmpty) continue;
 
-      final gender = Pokemon.normalizeGenderValue(rawSuffix);
+      final formKey = _normalizeWebFormKey(speciesSlug, rawSuffix);
+      final gender = Pokemon.normalizeGenderValue(formKey);
       final normalizedCandidate = _normalizeWebFormMechanics(
         candidate,
         speciesSlug: speciesSlug,
-        rawSuffix: rawSuffix,
+        formKey: formKey,
       );
       definitions.add(
         PokemonFormDefinition(
-          key: rawSuffix,
-          displayName: _webFormLabel(rawSuffix),
+          key: formKey,
+          displayName: _webFormLabel(formKey),
           pokemon: normalizedCandidate.copyWith(
             name: speciesName,
             formDefinitions: const [],
@@ -432,17 +433,28 @@ class PokemonRepository {
     );
   }
 
+  String _normalizeWebFormKey(String speciesSlug, String rawSuffix) {
+    if (speciesSlug == 'ogerpon' && rawSuffix == 'heartflame-mask') {
+      return 'hearthflame-mask';
+    }
+    return rawSuffix;
+  }
+
   Pokemon _normalizeWebFormMechanics(
     Pokemon pokemon, {
     required String speciesSlug,
-    required String rawSuffix,
+    required String formKey,
   }) {
     if (speciesSlug != 'ogerpon') return pokemon;
 
-    final maskType = ItemDrivenPokemonForm.ogerponMaskType(rawSuffix);
+    final maskType = ItemDrivenPokemonForm.ogerponMaskType(formKey);
     if (maskType == null) return pokemon;
     final secondaryType = maskType.toLowerCase();
+    final normalizedAssetSlug = formKey == 'hearthflame-mask'
+        ? 'ogerpon-hearthflame-mask'
+        : pokemon.assetSlug;
     return pokemon.copyWith(
+      assetSlug: normalizedAssetSlug,
       types: secondaryType == 'grass'
           ? const ['grass']
           : ['grass', secondaryType],

@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import '../localization/pokemon_form_localization.dart';
 import '../localization/ui_text.dart';
 import '../models/battle_environment.dart';
 import '../models/level_progression.dart';
@@ -836,6 +837,18 @@ class BattleFormChangeService {
   }
 
   static String formLabel(Pokemon pokemon, String? formName) {
+    if (const {
+      'Oricorio',
+      'Rotom',
+      'Shaymin',
+      'Tornadus',
+      'Thundurus',
+      'Landorus',
+      'Enamorus',
+    }.contains(pokemon.name)) {
+      return PokemonFormLocalization.formLabel(pokemon, formName);
+    }
+
     final key = canonicalFormKey(pokemon, formName);
     switch (pokemon.name) {
       case 'Deoxys':

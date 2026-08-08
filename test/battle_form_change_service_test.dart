@@ -34,8 +34,7 @@ void main() {
   test('battle form support covers automatic and controlled forms', () async {
     final pokemon = await PokemonRepository().getAllPokemon();
     final byName = {for (final entry in pokemon) entry.name: entry};
-
-    for (final name in const [
+    const expectedSpecies = [
       'Deoxys',
       'Castform',
       'Cherrim',
@@ -64,7 +63,15 @@ void main() {
       'Landorus',
       'Enamorus',
       'Terapagos',
-    ]) {
+    ];
+
+    final missing = expectedSpecies.where((name) => !byName.containsKey(name));
+    expect(
+      missing,
+      isEmpty,
+      reason: 'Specie attese non trovate nel catalogo: ${missing.join(', ')}',
+    );
+    for (final name in expectedSpecies.where(byName.containsKey)) {
       expect(
         BattleFormChangeService.supports(byName[name]!),
         isTrue,

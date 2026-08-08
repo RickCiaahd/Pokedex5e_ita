@@ -10,7 +10,12 @@ class PokemonFormDisplayNameExtras {
   static String? label(Pokemon pokemon, String? formName) {
     if (!GameCatalogLocale.isItalian) return null;
     final key = Pokemon.formReferenceKey(formName?.trim() ?? '', pokemon.name);
-    switch (pokemon.name.trim().toLowerCase()) {
+    final species = pokemon.name
+        .trim()
+        .toLowerCase()
+        .replaceFirst(RegExp(r'\s*\(.*\)$'), '')
+        .trim();
+    switch (species) {
       case 'arceus':
       case 'silvally':
         return _typeFormLabels[key];
@@ -23,6 +28,10 @@ class PokemonFormDisplayNameExtras {
         return null;
       case 'wormadam':
         if (key == 'sand-cloak') return 'Manto Sabbia';
+        return null;
+      case 'gimmighoul':
+        if (key == 'base' || key == 'chest') return 'Scrigno';
+        if (key == 'roaming') return 'Ambulante';
         return null;
       default:
         return null;

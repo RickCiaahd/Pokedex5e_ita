@@ -31,7 +31,7 @@ MoveData _move(String name, {bool damaging = false}) {
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  test('battle form support covers automatic and controlled forms', () async {
+  test('battle form support covers automatic and controlled runtime forms', () async {
     final pokemon = await PokemonRepository().getAllPokemon();
     final byName = {for (final entry in pokemon) entry.name: entry};
     const expectedSpecies = [
@@ -61,7 +61,6 @@ void main() {
       'Tornadus',
       'Thundurus',
       'Landorus',
-      'Enamorus',
       'Terapagos',
     ];
 
@@ -71,13 +70,16 @@ void main() {
       isEmpty,
       reason: 'Specie attese non trovate nel catalogo: ${missing.join(', ')}',
     );
-    for (final name in expectedSpecies.where(byName.containsKey)) {
+    for (final name in expectedSpecies) {
       expect(
         BattleFormChangeService.supports(byName[name]!),
         isTrue,
         reason: name,
       );
     }
+    // Enamorus has ancillary form metadata in the repository but no runtime
+    // Pokemon record, so it cannot be exercised by Battle Companion yet.
+    expect(byName.containsKey('Enamorus'), isFalse);
     expect(BattleFormChangeService.supports(byName['Pikachu']!), isFalse);
   });
 

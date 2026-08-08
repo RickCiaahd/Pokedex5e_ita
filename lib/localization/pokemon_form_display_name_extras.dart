@@ -24,7 +24,9 @@ class PokemonFormDisplayNameExtras {
       case 'alcremie':
         return _alcremieLabels[key];
       case 'floette':
-        if (key == 'eternal-flower') return 'Fiore Eterno';
+        if (key == 'eternal-flower' || key == 'eternal') {
+          return 'Fiore Eterno';
+        }
         return null;
       case 'wormadam':
         if (key == 'sand-cloak') return 'Manto Sabbia';
@@ -32,6 +34,14 @@ class PokemonFormDisplayNameExtras {
       case 'gimmighoul':
         if (key == 'base' || key == 'chest') return 'Scrigno';
         if (key == 'roaming') return 'Ambulante';
+        return null;
+      case 'calyrex':
+        if (key == 'ice' || key == 'ice-rider') {
+          return 'Cavaliere Glaciale';
+        }
+        if (key == 'shadow' || key == 'shadow-rider') {
+          return 'Cavaliere Spettrale';
+        }
         return null;
       default:
         return null;

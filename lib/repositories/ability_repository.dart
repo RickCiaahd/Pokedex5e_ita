@@ -179,6 +179,7 @@ class AbilityRepository {
           description: GameCatalogLocale.isItalian
               ? 'Quando Zygarde scende sotto la metà dei PF massimi, Sciamefusione ne cambia automaticamente la forma e ripristina tutti i PF.'
               : 'When Zygarde drops below half of its maximum HP, Power Construct automatically changes its form and restores all HP.',
+          deprecated: false,
         ),
       );
     }

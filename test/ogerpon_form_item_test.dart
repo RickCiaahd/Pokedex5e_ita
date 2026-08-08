@@ -51,7 +51,7 @@ void main() {
             '${definition.pokemon.assetSlug}:${definition.pokemon.types.join('/')}',
     };
     const expected = <String, (Set<String>, String)>{
-      'teal-mask': ({'grass'}, 'ogerpon-teal-mask'),
+      'teal-mask': ({'grass'}, 'ogerpon'),
       'wellspring-mask': ({'grass', 'water'}, 'ogerpon-wellspring-mask'),
       'hearthflame-mask': ({'grass', 'fire'}, 'ogerpon-hearthflame-mask'),
       'cornerstone-mask': ({'grass', 'rock'}, 'ogerpon-cornerstone-mask'),
@@ -59,7 +59,7 @@ void main() {
 
     expect(
       ogerpon.assetSlug,
-      'ogerpon-teal-mask',
+      'ogerpon',
       reason: 'La forma base canonica di Ogerpon deve essere Maschera Turchese',
     );
     expect(

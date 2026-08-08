@@ -77,6 +77,24 @@ void main() {
     }
   });
 
+  test('Base usa l artwork canonico nei gruppi senza voce web generica', () async {
+    final pokemon = await PokemonRepository().getAllPokemon();
+    final oricorio = pokemon.firstWhere((entry) => entry.id == 741);
+    final shaymin = pokemon.firstWhere((entry) => entry.id == 492);
+    final hoopa = pokemon.firstWhere((entry) => entry.id == 720);
+
+    expect(oricorio.assetSlug, 'oricorio-baile-style');
+    expect(shaymin.assetSlug, 'shaymin-land');
+    expect(hoopa.assetSlug, 'hoopa-confined');
+
+    expect(
+      oricorio.resolveVariant(formName: "Pa'u").assetSlug,
+      'oricorio-pau-style',
+    );
+    expect(shaymin.resolveVariant(formName: 'Sky').assetSlug, 'shaymin-sky');
+    expect(hoopa.resolveVariant(formName: 'Unbound').assetSlug, 'hoopa-unbound');
+  });
+
   test('Oricorio usa candidati grafici distinti per ogni stile', () {
     final repository = PokemonRepository();
     return repository.getAllPokemon().then((pokemon) {

@@ -86,24 +86,80 @@ void main() {
     _expectBundledCandidate(assets, shiny.first);
   });
 
-  test('Minior colour candidates point to the bundled shared folder', () async {
-    final pokemon = await PokemonRepository().getAllPokemon();
-    final minior = pokemon.firstWhere((entry) => entry.id == 774);
-    final paths = PokemonMiniorAssetPaths.candidates(
-      pokemon: minior,
-      useLargeArtwork: true,
-      formName: 'core-indigo',
-      isShiny: true,
-    );
+  test(
+    'Minior colour candidates reuse one canonical shiny Core artwork',
+    () async {
+      final pokemon = await PokemonRepository().getAllPokemon();
+      final minior = pokemon.firstWhere((entry) => entry.id == 774);
+      final manifest = await AssetManifest.loadFromAssetBundle(rootBundle);
+      final assets = manifest.listAssets();
 
-    expect(
-      paths.first,
-      'assets/textures/textures_webapp/pokemon/minior-core/main-indigo-shiny.png',
-    );
+      const colors = [
+        'red',
+        'orange',
+        'yellow',
+        'green',
+        'blue',
+        'indigo',
+        'violet',
+      ];
 
-    final manifest = await AssetManifest.loadFromAssetBundle(rootBundle);
-    _expectBundledCandidate(manifest.listAssets(), paths.first);
-  });
+      for (final color in colors) {
+        final shiny = PokemonMiniorAssetPaths.candidates(
+          pokemon: minior,
+          useLargeArtwork: true,
+          formName: 'core-$color',
+          isShiny: true,
+        );
+        expect(
+          shiny.first,
+          'assets/textures/textures_webapp/pokemon/minior-core/main-shiny.png',
+          reason: color,
+        );
+        _expectBundledCandidate(assets, shiny.first);
+        expect(
+          assets,
+          isNot(
+            contains(
+              'assets/textures/textures_webapp/pokemon/minior-core/main-$color-shiny.webp',
+            ),
+          ),
+          reason: color,
+        );
+        expect(
+          assets.any(
+            (asset) => asset.startsWith(
+              'assets/textures/textures_webapp/pokemon/minior-core-$color/',
+            ),
+          ),
+          isFalse,
+          reason: color,
+        );
+      }
+
+      final normalIndigo = PokemonMiniorAssetPaths.candidates(
+        pokemon: minior,
+        useLargeArtwork: true,
+        formName: 'core-indigo',
+      );
+      expect(
+        normalIndigo.first,
+        'assets/textures/textures_webapp/pokemon/minior-core/main-indigo.png',
+      );
+      _expectBundledCandidate(assets, normalIndigo.first);
+
+      final normalRed = PokemonMiniorAssetPaths.candidates(
+        pokemon: minior,
+        useLargeArtwork: true,
+        formName: 'core-red',
+      );
+      expect(
+        normalRed.first,
+        'assets/textures/textures_webapp/pokemon/minior-core/main.png',
+      );
+      _expectBundledCandidate(assets, normalRed.first);
+    },
+  );
 
   test('gender-only textures do not create a Forma selector', () async {
     final pokemon = await PokemonRepository().getAllPokemon();

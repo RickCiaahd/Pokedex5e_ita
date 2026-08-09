@@ -51,15 +51,19 @@ class PokemonMiniorAssetPaths {
       if (!result.contains(value)) result.add(value);
     }
 
+    // All seven shiny Core colours use the same canonical artwork. Keep
+    // one bundled copy instead of seven byte-identical colour aliases.
     if (isShiny) {
-      add('$_coreFolder/$primary-$color-shiny.png');
-      add('$_coreFolder/$secondary-$color-shiny.png');
       add('$_coreFolder/$primary-shiny.png');
       add('$_coreFolder/$secondary-shiny.png');
     }
 
-    add('$_coreFolder/$primary-$color.png');
-    add('$_coreFolder/$secondary-$color.png');
+    // Red is also the canonical normal Core artwork; the other colours keep
+    // their dedicated normal images.
+    if (color != 'red') {
+      add('$_coreFolder/$primary-$color.png');
+      add('$_coreFolder/$secondary-$color.png');
+    }
     add('$_coreFolder/$primary.png');
     add('$_coreFolder/$secondary.png');
     return result;

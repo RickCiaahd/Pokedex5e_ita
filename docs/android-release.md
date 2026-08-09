@@ -4,7 +4,7 @@
 
 - Nome visibile: `Trainer Atlas 5e`
 - Application ID definitivo: `io.github.rickciaahd.traineratlas`
-- Versione corrente: `1.3.2+8`
+- Versione corrente: `1.4.0+13`
 - `compileSdk`: Android 16 (API 36)
 - `targetSdk`: Android 16 (API 36)
 - Flutter bloccato in CI: `3.44.4`

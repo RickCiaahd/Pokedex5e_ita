@@ -1,0 +1,70 @@
+name: Fix Deoxys Speed rule once
+
+on:
+  push:
+    branches:
+      - feature/compact-pokemon-detail-v2
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v4
+        with:
+          ref: feature/compact-pokemon-detail-v2
+
+      - name: Set up pinned Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.4'
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Correct Deoxys Speed Form rule and regression
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          service = Path('lib/services/battle_form_change_service.dart')
+          text = service.read_text(encoding='utf-8')
+          old = """        'speed' => uiTextForLanguage(\n          'Mutante: ottiene un’azione di attacco aggiuntiva; i suoi attacchi hanno svantaggio e gli attacchi contro Deoxys hanno svantaggio.',\n          'Mutant: gains an additional attack action; its attacks have disadvantage and attacks against Deoxys have disadvantage.',\n        ),"""
+          new = """        'speed' => uiTextForLanguage(\n          'Mutante: ottiene un’azione di attacco aggiuntiva ogni turno; quell’attacco viene effettuato con svantaggio. Se la mossa richiede un TS, i bersagli hanno vantaggio.',\n          'Mutant: gains one additional attack action each turn; that attack is made with disadvantage. If the move requires a save, the targets have advantage.',\n        ),"""
+          if text.count(old) != 1:
+              raise SystemExit(f'Expected one Deoxys Speed note, found {text.count(old)}')
+          service.write_text(text.replace(old, new, 1), encoding='utf-8')
+
+          test = Path('test/deoxys_floette_form_regression_test.dart')
+          text = test.read_text(encoding='utf-8')
+          old = """    expect(\n      speedNote,\n      contains('gli attacchi contro Deoxys hanno svantaggio'),\n    );\n    expect(speedNote, isNot(contains('bersagli hanno vantaggio')));"""
+          new = """    expect(speedNote, contains('azione di attacco aggiuntiva ogni turno'));\n    expect(\n      speedNote,\n      contains('quell’attacco viene effettuato con svantaggio'),\n    );\n    expect(speedNote, contains('bersagli hanno vantaggio'));\n    expect(\n      speedNote,\n      isNot(contains('attacchi contro Deoxys hanno svantaggio')),\n    );"""
+          if text.count(old) != 1:
+              raise SystemExit(f'Expected one Deoxys regression block, found {text.count(old)}')
+          test.write_text(text.replace(old, new, 1), encoding='utf-8')
+          PY
+
+      - name: Format touched files
+        run: dart format lib/services/battle_form_change_service.dart test/deoxys_floette_form_regression_test.dart
+
+      - name: Run focused regression
+        run: flutter test test/deoxys_floette_form_regression_test.dart
+
+      - name: Verify strict analyzer
+        run: flutter analyze
+
+      - name: Commit correction
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add lib/services/battle_form_change_service.dart test/deoxys_floette_form_regression_test.dart
+          git commit -m "Correggi la Forma Velocità di Deoxys secondo il manuale"
+          git push origin HEAD:feature/compact-pokemon-detail-v2

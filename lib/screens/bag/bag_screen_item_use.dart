@@ -93,6 +93,7 @@ extension _BagScreenItemUse on _BagScreenState {
       profileId: data.profile.id,
       itemId: entry.item.id,
     );
+    if (!mounted) return;
     if (!consumed) {
       await _reload(
         message: context.uiText(
@@ -180,6 +181,7 @@ extension _BagScreenItemUse on _BagScreenState {
       profileId: data.profile.id,
       itemId: entry.item.id,
     );
+    if (!mounted) return;
     if (!consumed) {
       await _reload(
         message: context.uiText(
@@ -201,6 +203,7 @@ extension _BagScreenItemUse on _BagScreenState {
       profileId: data.profile.id,
       updatedSlot: candidate.slot.copyWith(heldItem: entry.item.id),
     );
+    if (!mounted) return;
 
     final replacementText = previousItem == null
         ? ''
@@ -225,6 +228,7 @@ extension _BagScreenItemUse on _BagScreenState {
       profileId: data.profile.id,
       updatedSlot: entry.slot.copyWith(heldItem: null),
     );
+    if (!mounted) return;
 
     await _reload(
       message: context.uiText(
@@ -250,6 +254,7 @@ extension _BagScreenItemUse on _BagScreenState {
     }
 
     final tmMap = await _tmRepository.getTmMap();
+    if (!mounted) return;
     final tm = tmMap[tmNumber];
     if (tm == null) {
       await _reload(
@@ -262,6 +267,7 @@ extension _BagScreenItemUse on _BagScreenState {
     }
 
     final move = await _moveRepository.getMove(tm.moveId);
+    if (!mounted) return;
     if (move == null) {
       await _reload(
         message: context.uiText(
@@ -277,6 +283,7 @@ extension _BagScreenItemUse on _BagScreenState {
 
     final team = await _teamRepository.getTeam(data.profile.id);
     final pokemonList = await _pokemonRepository.getAllPokemon();
+    if (!mounted) return;
     final pokemonById = {
       for (final pokemon in pokemonList) pokemon.id: pokemon,
     };
@@ -374,6 +381,7 @@ extension _BagScreenItemUse on _BagScreenState {
       profileId: data.profile.id,
       itemId: entry.item.id,
     );
+    if (!mounted) return;
     if (!consumed) {
       await _reload(
         message: context.uiText(
@@ -412,6 +420,7 @@ extension _BagScreenItemUse on _BagScreenState {
 
     final team = await _teamRepository.getTeam(data.profile.id);
     final pokemonList = await _pokemonRepository.getAllPokemon();
+    if (!mounted) return;
     final pokemonById = {
       for (final pokemon in pokemonList) pokemon.id: pokemon,
     };
@@ -469,6 +478,7 @@ extension _BagScreenItemUse on _BagScreenState {
       profileId: data.profile.id,
       itemId: entry.item.id,
     );
+    if (!mounted) return;
     if (!consumed) {
       await _reload(
         message: context.uiText(

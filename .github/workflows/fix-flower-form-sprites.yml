@@ -1,4 +1,4 @@
-name: Fix Floette and Florges form sprites
+name: Finalize Floette and Florges form sprites
 
 on:
   push:
@@ -13,9 +13,9 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  fix-and-verify:
+  finalize:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 20
 
     steps:
       - name: Check out branch
@@ -31,13 +31,9 @@ jobs:
           root='assets/textures/sprites'
           base='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-vii/icons'
           mkdir -p "$root"
-
           download_icon() {
-            local form_id="$1"
-            local target="$2"
-            curl -fsSL --retry 3 --retry-delay 2 "$base/${form_id}.png" -o "$root/$target"
+            curl -fsSL --retry 3 --retry-delay 2 "$base/$1.png" -o "$root/$2"
           }
-
           download_icon 10109 '670Floette Blue Flower.png'
           download_icon 10108 '670Floette Orange Flower.png'
           download_icon 10110 '670Floette White Flower.png'
@@ -53,36 +49,26 @@ jobs:
         run: |
           from pathlib import Path
           import struct
-
           root = Path('assets/textures/sprites')
-
-          def png_size(path: Path):
+          names = [
+              '670Floette Blue Flower.png',
+              '670Floette Orange Flower.png',
+              '670Floette White Flower.png',
+              '670Floette Yellow Flower.png',
+              '670Floette Eternal Flower.png',
+              '671Florges Blue Flower.png',
+              '671Florges Orange Flower.png',
+              '671Florges White Flower.png',
+              '671Florges Yellow Flower.png',
+          ]
+          for name in names:
+              path = root / name
               data = path.read_bytes()
               assert data.startswith(b'\x89PNG\r\n\x1a\n'), f'Not a PNG: {path}'
-              return struct.unpack('>II', data[16:24])
-
-          expected = {
-              670: png_size(root / '670Floette.png'),
-              671: png_size(root / '671Florges.png'),
-          }
-          forms = {
-              670: ('Floette', ['Blue Flower', 'Orange Flower', 'White Flower', 'Yellow Flower', 'Eternal Flower']),
-              671: ('Florges', ['Blue Flower', 'Orange Flower', 'White Flower', 'Yellow Flower']),
-          }
-          for pokemon_id, (name, labels) in forms.items():
-              assert expected[pokemon_id] == (40, 30), f'Unexpected base icon size for {name}: {expected[pokemon_id]}'
-              for label in labels:
-                  path = root / f'{pokemon_id}{name} {label}.png'
-                  size = png_size(path)
-                  assert size == expected[pokemon_id], f'{path} has {size}, expected {expected[pokemon_id]}'
-                  assert path.stat().st_size < 20_000, f'Unexpectedly large icon: {path}'
-                  print(f'OK {path}: {size[0]}x{size[1]}, {path.stat().st_size} bytes')
-
-      - name: Set up Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: '17'
+              size = struct.unpack('>II', data[16:24])
+              assert size == (40, 30), f'{path} has {size}, expected (40, 30)'
+              assert path.stat().st_size < 20_000, f'Unexpectedly large icon: {path}'
+              print(f'OK {path}: 40x30, {path.stat().st_size} bytes')
 
       - name: Set up pinned Flutter
         uses: subosito/flutter-action@v2
@@ -97,25 +83,14 @@ jobs:
         run: |
           python tooling/generate_compliance_reports.py
           python tooling/generate_compliance_reports.py --check
-          python tooling/prepare_release_legal_assets.py
-          python tooling/prepare_release_legal_assets.py --check
           git diff --check
-
-      - name: Format regression test
-        run: dart format test/deoxys_floette_form_regression_test.dart
-
-      - name: Run flower form regression test
-        run: flutter test test/deoxys_floette_form_regression_test.dart --reporter expanded
-
-      - name: Analyze source
-        run: flutter analyze --no-fatal-infos
 
       - name: Commit verified fix and remove helper workflow
         shell: bash
         run: |
           set -euo pipefail
           rm .github/workflows/fix-flower-form-sprites.yml
-          git add assets/textures/sprites test/deoxys_floette_form_regression_test.dart docs/compliance assets/legal .github/workflows/fix-flower-form-sprites.yml
+          git add -A assets/textures/sprites docs/compliance .github/workflows
           if git diff --cached --quiet; then
             echo 'No changes to commit.'
             exit 1

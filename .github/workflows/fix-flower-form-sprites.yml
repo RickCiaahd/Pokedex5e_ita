@@ -24,37 +24,34 @@ jobs:
           ref: fix/floette-florges-form-sprites
           fetch-depth: 0
 
-      - name: Download canonical 2D compact sprites
+      - name: Download canonical 40x30 form icons
         shell: bash
         run: |
           set -euo pipefail
           root='assets/textures/sprites'
+          base='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-vii/icons'
           mkdir -p "$root"
 
-          download_pair() {
-            local species_id="$1"
-            local species_name="$2"
-            local form_label="$3"
-            local showdown_slug="$4"
+          download_icon() {
+            local form_id="$1"
+            local target="$2"
             curl -fsSL --retry 3 --retry-delay 2 \
-              "https://play.pokemonshowdown.com/sprites/gen5/${showdown_slug}.png" \
-              -o "$root/${species_id}${species_name} ${form_label}.png"
-            curl -fsSL --retry 3 --retry-delay 2 \
-              "https://play.pokemonshowdown.com/sprites/gen5-shiny/${showdown_slug}.png" \
-              -o "$root/${species_id}${species_name} ${form_label} Shiny.png"
+              "$base/${form_id}.png" \
+              -o "$root/$target"
           }
 
-          download_pair 670 Floette 'Blue Flower' floette-blue
-          download_pair 670 Floette 'Orange Flower' floette-orange
-          download_pair 670 Floette 'White Flower' floette-white
-          download_pair 670 Floette 'Yellow Flower' floette-yellow
-          download_pair 670 Floette 'Eternal Flower' floette-eternal
-          download_pair 671 Florges 'Blue Flower' florges-blue
-          download_pair 671 Florges 'Orange Flower' florges-orange
-          download_pair 671 Florges 'White Flower' florges-white
-          download_pair 671 Florges 'Yellow Flower' florges-yellow
+          # PokeAPI form IDs for the non-red flower forms.
+          download_icon 10109 '670Floette Blue Flower.png'
+          download_icon 10108 '670Floette Orange Flower.png'
+          download_icon 10110 '670Floette White Flower.png'
+          download_icon 10107 '670Floette Yellow Flower.png'
+          download_icon 10061 '670Floette Eternal Flower.png'
+          download_icon 10113 '671Florges Blue Flower.png'
+          download_icon 10112 '671Florges Orange Flower.png'
+          download_icon 10114 '671Florges White Flower.png'
+          download_icon 10111 '671Florges Yellow Flower.png'
 
-      - name: Validate downloaded PNG sprites
+      - name: Validate downloaded compact PNG icons
         shell: python
         run: |
           from pathlib import Path
@@ -77,16 +74,17 @@ jobs:
               671: ('Florges', ['Blue Flower', 'Orange Flower', 'White Flower', 'Yellow Flower']),
           }
           for pokemon_id, (name, labels) in forms.items():
+              assert expected[pokemon_id] == (40, 30), (
+                  f'Unexpected base icon size for {name}: {expected[pokemon_id]}'
+              )
               for label in labels:
-                  for shiny in (False, True):
-                      suffix = ' Shiny' if shiny else ''
-                      path = root / f'{pokemon_id}{name} {label}{suffix}.png'
-                      size = png_size(path)
-                      assert size == expected[pokemon_id], (
-                          f'{path} has {size}, expected compact sprite size {expected[pokemon_id]}'
-                      )
-                      assert path.stat().st_size < 20_000, f'Unexpectedly large sprite: {path}'
-                      print(f'OK {path}: {size[0]}x{size[1]}, {path.stat().st_size} bytes')
+                  path = root / f'{pokemon_id}{name} {label}.png'
+                  size = png_size(path)
+                  assert size == expected[pokemon_id], (
+                      f'{path} has {size}, expected compact icon size {expected[pokemon_id]}'
+                  )
+                  assert path.stat().st_size < 20_000, f'Unexpectedly large icon: {path}'
+                  print(f'OK {path}: {size[0]}x{size[1]}, {path.stat().st_size} bytes')
 
       - name: Update flower sprite regression coverage
         shell: python
@@ -95,25 +93,46 @@ jobs:
 
           path = Path('test/deoxys_floette_form_regression_test.dart')
           text = path.read_text(encoding='utf-8')
-          old = """      expect(
-                assets,
-                isNot(contains('assets/textures/sprites/670Floette $form.png')),
-              );
-              expect(
-                assets,
-                isNot(contains('assets/textures/sprites/671Florges $form.png')),
-              );
-          """
-          new = """      final floetteSprite = 'assets/textures/sprites/670Floette $form.png';
-              final floetteShinySprite =
-                  'assets/textures/sprites/670Floette $form Shiny.png';
-              final florgesSprite = 'assets/textures/sprites/671Florges $form.png';
-              final florgesShinySprite =
-                  'assets/textures/sprites/671Florges $form Shiny.png';
+          marker = "  testWidgets('Flower artwork bundle uses dedicated artwork, not bad sprites', ("
+          start = text.find(marker)
+          if start < 0:
+              raise SystemExit('Expected flower regression test was not found')
+
+          replacement = r'''  testWidgets('Flower forms keep dedicated artwork and compact sprites', (
+            tester,
+          ) async {
+            final catalog = await PokemonRepository().getAllPokemon();
+            final floette = catalog.firstWhere((p) => p.id == 670);
+            final florges = catalog.firstWhere((p) => p.id == 671);
+            final assets = (await AssetManifest.loadFromAssetBundle(
+              rootBundle,
+            )).listAssets();
+            const forms = [
+              'Blue Flower',
+              'Orange Flower',
+              'White Flower',
+              'Yellow Flower',
+            ];
+            for (final form in forms) {
+              final floetteArtwork =
+                  'assets/textures/pokemons/670Floette $form.png';
+              final florgesArtwork =
+                  'assets/textures/pokemons/671Florges $form.png';
+              final floetteShinyArtwork =
+                  'assets/textures/pokemons/670Floette $form Shiny.png';
+              final florgesShinyArtwork =
+                  'assets/textures/pokemons/671Florges $form Shiny.png';
+              final floetteSprite =
+                  'assets/textures/sprites/670Floette $form.png';
+              final florgesSprite =
+                  'assets/textures/sprites/671Florges $form.png';
+
+              expect(assets, contains(floetteArtwork));
+              expect(assets, contains(florgesArtwork));
+              expect(assets, contains(floetteShinyArtwork));
+              expect(assets, contains(florgesShinyArtwork));
               expect(assets, contains(floetteSprite));
-              expect(assets, contains(floetteShinySprite));
               expect(assets, contains(florgesSprite));
-              expect(assets, contains(florgesShinySprite));
 
               final floetteCompact = PokemonAssetPaths.imageCandidates(
                 pokemon: floette,
@@ -137,79 +156,71 @@ jobs:
                 formName: form,
                 isShiny: true,
               );
+              final floetteShinyArtworkCandidates =
+                  PokemonAssetPaths.imageCandidates(
+                    pokemon: floette,
+                    useLargeArtwork: true,
+                    formName: form,
+                    isShiny: true,
+                  );
+              final florgesShinyArtworkCandidates =
+                  PokemonAssetPaths.imageCandidates(
+                    pokemon: florges,
+                    useLargeArtwork: true,
+                    formName: form,
+                    isShiny: true,
+                  );
+
               expect(floetteCompact, contains(floetteSprite));
               expect(florgesCompact, contains(florgesSprite));
-              expect(floetteShinyCompact, contains(floetteShinySprite));
-              expect(florgesShinyCompact, contains(florgesShinySprite));
+              expect(floetteShinyCompact, contains(floetteSprite));
+              expect(florgesShinyCompact, contains(florgesSprite));
               expect(
                 floetteCompact.indexOf(floetteSprite),
-                lessThan(
-                  floetteCompact.indexOf(
-                    'assets/textures/pokemons/670Floette $form.png',
-                  ),
-                ),
+                lessThan(floetteCompact.indexOf(floetteArtwork)),
               );
               expect(
                 florgesCompact.indexOf(florgesSprite),
-                lessThan(
-                  florgesCompact.indexOf(
-                    'assets/textures/pokemons/671Florges $form.png',
-                  ),
-                ),
+                lessThan(florgesCompact.indexOf(florgesArtwork)),
               );
               expect(
-                floetteShinyCompact.indexOf(floetteShinySprite),
-                lessThan(
-                  floetteShinyCompact.indexOf(
-                    'assets/textures/pokemons/670Floette $form Shiny.png',
-                  ),
-                ),
+                floetteShinyCompact.indexOf(floetteSprite),
+                lessThan(floetteShinyCompact.indexOf(floetteShinyArtwork)),
               );
               expect(
-                florgesShinyCompact.indexOf(florgesShinySprite),
-                lessThan(
-                  florgesShinyCompact.indexOf(
-                    'assets/textures/pokemons/671Florges $form Shiny.png',
-                  ),
-                ),
+                florgesShinyCompact.indexOf(florgesSprite),
+                lessThan(florgesShinyCompact.indexOf(florgesShinyArtwork)),
               );
-          """
-          if old not in text:
-              raise SystemExit('Expected old flower sprite assertions were not found')
-          text = text.replace(old, new, 1)
+              expect(
+                floetteShinyArtworkCandidates,
+                contains(floetteShinyArtwork),
+              );
+              expect(
+                florgesShinyArtworkCandidates,
+                contains(florgesShinyArtwork),
+              );
+            }
 
-          marker = """    expect(
-              assets,
-              contains('assets/textures/pokemons/670Floette Eternal Flower.png'),
-            );
-          """
-          addition = marker + """    const eternalSprite =
+            const eternalArtwork =
+                'assets/textures/pokemons/670Floette Eternal Flower.png';
+            const eternalSprite =
                 'assets/textures/sprites/670Floette Eternal Flower.png';
-            const eternalShinySprite =
-                'assets/textures/sprites/670Floette Eternal Flower Shiny.png';
+            expect(assets, contains(eternalArtwork));
             expect(assets, contains(eternalSprite));
-            expect(assets, contains(eternalShinySprite));
-            expect(
-              PokemonAssetPaths.imageCandidates(
-                pokemon: floette,
-                useLargeArtwork: false,
-                formName: 'Eternal Flower',
-              ),
-              contains(eternalSprite),
+            final eternalCompact = PokemonAssetPaths.imageCandidates(
+              pokemon: floette,
+              useLargeArtwork: false,
+              formName: 'Eternal Flower',
             );
+            expect(eternalCompact, contains(eternalSprite));
             expect(
-              PokemonAssetPaths.imageCandidates(
-                pokemon: floette,
-                useLargeArtwork: false,
-                formName: 'Eternal Flower',
-                isShiny: true,
-              ),
-              contains(eternalShinySprite),
+              eternalCompact.indexOf(eternalSprite),
+              lessThan(eternalCompact.indexOf(eternalArtwork)),
             );
-          """
-          if marker not in text:
-              raise SystemExit('Expected Eternal Flower artwork assertion was not found')
-          path.write_text(text.replace(marker, addition, 1), encoding='utf-8')
+          });
+        }
+'''
+          path.write_text(text[:start] + replacement, encoding='utf-8')
 
       - name: Regenerate compliance inventories
         run: |

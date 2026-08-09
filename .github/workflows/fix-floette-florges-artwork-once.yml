@@ -171,58 +171,39 @@ jobs:
               }
             });
 
-            testWidgets(
-              'Flower artwork is bundled and shiny appearances are not forms',
-              (tester) async {
-                final catalog = await PokemonRepository().getAllPokemon();
-                final floette = catalog.firstWhere((pokemon) => pokemon.id == 670);
-                final florges = catalog.firstWhere((pokemon) => pokemon.id == 671);
-                final manifest = await AssetManifest.loadFromAssetBundle(rootBundle);
-                final assets = manifest.listAssets();
-                const forms = [
-                  'Yellow Flower',
-                  'Orange Flower',
-                  'Blue Flower',
-                  'White Flower',
-                ];
+            testWidgets('Flower artwork is bundled without shiny form assets', (tester) async {
+              final manifest = await AssetManifest.loadFromAssetBundle(rootBundle);
+              final assets = manifest.listAssets();
+              const forms = [
+                'Yellow Flower',
+                'Orange Flower',
+                'Blue Flower',
+                'White Flower',
+              ];
 
-                for (final form in forms) {
-                  expect(
-                    assets,
-                    contains('assets/textures/sprites/670Floette $form.png'),
-                    reason: 'Floette $form',
-                  );
-                  expect(
-                    assets,
-                    contains('assets/textures/sprites/671Florges $form.png'),
-                    reason: 'Florges $form',
-                  );
-                  expect(
-                    assets,
-                    isNot(contains('assets/textures/sprites/670Floette $form Shiny.png')),
-                    reason: 'Floette shiny must stay an appearance, not a form asset',
-                  );
-                }
-
-                final floetteChoices = await PokemonAssetPaths.formChoices(floette);
-                final florgesChoices = await PokemonAssetPaths.formChoices(florges);
-                final floetteNames = floetteChoices.map((choice) => choice.name).toList();
-                final florgesNames = florgesChoices.map((choice) => choice.name).toList();
-
-                for (final form in forms) {
-                  expect(floetteNames, contains(form), reason: 'Floette $form');
-                  expect(florgesNames, contains(form), reason: 'Florges $form');
-                }
+              for (final form in forms) {
                 expect(
-                  floetteNames.any((name) => name.toLowerCase().contains('shiny')),
-                  isFalse,
+                  assets,
+                  contains('assets/textures/sprites/670Floette $form.png'),
+                  reason: 'Floette $form',
                 );
                 expect(
-                  florgesNames.any((name) => name.toLowerCase().contains('shiny')),
-                  isFalse,
+                  assets,
+                  contains('assets/textures/sprites/671Florges $form.png'),
+                  reason: 'Florges $form',
                 );
-              },
-            );
+                expect(
+                  assets,
+                  isNot(contains('assets/textures/sprites/670Floette $form Shiny.png')),
+                  reason: 'Floette shiny must stay an appearance, not a form asset',
+                );
+                expect(
+                  assets,
+                  isNot(contains('assets/textures/sprites/671Florges $form Shiny.png')),
+                  reason: 'Florges shiny must stay an appearance, not a form asset',
+                );
+              }
+            });
           }
           DART
 

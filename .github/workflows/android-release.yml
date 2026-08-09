@@ -26,6 +26,7 @@ jobs:
       ANDROID_STORE_PASSWORD: ${{ secrets.ANDROID_STORE_PASSWORD }}
       ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
       ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+      ORG_GRADLE_PROJECT_trainerAtlasEnableReleaseShrinking: 'true'
 
     steps:
       - name: Check out repository
@@ -124,7 +125,7 @@ jobs:
           Version: ${{ steps.version.outputs.name }}
           Version code: ${{ steps.version.outputs.code }}
           Commit: ${{ github.sha }}
-          Release shrinking: disabled by default
+          Release shrinking: enabled (R8 + resource shrinking)
           EOF
 
       - name: Download pinned bundletool

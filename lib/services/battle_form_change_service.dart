@@ -1110,8 +1110,8 @@ class BattleFormChangeService {
           'Mutant: +3 AC; its attacks have disadvantage and targets have advantage on saves against its moves.',
         ),
         'speed' => uiTextForLanguage(
-          'Mutante: ottiene un’azione di attacco aggiuntiva; quell’attacco ha svantaggio e i bersagli hanno vantaggio sui relativi TS.',
-          'Mutant: gains an additional attack action; that attack has disadvantage and targets have advantage on its related saves.',
+          'Mutante: ottiene un’azione di attacco aggiuntiva; i suoi attacchi hanno svantaggio e gli attacchi contro Deoxys hanno svantaggio.',
+          'Mutant: gains an additional attack action; its attacks have disadvantage and attacks against Deoxys have disadvantage.',
         ),
         _ => uiTextForLanguage(
           'Forma equilibrata, senza bonus di Mutante.',

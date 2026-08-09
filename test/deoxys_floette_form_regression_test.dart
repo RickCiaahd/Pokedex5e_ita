@@ -28,69 +28,69 @@ void main() {
     expect(BattleFormChangeService.armorClassBonus(deoxys, 'Defense'), 3);
   });
 
-  test(
-    'Floette flower forms resolve distinct normal and shiny sprites',
-    () async {
-      final catalog = await PokemonRepository().getAllPokemon();
-      final floette = catalog.firstWhere((pokemon) => pokemon.id == 670);
-      const forms = [
-        'Yellow Flower',
-        'Orange Flower',
-        'Blue Flower',
-        'White Flower',
-      ];
+  test('Floette and Florges flower forms resolve dedicated artwork', () async {
+    final catalog = await PokemonRepository().getAllPokemon();
+    final pokemonById = {
+      670: catalog.firstWhere((pokemon) => pokemon.id == 670),
+      671: catalog.firstWhere((pokemon) => pokemon.id == 671),
+    };
+    const namesById = {670: 'Floette', 671: 'Florges'};
+    const forms = [
+      'Yellow Flower',
+      'Orange Flower',
+      'Blue Flower',
+      'White Flower',
+    ];
 
+    for (final entry in pokemonById.entries) {
+      final pokemon = entry.value;
+      final speciesName = namesById[entry.key]!;
       for (final form in forms) {
-        final normalPath = 'assets/textures/sprites/670Floette $form.png';
-        final shinyPath = 'assets/textures/sprites/670Floette $form Shiny.png';
-        final normalCandidates = PokemonAssetPaths.imageCandidates(
-          pokemon: floette,
+        final artworkPath =
+            'assets/textures/sprites/${entry.key}$speciesName $form.png';
+        final candidates = PokemonAssetPaths.imageCandidates(
+          pokemon: pokemon,
           useLargeArtwork: false,
           formName: form,
         );
-        final shinyCandidates = PokemonAssetPaths.imageCandidates(
-          pokemon: floette,
-          useLargeArtwork: false,
-          formName: form,
-          isShiny: true,
-        );
-
-        expect(normalCandidates, contains(normalPath), reason: form);
-        expect(shinyCandidates, contains(shinyPath), reason: '$form shiny');
-        expect(shinyCandidates, contains(normalPath), reason: '$form fallback');
-        expect(
-          shinyCandidates.indexOf(shinyPath),
-          lessThan(shinyCandidates.indexOf(normalPath)),
-          reason: '$form must prefer its shiny sprite',
-        );
+        expect(candidates, contains(artworkPath), reason: '$speciesName $form');
       }
-    },
-  );
+    }
+  });
 
-  testWidgets(
-    'Floette flower sprites are included in the Flutter asset bundle',
-    (tester) async {
-      final manifest = await AssetManifest.loadFromAssetBundle(rootBundle);
-      final assets = manifest.listAssets();
-      const forms = [
-        'Yellow Flower',
-        'Orange Flower',
-        'Blue Flower',
-        'White Flower',
-      ];
+  testWidgets('Flower artwork is bundled without shiny form assets', (
+    tester,
+  ) async {
+    final manifest = await AssetManifest.loadFromAssetBundle(rootBundle);
+    final assets = manifest.listAssets();
+    const forms = [
+      'Yellow Flower',
+      'Orange Flower',
+      'Blue Flower',
+      'White Flower',
+    ];
 
-      for (final form in forms) {
-        expect(
-          assets,
-          contains('assets/textures/sprites/670Floette $form.png'),
-          reason: form,
-        );
-        expect(
-          assets,
-          contains('assets/textures/sprites/670Floette $form Shiny.png'),
-          reason: '$form shiny',
-        );
-      }
-    },
-  );
+    for (final form in forms) {
+      expect(
+        assets,
+        contains('assets/textures/sprites/670Floette $form.png'),
+        reason: 'Floette $form',
+      );
+      expect(
+        assets,
+        contains('assets/textures/sprites/671Florges $form.png'),
+        reason: 'Florges $form',
+      );
+      expect(
+        assets,
+        isNot(contains('assets/textures/sprites/670Floette $form Shiny.png')),
+        reason: 'Floette shiny must stay an appearance, not a form asset',
+      );
+      expect(
+        assets,
+        isNot(contains('assets/textures/sprites/671Florges $form Shiny.png')),
+        reason: 'Florges shiny must stay an appearance, not a form asset',
+      );
+    }
+  });
 }

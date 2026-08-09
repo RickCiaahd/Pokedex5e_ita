@@ -47,16 +47,16 @@ class PokemonAssetPaths {
     legacy.PokemonFormChoice? baseChoice;
     final realChoicesByKey = <String, legacy.PokemonFormChoice>{};
     for (final choice in rawChoices) {
+      if (_isShinyAppearanceChoice(pokemon: pokemon, value: choice.name)) {
+        continue;
+      }
       if (!PokedexEntry.isTrackableForm(
         choice.name,
         speciesName: pokemon.name,
       )) {
         continue;
       }
-      final key = PokedexEntry.formKey(
-        choice.name,
-        speciesName: pokemon.name,
-      );
+      final key = PokedexEntry.formKey(choice.name, speciesName: pokemon.name);
       if (key == 'base') {
         baseChoice ??= choice;
         continue;
@@ -79,6 +79,14 @@ class PokemonAssetPaths {
       baseChoice ?? const legacy.PokemonFormChoice(name: 'Base', assetPath: ''),
       ...realChoicesByKey.values,
     ];
+  }
+
+  static bool _isShinyAppearanceChoice({
+    required Pokemon pokemon,
+    required String value,
+  }) {
+    final key = Pokemon.formReferenceKey(value, pokemon.name);
+    return key.split('-').contains('shiny');
   }
 
   static bool _isGenderOnlyChoice({

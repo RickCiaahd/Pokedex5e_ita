@@ -4,7 +4,7 @@ This report scans every file below `assets/` and records path, size, SHA-256, po
 The presence of an attribution file does not prove that redistribution is authorised.
 
 - Asset files: **8982**
-- Total asset size: **254.4 MiB**
+- Total asset size: **255.4 MiB**
 - Files with nearby attribution/licence evidence: **2**
 - Files without nearby evidence: **8980**
 
@@ -25,7 +25,7 @@ The presence of an attribution file does not prove that redistribution is author
 | `assets/data_webapp` | 11 | 3.6 MiB | 0 |
 | `assets/textures/gui` | 105 | 532.7 KiB | 0 |
 | `assets/textures/pokemons` | 861 | 17.8 MiB | 0 |
-| `assets/textures/sprites` | 868 | 520.6 KiB | 0 |
+| `assets/textures/sprites` | 868 | 1.4 MiB | 0 |
 | `assets/textures/textures_webapp/items` | 316 | 374.7 KiB | 2 |
 | `assets/textures/textures_webapp/pokemon` | 4871 | 195.3 MiB | 0 |
 | `assets/textures/textures_webapp/pokemon_transforms` | 263 | 31.1 MiB | 0 |

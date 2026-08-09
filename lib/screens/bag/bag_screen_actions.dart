@@ -72,6 +72,7 @@ extension _BagScreenActions on _BagScreenState {
           rethrow;
         }
 
+        if (!mounted) return;
         await _reload(
           message: context.uiText(
             '$totalUnits oggetti di $typeCount tipi acquistati per ₽ $totalCost.',
@@ -85,6 +86,7 @@ extension _BagScreenActions on _BagScreenState {
         profileId: data.profile.id,
         quantities: quantities,
       );
+      if (!mounted) return;
       await _reload(
         message: context.uiText(
           '$totalUnits oggetti di $typeCount tipi aggiunti allo zaino.',
@@ -92,6 +94,7 @@ extension _BagScreenActions on _BagScreenState {
         ),
       );
     } catch (error) {
+      if (!mounted) return;
       await _reload(
         message: context.userFacingError(
           error,
@@ -188,6 +191,7 @@ extension _BagScreenActions on _BagScreenState {
       profileId: data.profile.id,
       quantities: result.quantities,
     );
+    if (!mounted) return;
     if (!removed) {
       await _reload(
         message: context.uiText(
@@ -207,6 +211,7 @@ extension _BagScreenActions on _BagScreenState {
         profileId: data.profile.id,
         quantities: result.quantities,
       );
+      if (!mounted) return;
       await _reload(
         message: context.userFacingError(
           error,
@@ -216,6 +221,7 @@ extension _BagScreenActions on _BagScreenState {
       return;
     }
 
+    if (!mounted) return;
     await _reload(
       message: context.uiText(
         '$totalUnits oggetti di $typeCount tipi venduti per ₽ $totalValue.',
@@ -313,6 +319,7 @@ extension _BagScreenActions on _BagScreenState {
       itemId: entry.item.id,
       quantity: selectedQuantity,
     );
+    if (!mounted) return;
     await _reload(
       message: removed
           ? context.uiText(

@@ -1,0 +1,259 @@
+name: Fix Floette and Florges form sprites
+
+on:
+  push:
+    branches:
+      - fix/floette-florges-form-sprites
+
+permissions:
+  contents: write
+
+concurrency:
+  group: fix-flower-form-sprites-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  fix-and-verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v4
+        with:
+          ref: fix/floette-florges-form-sprites
+          fetch-depth: 0
+
+      - name: Download canonical 2D compact sprites
+        shell: bash
+        run: |
+          set -euo pipefail
+          root='assets/textures/sprites'
+          mkdir -p "$root"
+
+          download_pair() {
+            local species_id="$1"
+            local species_name="$2"
+            local form_label="$3"
+            local showdown_slug="$4"
+            curl -fsSL --retry 3 --retry-delay 2 \
+              "https://play.pokemonshowdown.com/sprites/gen5/${showdown_slug}.png" \
+              -o "$root/${species_id}${species_name} ${form_label}.png"
+            curl -fsSL --retry 3 --retry-delay 2 \
+              "https://play.pokemonshowdown.com/sprites/gen5-shiny/${showdown_slug}.png" \
+              -o "$root/${species_id}${species_name} ${form_label} Shiny.png"
+          }
+
+          download_pair 670 Floette 'Blue Flower' floette-blue
+          download_pair 670 Floette 'Orange Flower' floette-orange
+          download_pair 670 Floette 'White Flower' floette-white
+          download_pair 670 Floette 'Yellow Flower' floette-yellow
+          download_pair 670 Floette 'Eternal Flower' floette-eternal
+          download_pair 671 Florges 'Blue Flower' florges-blue
+          download_pair 671 Florges 'Orange Flower' florges-orange
+          download_pair 671 Florges 'White Flower' florges-white
+          download_pair 671 Florges 'Yellow Flower' florges-yellow
+
+      - name: Validate downloaded PNG sprites
+        shell: python
+        run: |
+          from pathlib import Path
+          import struct
+
+          root = Path('assets/textures/sprites')
+
+          def png_size(path: Path):
+              data = path.read_bytes()
+              assert data.startswith(b'\x89PNG\r\n\x1a\n'), f'Not a PNG: {path}'
+              width, height = struct.unpack('>II', data[16:24])
+              return width, height
+
+          expected = {
+              670: png_size(root / '670Floette.png'),
+              671: png_size(root / '671Florges.png'),
+          }
+          forms = {
+              670: ('Floette', ['Blue Flower', 'Orange Flower', 'White Flower', 'Yellow Flower', 'Eternal Flower']),
+              671: ('Florges', ['Blue Flower', 'Orange Flower', 'White Flower', 'Yellow Flower']),
+          }
+          for pokemon_id, (name, labels) in forms.items():
+              for label in labels:
+                  for shiny in (False, True):
+                      suffix = ' Shiny' if shiny else ''
+                      path = root / f'{pokemon_id}{name} {label}{suffix}.png'
+                      size = png_size(path)
+                      assert size == expected[pokemon_id], (
+                          f'{path} has {size}, expected compact sprite size {expected[pokemon_id]}'
+                      )
+                      assert path.stat().st_size < 20_000, f'Unexpectedly large sprite: {path}'
+                      print(f'OK {path}: {size[0]}x{size[1]}, {path.stat().st_size} bytes')
+
+      - name: Update flower sprite regression coverage
+        shell: python
+        run: |
+          from pathlib import Path
+
+          path = Path('test/deoxys_floette_form_regression_test.dart')
+          text = path.read_text(encoding='utf-8')
+          old = """      expect(
+                assets,
+                isNot(contains('assets/textures/sprites/670Floette $form.png')),
+              );
+              expect(
+                assets,
+                isNot(contains('assets/textures/sprites/671Florges $form.png')),
+              );
+          """
+          new = """      final floetteSprite = 'assets/textures/sprites/670Floette $form.png';
+              final floetteShinySprite =
+                  'assets/textures/sprites/670Floette $form Shiny.png';
+              final florgesSprite = 'assets/textures/sprites/671Florges $form.png';
+              final florgesShinySprite =
+                  'assets/textures/sprites/671Florges $form Shiny.png';
+              expect(assets, contains(floetteSprite));
+              expect(assets, contains(floetteShinySprite));
+              expect(assets, contains(florgesSprite));
+              expect(assets, contains(florgesShinySprite));
+
+              final floetteCompact = PokemonAssetPaths.imageCandidates(
+                pokemon: floette,
+                useLargeArtwork: false,
+                formName: form,
+              );
+              final florgesCompact = PokemonAssetPaths.imageCandidates(
+                pokemon: florges,
+                useLargeArtwork: false,
+                formName: form,
+              );
+              final floetteShinyCompact = PokemonAssetPaths.imageCandidates(
+                pokemon: floette,
+                useLargeArtwork: false,
+                formName: form,
+                isShiny: true,
+              );
+              final florgesShinyCompact = PokemonAssetPaths.imageCandidates(
+                pokemon: florges,
+                useLargeArtwork: false,
+                formName: form,
+                isShiny: true,
+              );
+              expect(floetteCompact, contains(floetteSprite));
+              expect(florgesCompact, contains(florgesSprite));
+              expect(floetteShinyCompact, contains(floetteShinySprite));
+              expect(florgesShinyCompact, contains(florgesShinySprite));
+              expect(
+                floetteCompact.indexOf(floetteSprite),
+                lessThan(
+                  floetteCompact.indexOf(
+                    'assets/textures/pokemons/670Floette $form.png',
+                  ),
+                ),
+              );
+              expect(
+                florgesCompact.indexOf(florgesSprite),
+                lessThan(
+                  florgesCompact.indexOf(
+                    'assets/textures/pokemons/671Florges $form.png',
+                  ),
+                ),
+              );
+              expect(
+                floetteShinyCompact.indexOf(floetteShinySprite),
+                lessThan(
+                  floetteShinyCompact.indexOf(
+                    'assets/textures/pokemons/670Floette $form Shiny.png',
+                  ),
+                ),
+              );
+              expect(
+                florgesShinyCompact.indexOf(florgesShinySprite),
+                lessThan(
+                  florgesShinyCompact.indexOf(
+                    'assets/textures/pokemons/671Florges $form Shiny.png',
+                  ),
+                ),
+              );
+          """
+          if old not in text:
+              raise SystemExit('Expected old flower sprite assertions were not found')
+          text = text.replace(old, new, 1)
+
+          marker = """    expect(
+              assets,
+              contains('assets/textures/pokemons/670Floette Eternal Flower.png'),
+            );
+          """
+          addition = marker + """    const eternalSprite =
+                'assets/textures/sprites/670Floette Eternal Flower.png';
+            const eternalShinySprite =
+                'assets/textures/sprites/670Floette Eternal Flower Shiny.png';
+            expect(assets, contains(eternalSprite));
+            expect(assets, contains(eternalShinySprite));
+            expect(
+              PokemonAssetPaths.imageCandidates(
+                pokemon: floette,
+                useLargeArtwork: false,
+                formName: 'Eternal Flower',
+              ),
+              contains(eternalSprite),
+            );
+            expect(
+              PokemonAssetPaths.imageCandidates(
+                pokemon: floette,
+                useLargeArtwork: false,
+                formName: 'Eternal Flower',
+                isShiny: true,
+              ),
+              contains(eternalShinySprite),
+            );
+          """
+          if marker not in text:
+              raise SystemExit('Expected Eternal Flower artwork assertion was not found')
+          path.write_text(text.replace(marker, addition, 1), encoding='utf-8')
+
+      - name: Regenerate compliance inventories
+        run: |
+          python tooling/generate_compliance_reports.py
+          python tooling/generate_compliance_reports.py --check
+          python tooling/prepare_release_legal_assets.py
+          python tooling/prepare_release_legal_assets.py --check
+          git diff --check
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up pinned Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.4'
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Format regression test
+        run: dart format test/deoxys_floette_form_regression_test.dart
+
+      - name: Run flower form regression test
+        run: flutter test test/deoxys_floette_form_regression_test.dart --reporter expanded
+
+      - name: Analyze source
+        run: flutter analyze --no-fatal-infos
+
+      - name: Commit verified fix and remove helper workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm .github/workflows/fix-flower-form-sprites.yml
+          git add assets/textures/sprites test/deoxys_floette_form_regression_test.dart docs/compliance assets/legal .github/workflows/fix-flower-form-sprites.yml
+          if git diff --cached --quiet; then
+            echo 'No changes to commit.'
+            exit 1
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Ripristina gli sprite delle forme floreali'
+          git push origin HEAD:fix/floette-florges-form-sprites

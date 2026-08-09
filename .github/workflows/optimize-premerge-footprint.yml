@@ -1,0 +1,236 @@
+name: Pre-merge footprint optimization
+
+on:
+  push:
+    branches:
+      - feature/compact-pokemon-detail-v2
+    paths:
+      - '.github/workflows/optimize-premerge-footprint.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  optimize-measure-verify:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+
+    steps:
+      - name: Check out feature branch
+        uses: actions/checkout@v4
+        with:
+          ref: feature/compact-pokemon-detail-v2
+          fetch-depth: 0
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.4'
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Prepare temporary signing key
+        shell: bash
+        run: |
+          set -euo pipefail
+          keytool -genkeypair -v \
+            -keystore android/ci-footprint.jks \
+            -storepass footprint-pass \
+            -keypass footprint-pass \
+            -alias footprint \
+            -keyalg RSA \
+            -keysize 2048 \
+            -validity 10000 \
+            -dname 'CN=Trainer Atlas CI, OU=Build, O=Trainer Atlas, L=CI, S=CI, C=IT'
+          cat > android/key.properties <<'EOF'
+          storePassword=footprint-pass
+          keyPassword=footprint-pass
+          keyAlias=footprint
+          storeFile=../ci-footprint.jks
+          EOF
+
+      - name: Build current AAB baseline
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tooling/prepare_release_legal_assets.py
+          flutter build appbundle --release
+          mkdir -p /tmp/premerge-footprint
+          cp build/app/outputs/bundle/release/app-release.aab /tmp/premerge-footprint/before.aab
+          stat -c '%s' /tmp/premerge-footprint/before.aab > /tmp/premerge-footprint/before-bytes.txt
+
+      - name: Deduplicate Minior artwork aliases safely
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from hashlib import sha256
+          from pathlib import Path
+
+          root = Path('assets/textures/textures_webapp/pokemon')
+          shared = root / 'minior-core'
+          colors = ('red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet')
+
+          def digest(path: Path) -> str:
+              return sha256(path.read_bytes()).hexdigest()
+
+          def require_same(left: Path, right: Path) -> None:
+              if not left.exists() or not right.exists():
+                  raise SystemExit(f'Missing expected Minior asset: {left} or {right}')
+              if digest(left) != digest(right):
+                  raise SystemExit(f'Assets are not byte-identical: {left} != {right}')
+
+          canonical_main_shiny = shared / 'main-shiny.webp'
+          canonical_sprite_shiny = shared / 'sprite-shiny.png'
+
+          for color in colors:
+              # Every coloured shiny Core is canonically the same artwork.
+              require_same(shared / f'main-{color}-shiny.webp', canonical_main_shiny)
+              require_same(shared / f'sprite-{color}-shiny.png', canonical_sprite_shiny)
+
+              alias = root / f'minior-core-{color}'
+              require_same(alias / 'main-shiny.webp', canonical_main_shiny)
+              require_same(alias / 'sprite-shiny.png', canonical_sprite_shiny)
+              require_same(alias / 'main.webp', shared / f'main-{color}.webp')
+              require_same(alias / 'sprite.png', shared / f'sprite-{color}.png')
+
+          require_same(shared / 'main-red.webp', shared / 'main.webp')
+          require_same(shared / 'sprite-red.png', shared / 'sprite.png')
+
+          removed = []
+          for color in colors:
+              for path in (
+                  shared / f'main-{color}-shiny.webp',
+                  shared / f'sprite-{color}-shiny.png',
+              ):
+                  path.unlink()
+                  removed.append(path)
+
+              alias = root / f'minior-core-{color}'
+              for name in ('main.webp', 'main-shiny.webp', 'sprite.png', 'sprite-shiny.png'):
+                  path = alias / name
+                  path.unlink()
+                  removed.append(path)
+              alias.rmdir()
+
+          for path in (shared / 'main-red.webp', shared / 'sprite-red.png'):
+              path.unlink()
+              removed.append(path)
+
+          total = sum(1 for _ in removed)
+          print(f'Removed {total} byte-identical Minior asset aliases.')
+          for path in removed:
+              print(path)
+          PY
+
+      - name: Point Minior resolver at canonical shared shiny assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('lib/widgets/pokemon/pokemon_minior_asset_paths.dart')
+          text = path.read_text(encoding='utf-8')
+          old = """    if (isShiny) {\n      add('$_coreFolder/$primary-$color-shiny.png');\n      add('$_coreFolder/$secondary-$color-shiny.png');\n      add('$_coreFolder/$primary-shiny.png');\n      add('$_coreFolder/$secondary-shiny.png');\n    }\n\n    add('$_coreFolder/$primary-$color.png');\n    add('$_coreFolder/$secondary-$color.png');\n    add('$_coreFolder/$primary.png');\n    add('$_coreFolder/$secondary.png');\n"""
+          new = """    // All seven shiny Core colours use the same canonical artwork. Keep\n    // one bundled copy instead of seven byte-identical colour aliases.\n    if (isShiny) {\n      add('$_coreFolder/$primary-shiny.png');\n      add('$_coreFolder/$secondary-shiny.png');\n    }\n\n    // Red is also the canonical normal Core artwork; the other colours keep\n    // their dedicated normal images.\n    if (color != 'red') {\n      add('$_coreFolder/$primary-$color.png');\n      add('$_coreFolder/$secondary-$color.png');\n    }\n    add('$_coreFolder/$primary.png');\n    add('$_coreFolder/$secondary.png');\n"""
+          if old not in text:
+              raise SystemExit('Minior resolver marker not found')
+          path.write_text(text.replace(old, new, 1), encoding='utf-8')
+          PY
+
+      - name: Strengthen Minior regression coverage
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('test/minior_color_forms_test.dart')
+          text = path.read_text(encoding='utf-8')
+          old = """  test('Minior colour candidates point to the bundled shared folder', () async {\n    final pokemon = await PokemonRepository().getAllPokemon();\n    final minior = pokemon.firstWhere((entry) => entry.id == 774);\n    final paths = PokemonMiniorAssetPaths.candidates(\n      pokemon: minior,\n      useLargeArtwork: true,\n      formName: 'core-indigo',\n      isShiny: true,\n    );\n\n    expect(\n      paths.first,\n      'assets/textures/textures_webapp/pokemon/minior-core/main-indigo-shiny.png',\n    );\n\n    final manifest = await AssetManifest.loadFromAssetBundle(rootBundle);\n    _expectBundledCandidate(manifest.listAssets(), paths.first);\n  });\n"""
+          new = """  test('Minior colour candidates reuse one canonical shiny Core artwork', () async {\n    final pokemon = await PokemonRepository().getAllPokemon();\n    final minior = pokemon.firstWhere((entry) => entry.id == 774);\n    final manifest = await AssetManifest.loadFromAssetBundle(rootBundle);\n    final assets = manifest.listAssets();\n\n    const colors = [\n      'red',\n      'orange',\n      'yellow',\n      'green',\n      'blue',\n      'indigo',\n      'violet',\n    ];\n\n    for (final color in colors) {\n      final shiny = PokemonMiniorAssetPaths.candidates(\n        pokemon: minior,\n        useLargeArtwork: true,\n        formName: 'core-$color',\n        isShiny: true,\n      );\n      expect(\n        shiny.first,\n        'assets/textures/textures_webapp/pokemon/minior-core/main-shiny.png',\n        reason: color,\n      );\n      _expectBundledCandidate(assets, shiny.first);\n      expect(\n        assets,\n        isNot(contains(\n          'assets/textures/textures_webapp/pokemon/minior-core/main-$color-shiny.webp',\n        )),\n        reason: color,\n      );\n      expect(\n        assets.any((asset) => asset.startsWith(\n          'assets/textures/textures_webapp/pokemon/minior-core-$color/',\n        )),\n        isFalse,\n        reason: color,\n      );\n    }\n\n    final normalIndigo = PokemonMiniorAssetPaths.candidates(\n      pokemon: minior,\n      useLargeArtwork: true,\n      formName: 'core-indigo',\n    );\n    expect(\n      normalIndigo.first,\n      'assets/textures/textures_webapp/pokemon/minior-core/main-indigo.png',\n    );\n    _expectBundledCandidate(assets, normalIndigo.first);\n\n    final normalRed = PokemonMiniorAssetPaths.candidates(\n      pokemon: minior,\n      useLargeArtwork: true,\n      formName: 'core-red',\n    );\n    expect(\n      normalRed.first,\n      'assets/textures/textures_webapp/pokemon/minior-core/main.png',\n    );\n    _expectBundledCandidate(assets, normalRed.first);\n  });\n"""
+          if old not in text:
+              raise SystemExit('Minior regression marker not found')
+          path.write_text(text.replace(old, new, 1), encoding='utf-8')
+          PY
+
+      - name: Regenerate deterministic inventories
+        run: |
+          dart format lib/widgets/pokemon/pokemon_minior_asset_paths.dart test/minior_color_forms_test.dart
+          python tooling/generate_compliance_reports.py
+          python tooling/generate_asset_duplicates.py
+          python tooling/prepare_release_legal_assets.py
+          python tooling/generate_compliance_reports.py --check
+          python tooling/generate_asset_duplicates.py --check
+          python tooling/prepare_release_legal_assets.py --check
+
+      - name: Run targeted regression tests
+        run: |
+          flutter test test/minior_color_forms_test.dart --reporter expanded
+          flutter test test/pokemon_asset_paths_test.dart --reporter expanded
+
+      - name: Analyze project
+        run: flutter analyze
+
+      - name: Build optimized APK and AAB
+        shell: bash
+        run: |
+          set -euo pipefail
+          flutter clean
+          flutter pub get
+          python tooling/prepare_release_legal_assets.py
+          flutter build apk --release
+          flutter build appbundle --release
+          cp build/app/outputs/bundle/release/app-release.aab /tmp/premerge-footprint/after.aab
+          cp build/app/outputs/flutter-apk/app-release.apk /tmp/premerge-footprint/after.apk
+
+      - name: Measure and require a real reduction
+        shell: bash
+        run: |
+          set -euo pipefail
+          BEFORE=$(cat /tmp/premerge-footprint/before-bytes.txt)
+          AFTER=$(stat -c '%s' /tmp/premerge-footprint/after.aab)
+          SAVED=$((BEFORE - AFTER))
+          test "$SAVED" -gt 0
+          cat > /tmp/premerge-footprint/optimization-summary.md <<EOF
+          # Pre-merge footprint optimization\n\n- AAB before: **$BEFORE bytes**\n- AAB after: **$AFTER bytes**\n- Saved: **$SAVED bytes**\n\nThe change removes only byte-identical Minior asset aliases and keeps one canonical shiny Core artwork.\nEOF
+          cat /tmp/premerge-footprint/optimization-summary.md
+
+      - name: Refresh release footprint report
+        run: |
+          python tooling/analyze_release_footprint.py \
+            --apk /tmp/premerge-footprint/after.apk \
+            --aab /tmp/premerge-footprint/after.aab
+          python tooling/generate_asset_duplicates.py --check
+          git diff --check
+
+      - name: Upload footprint comparison
+        uses: actions/upload-artifact@v4
+        with:
+          name: premerge-footprint-optimization
+          path: /tmp/premerge-footprint/optimization-summary.md
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Commit optimized assets and remove helper workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f .github/workflows/optimize-premerge-footprint.yml
+          rm -f android/ci-footprint.jks android/key.properties
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git diff --cached --check
+          git commit -m 'Deduplica gli asset di Minior prima della release'
+          git push origin HEAD:feature/compact-pokemon-detail-v2

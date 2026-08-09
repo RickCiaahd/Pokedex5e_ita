@@ -114,25 +114,6 @@ jobs:
       - name: Analyze project
         run: flutter analyze
 
-      - name: Build release APK
-        run: flutter build apk --release
-
-      - name: Prepare APK artifact
-        shell: bash
-        run: |
-          set -euo pipefail
-          mkdir -p dist
-          cp build/app/outputs/flutter-apk/app-release.apk dist/pokedex-5e-ita-flower-shiny-test.apk
-          sha256sum dist/pokedex-5e-ita-flower-shiny-test.apk
-
-      - name: Upload APK artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: pokedex-5e-ita-flower-shiny-test
-          path: dist/pokedex-5e-ita-flower-shiny-test.apk
-          if-no-files-found: error
-          retention-days: 14
-
       - name: Commit permanent changes and remove helper workflow
         shell: bash
         run: |
@@ -144,3 +125,22 @@ jobs:
           git diff --cached --check
           git commit -m 'Aggiungi le forme floreali shiny di Floette e Florges'
           git push origin HEAD:feature/compact-pokemon-detail-v2
+
+      - name: Build debug APK for device testing
+        run: flutter build apk --debug
+
+      - name: Prepare APK artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          cp build/app/outputs/flutter-apk/app-debug.apk dist/pokedex-5e-ita-flower-shiny-test.apk
+          sha256sum dist/pokedex-5e-ita-flower-shiny-test.apk
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pokedex-5e-ita-flower-shiny-test
+          path: dist/pokedex-5e-ita-flower-shiny-test.apk
+          if-no-files-found: error
+          retention-days: 14

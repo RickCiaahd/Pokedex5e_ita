@@ -404,6 +404,15 @@ class Pokemon {
         .replaceAll(RegExp(r'\s+'), ' ')
         .trim();
 
+    // The web catalog calls the unreleased AZ Floette form `eternal`,
+    // while the legacy/asset catalog calls it `Eternal Flower`.
+    // Treat both spellings as one persisted identity so the Pokédex
+    // never exposes two cards for the same form.
+    if (normalizedSpecies == 'floette' &&
+        (normalized == 'eternal' || normalized == 'eternal flower')) {
+      normalized = 'eternal flower';
+    }
+
     switch (normalized) {
       case '':
       case 'base':

@@ -1,5 +1,6 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pokedex_5e_ita/models/pokedex_entry.dart';
 import 'package:pokedex_5e_ita/repositories/pokemon_repository.dart';
 import 'package:pokedex_5e_ita/services/battle_form_change_service.dart';
 import 'package:pokedex_5e_ita/widgets/pokemon/pokemon_asset_image.dart';
@@ -23,6 +24,26 @@ void main() {
     final catalog = await PokemonRepository().getAllPokemon();
     final floette = catalog.firstWhere((p) => p.id == 670);
     final florges = catalog.firstWhere((p) => p.id == 671);
+
+    expect(
+      PokedexEntry.formKey('Eternal', speciesName: floette.name),
+      'eternal-flower',
+    );
+    expect(
+      PokedexEntry.formKey('Eternal Flower', speciesName: floette.name),
+      'eternal-flower',
+    );
+    expect(
+      floette.formDefinitions.where(
+        (definition) =>
+            PokedexEntry.formKey(
+              definition.displayName,
+              speciesName: floette.name,
+            ) ==
+            'eternal-flower',
+      ),
+      hasLength(1),
+    );
     expect(
       (await PokemonAssetPaths.formChoices(
         floette,

@@ -1,0 +1,117 @@
+name: Fix Floette Eternal Flower duplicate
+
+on:
+  push:
+    branches: [feature/compact-pokemon-detail-v2]
+    paths:
+      - '.github/workflows/fix-floette-eternal-duplicate.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/compact-pokemon-detail-v2
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.4'
+          channel: stable
+          cache: true
+      - run: flutter pub get
+
+      - name: Canonicalize Floette Eternal Flower identity
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          pokemon = Path('lib/models/pokemon.dart')
+          source = pokemon.read_text(encoding='utf-8')
+          old = """    normalized = normalized
+              .replaceAll(RegExp(r'\\b(form|forme|style|mode)\\b'), ' ')
+              .replaceAll(RegExp(r'\\s+'), ' ')
+              .trim();
+
+            switch (normalized) {
+          """
+          new = """    normalized = normalized
+              .replaceAll(RegExp(r'\\b(form|forme|style|mode)\\b'), ' ')
+              .replaceAll(RegExp(r'\\s+'), ' ')
+              .trim();
+
+            // The web catalog calls the unreleased AZ Floette form `eternal`,
+            // while the legacy/asset catalog calls it `Eternal Flower`.
+            // Treat both spellings as one persisted identity so the Pokédex
+            // never exposes two cards for the same form.
+            if (normalizedSpecies == 'floette' &&
+                (normalized == 'eternal' || normalized == 'eternal flower')) {
+              normalized = 'eternal flower';
+            }
+
+            switch (normalized) {
+          """
+          if source.count(old) != 1:
+              raise SystemExit(f'pokemon.dart marker count={source.count(old)}')
+          pokemon.write_text(source.replace(old, new, 1), encoding='utf-8')
+
+          test = Path('test/deoxys_floette_form_regression_test.dart')
+          source = test.read_text(encoding='utf-8')
+          import_marker = "import 'package:flutter_test/flutter_test.dart';\n"
+          import_line = "import 'package:pokedex_5e_ita/models/pokedex_entry.dart';\n"
+          if import_line not in source:
+              if source.count(import_marker) != 1:
+                  raise SystemExit('test import marker not unique')
+              source = source.replace(import_marker, import_marker + import_line, 1)
+
+          marker = """    final floette = catalog.firstWhere((p) => p.id == 670);
+            final florges = catalog.firstWhere((p) => p.id == 671);
+            expect(
+          """
+          replacement = """    final floette = catalog.firstWhere((p) => p.id == 670);
+            final florges = catalog.firstWhere((p) => p.id == 671);
+
+            expect(
+              PokedexEntry.formKey('Eternal', speciesName: floette.name),
+              'eternal-flower',
+            );
+            expect(
+              PokedexEntry.formKey('Eternal Flower', speciesName: floette.name),
+              'eternal-flower',
+            );
+            expect(
+              floette.formDefinitions.where(
+                (definition) =>
+                    PokedexEntry.formKey(
+                      definition.displayName,
+                      speciesName: floette.name,
+                    ) ==
+                    'eternal-flower',
+              ),
+              hasLength(1),
+            );
+
+            expect(
+          """
+          if source.count(marker) != 1:
+              raise SystemExit(f'test marker count={source.count(marker)}')
+          test.write_text(source.replace(marker, replacement, 1), encoding='utf-8')
+          PY
+
+      - run: dart format lib/models/pokemon.dart test/deoxys_floette_form_regression_test.dart
+      - run: flutter test test/deoxys_floette_form_regression_test.dart
+      - run: flutter analyze
+
+      - name: Commit fix and remove temporary workflow
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          rm .github/workflows/fix-floette-eternal-duplicate.yml
+          git add -A
+          git commit -m 'Deduplica Fiore Eterno di Floette'
+          git push origin HEAD:feature/compact-pokemon-detail-v2

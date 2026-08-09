@@ -1,0 +1,282 @@
+name: Prepare production AAB and cleanup
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/prepare-production-aab-and-cleanup.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: prepare-production-aab-and-cleanup
+  cancel-in-progress: false
+
+env:
+  BUNDLETOOL_VERSION: '1.18.3'
+
+jobs:
+  build-verify-clean:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+      ANDROID_STORE_PASSWORD: ${{ secrets.ANDROID_STORE_PASSWORD }}
+      ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+      ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+
+    steps:
+      - name: Check out merged main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Verify expected merged release
+        shell: bash
+        run: |
+          set -euo pipefail
+          git merge-base --is-ancestor c3a878d197783a7a34771c4753e61083b9dc4fa2 HEAD
+          grep -q '^version: 1\.4\.0+13$' pubspec.yaml
+          test ! -e .github/workflows/optimize-premerge-footprint.yml
+          test ! -e .github/workflows/fix-webp-history-after-dedup.yml
+          test ! -e .github/workflows/add-flower-shiny-assets.yml
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up pinned Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.4'
+          cache: true
+
+      - name: Validate signing secrets
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$ANDROID_KEYSTORE_BASE64" || (echo 'ANDROID_KEYSTORE_BASE64 non configurato' && exit 1)
+          test -n "$ANDROID_STORE_PASSWORD" || (echo 'ANDROID_STORE_PASSWORD non configurato' && exit 1)
+          test -n "$ANDROID_KEY_PASSWORD" || (echo 'ANDROID_KEY_PASSWORD non configurato' && exit 1)
+          test -n "$ANDROID_KEY_ALIAS" || (echo 'ANDROID_KEY_ALIAS non configurato' && exit 1)
+
+      - name: Configure production upload signing
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > android/upload-keystore.jks
+          cat > android/key.properties <<EOF
+          storePassword=$ANDROID_STORE_PASSWORD
+          keyPassword=$ANDROID_KEY_PASSWORD
+          keyAlias=$ANDROID_KEY_ALIAS
+          storeFile=../upload-keystore.jks
+          EOF
+
+      - name: Install dependencies and verify release inputs
+        run: |
+          flutter pub get
+          python tooling/generate_compliance_reports.py --check
+          python tooling/generate_asset_duplicates.py --check
+          python tooling/prepare_release_legal_assets.py
+          python tooling/prepare_release_legal_assets.py --check
+          flutter analyze
+
+      - name: Read application version
+        id: version
+        shell: bash
+        run: |
+          set -euo pipefail
+          VERSION_FULL=$(awk '/^version:/{print $2}' pubspec.yaml)
+          VERSION_NAME=${VERSION_FULL%%+*}
+          VERSION_CODE=${VERSION_FULL##*+}
+          test "$VERSION_NAME" = '1.4.0'
+          test "$VERSION_CODE" = '13'
+          echo "name=$VERSION_NAME" >> "$GITHUB_OUTPUT"
+          echo "code=$VERSION_CODE" >> "$GITHUB_OUTPUT"
+
+      - name: Build signed production AAB
+        run: flutter build appbundle --release
+
+      - name: Prepare AAB artifact
+        id: artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p dist verification/apks verification/extracted-apks
+          BASENAME="TrainerAtlas5e-${{ steps.version.outputs.name }}-vc${{ steps.version.outputs.code }}"
+          echo "basename=$BASENAME" >> "$GITHUB_OUTPUT"
+          cp build/app/outputs/bundle/release/app-release.aab "dist/${BASENAME}.aab"
+          cp LICENSE dist/LICENSE
+          cp NOTICE.md dist/NOTICE.md
+          cat > dist/RELEASE-METADATA.txt <<EOF
+          App: Trainer Atlas 5e
+          Application ID: io.github.rickciaahd.traineratlas
+          Version: ${{ steps.version.outputs.name }}
+          Version code: ${{ steps.version.outputs.code }}
+          Main commit: c3a878d197783a7a34771c4753e61083b9dc4fa2
+          Release shrinking: disabled
+          Purpose: Google Play production upload candidate
+          EOF
+
+      - name: Download pinned bundletool
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 3 \
+            "https://github.com/google/bundletool/releases/download/${BUNDLETOOL_VERSION}/bundletool-all-${BUNDLETOOL_VERSION}.jar" \
+            --output "$RUNNER_TEMP/bundletool.jar"
+          java -jar "$RUNNER_TEMP/bundletool.jar" version
+
+      - name: Verify AAB signature and upload certificate
+        shell: bash
+        env:
+          BASENAME: ${{ steps.artifact.outputs.basename }}
+        run: |
+          set -euo pipefail
+          export LC_ALL=C
+          AAB="dist/${BASENAME}.aab"
+          jarsigner -verify "$AAB" > dist/JARSIGNER-VERIFICATION.txt 2>&1
+          keytool -printcert -jarfile "$AAB" > dist/SIGNING-CERTIFICATE.txt
+          KEYSTORE_SHA256=$(keytool -list -v -keystore android/upload-keystore.jks -storepass:env ANDROID_STORE_PASSWORD -alias "$ANDROID_KEY_ALIAS" | awk -F': ' '/SHA256:/{gsub(/:/, "", $2); print toupper($2); exit}')
+          AAB_SHA256=$(keytool -printcert -jarfile "$AAB" | awk -F': ' '/SHA256:/{gsub(/:/, "", $2); print toupper($2); exit}')
+          test -n "$KEYSTORE_SHA256"
+          test "$KEYSTORE_SHA256" = "$AAB_SHA256"
+          printf 'AAB signature: passed\nUpload certificate matches: yes\nCertificate SHA-256: %s\n' "$AAB_SHA256" > dist/SIGNING-VERIFICATION.txt
+
+      - name: Validate Google Play bundle metadata
+        shell: bash
+        env:
+          BASENAME: ${{ steps.artifact.outputs.basename }}
+        run: |
+          set -euo pipefail
+          AAB="dist/${BASENAME}.aab"
+          java -jar "$RUNNER_TEMP/bundletool.jar" validate --bundle="$AAB"
+          java -jar "$RUNNER_TEMP/bundletool.jar" dump manifest --bundle="$AAB" --module=base > dist/BUNDLE-MANIFEST.xml
+          java -jar "$RUNNER_TEMP/bundletool.jar" dump config --bundle="$AAB" > dist/BUNDLE-CONFIG.txt
+          grep -q 'package="io.github.rickciaahd.traineratlas"' dist/BUNDLE-MANIFEST.xml
+          grep -Eq 'targetSdkVersion="36"|targetSdkVersion="0x24"' dist/BUNDLE-MANIFEST.xml
+          grep -Eq 'versionCode="13"|versionCode="0xd"' dist/BUNDLE-MANIFEST.xml
+          grep -q 'versionName="1.4.0"' dist/BUNDLE-MANIFEST.xml
+          grep -q 'PAGE_ALIGNMENT_16K' dist/BUNDLE-CONFIG.txt
+
+      - name: Recreate Play delivery and verify 16 KiB APK alignment
+        shell: bash
+        env:
+          BASENAME: ${{ steps.artifact.outputs.basename }}
+        run: |
+          set -euo pipefail
+          AAB="dist/${BASENAME}.aab"
+          cat > verification/device-spec-api36-arm64.json <<'EOF'
+          {
+            "supportedAbis": ["arm64-v8a"],
+            "supportedLocales": ["it", "en"],
+            "screenDensity": 420,
+            "sdkVersion": 36
+          }
+          EOF
+          java -jar "$RUNNER_TEMP/bundletool.jar" build-apks \
+            --bundle="$AAB" \
+            --output=verification/apks/api36-arm64.apks \
+            --device-spec=verification/device-spec-api36-arm64.json \
+            --ks=android/upload-keystore.jks \
+            --ks-pass=pass:"$ANDROID_STORE_PASSWORD" \
+            --ks-key-alias="$ANDROID_KEY_ALIAS" \
+            --key-pass=pass:"$ANDROID_KEY_PASSWORD" \
+            --overwrite
+          java -jar "$RUNNER_TEMP/bundletool.jar" get-size total \
+            --apks=verification/apks/api36-arm64.apks \
+            --device-spec=verification/device-spec-api36-arm64.json \
+            > dist/BUNDLETOOL-DEVICE-SIZE.txt
+          unzip -q verification/apks/api36-arm64.apks -d verification/extracted-apks
+          ZIPALIGN_PATH=$(find "$ANDROID_SDK_ROOT/build-tools" -type f -name zipalign | sort -V | tail -n 1)
+          test -x "$ZIPALIGN_PATH"
+          while IFS= read -r APK; do
+            "$ZIPALIGN_PATH" -c -P 16 -v 4 "$APK"
+          done < <(find verification/extracted-apks -type f -name '*.apk' | sort)
+          echo 'All delivered APKs passed zipalign -P 16.' > dist/ZIPALIGN-16K-VERIFICATION.txt
+
+      - name: Write checksums and release verification
+        shell: bash
+        env:
+          BASENAME: ${{ steps.artifact.outputs.basename }}
+        run: |
+          set -euo pipefail
+          AAB="dist/${BASENAME}.aab"
+          AAB_BYTES=$(stat -c '%s' "$AAB")
+          AAB_SHA256=$(sha256sum "$AAB" | awk '{print $1}')
+          DEVICE_SIZE=$(tr '\n' ' ' < dist/BUNDLETOOL-DEVICE-SIZE.txt | sed 's/[[:space:]]\+$//')
+          cat > dist/ANDROID-VERIFICATION.txt <<EOF
+          bundletool version: $BUNDLETOOL_VERSION
+          Bundle validation: passed
+          Application ID: io.github.rickciaahd.traineratlas
+          Version: 1.4.0
+          Version code: 13
+          Target SDK: 36
+          Bundle page alignment: PAGE_ALIGNMENT_16K
+          Delivered APK ZIP alignment: passed with zipalign -P 16
+          AAB bytes: $AAB_BYTES
+          AAB SHA-256: $AAB_SHA256
+          bundletool API 36 arm64 device size: $DEVICE_SIZE
+          AAB certificate matches upload keystore: yes
+          EOF
+          find dist -maxdepth 1 -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum > dist/SHA256SUMS.txt
+          cat dist/ANDROID-VERIFICATION.txt
+
+      - name: Upload publishable signed AAB
+        uses: actions/upload-artifact@v4
+        with:
+          name: TrainerAtlas5e-production-AAB-1.4.0-vc13
+          path: dist/
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Delete obsolete merged and technical branches
+        shell: bash
+        run: |
+          set -euo pipefail
+          branches=(
+            'feature/compact-pokemon-detail-v2'
+            'agent/apply-bag-layout-via-pr'
+            'agent/compact-pokemon-detail'
+            'agent/item-driven-arceus-silvally-forms'
+            'agent/request-compact-apk-build'
+            'agent/run-bag-layout'
+            'agent/run-fixed-bag-apk-20260807'
+            'agent/trigger-bag-bar-fix-build-20260806'
+            'agent/trigger-bag-layout'
+            'agent/trigger-compact-apk-build-20260806'
+          )
+          : > dist/BRANCH-CLEANUP.txt
+          for branch in "${branches[@]}"; do
+            if git ls-remote --exit-code --heads origin "$branch" >/dev/null 2>&1; then
+              git push origin --delete "$branch"
+              echo "deleted: $branch" >> dist/BRANCH-CLEANUP.txt
+            else
+              echo "already absent: $branch" >> dist/BRANCH-CLEANUP.txt
+            fi
+          done
+          cat dist/BRANCH-CLEANUP.txt
+
+      - name: Remove temporary signing material
+        if: always()
+        shell: bash
+        run: rm -f android/upload-keystore.jks android/key.properties
+
+      - name: Remove this temporary workflow from main
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f .github/workflows/prepare-production-aab-and-cleanup.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git diff --cached --check
+          git commit -m 'Rimuovi la pipeline temporanea di preparazione release'
+          git push origin HEAD:main

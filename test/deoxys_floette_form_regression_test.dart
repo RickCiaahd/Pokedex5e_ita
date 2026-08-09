@@ -74,6 +74,9 @@ void main() {
   testWidgets('Flower artwork bundle uses dedicated artwork, not bad sprites', (
     tester,
   ) async {
+    final catalog = await PokemonRepository().getAllPokemon();
+    final floette = catalog.firstWhere((p) => p.id == 670);
+    final florges = catalog.firstWhere((p) => p.id == 671);
     final assets = (await AssetManifest.loadFromAssetBundle(
       rootBundle,
     )).listAssets();
@@ -86,6 +89,32 @@ void main() {
     for (final form in forms) {
       expect(assets, contains('assets/textures/pokemons/670Floette $form.png'));
       expect(assets, contains('assets/textures/pokemons/671Florges $form.png'));
+      expect(
+        assets,
+        contains('assets/textures/pokemons/670Floette $form Shiny.png'),
+      );
+      expect(
+        assets,
+        contains('assets/textures/pokemons/671Florges $form Shiny.png'),
+      );
+      expect(
+        PokemonAssetPaths.imageCandidates(
+          pokemon: floette,
+          useLargeArtwork: true,
+          formName: form,
+          isShiny: true,
+        ),
+        contains('assets/textures/pokemons/670Floette $form Shiny.png'),
+      );
+      expect(
+        PokemonAssetPaths.imageCandidates(
+          pokemon: florges,
+          useLargeArtwork: true,
+          formName: form,
+          isShiny: true,
+        ),
+        contains('assets/textures/pokemons/671Florges $form Shiny.png'),
+      );
       expect(
         assets,
         isNot(contains('assets/textures/sprites/670Floette $form.png')),

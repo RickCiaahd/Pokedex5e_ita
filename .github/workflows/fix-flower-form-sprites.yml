@@ -78,14 +78,6 @@ jobs:
                   assert path.stat().st_size < 20_000, f'Unexpectedly large icon: {path}'
                   print(f'OK {path}: {size[0]}x{size[1]}, {path.stat().st_size} bytes')
 
-      - name: Regenerate compliance inventories
-        run: |
-          python tooling/generate_compliance_reports.py
-          python tooling/generate_compliance_reports.py --check
-          python tooling/prepare_release_legal_assets.py
-          python tooling/prepare_release_legal_assets.py --check
-          git diff --check
-
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
@@ -100,6 +92,14 @@ jobs:
 
       - name: Install dependencies
         run: flutter pub get
+
+      - name: Regenerate compliance inventories
+        run: |
+          python tooling/generate_compliance_reports.py
+          python tooling/generate_compliance_reports.py --check
+          python tooling/prepare_release_legal_assets.py
+          python tooling/prepare_release_legal_assets.py --check
+          git diff --check
 
       - name: Format regression test
         run: dart format test/deoxys_floette_form_regression_test.dart

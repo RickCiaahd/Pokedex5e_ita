@@ -38,8 +38,8 @@ jobs:
 
           replacements = [
               (
-                  "        if (move != null && slot.pokemonId != null) {\n          final basePokemon = data.pokemonById[slot.pokemonId!];",
-                  "        if (move != null) {\n          final basePokemon = data.pokemonById[slot.pokemonId];",
+                  "          if (environmentMessage != null) messages.add(environmentMessage);",
+                  "          messages.add(environmentMessage);",
               ),
               (
                   "                final details = <String>[\n                  if (effect != null) effect,",

@@ -81,18 +81,17 @@ class _BattleScreenState extends State<BattleScreen> {
   final Map<int, Map<String, int>> _remainingPpBySlot = {};
   final Map<int, Set<String>> _volatileStatusesBySlot = {};
   final Map<int, String> _battleFormBySlot = {};
+  final Map<int, Map<String, int>> _formRuleStateBySlot = {};
   final Map<int, BattleTransformationState> _transformationBySlot = {};
   final Set<String> _trainerTransformationUses = {};
   final Set<String> _transformedPokemonKeys = {};
   final Map<int, int> _temporaryHpBySlot = {};
   final Map<int, bool> _temporaryHpEnabledBySlot = {};
   final Set<int> _temporaryHpInitializedSlots = {};
-  final List<BattleInitiativeEntry> _initiativeEntries = [];
 
   BattleStatusMoment _statusMoment = BattleStatusMoment.turnStart;
   int? _activeSlotIndex;
   int _round = 1;
-  int _turnIndex = 0;
   BattleEnvironment _environment = const BattleEnvironment();
   String? _message;
   String? _restoredProfileId;
@@ -111,23 +110,13 @@ class _BattleScreenState extends State<BattleScreen> {
     ),
     GuidedTourStepData(
       targetKey: _initiativeKey,
-      icon: Icons.format_list_numbered,
-      title: context.uiText('Iniziativa e turni', 'Initiative and turns'),
+      icon: Icons.timelapse_outlined,
+      title: context.uiText('Round personale', 'Personal round'),
       description: context.uiText(
-        'Aggiungi partecipanti, modifica l’ordine e usa il comando del turno successivo. Quando il giro termina, il round avanza automaticamente.',
-        'Add participants, change the order and use the next-turn command. When the cycle ends, the round advances automatically.',
+        'Quando il Master comunica che torna il tuo turno, usa il pulsante per avanzare il round personale. Non devi gestire l’ordine completo dell’iniziativa.',
+        'When the GM says your turn has come back, use the button to advance your personal round. You do not need to manage the full initiative order.',
       ),
       fallbackScrollFraction: .16,
-    ),
-    GuidedTourStepData(
-      targetKey: _environmentKey,
-      icon: Icons.public_outlined,
-      title: context.uiText('Meteo e terreno', 'Weather and terrain'),
-      description: context.uiText(
-        'L’ambiente applica regole e modificatori a velocità, CA, tipi e danni. Puoi impostarlo manualmente o generare il meteo con il d100.',
-        'The environment applies rules and modifiers to speed, AC, types and damage. Set it manually or roll weather with a d100.',
-      ),
-      fallbackScrollFraction: .30,
     ),
     GuidedTourStepData(
       targetKey: _activePokemonKey,
@@ -137,7 +126,7 @@ class _BattleScreenState extends State<BattleScreen> {
         'Qui gestisci PF, PF temporanei, status, forma di battaglia, oggetto tenuto e Zaino rapido del Pokémon selezionato.',
         'Manage HP, temporary HP, conditions, battle form, held item and the selected Pokémon’s quick Bag.',
       ),
-      fallbackScrollFraction: .50,
+      fallbackScrollFraction: .30,
     ),
     GuidedTourStepData(
       targetKey: _movesKey,
@@ -147,7 +136,17 @@ class _BattleScreenState extends State<BattleScreen> {
         'Le mosse mostrano tiro, CD, danni e PP rimanenti. Usa e ripristina i PP dai pulsanti; quando finiscono, il tracker segnala Struggle.',
         'Moves show rolls, DC, damage and remaining PP. Spend or restore PP with the buttons; when all are depleted, the tracker warns you to use Struggle.',
       ),
-      fallbackScrollFraction: 1,
+      fallbackScrollFraction: .55,
+    ),
+    GuidedTourStepData(
+      targetKey: _environmentKey,
+      icon: Icons.public_outlined,
+      title: context.uiText('Meteo e terreno', 'Weather and terrain'),
+      description: context.uiText(
+        'Registra il meteo e il terreno comunicati dal Master. Il Battle Companion applica al Pokémon i modificatori conosciuti, senza generare la scena al posto del Master.',
+        'Record the weather and terrain communicated by the GM. The Battle Companion applies known modifiers to the Pokémon without generating the scene for the GM.',
+      ),
+      fallbackScrollFraction: .80,
     ),
   ];
 
@@ -223,6 +222,14 @@ class _BattleScreenState extends State<BattleScreen> {
     });
   }
 
+  String _shortRestFormToken(TeamSlot slot, String speciesName) {
+    return 'battle-form:short-rest:${_itemReferenceKey(speciesName)}:${BattleTransformationService.pokemonUsageKey(slot)}';
+  }
+
+  String _terapagosShiftPrefix(TeamSlot slot) {
+    return 'battle-form:terapagos:${BattleTransformationService.pokemonUsageKey(slot)}:';
+  }
+
   Future<void> _restoreOrStartSession(_BattleData data) async {
     if (_restoredProfileId == data.profile.id) return;
     _restoredProfileId = data.profile.id;
@@ -230,6 +237,7 @@ class _BattleScreenState extends State<BattleScreen> {
     _remainingPpBySlot.clear();
     _volatileStatusesBySlot.clear();
     _battleFormBySlot.clear();
+    _formRuleStateBySlot.clear();
     _transformationBySlot.clear();
     _trainerTransformationUses
       ..clear()
@@ -240,9 +248,7 @@ class _BattleScreenState extends State<BattleScreen> {
     _temporaryHpBySlot.clear();
     _temporaryHpEnabledBySlot.clear();
     _temporaryHpInitializedSlots.clear();
-    _initiativeEntries.clear();
     _round = 1;
-    _turnIndex = 0;
     _activeSlotIndex = null;
     _environment = const BattleEnvironment();
 
@@ -250,7 +256,6 @@ class _BattleScreenState extends State<BattleScreen> {
     if (session != null) {
       _round = session.round;
       _environment = session.environment;
-      _initiativeEntries.addAll(session.initiativeEntries);
 
       for (final state in session.pokemonStates.values) {
         TeamSlot? matchingSlot;
@@ -265,6 +270,7 @@ class _BattleScreenState extends State<BattleScreen> {
         _volatileStatusesBySlot[matchingSlot.slotIndex] = {
           ...state.volatileStatuses,
         };
+        _formRuleStateBySlot[matchingSlot.slotIndex] = {...state.formRuleState};
         final battleFormName = state.battleFormName;
         if (battleFormName != null && battleFormName.trim().isNotEmpty) {
           _battleFormBySlot[matchingSlot.slotIndex] = battleFormName;
@@ -286,12 +292,10 @@ class _BattleScreenState extends State<BattleScreen> {
           data.occupiedSlots.any((slot) => slot.slotIndex == savedActiveSlot)) {
         _activeSlotIndex = savedActiveSlot;
       }
-      _turnIndex = _initiativeEntries.isEmpty
-          ? 0
-          : session.turnIndex.clamp(0, _initiativeEntries.length - 1).toInt();
     }
 
     for (final slot in data.occupiedSlots) {
+      _formRuleStateBySlot.putIfAbsent(slot.slotIndex, () => <String, int>{});
       if (_temporaryHpInitializedSlots.contains(slot.slotIndex)) continue;
       final pokemonId = slot.pokemonId;
       if (pokemonId == null) continue;
@@ -300,21 +304,58 @@ class _BattleScreenState extends State<BattleScreen> {
       final rule = BattleTemporaryHpService.ruleFor(basePokemon, slot);
       _temporaryHpInitializedSlots.add(slot.slotIndex);
       if (rule == null) continue;
-      _temporaryHpEnabledBySlot[slot.slotIndex] = true;
-      _temporaryHpBySlot[slot.slotIndex] = rule.maximumForLevel(
-        _levelForSlot(slot),
+      final shortRestToken = _shortRestFormToken(slot, basePokemon.name);
+      final brokenAcrossBattles = _trainerTransformationUses.contains(
+        shortRestToken,
       );
+      _temporaryHpEnabledBySlot[slot.slotIndex] = !brokenAcrossBattles;
+      _temporaryHpBySlot[slot.slotIndex] = brokenAcrossBattles
+          ? 0
+          : rule.maximumForLevel(_levelForSlot(slot));
       if (basePokemon.name == 'Mimikyu') {
-        _battleFormBySlot[slot.slotIndex] = 'Base';
+        _battleFormBySlot[slot.slotIndex] = brokenAcrossBattles
+            ? rule.brokenFormName ?? 'Busted'
+            : 'Base';
       }
     }
 
-    final activeSlot = _activeSlotFor(data);
-    if (activeSlot != null) {
-      _activeSlotIndex = activeSlot.slotIndex;
-      final pokemon = _pokemonForSlot(data, activeSlot);
-      if (pokemon != null) _ensureInitiative(data, activeSlot, pokemon);
+    for (final slot in data.occupiedSlots) {
+      final pokemonId = slot.pokemonId;
+      if (pokemonId == null) continue;
+      final basePokemon = data.pokemonById[pokemonId];
+      if (basePokemon == null) continue;
+      final initial = BattleFormChangeService.ruleFormAtBattleStart(
+        basePokemon,
+        slot,
+        _environment,
+      );
+      if (initial != null && !_battleFormBySlot.containsKey(slot.slotIndex)) {
+        _battleFormBySlot[slot.slotIndex] = initial;
+      }
+      final shortRestToken = _shortRestFormToken(slot, basePokemon.name);
+      if (_trainerTransformationUses.contains(shortRestToken)) {
+        if (basePokemon.name == 'Wishiwashi') {
+          _formRuleStateFor(
+            slot,
+          )[BattleFormChangeService.wishiwashiSchoolingLockedKey] = 1;
+        } else if (basePokemon.name == 'Minior') {
+          _battleFormBySlot[slot.slotIndex] = 'core-red';
+        } else if (basePokemon.name == 'Eiscue') {
+          _battleFormBySlot[slot.slotIndex] = 'noice-face';
+          _formRuleStateFor(
+            slot,
+          )[BattleFormChangeService.eiscueIceFaceBrokenKey] = 1;
+        }
+      }
+      if (basePokemon.name == 'Giratina' &&
+          _itemReferenceKey(slot.heldItem ?? '') == 'griseous-orb') {
+        _battleFormBySlot[slot.slotIndex] = 'origin';
+      }
     }
+    _syncEnvironmentForms(data);
+
+    final activeSlot = _activeSlotFor(data);
+    if (activeSlot != null) _activeSlotIndex = activeSlot.slotIndex;
     await _saveSession(data);
   }
 
@@ -330,6 +371,7 @@ class _BattleScreenState extends State<BattleScreen> {
         remainingPp: {...?_remainingPpBySlot[slot.slotIndex]},
         volatileStatuses: {...?_volatileStatusesBySlot[slot.slotIndex]},
         battleFormName: _battleFormBySlot[slot.slotIndex],
+        formRuleState: {...?_formRuleStateBySlot[slot.slotIndex]},
         transformation: _transformationBySlot[slot.slotIndex],
         temporaryHp: _temporaryHpBySlot[slot.slotIndex] ?? 0,
         temporaryHpEnabled: _temporaryHpEnabledBySlot[slot.slotIndex] ?? false,
@@ -343,10 +385,10 @@ class _BattleScreenState extends State<BattleScreen> {
       BattleSession(
         profileId: data.profile.id,
         round: _round,
-        turnIndex: _turnIndex,
+        turnIndex: 0,
         activeSlotIndex: _activeSlotIndex,
         pokemonStates: states,
-        initiativeEntries: List<BattleInitiativeEntry>.from(_initiativeEntries),
+        initiativeEntries: const [],
         environment: _environment,
         updatedAt: DateTime.now(),
       ),
@@ -355,6 +397,121 @@ class _BattleScreenState extends State<BattleScreen> {
 
   void _scheduleSessionSave(_BattleData data) {
     unawaited(_saveSession(data));
+  }
+
+  Map<String, int> _formRuleStateFor(TeamSlot slot) {
+    return _formRuleStateBySlot.putIfAbsent(
+      slot.slotIndex,
+      () => <String, int>{},
+    );
+  }
+
+  void _syncEnvironmentForms(_BattleData data) {
+    for (final slot in data.occupiedSlots) {
+      final pokemonId = slot.pokemonId;
+      if (pokemonId == null) continue;
+      final basePokemon = data.pokemonById[pokemonId];
+      if (basePokemon == null) continue;
+      final form = BattleFormChangeService.environmentForm(
+        basePokemon,
+        slot,
+        _environment,
+      );
+      if (form != null) _battleFormBySlot[slot.slotIndex] = form;
+    }
+  }
+
+  Future<void> _recordBattleFormUse(_BattleData data, String token) async {
+    if (!_trainerTransformationUses.add(token)) return;
+    final currentProfile = await _profileRepository.getActiveProfile();
+    if (currentProfile.id != data.profile.id) return;
+    final updated = currentProfile.copyWith(
+      transformationUses: _trainerTransformationUses.toList()..sort(),
+    );
+    await _profileRepository.saveProfile(updated);
+    _activeProfile = updated;
+  }
+
+  Future<void> _clearBattleFormUse(_BattleData data, String token) async {
+    if (!_trainerTransformationUses.remove(token)) return;
+    final currentProfile = await _profileRepository.getActiveProfile();
+    if (currentProfile.id != data.profile.id) return;
+    final updated = currentProfile.copyWith(
+      transformationUses: _trainerTransformationUses.toList()..sort(),
+    );
+    await _profileRepository.saveProfile(updated);
+    _activeProfile = updated;
+  }
+
+  Future<bool> _confirmBattleFormRule(String text) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (_) => AlertDialog(
+        scrollable: true,
+        title: Text(context.uiText('Conferma condizione', 'Confirm condition')),
+        content: Text(text),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text(context.uiText('ANNULLA', 'CANCEL')),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: Text(context.uiText('CONFERMA', 'CONFIRM')),
+          ),
+        ],
+      ),
+    );
+    return confirmed == true;
+  }
+
+  TeamSlot _applyPostHpFormRules(
+    _BattleData data,
+    TeamSlot originalSlot,
+    TeamSlot updatedSlot,
+    Pokemon basePokemon,
+    int maxHp,
+    List<String> messages,
+  ) {
+    final result = BattleFormChangeService.afterHpChange(
+      pokemon: basePokemon,
+      slot: updatedSlot,
+      currentFormName: _effectiveFormName(originalSlot),
+      currentHp: updatedSlot.currentHp,
+      maxHp: maxHp,
+    );
+    if (result.formName != null) {
+      _battleFormBySlot[originalSlot.slotIndex] = result.formName!;
+      if (basePokemon.name == 'Minior' &&
+          BattleFormChangeService.canonicalFormKey(
+                basePokemon,
+                result.formName,
+              ) !=
+              'meteor') {
+        unawaited(
+          _recordBattleFormUse(
+            data,
+            _shortRestFormToken(originalSlot, basePokemon.name),
+          ),
+        );
+      }
+    }
+    if (result.lockWishiwashiSchooling) {
+      _formRuleStateFor(
+        originalSlot,
+      )[BattleFormChangeService.wishiwashiSchoolingLockedKey] = 1;
+      unawaited(
+        _recordBattleFormUse(
+          data,
+          _shortRestFormToken(originalSlot, basePokemon.name),
+        ),
+      );
+    }
+    if (result.message != null) messages.add(result.message!);
+    if (result.restoreToFull) {
+      return updatedSlot.copyWith(currentHp: maxHp);
+    }
+    return updatedSlot;
   }
 
   TeamSlot? _activeSlotFor(_BattleData data) {
@@ -405,7 +562,9 @@ class _BattleScreenState extends State<BattleScreen> {
     }
     if (state.kind == BattleTransformationKind.terastal) {
       final teraType = state.teraType;
-      if (teraType != null && teraType != 'Stellar') {
+      if (teraType == 'Stellar' && pokemon.name == 'Terapagos') {
+        types = const ['Stellar'];
+      } else if (teraType != null && teraType != 'Stellar') {
         types = [teraType];
       }
     }
@@ -453,11 +612,253 @@ class _BattleScreenState extends State<BattleScreen> {
     return result;
   }
 
+  Future<void> _manageShortRestBattleForm(
+    _BattleData data,
+    TeamSlot slot,
+    Pokemon basePokemon,
+  ) async {
+    final currentKey = BattleFormChangeService.canonicalFormKey(
+      basePokemon,
+      _effectiveFormName(slot),
+    );
+    final needsReset =
+        (basePokemon.name == 'Minior' && currentKey != 'meteor') ||
+        (basePokemon.name == 'Eiscue' && currentKey == 'noice-face') ||
+        (basePokemon.name == 'Mimikyu' && currentKey == 'busted');
+    if (!needsReset) {
+      setState(
+        () => _message = BattleFormChangeService.changeHint(basePokemon),
+      );
+      return;
+    }
+    final confirmed = await _confirmBattleFormRule(
+      context.uiText(
+        'Conferma che ${_displayName(slot, basePokemon)} abbia completato un riposo breve. Verrà ripristinata la forma prevista dalla sua abilità.',
+        'Confirm that ${_displayName(slot, basePokemon)} has completed a short rest. The form required by its ability will be restored.',
+      ),
+    );
+    if (!mounted || !confirmed) return;
+
+    final token = _shortRestFormToken(slot, basePokemon.name);
+    await _clearBattleFormUse(data, token);
+    if (!mounted) return;
+    setState(() {
+      _formRuleStateFor(slot).clear();
+      _battleFormBySlot[slot.slotIndex] = 'Base';
+      if (basePokemon.name == 'Mimikyu') {
+        final rule = BattleTemporaryHpService.ruleFor(basePokemon, slot);
+        if (rule != null) {
+          _temporaryHpInitializedSlots.add(slot.slotIndex);
+          _temporaryHpEnabledBySlot[slot.slotIndex] = true;
+          _temporaryHpBySlot[slot.slotIndex] = rule.maximumForLevel(
+            _levelForSlot(slot),
+          );
+        }
+      }
+      _message = context.uiText(
+        'Riposo breve registrato: forma ripristinata.',
+        'Short rest recorded: form restored.',
+      );
+    });
+    await _saveSession(data);
+  }
+
+  Future<void> _manageWishiwashi(
+    _BattleData data,
+    TeamSlot slot,
+    Pokemon basePokemon,
+  ) async {
+    final key = BattleFormChangeService.canonicalFormKey(
+      basePokemon,
+      _effectiveFormName(slot),
+    );
+    final ruleState = _formRuleStateFor(slot);
+    if ((ruleState[BattleFormChangeService.wishiwashiSchoolingLockedKey] ?? 0) >
+        0) {
+      final confirmed = await _confirmBattleFormRule(
+        context.uiText(
+          'Schooling è bloccato finché Wishiwashi non completa un riposo breve. Conferma che il riposo breve sia stato completato.',
+          'Schooling is locked until Wishiwashi completes a short rest. Confirm that the short rest has been completed.',
+        ),
+      );
+      if (!mounted || !confirmed) return;
+      ruleState.remove(BattleFormChangeService.wishiwashiSchoolingLockedKey);
+      await _clearBattleFormUse(
+        data,
+        _shortRestFormToken(slot, basePokemon.name),
+      );
+      if (!mounted) return;
+      setState(() {
+        _message = context.uiText(
+          'Riposo breve registrato. Schooling può essere riattivato all’inizio di un turno valido.',
+          'Short rest recorded. Schooling can be activated again at the start of an eligible turn.',
+        );
+      });
+      await _saveSession(data);
+      return;
+    }
+    if (key == 'school') {
+      setState(() {
+        _message = context.uiText(
+          'Wishiwashi resta in Forma Banco finché non scende sotto il 25% dei PF massimi.',
+          'Wishiwashi stays in School Form until it falls below 25% of maximum HP.',
+        );
+      });
+      return;
+    }
+    final pokemon = _pokemonForSlot(data, slot) ?? basePokemon;
+    final eligibility = BattleFormChangeService.wishiwashiSchoolEligibility(
+      pokemon: basePokemon,
+      slot: slot,
+      currentHp: _currentHpFor(slot, pokemon),
+      maxHp: _maxHpFor(pokemon, slot),
+      ruleState: ruleState,
+      isTurnStart: _statusMoment == BattleStatusMoment.turnStart,
+    );
+    if (!eligibility.isAvailable) {
+      setState(() => _message = eligibility.missingRequirements.join(' · '));
+      return;
+    }
+    setState(() {
+      _battleFormBySlot[slot.slotIndex] = 'school';
+      _message = context.uiText(
+        'Schooling attivato: Wishiwashi assume la Forma Banco.',
+        'Schooling activated: Wishiwashi assumes School Form.',
+      );
+    });
+    await _saveSession(data);
+  }
+
+  Future<void> _managePalafin(
+    _BattleData data,
+    TeamSlot slot,
+    Pokemon basePokemon,
+  ) async {
+    final key = BattleFormChangeService.canonicalFormKey(
+      basePokemon,
+      _effectiveFormName(slot),
+    );
+    if (key == 'hero') {
+      setState(() {
+        _message = context.uiText(
+          'Palafin resta in Forma Possente fino al termine della lotta.',
+          'Palafin remains in Hero Form until the end of the battle.',
+        );
+      });
+      return;
+    }
+    final eligibility = BattleFormChangeService.palafinHeroEligibility(
+      pokemon: basePokemon,
+      slot: slot,
+      longRestUses: _trainerTransformationUses,
+    );
+    if (!eligibility.isAvailable) {
+      setState(() => _message = eligibility.missingRequirements.join(' · '));
+      return;
+    }
+    final confirmation = eligibility.confirmationText;
+    if (confirmation != null && !await _confirmBattleFormRule(confirmation)) {
+      return;
+    }
+    final token = BattleFormChangeService.palafinLongRestUseToken(slot);
+    setState(() {
+      _battleFormBySlot[slot.slotIndex] = 'hero';
+      _message = context.uiText(
+        'Supercambio attivato: Palafin assume la Forma Possente fino alla fine della lotta.',
+        'Zero to Hero activated: Palafin assumes Hero Form until the end of the battle.',
+      );
+    });
+    await _recordBattleFormUse(data, token);
+    await _saveSession(data);
+  }
+
+  Future<void> _manageTerapagos(
+    _BattleData data,
+    TeamSlot slot,
+    Pokemon basePokemon,
+  ) async {
+    final key = BattleFormChangeService.canonicalFormKey(
+      basePokemon,
+      _effectiveFormName(slot),
+    );
+    if (key == 'stellar') {
+      setState(() {
+        _message = context.uiText(
+          'La Forma Astrale dipende dalla Teracristallizzazione e termina con essa.',
+          'Stellar Form depends on Terastallization and ends with it.',
+        );
+      });
+      return;
+    }
+    if (key == 'terastal') {
+      setState(() {
+        _battleFormBySlot[slot.slotIndex] = 'Base';
+        _message = context.uiText(
+          'Tera Shift terminato: Terapagos torna alla Forma Normale.',
+          'Tera Shift ended: Terapagos returns to Normal Form.',
+        );
+      });
+      await _saveSession(data);
+      return;
+    }
+
+    final maximum = BattleFormChangeService.terapagosDailyShiftUses(
+      basePokemon,
+      slot,
+    );
+    final prefix = _terapagosShiftPrefix(slot);
+    final used = _trainerTransformationUses.where((value) {
+      return value.startsWith(prefix);
+    }).length;
+    if (maximum <= 0 || used >= maximum) {
+      setState(() {
+        _message = context.uiText(
+          'Tera Shift non ha più usi disponibili: la regola concede un numero di usi giornalieri pari al modificatore di COS.',
+          'Tera Shift has no uses remaining: the rule grants daily uses equal to the CON modifier.',
+        );
+      });
+      return;
+    }
+    final confirmed = await _confirmBattleFormRule(
+      context.uiText(
+        'Attivare Tera Shift come azione gratuita? Uso ${used + 1}/$maximum. Poiché l’app non tiene un calendario di gioco, il riposo lungo viene usato come reset del contatore giornaliero.',
+        'Activate Tera Shift as a free action? Use ${used + 1}/$maximum. Because the app does not track an in-game calendar, a long rest is used to reset the daily counter.',
+      ),
+    );
+    if (!mounted || !confirmed) return;
+    setState(() {
+      _battleFormBySlot[slot.slotIndex] = 'terastal';
+      _message = context.uiText(
+        'Tera Shift attivato: Terapagos assume la Forma Teracristal.',
+        'Tera Shift activated: Terapagos assumes Terastal Form.',
+      );
+    });
+    await _recordBattleFormUse(data, '$prefix${used + 1}');
+    await _saveSession(data);
+  }
+
   Future<void> _openBattleFormPicker(_BattleData data, TeamSlot slot) async {
     final pokemonId = slot.pokemonId;
     if (pokemonId == null) return;
     final basePokemon = data.pokemonById[pokemonId];
     if (basePokemon == null || !BattleFormChangeService.supports(basePokemon)) {
+      return;
+    }
+
+    if (basePokemon.name == 'Wishiwashi') {
+      await _manageWishiwashi(data, slot, basePokemon);
+      return;
+    }
+    if (basePokemon.name == 'Palafin') {
+      await _managePalafin(data, slot, basePokemon);
+      return;
+    }
+    if (basePokemon.name == 'Terapagos') {
+      await _manageTerapagos(data, slot, basePokemon);
+      return;
+    }
+    if (const {'Minior', 'Mimikyu', 'Eiscue'}.contains(basePokemon.name)) {
+      await _manageShortRestBattleForm(data, slot, basePokemon);
       return;
     }
 
@@ -476,6 +877,33 @@ class _BattleScreenState extends State<BattleScreen> {
     ]);
     if (!mounted || choices.length <= 1) return;
 
+    final liveInventory = await _bagRepository.getInventory(data.profile.id);
+    final inventoryIds = liveInventory
+        .where((entry) => entry.quantity > 0)
+        .map((entry) => _itemReferenceKey(entry.itemId))
+        .toSet();
+    final teamPokemonIds = data.occupiedSlots
+        .map((entry) => entry.pokemonId)
+        .whereType<int>()
+        .toSet();
+
+    BattleFormEligibility eligibilityFor(PokemonFormChoice choice) {
+      if (BattleFormChangeService.sameForm(
+        basePokemon,
+        _effectiveFormName(slot),
+        choice.name,
+      )) {
+        return const BattleFormEligibility(isAvailable: true);
+      }
+      return BattleFormChangeService.manualEligibility(
+        pokemon: basePokemon,
+        slot: slot,
+        targetFormName: choice.name,
+        inventoryItemIds: inventoryIds,
+        teamPokemonIds: teamPokemonIds,
+      );
+    }
+
     final selected = await showModalBottomSheet<String>(
       context: context,
       useSafeArea: true,
@@ -486,14 +914,93 @@ class _BattleScreenState extends State<BattleScreen> {
         slot: slot,
         currentFormName: _effectiveFormName(slot),
         choices: choices,
+        eligibilityForChoice:
+            BattleFormChangeService.usesPersistentControls(basePokemon) ||
+                basePokemon.name == 'Giratina'
+            ? eligibilityFor
+            : null,
       ),
     );
     if (!mounted || selected == null) return;
+    if (BattleFormChangeService.sameForm(
+      basePokemon,
+      _effectiveFormName(slot),
+      selected,
+    )) {
+      return;
+    }
+
+    final eligibility = eligibilityFor(
+      choices.firstWhere((choice) => choice.name == selected),
+    );
+    if (!eligibility.isAvailable) {
+      setState(() => _message = eligibility.missingRequirements.join(' · '));
+      return;
+    }
+    final confirmation = eligibility.confirmationText;
+    if (confirmation != null && !await _confirmBattleFormRule(confirmation)) {
+      return;
+    }
+    final consumeItemId = eligibility.consumeItemId;
+    if (consumeItemId != null) {
+      final consumed = await _bagRepository.consumeItem(
+        profileId: data.profile.id,
+        itemId: consumeItemId,
+      );
+      if (!consumed) {
+        setState(() {
+          _message = context.uiText(
+            'L’oggetto richiesto non è più disponibile nello Zaino.',
+            'The required item is no longer available in the Bag.',
+          );
+        });
+        return;
+      }
+    }
+
+    if (basePokemon.name == 'Giratina') {
+      setState(() {
+        _battleFormBySlot[slot.slotIndex] = selected;
+        _message = context.uiText(
+          '${_displayName(slot, basePokemon)} assume la ${BattleFormChangeService.formLabel(basePokemon, selected)}.',
+          '${_displayName(slot, basePokemon)} changes to ${BattleFormChangeService.formLabel(basePokemon, selected)}.',
+        );
+      });
+      await _saveSession(data);
+      return;
+    }
+
+    if (BattleFormChangeService.usesPersistentControls(basePokemon)) {
+      final updatedSlot = slot.copyWith(
+        formName:
+            BattleFormChangeService.canonicalFormKey(basePokemon, selected) ==
+                BattleFormChangeService.canonicalFormKey(basePokemon, 'Base')
+            ? null
+            : selected,
+      );
+      await _teamRepository.updateSlot(
+        profileId: data.profile.id,
+        updatedSlot: updatedSlot,
+      );
+      _replaceTeamSlot(data, updatedSlot);
+      _battleFormBySlot.remove(slot.slotIndex);
+      await _saveSession(data);
+      if (!mounted) return;
+      setState(() {
+        _message = context.uiText(
+          '${_displayName(updatedSlot, basePokemon)} assume la ${BattleFormChangeService.formLabel(basePokemon, selected)}.',
+          '${_displayName(updatedSlot, basePokemon)} changes to ${BattleFormChangeService.formLabel(basePokemon, selected)}.',
+        );
+      });
+      return;
+    }
 
     setState(() {
       _battleFormBySlot[slot.slotIndex] = selected;
-      _message =
-          '${_displayName(slot, basePokemon)} assume la ${BattleFormChangeService.formLabel(basePokemon, selected)}.';
+      _message = context.uiText(
+        '${_displayName(slot, basePokemon)} assume la ${BattleFormChangeService.formLabel(basePokemon, selected)}.',
+        '${_displayName(slot, basePokemon)} changes to ${BattleFormChangeService.formLabel(basePokemon, selected)}.',
+      );
     });
     await _saveSession(data);
   }
@@ -517,10 +1024,8 @@ class _BattleScreenState extends State<BattleScreen> {
   ) {
     final result = <MoveData>[];
     for (final reference in _movesForSlot(slot, pokemon)) {
-      final move = data.moves[MoveRepository.contextualKey(
-        slot.pokemonId!,
-        reference,
-      )];
+      final move =
+          data.moves[MoveRepository.contextualKey(slot.pokemonId!, reference)];
       if (move != null) result.add(_contextualMove(move, slot));
     }
     return result;
@@ -594,7 +1099,12 @@ class _BattleScreenState extends State<BattleScreen> {
       return;
     }
     if (_currentHpFor(slot, pokemon) <= 0) {
-      setState(() => _message = 'Un Pokémon esausto non può megaevolversi.');
+      setState(
+        () => _message = context.uiText(
+          'Un Pokémon esausto non può megaevolversi.',
+          'A fainted Pokémon cannot Mega Evolve.',
+        ),
+      );
       return;
     }
 
@@ -612,7 +1122,10 @@ class _BattleScreenState extends State<BattleScreen> {
         useSafeArea: true,
         showDragHandle: true,
         builder: (_) => _TransformArtPickerSheet(
-          title: 'Scegli la Mega Evoluzione',
+          title: context.uiText(
+            'Scegli la Mega Evoluzione',
+            'Choose Mega Evolution',
+          ),
           pokemonName: pokemon.name,
           options: options,
           isShiny: slot.isShiny,
@@ -627,8 +1140,10 @@ class _BattleScreenState extends State<BattleScreen> {
     );
     setState(() {
       _transformationBySlot[slot.slotIndex] = state;
-      _message =
-          '${_displayName(slot, pokemon)} attiva ${selected?.label ?? 'Mega Evoluzione'}.';
+      _message = context.uiText(
+        '${_displayName(slot, pokemon)} attiva ${selected?.label ?? 'Mega Evoluzione'}.',
+        '${_displayName(slot, pokemon)} activates ${selected?.label ?? 'Mega Evolution'}.',
+      );
     });
     await _recordTransformationUse(data, slot, state.kind);
     await _saveSession(data);
@@ -651,7 +1166,12 @@ class _BattleScreenState extends State<BattleScreen> {
     }
     final currentHp = _currentHpFor(slot, pokemon);
     if (currentHp <= 0) {
-      setState(() => _message = 'Un Pokémon esausto non può Dynamaxizzarsi.');
+      setState(
+        () => _message = context.uiText(
+          'Un Pokémon esausto non può Dynamaxizzarsi.',
+          'A fainted Pokémon cannot Dynamax.',
+        ),
+      );
       return;
     }
 
@@ -684,8 +1204,10 @@ class _BattleScreenState extends State<BattleScreen> {
     );
     setState(() {
       _transformationBySlot[slot.slotIndex] = state;
-      _message =
-          '${_displayName(slot, pokemon)} attiva ${selectedArt?.label ?? 'Dynamax'} e ottiene $currentHp PF temporanei.';
+      _message = context.uiText(
+        '${_displayName(slot, pokemon)} attiva ${selectedArt?.label ?? 'Dynamax'} e ottiene $currentHp PF temporanei.',
+        '${_displayName(slot, pokemon)} activates ${selectedArt?.label ?? 'Dynamax'} and gains $currentHp temporary HP.',
+      );
     });
     await _recordTransformationUse(data, slot, kind);
     await _saveSession(data);
@@ -708,20 +1230,31 @@ class _BattleScreenState extends State<BattleScreen> {
     }
     if (_currentHpFor(slot, pokemon) <= 0) {
       setState(
-        () => _message = 'Un Pokémon esausto non può teracristallizzarsi.',
+        () => _message = context.uiText(
+          'Un Pokémon esausto non può teracristallizzarsi.',
+          'A fainted Pokémon cannot Terastallize.',
+        ),
       );
       return;
     }
 
-    final teraType = await showModalBottomSheet<String>(
-      context: context,
-      useSafeArea: true,
-      showDragHandle: true,
-      builder: (_) => _TeraTypePickerSheet(
-        pokemonName: pokemon.name,
-        initialType: pokemon.types.isEmpty ? null : pokemon.types.first,
-      ),
-    );
+    String? teraType;
+    if (pokemon.name == 'Terapagos') {
+      teraType = 'Stellar';
+    } else if (slot.pokemonId == ItemDrivenPokemonForm.ogerponId) {
+      teraType =
+          ItemDrivenPokemonForm.ogerponMaskType(slot.heldItem) ?? 'Grass';
+    } else {
+      teraType = await showModalBottomSheet<String>(
+        context: context,
+        useSafeArea: true,
+        showDragHandle: true,
+        builder: (_) => _TeraTypePickerSheet(
+          pokemonName: pokemon.name,
+          initialType: pokemon.types.isEmpty ? null : pokemon.types.first,
+        ),
+      );
+    }
     if (!mounted || teraType == null) return;
 
     final state = BattleTransformationState(
@@ -730,8 +1263,21 @@ class _BattleScreenState extends State<BattleScreen> {
     );
     setState(() {
       _transformationBySlot[slot.slotIndex] = state;
-      _message =
-          '${_displayName(slot, pokemon)} si teracristallizza nel tipo $teraType.';
+      if (pokemon.name == 'Terapagos') {
+        _battleFormBySlot[slot.slotIndex] = 'stellar';
+      }
+      _message = context.uiText(
+        pokemon.name == 'Terapagos'
+            ? '${_displayName(slot, pokemon)} si teracristallizza e assume la Forma Astrale di tipo Stellar.'
+            : slot.pokemonId == ItemDrivenPokemonForm.ogerponId
+            ? '${_displayName(slot, pokemon)} si teracristallizza nel tipo $teraType imposto dalla maschera.'
+            : '${_displayName(slot, pokemon)} si teracristallizza nel tipo $teraType.',
+        pokemon.name == 'Terapagos'
+            ? '${_displayName(slot, pokemon)} Terastallizes and assumes Stellar Form with the Stellar type.'
+            : slot.pokemonId == ItemDrivenPokemonForm.ogerponId
+            ? '${_displayName(slot, pokemon)} Terastallizes into the $teraType type imposed by its mask.'
+            : '${_displayName(slot, pokemon)} Terastallizes into the $teraType type.',
+      );
     });
     await _recordTransformationUse(data, slot, state.kind);
     await _saveSession(data);
@@ -753,7 +1299,12 @@ class _BattleScreenState extends State<BattleScreen> {
       return;
     }
     if (_currentHpFor(slot, pokemon) <= 0) {
-      setState(() => _message = 'Un Pokémon esausto non può usare una Mossa Z.');
+      setState(
+        () => _message = context.uiText(
+          'Un Pokémon esausto non può usare una Mossa Z.',
+          'A fainted Pokémon cannot use a Z-Move.',
+        ),
+      );
       return;
     }
 
@@ -763,10 +1314,8 @@ class _BattleScreenState extends State<BattleScreen> {
     if (crystal == null) return;
     final choices = <_ZMoveChoice>[];
     for (final reference in _movesForSlot(slot, pokemon)) {
-      final rawMove = data.moves[MoveRepository.contextualKey(
-        slot.pokemonId!,
-        reference,
-      )];
+      final rawMove =
+          data.moves[MoveRepository.contextualKey(slot.pokemonId!, reference)];
       if (rawMove == null) continue;
       final move = _contextualMove(rawMove, slot);
       if (MoveData.referenceKey(move.type) !=
@@ -781,7 +1330,10 @@ class _BattleScreenState extends State<BattleScreen> {
     }
     if (choices.isEmpty) {
       setState(
-        () => _message = 'Nessuna Mossa Z compatibile ha PP disponibili.',
+        () => _message = context.uiText(
+          'Nessuna Mossa Z compatibile ha PP disponibili.',
+          'No compatible Z-Move has PP available.',
+        ),
       );
       return;
     }
@@ -809,13 +1361,14 @@ class _BattleScreenState extends State<BattleScreen> {
       _changePp(data, slot, selected.reference, selected.rawMove, -1);
     }
     setState(() {
-      _message =
-          'Mossa Z · ${selected.move.name}: ${BattleTransformationService.zMoveSummary(selected.move)}.';
+      _message = context.uiText(
+        'Mossa Z · ${selected.move.name}: ${BattleTransformationService.zMoveSummary(selected.move)}.',
+        'Z-Move · ${selected.move.name}: ${BattleTransformationService.zMoveSummary(selected.move)}.',
+      );
     });
     await _recordTransformationUse(data, slot, state.kind);
     await _saveSession(data);
   }
-
 
   Future<void> _openTransformationMenu({
     required _BattleData data,
@@ -902,10 +1455,6 @@ class _BattleScreenState extends State<BattleScreen> {
     return _modifier(profile.abilityScores['DEX'] ?? 10);
   }
 
-  int _rollTrainerInitiative(UserProfile profile) {
-    return _random.nextInt(20) + 1 + _trainerInitiativeBonus(profile);
-  }
-
   int _maxPpFor(MoveData? move) {
     if (move == null) return 0;
     final direct = int.tryParse(move.pp.trim());
@@ -942,6 +1491,7 @@ class _BattleScreenState extends State<BattleScreen> {
       slotPp[key] = (current + delta).clamp(0, maxPp).toInt();
       if (delta < 0) {
         _statusMoment = BattleStatusMoment.actionAttempt;
+        final messages = <String>[];
         if (BattleEnvironmentService.isEnvironmentMove(move)) {
           _environment = BattleEnvironmentService.applyMove(
             environment: _environment,
@@ -949,8 +1499,38 @@ class _BattleScreenState extends State<BattleScreen> {
             sourceLevel: _levelForSlot(slot),
             heldItemId: data.heldItemFor(slot)?.id,
           );
-          _message = BattleEnvironmentService.environmentMoveMessage(move);
+          final environmentMessage =
+              BattleEnvironmentService.environmentMoveMessage(move);
+          messages.add(environmentMessage);
+          _syncEnvironmentForms(data);
         }
+        if (move != null && slot.pokemonId != null) {
+          final basePokemon = data.pokemonById[slot.pokemonId!];
+          if (basePokemon != null) {
+            final nextForm = BattleFormChangeService.formAfterMove(
+              pokemon: basePokemon,
+              slot: slot,
+              currentFormName: _effectiveFormName(slot),
+              move: move,
+            );
+            if (nextForm != null) {
+              _battleFormBySlot[slot.slotIndex] = nextForm;
+              messages.add(
+                context.uiText(
+                  '${_displayName(slot, basePokemon)} assume la ${BattleFormChangeService.formLabel(basePokemon, nextForm)}.',
+                  '${_displayName(slot, basePokemon)} changes to ${BattleFormChangeService.formLabel(basePokemon, nextForm)}.',
+                ),
+              );
+            }
+            final cramorantCue = BattleFormChangeService.cramorantMoveCue(
+              basePokemon,
+              slot,
+              move,
+            );
+            if (cramorantCue != null) messages.add(cramorantCue);
+          }
+        }
+        _message = messages.isEmpty ? null : messages.join(' ');
       }
     });
     _scheduleSessionSave(data);
@@ -1008,12 +1588,12 @@ class _BattleScreenState extends State<BattleScreen> {
       }
       _message = enabled
           ? context.uiText(
-              '${rule.label} attivato: ${_temporaryHpBySlot[slot.slotIndex]} PF temporanei.',
-              '${rule.label} enabled: ${_temporaryHpBySlot[slot.slotIndex]} temporary HP.',
+              '${rule.localizedLabel} attivato: ${_temporaryHpBySlot[slot.slotIndex]} PF temporanei.',
+              '${rule.localizedLabel} enabled: ${_temporaryHpBySlot[slot.slotIndex]} temporary HP.',
             )
           : context.uiText(
-              '${rule.label} disattivato.',
-              '${rule.label} disabled.',
+              '${rule.localizedLabel} disattivato.',
+              '${rule.localizedLabel} disabled.',
             );
     });
     await _saveSession(data);
@@ -1028,15 +1608,46 @@ class _BattleScreenState extends State<BattleScreen> {
 
   Future<void> _changeHp(_BattleData data, TeamSlot slot, int delta) async {
     final pokemon = _pokemonForSlot(data, slot);
-    if (pokemon == null) return;
+    final basePokemon = slot.pokemonId == null
+        ? null
+        : data.pokemonById[slot.pokemonId!];
+    if (pokemon == null || basePokemon == null) return;
 
     final maxHp = _maxHpFor(pokemon, slot);
     var hpDelta = delta;
     var dynamaxAbsorbed = 0;
     var absorbed = 0;
+    final ruleMessages = <String>[];
+
+    if (delta < 0) {
+      final damageResult = BattleFormChangeService.onIncomingDamage(
+        pokemon: basePokemon,
+        slot: slot,
+        currentFormName: _effectiveFormName(slot),
+        damage: -delta,
+      );
+      hpDelta = -damageResult.damage;
+      if (damageResult.formName != null) {
+        _battleFormBySlot[slot.slotIndex] = damageResult.formName!;
+        if (basePokemon.name == 'Eiscue') {
+          _formRuleStateFor(
+            slot,
+          )[BattleFormChangeService.eiscueIceFaceBrokenKey] = 1;
+          unawaited(
+            _recordBattleFormUse(
+              data,
+              _shortRestFormToken(slot, basePokemon.name),
+            ),
+          );
+        }
+      }
+      if (damageResult.message != null) {
+        ruleMessages.add(damageResult.message!);
+      }
+    }
 
     final transformation = _transformationBySlot[slot.slotIndex];
-    if (delta < 0 && transformation?.isDynamaxLike == true) {
+    if (hpDelta < 0 && transformation?.isDynamaxLike == true) {
       final currentTemporaryHp = transformation!.dynamaxTemporaryHp;
       dynamaxAbsorbed = min(currentTemporaryHp, -hpDelta);
       if (dynamaxAbsorbed > 0) {
@@ -1064,9 +1675,14 @@ class _BattleScreenState extends State<BattleScreen> {
         hpDelta += absorbed;
         if (remainingTemporaryHp == 0) {
           _temporaryHpEnabledBySlot[slot.slotIndex] = false;
-          final basePokemon = data.pokemonById[slot.pokemonId!];
-          if (basePokemon?.name == 'Mimikyu') {
+          if (basePokemon.name == 'Mimikyu') {
             _battleFormBySlot[slot.slotIndex] = rule.brokenFormName ?? 'Busted';
+            unawaited(
+              _recordBattleFormUse(
+                data,
+                _shortRestFormToken(slot, basePokemon.name),
+              ),
+            );
           }
         }
       }
@@ -1078,7 +1694,15 @@ class _BattleScreenState extends State<BattleScreen> {
     if (updatedHp == 0) {
       _transformationBySlot.remove(slot.slotIndex);
     }
-    final updatedSlot = slot.copyWith(currentHp: updatedHp);
+    var updatedSlot = slot.copyWith(currentHp: updatedHp);
+    updatedSlot = _applyPostHpFormRules(
+      data,
+      slot,
+      updatedSlot,
+      basePokemon,
+      maxHp,
+      ruleMessages,
+    );
     await _teamRepository.updateSlot(
       profileId: data.profile.id,
       updatedSlot: updatedSlot,
@@ -1092,17 +1716,30 @@ class _BattleScreenState extends State<BattleScreen> {
           _transformationBySlot[slot.slotIndex]?.isDynamaxLike == true;
       messages.add(
         stillActive
-            ? '$dynamaxAbsorbed danni assorbiti dai PF Dynamax.'
-            : '$dynamaxAbsorbed danni assorbiti: Dynamax/Gigamax termina.',
+            ? context.uiText(
+                '$dynamaxAbsorbed danni assorbiti dai PF Dynamax.',
+                '$dynamaxAbsorbed damage absorbed by Dynamax HP.',
+              )
+            : context.uiText(
+                '$dynamaxAbsorbed danni assorbiti: Dynamax/Gigamax termina.',
+                '$dynamaxAbsorbed damage absorbed: Dynamax/Gigantamax ends.',
+              ),
       );
     }
     if (absorbed > 0) {
       messages.add(
         (_temporaryHpBySlot[slot.slotIndex] ?? 0) > 0
-            ? '$absorbed danni assorbiti dai PF temporanei.'
-            : '$absorbed danni assorbiti: ${rule?.label ?? 'la protezione'} si spezza.',
+            ? context.uiText(
+                '$absorbed danni assorbiti dai PF temporanei.',
+                '$absorbed damage absorbed by temporary HP.',
+              )
+            : context.uiText(
+                '$absorbed danni assorbiti: ${rule?.localizedLabel ?? 'la protezione'} si spezza.',
+                '$absorbed damage absorbed: ${rule?.localizedLabel ?? 'the protection'} breaks.',
+              ),
       );
     }
+    messages.addAll(ruleMessages);
     if (!mounted) return;
     setState(() {
       _message = messages.isEmpty ? null : messages.join(' ');
@@ -1111,7 +1748,10 @@ class _BattleScreenState extends State<BattleScreen> {
 
   Future<void> _editHp(_BattleData data, TeamSlot slot) async {
     final pokemon = _pokemonForSlot(data, slot);
-    if (pokemon == null) return;
+    final basePokemon = slot.pokemonId == null
+        ? null
+        : data.pokemonById[slot.pokemonId!];
+    if (pokemon == null || basePokemon == null) return;
 
     final input = await showDialog<String>(
       context: context,
@@ -1137,37 +1777,15 @@ class _BattleScreenState extends State<BattleScreen> {
     if (updatedHp == 0) {
       _transformationBySlot.remove(slot.slotIndex);
     }
-    final updatedSlot = slot.copyWith(currentHp: updatedHp);
-    await _teamRepository.updateSlot(
-      profileId: data.profile.id,
-      updatedSlot: updatedSlot,
-    );
-    _replaceTeamSlot(data, updatedSlot);
-    await _saveSession(data);
-    if (!mounted) return;
-    setState(() => _message = null);
-  }
-
-  Future<void> _healFull(_BattleData data, TeamSlot slot) async {
-    final pokemon = _pokemonForSlot(data, slot);
-    if (pokemon == null) return;
-
-    _volatileStatusesBySlot.remove(slot.slotIndex);
-    final rule = _temporaryHpRule(data, slot);
-    if (rule != null) {
-      _temporaryHpInitializedSlots.add(slot.slotIndex);
-      _temporaryHpEnabledBySlot[slot.slotIndex] = true;
-      _temporaryHpBySlot[slot.slotIndex] = rule.maximumForLevel(
-        _levelForSlot(slot),
-      );
-      final basePokemon = data.pokemonById[slot.pokemonId!];
-      if (basePokemon?.name == 'Mimikyu') {
-        _battleFormBySlot[slot.slotIndex] = 'Base';
-      }
-    }
-    final updatedSlot = slot.copyWith(
-      currentHp: _maxHpFor(pokemon, slot),
-      statusEffects: const [],
+    final messages = <String>[];
+    var updatedSlot = slot.copyWith(currentHp: updatedHp);
+    updatedSlot = _applyPostHpFormRules(
+      data,
+      slot,
+      updatedSlot,
+      basePokemon,
+      maxHp,
+      messages,
     );
     await _teamRepository.updateSlot(
       profileId: data.profile.id,
@@ -1176,17 +1794,15 @@ class _BattleScreenState extends State<BattleScreen> {
     _replaceTeamSlot(data, updatedSlot);
     await _saveSession(data);
     if (!mounted) return;
-    setState(() {
-      _message = context.uiText(
-        '${_displayName(updatedSlot, pokemon)} è pronto a combattere.',
-        '${_displayName(updatedSlot, pokemon)} is ready to battle.',
-      );
-    });
+    setState(() => _message = messages.isEmpty ? null : messages.join(' '));
   }
 
   Future<void> _useHeldBerry(_BattleData data, TeamSlot slot) async {
     final pokemon = _pokemonForSlot(data, slot);
     final heldItem = data.heldItemFor(slot);
+    final basePokemon = slot.pokemonId == null
+        ? null
+        : data.pokemonById[slot.pokemonId!];
     if (pokemon == null || heldItem == null || heldItem.type != 'berry') return;
 
     final result = _applyMedicine(
@@ -1195,7 +1811,19 @@ class _BattleScreenState extends State<BattleScreen> {
       pokemon: pokemon,
       volatileStatuses: _volatileStatusesFor(slot),
     );
-    final updatedSlot = (result?.updatedSlot ?? slot).copyWith(heldItem: null);
+    var updatedSlot = (result?.updatedSlot ?? slot).copyWith(heldItem: null);
+    final messages = <String>[];
+    if (result?.message != null) messages.add(result!.message);
+    if (basePokemon != null) {
+      updatedSlot = _applyPostHpFormRules(
+        data,
+        slot,
+        updatedSlot,
+        basePokemon,
+        _maxHpFor(pokemon, slot),
+        messages,
+      );
+    }
 
     await _teamRepository.updateSlot(
       profileId: data.profile.id,
@@ -1208,12 +1836,12 @@ class _BattleScreenState extends State<BattleScreen> {
     await _saveSession(data);
     if (!mounted) return;
     setState(() {
-      _message =
-          result?.message ??
-          context.uiText(
-            '${heldItem.name} è stato consumato. Applica manualmente il suo effetto se necessario.',
-            '${heldItem.name} was consumed. Apply its effect manually if needed.',
-          );
+      _message = messages.isNotEmpty
+          ? messages.join(' ')
+          : context.uiText(
+              '${heldItem.name} è stato consumato. Applica manualmente il suo effetto se necessario.',
+              '${heldItem.name} was consumed. Apply its effect manually if needed.',
+            );
     });
   }
 
@@ -1319,15 +1947,30 @@ class _BattleScreenState extends State<BattleScreen> {
     }
 
     if (result != null) {
+      final basePokemon = slot.pokemonId == null
+          ? null
+          : data.pokemonById[slot.pokemonId!];
+      final messages = <String>[result.message];
+      var updatedSlot = result.updatedSlot;
+      if (basePokemon != null) {
+        updatedSlot = _applyPostHpFormRules(
+          data,
+          slot,
+          updatedSlot,
+          basePokemon,
+          _maxHpFor(pokemon, slot),
+          messages,
+        );
+      }
       await _teamRepository.updateSlot(
         profileId: data.profile.id,
-        updatedSlot: result.updatedSlot,
+        updatedSlot: updatedSlot,
       );
-      _replaceTeamSlot(data, result.updatedSlot);
+      _replaceTeamSlot(data, updatedSlot);
       _volatileStatusesBySlot[slot.slotIndex] = result.volatileStatuses;
       await _saveSession(data);
       if (!mounted) return;
-      setState(() => _message = result.message);
+      setState(() => _message = messages.join(' '));
       return;
     }
 
@@ -1600,43 +2243,6 @@ class _BattleScreenState extends State<BattleScreen> {
     );
   }
 
-  void _ensureInitiative(_BattleData data, TeamSlot slot, Pokemon pokemon) {
-    final label = '${data.profile.name} + ${_displayName(slot, pokemon)}';
-    final index = _initiativeEntries.indexWhere(
-      (entry) => entry.isTrainerGroup,
-    );
-
-    if (index == -1) {
-      _initiativeEntries.add(
-        BattleInitiativeEntry(
-          id: 'trainer',
-          name: label,
-          initiative: _rollTrainerInitiative(data.profile),
-          isTrainerGroup: true,
-        ),
-      );
-      _sortInitiative();
-    } else if (_initiativeEntries[index].name != label) {
-      _initiativeEntries[index] = _initiativeEntries[index].copyWith(
-        name: label,
-      );
-    }
-  }
-
-  void _sortInitiative() {
-    _initiativeEntries.sort((a, b) {
-      final initiativeCompare = b.initiative.compareTo(a.initiative);
-      if (initiativeCompare != 0) return initiativeCompare;
-      if (a.isTrainerGroup != b.isTrainerGroup) {
-        return a.isTrainerGroup ? -1 : 1;
-      }
-      return a.name.compareTo(b.name);
-    });
-    _turnIndex = _initiativeEntries.isEmpty
-        ? 0
-        : _turnIndex.clamp(0, _initiativeEntries.length - 1).toInt();
-  }
-
   Future<void> _editEnvironment(_BattleData data) async {
     final result = await showBattleEnvironmentDialog(
       context: context,
@@ -1645,140 +2251,63 @@ class _BattleScreenState extends State<BattleScreen> {
     if (!mounted || result == null) return;
     setState(() {
       _environment = result;
+      _syncEnvironmentForms(data);
       _message = context.uiText(
-        'Meteo e terreno aggiornati.',
-        'Weather and terrain updated.',
+        'Meteo e terreno aggiornati. Le forme legate al meteo sono state sincronizzate.',
+        'Weather and terrain updated. Weather-driven forms were synchronized.',
       );
     });
     _scheduleSessionSave(data);
   }
 
-  void _rollEnvironmentWeather(_BattleData data) {
-    final roll = _random.nextInt(100) + 1;
-    final weather = BattleEnvironmentService.rollWeather(
-      _environment.season,
-      roll,
-    );
-    setState(() {
-      _environment = _environment.copyWith(
-        weather: weather,
-        weatherRoundsRemaining: 0,
-        weatherSourceLevel: 0,
-      );
-      _message = context.uiText(
-        'Meteo d100: $roll - ${weather.label}.',
-        'Weather d100: $roll - ${weather.label}.',
-      );
-    });
-    _scheduleSessionSave(data);
-  }
-
-  Future<void> _applyEnvironmentWeatherDamage(
-    _BattleData data,
-    TeamSlot slot,
-  ) async {
-    final pokemon = _pokemonForSlot(data, slot);
-    if (pokemon == null) return;
-    final damage = BattleEnvironmentService.startTurnWeatherDamage(
-      pokemon: pokemon,
-      slot: slot,
-      environment: _environment,
-    );
-    if (damage == null || damage <= 0) return;
-    final maxHp = _maxHpFor(pokemon, slot);
-    final currentHp = _currentHpFor(slot, pokemon);
-    final updatedHp = (currentHp - damage).clamp(0, maxHp).toInt();
-    final updatedSlot = slot.copyWith(currentHp: updatedHp);
-    await _teamRepository.updateSlot(
-      profileId: data.profile.id,
-      updatedSlot: updatedSlot,
-    );
-    _replaceTeamSlot(data, updatedSlot);
-    await _saveSession(data);
-    if (!mounted) return;
-    setState(() {
-      _message = context.uiText(
-        '${_displayName(updatedSlot, pokemon)} subisce $damage danni da ${_environment.weather.label}.',
-        '${_displayName(updatedSlot, pokemon)} takes $damage damage from ${_environment.weather.label}.',
-      );
-    });
-  }
-
-  void _rerollTrainerInitiative(_BattleData data) {
-    setState(() {
-      final index = _initiativeEntries.indexWhere(
-        (entry) => entry.isTrainerGroup,
-      );
-      final roll = _rollTrainerInitiative(data.profile);
-      if (index == -1) {
-        _initiativeEntries.add(
-          BattleInitiativeEntry(
-            id: 'trainer',
-            name: '${data.profile.name} + Pokémon',
-            initiative: roll,
-            isTrainerGroup: true,
-          ),
-        );
-      } else {
-        _initiativeEntries[index] = _initiativeEntries[index].copyWith(
-          initiative: roll,
-        );
-      }
-      _turnIndex = 0;
-      _sortInitiative();
-      _message = context.uiText(
-        'Iniziativa allenatore/Pokémon: $roll.',
-        'Trainer/Pokémon initiative: $roll.',
-      );
-    });
-    _scheduleSessionSave(data);
-  }
-
-  Future<void> _addInitiativeEntry(_BattleData data) async {
-    final input = await showDialog<_InitiativeEntryInput>(
-      context: context,
-      builder: (_) => const _InitiativeEntryDialog(),
-    );
-    if (!mounted || input == null) return;
-
-    setState(() {
-      _initiativeEntries.add(
-        BattleInitiativeEntry(
-          id: DateTime.now().microsecondsSinceEpoch.toString(),
-          name: input.name,
-          initiative: input.initiative,
-          isTrainerGroup: false,
-        ),
-      );
-      _sortInitiative();
-    });
-    _scheduleSessionSave(data);
-  }
-
-  void _removeInitiativeEntry(_BattleData data, BattleInitiativeEntry entry) {
-    setState(() {
-      _initiativeEntries.removeWhere((candidate) => candidate.id == entry.id);
-      _sortInitiative();
-    });
-    _scheduleSessionSave(data);
-  }
-
-  void _nextTurn(_BattleData data) {
+  void _nextPlayerRound(_BattleData data) {
+    final messages = <String>[];
     setState(() {
       _statusMoment = BattleStatusMoment.turnStart;
-      if (_initiativeEntries.isEmpty) return;
-      if (_turnIndex + 1 >= _initiativeEntries.length) {
-        _turnIndex = 0;
-        _round += 1;
-        _environment = _environment.advanceRound();
-        _message = context.uiText(
-          'Round $_round iniziato.',
-          'Round $_round started.',
-        );
-      } else {
-        _turnIndex += 1;
-        _message = null;
+      _round += 1;
+      _environment = _environment.advanceRound();
+      _syncEnvironmentForms(data);
+      messages.add(
+        context.uiText('Round $_round iniziato.', 'Round $_round started.'),
+      );
+      final activeSlot = _activeSlotFor(data);
+      if (activeSlot != null && activeSlot.pokemonId != null) {
+        final basePokemon = data.pokemonById[activeSlot.pokemonId!];
+        if (basePokemon != null) {
+          final nextForm = BattleFormChangeService.formAtTurnStart(
+            pokemon: basePokemon,
+            slot: activeSlot,
+            currentFormName: _effectiveFormName(activeSlot),
+            environment: _environment,
+          );
+          if (nextForm != null) {
+            _battleFormBySlot[activeSlot.slotIndex] = nextForm;
+            if (basePokemon.name == 'Eiscue' &&
+                BattleFormChangeService.canonicalFormKey(
+                      basePokemon,
+                      nextForm,
+                    ) ==
+                    'ice-face') {
+              _formRuleStateFor(
+                activeSlot,
+              ).remove(BattleFormChangeService.eiscueIceFaceBrokenKey);
+              unawaited(
+                _clearBattleFormUse(
+                  data,
+                  _shortRestFormToken(activeSlot, basePokemon.name),
+                ),
+              );
+            }
+            messages.add(
+              context.uiText(
+                '${_displayName(activeSlot, basePokemon)} assume la ${BattleFormChangeService.formLabel(basePokemon, nextForm)}.',
+                '${_displayName(activeSlot, basePokemon)} changes to ${BattleFormChangeService.formLabel(basePokemon, nextForm)}.',
+              ),
+            );
+          }
+        }
       }
+      _message = messages.join(' ');
     });
     _scheduleSessionSave(data);
   }
@@ -1793,8 +2322,8 @@ class _BattleScreenState extends State<BattleScreen> {
         ),
         content: Text(
           context.uiText(
-            'Round, iniziativa, PP, PF temporanei, forme di battaglia, trasformazioni attive e status volatili verranno rimossi. Gli utilizzi di Mega/Z/Dynamax/Tera resteranno consumati fino al prossimo riposo lungo.',
-            'Rounds, initiative, PP, temporary HP, battle forms, active transformations and volatile conditions will be cleared. Mega/Z/Dynamax/Tera uses remain spent until the next long rest.',
+            'Round personale, PP, PF temporanei, forme di battaglia, trasformazioni attive e status volatili verranno rimossi. Gli utilizzi con limite a riposo lungo/giornaliero e le forme che richiedono un riposo breve per ripristinarsi restano registrati.',
+            'Personal round, PP, temporary HP, battle forms, active transformations and volatile conditions will be cleared. Long-rest/daily uses and forms that require a short rest to recover remain recorded.',
           ),
         ),
         actions: [
@@ -1815,11 +2344,11 @@ class _BattleScreenState extends State<BattleScreen> {
     _remainingPpBySlot.clear();
     _volatileStatusesBySlot.clear();
     _battleFormBySlot.clear();
+    _formRuleStateBySlot.clear();
     _transformationBySlot.clear();
     _temporaryHpBySlot.clear();
     _temporaryHpEnabledBySlot.clear();
     _temporaryHpInitializedSlots.clear();
-    _initiativeEntries.clear();
     if (!mounted) return;
     Navigator.of(context).pop();
   }
@@ -1966,8 +2495,8 @@ class _BattleScreenState extends State<BattleScreen> {
       formName: formName,
       gender: slot.gender,
     );
-    final originalStab = transformation?.kind ==
-            BattleTransformationKind.terastal
+    final originalStab =
+        transformation?.kind == BattleTransformationKind.terastal
         ? TrainerPathPassiveService.stabEffect(
             profile: _activeProfile,
             pokemon: originalPokemon,
@@ -2011,7 +2540,8 @@ class _BattleScreenState extends State<BattleScreen> {
     if (transformation?.kind == BattleTransformationKind.terastal &&
         transformation?.teraType != null &&
         originalPokemon.types.any(
-          (type) => MoveData.referenceKey(type) ==
+          (type) =>
+              MoveData.referenceKey(type) ==
               MoveData.referenceKey(transformation!.teraType!),
         ) &&
         MoveData.referenceKey(effectiveMoveType) ==
@@ -2110,9 +2640,18 @@ class _BattleScreenState extends State<BattleScreen> {
                           data.pokemonById[activeSlot.pokemonId!]!;
                       final effectiveFormName = _effectiveFormName(activeSlot);
                       final pokemon = _pokemonForSlot(data, activeSlot)!;
-                      final canChangeForm = BattleFormChangeService.supports(
+                      final hasBattleForm = BattleFormChangeService.supports(
                         basePokemon,
                       );
+                      final canManageBattleForm =
+                          BattleFormChangeService.hasManualControls(
+                            basePokemon,
+                          ) ||
+                          const {
+                            'Minior',
+                            'Mimikyu',
+                            'Eiscue',
+                          }.contains(basePokemon.name);
                       final moveReferences = _movesForSlot(activeSlot, pokemon);
                       final noPpLeft = _hasNoPpLeft(
                         activeSlot,
@@ -2209,104 +2748,55 @@ class _BattleScreenState extends State<BattleScreen> {
                           children: [
                             KeyedSubtree(
                               key: _battleHeaderKey,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  _BattleHeader(
-                                    round: _round,
-                                    profile: data.profile,
-                                    trainerInitiativeBonus:
-                                        _trainerInitiativeBonus(data.profile),
-                                    onEnd: () => _endBattle(data),
-                                  ),
-                                  const SizedBox(height: 12),
-                                  _PartyBar(
-                                    slots: data.occupiedSlots,
-                                    activeSlot: activeSlot,
-                                    pokemonForSlot: (slot) =>
-                                        _pokemonForSlot(data, slot),
-                                    imagePokemonForSlot: (slot) =>
-                                        data.pokemonById[slot.pokemonId],
-                                    formNameForSlot: _effectiveFormName,
-                                    transformationForSlot: (slot) =>
-                                        _transformationBySlot[slot.slotIndex],
-                                    onSelected: (slotIndex) {
-                                      if (slotIndex != activeSlot.slotIndex &&
-                                          BattleTransformationService
-                                              .isDynamaxLike(
-                                                _transformationBySlot[
-                                                    activeSlot.slotIndex],
-                                              )) {
-                                        setState(() {
-                                          _message = context.uiText(
-                                            'Un Pokémon Dynamax/Gigamax non può essere richiamato o sostituito.',
-                                            'A Dynamax/Gigamax Pokémon cannot be recalled or switched.',
-                                          );
-                                        });
-                                        return;
-                                      }
-                                      setState(() {
-                                        _activeSlotIndex = slotIndex;
-                                        _statusMoment =
-                                            BattleStatusMoment.turnStart;
-                                        _message = null;
-                                      });
-                                      _scheduleSessionSave(data);
-                                    },
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            KeyedSubtree(
-                              key: _initiativeKey,
-                              child: _InitiativeTracker(
+                              child: _PartyBar(
+                                headerKey: _initiativeKey,
                                 round: _round,
-                                entries: _initiativeEntries,
-                                currentTurnIndex: _turnIndex,
                                 trainerInitiativeBonus: _trainerInitiativeBonus(
                                   data.profile,
                                 ),
-                                onRollTrainer: () =>
-                                    _rerollTrainerInitiative(data),
-                                onAddEntry: () => _addInitiativeEntry(data),
-                                onRemoveEntry: (entry) =>
-                                    _removeInitiativeEntry(data, entry),
-                                onNextTurn: () => _nextTurn(data),
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            KeyedSubtree(
-                              key: _environmentKey,
-                              child: BattleEnvironmentCard(
-                                environment: _environment,
-                                pokemon: pokemon,
-                                slot: activeSlot,
-                                level: _levelForSlot(activeSlot),
-                                proficiency: _proficiency(
-                                  _levelForSlot(activeSlot),
-                                ),
-                                baseSpeed:
-                                    TrainerPathPassiveService.effectiveSpeed(
-                                      profile: data.profile,
-                                      pokemon: pokemon,
-                                      slot: activeSlot,
-                                    ),
-                                onEdit: () => _editEnvironment(data),
-                                onRollWeather: () =>
-                                    _rollEnvironmentWeather(data),
-                                onApplyWeatherDamage:
-                                    BattleEnvironmentService.startTurnWeatherDamage(
-                                          pokemon: pokemon,
-                                          slot: activeSlot,
-                                          environment: _environment,
-                                        ) ==
-                                        null
-                                    ? null
-                                    : () => _applyEnvironmentWeatherDamage(
-                                        data,
-                                        activeSlot,
-                                      ),
+                                onNextRound: () => _nextPlayerRound(data),
+                                onEnd: () => _endBattle(data),
+                                slots: data.occupiedSlots,
+                                activeSlot: activeSlot,
+                                pokemonForSlot: (slot) =>
+                                    _pokemonForSlot(data, slot),
+                                imagePokemonForSlot: (slot) =>
+                                    data.pokemonById[slot.pokemonId],
+                                formNameForSlot: _effectiveFormName,
+                                transformationForSlot: (slot) =>
+                                    _transformationBySlot[slot.slotIndex],
+                                levelForSlot: _levelForSlot,
+                                maxHpForSlot: (slot) {
+                                  final slotPokemon = _pokemonForSlot(
+                                    data,
+                                    slot,
+                                  );
+                                  return slotPokemon == null
+                                      ? 0
+                                      : _maxHpFor(slotPokemon, slot);
+                                },
+                                onSelected: (slotIndex) {
+                                  if (slotIndex != activeSlot.slotIndex &&
+                                      BattleTransformationService.isDynamaxLike(
+                                        _transformationBySlot[activeSlot
+                                            .slotIndex],
+                                      )) {
+                                    setState(() {
+                                      _message = context.uiText(
+                                        'Un Pokémon Dynamax/Gigamax non può essere richiamato o sostituito.',
+                                        'A Dynamax/Gigamax Pokémon cannot be recalled or switched.',
+                                      );
+                                    });
+                                    return;
+                                  }
+                                  setState(() {
+                                    _activeSlotIndex = slotIndex;
+                                    _statusMoment =
+                                        BattleStatusMoment.turnStart;
+                                    _message = null;
+                                  });
+                                  _scheduleSessionSave(data);
+                                },
                               ),
                             ),
                             const SizedBox(height: 12),
@@ -2316,104 +2806,89 @@ class _BattleScreenState extends State<BattleScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
                                   _ActivePokemonCard(
-                                pokemon: pokemon,
-                                imagePokemon: basePokemon,
-                                slot: activeSlot,
-                                formName: effectiveFormName,
-                                transformation:
-                                    _transformationBySlot[activeSlot.slotIndex],
-                                formLabel: canChangeForm
-                                    ? BattleFormChangeService.formLabel(
-                                        basePokemon,
-                                        effectiveFormName,
-                                      )
-                                    : null,
-                                formNote: canChangeForm
-                                    ? BattleFormChangeService.effectNote(
-                                        basePokemon,
-                                        effectiveFormName,
-                                      )
-                                    : null,
-                                heldItem: heldItem,
-                                displayName: _displayName(activeSlot, pokemon),
-                                level: _levelForSlot(activeSlot),
-                                baseArmorClass: formArmorClass,
-                                effectiveArmorClass: effectiveArmorClass,
-                                currentHp: _currentHpFor(activeSlot, pokemon),
-                                maxHp: _maxHpFor(pokemon, activeSlot),
-                                temporaryHp: temporaryHp,
-                                temporaryHpRule: temporaryHpRule,
-                                temporaryHpEnabled: temporaryHpEnabled,
-                                nonVolatileStatus: _nonVolatileStatusFor(
-                                  activeSlot,
-                                ),
-                                volatileStatuses: _volatileStatusesFor(
-                                  activeSlot,
-                                ),
-                                message: _message,
-                                onTransformations: () {
-                                  _openTransformationMenu(
-                                    data: data,
-                                    slot: activeSlot,
                                     pokemon: pokemon,
-                                    basePokemon: basePokemon,
-                                    effectiveFormName: effectiveFormName,
-                                    currentState: transformationState,
-                                    megaEligibility: megaEligibility,
-                                    zMoveEligibility: zMoveEligibility,
-                                    dynamaxEligibility: dynamaxEligibility,
-                                    terastalEligibility: terastalEligibility,
-                                  );
-                                },
-                                onEditHp: () => _editHp(data, activeSlot),
-                                onHeal: () => _healFull(data, activeSlot),
-                                onStatus: () =>
-                                    _openStatusPicker(data, activeSlot),
-                                onUseHeldBerry: heldItem?.type == 'berry'
-                                    ? () => _useHeldBerry(data, activeSlot)
-                                    : null,
-                                onOpenBag: () =>
-                                    _openQuickBag(data, activeSlot),
-                                onToggleTemporaryHp: temporaryHpRule == null
-                                    ? null
-                                    : (enabled) => _toggleTemporaryHpRule(
-                                        data,
-                                        activeSlot,
-                                        enabled,
-                                      ),
-                                onChangeForm: canChangeForm
-                                    ? () => _openBattleFormPicker(
-                                        data,
-                                        activeSlot,
-                                      )
-                                    : null,
-                              ),
+                                    imagePokemon: basePokemon,
+                                    slot: activeSlot,
+                                    formName: effectiveFormName,
+                                    transformation:
+                                        _transformationBySlot[activeSlot
+                                            .slotIndex],
+                                    formLabel: hasBattleForm
+                                        ? BattleFormChangeService.formLabel(
+                                            basePokemon,
+                                            effectiveFormName,
+                                          )
+                                        : null,
+                                    formNote: hasBattleForm
+                                        ? BattleFormChangeService.effectNote(
+                                            basePokemon,
+                                            effectiveFormName,
+                                          )
+                                        : null,
+                                    heldItem: heldItem,
+                                    displayName: _displayName(
+                                      activeSlot,
+                                      pokemon,
+                                    ),
+                                    level: _levelForSlot(activeSlot),
+                                    baseArmorClass: formArmorClass,
+                                    effectiveArmorClass: effectiveArmorClass,
+                                    currentHp: _currentHpFor(
+                                      activeSlot,
+                                      pokemon,
+                                    ),
+                                    maxHp: _maxHpFor(pokemon, activeSlot),
+                                    temporaryHp: temporaryHp,
+                                    temporaryHpRule: temporaryHpRule,
+                                    temporaryHpEnabled: temporaryHpEnabled,
+                                    nonVolatileStatus: _nonVolatileStatusFor(
+                                      activeSlot,
+                                    ),
+                                    volatileStatuses: _volatileStatusesFor(
+                                      activeSlot,
+                                    ),
+                                    message: _message,
+                                    onTransformations: () {
+                                      _openTransformationMenu(
+                                        data: data,
+                                        slot: activeSlot,
+                                        pokemon: pokemon,
+                                        basePokemon: basePokemon,
+                                        effectiveFormName: effectiveFormName,
+                                        currentState: transformationState,
+                                        megaEligibility: megaEligibility,
+                                        zMoveEligibility: zMoveEligibility,
+                                        dynamaxEligibility: dynamaxEligibility,
+                                        terastalEligibility:
+                                            terastalEligibility,
+                                      );
+                                    },
+                                    onEditHp: () => _editHp(data, activeSlot),
+                                    onStatus: () =>
+                                        _openStatusPicker(data, activeSlot),
+                                    onUseHeldBerry: heldItem?.type == 'berry'
+                                        ? () => _useHeldBerry(data, activeSlot)
+                                        : null,
+                                    onOpenBag: () =>
+                                        _openQuickBag(data, activeSlot),
+                                    onToggleTemporaryHp:
+                                        temporaryHpRule == null ||
+                                            basePokemon.name == 'Mimikyu'
+                                        ? null
+                                        : (enabled) => _toggleTemporaryHpRule(
+                                            data,
+                                            activeSlot,
+                                            enabled,
+                                          ),
+                                    onChangeForm: canManageBattleForm
+                                        ? () => _openBattleFormPicker(
+                                            data,
+                                            activeSlot,
+                                          )
+                                        : null,
+                                  ),
                                 ],
                               ),
-                            ),
-                            if (passiveNotes.isNotEmpty) ...[
-                              const SizedBox(height: 12),
-                              TrainerPathPassiveCard(
-                                trainerPath: data.profile.trainerPath,
-                                notes: passiveNotes,
-                              ),
-                            ],
-                            const SizedBox(height: 12),
-                            BattleStatusAssistanceCard(
-                              key: ValueKey(
-                                'player-status-${activeSlot.slotIndex}',
-                              ),
-                              pokemonName: _displayName(activeSlot, pokemon),
-                              nonVolatileStatus: _nonVolatileStatusFor(
-                                activeSlot,
-                              ),
-                              volatileStatuses: _volatileStatusesFor(
-                                activeSlot,
-                              ),
-                              selectedMoment: _statusMoment,
-                              onMomentChanged: (moment) {
-                                setState(() => _statusMoment = moment);
-                              },
                             ),
                             const SizedBox(height: 12),
                             PokemonBattleAttributesCard(attributes: attributes),
@@ -2485,6 +2960,54 @@ class _BattleScreenState extends State<BattleScreen> {
                                     ),
                                 ],
                               ),
+                            ),
+                            const SizedBox(height: 12),
+                            KeyedSubtree(
+                              key: _environmentKey,
+                              child: BattleEnvironmentCard(
+                                environment: _environment,
+                                pokemon: pokemon,
+                                slot: activeSlot,
+                                level: _levelForSlot(activeSlot),
+                                proficiency: _proficiency(
+                                  _levelForSlot(activeSlot),
+                                ),
+                                baseSpeed:
+                                    TrainerPathPassiveService.effectiveSpeed(
+                                      profile: data.profile,
+                                      pokemon: pokemon,
+                                      slot: activeSlot,
+                                    ) +
+                                    BattleFormChangeService.speedBonus(
+                                      basePokemon,
+                                      effectiveFormName,
+                                    ),
+                                onEdit: () => _editEnvironment(data),
+                              ),
+                            ),
+                            if (passiveNotes.isNotEmpty) ...[
+                              const SizedBox(height: 12),
+                              TrainerPathPassiveCard(
+                                trainerPath: data.profile.trainerPath,
+                                notes: passiveNotes,
+                              ),
+                            ],
+                            const SizedBox(height: 12),
+                            BattleStatusAssistanceCard(
+                              key: ValueKey(
+                                'player-status-${activeSlot.slotIndex}',
+                              ),
+                              pokemonName: _displayName(activeSlot, pokemon),
+                              nonVolatileStatus: _nonVolatileStatusFor(
+                                activeSlot,
+                              ),
+                              volatileStatuses: _volatileStatusesFor(
+                                activeSlot,
+                              ),
+                              selectedMoment: _statusMoment,
+                              onMomentChanged: (moment) {
+                                setState(() => _statusMoment = moment);
+                              },
                             ),
                           ],
                         ),
@@ -2567,13 +3090,6 @@ class _MedicineUseResult {
   final TeamSlot updatedSlot;
   final Set<String> volatileStatuses;
   final String message;
-}
-
-class _InitiativeEntryInput {
-  const _InitiativeEntryInput({required this.name, required this.initiative});
-
-  final String name;
-  final int initiative;
 }
 
 class _StatusPickerResult {
@@ -2752,66 +3268,190 @@ Color _hpProgressColor(double value) {
 
 class _BattleHeader extends StatelessWidget {
   const _BattleHeader({
+    super.key,
     required this.round,
-    required this.profile,
     required this.trainerInitiativeBonus,
+    required this.onNextRound,
     required this.onEnd,
   });
 
   final int round;
-  final UserProfile profile;
   final int trainerInitiativeBonus;
+  final VoidCallback onNextRound;
   final VoidCallback onEnd;
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        child: Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Round $round',
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                  Text(
-                    context.uiText(
-                      '${profile.name} · INIZ. ${trainerInitiativeBonus >= 0 ? '+' : ''}$trainerInitiativeBonus',
-                      '${profile.name} · INIT. ${trainerInitiativeBonus >= 0 ? '+' : ''}$trainerInitiativeBonus',
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ),
-            ),
-            IconButton(
-              tooltip: context.uiText('Termina battaglia', 'End battle'),
-              onPressed: onEnd,
-              icon: const Icon(Icons.stop_circle_outlined),
-            ),
-          ],
-        ),
+    final initiative =
+        '${trainerInitiativeBonus >= 0 ? '+' : ''}$trainerInitiativeBonus';
+    final info = Text(
+      context.uiText(
+        'ROUND $round · INIZ. $initiative',
+        'ROUND $round · INIT. $initiative',
       ),
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      style: Theme.of(
+        context,
+      ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
+    );
+
+    final endButton = IconButton(
+      tooltip: context.uiText('Termina battaglia', 'End battle'),
+      visualDensity: VisualDensity.compact,
+      onPressed: onEnd,
+      icon: const Icon(Icons.stop_circle_outlined),
+    );
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final veryCompact = constraints.maxWidth < 390;
+        final nextButton = Tooltip(
+          message: context.uiText('Prossimo mio turno', 'Next my turn'),
+          child: FilledButton.icon(
+            onPressed: onNextRound,
+            style: FilledButton.styleFrom(
+              visualDensity: VisualDensity.compact,
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+            ),
+            icon: const Icon(Icons.navigate_next, size: 18),
+            label: Text(
+              veryCompact
+                  ? context.uiText('TURNO', 'TURN')
+                  : context.uiText('PROSSIMO TURNO', 'NEXT TURN'),
+              maxLines: 1,
+            ),
+          ),
+        );
+
+        return Row(
+          children: [
+            Expanded(child: info),
+            const SizedBox(width: 6),
+            nextButton,
+            endButton,
+          ],
+        );
+      },
     );
   }
 }
 
 class _PartyBar extends StatelessWidget {
   const _PartyBar({
+    required this.headerKey,
+    required this.round,
+    required this.trainerInitiativeBonus,
+    required this.onNextRound,
+    required this.onEnd,
     required this.slots,
     required this.activeSlot,
     required this.pokemonForSlot,
     required this.imagePokemonForSlot,
     required this.formNameForSlot,
     required this.transformationForSlot,
+    required this.levelForSlot,
+    required this.maxHpForSlot,
     required this.onSelected,
+  });
+
+  final Key headerKey;
+  final int round;
+  final int trainerInitiativeBonus;
+  final VoidCallback onNextRound;
+  final VoidCallback onEnd;
+  final List<TeamSlot> slots;
+  final TeamSlot activeSlot;
+  final Pokemon? Function(TeamSlot slot) pokemonForSlot;
+  final Pokemon? Function(TeamSlot slot) imagePokemonForSlot;
+  final String? Function(TeamSlot slot) formNameForSlot;
+  final BattleTransformationState? Function(TeamSlot slot)
+  transformationForSlot;
+  final int Function(TeamSlot slot) levelForSlot;
+  final int Function(TeamSlot slot) maxHpForSlot;
+  final ValueChanged<int> onSelected;
+
+  Future<void> _openPicker(BuildContext context) async {
+    final selectedSlot = await showModalBottomSheet<int>(
+      context: context,
+      useSafeArea: true,
+      showDragHandle: true,
+      isScrollControlled: true,
+      builder: (_) => _PartyPickerSheet(
+        slots: slots,
+        activeSlot: activeSlot,
+        pokemonForSlot: pokemonForSlot,
+        imagePokemonForSlot: imagePokemonForSlot,
+        formNameForSlot: formNameForSlot,
+        transformationForSlot: transformationForSlot,
+        levelForSlot: levelForSlot,
+        maxHpForSlot: maxHpForSlot,
+      ),
+    );
+    if (!context.mounted || selectedSlot == null) return;
+    onSelected(selectedSlot);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final changeButton = OutlinedButton.icon(
+      onPressed: () => _openPicker(context),
+      style: OutlinedButton.styleFrom(
+        visualDensity: VisualDensity.compact,
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      ),
+      icon: const Icon(Icons.swap_horiz, size: 18),
+      label: Text(context.uiText('CAMBIA POKÉMON', 'SWITCH POKÉMON')),
+    );
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(8),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final header = _BattleHeader(
+              key: headerKey,
+              round: round,
+              trainerInitiativeBonus: trainerInitiativeBonus,
+              onNextRound: onNextRound,
+              onEnd: onEnd,
+            );
+
+            if (constraints.maxWidth < 600) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  header,
+                  const SizedBox(height: 6),
+                  SizedBox(width: double.infinity, child: changeButton),
+                ],
+              );
+            }
+
+            return Row(
+              children: [
+                Expanded(child: header),
+                const SizedBox(width: 10),
+                changeButton,
+              ],
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class _PartyPickerSheet extends StatelessWidget {
+  const _PartyPickerSheet({
+    required this.slots,
+    required this.activeSlot,
+    required this.pokemonForSlot,
+    required this.imagePokemonForSlot,
+    required this.formNameForSlot,
+    required this.transformationForSlot,
+    required this.levelForSlot,
+    required this.maxHpForSlot,
   });
 
   final List<TeamSlot> slots;
@@ -2821,374 +3461,123 @@ class _PartyBar extends StatelessWidget {
   final String? Function(TeamSlot slot) formNameForSlot;
   final BattleTransformationState? Function(TeamSlot slot)
   transformationForSlot;
-  final ValueChanged<int> onSelected;
+  final int Function(TeamSlot slot) levelForSlot;
+  final int Function(TeamSlot slot) maxHpForSlot;
 
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(8),
-        child: Row(
-          children: [
-            Text(
-              context.uiText('SQUADRA', 'TEAM'),
-              style: Theme.of(
-                context,
-              ).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w900),
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    for (final slot in slots)
-                      _PartyPokemonButton(
-                        slot: slot,
-                        pokemon: pokemonForSlot(slot),
-                        imagePokemon: imagePokemonForSlot(slot),
-                        formName: formNameForSlot(slot),
-                        transformation: transformationForSlot(slot),
-                        selected: slot.slotIndex == activeSlot.slotIndex,
-                        onTap: () => onSelected(slot.slotIndex),
-                      ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _PartyPokemonButton extends StatelessWidget {
-  const _PartyPokemonButton({
-    required this.slot,
-    required this.pokemon,
-    required this.imagePokemon,
-    required this.formName,
-    required this.transformation,
-    required this.selected,
-    required this.onTap,
-  });
-
-  final TeamSlot slot;
-  final Pokemon? pokemon;
-  final Pokemon? imagePokemon;
-  final String? formName;
-  final BattleTransformationState? transformation;
-  final bool selected;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final pokemon = this.pokemon;
-    if (pokemon == null) return const SizedBox.shrink();
-
-    final colorScheme = Theme.of(context).colorScheme;
+  String _displayName(TeamSlot slot, Pokemon pokemon) {
     final nickname = slot.nickname?.trim();
-    final name = nickname == null || nickname.isEmpty ? pokemon.name : nickname;
-
-    return Padding(
-      padding: const EdgeInsets.only(right: 6),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(10),
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            color: selected
-                ? colorScheme.primaryContainer
-                : colorScheme.surface,
-            border: Border.all(
-              color: selected
-                  ? colorScheme.primary
-                  : colorScheme.outlineVariant,
-              width: selected ? 2 : 1,
-            ),
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 4),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                PokemonTransformationImage(
-                  pokemon: imagePokemon ?? pokemon,
-                  size: 40,
-                  formName: formName,
-                  gender: slot.gender,
-                  isShiny: slot.isShiny,
-                  transformation: transformation,
-                ),
-                const SizedBox(width: 4),
-                SizedBox(
-                  width: 64,
-                  child: Text(
-                    name,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
+    return nickname == null || nickname.isEmpty ? pokemon.name : nickname;
   }
-}
 
-class _InitiativeTracker extends StatelessWidget {
-  const _InitiativeTracker({
-    required this.round,
-    required this.entries,
-    required this.currentTurnIndex,
-    required this.trainerInitiativeBonus,
-    required this.onRollTrainer,
-    required this.onAddEntry,
-    required this.onRemoveEntry,
-    required this.onNextTurn,
-  });
-
-  final int round;
-  final List<BattleInitiativeEntry> entries;
-  final int currentTurnIndex;
-  final int trainerInitiativeBonus;
-  final VoidCallback onRollTrainer;
-  final VoidCallback onAddEntry;
-  final ValueChanged<BattleInitiativeEntry> onRemoveEntry;
-  final VoidCallback onNextTurn;
+  String _statusLabel(BuildContext context, TeamSlot slot) {
+    if (slot.statusEffects.isEmpty) {
+      return context.uiText('Nessuno status', 'No conditions');
+    }
+    return slot.statusEffects.join(', ');
+  }
 
   @override
   Widget build(BuildContext context) {
-    final currentEntry = entries.isEmpty
-        ? null
-        : entries[currentTurnIndex.clamp(0, entries.length - 1).toInt()];
+    final sheetHeight = min(MediaQuery.sizeOf(context).height * 0.78, 640.0);
 
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(10, 8, 10, 6),
+    return SafeArea(
+      child: SizedBox(
+        height: sheetHeight,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    context.uiText('INIZIATIVA', 'INITIATIVE'),
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    context.uiText('SCEGLI IL POKÉMON', 'CHOOSE A POKÉMON'),
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.w900,
                     ),
                   ),
-                ),
-                Text('Round $round'),
-              ],
-            ),
-            const SizedBox(height: 4),
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    currentEntry == null
-                        ? context.uiText(
-                            'Nessun turno impostato.',
-                            'No turn is set.',
-                          )
-                        : context.uiText(
-                            'Turno: ${currentEntry.name}',
-                            'Turn: ${currentEntry.name}',
-                          ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
+                  const SizedBox(height: 4),
+                  Text(
+                    context.uiText(
+                      'Il cambio volontario usa l’azione del turno. Se il Pokémon attivo è esausto, la sostituzione è gratuita.',
+                      'A voluntary switch uses the turn action. If the active Pokémon is fainted, replacing it is free.',
                     ),
                   ),
-                ),
-                const SizedBox(width: 8),
-                FilledButton.icon(
-                  onPressed: onNextTurn,
-                  icon: const Icon(Icons.navigate_next),
-                  label: Text(context.uiText('PROSSIMO TURNO', 'NEXT TURN')),
-                ),
-              ],
-            ),
-            ExpansionTile(
-              tilePadding: EdgeInsets.zero,
-              childrenPadding: EdgeInsets.zero,
-              dense: true,
-              visualDensity: VisualDensity.compact,
-              title: Text(
-                context.uiText(
-                  'Ordine e comandi (${entries.length})',
-                  'Order and commands (${entries.length})',
-                ),
+                ],
               ),
-              children: [
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: [
-                      OutlinedButton.icon(
-                        onPressed: onRollTrainer,
-                        icon: const Icon(Icons.casino_outlined),
-                        label: Text(
-                          '${context.uiText('RITIRA ALLENATORE', 'REROLL TRAINER')} '
-                          '(${trainerInitiativeBonus >= 0 ? '+' : ''}$trainerInitiativeBonus)',
-                        ),
+            ),
+            const Divider(height: 1),
+            Expanded(
+              child: ListView.separated(
+                padding: const EdgeInsets.fromLTRB(12, 10, 12, 18),
+                itemCount: slots.length,
+                separatorBuilder: (_, __) => const SizedBox(height: 6),
+                itemBuilder: (context, index) {
+                  final slot = slots[index];
+                  final pokemon = pokemonForSlot(slot);
+                  if (pokemon == null) return const SizedBox.shrink();
+
+                  final isActive = slot.slotIndex == activeSlot.slotIndex;
+                  final maxHp = maxHpForSlot(slot);
+                  final currentHp = maxHp <= 0
+                      ? slot.currentHp
+                      : slot.currentHp.clamp(0, maxHp).toInt();
+                  final isFainted = currentHp <= 0;
+                  final types = pokemon.types.isEmpty
+                      ? context.uiText('Senza tipo', 'Typeless')
+                      : pokemon.types.join(' · ');
+                  final status = _statusLabel(context, slot);
+
+                  return Card(
+                    margin: EdgeInsets.zero,
+                    child: ListTile(
+                      enabled: !isActive && !isFainted,
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 4,
                       ),
-                      OutlinedButton.icon(
-                        onPressed: onAddEntry,
-                        icon: const Icon(Icons.add),
-                        label: Text(context.uiText('AGGIUNGI', 'ADD')),
+                      leading: PokemonTransformationImage(
+                        pokemon: imagePokemonForSlot(slot) ?? pokemon,
+                        size: 54,
+                        formName: formNameForSlot(slot),
+                        gender: slot.gender,
+                        isShiny: slot.isShiny,
+                        transformation: transformationForSlot(slot),
                       ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 8),
-                for (final indexed in entries.indexed)
-                  _InitiativeTile(
-                    entry: indexed.$2,
-                    active: indexed.$1 == currentTurnIndex,
-                    onRemove: indexed.$2.isTrainerGroup
-                        ? null
-                        : () => onRemoveEntry(indexed.$2),
-                  ),
-              ],
+                      title: Text(
+                        _displayName(slot, pokemon),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(fontWeight: FontWeight.w900),
+                      ),
+                      subtitle: Text(
+                        'LV ${levelForSlot(slot)} · PF $currentHp/$maxHp\n$types · $status',
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      trailing: isActive
+                          ? Chip(
+                              label: Text(context.uiText('ATTIVO', 'ACTIVE')),
+                              visualDensity: VisualDensity.compact,
+                            )
+                          : isFainted
+                          ? Chip(
+                              label: Text(context.uiText('ESAUSTO', 'FAINTED')),
+                              visualDensity: VisualDensity.compact,
+                            )
+                          : const Icon(Icons.chevron_right),
+                      onTap: isActive || isFainted
+                          ? null
+                          : () => Navigator.of(context).pop(slot.slotIndex),
+                    ),
+                  );
+                },
+              ),
             ),
           ],
         ),
       ),
-    );
-  }
-}
-
-class _InitiativeTile extends StatelessWidget {
-  const _InitiativeTile({
-    required this.entry,
-    required this.active,
-    required this.onRemove,
-  });
-
-  final BattleInitiativeEntry entry;
-  final bool active;
-  final VoidCallback? onRemove;
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 6),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: active
-              ? colorScheme.primaryContainer
-              : colorScheme.surfaceContainerHighest,
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: ListTile(
-          dense: true,
-          leading: CircleAvatar(child: Text(entry.initiative.toString())),
-          title: Text(
-            entry.name,
-            style: const TextStyle(fontWeight: FontWeight.w800),
-          ),
-          subtitle: Text(
-            entry.isTrainerGroup
-                ? context.uiText('Allenatore + Pokémon', 'Trainer + Pokémon')
-                : context.uiText(
-                    'Partecipante esterno',
-                    'External participant',
-                  ),
-          ),
-          trailing: onRemove == null
-              ? null
-              : IconButton(
-                  tooltip: context.uiText('Rimuovi', 'Remove'),
-                  onPressed: onRemove,
-                  icon: const Icon(Icons.close),
-                ),
-        ),
-      ),
-    );
-  }
-}
-
-class _InitiativeEntryDialog extends StatefulWidget {
-  const _InitiativeEntryDialog();
-
-  @override
-  State<_InitiativeEntryDialog> createState() => _InitiativeEntryDialogState();
-}
-
-class _InitiativeEntryDialogState extends State<_InitiativeEntryDialog> {
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _initiativeController = TextEditingController();
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _initiativeController.dispose();
-    super.dispose();
-  }
-
-  void _submit() {
-    final name = _nameController.text.trim();
-    final initiative = int.tryParse(_initiativeController.text.trim());
-    if (name.isEmpty || initiative == null) return;
-    Navigator.of(
-      context,
-    ).pop(_InitiativeEntryInput(name: name, initiative: initiative));
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      scrollable: true,
-      title: Text(context.uiText('Aggiungi iniziativa', 'Add initiative')),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          TextField(
-            controller: _nameController,
-            autofocus: true,
-            decoration: InputDecoration(
-              labelText: context.uiText(
-                'Nome partecipante',
-                'Participant name',
-              ),
-            ),
-            onSubmitted: (_) => _submit(),
-          ),
-          const SizedBox(height: 10),
-          TextField(
-            controller: _initiativeController,
-            keyboardType: TextInputType.number,
-            decoration: InputDecoration(
-              labelText: context.uiText('Iniziativa', 'Initiative'),
-            ),
-            onSubmitted: (_) => _submit(),
-          ),
-        ],
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: Text(context.uiText('Annulla', 'Cancel')),
-        ),
-        FilledButton(
-          onPressed: _submit,
-          child: Text(context.uiText('Aggiungi', 'Add')),
-        ),
-      ],
     );
   }
 }
@@ -3199,12 +3588,15 @@ class _BattleFormPickerSheet extends StatelessWidget {
     required this.slot,
     required this.currentFormName,
     required this.choices,
+    this.eligibilityForChoice,
   });
 
   final Pokemon pokemon;
   final TeamSlot slot;
   final String? currentFormName;
   final List<PokemonFormChoice> choices;
+  final BattleFormEligibility Function(PokemonFormChoice choice)?
+  eligibilityForChoice;
 
   @override
   Widget build(BuildContext context) {
@@ -3214,7 +3606,7 @@ class _BattleFormPickerSheet extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
         children: [
           Text(
-            context.uiText('Cambia forma in battaglia', 'Change battle form'),
+            context.uiText('Gestisci forma', 'Manage form'),
             style: Theme.of(
               context,
             ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
@@ -3223,39 +3615,51 @@ class _BattleFormPickerSheet extends StatelessWidget {
           Text(BattleFormChangeService.changeHint(pokemon)),
           const SizedBox(height: 12),
           for (final choice in choices)
-            Card(
-              child: ListTile(
-                leading: PokemonAssetImage(
-                  pokemon: pokemon,
-                  formName: choice.name,
-                  gender: slot.gender,
-                  isShiny: slot.isShiny,
-                  size: 54,
-                ),
-                title: Text(
-                  BattleFormChangeService.formLabel(pokemon, choice.name),
-                  style: const TextStyle(fontWeight: FontWeight.w800),
-                ),
-                subtitle:
-                    BattleFormChangeService.effectNote(pokemon, choice.name) ==
-                        null
-                    ? null
-                    : Text(
-                        BattleFormChangeService.effectNote(
+            Builder(
+              builder: (context) {
+                final eligibility =
+                    eligibilityForChoice?.call(choice) ??
+                    const BattleFormEligibility(isAvailable: true);
+                final effect = BattleFormChangeService.effectNote(
+                  pokemon,
+                  choice.name,
+                );
+                final details = <String>[
+                  ?effect,
+                  if (eligibility.missingRequirements.isNotEmpty)
+                    eligibility.missingRequirements.join(' · '),
+                ].join('\n');
+                return Card(
+                  child: ListTile(
+                    enabled: eligibility.isAvailable,
+                    leading: PokemonAssetImage(
+                      pokemon: pokemon,
+                      formName: choice.name,
+                      gender: slot.gender,
+                      isShiny: slot.isShiny,
+                      size: 54,
+                    ),
+                    title: Text(
+                      BattleFormChangeService.formLabel(pokemon, choice.name),
+                      style: const TextStyle(fontWeight: FontWeight.w800),
+                    ),
+                    subtitle: details.isEmpty ? null : Text(details),
+                    trailing:
+                        BattleFormChangeService.sameForm(
                           pokemon,
+                          currentFormName,
                           choice.name,
-                        )!,
-                      ),
-                trailing:
-                    BattleFormChangeService.sameForm(
-                      pokemon,
-                      currentFormName,
-                      choice.name,
-                    )
-                    ? const Icon(Icons.check_circle)
-                    : const Icon(Icons.radio_button_unchecked),
-                onTap: () => Navigator.of(context).pop(choice.name),
-              ),
+                        )
+                        ? const Icon(Icons.check_circle)
+                        : eligibility.isAvailable
+                        ? const Icon(Icons.radio_button_unchecked)
+                        : const Icon(Icons.lock_outline),
+                    onTap: eligibility.isAvailable
+                        ? () => Navigator.of(context).pop(choice.name)
+                        : null,
+                  ),
+                );
+              },
             ),
         ],
       ),
@@ -3287,7 +3691,6 @@ class _ActivePokemonCard extends StatelessWidget {
     required this.message,
     required this.onTransformations,
     required this.onEditHp,
-    required this.onHeal,
     required this.onStatus,
     required this.onUseHeldBerry,
     required this.onOpenBag,
@@ -3317,7 +3720,6 @@ class _ActivePokemonCard extends StatelessWidget {
   final String? message;
   final VoidCallback onTransformations;
   final VoidCallback onEditHp;
-  final VoidCallback onHeal;
   final VoidCallback onStatus;
   final VoidCallback? onUseHeldBerry;
   final VoidCallback onOpenBag;
@@ -3388,7 +3790,7 @@ class _ActivePokemonCard extends StatelessWidget {
                 ),
               ],
             ),
-            if (onChangeForm != null) ...[
+            if (formLabel != null) ...[
               const SizedBox(height: 10),
               Wrap(
                 spacing: 8,
@@ -3397,13 +3799,16 @@ class _ActivePokemonCard extends StatelessWidget {
                 children: [
                   Chip(
                     avatar: const Icon(Icons.change_circle_outlined, size: 18),
-                    label: Text(formLabel ?? context.uiText('Forma', 'Form')),
+                    label: Text(formLabel!),
                   ),
-                  OutlinedButton.icon(
-                    onPressed: onChangeForm,
-                    icon: const Icon(Icons.swap_horiz),
-                    label: Text(context.uiText('CAMBIA FORMA', 'CHANGE FORM')),
-                  ),
+                  if (onChangeForm != null)
+                    OutlinedButton.icon(
+                      onPressed: onChangeForm,
+                      icon: const Icon(Icons.tune),
+                      label: Text(
+                        context.uiText('GESTISCI FORMA', 'MANAGE FORM'),
+                      ),
+                    ),
                 ],
               ),
               if (formNote != null) ...[
@@ -3415,10 +3820,9 @@ class _ActivePokemonCard extends StatelessWidget {
               const SizedBox(height: 10),
               DecoratedBox(
                 decoration: BoxDecoration(
-                  color: Theme.of(context)
-                      .colorScheme
-                      .primaryContainer
-                      .withValues(alpha: 0.7),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.primaryContainer.withValues(alpha: 0.7),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Padding(
@@ -3434,7 +3838,9 @@ class _ActivePokemonCard extends StatelessWidget {
                           children: [
                             Text(
                               transformation!.kind.label.toUpperCase(),
-                              style: const TextStyle(fontWeight: FontWeight.w900),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w900,
+                              ),
                             ),
                             Text(
                               BattleTransformationService.effectSummary(
@@ -3496,12 +3902,6 @@ class _ActivePokemonCard extends StatelessWidget {
                   onPressed: onTransformations,
                   icon: const Icon(Icons.auto_awesome, size: 18),
                   label: Text(context.uiText('TRASFORMA', 'TRANSFORM')),
-                ),
-                FilledButton(
-                  onPressed: onHeal,
-                  child: Text(
-                    context.uiText('POKÉMON CENTER', 'POKÉMON CENTER'),
-                  ),
                 ),
               ],
             ),
@@ -3568,11 +3968,14 @@ class _TemporaryHpPanel extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '${rule.label}: $currentHp PF temporanei',
+                    context.uiText(
+                      '${rule.localizedLabel}: $currentHp PF temporanei',
+                      '${rule.localizedLabel}: $currentHp temporary HP',
+                    ),
                     style: const TextStyle(fontWeight: FontWeight.w800),
                   ),
                   Text(
-                    rule.description,
+                    rule.localizedDescription,
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
                 ],
@@ -4423,12 +4826,24 @@ class _TransformationPanel extends StatelessWidget {
                 ),
                 child: Text(
                   state.isDynamaxLike
-                      ? '${state.kind.label} attiva · ${state.dynamaxTemporaryHp} PF Dynamax'
+                      ? context.uiText(
+                          '${state.kind.label} attiva · ${state.dynamaxTemporaryHp} PF Dynamax',
+                          '${state.kind.label} active · ${state.dynamaxTemporaryHp} Dynamax HP',
+                        )
                       : state.kind == BattleTransformationKind.terastal
-                      ? '${state.kind.label} attiva · ${state.teraType}'
+                      ? context.uiText(
+                          '${state.kind.label} attiva · ${state.teraType}',
+                          '${state.kind.label} active · ${state.teraType}',
+                        )
                       : state.kind == BattleTransformationKind.zMove
-                      ? 'Mossa Z già usata in questo riposo lungo'
-                      : '${state.kind.label} attiva',
+                      ? context.uiText(
+                          'Mossa Z già usata in questo riposo lungo',
+                          'Z-Move already used during this long rest',
+                        )
+                      : context.uiText(
+                          '${state.kind.label} attiva',
+                          '${state.kind.label} active',
+                        ),
                   style: const TextStyle(fontWeight: FontWeight.w900),
                 ),
               ),
@@ -4513,7 +4928,9 @@ class _TransformationActionTile extends StatelessWidget {
       padding: const EdgeInsets.only(top: 6),
       child: DecoratedBox(
         decoration: BoxDecoration(
-          border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+          border: Border.all(
+            color: Theme.of(context).colorScheme.outlineVariant,
+          ),
           borderRadius: BorderRadius.circular(10),
         ),
         child: Padding(
@@ -4527,10 +4944,14 @@ class _TransformationActionTile extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(title, style: const TextStyle(fontWeight: FontWeight.w900)),
+                    Text(
+                      title,
+                      style: const TextStyle(fontWeight: FontWeight.w900),
+                    ),
                     const SizedBox(height: 2),
                     Text(hint, style: Theme.of(context).textTheme.bodySmall),
-                    if (!available && eligibility.missingRequirements.isNotEmpty) ...[
+                    if (!available &&
+                        eligibility.missingRequirements.isNotEmpty) ...[
                       const SizedBox(height: 4),
                       Text(
                         eligibility.missingRequirements.join(' · '),
@@ -4575,7 +4996,12 @@ class _TransformArtPickerSheet extends StatelessWidget {
         shrinkWrap: true,
         padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
         children: [
-          Text(title, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900)),
+          Text(
+            title,
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
+          ),
           const SizedBox(height: 4),
           Text(pokemonName),
           const SizedBox(height: 10),
@@ -4620,7 +5046,9 @@ class _DynamaxPickerSheet extends StatelessWidget {
         children: [
           Text(
             context.uiText('Dynamax / Gigamax', 'Dynamax / Gigantamax'),
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
           ),
           const SizedBox(height: 6),
           Text(
@@ -4677,7 +5105,9 @@ class _TeraTypePickerSheet extends StatelessWidget {
           children: [
             Text(
               context.uiText('Scegli il Tera Tipo', 'Choose the Tera Type'),
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
             ),
             const SizedBox(height: 4),
             Text(pokemonName),
@@ -4739,17 +5169,26 @@ class _ZMovePickerSheet extends StatelessWidget {
         children: [
           Text(
             context.uiText('Usa una Mossa Z', 'Use a Z-Move'),
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
           ),
           const SizedBox(height: 4),
-          Text('$pokemonName · Cristallo Z $crystalType'),
+          Text(
+            context.uiText(
+              '$pokemonName · Cristallo Z $crystalType',
+              '$pokemonName · $crystalType Z-Crystal',
+            ),
+          ),
           const SizedBox(height: 10),
           for (final choice in choices)
             Card(
               child: ListTile(
                 leading: const Icon(Icons.flash_on),
                 title: Text(choice.move.name),
-                subtitle: Text(BattleTransformationService.zMoveSummary(choice.move)),
+                subtitle: Text(
+                  BattleTransformationService.zMoveSummary(choice.move),
+                ),
                 onTap: () => Navigator.of(context).pop(choice),
               ),
             ),

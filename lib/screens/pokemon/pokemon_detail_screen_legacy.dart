@@ -1599,22 +1599,27 @@ class _Header extends StatelessWidget {
     final hpProgress = maxHp <= 0
         ? 0.0
         : (currentHp / maxHp).clamp(0.0, 1.0).toDouble();
+    final compact = MediaQuery.sizeOf(context).width < 520;
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(8, 8, 8, 6),
+      padding: EdgeInsets.fromLTRB(compact ? 6 : 8, 6, compact ? 6 : 8, 4),
       child: Column(
         children: [
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _PokemonCenterButton(onTap: isPartyMode ? onPokemonCenter : null),
-              const SizedBox(width: 6),
+              _PokemonCenterButton(
+                onTap: isPartyMode ? onPokemonCenter : null,
+                compact: compact,
+              ),
+              SizedBox(width: compact ? 4 : 6),
               Card(
+                margin: EdgeInsets.zero,
                 child: SizedBox(
-                  width: 132,
-                  height: 142,
+                  width: compact ? 108 : 132,
+                  height: compact ? 136 : 142,
                   child: Padding(
-                    padding: const EdgeInsets.all(6),
+                    padding: EdgeInsets.all(compact ? 4 : 6),
                     child: Column(
                       children: [
                         Expanded(
@@ -1624,7 +1629,7 @@ class _Header extends StatelessWidget {
                             gender: slot?.gender,
                             isShiny: slot?.isShiny,
                             useLargeArtwork: true,
-                            size: 112,
+                            size: compact ? 96 : 112,
                           ),
                         ),
                         Text(
@@ -1639,68 +1644,136 @@ class _Header extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(width: 8),
+              SizedBox(width: compact ? 6 : 8),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text(
-                      pokemon.name.toUpperCase(),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.headlineSmall
-                          ?.copyWith(fontWeight: FontWeight.w900),
-                    ),
-                    const SizedBox(height: 4),
-                    Wrap(
-                      alignment: WrapAlignment.center,
-                      spacing: 6,
-                      runSpacing: 4,
-                      children: [
-                        for (final type in pokemon.types)
-                          PokemonTypeBadge(type: type, height: 20),
-                      ],
-                    ),
-                    const SizedBox(height: 6),
+                    if (compact)
+                      SizedBox(
+                        height: 34,
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                pokemon.name.toUpperCase(),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: Theme.of(context).textTheme.titleMedium
+                                    ?.copyWith(fontWeight: FontWeight.w900),
+                              ),
+                            ),
+                            if (pokemon.types.isNotEmpty) ...[
+                              const SizedBox(width: 4),
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  for (final type in pokemon.types.take(2))
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 1,
+                                      ),
+                                      child: PokemonTypeBadge(
+                                        type: type,
+                                        height: 15,
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ],
+                          ],
+                        ),
+                      )
+                    else ...[
+                      Text(
+                        pokemon.name.toUpperCase(),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.headlineSmall
+                            ?.copyWith(fontWeight: FontWeight.w900),
+                      ),
+                      const SizedBox(height: 4),
+                      Wrap(
+                        alignment: WrapAlignment.center,
+                        spacing: 6,
+                        runSpacing: 4,
+                        children: [
+                          for (final type in pokemon.types)
+                            PokemonTypeBadge(type: type, height: 20),
+                        ],
+                      ),
+                    ],
+                    SizedBox(height: compact ? 4 : 6),
                     _LoyaltyRow(
                       loyalty: loyalty,
+                      compact: compact,
                       onDecrease: loyalty <= -3 ? null : onDecreaseLoyalty,
                       onIncrease: loyalty >= 3 ? null : onIncreaseLoyalty,
                     ),
-                    const SizedBox(height: 6),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _MetricBox(
-                            label: context.uiText('Liv.', 'Lv.'),
-                            value: '$level',
+                    SizedBox(height: compact ? 4 : 6),
+                    if (compact) ...[
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _MetricBox(
+                              label: context.uiText('Liv.', 'Lv.'),
+                              value: '$level',
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: 6),
-                        Expanded(
-                          child: _MetricBox(
-                            label: context.uiText('CA:', 'AC:'),
-                            value: '$armorClass',
+                          const SizedBox(width: 4),
+                          Expanded(
+                            child: _MetricBox(
+                              label: context.uiText('CA:', 'AC:'),
+                              value: '$armorClass',
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 6),
-                    InkWell(
-                      onTap: isPartyMode ? onEditExperience : null,
-                      borderRadius: BorderRadius.circular(8),
-                      child: _ProgressPanel(
-                        label: 'EXP: $experience/$nextThreshold',
-                        value: expProgress,
+                        ],
                       ),
-                    ),
+                      const SizedBox(height: 4),
+                      InkWell(
+                        onTap: isPartyMode ? onEditExperience : null,
+                        borderRadius: BorderRadius.circular(8),
+                        child: _ProgressPanel(
+                          label: 'EXP: $experience/$nextThreshold',
+                          value: expProgress,
+                          compact: true,
+                        ),
+                      ),
+                    ] else ...[
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _MetricBox(
+                              label: context.uiText('Liv.', 'Lv.'),
+                              value: '$level',
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          Expanded(
+                            child: _MetricBox(
+                              label: context.uiText('CA:', 'AC:'),
+                              value: '$armorClass',
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 6),
+                      InkWell(
+                        onTap: isPartyMode ? onEditExperience : null,
+                        borderRadius: BorderRadius.circular(8),
+                        child: _ProgressPanel(
+                          label: 'EXP: $experience/$nextThreshold',
+                          value: expProgress,
+                        ),
+                      ),
+                    ],
                   ],
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 6),
+          SizedBox(height: compact ? 5 : 6),
           _FightStatsGrid(
             attributes: attributes,
             modifierBuilder: modifierBuilder,
@@ -1713,7 +1786,7 @@ class _Header extends StatelessWidget {
             proficiency: proficiency,
             loyaltyBonus: savingThrowLoyaltyBonus,
           ),
-          const SizedBox(height: 6),
+          SizedBox(height: compact ? 5 : 6),
           Row(
             children: [
               Expanded(
@@ -1737,17 +1810,17 @@ class _Header extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: compact ? 6 : 8),
           Row(
             children: [
               _FightIconButton(icon: Icons.remove, onPressed: onDecreaseHp),
-              const SizedBox(width: 8),
+              SizedBox(width: compact ? 6 : 8),
               Expanded(
                 child: InkWell(
                   onTap: isPartyMode ? onEditHp : null,
                   borderRadius: BorderRadius.circular(8),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 6),
+                    padding: EdgeInsets.symmetric(vertical: compact ? 4 : 6),
                     child: Row(
                       children: [
                         Text(
@@ -1755,16 +1828,19 @@ class _Header extends StatelessWidget {
                             'PF: $currentHp/$maxHp',
                             'HP: $currentHp/$maxHp',
                           ),
-                          style: Theme.of(context).textTheme.titleLarge
-                              ?.copyWith(fontWeight: FontWeight.w800),
+                          style:
+                              (compact
+                                      ? Theme.of(context).textTheme.titleMedium
+                                      : Theme.of(context).textTheme.titleLarge)
+                                  ?.copyWith(fontWeight: FontWeight.w800),
                         ),
-                        const SizedBox(width: 12),
+                        SizedBox(width: compact ? 8 : 12),
                         Expanded(
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(999),
                             child: LinearProgressIndicator(
                               value: hpProgress,
-                              minHeight: 16,
+                              minHeight: compact ? 12 : 16,
                               valueColor: AlwaysStoppedAnimation<Color>(
                                 _hpProgressColor(hpProgress),
                               ),
@@ -1779,23 +1855,24 @@ class _Header extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(width: 8),
+              SizedBox(width: compact ? 6 : 8),
               _FightIconButton(icon: Icons.add, onPressed: onIncreaseHp),
             ],
           ),
-          if (message != null) ...[
-            const SizedBox(height: 8),
-            _InlineDetailMessage(message: message!),
-          ],
           if (isPartyMode && evolutionLabel != null) ...[
-            const SizedBox(height: 8),
+            SizedBox(height: compact ? 6 : 8),
             SizedBox(
               width: double.infinity,
+              height: compact ? 42 : null,
               child: FilledButton(
                 onPressed: onEvolve,
                 child: Text(evolutionLabel!),
               ),
             ),
+          ],
+          if (message != null) ...[
+            const SizedBox(height: 8),
+            _InlineDetailMessage(message: message!),
           ],
         ],
       ),
@@ -1992,9 +2069,10 @@ String _itemReferenceKey(String value) {
 }
 
 class _PokemonCenterButton extends StatelessWidget {
-  const _PokemonCenterButton({required this.onTap});
+  const _PokemonCenterButton({required this.onTap, this.compact = false});
 
   final VoidCallback? onTap;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
@@ -2003,8 +2081,8 @@ class _PokemonCenterButton extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(8),
       child: Container(
-        width: 46,
-        height: 142,
+        width: compact ? 44 : 46,
+        height: compact ? 136 : 142,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(8),
@@ -2076,22 +2154,35 @@ class _LoyaltyRow extends StatelessWidget {
     required this.loyalty,
     required this.onDecrease,
     required this.onIncrease,
+    this.compact = false,
   });
 
   final int loyalty;
   final VoidCallback? onDecrease;
   final VoidCallback? onIncrease;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
+    final buttonSize = compact ? 40.0 : 48.0;
+    final spacing = compact ? 4.0 : 6.0;
+
     return Row(
       children: [
-        _FightIconButton(icon: Icons.remove, onPressed: onDecrease),
-        const SizedBox(width: 6),
+        _FightIconButton(
+          icon: Icons.remove,
+          onPressed: onDecrease,
+          size: buttonSize,
+          iconSize: compact ? 22 : 26,
+        ),
+        SizedBox(width: spacing),
         Expanded(
           child: Container(
-            constraints: const BoxConstraints(minHeight: 48),
-            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+            constraints: BoxConstraints(minHeight: buttonSize),
+            padding: EdgeInsets.symmetric(
+              horizontal: 4,
+              vertical: compact ? 2 : 6,
+            ),
             alignment: Alignment.center,
             decoration: BoxDecoration(
               color: Colors.white,
@@ -2109,6 +2200,7 @@ class _LoyaltyRow extends StatelessWidget {
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
                     fontWeight: FontWeight.w800,
                     height: 1,
+                    fontSize: compact ? 10 : null,
                   ),
                 ),
                 Text(
@@ -2116,14 +2208,20 @@ class _LoyaltyRow extends StatelessWidget {
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w900,
                     height: 1,
+                    fontSize: compact ? 16 : null,
                   ),
                 ),
               ],
             ),
           ),
         ),
-        const SizedBox(width: 6),
-        _FightIconButton(icon: Icons.add, onPressed: onIncrease),
+        SizedBox(width: spacing),
+        _FightIconButton(
+          icon: Icons.add,
+          onPressed: onIncrease,
+          size: buttonSize,
+          iconSize: compact ? 22 : 26,
+        ),
       ],
     );
   }
@@ -2142,22 +2240,25 @@ class _MetricBox extends StatelessWidget {
 }
 
 class _ProgressPanel extends StatelessWidget {
-  const _ProgressPanel({required this.label, required this.value});
+  const _ProgressPanel({
+    required this.label,
+    required this.value,
+    this.compact = false,
+  });
 
   final String label;
   final double value;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Container(
-      height: textScaleAwareValue(
-        context,
-        normal: 46,
-        enlarged: 62,
-      ),
-      padding: const EdgeInsets.fromLTRB(8, 4, 8, 6),
+      height: compact
+          ? textScaleAwareValue(context, normal: 36, enlarged: 50)
+          : textScaleAwareValue(context, normal: 46, enlarged: 62),
+      padding: EdgeInsets.fromLTRB(8, compact ? 2 : 4, 8, compact ? 4 : 6),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(8),
@@ -2167,18 +2268,22 @@ class _ProgressPanel extends StatelessWidget {
         children: [
           Expanded(
             child: Center(
-              child: Text(
-                label,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  color: colorScheme.primary,
-                  fontWeight: FontWeight.w900,
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  softWrap: false,
+                  style: TextStyle(
+                    color: colorScheme.primary,
+                    fontWeight: FontWeight.w900,
+                    fontSize: compact ? 11 : null,
+                  ),
                 ),
               ),
             ),
           ),
-          LinearProgressIndicator(value: value, minHeight: 6),
+          LinearProgressIndicator(value: value, minHeight: compact ? 4 : 6),
         ],
       ),
     );
@@ -2197,11 +2302,7 @@ class _PanelButton extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(8),
       child: Container(
-        height: textScaleAwareValue(
-          context,
-          normal: 36,
-          enlarged: 50,
-        ),
+        height: textScaleAwareValue(context, normal: 36, enlarged: 50),
         alignment: Alignment.center,
         padding: const EdgeInsets.symmetric(horizontal: 8),
         decoration: BoxDecoration(
@@ -2228,20 +2329,27 @@ class _PanelButton extends StatelessWidget {
 }
 
 class _FightIconButton extends StatelessWidget {
-  const _FightIconButton({required this.icon, required this.onPressed});
+  const _FightIconButton({
+    required this.icon,
+    required this.onPressed,
+    this.size = 48,
+    this.iconSize = 26,
+  });
 
   final IconData icon;
   final VoidCallback? onPressed;
+  final double size;
+  final double iconSize;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 48,
-      height: 48,
+      width: size,
+      height: size,
       child: IconButton.filled(
         padding: EdgeInsets.zero,
         onPressed: onPressed,
-        icon: Icon(icon, size: 26),
+        icon: Icon(icon, size: iconSize),
       ),
     );
   }
@@ -2261,21 +2369,17 @@ class _FightStatsGrid extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final compact = constraints.maxWidth < 520;
-        final compactAspectRatio = textScaleAwareValue(
-          context,
-          normal: 1.85,
-          enlarged: 1.1,
-        );
-        final wideAspectRatio = textScaleAwareValue(
-          context,
-          normal: 1.18,
-          enlarged: 0.82,
-        );
+        final singleRow = compact && accessibleTextScaleRatio(context) <= 1.3;
+        final columns = singleRow || !compact ? 6 : 3;
+        final aspectRatio = singleRow
+            ? 0.98
+            : compact
+            ? textScaleAwareValue(context, normal: 1.85, enlarged: 1.1)
+            : textScaleAwareValue(context, normal: 1.18, enlarged: 0.82);
+
         return GridView.count(
-          crossAxisCount: compact ? 3 : 6,
-          childAspectRatio: compact
-              ? compactAspectRatio
-              : wideAspectRatio,
+          crossAxisCount: columns,
+          childAspectRatio: aspectRatio,
           crossAxisSpacing: 4,
           mainAxisSpacing: 4,
           shrinkWrap: true,
@@ -2286,6 +2390,7 @@ class _FightStatsGrid extends StatelessWidget {
                 label: TrainerUiLocalization.abilityAbbreviation(entry.key),
                 score: entry.value,
                 modifier: modifierBuilder(entry.value),
+                dense: singleRow,
               ),
           ],
         );
@@ -2299,17 +2404,22 @@ class _FightStatBox extends StatelessWidget {
     required this.label,
     required this.score,
     required this.modifier,
+    required this.dense,
   });
 
   final String label;
   final int score;
   final int modifier;
+  final bool dense;
 
   @override
   Widget build(BuildContext context) {
     final muted = Theme.of(context).colorScheme.onSurfaceVariant;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 3),
+      padding: EdgeInsets.symmetric(
+        horizontal: dense ? 2 : 4,
+        vertical: dense ? 2 : 3,
+      ),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(6),
@@ -2318,26 +2428,23 @@ class _FightStatBox extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                label,
-                style: TextStyle(color: muted, fontWeight: FontWeight.w700),
-              ),
-              const SizedBox(width: 5),
-              Text(
-                '$score',
-                style: const TextStyle(fontWeight: FontWeight.w900),
-              ),
-            ],
+          Text(
+            '$label $score',
+            maxLines: 1,
+            overflow: TextOverflow.clip,
+            style:
+                (dense
+                        ? Theme.of(context).textTheme.labelSmall
+                        : Theme.of(context).textTheme.bodyMedium)
+                    ?.copyWith(color: muted, fontWeight: FontWeight.w800),
           ),
           Text(
             _signed(modifier),
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.w900,
-              height: 1,
-            ),
+            style:
+                (dense
+                        ? Theme.of(context).textTheme.titleLarge
+                        : Theme.of(context).textTheme.headlineSmall)
+                    ?.copyWith(fontWeight: FontWeight.w900, height: 1),
           ),
         ],
       ),
@@ -2410,11 +2517,7 @@ class _SaveBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: textScaleAwareValue(
-        context,
-        normal: 26,
-        enlarged: 42,
-      ),
+      height: textScaleAwareValue(context, normal: 26, enlarged: 42),
       alignment: Alignment.center,
       decoration: BoxDecoration(
         color: proficient
@@ -2446,11 +2549,7 @@ class _StatusPanelButton extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(8),
       child: Container(
-        height: textScaleAwareValue(
-          context,
-          normal: 42,
-          enlarged: 52,
-        ),
+        height: textScaleAwareValue(context, normal: 42, enlarged: 52),
         alignment: Alignment.center,
         padding: const EdgeInsets.symmetric(horizontal: 8),
         decoration: BoxDecoration(
@@ -2573,57 +2672,216 @@ class _MovesView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      padding: const EdgeInsets.all(12),
-      children: [
-        _MoveSection(
-          title: context.uiText('Mosse equipaggiate', 'Equipped moves'),
-          names: [...selectedMoves, 'Struggle'],
-          moves: moves,
-          moveStatsBuilder: moveStatsBuilder,
-          moveTypeBuilder: moveTypeBuilder,
-        ),
-      ],
+    final names = [...selectedMoves, 'Struggle'];
+    return ListView.builder(
+      padding: const EdgeInsets.fromLTRB(8, 8, 8, 12),
+      itemCount: names.length,
+      itemBuilder: (context, index) {
+        final reference = names[index];
+        final move = moves[reference];
+        return _CompactMoveTile(
+          reference: reference,
+          move: move,
+          moveType: move == null ? null : moveTypeBuilder(move),
+          stats: move == null ? null : moveStatsBuilder(move),
+        );
+      },
     );
   }
 }
 
-class _MoveSection extends StatelessWidget {
-  const _MoveSection({
-    required this.title,
-    required this.names,
-    required this.moves,
-    required this.moveStatsBuilder,
-    required this.moveTypeBuilder,
+class _CompactMoveTile extends StatelessWidget {
+  const _CompactMoveTile({
+    required this.reference,
+    required this.move,
+    required this.moveType,
+    required this.stats,
   });
 
-  final String title;
-  final List<String> names;
-  final Map<String, MoveData?> moves;
-  final String Function(MoveData move) moveStatsBuilder;
-  final String Function(MoveData move) moveTypeBuilder;
+  final String reference;
+  final MoveData? move;
+  final String? moveType;
+  final String? stats;
 
   @override
   Widget build(BuildContext context) {
-    if (names.isEmpty) return const SizedBox.shrink();
+    final move = this.move;
+    final name = move?.name ?? reference;
+    final colorScheme = Theme.of(context).colorScheme;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(4, 12, 4, 4),
-          child: Text(title.toUpperCase()),
-        ),
-        for (final name in names)
-          _MoveCard(
-            reference: name,
-            move: moves[name],
-            moveType: moves[name] == null
-                ? null
-                : moveTypeBuilder(moves[name]!),
-            stats: moves[name] == null ? null : moveStatsBuilder(moves[name]!),
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 3),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: () => _showDetails(context),
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            minHeight: textScaleAwareValue(context, normal: 66, enlarged: 92),
           ),
-      ],
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(10, 8, 8, 8),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      Icons.radio_button_unchecked,
+                      size: 17,
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                    const SizedBox(width: 7),
+                    Expanded(
+                      child: Text(
+                        name.toUpperCase(),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(fontWeight: FontWeight.w900),
+                      ),
+                    ),
+                    if (move != null) ...[
+                      PokemonTypeBadge(type: moveType ?? move.type, height: 19),
+                      const SizedBox(width: 8),
+                      Text(
+                        'PP ${move.pp}',
+                        style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                    ],
+                    const SizedBox(width: 2),
+                    const Icon(Icons.chevron_right, size: 22),
+                  ],
+                ),
+                const SizedBox(height: 5),
+                Text(
+                  move == null
+                      ? context.uiText(
+                          'Dettagli mossa non disponibili.',
+                          'Move details are unavailable.',
+                        )
+                      : (stats?.isNotEmpty == true ? stats! : move.moveTime),
+                  maxLines: accessibleTextScaleRatio(context) > 1.3 ? 2 : 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _showDetails(BuildContext context) {
+    return showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      isScrollControlled: true,
+      builder: (_) => _MoveDetailsSheet(
+        reference: reference,
+        move: move,
+        moveType: moveType,
+        stats: stats,
+      ),
+    );
+  }
+}
+
+class _MoveDetailsSheet extends StatelessWidget {
+  const _MoveDetailsSheet({
+    required this.reference,
+    required this.move,
+    required this.moveType,
+    required this.stats,
+  });
+
+  final String reference;
+  final MoveData? move;
+  final String? moveType;
+  final String? stats;
+
+  @override
+  Widget build(BuildContext context) {
+    final move = this.move;
+    final name = move?.name ?? reference;
+
+    return SafeArea(
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.sizeOf(context).height * 0.78,
+        ),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(18, 4, 18, 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Text(
+                      name.toUpperCase(),
+                      style: Theme.of(context).textTheme.headlineSmall
+                          ?.copyWith(fontWeight: FontWeight.w900),
+                    ),
+                  ),
+                  if (move != null)
+                    Text(
+                      'PP ${move.pp}',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              if (move == null)
+                Text(
+                  context.uiText(
+                    'Dettagli mossa non disponibili.',
+                    'Move details are unavailable.',
+                  ),
+                )
+              else ...[
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    PokemonTypeBadge(type: moveType ?? move.type, height: 26),
+                    Chip(label: Text(move.moveTime)),
+                  ],
+                ),
+                if (stats?.isNotEmpty == true) ...[
+                  const SizedBox(height: 12),
+                  Text(
+                    stats!,
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ],
+                if (move.description.isNotEmpty) ...[
+                  const SizedBox(height: 14),
+                  const Divider(),
+                  const SizedBox(height: 6),
+                  Text(move.description),
+                ],
+              ],
+              const SizedBox(height: 18),
+              FilledButton.tonal(
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text(context.uiText('CHIUDI', 'CLOSE')),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
@@ -2873,9 +3131,7 @@ class _TraitsView extends StatelessWidget {
                 label: context.uiText('Forma', 'Form'),
                 value: slot == null
                     ? '-'
-                    : ItemDrivenPokemonForm.usesHeldItemForm(
-                        basePokemon.id,
-                      )
+                    : ItemDrivenPokemonForm.usesHeldItemForm(basePokemon.id)
                     ? PokemonAssetPaths.localizedTypeLabel(
                         slot?.effectiveFormName ?? 'Normal',
                       )
@@ -3065,11 +3321,7 @@ class _PartySwitcher extends StatelessWidget {
     return SafeArea(
       top: false,
       child: Container(
-        height: textScaleAwareValue(
-          context,
-          normal: 68,
-          enlarged: 98,
-        ),
+        height: textScaleAwareValue(context, normal: 60, enlarged: 98),
         decoration: BoxDecoration(
           color: colorScheme.surfaceContainerHighest,
           border: Border(top: BorderSide(color: colorScheme.outlineVariant)),
@@ -3114,7 +3366,7 @@ class _PartySlotButton extends StatelessWidget {
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 160),
-        margin: const EdgeInsets.all(6),
+        margin: const EdgeInsets.all(4),
         decoration: BoxDecoration(
           color: isActive ? colorScheme.primaryContainer : Colors.transparent,
           borderRadius: BorderRadius.circular(8),
@@ -3132,9 +3384,8 @@ class _PartySlotButton extends StatelessWidget {
                     formName: slot.effectiveFormName,
                     gender: slot.gender,
                     isShiny: slot.isShiny,
-                    size: 30,
+                    size: 28,
                   ),
-            const SizedBox(height: 2),
             Text(
               pokemon == null
                   ? '${slot.slotIndex + 1}'

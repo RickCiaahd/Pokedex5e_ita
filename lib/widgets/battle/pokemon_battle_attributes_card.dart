@@ -22,55 +22,38 @@ class PokemonBattleAttributesCard extends StatelessWidget {
 
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.fromLTRB(10, 8, 10, 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Row(
               children: [
-                Icon(Icons.analytics_outlined, color: colors.primary),
-                const SizedBox(width: 8),
+                Icon(Icons.analytics_outlined, size: 20, color: colors.primary),
+                const SizedBox(width: 6),
                 Expanded(
                   child: Text(
                     context.uiText('CARATTERISTICHE', 'ABILITY SCORES'),
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
                       fontWeight: FontWeight.w900,
                     ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 4),
-            Text(
-              context.uiText(
-                'Valori effettivi e modificatori da usare per prove, tiri salvezza e iniziativa del Pokémon.',
-                'Effective scores and modifiers used for checks, saving throws and the Pokémon’s initiative.',
-              ),
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 6),
             LayoutBuilder(
               builder: (context, constraints) {
                 if (!constraints.hasBoundedWidth || constraints.maxWidth <= 0) {
                   return const SizedBox.shrink();
                 }
 
-                final availableWidth = constraints.maxWidth;
-                final columns = availableWidth >= 620
-                    ? 6
-                    : availableWidth >= 360
+                final textScale = MediaQuery.textScalerOf(context).scale(1);
+                final columns = constraints.maxWidth < 320 || textScale > 1.3
                     ? 3
-                    : availableWidth >= 180
-                    ? 2
-                    : 1;
-                const spacing = 8.0;
-                final occupiedBySpacing = spacing * (columns - 1);
+                    : 6;
+                const spacing = 4.0;
                 final itemWidth =
-                    (availableWidth - occupiedBySpacing) / columns;
-
-                if (itemWidth <= 0) {
-                  return const SizedBox.shrink();
-                }
+                    (constraints.maxWidth - spacing * (columns - 1)) / columns;
 
                 return Wrap(
                   spacing: spacing,
@@ -80,7 +63,7 @@ class PokemonBattleAttributesCard extends StatelessWidget {
                         in _attributeLabels)
                       SizedBox(
                         width: itemWidth,
-                        child: _AttributeTile(
+                        child: _CompactAttributeTile(
                           abbreviation: key,
                           label: context.uiText(italianLabel, englishLabel),
                           score: attributes[key] ?? 0,
@@ -97,8 +80,8 @@ class PokemonBattleAttributesCard extends StatelessWidget {
   }
 }
 
-class _AttributeTile extends StatelessWidget {
-  const _AttributeTile({
+class _CompactAttributeTile extends StatelessWidget {
+  const _CompactAttributeTile({
     required this.abbreviation,
     required this.label,
     required this.score,
@@ -116,47 +99,49 @@ class _AttributeTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
 
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: colors.surfaceContainerHighest.withValues(alpha: 0.55),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: colors.outlineVariant),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
-        child: Column(
-          children: [
-            Text(
-              abbreviation,
-              style: Theme.of(
-                context,
-              ).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w900),
-            ),
-            const SizedBox(height: 2),
-            Text(label, style: Theme.of(context).textTheme.labelSmall),
-            const SizedBox(height: 6),
-            Text(
-              '$score',
-              style: Theme.of(
-                context,
-              ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w900),
-            ),
-            const SizedBox(height: 4),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-              decoration: BoxDecoration(
-                color: colors.primaryContainer,
-                borderRadius: BorderRadius.circular(999),
+    return Semantics(
+      container: true,
+      label: '$label: $score, $modifierLabel',
+      excludeSemantics: true,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: colors.surfaceContainerHighest.withValues(alpha: 0.55),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: colors.outlineVariant),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 6),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                abbreviation,
+                maxLines: 1,
+                style: Theme.of(
+                  context,
+                ).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w900),
               ),
-              child: Text(
+              const SizedBox(height: 2),
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  '$score',
+                  maxLines: 1,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ),
+              Text(
                 modifierLabel,
-                style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                  color: colors.onPrimaryContainer,
+                maxLines: 1,
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  color: colors.primary,
                   fontWeight: FontWeight.w900,
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

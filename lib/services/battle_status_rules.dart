@@ -1,32 +1,46 @@
-enum BattleStatusMoment {
-  turnStart,
-  actionAttempt,
-  subjectedToMove,
-  turnEnd,
-}
+import '../localization/ui_text.dart';
+
+enum BattleStatusMoment { turnStart, actionAttempt, subjectedToMove, turnEnd }
 
 extension BattleStatusMomentLabel on BattleStatusMoment {
   String get label => switch (this) {
-    BattleStatusMoment.turnStart => 'INIZIO TURNO',
-    BattleStatusMoment.actionAttempt => 'AZIONE',
-    BattleStatusMoment.subjectedToMove => 'MOSSA SUBITA',
-    BattleStatusMoment.turnEnd => 'FINE TURNO',
+    BattleStatusMoment.turnStart => uiTextForLanguage(
+      'INIZIO TURNO',
+      'START OF TURN',
+    ),
+    BattleStatusMoment.actionAttempt => uiTextForLanguage('AZIONE', 'ACTION'),
+    BattleStatusMoment.subjectedToMove => uiTextForLanguage(
+      'MOSSA SUBITA',
+      'SUBJECTED TO MOVE',
+    ),
+    BattleStatusMoment.turnEnd => uiTextForLanguage(
+      'FINE TURNO',
+      'END OF TURN',
+    ),
   };
 
   String get description => switch (this) {
-    BattleStatusMoment.turnStart =>
+    BattleStatusMoment.turnStart => uiTextForLanguage(
       'Controlli da risolvere appena comincia il turno del Pokémon.',
-    BattleStatusMoment.actionAttempt =>
+      'Checks to resolve as soon as the Pokémon’s turn begins.',
+    ),
+    BattleStatusMoment.actionAttempt => uiTextForLanguage(
       'Controlli da risolvere prima di un’azione o azione bonus.',
-    BattleStatusMoment.subjectedToMove =>
+      'Checks to resolve before an action or bonus action.',
+    ),
+    BattleStatusMoment.subjectedToMove => uiTextForLanguage(
       'Controlli da risolvere quando il Pokémon è sottoposto a una mossa.',
-    BattleStatusMoment.turnEnd =>
+      'Checks to resolve when the Pokémon is subjected to a move.',
+    ),
+    BattleStatusMoment.turnEnd => uiTextForLanguage(
       'Danni e tiri da risolvere alla fine del turno del Pokémon.',
+      'Damage and rolls to resolve at the end of the Pokémon’s turn.',
+    ),
   };
 }
 
 class BattleStatusReminder {
-  const BattleStatusReminder({
+  BattleStatusReminder({
     required this.status,
     required this.title,
     required this.instruction,
@@ -118,51 +132,80 @@ class BattleStatusRules {
       case 'Badly Poisoned':
         return BattleStatusReminder(
           status: status,
-          title: 'Attacchi e prove penalizzati',
-          instruction:
-              'Ha svantaggio ai tiri per colpire e a tutte le prove di caratteristica.',
+          title: uiTextForLanguage(
+            'Attacchi e prove penalizzati',
+            'Attacks and checks penalized',
+          ),
+          instruction: uiTextForLanguage(
+            'Ha svantaggio ai tiri per colpire e a tutte le prove di caratteristica.',
+            'It has disadvantage on attack rolls and all ability checks.',
+          ),
         );
       case 'Burned':
-        return const BattleStatusReminder(
+        return BattleStatusReminder(
           status: 'Burned',
-          title: 'Danni ridotti',
-          instruction:
-              'Quando infligge danni, tira i dadi dei danni due volte e usa il risultato più basso.',
+          title: uiTextForLanguage('Danni ridotti', 'Reduced damage'),
+          instruction: uiTextForLanguage(
+            'Quando infligge danni, tira i dadi dei danni due volte e usa il risultato più basso.',
+            'When it deals damage, roll the damage dice twice and use the lower result.',
+          ),
         );
       case 'Frozen':
-        return const BattleStatusReminder(
+        return BattleStatusReminder(
           status: 'Frozen',
-          title: 'Incapacitato e trattenuto',
-          instruction:
-              'Non può agire ed è trattenuto. Fuori dal combattimento lo status termina dopo 1 ora.',
+          title: uiTextForLanguage(
+            'Incapacitato e trattenuto',
+            'Incapacitated and restrained',
+          ),
+          instruction: uiTextForLanguage(
+            'Non può agire ed è trattenuto. Fuori dal combattimento lo status termina dopo 1 ora.',
+            'It cannot act and is restrained. Outside combat, the condition ends after 1 hour.',
+          ),
         );
       case 'Paralyzed':
-        return const BattleStatusReminder(
+        return BattleStatusReminder(
           status: 'Paralyzed',
-          title: 'Movimento e tiri salvezza',
-          instruction:
-              'Ha velocità dimezzata e svantaggio ai tiri salvezza di Forza e Destrezza.',
+          title: uiTextForLanguage(
+            'Movimento e tiri salvezza',
+            'Movement and saving throws',
+          ),
+          instruction: uiTextForLanguage(
+            'Ha velocità dimezzata e svantaggio ai tiri salvezza di Forza e Destrezza.',
+            'Its Speed is halved and it has disadvantage on Strength and Dexterity saving throws.',
+          ),
         );
       case 'Asleep':
-        return const BattleStatusReminder(
+        return BattleStatusReminder(
           status: 'Asleep',
-          title: 'Incapacitato e trattenuto',
-          instruction:
-              'Non può agire, è trattenuto ed effettua i tiri salvezza con svantaggio. Conta manualmente i prossimi 3 turni completi.',
+          title: uiTextForLanguage(
+            'Incapacitato e trattenuto',
+            'Incapacitated and restrained',
+          ),
+          instruction: uiTextForLanguage(
+            'Non può agire, è trattenuto ed effettua i tiri salvezza con svantaggio. Conta manualmente i prossimi 3 turni completi.',
+            'It cannot act, is restrained, and makes saving throws with disadvantage. Manually count the next 3 full turns.',
+          ),
         );
       case 'Confused':
-        return const BattleStatusReminder(
+        return BattleStatusReminder(
           status: 'Confused',
-          title: 'Niente reazioni',
-          instruction:
-              'Non può usare reazioni e ha velocità dimezzata. Conta manualmente i prossimi 3 turni completi.',
+          title: uiTextForLanguage('Niente reazioni', 'No reactions'),
+          instruction: uiTextForLanguage(
+            'Non può usare reazioni e ha velocità dimezzata. Conta manualmente i prossimi 3 turni completi.',
+            'It cannot take reactions and its Speed is halved. Manually count the next 3 full turns.',
+          ),
         );
       case 'Flinched':
-        return const BattleStatusReminder(
+        return BattleStatusReminder(
           status: 'Flinched',
-          title: 'Penalità fino al prossimo turno',
-          instruction:
-              'Fino alla fine del prossimo turno ha svantaggio a tiri per colpire, prove e tiri salvezza; le creature hanno vantaggio ai TS contro le sue mosse.',
+          title: uiTextForLanguage(
+            'Penalità fino al prossimo turno',
+            'Penalty until the next turn',
+          ),
+          instruction: uiTextForLanguage(
+            'Fino alla fine del prossimo turno ha svantaggio a tiri per colpire, prove e tiri salvezza; le creature hanno vantaggio ai TS contro le sue mosse.',
+            'Until the end of its next turn it has disadvantage on attack rolls, checks, and saving throws; creatures have advantage on saves against its moves.',
+          ),
         );
       default:
         return null;
@@ -176,71 +219,105 @@ class BattleStatusRules {
     switch (moment) {
       case BattleStatusMoment.turnStart:
         if (status == 'Burned') {
-          return const BattleStatusReminder(
+          return BattleStatusReminder(
             status: 'Burned',
-            title: 'Applica i danni da bruciatura',
-            instruction:
-                'All’inizio del turno subisce danni pari al bonus di competenza previsto dall’effetto che ha causato Burned.',
+            title: uiTextForLanguage(
+              'Applica i danni da bruciatura',
+              'Apply burn damage',
+            ),
+            instruction: uiTextForLanguage(
+              'All’inizio del turno subisce danni pari al bonus di competenza previsto dall’effetto che ha causato Burned.',
+              'At the start of its turn it takes damage equal to the proficiency bonus specified by the effect that caused Burned.',
+            ),
           );
         }
         if (status == 'Paralyzed') {
-          return const BattleStatusReminder(
+          return BattleStatusReminder(
             status: 'Paralyzed',
-            title: 'Tira 1d4 prima degli altri status',
-            instruction:
-                'Con 1 è incapacitato e trattenuto fino al prossimo turno e perde azione e azione bonus. Risolvi questo tiro prima di Asleep o Confused.',
+            title: uiTextForLanguage(
+              'Tira 1d4 prima degli altri status',
+              'Roll 1d4 before other conditions',
+            ),
+            instruction: uiTextForLanguage(
+              'Con 1 è incapacitato e trattenuto fino al prossimo turno e perde azione e azione bonus. Risolvi questo tiro prima di Asleep o Confused.',
+              'On a 1 it is incapacitated and restrained until its next turn and loses its action and bonus action. Resolve this roll before Asleep or Confused.',
+            ),
           );
         }
         return null;
       case BattleStatusMoment.actionAttempt:
         if (status == 'Paralyzed') {
-          return const BattleStatusReminder(
+          return BattleStatusReminder(
             status: 'Paralyzed',
-            title: 'Controlla il d4 di inizio turno',
-            instruction:
-                'Se il risultato era 1, il Pokémon non può agire e non deve effettuare altri controlli legati all’azione.',
+            title: uiTextForLanguage(
+              'Controlla il d4 di inizio turno',
+              'Check the start-of-turn d4',
+            ),
+            instruction: uiTextForLanguage(
+              'Se il risultato era 1, il Pokémon non può agire e non deve effettuare altri controlli legati all’azione.',
+              'If the result was 1, the Pokémon cannot act and does not make any other action-related checks.',
+            ),
           );
         }
         if (status == 'Asleep') {
-          return const BattleStatusReminder(
+          return BattleStatusReminder(
             status: 'Asleep',
-            title: 'Non può agire',
-            instruction:
-                'Finché Asleep è attivo, il Pokémon è incapacitato e non può usare azioni o azioni bonus.',
+            title: uiTextForLanguage('Non può agire', 'Cannot act'),
+            instruction: uiTextForLanguage(
+              'Finché Asleep è attivo, il Pokémon è incapacitato e non può usare azioni o azioni bonus.',
+              'While Asleep is active, the Pokémon is incapacitated and cannot take actions or bonus actions.',
+            ),
           );
         }
         if (status == 'Confused') {
-          return const BattleStatusReminder(
+          return BattleStatusReminder(
             status: 'Confused',
-            title: 'Tira 1d20 prima di agire',
-            instruction:
-                '1–10: perde la concentrazione, subisce i danni previsti e la mossa fallisce. 11–15: agisce normalmente. 16+: Confused termina immediatamente.',
+            title: uiTextForLanguage(
+              'Tira 1d20 prima di agire',
+              'Roll 1d20 before acting',
+            ),
+            instruction: uiTextForLanguage(
+              '1–10: perde la concentrazione, subisce i danni previsti e la mossa fallisce. 11–15: agisce normalmente. 16+: Confused termina immediatamente.',
+              '1–10: it loses focus, takes the listed damage, and the move fails. 11–15: it acts normally. 16+: Confused ends immediately.',
+            ),
           );
         }
         if (status == 'Flinched') {
-          return const BattleStatusReminder(
+          return BattleStatusReminder(
             status: 'Flinched',
-            title: 'Applica svantaggio',
-            instruction:
-                'Applica svantaggio a tiri per colpire, prove e tiri salvezza effettuati prima della fine del prossimo turno.',
+            title: uiTextForLanguage(
+              'Applica svantaggio',
+              'Apply disadvantage',
+            ),
+            instruction: uiTextForLanguage(
+              'Applica svantaggio a tiri per colpire, prove e tiri salvezza effettuati prima della fine del prossimo turno.',
+              'Apply disadvantage to attack rolls, checks, and saving throws made before the end of the next turn.',
+            ),
           );
         }
         return null;
       case BattleStatusMoment.subjectedToMove:
         if (status == 'Asleep') {
-          return const BattleStatusReminder(
+          return BattleStatusReminder(
             status: 'Asleep',
-            title: 'Tiro di risveglio',
-            instruction:
-                'Quando è sottoposto a una mossa, tira 1d20. Con 11 o più Asleep termina immediatamente.',
+            title: uiTextForLanguage('Tiro di risveglio', 'Wake-up roll'),
+            instruction: uiTextForLanguage(
+              'Quando è sottoposto a una mossa, tira 1d20. Con 11 o più Asleep termina immediatamente.',
+              'When subjected to a move, roll 1d20. On 11 or higher, Asleep ends immediately.',
+            ),
           );
         }
         if (status == 'Frozen') {
-          return const BattleStatusReminder(
+          return BattleStatusReminder(
             status: 'Frozen',
-            title: 'Controlla il tipo di danno',
-            instruction:
-                'Se subisce danni da una mossa capace di applicare Burned, Frozen termina immediatamente.',
+            title: uiTextForLanguage(
+              'Controlla il tipo di danno',
+              'Check the damage type',
+            ),
+            instruction: uiTextForLanguage(
+              'Se subisce danni da una mossa capace di applicare Burned, Frozen termina immediatamente.',
+              'If it takes damage from a move capable of applying Burned, Frozen ends immediately.',
+            ),
           );
         }
         return null;
@@ -248,41 +325,60 @@ class BattleStatusRules {
         if (status == 'Poisoned' || status == 'Badly Poisoned') {
           return BattleStatusReminder(
             status: status,
-            title: 'Applica i danni da veleno',
-            instruction:
-                'Alla fine del turno subisce danni pari al bonus di competenza previsto dall’effetto che ha causato lo status.',
+            title: uiTextForLanguage(
+              'Applica i danni da veleno',
+              'Apply poison damage',
+            ),
+            instruction: uiTextForLanguage(
+              'Alla fine del turno subisce danni pari al bonus di competenza previsto dall’effetto che ha causato lo status.',
+              'At the end of its turn it takes damage equal to the proficiency bonus specified by the effect that caused the condition.',
+            ),
           );
         }
         if (status == 'Frozen') {
-          return const BattleStatusReminder(
+          return BattleStatusReminder(
             status: 'Frozen',
-            title: 'Tiro salvezza di Forza',
-            instruction:
-                'Effettua un TS di Forza contro CD 10 + bonus di competenza della fonte. Con successo Frozen termina.',
+            title: uiTextForLanguage(
+              'Tiro salvezza di Forza',
+              'Strength saving throw',
+            ),
+            instruction: uiTextForLanguage(
+              'Effettua un TS di Forza contro CD 10 + bonus di competenza della fonte. Con successo Frozen termina.',
+              'Make a Strength saving throw against DC 10 + the source’s proficiency bonus. On a success, Frozen ends.',
+            ),
           );
         }
         if (status == 'Asleep') {
-          return const BattleStatusReminder(
+          return BattleStatusReminder(
             status: 'Asleep',
-            title: 'Tiro di risveglio',
-            instruction:
-                'Tira 1d20. Con 11 o più Asleep termina immediatamente; altrimenti conta un altro turno completo.',
+            title: uiTextForLanguage('Tiro di risveglio', 'Wake-up roll'),
+            instruction: uiTextForLanguage(
+              'Tira 1d20. Con 11 o più Asleep termina immediatamente; altrimenti conta un altro turno completo.',
+              'Roll 1d20. On 11 or higher, Asleep ends immediately; otherwise count another full turn.',
+            ),
           );
         }
         if (status == 'Confused') {
-          return const BattleStatusReminder(
+          return BattleStatusReminder(
             status: 'Confused',
-            title: 'Aggiorna la durata',
-            instruction:
-                'Conta il turno completo appena terminato. Dopo 3 turni completi Confused termina se non è già cessato.',
+            title: uiTextForLanguage('Aggiorna la durata', 'Update duration'),
+            instruction: uiTextForLanguage(
+              'Conta il turno completo appena terminato. Dopo 3 turni completi Confused termina se non è già cessato.',
+              'Count the full turn that just ended. After 3 full turns, Confused ends if it has not already ended.',
+            ),
           );
         }
         if (status == 'Flinched') {
-          return const BattleStatusReminder(
+          return BattleStatusReminder(
             status: 'Flinched',
-            title: 'Verifica la scadenza',
-            instruction:
-                'Se questo è il turno successivo all’applicazione, rimuovi Flinched alla fine del turno.',
+            title: uiTextForLanguage(
+              'Verifica la scadenza',
+              'Check expiration',
+            ),
+            instruction: uiTextForLanguage(
+              'Se questo è il turno successivo all’applicazione, rimuovi Flinched alla fine del turno.',
+              'If this is the turn after the condition was applied, remove Flinched at the end of the turn.',
+            ),
           );
         }
         return null;

@@ -87,6 +87,79 @@ class PokedexEntry {
 
   bool get caught => forms.values.any((entry) => entry.caught);
 
+  static const Map<String, Set<String>> _defaultFormsBySpecies = {
+    'pumpkaboo': {'average'},
+    'gourgeist': {'average'},
+    'giratina': {'altered'},
+    'hoopa': {'confined'},
+    'zygarde': {'50'},
+    'shaymin': {'land'},
+    'meloetta': {'aria'},
+    'wishiwashi': {'solo'},
+    'oricorio': {'baile'},
+    'lycanroc': {'midday'},
+    'minior': {'meteor'},
+    'burmy': {'plant-cloak'},
+    'wormadam': {'plant-cloak'},
+    'cherrim': {'overcast'},
+    'shellos': {'west-sea'},
+    'gastrodon': {'west-sea'},
+    'dialga': {'altered'},
+    'palkia': {'altered'},
+    'basculin': {'red-striped'},
+    'darmanitan': {'standard'},
+    'deerling': {'spring'},
+    'sawsbuck': {'spring'},
+    'tornadus': {'incarnate'},
+    'thundurus': {'incarnate'},
+    'landorus': {'incarnate'},
+    'keldeo': {'ordinary'},
+    'genesect': {'normal-drive'},
+    'vivillon': {'meadow-pattern'},
+    'flabebe': {'red-flower'},
+    'floette': {'red-flower'},
+    'florges': {'red-flower'},
+    'furfrou': {'natural'},
+    'aegislash': {'shield'},
+    'mimikyu': {'disguised'},
+    'toxtricity': {'amped'},
+    'sinistea': {'phony'},
+    'polteageist': {'phony'},
+    'alcremie': {'vanilla-cream'},
+    'eiscue': {'ice-face'},
+    'morpeko': {'full-belly'},
+    'zacian': {'hero-of-many-battles'},
+    'zamazenta': {'hero-of-many-battles'},
+    'urshifu': {'single'},
+    'enamorus': {'incarnate'},
+    'maushold': {'family-of-four'},
+    'squawkabilly': {'green-plumage'},
+    'palafin': {'zero'},
+    'tatsugiri': {'curly'},
+    'dudunsparce': {'two-segment'},
+    'gimmighoul': {'chest'},
+    'ogerpon': {'teal-mask'},
+  };
+
+  static const Map<String, Set<String>> _battleOnlyFormsBySpecies = {
+    'castform': {'sunny', 'rainy', 'snowy'},
+    'cherrim': {'sunshine'},
+    'darmanitan': {'zen', 'galarian-zen'},
+    'meloetta': {'pirouette'},
+    'wishiwashi': {'school'},
+    'zygarde': {'complete'},
+    'necrozma': {'ultra'},
+    'aegislash': {'blade'},
+    'xerneas': {'active'},
+    'mimikyu': {'busted'},
+    'cramorant': {'gulping', 'gorging'},
+    'eiscue': {'noice-face'},
+    'morpeko': {'hangry'},
+    'eternatus': {'eternamax'},
+    'palafin': {'hero'},
+    'terapagos': {'terastal', 'stellar'},
+  };
+
   static Map<String, PokedexFormEntry> _initialForms({
     required Map<String, PokedexFormEntry> forms,
     required bool seen,
@@ -108,8 +181,24 @@ class PokedexEntry {
     });
   }
 
+  static String _speciesPolicyKey(String speciesName) {
+    return speciesName
+        .trim()
+        .toLowerCase()
+        .replaceFirst(RegExp(r'\s*\(.*\)$'), '')
+        .trim();
+  }
+
   static String formKey(String? formName, {String speciesName = ''}) {
-    return Pokemon.formReferenceKey(formName ?? '', speciesName);
+    final key = Pokemon.formReferenceKey(formName ?? '', speciesName);
+    final defaults = _defaultFormsBySpecies[_speciesPolicyKey(speciesName)];
+    if (defaults != null &&
+        defaults.any(
+          (defaultKey) => key == defaultKey || key.startsWith('$defaultKey-'),
+        )) {
+      return 'base';
+    }
+    return key;
   }
 
   static String? displayNameFor(String? formName, {String speciesName = ''}) {
@@ -136,16 +225,23 @@ class PokedexEntry {
 
   static bool isTrackableForm(String? formName, {String speciesName = ''}) {
     final key = formKey(formName, speciesName: speciesName);
-    if (key != 'base' &&
-        ItemDrivenPokemonForm.usesHeldItemFormForSpecies(speciesName)) {
+    if (key == 'base') return true;
+    if (ItemDrivenPokemonForm.usesHeldItemFormForSpecies(speciesName)) {
       return false;
     }
+
+    final speciesKey = _speciesPolicyKey(speciesName);
+    if (_battleOnlyFormsBySpecies[speciesKey]?.contains(key) ?? false) {
+      return false;
+    }
+
     const temporaryTokens = {
       'mega',
       'gigantamax',
       'gmax',
       'dynamax',
       'terastal',
+      'stellar',
       'primal',
     };
     final parts = key.split('-').toSet();

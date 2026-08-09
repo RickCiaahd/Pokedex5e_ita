@@ -5,7 +5,9 @@ import 'package:flutter/services.dart';
 import '../localization/game_catalog_locale.dart';
 import '../models/bag_item.dart';
 import '../models/move_data.dart';
+import '../models/special_form_item_catalog.dart';
 import '../models/tm_data.dart';
+import '../models/trainer_starting_equipment.dart';
 import '../services/performance_trace.dart';
 import 'item_localization_repository.dart';
 import 'move_repository.dart';
@@ -94,6 +96,15 @@ class ItemRepository {
           .toList(growable: true);
 
       items.addAll(await _getTmItems());
+      final existingIds = items.map((item) => item.id).toSet();
+      for (final item in [
+        ...TrainerStartingEquipment.catalogItems,
+        ...SpecialFormItemCatalog.items,
+      ]) {
+        if (existingIds.add(item.id)) {
+          items.add(item);
+        }
+      }
 
       items.sort((a, b) {
         final typeCompare = a.type.compareTo(b.type);

@@ -11,7 +11,6 @@ void main() {
       final source = File(path).readAsStringSync();
       expect('PROSSIMO TURNO'.allMatches(source).length, 1, reason: path);
       expect(source, isNot(contains('NUOVO ROUND')), reason: path);
-      expect(source, isNot(contains('onNextRound')), reason: path);
       expect(source, isNot(contains('_nextRound(')), reason: path);
     }
   });

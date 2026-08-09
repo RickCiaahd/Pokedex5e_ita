@@ -1,4 +1,5 @@
 import '../models/master_battle_session.dart';
+import '../localization/ui_text.dart';
 import '../models/pokemon.dart';
 import '../models/pokemon_form_choice.dart';
 
@@ -12,19 +13,40 @@ class MasterFightSummaryService {
   }) {
     final generatedAt = exportedAt ?? DateTime.now();
     final buffer = StringBuffer()
-      ..writeln('POKÉDEX 5E ITA — RIEPILOGO FIGHT DEL MASTER')
-      ..writeln('Esportato: ${generatedAt.toIso8601String()}')
-      ..writeln('Round: ${session.round}')
-      ..writeln('Allenatori PNG: ${session.participants.length}')
+      ..writeln(
+        uiTextForLanguage(
+          'POKÉDEX 5E ITA — RIEPILOGO FIGHT DEL MASTER',
+          'TRAINER ATLAS 5E — MASTER FIGHT SUMMARY',
+        ),
+      )
+      ..writeln(
+        uiTextForLanguage('Esportato: $generatedAt', 'Exported: $generatedAt'),
+      )
+      ..writeln(
+        uiTextForLanguage('Round: ${session.round}', 'Round: ${session.round}'),
+      )
+      ..writeln(
+        uiTextForLanguage(
+          'Allenatori PNG: ${session.participants.length}',
+          'NPC Trainers: ${session.participants.length}',
+        ),
+      )
       ..writeln();
 
-    buffer.writeln('INIZIATIVA');
+    buffer.writeln(uiTextForLanguage('INIZIATIVA', 'INITIATIVE'));
     if (session.initiativeEntries.isEmpty) {
-      buffer.writeln('- Nessun partecipante in iniziativa');
+      buffer.writeln(
+        uiTextForLanguage(
+          '- Nessun partecipante in iniziativa',
+          '- No initiative entries',
+        ),
+      );
     } else {
       for (var index = 0; index < session.initiativeEntries.length; index++) {
         final entry = session.initiativeEntries[index];
-        final current = index == session.turnIndex ? ' ← TURNO ATTUALE' : '';
+        final current = index == session.turnIndex
+            ? uiTextForLanguage(' ← TURNO ATTUALE', ' ← CURRENT TURN')
+            : '';
         buffer.writeln('- ${entry.initiative}: ${entry.name}$current');
       }
     }
@@ -34,21 +56,44 @@ class MasterFightSummaryService {
         ..writeln()
         ..writeln(participant.displayName.toUpperCase())
         ..writeln(
-          '${participant.rank} · limite attivi ${participant.activeLimit}',
+          uiTextForLanguage(
+            '${participant.rank} · limite attivi ${participant.activeLimit}',
+            '${participant.rank} · active limit ${participant.activeLimit}',
+          ),
         );
       if (participant.personality.trim().isNotEmpty) {
-        buffer.writeln('Personalità: ${participant.personality.trim()}');
+        buffer.writeln(
+          uiTextForLanguage(
+            'Personalità: ${participant.personality.trim()}',
+            'Personality: ${participant.personality.trim()}',
+          ),
+        );
       }
       if (participant.tactics.trim().isNotEmpty) {
-        buffer.writeln('Tattiche: ${participant.tactics.trim()}');
+        buffer.writeln(
+          uiTextForLanguage(
+            'Tattiche: ${participant.tactics.trim()}',
+            'Tactics: ${participant.tactics.trim()}',
+          ),
+        );
       }
       if (participant.rewardMoney > 0) {
-        buffer.writeln('Ricompensa: ₽${participant.rewardMoney}');
+        buffer.writeln(
+          uiTextForLanguage(
+            'Ricompensa: ₽${participant.rewardMoney}',
+            'Reward: ₽${participant.rewardMoney}',
+          ),
+        );
       }
       if (participant.rewards.isNotEmpty) {
-        buffer.writeln('Oggetti: ${participant.rewards.join(', ')}');
+        buffer.writeln(
+          uiTextForLanguage(
+            'Oggetti: ${participant.rewards.join(', ')}',
+            'Items: ${participant.rewards.join(', ')}',
+          ),
+        );
       }
-      buffer.writeln('Squadra:');
+      buffer.writeln(uiTextForLanguage('Squadra:', 'Team:'));
 
       for (final state in participant.team) {
         final pokemon = pokemonById[state.pokemon.pokemonId];
@@ -56,29 +101,41 @@ class MasterFightSummaryService {
             ? '#${state.pokemon.pokemonId}'
             : pokemonFormDisplayName(pokemon.name, state.pokemon.formName);
         final active = participant.activeSlotIndices.contains(state.slotIndex)
-            ? 'ATTIVO'
-            : 'RISERVA';
-        final fainted = state.isFainted ? ' · ESAUSTO' : '';
+            ? uiTextForLanguage('ATTIVO', 'ACTIVE')
+            : uiTextForLanguage('RISERVA', 'RESERVE');
+        final fainted = state.isFainted
+            ? uiTextForLanguage(' · ESAUSTO', ' · FAINTED')
+            : '';
         final statuses = <String>[
           if (state.nonVolatileStatus != null) state.nonVolatileStatus!,
           ...(state.volatileStatuses.toList()..sort()),
         ];
-        final statusText = statuses.isEmpty ? 'nessuno' : statuses.join(', ');
+        final statusText = statuses.isEmpty
+            ? uiTextForLanguage('nessuno', 'none')
+            : statuses.join(', ');
         buffer.writeln(
-          '- [$active] $name Lv. ${state.pokemon.level} · '
-          'PF ${state.currentHp}/${state.pokemon.maxHp}$fainted · '
-          'Status: $statusText',
+          uiTextForLanguage(
+            '- [$active] $name Lv. ${state.pokemon.level} · PF ${state.currentHp}/${state.pokemon.maxHp}$fainted · Status: $statusText',
+            '- [$active] $name Lv. ${state.pokemon.level} · HP ${state.currentHp}/${state.pokemon.maxHp}$fainted · Conditions: $statusText',
+          ),
         );
 
         final moves = state.pokemon.selectedMoves;
         if (moves.isEmpty) {
-          buffer.writeln('  Mosse: nessuna');
+          buffer.writeln(
+            uiTextForLanguage('  Mosse: nessuna', '  Moves: none'),
+          );
         } else {
           final pp = [
             for (final move in moves)
               '$move ${state.remainingPp.containsKey(move) ? state.remainingPp[move] : '?'} PP',
           ];
-          buffer.writeln('  Mosse: ${pp.join(' · ')}');
+          buffer.writeln(
+            uiTextForLanguage(
+              '  Mosse: ${pp.join(' · ')}',
+              '  Moves: ${pp.join(' · ')}',
+            ),
+          );
         }
       }
     }

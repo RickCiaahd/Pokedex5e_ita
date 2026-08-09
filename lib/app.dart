@@ -30,9 +30,7 @@ bool _usesTouchLayout(TargetPlatform platform) {
 ThemeData buildTrainerAtlasTheme({TargetPlatform? platform}) {
   final effectivePlatform = platform ?? defaultTargetPlatform;
   final touchLayout = _usesTouchLayout(effectivePlatform);
-  final density = touchLayout
-      ? VisualDensity.standard
-      : _desktopCompactDensity;
+  final density = touchLayout ? VisualDensity.standard : _desktopCompactDensity;
   final tapTargetSize = touchLayout
       ? MaterialTapTargetSize.padded
       : MaterialTapTargetSize.shrinkWrap;
@@ -42,9 +40,7 @@ ThemeData buildTrainerAtlasTheme({TargetPlatform? platform}) {
   );
 
   final compactButtonStyle = ButtonStyle(
-    minimumSize: WidgetStatePropertyAll(
-      Size(0, touchLayout ? 48 : 42),
-    ),
+    minimumSize: WidgetStatePropertyAll(Size(0, touchLayout ? 48 : 42)),
     padding: const WidgetStatePropertyAll(
       EdgeInsets.symmetric(horizontal: 12, vertical: 8),
     ),
@@ -94,9 +90,7 @@ ThemeData buildTrainerAtlasTheme({TargetPlatform? platform}) {
     outlinedButtonTheme: OutlinedButtonThemeData(style: compactButtonStyle),
     textButtonTheme: TextButtonThemeData(
       style: compactButtonStyle.copyWith(
-        minimumSize: WidgetStatePropertyAll(
-          Size(0, touchLayout ? 48 : 38),
-        ),
+        minimumSize: WidgetStatePropertyAll(Size(0, touchLayout ? 48 : 38)),
       ),
     ),
     iconButtonTheme: IconButtonThemeData(
@@ -186,20 +180,26 @@ class _Pokedex5EAppState extends State<Pokedex5EApp> {
         animation: _localeController,
         builder: (context, _) {
           final explicitLocale = _localeController.locale;
-          if (explicitLocale != null) {
-            GameCatalogLocale.setLanguageCode(explicitLocale.languageCode);
-          }
+          final platformLocales =
+              WidgetsBinding.instance.platformDispatcher.locales;
+          final catalogLocale =
+              explicitLocale ??
+              _localeController.resolveDeviceLocales(platformLocales);
+          GameCatalogLocale.setLanguageCode(catalogLocale.languageCode);
 
           return MaterialApp(
             title: 'Trainer Atlas 5e',
             onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
             debugShowCheckedModeBanner: false,
-            locale: _localeController.locale,
+            locale: explicitLocale,
             supportedLocales: AppLocalizations.supportedLocales,
             localizationsDelegates: AppLocalizations.localizationsDelegates,
-            localeResolutionCallback: (deviceLocale, supportedLocales) {
-              final resolvedLocale = _localeController.resolveDeviceLocale(
-                deviceLocale,
+            localeListResolutionCallback: (deviceLocales, supportedLocales) {
+              final effectiveDeviceLocales =
+                  deviceLocales ??
+                  WidgetsBinding.instance.platformDispatcher.locales;
+              final resolvedLocale = _localeController.resolveDeviceLocales(
+                effectiveDeviceLocales,
               );
               GameCatalogLocale.setLanguageCode(resolvedLocale.languageCode);
               return resolvedLocale;

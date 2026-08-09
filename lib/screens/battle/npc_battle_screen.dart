@@ -483,7 +483,7 @@ class _NpcBattleScreenState extends State<NpcBattleScreen> {
     if (confirmed != true) return;
     await _commit(
       _battleService.reset(_session, random: _random),
-      message: 'Fight azzerato.',
+      message: uiTextForLanguage('Fight azzerato.', 'Fight reset.'),
     );
   }
 
@@ -588,7 +588,7 @@ class _NpcBattleScreenState extends State<NpcBattleScreen> {
       context: context,
       builder: (_) => AlertDialog(
         scrollable: true,
-        title: Text('Terminare il fight?'),
+        title: Text(uiTextForLanguage('Terminare il fight?', 'End the fight?')),
         content: Text(
           uiTextForLanguage(
             'La sessione del Master verrà eliminata. Gli Allenatori PNG salvati rimarranno intatti nella libreria.',
@@ -676,7 +676,7 @@ class _NpcBattleScreenState extends State<NpcBattleScreen> {
     return Scaffold(
       appBar: AppBar(
         leading: const HomeLeadingButton(),
-        title: Text('Fight del Master'),
+        title: Text(uiTextForLanguage('Fight del Master', 'Master Fight')),
         actions: [
           const HomeAppBarAction(),
           PopupMenuButton<_FightSummaryAction>(
@@ -993,7 +993,10 @@ class _TrainerFightCard extends StatelessWidget {
             if (participant.tactics.trim().isNotEmpty) ...[
               const SizedBox(height: 6),
               Text(
-                'Tattiche: ${participant.tactics}',
+                uiTextForLanguage(
+                  'Tattiche: ${participant.tactics}',
+                  'Tactics: ${participant.tactics}',
+                ),
                 style: const TextStyle(fontWeight: FontWeight.w700),
               ),
             ],
@@ -1082,7 +1085,10 @@ class _InitiativeCard extends StatelessWidget {
                             'Pokémon controllato dal Master',
                             """Master-controlled Pokémon""",
                           )
-                        : 'Partecipante esterno non gestito',
+                        : uiTextForLanguage(
+                            'Partecipante esterno non gestito',
+                            'External participant not managed by the app',
+                          ),
                   ),
                   trailing: entries[index].isTrainerGroup
                       ? null
@@ -1175,8 +1181,10 @@ class _TeamMemberCard extends StatelessWidget {
                       ],
                     ),
                     Text(
-                      'Lv. ${state.pokemon.level} · PF ${state.currentHp}/${state.pokemon.maxHp}'
-                      '${state.isFainted ? ' · ESAUSTO' : ''}',
+                      context.uiText(
+                        'Lv. ${state.pokemon.level} · PF ${state.currentHp}/${state.pokemon.maxHp}${state.isFainted ? ' · ESAUSTO' : ''}',
+                        'Lv. ${state.pokemon.level} · HP ${state.currentHp}/${state.pokemon.maxHp}${state.isFainted ? ' · FAINTED' : ''}',
+                      ),
                     ),
                     LinearProgressIndicator(
                       value: state.pokemon.maxHp <= 0
@@ -1299,7 +1307,10 @@ class _FocusedPokemonCard extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             Text(
-              'PF ${state.currentHp}/${state.pokemon.maxHp}',
+              context.uiText(
+                'PF ${state.currentHp}/${state.pokemon.maxHp}',
+                'HP ${state.currentHp}/${state.pokemon.maxHp}',
+              ),
               textAlign: TextAlign.center,
               style: Theme.of(
                 context,
@@ -1344,7 +1355,7 @@ class _FocusedPokemonCard extends StatelessWidget {
                 ),
                 ActionChip(
                   avatar: const Icon(Icons.favorite, size: 18),
-                  label: Text('RIPRISTINA'),
+                  label: Text(uiTextForLanguage('RIPRISTINA', 'RESTORE')),
                   onPressed: onHeal,
                 ),
                 ActionChip(
@@ -1395,7 +1406,7 @@ class _NpcMoveCard extends StatelessWidget {
     final details = <String?>[
       damage,
       move?.range == '-' ? null : move?.range,
-      save == null ? null : 'TS $save',
+      save == null ? null : uiTextForLanguage('TS $save', 'Save $save'),
     ].whereType<String>().join(' · ');
     return Card(
       child: ExpansionTile(
@@ -1428,7 +1439,7 @@ class _NpcMoveCard extends StatelessWidget {
                   ),
                   IconButton(
                     onPressed: remainingPp >= maxPp ? null : onRestore,
-                    tooltip: 'Ripristina PP',
+                    tooltip: uiTextForLanguage('Ripristina PP', 'Restore PP'),
                     icon: const Icon(Icons.add_circle_outline),
                   ),
                 ],
@@ -1481,8 +1492,10 @@ class _NpcHpInputDialogState extends State<_NpcHpInputDialog> {
         keyboardType: const TextInputType.numberWithOptions(signed: true),
         decoration: InputDecoration(
           labelText: uiTextForLanguage('PF o modifica', """HP or adjustment"""),
-          helperText:
-              'Esempi: -12, +8 oppure 35. Attuali ${widget.currentHp}/${widget.maxHp}',
+          helperText: uiTextForLanguage(
+            'Esempi: -12, +8 oppure 35. Attuali ${widget.currentHp}/${widget.maxHp}',
+            'Examples: -12, +8 or 35. Current ${widget.currentHp}/${widget.maxHp}',
+          ),
         ),
         onSubmitted: (value) => Navigator.of(context).pop(value),
       ),
@@ -1528,7 +1541,10 @@ class _StatusDialogState extends State<_StatusDialog> {
           DropdownButtonFormField<String?>(
             initialValue: _nonVolatile,
             decoration: InputDecoration(
-              labelText: 'Status persistente',
+              labelText: uiTextForLanguage(
+                'Status persistente',
+                'Persistent condition',
+              ),
               border: OutlineInputBorder(),
             ),
             items: [
@@ -1543,7 +1559,7 @@ class _StatusDialogState extends State<_StatusDialog> {
           ),
           const SizedBox(height: 12),
           Text(
-            'Status temporanei',
+            uiTextForLanguage('Status temporanei', 'Temporary conditions'),
             style: TextStyle(fontWeight: FontWeight.w900),
           ),
           const SizedBox(height: 6),

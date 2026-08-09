@@ -14,8 +14,10 @@ void main() {
     expect(alolan.types, containsAll(<String>['Dark', 'Normal']));
     expect(alolan.abilities, contains('Gluttony'));
     expect(alolan.moves.startingMoves, contains('Quick Attack'));
-    expect(alolan.genus, 'Mouse Pokémon');
-    expect(alolan.description, startsWith('Night after night'));
+    expect(alolan.genus, 'Pokémon Topo');
+    expect(alolan.description, isNotNull);
+    expect(alolan.description, isNotEmpty);
+    expect(alolan.description, isNot(startsWith('Night after night')));
     expect(alolan.heightMeters, 0.3);
     expect(alolan.weightKg, 3.8);
   });

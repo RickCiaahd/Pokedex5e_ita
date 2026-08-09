@@ -28,45 +28,48 @@ void main() {
     tester,
   ) async {
     GameCatalogLocale.setLanguageCode('en');
-
-    await tester.pumpWidget(
-      const MaterialApp(
-        locale: Locale('en'),
-        home: Scaffold(
-          body: PokemonBattleAttributesCard(
-            attributes: {
-              'STR': 13,
-              'DEX': 12,
-              'CON': 12,
-              'INT': 6,
-              'WIS': 10,
-              'CHA': 10,
-            },
+    final semantics = tester.ensureSemantics();
+    try {
+      await tester.pumpWidget(
+        const MaterialApp(
+          locale: Locale('en'),
+          home: Scaffold(
+            body: PokemonBattleAttributesCard(
+              attributes: {
+                'STR': 13,
+                'DEX': 12,
+                'CON': 12,
+                'INT': 6,
+                'WIS': 10,
+                'CHA': 10,
+              },
+            ),
           ),
         ),
-      ),
-    );
+      );
 
-    expect(find.text('ABILITY SCORES'), findsOneWidget);
-    expect(find.text('Strength'), findsOneWidget);
-    expect(find.text('Dexterity'), findsOneWidget);
-    expect(find.text('Constitution'), findsOneWidget);
-    expect(find.text('Intelligence'), findsOneWidget);
-    expect(find.text('Wisdom'), findsOneWidget);
-    expect(find.text('Charisma'), findsOneWidget);
-    expect(find.text('CARATTERISTICHE'), findsNothing);
-    expect(find.text('Forza'), findsNothing);
+      expect(find.text('ABILITY SCORES'), findsOneWidget);
+      expect(find.bySemanticsLabel('Strength: 13, +1'), findsOneWidget);
+      expect(find.bySemanticsLabel('Dexterity: 12, +1'), findsOneWidget);
+      expect(find.bySemanticsLabel('Constitution: 12, +1'), findsOneWidget);
+      expect(find.bySemanticsLabel('Intelligence: 6, -2'), findsOneWidget);
+      expect(find.bySemanticsLabel('Wisdom: 10, +0'), findsOneWidget);
+      expect(find.bySemanticsLabel('Charisma: 10, +0'), findsOneWidget);
+      expect(find.text('CARATTERISTICHE'), findsNothing);
+    } finally {
+      semantics.dispose();
+    }
   });
 
   test('reported screens include their English UI text', () {
     final expectations = <String, List<String>>{
       'lib/widgets/battle/battle_environment_card.dart': [
         "'ENVIRONMENT'",
-        "'ROLL WEATHER'",
+        "'Update environment'",
       ],
       'lib/screens/bag/bag_screen.dart': [
-        "'Trainer Bag'",
-        "'Find item'",
+        "'Bag'",
+        "'Search items'",
         "'Quantity",
       ],
       'lib/screens/trainer/trainer_sheet_screen.dart': [
@@ -117,7 +120,9 @@ void main() {
     };
 
     for (final entry in expectations.entries) {
-      final source = File(entry.key).readAsStringSync();
+      final source = entry.key == 'lib/screens/bag/bag_screen.dart'
+          ? _bagSource()
+          : File(entry.key).readAsStringSync();
       for (final expected in entry.value) {
         expect(
           source,
@@ -148,4 +153,14 @@ void main() {
       ),
     );
   });
+}
+
+String _bagSource() {
+  final files = Directory('lib/screens/bag')
+      .listSync()
+      .whereType<File>()
+      .where((file) => file.path.endsWith('.dart'))
+      .toList()
+    ..sort((a, b) => a.path.compareTo(b.path));
+  return files.map((file) => file.readAsStringSync()).join('\n');
 }

@@ -1,3 +1,5 @@
+import '../localization/ui_text.dart';
+
 enum BattleTransformationKind {
   mega,
   zMove,
@@ -19,11 +21,20 @@ enum BattleTransformationKind {
   };
 
   String get label => switch (this) {
-    BattleTransformationKind.mega => 'Mega Evoluzione',
-    BattleTransformationKind.zMove => 'Mossa Z',
+    BattleTransformationKind.mega => uiTextForLanguage(
+      'Mega Evoluzione',
+      'Mega Evolution',
+    ),
+    BattleTransformationKind.zMove => uiTextForLanguage('Mossa Z', 'Z-Move'),
     BattleTransformationKind.dynamax => 'Dynamax',
-    BattleTransformationKind.gigamax => 'Gigamax',
-    BattleTransformationKind.terastal => 'Teracristal',
+    BattleTransformationKind.gigamax => uiTextForLanguage(
+      'Gigamax',
+      'Gigantamax',
+    ),
+    BattleTransformationKind.terastal => uiTextForLanguage(
+      'Teracristal',
+      'Terastallization',
+    ),
   };
 
   static BattleTransformationKind? fromId(String? value) {
@@ -79,7 +90,12 @@ class BattleTransformationState {
   factory BattleTransformationState.fromJson(Map<String, dynamic> json) {
     final kind = BattleTransformationKind.fromId(json['kind']?.toString());
     if (kind == null) {
-      throw const FormatException('Trasformazione di battaglia non valida.');
+      throw FormatException(
+        uiTextForLanguage(
+          'Trasformazione di battaglia non valida.',
+          'Invalid battle transformation.',
+        ),
+      );
     }
     return BattleTransformationState(
       kind: kind,

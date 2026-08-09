@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pokedex_5e_ita/models/team_slot.dart';
 import 'package:pokedex_5e_ita/models/user_profile.dart';
+import 'package:pokedex_5e_ita/repositories/bag_inventory_repository.dart';
 import 'package:pokedex_5e_ita/repositories/pokedex_repositry.dart';
 import 'package:pokedex_5e_ita/repositories/profile_repository.dart';
 import 'package:pokedex_5e_ita/repositories/team_repository.dart';
@@ -16,11 +17,13 @@ void main() {
       );
       final teams = _FakeTeamRepository();
       final pokedex = _FakePokedexRepository();
+      final bags = _FakeBagInventoryRepository();
       final launch = _FakeAppLaunchService();
       final service = ProfileCreationService(
         profileRepository: profiles,
         teamRepository: teams,
         pokedexRepository: pokedex,
+        bagInventoryRepository: bags,
         appLaunchService: launch,
       );
       final profile = _profile(id: 'guided', name: 'Misty');
@@ -31,6 +34,7 @@ void main() {
         starterSlot: starterSlot,
         starterPokemonId: 7,
         starterSpeciesName: 'Squirtle',
+        initialInventory: const {'poke-ball': 5},
       );
 
       expect(created, same(profile));
@@ -38,6 +42,7 @@ void main() {
       expect(profiles.activeProfileId, 'guided');
       expect(teams.slots['guided'], starterSlot);
       expect(pokedex.markedProfiles, {'guided'});
+      expect(bags.inventories['guided'], {'poke-ball': 5});
       expect(launch.completed, isFalse);
     });
 
@@ -48,10 +53,12 @@ void main() {
       );
       final teams = _FakeTeamRepository();
       final pokedex = _FakePokedexRepository(failOnUpdate: true);
+      final bags = _FakeBagInventoryRepository();
       final service = ProfileCreationService(
         profileRepository: profiles,
         teamRepository: teams,
         pokedexRepository: pokedex,
+        bagInventoryRepository: bags,
         appLaunchService: _FakeAppLaunchService(),
       );
 
@@ -61,6 +68,7 @@ void main() {
           starterSlot: TeamSlot(slotIndex: 0, pokemonId: 4),
           starterPokemonId: 4,
           starterSpeciesName: 'Charmander',
+          initialInventory: const {'poke-ball': 5},
         ),
         throwsStateError,
       );
@@ -69,17 +77,20 @@ void main() {
       expect(profiles.activeProfileId, 'old');
       expect(teams.slots, isEmpty);
       expect(pokedex.markedProfiles, isEmpty);
+      expect(bags.inventories, isEmpty);
     });
 
     test('first launch failure does not leave a partial profile active', () async {
       final profiles = _FakeProfileRepository();
       final teams = _FakeTeamRepository();
       final pokedex = _FakePokedexRepository();
+      final bags = _FakeBagInventoryRepository();
       final launch = _FakeAppLaunchService(failOnComplete: true);
       final service = ProfileCreationService(
         profileRepository: profiles,
         teamRepository: teams,
         pokedexRepository: pokedex,
+        bagInventoryRepository: bags,
         appLaunchService: launch,
       );
 
@@ -89,6 +100,7 @@ void main() {
           starterSlot: TeamSlot(slotIndex: 0, pokemonId: 1),
           starterPokemonId: 1,
           starterSpeciesName: 'Bulbasaur',
+          initialInventory: const {'poke-ball': 5},
           markOnboardingCompleted: true,
         ),
         throwsStateError,
@@ -98,6 +110,7 @@ void main() {
       expect(profiles.activeProfileId, isNull);
       expect(teams.slots, isEmpty);
       expect(pokedex.markedProfiles, isEmpty);
+      expect(bags.inventories, isEmpty);
       expect(launch.completed, isFalse);
     });
 
@@ -110,6 +123,7 @@ void main() {
         profileRepository: profiles,
         teamRepository: _FakeTeamRepository(),
         pokedexRepository: _FakePokedexRepository(),
+        bagInventoryRepository: _FakeBagInventoryRepository(),
         appLaunchService: _FakeAppLaunchService(),
       );
 
@@ -208,6 +222,28 @@ class _FakePokedexRepository extends PokedexRepository {
   @override
   Future<void> clearProfilePokedex(String profileId) async {
     markedProfiles.remove(profileId);
+  }
+}
+
+class _FakeBagInventoryRepository extends BagInventoryRepository {
+  final Map<String, Map<String, int>> inventories = {};
+
+  @override
+  Future<void> addItems({
+    required String profileId,
+    required Map<String, int> quantities,
+  }) async {
+    final selected = <String, int>{
+      for (final entry in quantities.entries)
+        if (entry.key.trim().isNotEmpty && entry.value > 0)
+          entry.key.trim(): entry.value,
+    };
+    if (selected.isNotEmpty) inventories[profileId] = selected;
+  }
+
+  @override
+  Future<void> deleteInventory(String profileId) async {
+    inventories.remove(profileId);
   }
 }
 

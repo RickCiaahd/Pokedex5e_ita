@@ -23,6 +23,7 @@ import '../../services/trainer_path_automation_service.dart';
 import '../../services/trainer_path_passive_service.dart';
 import '../../widgets/navigation/home_leading_button.dart';
 import '../../widgets/profile/trainer_profile_image_picker.dart';
+import 'trainer_sheet_mobile.dart';
 import '../../widgets/tour/guided_tour.dart';
 import '../../widgets/trainer/trainer_path_automation_panel.dart';
 
@@ -41,6 +42,7 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
   final TrainerManualRepository _trainerManualRepository =
       TrainerManualRepository();
   final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _ageController = TextEditingController();
   final TextEditingController _moneyController = TextEditingController();
   final TextEditingController _raceController = TextEditingController();
   final GuidedTourController _tourController = GuidedTourController(
@@ -64,6 +66,7 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
   int _currentHp = 8;
   int _speed = 30;
   String _startingPack = '';
+  String _background = '';
   String _trainerPath = '';
   String _starterPokemon = '';
   String _profileImageBase64 = '';
@@ -129,6 +132,7 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
   void initState() {
     super.initState();
     _nameController.addListener(_refreshSheetPreview);
+    _ageController.addListener(_refreshSheetPreview);
     _moneyController.addListener(_refreshSheetPreview);
     _raceController.addListener(_refreshSheetPreview);
     _loadProfile();
@@ -137,9 +141,11 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
   @override
   void dispose() {
     _nameController.removeListener(_refreshSheetPreview);
+    _ageController.removeListener(_refreshSheetPreview);
     _moneyController.removeListener(_refreshSheetPreview);
     _raceController.removeListener(_refreshSheetPreview);
     _nameController.dispose();
+    _ageController.dispose();
     _moneyController.dispose();
     _raceController.dispose();
     _tourController.dispose();
@@ -174,6 +180,7 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
       if (!mounted) return;
 
       _nameController.text = profile.name;
+      _ageController.text = profile.trainerAge.toString();
       _moneyController.text = profile.money.toString();
       _raceController.text = profile.trainerRace;
 
@@ -191,6 +198,7 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
         _currentHp = profile.currentHp.clamp(0, profile.maxHp).toInt();
         _speed = profile.speed;
         _startingPack = profile.startingPack;
+        _background = profile.background;
         _trainerPath = profile.trainerPath;
         _starterPokemon = profile.starterPokemon;
         _profileImageBase64 = profile.profileImageBase64;
@@ -272,6 +280,10 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
 
   void _changeStartingPack(String? pack) {
     setState(() => _startingPack = pack ?? '');
+  }
+
+  void _changeBackground(String? value) {
+    if (value != null) setState(() => _background = value);
   }
 
   void _changeTrainerPath(String? path) {
@@ -585,6 +597,7 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
     if (profile == null) return;
 
     final name = _nameController.text.trim();
+    final age = int.tryParse(_ageController.text.trim());
     final money = int.tryParse(_moneyController.text.trim());
 
     if (name.isEmpty) {
@@ -592,6 +605,16 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
         () => _errorMessage = context.uiText(
           'Inserisci un nome allenatore.',
           'Enter a Trainer name.',
+        ),
+      );
+      return;
+    }
+
+    if (age == null || age < 6 || age > 99) {
+      setState(
+        () => _errorMessage = context.uiText(
+          'Inserisci un’età valida da 6 a 99.',
+          'Enter a valid age from 6 to 99.',
         ),
       );
       return;
@@ -616,6 +639,7 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
       final updated = profile.copyWith(
         name: name,
         profileImageBase64: _profileImageBase64,
+        trainerAge: age,
         trainerLevel: _trainerLevel,
         money: money,
         abilityScores: _abilityScores,
@@ -625,6 +649,7 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
         speed: _speed,
         trainerRace: _raceController.text.trim(),
         originAbilityBonusSource: _originAbilityBonusSource,
+        background: _background,
         starterPokemon: _starterPokemon.trim(),
         startingPack: _startingPack,
         skillProficiencies: [..._skillProficiencies],
@@ -725,6 +750,59 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
     _changeRace(selected);
   }
 
+  Future<void> _openBackgroundEditor() async {
+    final controller = TextEditingController(text: _background);
+    final selected = await showDialog<String>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(
+          context.uiText('Background narrativo', 'Narrative background'),
+        ),
+        content: SizedBox(
+          width: 560,
+          child: TextField(
+            controller: controller,
+            autofocus: true,
+            minLines: 7,
+            maxLines: 14,
+            textCapitalization: TextCapitalization.sentences,
+            inputFormatters: [LengthLimitingTextInputFormatter(4000)],
+            decoration: InputDecoration(
+              hintText: context.uiText(
+                'Scrivi storia, legami, motivazioni ed esperienze del personaggio.',
+                'Write the character’s history, bonds, motivations, and experiences.',
+              ),
+              helperText: context.uiText(
+                'Testo narrativo libero: non assegna bonus automatici.',
+                'Free narrative text: it grants no automatic bonuses.',
+              ),
+              helperMaxLines: 2,
+              alignLabelWithHint: true,
+              border: const OutlineInputBorder(),
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: Text(context.uiText('ANNULLA', 'CANCEL')),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(''),
+            child: Text(context.uiText('SVUOTA', 'CLEAR')),
+          ),
+          FilledButton(
+            onPressed: () =>
+                Navigator.of(dialogContext).pop(controller.text.trim()),
+            child: Text(context.uiText('APPLICA', 'APPLY')),
+          ),
+        ],
+      ),
+    );
+    controller.dispose();
+    _changeBackground(selected);
+  }
+
   Future<void> _openStartingPackPicker() async {
     final selected = await showModalBottomSheet<String>(
       context: context,
@@ -733,6 +811,7 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
         title: context.uiText('Dotazione iniziale', 'Starting pack'),
         options: TrainerManualOptions.startingPacks,
         selected: _startingPack,
+        descriptions: TrainerUiLocalization.startingPackDescriptions,
         displayNames: TrainerUiLocalization.startingPackLabels,
       ),
     );
@@ -867,6 +946,19 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
         leading: const HomeLeadingButton(),
         title: Text(context.uiText('Scheda Allenatore', 'Trainer Sheet')),
         actions: [
+          IconButton(
+            tooltip: context.uiText('Salva scheda', 'Save sheet'),
+            onPressed: _isLoading || _profile == null || _isSaving
+                ? null
+                : _saveProfile,
+            icon: _isSaving
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Icon(Icons.save_outlined),
+          ),
           GuidedTourInfoAction(
             controller: _tourController,
             enabled: !_isLoading && _profile != null,
@@ -877,6 +969,7 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
       body: AnimatedBuilder(
         animation: _tourController,
         builder: (context, _) {
+          final isCompactLayout = MediaQuery.sizeOf(context).width < 760;
           final selectedOriginName = _raceController.text.trim();
           final selectedOrigin = _originByName(selectedOriginName);
 
@@ -911,12 +1004,17 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
                           nameController: _nameController,
                           profileImageBase64: _profileImageBase64,
                           moneyController: _moneyController,
+                          ageController: _ageController,
                           race: selectedOrigin == null
                               ? selectedOriginName
                               : _localizedOriginName(selectedOrigin),
                           raceDescription: selectedOrigin == null
                               ? ''
                               : _localizedOriginDescription(selectedOrigin),
+                          background: TrainerUiLocalization.backgroundName(
+                            _background,
+                          ),
+                          backgroundDescription: _background,
                           selectedStarter: _selectedStarter,
                           startingPack: _startingPack,
                           trainerLevel: _trainerLevel,
@@ -937,12 +1035,43 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
                           starterAlreadyInTeam: _starterAlreadyInTeam,
                           isSaving: _isSaving,
                           errorMessage: _errorMessage,
+                          mobileAdvancementFooter: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              KeyedSubtree(
+                                key: _automationKey,
+                                child: TrainerPathAutomationPanel(
+                                  trainerPath: _trainerPath,
+                                  resources: _trainerPathResourceDefinitions,
+                                  resourceValues: _trainerPathResources,
+                                  choices: _trainerPathChoiceDefinitions,
+                                  choiceValues: _trainerPathChoices,
+                                  onResourceChanged: _changeTrainerPathResource,
+                                  onChoiceChanged: _changeTrainerPathChoice,
+                                  onShortRest: () =>
+                                      _restoreTrainerPathResources(
+                                        TrainerPathResourceReset.shortRest,
+                                      ),
+                                  onLongRest: () => _applyLongRest(),
+                                ),
+                              ),
+                              if (_transformationUses.isNotEmpty ||
+                                  _transformedPokemonKeys.isNotEmpty) ...[
+                                const SizedBox(height: 12),
+                                _TransformationRestCard(
+                                  usedKinds: _transformationUses,
+                                  pokemonCount: _transformedPokemonKeys.length,
+                                  onLongRest: () => _applyLongRest(),
+                                ),
+                              ],
+                            ],
+                          ),
                           onDecreaseLevel: () => _changeLevel(-1),
                           onIncreaseLevel: () => _changeLevel(1),
-                          onProfileImageChanged: (value) => setState(
-                            () => _profileImageBase64 = value,
-                          ),
+                          onProfileImageChanged: (value) =>
+                              setState(() => _profileImageBase64 = value),
                           onRaceTap: _openRacePicker,
+                          onBackgroundTap: _openBackgroundEditor,
                           onStarterTap: _openStarterPicker,
                           onAddStarterToTeam: _addStarterToTeam,
                           onStartingPackTap: _openStartingPackPicker,
@@ -957,31 +1086,33 @@ class _TrainerSheetScreenState extends State<TrainerSheetScreen> {
                           onSpeedChanged: _changeSpeed,
                           onSave: _saveProfile,
                         ),
-                        const SizedBox(height: 16),
-                        KeyedSubtree(
-                          key: _automationKey,
-                          child: TrainerPathAutomationPanel(
-                            trainerPath: _trainerPath,
-                            resources: _trainerPathResourceDefinitions,
-                            resourceValues: _trainerPathResources,
-                            choices: _trainerPathChoiceDefinitions,
-                            choiceValues: _trainerPathChoices,
-                            onResourceChanged: _changeTrainerPathResource,
-                            onChoiceChanged: _changeTrainerPathChoice,
-                            onShortRest: () => _restoreTrainerPathResources(
-                              TrainerPathResourceReset.shortRest,
+                        if (!isCompactLayout) ...[
+                          const SizedBox(height: 16),
+                          KeyedSubtree(
+                            key: _automationKey,
+                            child: TrainerPathAutomationPanel(
+                              trainerPath: _trainerPath,
+                              resources: _trainerPathResourceDefinitions,
+                              resourceValues: _trainerPathResources,
+                              choices: _trainerPathChoiceDefinitions,
+                              choiceValues: _trainerPathChoices,
+                              onResourceChanged: _changeTrainerPathResource,
+                              onChoiceChanged: _changeTrainerPathChoice,
+                              onShortRest: () => _restoreTrainerPathResources(
+                                TrainerPathResourceReset.shortRest,
+                              ),
+                              onLongRest: () => _applyLongRest(),
                             ),
-                            onLongRest: () => _applyLongRest(),
                           ),
-                        ),
-                        if (_transformationUses.isNotEmpty ||
-                            _transformedPokemonKeys.isNotEmpty) ...[
-                          const SizedBox(height: 12),
-                          _TransformationRestCard(
-                            usedKinds: _transformationUses,
-                            pokemonCount: _transformedPokemonKeys.length,
-                            onLongRest: () => _applyLongRest(),
-                          ),
+                          if (_transformationUses.isNotEmpty ||
+                              _transformedPokemonKeys.isNotEmpty) ...[
+                            const SizedBox(height: 12),
+                            _TransformationRestCard(
+                              usedKinds: _transformationUses,
+                              pokemonCount: _transformedPokemonKeys.length,
+                              onLongRest: () => _applyLongRest(),
+                            ),
+                          ],
                         ],
                       ],
                     ],
@@ -1020,8 +1151,11 @@ class _InteractiveTrainerSheet extends StatelessWidget {
     required this.nameController,
     required this.profileImageBase64,
     required this.moneyController,
+    required this.ageController,
     required this.race,
     required this.raceDescription,
+    required this.background,
+    required this.backgroundDescription,
     required this.selectedStarter,
     required this.startingPack,
     required this.trainerLevel,
@@ -1039,10 +1173,12 @@ class _InteractiveTrainerSheet extends StatelessWidget {
     required this.starterAlreadyInTeam,
     required this.isSaving,
     required this.errorMessage,
+    required this.mobileAdvancementFooter,
     required this.onDecreaseLevel,
     required this.onIncreaseLevel,
     required this.onProfileImageChanged,
     required this.onRaceTap,
+    required this.onBackgroundTap,
     required this.onStarterTap,
     required this.onAddStarterToTeam,
     required this.onStartingPackTap,
@@ -1062,8 +1198,11 @@ class _InteractiveTrainerSheet extends StatelessWidget {
   final TextEditingController nameController;
   final String profileImageBase64;
   final TextEditingController moneyController;
+  final TextEditingController ageController;
   final String race;
   final String raceDescription;
+  final String background;
+  final String backgroundDescription;
   final Pokemon? selectedStarter;
   final String startingPack;
   final int trainerLevel;
@@ -1081,10 +1220,12 @@ class _InteractiveTrainerSheet extends StatelessWidget {
   final bool starterAlreadyInTeam;
   final bool isSaving;
   final String? errorMessage;
+  final Widget mobileAdvancementFooter;
   final VoidCallback onDecreaseLevel;
   final VoidCallback onIncreaseLevel;
   final ValueChanged<String> onProfileImageChanged;
   final VoidCallback onRaceTap;
+  final VoidCallback onBackgroundTap;
   final VoidCallback onStarterTap;
   final VoidCallback onAddStarterToTeam;
   final VoidCallback onStartingPackTap;
@@ -1105,6 +1246,56 @@ class _InteractiveTrainerSheet extends StatelessWidget {
     final maxSr = TrainerProgression.maxControlledSrForLevel(trainerLevel);
     final width = MediaQuery.sizeOf(context).width;
     final isWide = width >= 980;
+
+    if (width < 760) {
+      return TrainerSheetMobile(
+        nameController: nameController,
+        profileImageBase64: profileImageBase64,
+        moneyController: moneyController,
+        ageController: ageController,
+        race: race,
+        raceDescription: raceDescription,
+        background: background,
+        backgroundDescription: backgroundDescription,
+        selectedStarter: selectedStarter,
+        startingPack: startingPack,
+        trainerLevel: trainerLevel,
+        trainerPath: trainerPath,
+        trainerPaths: trainerPaths,
+        abilityScores: abilityScores,
+        armorClass: armorClass,
+        maxHp: maxHp,
+        currentHp: currentHp,
+        speed: speed,
+        pokeslots: pokeslots,
+        maxSr: maxSr,
+        skillProficiencies: skillProficiencies,
+        savingThrowProficiencies: savingThrowProficiencies,
+        specializations: specializations,
+        canAddStarterToTeam: canAddStarterToTeam,
+        starterAlreadyInTeam: starterAlreadyInTeam,
+        isSaving: isSaving,
+        errorMessage: errorMessage,
+        onDecreaseLevel: onDecreaseLevel,
+        onIncreaseLevel: onIncreaseLevel,
+        onProfileImageChanged: onProfileImageChanged,
+        onRaceTap: onRaceTap,
+        onBackgroundTap: onBackgroundTap,
+        onStarterTap: onStarterTap,
+        onAddStarterToTeam: onAddStarterToTeam,
+        onStartingPackTap: onStartingPackTap,
+        onTrainerPathTap: onTrainerPathTap,
+        onSkillToggle: onSkillToggle,
+        onSavingThrowToggle: onSavingThrowToggle,
+        onSpecializationTap: onSpecializationTap,
+        onAbilityScoreChanged: onAbilityScoreChanged,
+        onArmorClassChanged: onArmorClassChanged,
+        onMaxHpChanged: onMaxHpChanged,
+        onCurrentHpChanged: onCurrentHpChanged,
+        onSpeedChanged: onSpeedChanged,
+        advancementFooter: mobileAdvancementFooter,
+      );
+    }
 
     return DecoratedBox(
       decoration: BoxDecoration(
@@ -1130,8 +1321,11 @@ class _InteractiveTrainerSheet extends StatelessWidget {
                       nameController: nameController,
                       profileImageBase64: profileImageBase64,
                       moneyController: moneyController,
+                      ageController: ageController,
                       race: race,
                       raceDescription: raceDescription,
+                      background: background,
+                      backgroundDescription: backgroundDescription,
                       selectedStarter: selectedStarter,
                       startingPack: startingPack,
                       trainerLevel: trainerLevel,
@@ -1152,6 +1346,7 @@ class _InteractiveTrainerSheet extends StatelessWidget {
                       onIncreaseLevel: onIncreaseLevel,
                       onProfileImageChanged: onProfileImageChanged,
                       onRaceTap: onRaceTap,
+                      onBackgroundTap: onBackgroundTap,
                       onStarterTap: onStarterTap,
                       onAddStarterToTeam: onAddStarterToTeam,
                       onStartingPackTap: onStartingPackTap,
@@ -1187,8 +1382,11 @@ class _InteractiveTrainerSheet extends StatelessWidget {
                     nameController: nameController,
                     profileImageBase64: profileImageBase64,
                     moneyController: moneyController,
+                    ageController: ageController,
                     race: race,
                     raceDescription: raceDescription,
+                    background: background,
+                    backgroundDescription: backgroundDescription,
                     selectedStarter: selectedStarter,
                     startingPack: startingPack,
                     trainerLevel: trainerLevel,
@@ -1209,6 +1407,7 @@ class _InteractiveTrainerSheet extends StatelessWidget {
                     onIncreaseLevel: onIncreaseLevel,
                     onProfileImageChanged: onProfileImageChanged,
                     onRaceTap: onRaceTap,
+                    onBackgroundTap: onBackgroundTap,
                     onStarterTap: onStarterTap,
                     onAddStarterToTeam: onAddStarterToTeam,
                     onStartingPackTap: onStartingPackTap,
@@ -1243,8 +1442,11 @@ class _TrainerSheetMainColumn extends StatelessWidget {
     required this.nameController,
     required this.profileImageBase64,
     required this.moneyController,
+    required this.ageController,
     required this.race,
     required this.raceDescription,
+    required this.background,
+    required this.backgroundDescription,
     required this.selectedStarter,
     required this.startingPack,
     required this.trainerLevel,
@@ -1265,6 +1467,7 @@ class _TrainerSheetMainColumn extends StatelessWidget {
     required this.onIncreaseLevel,
     required this.onProfileImageChanged,
     required this.onRaceTap,
+    required this.onBackgroundTap,
     required this.onStarterTap,
     required this.onAddStarterToTeam,
     required this.onStartingPackTap,
@@ -1281,8 +1484,11 @@ class _TrainerSheetMainColumn extends StatelessWidget {
   final TextEditingController nameController;
   final String profileImageBase64;
   final TextEditingController moneyController;
+  final TextEditingController ageController;
   final String race;
   final String raceDescription;
+  final String background;
+  final String backgroundDescription;
   final Pokemon? selectedStarter;
   final String startingPack;
   final int trainerLevel;
@@ -1303,6 +1509,7 @@ class _TrainerSheetMainColumn extends StatelessWidget {
   final VoidCallback onIncreaseLevel;
   final ValueChanged<String> onProfileImageChanged;
   final VoidCallback onRaceTap;
+  final VoidCallback onBackgroundTap;
   final VoidCallback onStarterTap;
   final VoidCallback onAddStarterToTeam;
   final VoidCallback onStartingPackTap;
@@ -1358,6 +1565,16 @@ class _TrainerSheetMainColumn extends StatelessWidget {
               controller: nameController,
               width: 260,
             ),
+            _SheetTextBox(
+              label: context.uiText('Età', 'Age'),
+              controller: ageController,
+              width: 96,
+              keyboardType: TextInputType.number,
+              inputFormatters: [
+                FilteringTextInputFormatter.digitsOnly,
+                LengthLimitingTextInputFormatter(2),
+              ],
+            ),
             _SheetCounterBox(
               label: context.uiText('Livello', 'Level'),
               value: trainerLevel.toString(),
@@ -1407,6 +1624,21 @@ class _TrainerSheetMainColumn extends StatelessWidget {
               : raceDescription,
           detailMaxLines: null,
           onTap: onRaceTap,
+        ),
+        const SizedBox(height: 8),
+        _SheetChoiceBox(
+          label: context.uiText('Background narrativo', 'Narrative background'),
+          value: background.isEmpty
+              ? context.uiText('Aggiungi storia', 'Add story')
+              : context.uiText('Storia del personaggio', 'Character story'),
+          detail: background.isEmpty
+              ? context.uiText(
+                  'Scrivi liberamente storia, legami e motivazioni del personaggio.',
+                  'Write the character’s history, bonds, and motivations freely.',
+                )
+              : backgroundDescription,
+          detailMaxLines: null,
+          onTap: onBackgroundTap,
         ),
         const SizedBox(height: 16),
         _SheetSectionTitle(
@@ -1515,10 +1747,14 @@ class _TrainerSheetMainColumn extends StatelessWidget {
                   value: startingPack.isEmpty
                       ? context.uiText('Scegli', 'Choose')
                       : TrainerUiLocalization.startingPackName(startingPack),
-                  detail: context.uiText(
-                    'Equipaggiamento iniziale dell’Allenatore.',
-                    'The Trainer’s starting equipment.',
-                  ),
+                  detail: startingPack.isEmpty
+                      ? context.uiText(
+                          'Scegli una delle tre dotazioni del manuale.',
+                          'Choose one of the three packs from the manual.',
+                        )
+                      : TrainerUiLocalization.startingPackDescription(
+                          startingPack,
+                        ),
                   onTap: onStartingPackTap,
                 ),
                 const SizedBox(height: 8),
@@ -2875,7 +3111,6 @@ class _TrainerSheetErrorState extends StatelessWidget {
   }
 }
 
-
 class _TransformationRestCard extends StatelessWidget {
   const _TransformationRestCard({
     required this.usedKinds,
@@ -2890,17 +3125,22 @@ class _TransformationRestCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: Theme.of(context).colorScheme.tertiaryContainer.withValues(alpha: 0.45),
+      color: Theme.of(
+        context,
+      ).colorScheme.tertiaryContainer.withValues(alpha: 0.45),
       child: Padding(
         padding: const EdgeInsets.all(14),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              context.uiText('TRASFORMAZIONI UTILIZZATE', 'USED TRANSFORMATIONS'),
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w900,
+              context.uiText(
+                'TRASFORMAZIONI UTILIZZATE',
+                'USED TRANSFORMATIONS',
               ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
             ),
             const SizedBox(height: 6),
             Text(

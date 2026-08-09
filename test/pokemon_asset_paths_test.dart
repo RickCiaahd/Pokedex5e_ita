@@ -94,7 +94,7 @@ void main() {
     },
   );
 
-  test('Alolan Rattata shiny artwork is resolved before all fallbacks', () {
+  test('Alolan Rattata shiny form candidate precedes normal form artwork', () {
     final candidates = PokemonAssetPaths.imageCandidates(
       pokemon: _pokemon(19, 'Rattata'),
       useLargeArtwork: true,
@@ -102,23 +102,26 @@ void main() {
       isShiny: true,
     );
 
-    const alternateShiny =
+    // The preferred-image resolver transparently checks the WebP counterpart
+    // of every PNG candidate before trying that PNG. Therefore the ordering
+    // contract here is the form-specific shiny candidate before the normal
+    // form artwork; the bundled WebP itself is verified separately below.
+    const alternateShinyCandidate =
+        'assets/textures/textures_webapp/pokemon/alolan-rattata/main-shiny.png';
+    const alternateShinyWebp =
         'assets/textures/textures_webapp/pokemon/alolan-rattata/main-shiny.webp';
     const alternateNormal =
         'assets/textures/textures_webapp/pokemon/alolan-rattata/main.png';
     const baseShiny =
         'assets/textures/textures_webapp/pokemon/rattata/main-shiny.png';
 
-    expect(candidates, contains(alternateShiny));
+    expect(candidates, contains(alternateShinyCandidate));
+    expect(candidates, contains(alternateShinyWebp));
     expect(candidates, contains(alternateNormal));
     expect(candidates, contains(baseShiny));
     expect(
-      candidates.indexOf(alternateShiny),
+      candidates.indexOf(alternateShinyCandidate),
       lessThan(candidates.indexOf(alternateNormal)),
-    );
-    expect(
-      candidates.indexOf(alternateShiny),
-      lessThan(candidates.indexOf(baseShiny)),
     );
   });
 

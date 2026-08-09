@@ -4,6 +4,7 @@ class ItemDrivenPokemonForm {
   static const int arceusId = 493;
   static const int genesectId = 649;
   static const int silvallyId = 773;
+  static const int ogerponId = 1017;
 
   static const Map<String, String> _arceusPlateTypes = {
     'draco-plate': 'Dragon',
@@ -105,15 +106,42 @@ class ItemDrivenPokemonForm {
     'voltmodulo': 'Electric',
   };
 
+  static const Map<String, String> _ogerponMaskForms = {
+    'teal-mask': 'Teal Mask',
+    'wellspring-mask': 'Wellspring Mask',
+    'hearthflame-mask': 'Hearthflame Mask',
+    'cornerstone-mask': 'Cornerstone Mask',
+    // Localized display names are accepted for imported legacy data.
+    'maschera-turchese': 'Teal Mask',
+    'maschera-pozzo': 'Wellspring Mask',
+    'maschera-focolare': 'Hearthflame Mask',
+    'maschera-fondamenta': 'Cornerstone Mask',
+  };
+
+  static const Map<String, String> _ogerponMaskTypes = {
+    'teal-mask': 'Grass',
+    'wellspring-mask': 'Water',
+    'hearthflame-mask': 'Fire',
+    'cornerstone-mask': 'Rock',
+    'maschera-turchese': 'Grass',
+    'maschera-pozzo': 'Water',
+    'maschera-focolare': 'Fire',
+    'maschera-fondamenta': 'Rock',
+  };
+
   static bool usesHeldItemForm(int? pokemonId) {
     return pokemonId == arceusId ||
         pokemonId == genesectId ||
-        pokemonId == silvallyId;
+        pokemonId == silvallyId ||
+        pokemonId == ogerponId;
   }
 
   static bool usesHeldItemFormForSpecies(String speciesName) {
     final key = speciesName.trim().toLowerCase();
-    return key == 'arceus' || key == 'genesect' || key == 'silvally';
+    return key == 'arceus' ||
+        key == 'genesect' ||
+        key == 'silvally' ||
+        key == 'ogerpon';
   }
 
   /// Item-driven species never persist an independently selected form.
@@ -126,7 +154,7 @@ class ItemDrivenPokemonForm {
 
   /// Returns the mechanical/visual form implied by the held item.
   ///
-  /// A null result means the species must use its base Normal form.
+  /// A null result means the species must use its base/default form.
   static String? formNameForHeldItem({
     required int? pokemonId,
     required String? heldItem,
@@ -138,8 +166,13 @@ class ItemDrivenPokemonForm {
       arceusId => _arceusPlateTypes[itemKey],
       genesectId => _genesectDriveForms[itemKey],
       silvallyId => _silvallyMemoryTypes[itemKey],
+      ogerponId => _ogerponMaskForms[itemKey],
       _ => null,
     };
+  }
+
+  static String? ogerponMaskType(String? heldItem) {
+    return _ogerponMaskTypes[_referenceKey(heldItem)];
   }
 
   /// Returns the contextual type of moves whose type depends on a held item.

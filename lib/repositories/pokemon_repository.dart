@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../localization/game_catalog_locale.dart';
+import '../models/item_driven_pokemon_form.dart';
+import '../models/pokedex_entry.dart';
 import '../models/pokemon.dart';
 import '../models/pokemon_flavor.dart';
 import '../services/custom_pokemon_discovery_service.dart';
@@ -119,9 +121,23 @@ class PokemonRepository {
               .map((pokemon) {
                 final localized = localizedTexts[pokemon.id];
                 if (localized == null) return pokemon;
+                final localizedForms = pokemon.formDefinitions
+                    .map(
+                      (definition) => PokemonFormDefinition(
+                        key: definition.key,
+                        displayName: definition.displayName,
+                        pokemon: definition.pokemon.copyWith(
+                          genus: localized.genus,
+                          description: localized.description,
+                        ),
+                        gender: definition.gender,
+                      ),
+                    )
+                    .toList(growable: false);
                 return pokemon.copyWith(
                   genus: localized.genus,
                   description: localized.description,
+                  formDefinitions: localizedForms,
                 );
               })
               .toList(growable: false)
@@ -252,6 +268,7 @@ class PokemonRepository {
       final json = Map<String, dynamic>.from(jsonDecode(jsonString));
       final items = List<dynamic>.from(json['items'] ?? const []);
       final physicalMetadata = await _getWebappPhysicalMetadata();
+      final preferredBaseSlugs = await _getWebappPreferredBaseSlugs();
       final grouped = <int, List<Pokemon>>{};
 
       for (final item in items) {
@@ -274,10 +291,44 @@ class PokemonRepository {
         }
       }
 
-      return [for (final group in grouped.values) _mergeWebFormGroup(group)];
+      return [
+        for (final group in grouped.values)
+          _mergeWebFormGroup(group, preferredBaseSlugs),
+      ];
     } catch (error) {
       debugPrint('Catalogo Pokemon webapp non disponibile: $error');
       return const [];
+    }
+  }
+
+  Future<Map<String, String>> _getWebappPreferredBaseSlugs() async {
+    try {
+      final jsonString = await rootBundle.loadString(
+        'assets/data/variant_map.json',
+      );
+      final json = Map<String, dynamic>.from(jsonDecode(jsonString));
+      final result = <String, String>{};
+      for (final entry in json.entries) {
+        final variants = entry.value;
+        if (variants is! List || variants.isEmpty) continue;
+        final speciesName = entry.key.toString();
+        String? preferredVariant;
+        for (final variant in variants) {
+          final name = variant.toString().trim();
+          if (name.isEmpty) continue;
+          if (PokedexEntry.formKey(name, speciesName: speciesName) == 'base') {
+            preferredVariant = name;
+            break;
+          }
+        }
+        preferredVariant ??= variants.first.toString().trim();
+        if (preferredVariant.isEmpty) continue;
+        result[_slug(speciesName)] = _slug(preferredVariant);
+      }
+      return result;
+    } catch (error) {
+      debugPrint('Mappa delle forme predefinite non disponibile: $error');
+      return const {};
     }
   }
 
@@ -301,7 +352,10 @@ class PokemonRepository {
     }
   }
 
-  Pokemon _mergeWebFormGroup(List<Pokemon> group) {
+  Pokemon _mergeWebFormGroup(
+    List<Pokemon> group,
+    Map<String, String> preferredBaseSlugs,
+  ) {
     if (group.length <= 1) return group.first;
 
     final speciesSlug = _commonSlugPrefix(
@@ -315,6 +369,17 @@ class PokemonRepository {
       }
     }
 
+    Pokemon? preferredBase;
+    final preferredBaseSlug = preferredBaseSlugs[speciesSlug];
+    if (preferredBaseSlug != null) {
+      for (final pokemon in group) {
+        if ((pokemon.assetSlug ?? _slug(pokemon.name)) == preferredBaseSlug) {
+          preferredBase = pokemon;
+          break;
+        }
+      }
+    }
+
     final sorted = [...group]
       ..sort((a, b) {
         final aSlug = a.assetSlug ?? _slug(a.name);
@@ -322,7 +387,7 @@ class PokemonRepository {
         final lengthCompare = aSlug.length.compareTo(bSlug.length);
         return lengthCompare != 0 ? lengthCompare : aSlug.compareTo(bSlug);
       });
-    final selectedBase = explicitBase ?? sorted.first;
+    final selectedBase = explicitBase ?? preferredBase ?? sorted.first;
     final defaultSpeciesName =
         explicitBase?.name ?? Pokemon.labelFromId(speciesSlug);
     final speciesName =
@@ -334,7 +399,7 @@ class PokemonRepository {
 
     for (final candidate in group) {
       final candidateSlug = candidate.assetSlug ?? _slug(candidate.name);
-      if (explicitBase != null && identical(candidate, explicitBase)) continue;
+      if (identical(candidate, selectedBase)) continue;
       if (candidateSlug == speciesSlug) continue;
 
       final rawSuffix = candidateSlug.startsWith('$speciesSlug-')
@@ -342,12 +407,18 @@ class PokemonRepository {
           : candidateSlug;
       if (rawSuffix.isEmpty) continue;
 
-      final gender = Pokemon.normalizeGenderValue(rawSuffix);
+      final formKey = _normalizeWebFormKey(speciesSlug, rawSuffix);
+      final gender = Pokemon.normalizeGenderValue(formKey);
+      final normalizedCandidate = _normalizeWebFormMechanics(
+        candidate,
+        speciesSlug: speciesSlug,
+        formKey: formKey,
+      );
       definitions.add(
         PokemonFormDefinition(
-          key: rawSuffix,
-          displayName: _webFormLabel(rawSuffix),
-          pokemon: candidate.copyWith(
+          key: formKey,
+          displayName: _webFormLabel(formKey),
+          pokemon: normalizedCandidate.copyWith(
             name: speciesName,
             formDefinitions: const [],
           ),
@@ -359,6 +430,34 @@ class PokemonRepository {
     return selectedBase.copyWith(
       name: speciesName,
       formDefinitions: definitions,
+    );
+  }
+
+  String _normalizeWebFormKey(String speciesSlug, String rawSuffix) {
+    if (speciesSlug == 'ogerpon' && rawSuffix == 'heartflame-mask') {
+      return 'hearthflame-mask';
+    }
+    return rawSuffix;
+  }
+
+  Pokemon _normalizeWebFormMechanics(
+    Pokemon pokemon, {
+    required String speciesSlug,
+    required String formKey,
+  }) {
+    if (speciesSlug != 'ogerpon') return pokemon;
+
+    final maskType = ItemDrivenPokemonForm.ogerponMaskType(formKey);
+    if (maskType == null) return pokemon;
+    final secondaryType = maskType.toLowerCase();
+    final normalizedAssetSlug = formKey == 'hearthflame-mask'
+        ? 'ogerpon-hearthflame-mask'
+        : pokemon.assetSlug;
+    return pokemon.copyWith(
+      assetSlug: normalizedAssetSlug,
+      types: secondaryType == 'grass'
+          ? const ['grass']
+          : ['grass', secondaryType],
     );
   }
 

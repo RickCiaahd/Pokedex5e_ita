@@ -41,16 +41,15 @@ void main() {
       ],
       'lib/screens/team/team_selection_screen.dart': [
         'Team',
-        'Poké Slots occupied',
         'Empty slot',
-        'Tap to choose a Pokémon',
+        'Tap to choose',
       ],
       'lib/screens/pokemon/pokemon_detail_screen_legacy.dart': [
         'AVAILABLE ASI',
         'EVOLUTION REQUIREMENTS',
         'LOYALTY',
         'SAVING THROWS',
-        'Equipped moves',
+        'MOVES',
       ],
       'lib/services/npc_trainer_generator_service.dart': [
         '_personalitiesEn',

@@ -65,11 +65,22 @@ class AppLocaleController extends ChangeNotifier {
   }
 
   Locale resolveDeviceLocale(Locale? deviceLocale) {
+    return resolveDeviceLocales([?deviceLocale]);
+  }
+
+  Locale resolveDeviceLocales(Iterable<Locale> deviceLocales) {
     final selectedLocale = locale;
     if (selectedLocale != null) return selectedLocale;
-    if (deviceLocale?.languageCode.toLowerCase() == 'it') {
-      return const Locale('it');
+
+    for (final deviceLocale in deviceLocales) {
+      switch (deviceLocale.languageCode.toLowerCase()) {
+        case 'it':
+          return const Locale('it');
+        case 'en':
+          return const Locale('en');
+      }
     }
+
     return const Locale('en');
   }
 }

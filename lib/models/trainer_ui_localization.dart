@@ -48,6 +48,75 @@ class TrainerUiLocalization {
     "Filcher's pack": 'Dotazione da Borseggiatore',
   };
 
+  static const Map<String, String> _startingPackDescriptionsIt = {
+    "Dungeoneer's pack":
+        'Contiene: zaino, kit da scalatore, torcia, 5 celle energetiche, acciarino e pietra focaia, 10 razioni da campeggio, borraccia e 30 piedi di corda.',
+    "Explorer's pack":
+        'Contiene: zaino, sacco a pelo, gavetta, acciarino e pietra focaia, torcia, 5 celle energetiche, 10 razioni da campeggio, borraccia e 30 piedi di corda.',
+    "Filcher's pack":
+        'Contiene: zaino, arnesi da scasso, 20 piedi di filo, campanella, lanterna, 3 celle energetiche, 5 razioni da campeggio, acciarino e pietra focaia e borraccia.',
+  };
+  static const Map<String, String> _startingPackDescriptionsEn = {
+    "Dungeoneer's pack":
+        "Contains a backpack, climber's kit, flashlight, 5 energy cells, flint and steel, 10 camping rations, a canteen, and 30 feet of rope.",
+    "Explorer's pack":
+        'Contains a backpack, sleeping bag, mess kit, flint and steel, flashlight, 5 energy cells, 10 camping rations, a canteen, and 30 feet of rope.',
+    "Filcher's pack":
+        "Contains a backpack, thieves' tools, 20 feet of wire, a bell, a lantern, 3 energy cells, 5 camping rations, flint and steel, and a canteen.",
+  };
+  static const List<String> backgroundOptions = [
+    'Ricercatore',
+    'Esploratore',
+    'Allevatore',
+    'Combattente',
+    'Artista',
+    'Studioso',
+  ];
+  static const Map<String, String> _backgroundLabelsIt = {
+    'Ricercatore': 'Ricercatore',
+    'Esploratore': 'Esploratore',
+    'Allevatore': 'Allevatore',
+    'Combattente': 'Combattente',
+    'Artista': 'Artista',
+    'Studioso': 'Studioso',
+  };
+  static const Map<String, String> _backgroundLabelsEn = {
+    'Ricercatore': 'Researcher',
+    'Esploratore': 'Explorer',
+    'Allevatore': 'Breeder',
+    'Combattente': 'Fighter',
+    'Artista': 'Artist',
+    'Studioso': 'Scholar',
+  };
+  static const Map<String, String> _backgroundDescriptionsIt = {
+    'Ricercatore':
+        'Background scelto durante l’onboarding. Nel manuale disponibile non gli sono associati aumenti automatici delle caratteristiche.',
+    'Esploratore':
+        'Background scelto durante l’onboarding. Nel manuale disponibile non gli sono associati aumenti automatici delle caratteristiche.',
+    'Allevatore':
+        'Background scelto durante l’onboarding. Nel manuale disponibile non gli sono associati aumenti automatici delle caratteristiche.',
+    'Combattente':
+        'Background scelto durante l’onboarding. Nel manuale disponibile non gli sono associati aumenti automatici delle caratteristiche.',
+    'Artista':
+        'Background scelto durante l’onboarding. Nel manuale disponibile non gli sono associati aumenti automatici delle caratteristiche.',
+    'Studioso':
+        'Background scelto durante l’onboarding. Nel manuale disponibile non gli sono associati aumenti automatici delle caratteristiche.',
+  };
+  static const Map<String, String> _backgroundDescriptionsEn = {
+    'Ricercatore':
+        'Background selected during onboarding. The available manual does not associate it with automatic ability-score increases.',
+    'Esploratore':
+        'Background selected during onboarding. The available manual does not associate it with automatic ability-score increases.',
+    'Allevatore':
+        'Background selected during onboarding. The available manual does not associate it with automatic ability-score increases.',
+    'Combattente':
+        'Background selected during onboarding. The available manual does not associate it with automatic ability-score increases.',
+    'Artista':
+        'Background selected during onboarding. The available manual does not associate it with automatic ability-score increases.',
+    'Studioso':
+        'Background selected during onboarding. The available manual does not associate it with automatic ability-score increases.',
+  };
+
   static const Map<String, String> _natureLabelsIt = {
     'Hardy': 'Ardita',
     'Lonely': 'Schiva',
@@ -201,6 +270,12 @@ class TrainerUiLocalization {
   static Map<String, String> get skillLabels => _localizedMap(_skillLabelsIt);
   static Map<String, String> get startingPackLabels =>
       _localizedMap(_startingPackLabelsIt);
+  static Map<String, String> get startingPackDescriptions =>
+      _isItalian ? _startingPackDescriptionsIt : _startingPackDescriptionsEn;
+  static Map<String, String> get backgroundLabels =>
+      _isItalian ? _backgroundLabelsIt : _backgroundLabelsEn;
+  static Map<String, String> get backgroundDescriptions =>
+      _isItalian ? _backgroundDescriptionsIt : _backgroundDescriptionsEn;
   static Map<String, String> get natureLabels => _localizedMap(_natureLabelsIt);
   static Map<String, String> get sizeLabels => _localizedMap(_sizeLabelsIt);
   static Map<String, String> get genderLabels => _localizedMap(_genderLabelsIt);
@@ -231,6 +306,12 @@ class TrainerUiLocalization {
 
   static String startingPackName(String value) =>
       _isItalian ? (_startingPackLabelsIt[value] ?? value) : value;
+  static String startingPackDescription(String value) =>
+      startingPackDescriptions[value] ?? '';
+  static String backgroundName(String value) =>
+      backgroundLabels[value] ?? value;
+  static String backgroundDescription(String value) =>
+      backgroundDescriptions[value] ?? '';
 
   static String natureName(String value) =>
       _isItalian ? (_natureLabelsIt[value] ?? value) : value;
@@ -252,8 +333,43 @@ class TrainerUiLocalization {
     return _featureLabelsIt[value] ?? trainerPathName(value);
   }
 
+  static String _englishLegacyText(String value) {
+    const exact = <String, String>{
+      'Dadi battaglia d6': 'Battle Dice d6',
+      'Dadi abilità d6': 'Ability Dice d6',
+      'Riserva di guarigione': 'Healing Pool',
+      'Potenziamento permanente': 'Permanent boost',
+      'La scelta si applica a tutti i Pokémon dell’Allenatore.':
+          'The choice applies to all of the Trainer’s Pokémon.',
+      'Privilegio copiato': 'Copied feature',
+      'Scegli un privilegio di livello 2, 5 o 9 appartenente a un altro Trainer Path.':
+          'Choose a level 2, 5 or 9 feature from another Trainer Path.',
+      'Caratteristica di ricerca': 'Research ability score',
+      'Il modificatore scelto viene aggiunto alle prove di abilità dei tuoi Pokémon, minimo +1.':
+          'The chosen modifier is added to your Pokémon’s ability checks, minimum +1.',
+      'Resistenza scelta': 'Chosen resistance',
+      'La resistenza deve appartenere a uno dei tipi delle tue specializzazioni.':
+          'The resistance must match one of your specialization types.',
+      'Caratteristica di Deep Connection': 'Deep Connection ability score',
+      'Determina il numero di utilizzi giornalieri, con un minimo di 1.':
+          'Determines the number of daily uses, with a minimum of 1.',
+      'Primo legame': 'First bond',
+      'Il legame può essere ridefinito dopo un riposo lungo.':
+          'The bond can be redefined after a long rest.',
+      'Secondo legame': 'Second bond',
+      'Nessun secondo legame': 'No second bond',
+      'Scegli Nessun secondo legame per mantenere un solo Pokémon legato.':
+          'Choose No second bond to keep only one bonded Pokémon.',
+      '+10 ft velocità': '+10 ft Speed',
+      'dadi': 'dice',
+      'punti': 'points',
+      'usi': 'uses',
+    };
+    return exact[value] ?? value;
+  }
+
   static String optionLabel(String value) {
-    if (!_isItalian) return value;
+    if (!_isItalian) return _englishLegacyText(value);
     final parts = value.split(' · ');
     if (parts.length == 3 && parts[1].startsWith('Lv ')) {
       return '${trainerPathName(parts[0])} · Liv. ${parts[1].substring(3)} · ${featureName(parts[2])}';
@@ -266,7 +382,7 @@ class TrainerUiLocalization {
   }
 
   static String visibleText(String value) {
-    if (!_isItalian) return value;
+    if (!_isItalian) return _englishLegacyText(value);
     final exactFeature = _featureLabelsIt[value];
     if (exactFeature != null) return exactFeature;
     final exactPath = _trainerPathLabelsIt[value];

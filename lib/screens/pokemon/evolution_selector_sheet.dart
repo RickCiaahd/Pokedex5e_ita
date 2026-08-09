@@ -29,17 +29,17 @@ class EvolutionSelectorSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final availableChoices = choices
-        .where(
-          (choice) =>
-              choice.isAvailable && _targetFor(choice) != null,
-        )
+        .where((choice) => choice.isAvailable && _targetFor(choice) != null)
         .toList(growable: false);
     final isSingleEvolution = choices.length == 1;
     final title = isSingleEvolution
-        ? 'Evoluzione'
+        ? uiTextForLanguage('Evoluzione', 'Evolution')
         : uiTextForLanguage('Scegli evoluzione', """Choose evolution""");
     final description = isSingleEvolution
-        ? 'Controlla i requisiti per far evolvere ${currentPokemon.name}.'
+        ? uiTextForLanguage(
+            'Controlla i requisiti per far evolvere ${currentPokemon.name}.',
+            'Check the requirements to evolve ${currentPokemon.name}.',
+          )
         : uiTextForLanguage(
             '${currentPokemon.name} può evolversi in ${choices.length} forme.',
             """${currentPokemon.name} can evolve into ${choices.length} forms.""",
@@ -75,7 +75,7 @@ class EvolutionSelectorSheet extends StatelessWidget {
                 choice: choice,
                 targetPokemon: _targetFor(choice),
                 actionLabel: isSingleEvolution
-                    ? 'Evolvi'
+                    ? uiTextForLanguage('Evolvi', 'Evolve')
                     : uiTextForLanguage('Scegli', """Choose"""),
               ),
           ],
@@ -117,7 +117,7 @@ class _EvolutionChoiceTile extends StatelessWidget {
               ),
         title: Text(
           choice.option.isSecret
-              ? 'EVOLUZIONE SCONOSCIUTA'
+              ? uiTextForLanguage('EVOLUZIONE SCONOSCIUTA', 'UNKNOWN EVOLUTION')
               : PokemonFormLocalization.evolutionName(
                   choice.option.toName,
                 ).toUpperCase(),

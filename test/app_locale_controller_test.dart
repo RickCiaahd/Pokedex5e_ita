@@ -44,6 +44,30 @@ void main() {
     );
   });
 
+  test(
+    'la modalità sistema usa la prima lingua supportata del dispositivo',
+    () {
+      final controller = AppLocaleController(store: _MemoryLocaleStore());
+
+      expect(
+        controller.resolveDeviceLocales(const [
+          Locale('fr', 'FR'),
+          Locale('it', 'IT'),
+          Locale('en', 'US'),
+        ]),
+        const Locale('it'),
+      );
+      expect(
+        controller.resolveDeviceLocales(const [
+          Locale('de', 'DE'),
+          Locale('en', 'GB'),
+          Locale('it', 'IT'),
+        ]),
+        const Locale('en'),
+      );
+    },
+  );
+
   test('la preferenza manuale prevale e viene salvata', () async {
     final store = _MemoryLocaleStore();
     final controller = AppLocaleController(store: store);
@@ -58,4 +82,25 @@ void main() {
       const Locale('it'),
     );
   });
+
+  test(
+    'tornando a sistema viene ripristinata la lingua del dispositivo',
+    () async {
+      final store = _MemoryLocaleStore();
+      final controller = AppLocaleController(store: store);
+
+      await controller.load();
+      await controller.setPreference(AppLocalePreference.english);
+      expect(controller.locale, const Locale('en'));
+
+      await controller.setPreference(AppLocalePreference.system);
+
+      expect(controller.locale, isNull);
+      expect(store.value, 'system');
+      expect(
+        controller.resolveDeviceLocales(const [Locale('it', 'IT')]),
+        const Locale('it'),
+      );
+    },
+  );
 }

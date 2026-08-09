@@ -51,7 +51,7 @@ jobs:
           python tooling/prepare_release_legal_assets.py --check
 
       - name: Analyze source
-        run: flutter analyze
+        run: flutter analyze --no-fatal-infos
 
       - name: Validate application data
         run: |

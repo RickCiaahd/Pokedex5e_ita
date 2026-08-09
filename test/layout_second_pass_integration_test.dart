@@ -9,7 +9,7 @@ void main() {
       'lib/screens/pokedex/pokedex_screen.dart',
     ).readAsStringSync();
     final pc = File('lib/screens/pc/pokemon_pc_screen.dart').readAsStringSync();
-    final bag = File('lib/screens/bag/bag_screen.dart').readAsStringSync();
+    final bag = _bagSource();
 
     expect(home, contains('maxWidth: 1040'));
     expect(home, contains('_TrainerInfoChip'));
@@ -20,4 +20,14 @@ void main() {
     expect(bag, contains('maxWidth: 1180'));
     expect(bag, contains('_BagItemsLayout'));
   });
+}
+
+String _bagSource() {
+  final files = Directory('lib/screens/bag')
+      .listSync()
+      .whereType<File>()
+      .where((file) => file.path.endsWith('.dart'))
+      .toList()
+    ..sort((a, b) => a.path.compareTo(b.path));
+  return files.map((file) => file.readAsStringSync()).join('\n');
 }

@@ -30,6 +30,9 @@ class PokemonAssetPaths {
   ) async {
     if (ItemDrivenPokemonForm.usesHeldItemForm(pokemon.id)) return const [];
 
+    final flowerChoices = _flowerFormChoices(pokemon.id);
+    if (flowerChoices != null) return flowerChoices;
+
     final rawChoices = await legacy.PokemonAssetPaths.formChoices(pokemon);
     if (rawChoices.isEmpty) return const [];
 
@@ -79,6 +82,29 @@ class PokemonAssetPaths {
       baseChoice ?? const legacy.PokemonFormChoice(name: 'Base', assetPath: ''),
       ...realChoicesByKey.values,
     ];
+  }
+
+  static List<legacy.PokemonFormChoice>? _flowerFormChoices(int pokemonId) {
+    if (pokemonId == 670) {
+      return const <legacy.PokemonFormChoice>[
+        legacy.PokemonFormChoice(name: 'Base', assetPath: ''),
+        legacy.PokemonFormChoice(name: 'Blue Flower', assetPath: ''),
+        legacy.PokemonFormChoice(name: 'Orange Flower', assetPath: ''),
+        legacy.PokemonFormChoice(name: 'White Flower', assetPath: ''),
+        legacy.PokemonFormChoice(name: 'Yellow Flower', assetPath: ''),
+        legacy.PokemonFormChoice(name: 'Eternal Flower', assetPath: ''),
+      ];
+    }
+    if (pokemonId == 671) {
+      return const <legacy.PokemonFormChoice>[
+        legacy.PokemonFormChoice(name: 'Base', assetPath: ''),
+        legacy.PokemonFormChoice(name: 'Blue Flower', assetPath: ''),
+        legacy.PokemonFormChoice(name: 'Orange Flower', assetPath: ''),
+        legacy.PokemonFormChoice(name: 'White Flower', assetPath: ''),
+        legacy.PokemonFormChoice(name: 'Yellow Flower', assetPath: ''),
+      ];
+    }
+    return null;
   }
 
   static bool _isShinyAppearanceChoice({

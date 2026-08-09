@@ -1,0 +1,323 @@
+name: Fix flower artwork mapping once
+
+on:
+  push:
+    branches:
+      - feature/compact-pokemon-detail-v2
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v4
+        with:
+          ref: feature/compact-pokemon-detail-v2
+
+      - name: Set up pinned Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.4'
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Replace flower images with named official artwork
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p assets/textures/pokemons
+
+          # Remove the previous bad mapping. Those files were valid PNGs but
+          # were downloaded using form-table IDs as if they were Pokémon IDs.
+          rm -f \
+            'assets/textures/sprites/670Floette Blue Flower.png' \
+            'assets/textures/sprites/670Floette Orange Flower.png' \
+            'assets/textures/sprites/670Floette White Flower.png' \
+            'assets/textures/sprites/670Floette Yellow Flower.png' \
+            'assets/textures/sprites/670Floette Blue Flower Shiny.png' \
+            'assets/textures/sprites/670Floette Orange Flower Shiny.png' \
+            'assets/textures/sprites/670Floette White Flower Shiny.png' \
+            'assets/textures/sprites/670Floette Yellow Flower Shiny.png' \
+            'assets/textures/sprites/671Florges Blue Flower.png' \
+            'assets/textures/sprites/671Florges Orange Flower.png' \
+            'assets/textures/sprites/671Florges White Flower.png' \
+            'assets/textures/sprites/671Florges Yellow Flower.png'
+
+          download_pokedb_artwork() {
+            local slug="$1"
+            local output="$2"
+            local large="https://img.pokemondb.net/artwork/large/${slug}.png"
+            local vector="https://img.pokemondb.net/artwork/vector/${slug}.png"
+            if ! curl --fail --location --retry 3 --silent --show-error \
+                -A 'Mozilla/5.0' "$large" --output "$output"; then
+              curl --fail --location --retry 3 --silent --show-error \
+                -A 'Mozilla/5.0' "$vector" --output "$output"
+            fi
+          }
+
+          download_pokedb_artwork floette-blue \
+            'assets/textures/pokemons/670Floette Blue Flower.png'
+          download_pokedb_artwork floette-orange \
+            'assets/textures/pokemons/670Floette Orange Flower.png'
+          download_pokedb_artwork floette-white \
+            'assets/textures/pokemons/670Floette White Flower.png'
+          download_pokedb_artwork floette-yellow \
+            'assets/textures/pokemons/670Floette Yellow Flower.png'
+          download_pokedb_artwork florges-blue \
+            'assets/textures/pokemons/671Florges Blue Flower.png'
+          download_pokedb_artwork florges-orange \
+            'assets/textures/pokemons/671Florges Orange Flower.png'
+          download_pokedb_artwork florges-white \
+            'assets/textures/pokemons/671Florges White Flower.png'
+          download_pokedb_artwork florges-yellow \
+            'assets/textures/pokemons/671Florges Yellow Flower.png'
+
+          # Floette Eternal Flower has a recent official Sugimori artwork.
+          # Keep a single canonical asset name so it cannot appear twice.
+          rm -f assets/textures/sprites/'670Floette Eternal'*.png \
+                assets/textures/pokemons/'670Floette Eternal'*.png
+          curl --fail --location --retry 3 --silent --show-error \
+            -A 'Mozilla/5.0' \
+            'https://archives.bulbagarden.net/media/upload/thumb/6/60/0670Floette-Eternal_ZA.png/600px-0670Floette-Eternal_ZA.png' \
+            --output 'assets/textures/pokemons/670Floette Eternal Flower.png'
+
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib
+          import struct
+
+          expected = [
+              Path('assets/textures/pokemons/670Floette Blue Flower.png'),
+              Path('assets/textures/pokemons/670Floette Orange Flower.png'),
+              Path('assets/textures/pokemons/670Floette White Flower.png'),
+              Path('assets/textures/pokemons/670Floette Yellow Flower.png'),
+              Path('assets/textures/pokemons/670Floette Eternal Flower.png'),
+              Path('assets/textures/pokemons/671Florges Blue Flower.png'),
+              Path('assets/textures/pokemons/671Florges Orange Flower.png'),
+              Path('assets/textures/pokemons/671Florges White Flower.png'),
+              Path('assets/textures/pokemons/671Florges Yellow Flower.png'),
+          ]
+          digests = set()
+          for path in expected:
+              data = path.read_bytes()
+              if data[:8] != b'\x89PNG\r\n\x1a\n':
+                  raise SystemExit(f'{path} is not a PNG')
+              width, height = struct.unpack('>II', data[16:24])
+              if width < 250 or height < 250:
+                  raise SystemExit(f'{path} is only {width}x{height}')
+              digest = hashlib.sha256(data).hexdigest()
+              if digest in digests:
+                  raise SystemExit(f'{path} duplicates another flower artwork')
+              digests.add(digest)
+              print(f'{path}: {width}x{height}, sha256={digest}')
+          PY
+
+      - name: Make flower form choices deterministic
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('lib/widgets/pokemon/pokemon_asset_image.dart')
+          text = path.read_text(encoding='utf-8')
+          marker = """  static Future<List<legacy.PokemonFormChoice>> formChoices(\n    Pokemon pokemon,\n  ) async {\n    if (ItemDrivenPokemonForm.usesHeldItemForm(pokemon.id)) return const [];\n"""
+          replacement = """  static Future<List<legacy.PokemonFormChoice>> formChoices(\n    Pokemon pokemon,\n  ) async {\n    if (ItemDrivenPokemonForm.usesHeldItemForm(pokemon.id)) return const [];\n\n    final flowerChoices = _flowerFormChoices(pokemon.id);\n    if (flowerChoices != null) return flowerChoices;\n"""
+          if text.count(marker) != 1:
+              raise SystemExit(f'Expected one formChoices marker, found {text.count(marker)}')
+          text = text.replace(marker, replacement, 1)
+
+          helper_marker = """  static bool _isShinyAppearanceChoice({\n"""
+          helper = """  static List<legacy.PokemonFormChoice>? _flowerFormChoices(int pokemonId) {\n    if (pokemonId == 670) {\n      return const <legacy.PokemonFormChoice>[\n        legacy.PokemonFormChoice(name: 'Base', assetPath: ''),\n        legacy.PokemonFormChoice(name: 'Blue Flower', assetPath: ''),\n        legacy.PokemonFormChoice(name: 'Orange Flower', assetPath: ''),\n        legacy.PokemonFormChoice(name: 'White Flower', assetPath: ''),\n        legacy.PokemonFormChoice(name: 'Yellow Flower', assetPath: ''),\n        legacy.PokemonFormChoice(name: 'Eternal Flower', assetPath: ''),\n      ];\n    }\n    if (pokemonId == 671) {\n      return const <legacy.PokemonFormChoice>[\n        legacy.PokemonFormChoice(name: 'Base', assetPath: ''),\n        legacy.PokemonFormChoice(name: 'Blue Flower', assetPath: ''),\n        legacy.PokemonFormChoice(name: 'Orange Flower', assetPath: ''),\n        legacy.PokemonFormChoice(name: 'White Flower', assetPath: ''),\n        legacy.PokemonFormChoice(name: 'Yellow Flower', assetPath: ''),\n      ];\n    }\n    return null;\n  }\n\n"""
+          if text.count(helper_marker) != 1:
+              raise SystemExit(f'Expected one helper marker, found {text.count(helper_marker)}')
+          text = text.replace(helper_marker, helper + helper_marker, 1)
+          path.write_text(text, encoding='utf-8')
+          PY
+
+      - name: Strengthen flower regressions
+        shell: bash
+        run: |
+          cat > test/deoxys_floette_form_regression_test.dart <<'DART'
+          import 'package:flutter/services.dart';
+          import 'package:flutter_test/flutter_test.dart';
+          import 'package:pokedex_5e_ita/repositories/pokemon_repository.dart';
+          import 'package:pokedex_5e_ita/services/battle_form_change_service.dart';
+          import 'package:pokedex_5e_ita/widgets/pokemon/pokemon_asset_image.dart';
+
+          void main() {
+            TestWidgetsFlutterBinding.ensureInitialized();
+
+            test('Deoxys Speed Form follows the 5e Transformer rule', () async {
+              final catalog = await PokemonRepository().getAllPokemon();
+              final deoxys = catalog.firstWhere((pokemon) => pokemon.id == 386);
+
+              final speedNote = BattleFormChangeService.effectNote(deoxys, 'Speed');
+
+              expect(speedNote, isNotNull);
+              expect(speedNote, contains('azione di attacco aggiuntiva ogni turno'));
+              expect(
+                speedNote,
+                contains('quell’attacco viene effettuato con svantaggio'),
+              );
+              expect(speedNote, contains('bersagli hanno vantaggio'));
+              expect(
+                speedNote,
+                isNot(contains('attacchi contro Deoxys hanno svantaggio')),
+              );
+              expect(BattleFormChangeService.attackRollBonus(deoxys, 'Attack'), 5);
+              expect(BattleFormChangeService.armorClassBonus(deoxys, 'Defense'), 3);
+            });
+
+            test('Floette and Florges expose only canonical flower forms', () async {
+              final catalog = await PokemonRepository().getAllPokemon();
+              final floette = catalog.firstWhere((pokemon) => pokemon.id == 670);
+              final florges = catalog.firstWhere((pokemon) => pokemon.id == 671);
+
+              final floetteChoices = await PokemonAssetPaths.formChoices(floette);
+              final florgesChoices = await PokemonAssetPaths.formChoices(florges);
+
+              expect(
+                floetteChoices.map((choice) => choice.name).toList(),
+                const [
+                  'Base',
+                  'Blue Flower',
+                  'Orange Flower',
+                  'White Flower',
+                  'Yellow Flower',
+                  'Eternal Flower',
+                ],
+              );
+              expect(
+                florgesChoices.map((choice) => choice.name).toList(),
+                const [
+                  'Base',
+                  'Blue Flower',
+                  'Orange Flower',
+                  'White Flower',
+                  'Yellow Flower',
+                ],
+              );
+              expect(
+                floetteChoices.where((choice) => choice.name == 'Eternal Flower'),
+                hasLength(1),
+              );
+              expect(
+                [...floetteChoices, ...florgesChoices].any(
+                  (choice) => choice.name.toLowerCase().contains('shiny'),
+                ),
+                isFalse,
+              );
+            });
+
+            test('Flower forms prefer their dedicated artwork paths', () async {
+              final catalog = await PokemonRepository().getAllPokemon();
+              final floette = catalog.firstWhere((pokemon) => pokemon.id == 670);
+              final florges = catalog.firstWhere((pokemon) => pokemon.id == 671);
+              const regularForms = [
+                'Blue Flower',
+                'Orange Flower',
+                'White Flower',
+                'Yellow Flower',
+              ];
+
+              for (final form in regularForms) {
+                final floettePath = 'assets/textures/pokemons/670Floette $form.png';
+                final florgesPath = 'assets/textures/pokemons/671Florges $form.png';
+                expect(
+                  PokemonAssetPaths.imageCandidates(
+                    pokemon: floette,
+                    useLargeArtwork: false,
+                    formName: form,
+                  ),
+                  contains(floettePath),
+                  reason: 'Floette $form',
+                );
+                expect(
+                  PokemonAssetPaths.imageCandidates(
+                    pokemon: florges,
+                    useLargeArtwork: false,
+                    formName: form,
+                  ),
+                  contains(florgesPath),
+                  reason: 'Florges $form',
+                );
+              }
+              expect(
+                PokemonAssetPaths.imageCandidates(
+                  pokemon: floette,
+                  useLargeArtwork: false,
+                  formName: 'Eternal Flower',
+                ),
+                contains(
+                  'assets/textures/pokemons/670Floette Eternal Flower.png',
+                ),
+              );
+            });
+
+            testWidgets('Correct flower artwork is bundled and bad sprite mapping is gone', (
+              tester,
+            ) async {
+              final manifest = await AssetManifest.loadFromAssetBundle(rootBundle);
+              final assets = manifest.listAssets();
+              const regularForms = [
+                'Blue Flower',
+                'Orange Flower',
+                'White Flower',
+                'Yellow Flower',
+              ];
+
+              for (final form in regularForms) {
+                expect(
+                  assets,
+                  contains('assets/textures/pokemons/670Floette $form.png'),
+                );
+                expect(
+                  assets,
+                  contains('assets/textures/pokemons/671Florges $form.png'),
+                );
+                expect(
+                  assets,
+                  isNot(contains('assets/textures/sprites/670Floette $form.png')),
+                );
+                expect(
+                  assets,
+                  isNot(contains('assets/textures/sprites/671Florges $form.png')),
+                );
+              }
+              expect(
+                assets,
+                contains('assets/textures/pokemons/670Floette Eternal Flower.png'),
+              );
+            });
+          }
+          DART
+
+      - name: Format touched Dart files
+        run: dart format lib/widgets/pokemon/pokemon_asset_image.dart test/deoxys_floette_form_regression_test.dart
+
+      - name: Refresh compliance inventories
+        run: |
+          python tooling/generate_compliance_reports.py
+          python tooling/generate_compliance_reports.py --check
+
+      - name: Run focused regression
+        run: flutter test test/deoxys_floette_form_regression_test.dart
+
+      - name: Verify strict analyzer
+        run: flutter analyze
+
+      - name: Commit correction
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Correggi artwork e forme floreali di Floette e Florges"
+          git push origin HEAD:feature/compact-pokemon-detail-v2

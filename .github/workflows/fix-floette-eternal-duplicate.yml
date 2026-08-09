@@ -32,32 +32,20 @@ jobs:
 
           pokemon = Path('lib/models/pokemon.dart')
           source = pokemon.read_text(encoding='utf-8')
-          old = """    normalized = normalized
-              .replaceAll(RegExp(r'\\b(form|forme|style|mode)\\b'), ' ')
-              .replaceAll(RegExp(r'\\s+'), ' ')
-              .trim();
-
-            switch (normalized) {
-          """
-          new = """    normalized = normalized
-              .replaceAll(RegExp(r'\\b(form|forme|style|mode)\\b'), ' ')
-              .replaceAll(RegExp(r'\\s+'), ' ')
-              .trim();
-
-            // The web catalog calls the unreleased AZ Floette form `eternal`,
-            // while the legacy/asset catalog calls it `Eternal Flower`.
-            // Treat both spellings as one persisted identity so the Pokédex
-            // never exposes two cards for the same form.
-            if (normalizedSpecies == 'floette' &&
-                (normalized == 'eternal' || normalized == 'eternal flower')) {
-              normalized = 'eternal flower';
-            }
-
-            switch (normalized) {
-          """
-          if source.count(old) != 1:
-              raise SystemExit(f'pokemon.dart marker count={source.count(old)}')
-          pokemon.write_text(source.replace(old, new, 1), encoding='utf-8')
+          needle = "    switch (normalized) {\n"
+          block = (
+              "    // The web catalog calls the unreleased AZ Floette form `eternal`,\n"
+              "    // while the legacy/asset catalog calls it `Eternal Flower`.\n"
+              "    // Treat both spellings as one persisted identity so the Pokédex\n"
+              "    // never exposes two cards for the same form.\n"
+              "    if (normalizedSpecies == 'floette' &&\n"
+              "        (normalized == 'eternal' || normalized == 'eternal flower')) {\n"
+              "      normalized = 'eternal flower';\n"
+              "    }\n\n"
+          )
+          if source.count(needle) != 1:
+              raise SystemExit(f'pokemon.dart switch marker count={source.count(needle)}')
+          pokemon.write_text(source.replace(needle, block + needle, 1), encoding='utf-8')
 
           test = Path('test/deoxys_floette_form_regression_test.dart')
           source = test.read_text(encoding='utf-8')
@@ -68,38 +56,32 @@ jobs:
                   raise SystemExit('test import marker not unique')
               source = source.replace(import_marker, import_marker + import_line, 1)
 
-          marker = """    final floette = catalog.firstWhere((p) => p.id == 670);
-            final florges = catalog.firstWhere((p) => p.id == 671);
-            expect(
-          """
-          replacement = """    final floette = catalog.firstWhere((p) => p.id == 670);
-            final florges = catalog.firstWhere((p) => p.id == 671);
-
-            expect(
-              PokedexEntry.formKey('Eternal', speciesName: floette.name),
-              'eternal-flower',
-            );
-            expect(
-              PokedexEntry.formKey('Eternal Flower', speciesName: floette.name),
-              'eternal-flower',
-            );
-            expect(
-              floette.formDefinitions.where(
-                (definition) =>
-                    PokedexEntry.formKey(
-                      definition.displayName,
-                      speciesName: floette.name,
-                    ) ==
-                    'eternal-flower',
-              ),
-              hasLength(1),
-            );
-
-            expect(
-          """
+          marker = "    final florges = catalog.firstWhere((p) => p.id == 671);\n"
+          assertions = (
+              "\n"
+              "    expect(\n"
+              "      PokedexEntry.formKey('Eternal', speciesName: floette.name),\n"
+              "      'eternal-flower',\n"
+              "    );\n"
+              "    expect(\n"
+              "      PokedexEntry.formKey('Eternal Flower', speciesName: floette.name),\n"
+              "      'eternal-flower',\n"
+              "    );\n"
+              "    expect(\n"
+              "      floette.formDefinitions.where(\n"
+              "        (definition) =>\n"
+              "            PokedexEntry.formKey(\n"
+              "              definition.displayName,\n"
+              "              speciesName: floette.name,\n"
+              "            ) ==\n"
+              "            'eternal-flower',\n"
+              "      ),\n"
+              "      hasLength(1),\n"
+              "    );\n"
+          )
           if source.count(marker) != 1:
               raise SystemExit(f'test marker count={source.count(marker)}')
-          test.write_text(source.replace(marker, replacement, 1), encoding='utf-8')
+          test.write_text(source.replace(marker, marker + assertions, 1), encoding='utf-8')
           PY
 
       - run: dart format lib/models/pokemon.dart test/deoxys_floette_form_regression_test.dart

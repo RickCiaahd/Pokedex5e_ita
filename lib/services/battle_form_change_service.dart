@@ -351,8 +351,7 @@ class BattleFormChangeService {
       final choiceKey = canonicalFormKey(pokemon, formName);
       final isGalarian = persistentKey.startsWith('galarian-');
       if (isGalarian) {
-        return choiceKey == 'galarian-standard' ||
-            choiceKey == 'galarian-zen';
+        return choiceKey == 'galarian-standard' || choiceKey == 'galarian-zen';
       }
       return choiceKey == 'standard' || choiceKey == 'zen';
     }
@@ -414,8 +413,7 @@ class BattleFormChangeService {
     if (pokemon.name == 'Cherrim') {
       if (suppressed) return 'Base';
       return switch (environment.weather) {
-        BattleWeather.harshSunCalm || BattleWeather.harshSunWindy =>
-          'sunshine',
+        BattleWeather.harshSunCalm || BattleWeather.harshSunWindy => 'sunshine',
         _ => 'Base',
       };
     }
@@ -477,14 +475,11 @@ class BattleFormChangeService {
     final key = canonicalFormKey(pokemon, currentFormName);
 
     if (pokemon.name == 'Darmanitan' &&
-        hasAbility(
-          pokemon,
-          slot,
-          const {'Zen Mode', 'Zen Mode (Galarian)'},
-        )) {
-      final isGalarian = canonicalFormKey(pokemon, slot.formName).startsWith(
-        'galarian-',
-      );
+        hasAbility(pokemon, slot, const {'Zen Mode', 'Zen Mode (Galarian)'})) {
+      final isGalarian = canonicalFormKey(
+        pokemon,
+        slot.formName,
+      ).startsWith('galarian-');
       final zen = currentHp * 2 <= maxHp;
       return BattleFormHpResult(
         formName: isGalarian
@@ -563,7 +558,9 @@ class BattleFormChangeService {
     if (pokemon.name == 'Aegislash' &&
         hasAbility(pokemon, slot, const {'Stance Change'})) {
       if (moveKey == 'kings-shield') return 'shield';
-      if (move.damageForLevel(LevelProgression.levelFromExperience(slot.experience)) !=
+      if (move.damageForLevel(
+            LevelProgression.levelFromExperience(slot.experience),
+          ) !=
           null) {
         return 'Base';
       }
@@ -622,7 +619,9 @@ class BattleFormChangeService {
   }) {
     final missing = <String>[];
     if (!hasAbility(pokemon, slot, const {'Schooling'})) {
-      missing.add(uiTextForLanguage('Richiede Schooling', 'Requires Schooling'));
+      missing.add(
+        uiTextForLanguage('Richiede Schooling', 'Requires Schooling'),
+      );
     }
     if (LevelProgression.levelFromExperience(slot.experience) < 5) {
       missing.add(uiTextForLanguage('Richiede livello 5', 'Requires level 5'));
@@ -691,7 +690,8 @@ class BattleFormChangeService {
   }
 
   static int terapagosDailyShiftUses(Pokemon pokemon, TeamSlot slot) {
-    final con = slot.customAbilityScores['CON'] ?? pokemon.attributes.constitution;
+    final con =
+        slot.customAbilityScores['CON'] ?? pokemon.attributes.constitution;
     return math.max(0, ((con - 10) / 2).floor());
   }
 
@@ -718,7 +718,8 @@ class BattleFormChangeService {
         }
         break;
       case 'Hoopa':
-        if (target == 'unbound' && !inventoryItemIds.contains('prison-bottle')) {
+        if (target == 'unbound' &&
+            !inventoryItemIds.contains('prison-bottle')) {
           missing.add(
             uiTextForLanguage(
               'Richiede il Vaso del vincolo',
@@ -736,34 +737,74 @@ class BattleFormChangeService {
       case 'Kyurem':
         if (target == 'black') {
           if (!inventoryItemIds.contains('dna-splicer')) {
-            missing.add(uiTextForLanguage('Richiede il Cuneo DNA', 'Requires the DNA Splicer'));
+            missing.add(
+              uiTextForLanguage(
+                'Richiede il Cuneo DNA',
+                'Requires the DNA Splicer',
+              ),
+            );
           }
           if (!teamPokemonIds.contains(644)) {
-            missing.add(uiTextForLanguage('Richiede Zekrom in squadra', 'Requires Zekrom in the team'));
+            missing.add(
+              uiTextForLanguage(
+                'Richiede Zekrom in squadra',
+                'Requires Zekrom in the team',
+              ),
+            );
           }
         } else if (target == 'white') {
           if (!inventoryItemIds.contains('dna-splicer')) {
-            missing.add(uiTextForLanguage('Richiede il Cuneo DNA', 'Requires the DNA Splicer'));
+            missing.add(
+              uiTextForLanguage(
+                'Richiede il Cuneo DNA',
+                'Requires the DNA Splicer',
+              ),
+            );
           }
           if (!teamPokemonIds.contains(643)) {
-            missing.add(uiTextForLanguage('Richiede Reshiram in squadra', 'Requires Reshiram in the team'));
+            missing.add(
+              uiTextForLanguage(
+                'Richiede Reshiram in squadra',
+                'Requires Reshiram in the team',
+              ),
+            );
           }
         }
         break;
       case 'Necrozma':
         if (target == 'dusk-mane') {
           if (!inventoryItemIds.contains('n-solarizer')) {
-            missing.add(uiTextForLanguage('Richiede il Necrosolix', 'Requires the N-Solarizer'));
+            missing.add(
+              uiTextForLanguage(
+                'Richiede il Necrosolix',
+                'Requires the N-Solarizer',
+              ),
+            );
           }
           if (!teamPokemonIds.contains(791)) {
-            missing.add(uiTextForLanguage('Richiede Solgaleo in squadra', 'Requires Solgaleo in the team'));
+            missing.add(
+              uiTextForLanguage(
+                'Richiede Solgaleo in squadra',
+                'Requires Solgaleo in the team',
+              ),
+            );
           }
         } else if (target == 'dawn-wings') {
           if (!inventoryItemIds.contains('n-lunarizer')) {
-            missing.add(uiTextForLanguage('Richiede il Necrolunix', 'Requires the N-Lunarizer'));
+            missing.add(
+              uiTextForLanguage(
+                'Richiede il Necrolunix',
+                'Requires the N-Lunarizer',
+              ),
+            );
           }
           if (!teamPokemonIds.contains(792)) {
-            missing.add(uiTextForLanguage('Richiede Lunala in squadra', 'Requires Lunala in the team'));
+            missing.add(
+              uiTextForLanguage(
+                'Richiede Lunala in squadra',
+                'Requires Lunala in the team',
+              ),
+            );
           }
         } else if (target == 'ultra') {
           missing.add(
@@ -1110,8 +1151,8 @@ class BattleFormChangeService {
           'Mutant: +3 AC; its attacks have disadvantage and targets have advantage on saves against its moves.',
         ),
         'speed' => uiTextForLanguage(
-          'Mutante: ottiene un’azione di attacco aggiuntiva; i suoi attacchi hanno svantaggio e gli attacchi contro Deoxys hanno svantaggio.',
-          'Mutant: gains an additional attack action; its attacks have disadvantage and attacks against Deoxys have disadvantage.',
+          'Mutante: ottiene un’azione di attacco aggiuntiva ogni turno; quell’attacco viene effettuato con svantaggio. Se la mossa richiede un TS, i bersagli hanno vantaggio.',
+          'Mutant: gains one additional attack action each turn; that attack is made with disadvantage. If the move requires a save, the targets have advantage.',
         ),
         _ => uiTextForLanguage(
           'Forma equilibrata, senza bonus di Mutante.',

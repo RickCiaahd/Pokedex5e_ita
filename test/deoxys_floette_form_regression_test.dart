@@ -71,7 +71,7 @@ void main() {
     );
   });
 
-  testWidgets('Flower artwork bundle uses dedicated artwork, not bad sprites', (
+  testWidgets('Flower forms keep dedicated artwork and compact sprites', (
     tester,
   ) async {
     final catalog = await PokemonRepository().getAllPokemon();
@@ -86,47 +86,114 @@ void main() {
       'White Flower',
       'Yellow Flower',
     ];
+
     for (final form in forms) {
-      expect(assets, contains('assets/textures/pokemons/670Floette $form.png'));
-      expect(assets, contains('assets/textures/pokemons/671Florges $form.png'));
+      final floetteArtwork = 'assets/textures/pokemons/670Floette $form.png';
+      final florgesArtwork = 'assets/textures/pokemons/671Florges $form.png';
+      final floetteShinyArtwork =
+          'assets/textures/pokemons/670Floette $form Shiny.png';
+      final florgesShinyArtwork =
+          'assets/textures/pokemons/671Florges $form Shiny.png';
+      final floetteSprite = 'assets/textures/sprites/670Floette $form.png';
+      final florgesSprite = 'assets/textures/sprites/671Florges $form.png';
+      final floetteShinySprite =
+          'assets/textures/sprites/670Floette $form Shiny.png';
+      final florgesShinySprite =
+          'assets/textures/sprites/671Florges $form Shiny.png';
+
+      expect(assets, contains(floetteArtwork));
+      expect(assets, contains(florgesArtwork));
+      expect(assets, contains(floetteShinyArtwork));
+      expect(assets, contains(florgesShinyArtwork));
+      expect(assets, contains(floetteSprite));
+      expect(assets, contains(florgesSprite));
+      expect(assets, contains(floetteShinySprite));
+      expect(assets, contains(florgesShinySprite));
+
+      final floetteCompact = PokemonAssetPaths.imageCandidates(
+        pokemon: floette,
+        useLargeArtwork: false,
+        formName: form,
+      );
+      final florgesCompact = PokemonAssetPaths.imageCandidates(
+        pokemon: florges,
+        useLargeArtwork: false,
+        formName: form,
+      );
+      final floetteShinyCompact = PokemonAssetPaths.imageCandidates(
+        pokemon: floette,
+        useLargeArtwork: false,
+        formName: form,
+        isShiny: true,
+      );
+      final florgesShinyCompact = PokemonAssetPaths.imageCandidates(
+        pokemon: florges,
+        useLargeArtwork: false,
+        formName: form,
+        isShiny: true,
+      );
+      final floetteLargeShiny = PokemonAssetPaths.imageCandidates(
+        pokemon: floette,
+        useLargeArtwork: true,
+        formName: form,
+        isShiny: true,
+      );
+      final florgesLargeShiny = PokemonAssetPaths.imageCandidates(
+        pokemon: florges,
+        useLargeArtwork: true,
+        formName: form,
+        isShiny: true,
+      );
+
+      expect(floetteCompact, contains(floetteSprite));
+      expect(florgesCompact, contains(florgesSprite));
+      expect(floetteShinyCompact, contains(floetteShinySprite));
+      expect(florgesShinyCompact, contains(florgesShinySprite));
       expect(
-        assets,
-        contains('assets/textures/pokemons/670Floette $form Shiny.png'),
+        floetteCompact.indexOf(floetteSprite),
+        lessThan(floetteCompact.indexOf(floetteArtwork)),
       );
       expect(
-        assets,
-        contains('assets/textures/pokemons/671Florges $form Shiny.png'),
+        florgesCompact.indexOf(florgesSprite),
+        lessThan(florgesCompact.indexOf(florgesArtwork)),
       );
       expect(
-        PokemonAssetPaths.imageCandidates(
-          pokemon: floette,
-          useLargeArtwork: true,
-          formName: form,
-          isShiny: true,
-        ),
-        contains('assets/textures/pokemons/670Floette $form Shiny.png'),
+        floetteShinyCompact.indexOf(floetteShinySprite),
+        lessThan(floetteShinyCompact.indexOf(floetteShinyArtwork)),
       );
       expect(
-        PokemonAssetPaths.imageCandidates(
-          pokemon: florges,
-          useLargeArtwork: true,
-          formName: form,
-          isShiny: true,
-        ),
-        contains('assets/textures/pokemons/671Florges $form Shiny.png'),
+        florgesShinyCompact.indexOf(florgesShinySprite),
+        lessThan(florgesShinyCompact.indexOf(florgesShinyArtwork)),
       );
-      expect(
-        assets,
-        isNot(contains('assets/textures/sprites/670Floette $form.png')),
-      );
-      expect(
-        assets,
-        isNot(contains('assets/textures/sprites/671Florges $form.png')),
-      );
+      expect(floetteLargeShiny, contains(floetteShinyArtwork));
+      expect(florgesLargeShiny, contains(florgesShinyArtwork));
     }
-    expect(
-      assets,
-      contains('assets/textures/pokemons/670Floette Eternal Flower.png'),
+
+    const eternalArtwork =
+        'assets/textures/pokemons/670Floette Eternal Flower.png';
+    const eternalSprite =
+        'assets/textures/sprites/670Floette Eternal Flower.png';
+    const eternalShinySprite =
+        'assets/textures/sprites/670Floette Eternal Flower Shiny.png';
+    expect(assets, contains(eternalArtwork));
+    expect(assets, contains(eternalSprite));
+    expect(assets, contains(eternalShinySprite));
+    final eternalCompact = PokemonAssetPaths.imageCandidates(
+      pokemon: floette,
+      useLargeArtwork: false,
+      formName: 'Eternal Flower',
     );
+    expect(eternalCompact, contains(eternalSprite));
+    expect(
+      eternalCompact.indexOf(eternalSprite),
+      lessThan(eternalCompact.indexOf(eternalArtwork)),
+    );
+    final eternalShinyCompact = PokemonAssetPaths.imageCandidates(
+      pokemon: floette,
+      useLargeArtwork: false,
+      formName: 'Eternal Flower',
+      isShiny: true,
+    );
+    expect(eternalShinyCompact, contains(eternalShinySprite));
   });
 }

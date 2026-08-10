@@ -49,17 +49,33 @@ jobs:
       - name: Build unsigned iOS release
         run: flutter build ios --release --no-codesign
 
-      - name: Package unsigned app bundle
+      - name: Package unsigned app bundle and IPA
+        shell: bash
         run: |
-          test -d build/ios/iphoneos/Runner.app
-          ditto -c -k --sequesterRsrc --keepParent \
-            build/ios/iphoneos/Runner.app \
-            build/ios/Pokedex5eITA-iOS-unsigned.zip
+          set -euo pipefail
+          APP_PATH="build/ios/iphoneos/Runner.app"
+          OUTPUT_DIR="build/ios/sideload"
+          PAYLOAD_DIR="$OUTPUT_DIR/Payload"
 
-      - name: Upload unsigned iOS artifact
+          test -d "$APP_PATH"
+          rm -rf "$OUTPUT_DIR"
+          mkdir -p "$PAYLOAD_DIR"
+
+          ditto "$APP_PATH" "$PAYLOAD_DIR/Runner.app"
+          ditto -c -k --sequesterRsrc --keepParent \
+            "$APP_PATH" \
+            "$OUTPUT_DIR/Pokedex5eITA-iOS-unsigned-app.zip"
+
+          cd "$OUTPUT_DIR"
+          zip -qry "Pokedex5eITA-iOS-unsigned.ipa" Payload
+          test -f "Pokedex5eITA-iOS-unsigned.ipa"
+
+      - name: Upload unsigned iOS artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: Pokedex5eITA-iOS-unsigned
-          path: build/ios/Pokedex5eITA-iOS-unsigned.zip
+          name: Pokedex5eITA-iOS-sideload
+          path: |
+            build/ios/sideload/Pokedex5eITA-iOS-unsigned.ipa
+            build/ios/sideload/Pokedex5eITA-iOS-unsigned-app.zip
           if-no-files-found: error
           retention-days: 30

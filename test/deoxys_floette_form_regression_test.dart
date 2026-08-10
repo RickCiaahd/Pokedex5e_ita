@@ -96,6 +96,10 @@ void main() {
           'assets/textures/pokemons/671Florges $form Shiny.png';
       final floetteSprite = 'assets/textures/sprites/670Floette $form.png';
       final florgesSprite = 'assets/textures/sprites/671Florges $form.png';
+      final floetteShinySprite =
+          'assets/textures/sprites/670Floette $form Shiny.png';
+      final florgesShinySprite =
+          'assets/textures/sprites/671Florges $form Shiny.png';
 
       expect(assets, contains(floetteArtwork));
       expect(assets, contains(florgesArtwork));
@@ -103,6 +107,8 @@ void main() {
       expect(assets, contains(florgesShinyArtwork));
       expect(assets, contains(floetteSprite));
       expect(assets, contains(florgesSprite));
+      expect(assets, contains(floetteShinySprite));
+      expect(assets, contains(florgesShinySprite));
 
       final floetteCompact = PokemonAssetPaths.imageCandidates(
         pokemon: floette,
@@ -141,8 +147,8 @@ void main() {
 
       expect(floetteCompact, contains(floetteSprite));
       expect(florgesCompact, contains(florgesSprite));
-      expect(floetteShinyCompact, contains(floetteSprite));
-      expect(florgesShinyCompact, contains(florgesSprite));
+      expect(floetteShinyCompact, contains(floetteShinySprite));
+      expect(florgesShinyCompact, contains(florgesShinySprite));
       expect(
         floetteCompact.indexOf(floetteSprite),
         lessThan(floetteCompact.indexOf(floetteArtwork)),
@@ -152,11 +158,11 @@ void main() {
         lessThan(florgesCompact.indexOf(florgesArtwork)),
       );
       expect(
-        floetteShinyCompact.indexOf(floetteSprite),
+        floetteShinyCompact.indexOf(floetteShinySprite),
         lessThan(floetteShinyCompact.indexOf(floetteShinyArtwork)),
       );
       expect(
-        florgesShinyCompact.indexOf(florgesSprite),
+        florgesShinyCompact.indexOf(florgesShinySprite),
         lessThan(florgesShinyCompact.indexOf(florgesShinyArtwork)),
       );
       expect(floetteLargeShiny, contains(floetteShinyArtwork));
@@ -167,8 +173,11 @@ void main() {
         'assets/textures/pokemons/670Floette Eternal Flower.png';
     const eternalSprite =
         'assets/textures/sprites/670Floette Eternal Flower.png';
+    const eternalShinySprite =
+        'assets/textures/sprites/670Floette Eternal Flower Shiny.png';
     expect(assets, contains(eternalArtwork));
     expect(assets, contains(eternalSprite));
+    expect(assets, contains(eternalShinySprite));
     final eternalCompact = PokemonAssetPaths.imageCandidates(
       pokemon: floette,
       useLargeArtwork: false,
@@ -179,5 +188,12 @@ void main() {
       eternalCompact.indexOf(eternalSprite),
       lessThan(eternalCompact.indexOf(eternalArtwork)),
     );
+    final eternalShinyCompact = PokemonAssetPaths.imageCandidates(
+      pokemon: floette,
+      useLargeArtwork: false,
+      formName: 'Eternal Flower',
+      isShiny: true,
+    );
+    expect(eternalShinyCompact, contains(eternalShinySprite));
   });
 }

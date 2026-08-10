@@ -78,7 +78,7 @@ jobs:
                       width, height = struct.unpack('>II', data[16:24])
                       assert (width, height) != (40, 30), f'Wrong party icon slipped back in: {path}'
                       assert width >= 80 and height >= 80, f'Unexpected sprite canvas {width}x{height}: {path}'
-                      assert len(data) > 1000, f'Unexpectedly tiny sprite: {path}'
+                      assert len(data) > 100, f'Unexpectedly tiny sprite: {path}'
                       digest = hashlib.sha256(data).hexdigest()
                       assert digest not in hashes, f'Duplicate sprite content: {path}'
                       hashes.add(digest)

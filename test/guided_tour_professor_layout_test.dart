@@ -55,6 +55,12 @@ void main() {
       reason: 'Il tour Home deve restare sopra la navigazione di sistema',
     );
     expect(guided, contains('ProfessorTourPanel('));
+    expect(
+      guided,
+      contains('bottom: MediaQuery.viewPaddingOf(context).bottom'),
+      reason:
+          'I tour dei sottomenu devono restare sopra la navigazione di sistema',
+    );
     expect(home, isNot(contains('class _ProfessorSpeechPanel')));
     expect(guided, isNot(contains('class _ProfessorSpeechPanel')));
   });

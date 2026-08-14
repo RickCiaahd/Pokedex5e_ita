@@ -1,0 +1,167 @@
+name: iOS TestFlight
+
+on:
+  workflow_dispatch:
+    inputs:
+      bundle_id:
+        description: 'Bundle ID registrato su Apple Developer (es. com.rickciaahd.pokedex5eita)'
+        required: true
+        type: string
+      team_id:
+        description: 'Apple Developer Team ID'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ios-testflight-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  upload-testflight:
+    name: Build, sign and upload to TestFlight
+    runs-on: macos-latest
+    timeout-minutes: 75
+
+    env:
+      BUNDLE_ID: ${{ inputs.bundle_id }}
+      TEAM_ID: ${{ inputs.team_id }}
+      ASC_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+      ASC_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+      ASC_PRIVATE_KEY_B64: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY_BASE64 }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up pinned Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.4'
+          cache: true
+
+      - name: Show toolchain versions
+        run: |
+          flutter --version
+          xcodebuild -version
+
+      - name: Validate TestFlight credentials
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$BUNDLE_ID"
+          test -n "$TEAM_ID"
+          test -n "$ASC_KEY_ID"
+          test -n "$ASC_ISSUER_ID"
+          test -n "$ASC_PRIVATE_KEY_B64"
+
+      - name: Install App Store Connect API key
+        shell: bash
+        run: |
+          set -euo pipefail
+          API_KEYS_DIR="$HOME/.appstoreconnect/private_keys"
+          API_KEY_PATH="$API_KEYS_DIR/AuthKey_${ASC_KEY_ID}.p8"
+          mkdir -p "$API_KEYS_DIR"
+          export API_KEY_PATH
+          python3 - <<'PY'
+          import base64
+          import os
+          from pathlib import Path
+
+          encoded = os.environ['ASC_PRIVATE_KEY_B64'].strip()
+          key_path = Path(os.environ['API_KEY_PATH'])
+          key_path.write_bytes(base64.b64decode(encoded))
+          PY
+          chmod 600 "$API_KEY_PATH"
+          echo "API_KEY_PATH=$API_KEY_PATH" >> "$GITHUB_ENV"
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Verify compliance reports
+        run: python3 tooling/generate_compliance_reports.py --check
+
+      - name: Prepare embedded GPL and NOTICE
+        run: |
+          python3 tooling/prepare_release_legal_assets.py
+          python3 tooling/prepare_release_legal_assets.py --check
+
+      - name: Prepare Flutter iOS release files
+        shell: bash
+        run: |
+          set -euo pipefail
+          flutter build ios \
+            --release \
+            --no-codesign \
+            --build-number="$GITHUB_RUN_NUMBER"
+
+      - name: Create signed Xcode archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p build/ios/archive
+          xcodebuild \
+            -workspace ios/Runner.xcworkspace \
+            -scheme Runner \
+            -configuration Release \
+            -destination 'generic/platform=iOS' \
+            -archivePath build/ios/archive/Runner.xcarchive \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$API_KEY_PATH" \
+            -authenticationKeyID "$ASC_KEY_ID" \
+            -authenticationKeyIssuerID "$ASC_ISSUER_ID" \
+            PRODUCT_BUNDLE_IDENTIFIER="$BUNDLE_ID" \
+            DEVELOPMENT_TEAM="$TEAM_ID" \
+            CODE_SIGN_STYLE=Automatic \
+            CURRENT_PROJECT_VERSION="$GITHUB_RUN_NUMBER" \
+            archive
+
+      - name: Upload archive to App Store Connect
+        shell: bash
+        run: |
+          set -euo pipefail
+          EXPORT_OPTIONS="$RUNNER_TEMP/ExportOptions.plist"
+          cat > "$EXPORT_OPTIONS" <<EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key>
+            <string>app-store-connect</string>
+            <key>destination</key>
+            <string>upload</string>
+            <key>signingStyle</key>
+            <string>automatic</string>
+            <key>teamID</key>
+            <string>${TEAM_ID}</string>
+            <key>manageAppVersionAndBuildNumber</key>
+            <false/>
+            <key>uploadSymbols</key>
+            <true/>
+          </dict>
+          </plist>
+          EOF
+
+          mkdir -p build/ios/export
+          xcodebuild \
+            -exportArchive \
+            -archivePath build/ios/archive/Runner.xcarchive \
+            -exportPath build/ios/export \
+            -exportOptionsPlist "$EXPORT_OPTIONS" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$API_KEY_PATH" \
+            -authenticationKeyID "$ASC_KEY_ID" \
+            -authenticationKeyIssuerID "$ASC_ISSUER_ID"
+
+      - name: Upload archive for diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Pokedex5eITA-iOS-TestFlight-diagnostics
+          path: |
+            build/ios/archive
+            build/ios/export
+          if-no-files-found: ignore
+          retention-days: 7

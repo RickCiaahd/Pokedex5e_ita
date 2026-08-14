@@ -2,7 +2,7 @@ name: pokedex_5e_ita
 description: "Trainer Atlas, companion non ufficiale in italiano per campagne con creature tascabili in 5e."
 publish_to: 'none'
 
-version: 1.4.0+14
+version: 1.4.1+15
 environment:
   sdk: ^3.12.2
 

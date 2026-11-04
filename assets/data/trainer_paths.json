@@ -5,22 +5,26 @@
       {
         "level": 2,
         "title": "Ace Trainer",
-        "description": "I tuoi Pokemon ottengono +1 ai tiri per colpire e ai danni. E il path piu diretto per chi vuole eccellere in battaglia."
+        "description": "I tuoi Pokemon ottengono +1 ai tiri per colpire e ai danni. E il path piu diretto per chi vuole eccellere in battaglia.",
+        "descriptionEn": "Your Pokemon gain +1 to attack and damage rolls. This is the most direct path for trainers who want to excel in battle."
       },
       {
         "level": 5,
         "title": "Battle Master",
-        "description": "Ottieni dadi battaglia d6 pari a 1 + modificatore WIS, minimo 1. Puoi assegnarne uno a un tuo Pokemon dopo un tiro per colpire o danni per aggiungerlo al risultato. Recuperi i dadi con un riposo lungo."
+        "description": "Ottieni dadi battaglia d6 pari a 1 + modificatore WIS, minimo 1. Puoi assegnarne uno a un tuo Pokemon dopo un tiro per colpire o danni per aggiungerlo al risultato. Recuperi i dadi con un riposo lungo.",
+        "descriptionEn": "You gain a number of d6 battle dice equal to 1 + your WIS modifier (minimum 1). You can assign one to one of your Pokemon after an attack or damage roll and add it to the result. You regain the dice after a long rest."
       },
       {
         "level": 9,
         "title": "Max Potential",
-        "description": "Scegli un potenziamento permanente per tutti i tuoi Pokemon: +10 ft velocita, +1 STR, +1 DEX oppure +1 CON."
+        "description": "Scegli un potenziamento permanente per tutti i tuoi Pokemon: +10 ft velocita, +1 STR, +1 DEX oppure +1 CON.",
+        "descriptionEn": "Choose a permanent improvement for all your Pokemon: +10 ft speed, +1 STR, +1 DEX, or +1 CON."
       },
       {
         "level": 15,
         "title": "Rapid Switching",
-        "description": "Puoi richiamare e mandare in campo Pokemon come azione bonus. Usi pari a 1 + modificatore WIS, minimo 1, recuperati con riposo lungo. Un Pokemon non puo essere sostituito prima della fine del suo primo turno completo, salvo effetti specifici."
+        "description": "Puoi richiamare e mandare in campo Pokemon come azione bonus. Usi pari a 1 + modificatore WIS, minimo 1, recuperati con riposo lungo. Un Pokemon non puo essere sostituito prima della fine del suo primo turno completo, salvo effetti specifici.",
+        "descriptionEn": "You can recall and send out Pokemon as a bonus action. Uses equal 1 + your WIS modifier (minimum 1), regained after a long rest. A Pokemon cannot be switched out before the end of its first full turn, unless a specific effect allows it."
       }
     ]
   },
@@ -30,22 +34,26 @@
       {
         "level": 2,
         "title": "Hobbyist",
-        "description": "Scegli una specializzazione aggiuntiva e due competenze extra."
+        "description": "Scegli una specializzazione aggiuntiva e due competenze extra.",
+        "descriptionEn": "Choose an additional specialization and two extra skill proficiencies."
       },
       {
         "level": 5,
         "title": "Versatile",
-        "description": "Ottieni dadi abilita d6 pari a 1 + modificatore WIS, minimo 1. Puoi aggiungerne uno a una prova di abilita o tiro salvezza di un tuo Pokemon dopo il tiro. Recuperi i dadi con riposo lungo."
+        "description": "Ottieni dadi abilita d6 pari a 1 + modificatore WIS, minimo 1. Puoi aggiungerne uno a una prova di abilita o tiro salvezza di un tuo Pokemon dopo il tiro. Recuperi i dadi con riposo lungo.",
+        "descriptionEn": "You gain a number of d6 skill dice equal to 1 + your WIS modifier (minimum 1). You can add one to a skill check or saving throw made by one of your Pokemon after the roll. You regain the dice after a long rest."
       },
       {
         "level": 9,
         "title": "Many Faces",
-        "description": "Scegli una feature di livello 2, 5 o 9 da un altro Trainer Path."
+        "description": "Scegli una feature di livello 2, 5 o 9 da un altro Trainer Path.",
+        "descriptionEn": "Choose a level 2, 5, or 9 feature from another Trainer Path."
       },
       {
         "level": 15,
         "title": "Skill Switch",
-        "description": "A ogni riposo lungo scegli un talento dalla sezione Additional Feats: tutti i tuoi Pokemon lo conoscono per quel giorno."
+        "description": "A ogni riposo lungo scegli un talento dalla sezione Additional Feats: tutti i tuoi Pokemon lo conoscono per quel giorno.",
+        "descriptionEn": "After each long rest, choose a feat from the Additional Feats section: all your Pokemon know it for that day."
       }
     ]
   },
@@ -55,22 +63,26 @@
       {
         "level": 2,
         "title": "Poké Mentor",
-        "description": "Le tue TM possono essere usate due volte prima di rompersi."
+        "description": "Le tue TM possono essere usate due volte prima di rompersi.",
+        "descriptionEn": "Your TMs can be used twice before breaking."
       },
       {
         "level": 5,
         "title": "Tutor",
-        "description": "Il tuo addestramento riduce tempi e sprechi nell insegnare mosse. Usa questa tappa come riferimento per gestione TM e apprendimento al tavolo."
+        "description": "Il tuo addestramento riduce tempi e sprechi nell insegnare mosse. Usa questa tappa come riferimento per gestione TM e apprendimento al tavolo.",
+        "descriptionEn": "Your training reduces the time and resources needed to teach moves. Use this milestone as a reference for managing TMs and learning at the table."
       },
       {
         "level": 9,
         "title": "Guided Practice",
-        "description": "Il mentoring diventa piu efficiente: i Pokemon apprendono e consolidano tecniche con maggiore facilita durante la crescita."
+        "description": "Il mentoring diventa piu efficiente: i Pokemon apprendono e consolidano tecniche con maggiore facilita durante la crescita.",
+        "descriptionEn": "Your mentoring becomes more efficient: Pokemon learn and consolidate techniques more easily as they grow."
       },
       {
         "level": 15,
         "title": "Master Teacher",
-        "description": "Le mosse dei tuoi Pokemon possono essere apprese e dimenticate a ogni riposo lungo invece che solo al level up."
+        "description": "Le mosse dei tuoi Pokemon possono essere apprese e dimenticate a ogni riposo lungo invece che solo al level up.",
+        "descriptionEn": "Your Pokemon can learn and forget moves after each long rest instead of only when leveling up."
       }
     ]
   },
@@ -80,22 +92,26 @@
       {
         "level": 2,
         "title": "Pokéchef",
-        "description": "Sei specializzato nel preparare cibo e treat per sostenere i Pokemon durante l avventura."
+        "description": "Sei specializzato nel preparare cibo e treat per sostenere i Pokemon durante l avventura.",
+        "descriptionEn": "You specialize in preparing food and treats to support Pokemon during adventures."
       },
       {
         "level": 5,
         "title": "Edible Treat",
-        "description": "Prepari treat curativi. Come azione un Pokemon recupera 2d4+2 PF. Usi pari a 1 + modificatore WIS, recuperati con riposo lungo."
+        "description": "Prepari treat curativi. Come azione un Pokemon recupera 2d4+2 PF. Usi pari a 1 + modificatore WIS, recuperati con riposo lungo.",
+        "descriptionEn": "You prepare healing treats. As an action, a Pokemon regains 2d4+2 HP. Uses equal 1 + your WIS modifier, regained after a long rest."
       },
       {
         "level": 9,
         "title": "Cheerleader",
-        "description": "Una volta per riposo breve, come azione bonus, ispiri gli alleati: fino al tuo prossimo turno aggiungi il modificatore CHA, minimo 1, a tiri per colpire, danni oppure CA degli alleati. I treat curano 3d10+6."
+        "description": "Una volta per riposo breve, come azione bonus, ispiri gli alleati: fino al tuo prossimo turno aggiungi il modificatore CHA, minimo 1, a tiri per colpire, danni oppure CA degli alleati. I treat curano 3d10+6.",
+        "descriptionEn": "Once per short rest, as a bonus action, you inspire allies: until your next turn, add your CHA modifier (minimum 1) to allies' attack rolls, damage rolls, or AC. Your treats heal 3d10+6 HP."
       },
       {
         "level": 15,
         "title": "Master Teacher",
-        "description": "Le mosse possono essere apprese e dimenticate a ogni riposo lungo; i tuoi treat curano 4d12+10 PF."
+        "description": "Le mosse possono essere apprese e dimenticate a ogni riposo lungo; i tuoi treat curano 4d12+10 PF.",
+        "descriptionEn": "Moves can be learned and forgotten after each long rest; your treats heal 4d12+10 HP."
       }
     ]
   },
@@ -105,22 +121,26 @@
       {
         "level": 2,
         "title": "Researcher",
-        "description": "Scegli WIS o INT quando prendi il path. Puoi aggiungere quel modificatore, minimo 1, alle prove di abilita dei tuoi Pokemon."
+        "description": "Scegli WIS o INT quando prendi il path. Puoi aggiungere quel modificatore, minimo 1, alle prove di abilita dei tuoi Pokemon.",
+        "descriptionEn": "Choose WIS or INT when you take this path. You can add that modifier (minimum 1) to your Pokemon's skill checks."
       },
       {
         "level": 5,
         "title": "Analyst",
-        "description": "Come azione bonus puoi fare una prova Investigation CD 12 per determinare il livello di un Pokemon e identificare una sua abilita scelta dal DM."
+        "description": "Come azione bonus puoi fare una prova Investigation CD 12 per determinare il livello di un Pokemon e identificare una sua abilita scelta dal DM.",
+        "descriptionEn": "As a bonus action, you can make a DC 12 Investigation check to determine a Pokemon's level and identify one of its abilities chosen by the DM."
       },
       {
         "level": 9,
         "title": "Evolutionary Expert",
-        "description": "Quando un tuo Pokemon evolve, puoi usare due suoi punti evoluzione per acquistare un talento."
+        "description": "Quando un tuo Pokemon evolve, puoi usare due suoi punti evoluzione per acquistare un talento.",
+        "descriptionEn": "When one of your Pokemon evolves, you can spend two of its evolution points to purchase a feat."
       },
       {
         "level": 15,
         "title": "Professor",
-        "description": "Come azione bonus puoi identificare tutte le mosse note di un bersaglio. Inoltre indichi punti deboli: gli alleati entro 60 ft ottengono +2 ai tiri per colpire contro quel bersaglio fino alla fine del tuo prossimo turno. Usi pari a 1 + modificatore INT, recuperati con riposo lungo."
+        "description": "Come azione bonus puoi identificare tutte le mosse note di un bersaglio. Inoltre indichi punti deboli: gli alleati entro 60 ft ottengono +2 ai tiri per colpire contro quel bersaglio fino alla fine del tuo prossimo turno. Usi pari a 1 + modificatore INT, recuperati con riposo lungo.",
+        "descriptionEn": "As a bonus action, you can identify all moves a target knows. You also point out weaknesses: allies within 60 ft gain +2 to attack rolls against that target until the end of your next turn. Uses equal 1 + your INT modifier, regained after a long rest."
       }
     ]
   },
@@ -130,22 +150,26 @@
       {
         "level": 2,
         "title": "Pokémon Collector",
-        "description": "Ottieni expertise in Animal Handling, raddoppiando il bonus competenza per questa abilita."
+        "description": "Ottieni expertise in Animal Handling, raddoppiando il bonus competenza per questa abilita.",
+        "descriptionEn": "You gain expertise in Animal Handling, doubling your proficiency bonus for this skill."
       },
       {
         "level": 5,
         "title": "Gotta Catch 'Em All",
-        "description": "Una volta per riposo lungo puoi tirare Animal Handling con vantaggio per catturare, anche se il bersaglio non ha condizioni negative."
+        "description": "Una volta per riposo lungo puoi tirare Animal Handling con vantaggio per catturare, anche se il bersaglio non ha condizioni negative.",
+        "descriptionEn": "Once per long rest, you can roll Animal Handling with advantage to catch a Pokemon, even if the target has no negative conditions."
       },
       {
         "level": 9,
         "title": "Catching Expert",
-        "description": "I Pokemon che catturi vengono guariti da condizioni e tornano a PF pieni. Aggiungi anche il modificatore CHA ai tentativi di cattura."
+        "description": "I Pokemon che catturi vengono guariti da condizioni e tornano a PF pieni. Aggiungi anche il modificatore CHA ai tentativi di cattura.",
+        "descriptionEn": "Pokemon you catch are cured of conditions and restored to full HP. You also add your CHA modifier to capture attempts."
       },
       {
         "level": 15,
         "title": "Disciplined Strikes",
-        "description": "Quando un tuo Pokemon infliggerebbe abbastanza danni da mandare KO un Pokemon, puoi lasciarlo invece a 1 PF."
+        "description": "Quando un tuo Pokemon infliggerebbe abbastanza danni da mandare KO un Pokemon, puoi lasciarlo invece a 1 PF.",
+        "descriptionEn": "When one of your Pokemon would deal enough damage to knock out a Pokemon, you can leave it at 1 HP instead."
       }
     ]
   },
@@ -155,22 +179,26 @@
       {
         "level": 2,
         "title": "Nurse",
-        "description": "Ottieni competenza in Medicine. Dopo un riposo lungo o visita a un Pokecenter, i Pokemon con te ottengono PF temporanei pari al tuo livello."
+        "description": "Ottieni competenza in Medicine. Dopo un riposo lungo o visita a un Pokecenter, i Pokemon con te ottengono PF temporanei pari al tuo livello.",
+        "descriptionEn": "You gain proficiency in Medicine. After a long rest or a visit to a Pokecenter, Pokemon with you gain temporary HP equal to your level."
       },
       {
         "level": 5,
         "title": "Pure Heart",
-        "description": "Ottieni una riserva di guarigione pari a livello trainer x 5. Come azione puoi toccare una creatura consenziente e spendere punti per curarla. Si ricarica con riposo lungo."
+        "description": "Ottieni una riserva di guarigione pari a livello trainer x 5. Come azione puoi toccare una creatura consenziente e spendere punti per curarla. Si ricarica con riposo lungo.",
+        "descriptionEn": "You gain a healing pool equal to your trainer level x 5. As an action, you can touch a willing creature and spend points to heal it. The pool replenishes after a long rest."
       },
       {
         "level": 9,
         "title": "Healing Spirit",
-        "description": "Quando usi consumabili curativi sui Pokemon, o un Pokemon usa una mossa curativa, tira due volte i dadi di cura e tieni il risultato migliore."
+        "description": "Quando usi consumabili curativi sui Pokemon, o un Pokemon usa una mossa curativa, tira due volte i dadi di cura e tieni il risultato migliore.",
+        "descriptionEn": "When you use healing consumables on Pokemon, or a Pokemon uses a healing move, roll the healing dice twice and keep the better result."
       },
       {
         "level": 15,
         "title": "Joy",
-        "description": "Una volta dopo ogni riposo lungo puoi spendere 1 ora per curare completamente fino a sei Pokemon e rimuovere tutti gli status, come in un Pokecenter."
+        "description": "Una volta dopo ogni riposo lungo puoi spendere 1 ora per curare completamente fino a sei Pokemon e rimuovere tutti gli status, come in un Pokecenter.",
+        "descriptionEn": "Once after each long rest, you can spend 1 hour fully healing up to six Pokemon and removing all status conditions, as at a Pokecenter."
       }
     ]
   },
@@ -180,22 +208,26 @@
       {
         "level": 2,
         "title": "Commander",
-        "description": "La lealta dello starter diventa Loyal. Tutti i tuoi Pokemon raddoppiano i bonus ai tiri salvezza e PF provenienti da livelli di lealta positivi."
+        "description": "La lealta dello starter diventa Loyal. Tutti i tuoi Pokemon raddoppiano i bonus ai tiri salvezza e PF provenienti da livelli di lealta positivi.",
+        "descriptionEn": "Your starter's loyalty becomes Loyal. All your Pokemon double the saving throw and HP bonuses from positive loyalty levels."
       },
       {
         "level": 5,
         "title": "Follow Me",
-        "description": "I nuovi Pokemon che catturi ottengono +1 Loyalty. La Loyalty dei tuoi Pokemon non diminuisce per aver perso una battaglia."
+        "description": "I nuovi Pokemon che catturi ottengono +1 Loyalty. La Loyalty dei tuoi Pokemon non diminuisce per aver perso una battaglia.",
+        "descriptionEn": "New Pokemon you catch gain +1 Loyalty. Your Pokemon's Loyalty does not decrease from losing a battle."
       },
       {
         "level": 9,
         "title": "Show Me What You've Got",
-        "description": "Una volta per riposo breve, un tuo Pokemon puo raddoppiare i dadi danno di una mossa oppure usare una mossa di un tier superiore disponibile nel suo stat block. Puoi decidere il raddoppio dopo aver visto tiro per colpire o tiro salvezza."
+        "description": "Una volta per riposo breve, un tuo Pokemon puo raddoppiare i dadi danno di una mossa oppure usare una mossa di un tier superiore disponibile nel suo stat block. Puoi decidere il raddoppio dopo aver visto tiro per colpire o tiro salvezza.",
+        "descriptionEn": "Once per short rest, one of your Pokemon can double a move's damage dice or use a higher-tier move available in its stat block. You can choose to double the dice after seeing the attack roll or saving throw."
       },
       {
         "level": 15,
         "title": "We're a Team",
-        "description": "Come azione bonus pronunci un comando. Fino alla fine del tuo prossimo turno, i Pokemon alleati entro 60 ft hanno vantaggio agli attacchi. Usi pari a 1 + modificatore CHA, recuperati con riposo lungo."
+        "description": "Come azione bonus pronunci un comando. Fino alla fine del tuo prossimo turno, i Pokemon alleati entro 60 ft hanno vantaggio agli attacchi. Usi pari a 1 + modificatore CHA, recuperati con riposo lungo.",
+        "descriptionEn": "As a bonus action, you issue a command. Until the end of your next turn, allied Pokemon within 60 ft have advantage on attacks. Uses equal 1 + your CHA modifier, regained after a long rest."
       }
     ]
   },
@@ -205,22 +237,26 @@
       {
         "level": 2,
         "title": "Type Master",
-        "description": "I Pokemon dello stesso tipo della tua specializzazione aumentano lo STAB di +1. Se in futuro hai piu specializzazioni, il bonus si applica anche ai nuovi tipi; con doppio tipo e doppia specializzazione il bonus diventa +2."
+        "description": "I Pokemon dello stesso tipo della tua specializzazione aumentano lo STAB di +1. Se in futuro hai piu specializzazioni, il bonus si applica anche ai nuovi tipi; con doppio tipo e doppia specializzazione il bonus diventa +2.",
+        "descriptionEn": "Pokemon matching your specialization's type increase their STAB by +1. If you gain more specializations, the bonus also applies to the new types; with two matching types and specializations, the bonus becomes +2."
       },
       {
         "level": 5,
         "title": "Drawing Power",
-        "description": "I Pokemon dei tuoi tipi specializzati aggiungono +2 ai tiri per colpire."
+        "description": "I Pokemon dei tuoi tipi specializzati aggiungono +2 ai tiri per colpire.",
+        "descriptionEn": "Pokemon of your specialized types gain +2 to attack rolls."
       },
       {
         "level": 9,
         "title": "Storing Power",
-        "description": "I Pokemon che porti con te e appartengono ai tuoi tipi specializzati ottengono resistenza a uno dei tipi della tua specializzazione, scelto quando ottieni la feature."
+        "description": "I Pokemon che porti con te e appartengono ai tuoi tipi specializzati ottengono resistenza a uno dei tipi della tua specializzazione, scelto quando ottieni la feature.",
+        "descriptionEn": "Pokemon traveling with you that belong to your specialized types gain resistance to one of your specialization's types, chosen when you gain this feature."
       },
       {
         "level": 15,
         "title": "Releasing Power",
-        "description": "I Pokemon dei tuoi tipi specializzati possono applicare lo STAB a una qualsiasi mossa dannosa a scelta, anche se la mossa non e del loro tipo."
+        "description": "I Pokemon dei tuoi tipi specializzati possono applicare lo STAB a una qualsiasi mossa dannosa a scelta, anche se la mossa non e del loro tipo.",
+        "descriptionEn": "Pokemon of your specialized types can apply STAB to any damaging move of your choice, even if the move does not match their type."
       }
     ]
   },
@@ -230,22 +266,26 @@
       {
         "level": 2,
         "title": "Sabotage",
-        "description": "Ottieni Shadow Points pari al tuo livello, recuperati con riposo lungo. Come reazione puoi spendere punti per ridurre un tiro per colpire che colpisce un tuo Pokemon, potenzialmente facendolo mancare; un 20 naturale non puo essere ridotto."
+        "description": "Ottieni Shadow Points pari al tuo livello, recuperati con riposo lungo. Come reazione puoi spendere punti per ridurre un tiro per colpire che colpisce un tuo Pokemon, potenzialmente facendolo mancare; un 20 naturale non puo essere ridotto.",
+        "descriptionEn": "You gain Shadow Points equal to your level, regained after a long rest. As a reaction, you can spend points to reduce an attack roll that hits one of your Pokemon, potentially making it miss; a natural 20 cannot be reduced."
       },
       {
         "level": 5,
         "title": "And Make It Double",
-        "description": "Spendendo 3 Shadow Points, tu o un tuo Pokemon potete tirare con vantaggio una prova di abilita, un tiro per colpire o un tiro salvezza."
+        "description": "Spendendo 3 Shadow Points, tu o un tuo Pokemon potete tirare con vantaggio una prova di abilita, un tiro per colpire o un tiro salvezza.",
+        "descriptionEn": "By spending 3 Shadow Points, you or one of your Pokemon can make a skill check, attack roll, or saving throw with advantage."
       },
       {
         "level": 9,
         "title": "Surrender Now",
-        "description": "Come reazione puoi spendere 4 Shadow Points per aumentare di un grado la resistenza di un tuo Pokemon contro una mossa che lo danneggia."
+        "description": "Come reazione puoi spendere 4 Shadow Points per aumentare di un grado la resistenza di un tuo Pokemon contro una mossa che lo danneggia.",
+        "descriptionEn": "As a reaction, you can spend 4 Shadow Points to increase one of your Pokemon's resistance by one degree against a move that damages it."
       },
       {
         "level": 15,
         "title": "Prepare to Fight",
-        "description": "Puoi spendere 5 Shadow Points per permettere a un tuo Pokemon di invocare la reazione Me First tramite Copy Meowth."
+        "description": "Puoi spendere 5 Shadow Points per permettere a un tuo Pokemon di invocare la reazione Me First tramite Copy Meowth.",
+        "descriptionEn": "You can spend 5 Shadow Points to let one of your Pokemon invoke the Me First reaction through Copy Meowth."
       }
     ]
   },
@@ -255,22 +295,26 @@
       {
         "level": 2,
         "title": "Tactician",
-        "description": "Ottieni Tactical Points pari al tuo livello, recuperati con riposo lungo. Quando un Pokemon recupera PF da item o mossa, puoi spendere punti per aumentare la cura di 1d4 per punto."
+        "description": "Ottieni Tactical Points pari al tuo livello, recuperati con riposo lungo. Quando un Pokemon recupera PF da item o mossa, puoi spendere punti per aumentare la cura di 1d4 per punto.",
+        "descriptionEn": "You gain Tactical Points equal to your level, regained after a long rest. When a Pokemon regains HP from an item or move, you can spend points to increase the healing by 1d4 per point."
       },
       {
         "level": 5,
         "title": "Directed Strike",
-        "description": "Spendendo 2 Tactical Points, un tuo Pokemon tira due volte i danni di un attacco e tiene il risultato migliore."
+        "description": "Spendendo 2 Tactical Points, un tuo Pokemon tira due volte i danni di un attacco e tiene il risultato migliore.",
+        "descriptionEn": "By spending 2 Tactical Points, one of your Pokemon rolls an attack's damage twice and keeps the better result."
       },
       {
         "level": 9,
         "title": "Raise Your Defenses",
-        "description": "Come reazione puoi spendere fino a 3 Tactical Points per aumentare la CA di un Pokemon se questo trasforma un colpo in un mancato."
+        "description": "Come reazione puoi spendere fino a 3 Tactical Points per aumentare la CA di un Pokemon se questo trasforma un colpo in un mancato.",
+        "descriptionEn": "As a reaction, you can spend up to 3 Tactical Points to increase a Pokemon's AC if this turns a hit into a miss."
       },
       {
         "level": 15,
         "title": "Not This Time",
-        "description": "Dopo che un avversario tira un TS contro una mossa di un tuo Pokemon, puoi aumentare la CD fino a 5 spendendo 1 Tactical Point per ogni punto, se questo causa il fallimento."
+        "description": "Dopo che un avversario tira un TS contro una mossa di un tuo Pokemon, puoi aumentare la CD fino a 5 spendendo 1 Tactical Point per ogni punto, se questo causa il fallimento.",
+        "descriptionEn": "After an opponent rolls a saving throw against one of your Pokemon's moves, you can increase the DC by up to 5, spending 1 Tactical Point per point, if this causes the save to fail."
       }
     ]
   },
@@ -280,22 +324,26 @@
       {
         "level": 2,
         "title": "Ranger",
-        "description": "Ottieni competenza in Nature e Survival, o expertise se eri gia competente. La velocita aumenta di 5 ft e ottieni velocita di scalata e nuoto pari alla velocita di camminata."
+        "description": "Ottieni competenza in Nature e Survival, o expertise se eri gia competente. La velocita aumenta di 5 ft e ottieni velocita di scalata e nuoto pari alla velocita di camminata.",
+        "descriptionEn": "You gain proficiency in Nature and Survival, or expertise if already proficient. Your speed increases by 5 ft, and you gain climbing and swimming speeds equal to your walking speed."
       },
       {
         "level": 5,
         "title": "Deep Connection",
-        "description": "Puoi lanciare Speak with Animals per comunicare con un Pokemon consenziente e comprenderne la risposta. Usi giornalieri pari a modificatore WIS o CHA, minimo 1."
+        "description": "Puoi lanciare Speak with Animals per comunicare con un Pokemon consenziente e comprenderne la risposta. Usi giornalieri pari a modificatore WIS o CHA, minimo 1.",
+        "descriptionEn": "You can cast Speak with Animals to communicate with a willing Pokemon and understand its response. Daily uses equal your WIS or CHA modifier (minimum 1)."
       },
       {
         "level": 9,
         "title": "Strong Bond",
-        "description": "A ogni riposo lungo puoi creare un legame con fino a due Pokemon."
+        "description": "A ogni riposo lungo puoi creare un legame con fino a due Pokemon.",
+        "descriptionEn": "After each long rest, you can form a bond with up to two Pokemon."
       },
       {
         "level": 15,
         "title": "Best Friends",
-        "description": "Puoi avere due Pokemon attivi fuori dalla Ball. In battaglia condividono comunque economia d azione come se ci fosse un solo Pokemon attivo; se uno sviene puoi mandarne fuori un altro."
+        "description": "Puoi avere due Pokemon attivi fuori dalla Ball. In battaglia condividono comunque economia d azione come se ci fosse un solo Pokemon attivo; se uno sviene puoi mandarne fuori un altro.",
+        "descriptionEn": "You can have two active Pokemon outside their Balls. In battle, they share the action economy as if only one Pokemon were active; if one faints, you can send out another."
       }
     ]
   },
@@ -305,22 +353,26 @@
       {
         "level": 2,
         "title": "Guru",
-        "description": "Ottieni competenza in Persuasion. I Pokemon non ancora controllabili restano Indifferent invece di Disloyal finche non raggiungi il Control Upgrade richiesto."
+        "description": "Ottieni competenza in Persuasion. I Pokemon non ancora controllabili restano Indifferent invece di Disloyal finche non raggiungi il Control Upgrade richiesto.",
+        "descriptionEn": "You gain proficiency in Persuasion. Pokemon you cannot yet control remain Indifferent instead of Disloyal until you reach the required Control Upgrade."
       },
       {
         "level": 5,
         "title": "Mind",
-        "description": "Tutti i tuoi Pokemon sono competenti nei tiri salvezza di Saggezza e hanno vantaggio per evitare di fallire contro confusione."
+        "description": "Tutti i tuoi Pokemon sono competenti nei tiri salvezza di Saggezza e hanno vantaggio per evitare di fallire contro confusione.",
+        "descriptionEn": "All your Pokemon are proficient in Wisdom saving throws and have advantage to avoid failing against confusion."
       },
       {
         "level": 9,
         "title": "Body",
-        "description": "I tuoi Pokemon hanno accesso a entrambe le abilita non nascoste, se disponibili. Tireless costa 1 ASI invece di 2; chi lo possiede gia puo ottenere 1 ASI."
+        "description": "I tuoi Pokemon hanno accesso a entrambe le abilita non nascoste, se disponibili. Tireless costa 1 ASI invece di 2; chi lo possiede gia puo ottenere 1 ASI.",
+        "descriptionEn": "Your Pokemon have access to both non-hidden abilities, if available. Tireless costs 1 ASI instead of 2; Pokemon that already have it can gain 1 ASI."
       },
       {
         "level": 15,
         "title": "Spirit",
-        "description": "All inizio del tuo turno puoi aggiungere il modificatore WIS ai tiri per colpire oppure ai danni del tuo Pokemon fino all inizio del tuo prossimo turno. Usi pari a 1 + modificatore WIS, recuperati con riposo lungo."
+        "description": "All inizio del tuo turno puoi aggiungere il modificatore WIS ai tiri per colpire oppure ai danni del tuo Pokemon fino all inizio del tuo prossimo turno. Usi pari a 1 + modificatore WIS, recuperati con riposo lungo.",
+        "descriptionEn": "At the start of your turn, you can add your WIS modifier to your Pokemon's attack or damage rolls until the start of your next turn. Uses equal 1 + your WIS modifier, regained after a long rest."
       }
     ]
   },
@@ -330,22 +382,26 @@
       {
         "level": 2,
         "title": "Pokémon Breeder",
-        "description": "Quando provi a far accoppiare due Pokemon, aggiungi il modificatore WIS al d20 della prova di successo."
+        "description": "Quando provi a far accoppiare due Pokemon, aggiungi il modificatore WIS al d20 della prova di successo.",
+        "descriptionEn": "When attempting to breed two Pokemon, add your WIS modifier to the d20 success check."
       },
       {
         "level": 5,
         "title": "Tender Love and Care",
-        "description": "Hai vantaggio su tutti i tiri che riducono il contatore di incubazione delle uova Pokemon."
+        "description": "Hai vantaggio su tutti i tiri che riducono il contatore di incubazione delle uova Pokemon.",
+        "descriptionEn": "You have advantage on all rolls that reduce Pokemon eggs' incubation counters."
       },
       {
         "level": 9,
         "title": "Good Genes",
-        "description": "Ogni Pokemon nato da un uovo che fai schiudere ottiene 2 punti da aggiungere alle caratteristiche o da spendere in un talento."
+        "description": "Ogni Pokemon nato da un uovo che fai schiudere ottiene 2 punti da aggiungere alle caratteristiche o da spendere in un talento.",
+        "descriptionEn": "Every Pokemon hatched from an egg you hatch gains 2 points to add to ability scores or spend on a feat."
       },
       {
         "level": 15,
         "title": "Master of Traits",
-        "description": "Per le uova future puoi scegliere sesso, natura e abilita disponibili del Pokemon. Se eredita almeno una Egg Move, puoi sostituirla con altre mosse dalla lista Egg Moves."
+        "description": "Per le uova future puoi scegliere sesso, natura e abilita disponibili del Pokemon. Se eredita almeno una Egg Move, puoi sostituirla con altre mosse dalla lista Egg Moves.",
+        "descriptionEn": "For future eggs, you can choose the Pokemon's sex, nature, and available abilities. If it inherits at least one Egg Move, you can replace it with other moves from its Egg Moves list."
       }
     ]
   }

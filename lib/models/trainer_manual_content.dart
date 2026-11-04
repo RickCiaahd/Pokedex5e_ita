@@ -1,3 +1,5 @@
+import '../localization/game_catalog_locale.dart';
+
 class TrainerOrigin {
   const TrainerOrigin({
     required this.name,
@@ -66,18 +68,28 @@ class TrainerPathFeature {
   const TrainerPathFeature({
     required this.level,
     required this.title,
-    required this.description,
-  });
+    required String description,
+    this.descriptionEn,
+  // Preserve the public constructor parameter while localizing the getter.
+  // ignore: prefer_initializing_formals
+  }) : _description = description;
 
   final int level;
   final String title;
-  final String description;
+  final String _description;
+  final String? descriptionEn;
+
+  // Resolve on access so already loaded paths follow language changes.
+  String get description => GameCatalogLocale.isItalian
+      ? _description
+      : (descriptionEn ?? _description);
 
   factory TrainerPathFeature.fromJson(Map<String, dynamic> json) {
     return TrainerPathFeature(
       level: json['level'] as int,
       title: json['title'] as String,
       description: json['description'] as String? ?? '',
+      descriptionEn: json['descriptionEn'] as String?,
     );
   }
 }

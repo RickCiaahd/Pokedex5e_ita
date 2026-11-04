@@ -1,0 +1,60 @@
+name: Temporary dispatch Trainer Atlas v1.4.2 release
+
+on:
+  push:
+    branches:
+      - automation/publish-v1.4.2
+    paths:
+      - .github/workflows/temp-dispatch-v1.4.2.yml
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+      ANDROID_STORE_PASSWORD: ${{ secrets.ANDROID_STORE_PASSWORD }}
+      ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+      ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Validate release target and signing configuration
+        shell: bash
+        run: |
+          set -euo pipefail
+          TARGET=d5acc43214c7841d307bc4f9ada6c308b198f136
+          git fetch origin main --tags
+          git merge-base --is-ancestor "$TARGET" origin/main
+          test "$(git show "$TARGET:pubspec.yaml" | grep '^version: ')" = 'version: 1.4.2+16'
+          test -n "$ANDROID_KEYSTORE_BASE64" || (echo 'Missing ANDROID_KEYSTORE_BASE64' && exit 1)
+          test -n "$ANDROID_STORE_PASSWORD" || (echo 'Missing ANDROID_STORE_PASSWORD' && exit 1)
+          test -n "$ANDROID_KEY_PASSWORD" || (echo 'Missing ANDROID_KEY_PASSWORD' && exit 1)
+          test -n "$ANDROID_KEY_ALIAS" || (echo 'Missing ANDROID_KEY_ALIAS' && exit 1)
+          if git ls-remote --tags --exit-code origin refs/tags/v1.4.2 >/dev/null 2>&1; then
+            echo 'Release tag already exists; refusing to overwrite.'
+            exit 1
+          fi
+      - name: Create release tag on the verified main commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git tag -a v1.4.2 d5acc43214c7841d307bc4f9ada6c308b198f136 -m 'Trainer Atlas 5e 1.4.2 (versionCode 16)'
+          git push origin refs/tags/v1.4.2
+      - name: Dispatch the official signed Android release workflow on tag
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh workflow run android-release.yml --repo "$GITHUB_REPOSITORY" --ref v1.4.2
+      - name: Dispatch the official Windows release workflow on tag
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh workflow run windows-release.yml --repo "$GITHUB_REPOSITORY" --ref v1.4.2
